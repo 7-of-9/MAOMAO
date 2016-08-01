@@ -10,20 +10,7 @@
     </AssociationSet>
     <EntitySet Name="term_type" EntityType="mm02Model.term_type" />
     <EntitySet Name="cal_entity_type" EntityType="mm02Model.cal_entity_type" />
-    <EntitySet Name="terms" EntityType="mm02Model.term" />
-    <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
-      <End Role="cal_entity_type" EntitySet="cal_entity_type" />
-      <End Role="term" EntitySet="terms" />
-    </AssociationSet>
-    <AssociationSet Name="FK_term_term_type" Association="mm02Model.FK_term_term_type">
-      <End Role="term_type" EntitySet="term_type" />
-      <End Role="term" EntitySet="terms" />
-    </AssociationSet>
     <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
-    <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
-      <End Role="term" EntitySet="terms" />
-      <End Role="url_term" EntitySet="url_term" />
-    </AssociationSet>
     <EntitySet Name="urls" EntityType="mm02Model.url" />
     <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
       <End Role="awis_site" EntitySet="awis_site" />
@@ -34,6 +21,11 @@
       <End Role="url_term" EntitySet="url_term" />
     </AssociationSet>
     <EntitySet Name="term_matrix" EntityType="mm02Model.term_matrix" />
+    <EntitySet Name="terms" EntityType="mm02Model.term" />
+    <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
+      <End Role="cal_entity_type" EntitySet="cal_entity_type" />
+      <End Role="term" EntitySet="terms" />
+    </AssociationSet>
     <AssociationSet Name="FK_term_matrix_term" Association="mm02Model.FK_term_matrix_term">
       <End Role="term" EntitySet="terms" />
       <End Role="term_matrix" EntitySet="term_matrix" />
@@ -41,6 +33,14 @@
     <AssociationSet Name="FK_term_matrix_term1" Association="mm02Model.FK_term_matrix_term1">
       <End Role="term" EntitySet="terms" />
       <End Role="term_matrix" EntitySet="term_matrix" />
+    </AssociationSet>
+    <AssociationSet Name="FK_term_term_type" Association="mm02Model.FK_term_term_type">
+      <End Role="term_type" EntitySet="term_type" />
+      <End Role="term" EntitySet="terms" />
+    </AssociationSet>
+    <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
+      <End Role="term" EntitySet="terms" />
+      <End Role="url_term" EntitySet="url_term" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="awis_site">
@@ -104,45 +104,6 @@
     <Property Name="name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="terms" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="cal_entity_type" ToRole="term" />
   </EntityType>
-  <EntityType Name="term">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-    <Property Name="term_type_id" Type="Int32" Nullable="false" />
-    <Property Name="cal_entity_type_id" Type="Int32" />
-    <Property Name="occurs_count" Type="Int64" Nullable="false" />
-    <NavigationProperty Name="cal_entity_type" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="term" ToRole="cal_entity_type" />
-    <NavigationProperty Name="term_type" Relationship="mm02Model.FK_term_term_type" FromRole="term" ToRole="term_type" />
-    <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
-    <NavigationProperty Name="term_matrix" Relationship="mm02Model.FK_term_matrix_term" FromRole="term" ToRole="term_matrix" />
-    <NavigationProperty Name="term_matrix1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term" ToRole="term_matrix" />
-  </EntityType>
-  <Association Name="FK_term_cal_entity_type">
-    <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
-    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="cal_entity_type">
-        <PropertyRef Name="id" />
-      </Principal>
-      <Dependent Role="term">
-        <PropertyRef Name="cal_entity_type_id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_term_term_type">
-    <End Type="mm02Model.term_type" Role="term_type" Multiplicity="1" />
-    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="term_type">
-        <PropertyRef Name="id" />
-      </Principal>
-      <Dependent Role="term">
-        <PropertyRef Name="term_type_id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <EntityType Name="url_term">
     <Key>
       <PropertyRef Name="id" />
@@ -153,21 +114,9 @@
     <Property Name="cal_topic_score" Type="Double" />
     <Property Name="cal_socialtag_importance" Type="Int32" />
     <Property Name="cal_entity_relevance" Type="Double" />
-    <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
     <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
+    <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
   </EntityType>
-  <Association Name="FK_urlTerm_term">
-    <End Type="mm02Model.term" Role="term" Multiplicity="1" />
-    <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="term">
-        <PropertyRef Name="id" />
-      </Principal>
-      <Dependent Role="url_term">
-        <PropertyRef Name="term_id" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <EntityType Name="url">
     <Key>
       <PropertyRef Name="id" />
@@ -217,6 +166,34 @@
     <NavigationProperty Name="term" Relationship="mm02Model.FK_term_matrix_term" FromRole="term_matrix" ToRole="term" />
     <NavigationProperty Name="term1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term_matrix" ToRole="term" />
   </EntityType>
+  <EntityType Name="term">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="term_type_id" Type="Int32" Nullable="false" />
+    <Property Name="cal_entity_type_id" Type="Int32" />
+    <Property Name="occurs_count" Type="Int64" Nullable="false" />
+    <Property Name="mmcat" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="cal_entity_type" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="term" ToRole="cal_entity_type" />
+    <NavigationProperty Name="term_matrix" Relationship="mm02Model.FK_term_matrix_term" FromRole="term" ToRole="term_matrix" />
+    <NavigationProperty Name="term_matrix1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term" ToRole="term_matrix" />
+    <NavigationProperty Name="term_type" Relationship="mm02Model.FK_term_term_type" FromRole="term" ToRole="term_type" />
+    <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
+  </EntityType>
+  <Association Name="FK_term_cal_entity_type">
+    <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
+    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="cal_entity_type">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term">
+        <PropertyRef Name="cal_entity_type_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_term_matrix_term">
     <End Type="mm02Model.term" Role="term" Multiplicity="1" />
     <End Type="mm02Model.term_matrix" Role="term_matrix" Multiplicity="*" />
@@ -238,6 +215,30 @@
       </Principal>
       <Dependent Role="term_matrix">
         <PropertyRef Name="term_b_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_term_term_type">
+    <End Type="mm02Model.term_type" Role="term_type" Multiplicity="1" />
+    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term_type">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term">
+        <PropertyRef Name="term_type_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_urlTerm_term">
+    <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+    <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="url_term">
+        <PropertyRef Name="term_id" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

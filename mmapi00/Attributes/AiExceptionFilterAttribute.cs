@@ -13,7 +13,7 @@ namespace mmapi00
         {
             if (actionExecutedContext != null && actionExecutedContext.Exception != null)
             {  
-                Global.tel_client.TrackException(actionExecutedContext.Exception);
+                g.tel_client.TrackException(actionExecutedContext.Exception);
             }
             base.OnException(actionExecutedContext);
         }

@@ -50,17 +50,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="terms">
-      <EntityTypeMapping TypeName="mm02Model.term">
-        <MappingFragment StoreEntitySet="term">
-          <ScalarProperty Name="occurs_count" ColumnName="occurs_count" />
-          <ScalarProperty Name="cal_entity_type_id" ColumnName="cal_entity_type_id" />
-          <ScalarProperty Name="term_type_id" ColumnName="term_type_id" />
-          <ScalarProperty Name="name" ColumnName="name" />
-          <ScalarProperty Name="id" ColumnName="id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="url_term">
       <EntityTypeMapping TypeName="mm02Model.url_term">
         <MappingFragment StoreEntitySet="url_term">
@@ -92,6 +81,18 @@
           <ScalarProperty Name="occurs_together_count" ColumnName="occurs_together_count" />
           <ScalarProperty Name="term_b_id" ColumnName="term_b_id" />
           <ScalarProperty Name="term_a_id" ColumnName="term_a_id" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="terms">
+      <EntityTypeMapping TypeName="mm02Model.term">
+        <MappingFragment StoreEntitySet="term">
+          <ScalarProperty Name="mmcat" ColumnName="mmcat" />
+          <ScalarProperty Name="occurs_count" ColumnName="occurs_count" />
+          <ScalarProperty Name="cal_entity_type_id" ColumnName="cal_entity_type_id" />
+          <ScalarProperty Name="term_type_id" ColumnName="term_type_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>

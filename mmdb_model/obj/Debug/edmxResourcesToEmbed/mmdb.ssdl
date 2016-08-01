@@ -39,6 +39,7 @@
     <Property Name="term_type_id" Type="int" Nullable="false" />
     <Property Name="cal_entity_type_id" Type="int" />
     <Property Name="occurs_count" Type="bigint" Nullable="false" />
+    <Property Name="mmcat" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="term_matrix">
     <Key>

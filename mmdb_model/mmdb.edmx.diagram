@@ -11,17 +11,17 @@
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         <EntityTypeShape EntityType="mm02Model.term_type" Width="1.5" PointX="0.75" PointY="6.875" />
         <EntityTypeShape EntityType="mm02Model.cal_entity_type" Width="1.5" PointX="5.5" PointY="9" />
-        <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="3.375" PointY="7.25" />
-        <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
-        <AssociationConnector Association="mm02Model.FK_term_term_type" />
         <EntityTypeShape EntityType="mm02Model.url_term" Width="1.5" PointX="8.625" PointY="4.5" />
-        <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="3.625" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         <EntityTypeShape EntityType="mm02Model.term_matrix" Width="1.5" PointX="5.625" PointY="5.625" />
+        <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="3.25" PointY="7" />
+        <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term1" />
+        <AssociationConnector Association="mm02Model.FK_term_term_type" />
+        <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

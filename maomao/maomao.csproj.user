@@ -18,8 +18,8 @@
           <ExternalProgram>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</ExternalProgram>
           <StartExternalURL>
           </StartExternalURL>
-          <StartCmdLineArguments>--load-extension="Y:\src\fs\maomao\app"</StartCmdLineArguments>
-          <StartWorkingDirectory>Y:\src\fs\maomao\app</StartWorkingDirectory>
+          <StartCmdLineArguments>--load-extension="Y:\src\MAOMAO\maomao\app"</StartCmdLineArguments>
+          <StartWorkingDirectory>Y:\src\MAOMAO\maomao\app</StartWorkingDirectory>
           <EnableENC>True</EnableENC>
           <AlwaysStartWebServerOnDebug>True</AlwaysStartWebServerOnDebug>
         </WebProjectProperties>

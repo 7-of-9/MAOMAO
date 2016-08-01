@@ -17,9 +17,9 @@ namespace mmdb_model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public term()
         {
-            this.url_term = new HashSet<url_term>();
             this.term_matrix = new HashSet<term_matrix>();
             this.term_matrix1 = new HashSet<term_matrix>();
+            this.url_term = new HashSet<url_term>();
         }
     
         public long id { get; set; }
@@ -27,14 +27,15 @@ namespace mmdb_model
         public int term_type_id { get; set; }
         public Nullable<int> cal_entity_type_id { get; set; }
         public long occurs_count { get; set; }
+        public int mmcat { get; set; }
     
         public virtual cal_entity_type cal_entity_type { get; set; }
-        public virtual term_type term_type { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<url_term> url_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<term_matrix> term_matrix { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<term_matrix> term_matrix1 { get; set; }
+        public virtual term_type term_type { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<url_term> url_term { get; set; }
     }
 }
