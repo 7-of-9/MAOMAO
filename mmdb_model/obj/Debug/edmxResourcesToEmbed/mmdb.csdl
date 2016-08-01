@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="mm02Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="mm02Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="awis_site" EntityType="mm02Model.awis_site" />
+    <EntitySet Name="users" EntityType="mm02Model.user" />
+    <EntitySet Name="awis_cat" EntityType="mm02Model.awis_cat" />
+    <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
+      <End Role="awis_cat" EntitySet="awis_cat" />
+      <End Role="awis_site" EntitySet="awis_site" />
+    </AssociationSet>
+    <EntitySet Name="term_type" EntityType="mm02Model.term_type" />
+    <EntitySet Name="cal_entity_type" EntityType="mm02Model.cal_entity_type" />
+    <EntitySet Name="terms" EntityType="mm02Model.term" />
+    <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
+      <End Role="cal_entity_type" EntitySet="cal_entity_type" />
+      <End Role="term" EntitySet="terms" />
+    </AssociationSet>
+    <AssociationSet Name="FK_term_term_type" Association="mm02Model.FK_term_term_type">
+      <End Role="term_type" EntitySet="term_type" />
+      <End Role="term" EntitySet="terms" />
+    </AssociationSet>
+    <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
+    <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
+      <End Role="term" EntitySet="terms" />
+      <End Role="url_term" EntitySet="url_term" />
+    </AssociationSet>
+    <EntitySet Name="urls" EntityType="mm02Model.url" />
+    <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
+      <End Role="awis_site" EntitySet="awis_site" />
+      <End Role="url" EntitySet="urls" />
+    </AssociationSet>
+    <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
+      <End Role="url" EntitySet="urls" />
+      <End Role="url_term" EntitySet="url_term" />
+    </AssociationSet>
+    <EntitySet Name="term_matrix" EntityType="mm02Model.term_matrix" />
+    <AssociationSet Name="FK_term_matrix_term" Association="mm02Model.FK_term_matrix_term">
+      <End Role="term" EntitySet="terms" />
+      <End Role="term_matrix" EntitySet="term_matrix" />
+    </AssociationSet>
+    <AssociationSet Name="FK_term_matrix_term1" Association="mm02Model.FK_term_matrix_term1">
+      <End Role="term" EntitySet="terms" />
+      <End Role="term_matrix" EntitySet="term_matrix" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="awis_site">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="as_of_utc" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="TLD" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="adult" Type="Boolean" Nullable="false" />
+    <Property Name="title" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="desc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="lang" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="url" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="awis_cat_id" Type="Int64" />
+    <NavigationProperty Name="awis_cat" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_site" ToRole="awis_cat" />
+    <Property Name="hard_disallow" Type="Boolean" />
+    <NavigationProperty Name="urls" Relationship="mm02Model.FK_url_awis_site" FromRole="awis_site" ToRole="url" />
+  </EntityType>
+  <EntityType Name="user">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="awis_cat">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="title" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="abs_path" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_cat" ToRole="awis_site" />
+  </EntityType>
+  <Association Name="FK_awis_site_awis_cat">
+    <End Type="mm02Model.awis_cat" Role="awis_cat" Multiplicity="0..1" />
+    <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="awis_cat">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="awis_site">
+        <PropertyRef Name="awis_cat_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="term_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="type" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="terms" Relationship="mm02Model.FK_term_term_type" FromRole="term_type" ToRole="term" />
+  </EntityType>
+  <EntityType Name="cal_entity_type">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="terms" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="cal_entity_type" ToRole="term" />
+  </EntityType>
+  <EntityType Name="term">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="term_type_id" Type="Int32" Nullable="false" />
+    <Property Name="cal_entity_type_id" Type="Int32" />
+    <Property Name="occurs_count" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="cal_entity_type" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="term" ToRole="cal_entity_type" />
+    <NavigationProperty Name="term_type" Relationship="mm02Model.FK_term_term_type" FromRole="term" ToRole="term_type" />
+    <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
+    <NavigationProperty Name="term_matrix" Relationship="mm02Model.FK_term_matrix_term" FromRole="term" ToRole="term_matrix" />
+    <NavigationProperty Name="term_matrix1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term" ToRole="term_matrix" />
+  </EntityType>
+  <Association Name="FK_term_cal_entity_type">
+    <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
+    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="cal_entity_type">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term">
+        <PropertyRef Name="cal_entity_type_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_term_term_type">
+    <End Type="mm02Model.term_type" Role="term_type" Multiplicity="1" />
+    <End Type="mm02Model.term" Role="term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term_type">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term">
+        <PropertyRef Name="term_type_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="url_term">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="url_id" Type="Int64" Nullable="false" />
+    <Property Name="term_id" Type="Int64" Nullable="false" />
+    <Property Name="cal_topic_score" Type="Double" />
+    <Property Name="cal_socialtag_importance" Type="Int32" />
+    <Property Name="cal_entity_relevance" Type="Double" />
+    <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
+    <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
+  </EntityType>
+  <Association Name="FK_urlTerm_term">
+    <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+    <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="url_term">
+        <PropertyRef Name="term_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="url">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="url1" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+    <Property Name="calais_as_of_utc" Type="DateTime" Precision="3" />
+    <Property Name="awis_site_id" Type="Int64" Nullable="false" />
+    <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
+    <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
+  </EntityType>
+  <Association Name="FK_url_awis_site">
+    <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
+    <End Type="mm02Model.url" Role="url" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="awis_site">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="url">
+        <PropertyRef Name="awis_site_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_urlTerms_url">
+    <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+    <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="url">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="url_term">
+        <PropertyRef Name="url_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="term_matrix">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="term_a_id" Type="Int64" Nullable="false" />
+    <Property Name="term_b_id" Type="Int64" Nullable="false" />
+    <Property Name="occurs_together_count" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="term" Relationship="mm02Model.FK_term_matrix_term" FromRole="term_matrix" ToRole="term" />
+    <NavigationProperty Name="term1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term_matrix" ToRole="term" />
+  </EntityType>
+  <Association Name="FK_term_matrix_term">
+    <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+    <End Type="mm02Model.term_matrix" Role="term_matrix" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term_matrix">
+        <PropertyRef Name="term_a_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_term_matrix_term1">
+    <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+    <End Type="mm02Model.term_matrix" Role="term_matrix" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="term">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="term_matrix">
+        <PropertyRef Name="term_b_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

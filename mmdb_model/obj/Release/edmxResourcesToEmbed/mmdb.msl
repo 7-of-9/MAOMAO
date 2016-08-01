@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="mm02ModelStoreContainer" CdmEntityContainer="mm02Entities">
+    <EntitySetMapping Name="awis_site">
+      <EntityTypeMapping TypeName="mm02Model.awis_site">
+        <MappingFragment StoreEntitySet="awis_site">
+          <ScalarProperty Name="hard_disallow" ColumnName="hard_disallow" />
+          <ScalarProperty Name="awis_cat_id" ColumnName="awis_cat_id" />
+          <ScalarProperty Name="url" ColumnName="url" />
+          <ScalarProperty Name="lang" ColumnName="lang" />
+          <ScalarProperty Name="desc" ColumnName="desc" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="adult" ColumnName="adult" />
+          <ScalarProperty Name="TLD" ColumnName="TLD" />
+          <ScalarProperty Name="as_of_utc" ColumnName="as_of_utc" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="users">
+      <EntityTypeMapping TypeName="mm02Model.user">
+        <MappingFragment StoreEntitySet="user">
+          <ScalarProperty Name="username" ColumnName="username" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="awis_cat">
+      <EntityTypeMapping TypeName="mm02Model.awis_cat">
+        <MappingFragment StoreEntitySet="awis_cat">
+          <ScalarProperty Name="abs_path" ColumnName="abs_path" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="urls">
+      <EntityTypeMapping TypeName="mm02Model.url">
+        <MappingFragment StoreEntitySet="url">
+          <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
+          <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
+          <ScalarProperty Name="url1" ColumnName="url" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

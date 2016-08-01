@@ -1,0 +1,15 @@
+Z:\src\fs\mmdb_model\bin\Release\ApplicationInsights.config
+Z:\src\fs\mmdb_model\bin\Release\mmdb_model.dll.config
+Z:\src\fs\mmdb_model\bin\Release\mmdb_model.dll
+Z:\src\fs\mmdb_model\bin\Release\mmdb_model.pdb
+Z:\src\fs\mmdb_model\bin\Release\EntityFramework.dll
+Z:\src\fs\mmdb_model\bin\Release\EntityFramework.SqlServer.dll
+Z:\src\fs\mmdb_model\bin\Release\global.dll
+Z:\src\fs\mmdb_model\bin\Release\Microsoft.ApplicationInsights.dll
+Z:\src\fs\mmdb_model\bin\Release\global.pdb
+Z:\src\fs\mmdb_model\bin\Release\EntityFramework.xml
+Z:\src\fs\mmdb_model\bin\Release\EntityFramework.SqlServer.xml
+Z:\src\fs\mmdb_model\bin\Release\Microsoft.ApplicationInsights.xml
+Z:\src\fs\mmdb_model\obj\Release\mm_db.csprojResolveAssemblyReference.cache
+Z:\src\fs\mmdb_model\obj\Release\mmdb_model.dll
+Z:\src\fs\mmdb_model\obj\Release\mmdb_model.pdb

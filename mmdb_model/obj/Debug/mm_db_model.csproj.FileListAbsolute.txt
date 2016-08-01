@@ -1,0 +1,10 @@
+Y:\src\fs\mmdb_model\bin\Debug\mmdb_model.dll.config
+Y:\src\fs\mmdb_model\bin\Debug\mmdb_model.dll
+Y:\src\fs\mmdb_model\bin\Debug\mmdb_model.pdb
+Y:\src\fs\mmdb_model\bin\Debug\EntityFramework.dll
+Y:\src\fs\mmdb_model\bin\Debug\EntityFramework.SqlServer.dll
+Y:\src\fs\mmdb_model\bin\Debug\EntityFramework.xml
+Y:\src\fs\mmdb_model\bin\Debug\EntityFramework.SqlServer.xml
+Y:\src\fs\mmdb_model\obj\Debug\mm_db_model.csprojResolveAssemblyReference.cache
+Y:\src\fs\mmdb_model\obj\Debug\mmdb_model.dll
+Y:\src\fs\mmdb_model\obj\Debug\mmdb_model.pdb

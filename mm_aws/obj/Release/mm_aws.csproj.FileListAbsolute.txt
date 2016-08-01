@@ -1,0 +1,17 @@
+Z:\src\fs\mm_aws\bin\Release\ApplicationInsights.config
+Z:\src\fs\mm_aws\bin\Release\mm_aws.dll.config
+Z:\src\fs\mm_aws\bin\Release\mm_aws.dll
+Z:\src\fs\mm_aws\bin\Release\mm_aws.pdb
+Z:\src\fs\mm_aws\bin\Release\EntityFramework.dll
+Z:\src\fs\mm_aws\bin\Release\EntityFramework.SqlServer.dll
+Z:\src\fs\mm_aws\bin\Release\global.dll
+Z:\src\fs\mm_aws\bin\Release\mmdb_model.dll
+Z:\src\fs\mm_aws\bin\Release\Microsoft.ApplicationInsights.dll
+Z:\src\fs\mm_aws\bin\Release\global.pdb
+Z:\src\fs\mm_aws\bin\Release\mmdb_model.pdb
+Z:\src\fs\mm_aws\bin\Release\EntityFramework.xml
+Z:\src\fs\mm_aws\bin\Release\EntityFramework.SqlServer.xml
+Z:\src\fs\mm_aws\bin\Release\Microsoft.ApplicationInsights.xml
+Z:\src\fs\mm_aws\obj\Release\mm_aws.csprojResolveAssemblyReference.cache
+Z:\src\fs\mm_aws\obj\Release\mm_aws.dll
+Z:\src\fs\mm_aws\obj\Release\mm_aws.pdb
