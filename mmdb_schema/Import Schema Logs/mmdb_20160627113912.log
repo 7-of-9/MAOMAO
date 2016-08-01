@@ -1,0 +1,73 @@
+6/27/2016 7:39:12 PM	This log contains information about the import schema operation into project 'mmdb' on computer 'DMWIN10NEW' by user 'morri'.
+6/27/2016 7:39:13 PM	Import of database schema has started.
+6/27/2016 7:39:13 PM	Gathering logins
+6/27/2016 7:39:13 PM	Gathering database options
+6/27/2016 7:39:13 PM	Gathering users
+6/27/2016 7:39:13 PM	Gathering roles
+6/27/2016 7:39:13 PM	Gathering application roles
+6/27/2016 7:39:13 PM	Gathering role memberships
+6/27/2016 7:39:13 PM	Gathering filegroups
+6/27/2016 7:39:13 PM	Gathering full-text catalogs
+6/27/2016 7:39:13 PM	Gathering assemblies
+6/27/2016 7:39:13 PM	Gathering certificates
+6/27/2016 7:39:13 PM	Gathering schemas
+6/27/2016 7:39:13 PM	Gathering XML schema collections
+6/27/2016 7:39:13 PM	Gathering user-defined data types
+6/27/2016 7:39:13 PM	Gathering user-defined types
+6/27/2016 7:39:13 PM	Gathering table types
+6/27/2016 7:39:13 PM	Gathering unique keys for table types
+6/27/2016 7:39:13 PM	Gathering primary keys for table types
+6/27/2016 7:39:13 PM	Gathering indexes for table types
+6/27/2016 7:39:13 PM	Gathering check constraints for table types
+6/27/2016 7:39:13 PM	Gathering default constraints for table types
+6/27/2016 7:39:13 PM	Gathering partition functions
+6/27/2016 7:39:14 PM	Gathering partition schemes
+6/27/2016 7:39:14 PM	Gathering functions
+6/27/2016 7:39:14 PM	Gathering encrypted functions
+6/27/2016 7:39:14 PM	Gathering aggregates
+6/27/2016 7:39:14 PM	Gathering procedures
+6/27/2016 7:39:14 PM	Gathering encrypted procedures
+6/27/2016 7:39:14 PM	Gathering tables
+6/27/2016 7:39:14 PM	Gathering primary keys
+6/27/2016 7:39:14 PM	Gathering unique constraints
+6/27/2016 7:39:14 PM	Gathering foreign keys
+6/27/2016 7:39:14 PM	Gathering default constraints
+6/27/2016 7:39:14 PM	Gathering check constraints
+6/27/2016 7:39:14 PM	Gathering views
+6/27/2016 7:39:14 PM	Gathering encrypted views
+6/27/2016 7:39:14 PM	Gathering indexes
+6/27/2016 7:39:14 PM	Gathering statistics
+6/27/2016 7:39:14 PM	Gathering full-text index stoplists
+6/27/2016 7:39:14 PM	Gathering search property lists
+6/27/2016 7:39:14 PM	Gathering search properties
+6/27/2016 7:39:14 PM	Gathering full-text indexes
+6/27/2016 7:39:15 PM	Gathering column store indexes
+6/27/2016 7:39:15 PM	Gathering spatial indexes
+6/27/2016 7:39:15 PM	Gathering XML indexes
+6/27/2016 7:39:15 PM	Gathering Selective XML indexes
+6/27/2016 7:39:15 PM	Gathering encrypted triggers
+6/27/2016 7:39:15 PM	Gathering triggers
+6/27/2016 7:39:15 PM	Gathering encrypted and clr ddl triggers
+6/27/2016 7:39:15 PM	Gathering ddl triggers
+6/27/2016 7:39:15 PM	Gathering synonyms
+6/27/2016 7:39:15 PM	Gathering defaults
+6/27/2016 7:39:15 PM	Gathering data constraint uddt bindings
+6/27/2016 7:39:15 PM	Gathering rules
+6/27/2016 7:39:15 PM	Gathering data constraint uddt bindings
+6/27/2016 7:39:15 PM	Gathering message types
+6/27/2016 7:39:15 PM	Gathering queues
+6/27/2016 7:39:15 PM	Gathering contracts
+6/27/2016 7:39:15 PM	Gathering services
+6/27/2016 7:39:15 PM	Gathering event notifications
+6/27/2016 7:39:15 PM	Gathering remote service bindings
+6/27/2016 7:39:15 PM	Gathering broker priorities
+6/27/2016 7:39:15 PM	Gathering signatures
+6/27/2016 7:39:15 PM	Gathering data compression options
+6/27/2016 7:39:15 PM	Gathering sequence types
+6/27/2016 7:39:15 PM	Gathering extended properties
+6/27/2016 7:39:15 PM	Gathering logins
+6/27/2016 7:39:16 PM	Scanning project for duplicate elements
+6/27/2016 7:39:17 PM	Finished duplicate element processing
+6/27/2016 7:39:18 PM	Finished importing database.
+6/27/2016 7:39:18 PM	A summary of the import was saved to the following location: \\Mac\Home\src\fs\mmdb\Import Schema Logs\mmdb_20160627113912.log
+6/27/2016 7:39:18 PM	Click Finish to continue...

@@ -1,2 +1,5 @@
 stanford-corenlp-full-2015-12-09/
+bin/
+obj/
+TestResults/
 
