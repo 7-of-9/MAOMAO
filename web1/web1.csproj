@@ -203,6 +203,7 @@
     <Content Include="js\lib\textillate\jquery.textillate.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\maomaoweb.pubxml" />
     <None Include="Properties\PublishProfiles\maomaoweb1.pubxml" />
     <None Include="Properties\PublishProfiles\web120160524115104 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
