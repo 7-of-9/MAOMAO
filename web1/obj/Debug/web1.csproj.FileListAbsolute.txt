@@ -270,6 +270,5 @@ Z:\src\mm_2016\web1\bin\Microsoft.Owin.Security.OAuth.xml
 Z:\src\mm_2016\web1\bin\Microsoft.Owin.Security.Google.xml
 Z:\src\mm_2016\web1\bin\Microsoft.Owin.Security.Twitter.xml
 Z:\src\mm_2016\web1\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
-Z:\src\mm_2016\web1\obj\Debug\web1.csprojResolveAssemblyReference.cache
 Z:\src\mm_2016\web1\obj\Debug\web1.dll
 Z:\src\mm_2016\web1\obj\Debug\web1.pdb
