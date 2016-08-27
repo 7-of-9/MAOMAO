@@ -49,25 +49,27 @@ console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs
 
         // TODO: (1) not showing on pure signed in page (https://clients.mindbodyonline.com/classic/home?studioid=1092)
         //       (2) not showing on YouTube
-        if ($('#mmDiv01').length == 0) {
-            var div = document.createElement('div');
-            div.id = 'mmDiv01';
-            div.style.position = 'fixed';
-            div.style.top = '0';
-            div.style.left = '0';
-            div.style.width = '20px';
-            div.style.height = '20px';
-            div.style.border = 'solid 2px blue';
-            div.style.backgroundColor = 'rgba(225, 225, 225, .4)';
-            div.style.zIndex = '99999';
-            div.align = 'center';
-            div.innerText = 'MM';
+        // dunghd comment out this tooltip - 8/28/2016
 
-            document.body.appendChild(div);
-            //document.body.insertBefore(div, document.body.childNodes[0]);
-            console.log("appended to body: " + JSON.stringify(div));
-            //*[@id="mmDiv01"]
-        }
+        //if ($('#mmDiv01').length == 0) {
+        //    var div = document.createElement('div');
+        //    div.id = 'mmDiv01';
+        //    div.style.position = 'fixed';
+        //    div.style.top = '0';
+        //    div.style.left = '0';
+        //    div.style.width = '20px';
+        //    div.style.height = '20px';
+        //    div.style.border = 'solid 2px blue';
+        //    div.style.backgroundColor = 'rgba(225, 225, 225, .4)';
+        //    div.style.zIndex = '99999';
+        //    div.align = 'center';
+        //    div.innerText = 'MM';
+
+        //    document.body.appendChild(div);
+        //    //document.body.insertBefore(div, document.body.childNodes[0]);
+        //    console.log("appended to body: " + JSON.stringify(div));
+        //    //*[@id="mmDiv01"]
+        //}
 
 
         //var canvas = document.createElement('canvas');

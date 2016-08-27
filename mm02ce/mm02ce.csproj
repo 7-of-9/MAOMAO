@@ -39,7 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".babelrc" />
     <Content Include="app\bg.html" />
+    <Content Include="app\build\content.js" />
+    <Content Include="app\build\event.js" />
     <Content Include="app\css\bootstrap.css" />
     <Content Include="app\css\bootstrap.min.css" />
     <Content Include="app\img\6customicons_09.png" />
@@ -97,11 +100,20 @@
     <Content Include="app\pages\ui.html" />
     <Content Include="app\pages\options.html" />
     <Content Include="app\pages\options.js" />
+    <Content Include="dunghd\content\src\scripts\index.js" />
+    <Content Include="dunghd\content\webpack.config.js" />
+    <Content Include="dunghd\event\src\index.js" />
+    <Content Include="dunghd\event\src\reducers\count.js" />
+    <Content Include="dunghd\event\src\reducers\index.js" />
+    <Content Include="dunghd\event\webpack.config.js" />
+    <Content Include="gulpfile.babel.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
     <Content Include="Properties\build\lib\MSBuild.ExtensionPack.dll" />
     <Content Include="index.htm" />
     <Content Include="DebugSettings.template.xml" />
     <Content Include="Properties\build\ligershark.chrome.targets" />
+    <Content Include="package.json" />
+    <Content Include="dunghd\content\src\scripts\components\app\App.jsx" />
     <None Include="scripts\_references.js" />
     <None Include="scripts\chrome-api-vsdoc.js" />
     <Content Include="web.config" />

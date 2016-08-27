@@ -14,11 +14,11 @@
           <SilverlightDebugging>False</SilverlightDebugging>
           <NativeDebugging>False</NativeDebugging>
           <SQLDebugging>False</SQLDebugging>
-          <ExternalProgram>C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</ExternalProgram>
+          <ExternalProgram>C:\Program Files\Google\Chrome\Application\chrome.exe</ExternalProgram>
           <StartExternalURL>
           </StartExternalURL>
-          <StartCmdLineArguments>--load-extension="Z:\src\mm_2016\mm02ce\app"</StartCmdLineArguments>
-          <StartWorkingDirectory>Z:\src\mm_2016\mm02ce\app</StartWorkingDirectory>
+          <StartCmdLineArguments>--load-extension="E:\BanhBao\Maomao\mm02ce\app"</StartCmdLineArguments>
+          <StartWorkingDirectory>E:\BanhBao\Maomao\mm02ce\app</StartWorkingDirectory>
           <EnableENC>True</EnableENC>
           <AlwaysStartWebServerOnDebug>True</AlwaysStartWebServerOnDebug>
         </WebProjectProperties>
