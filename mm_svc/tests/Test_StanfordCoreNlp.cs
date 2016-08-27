@@ -13,7 +13,7 @@ namespace tests
     [TestClass]
     public class Test_StanfordCoreNlp
     {
-        [TestMethod]
+        /*[TestMethod]
         public void StanfordCoreNlp_Test1()
         {
             //mm_svc.CoreNlp.test1();
@@ -26,6 +26,6 @@ namespace tests
             StanfordCoreNlp.tokenize_pos("this is a test string. I want tokens! goddamit!");
             
             StanfordCoreNlp.tokenize_pos("is this now faster, oh! i don't want commas partcularly, nor full stops FFS! c'mon!! ?!!");
-        }
+        }*/
     }
 }

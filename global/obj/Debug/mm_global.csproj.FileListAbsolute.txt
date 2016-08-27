@@ -86,6 +86,5 @@ Z:\src\mm_2016\global\bin\Debug\Microsoft.AI.ServerTelemetryChannel.xml
 Z:\src\mm_2016\global\bin\Debug\Microsoft.AI.Web.xml
 Z:\src\mm_2016\global\bin\Debug\Microsoft.AI.WindowsServer.xml
 Z:\src\mm_2016\global\bin\Debug\Microsoft.ApplicationInsights.xml
-Z:\src\mm_2016\global\obj\Debug\mm_global.csprojResolveAssemblyReference.cache
 Z:\src\mm_2016\global\obj\Debug\global.dll
 Z:\src\mm_2016\global\obj\Debug\global.pdb
