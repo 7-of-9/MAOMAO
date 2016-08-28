@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import HelloModal from '../modal/HelloModal';
 
 class App extends Component {
     constructor(props) {
@@ -17,15 +18,19 @@ class App extends Component {
     render() {
         return (
           <div>
+            <HelloModal/>
             Count: {this.props.count}
-      </div>
+            <br/>
+            <pre> {JSON.stringify(this.props,null,2)} </pre>
+          </div>
     );
       }
 }
 
 const mapStateToProps = (state) => {
     return {
-        count: state.count
+        count: state.count,
+        modalIsOpen: state.modal
     };
 };
 

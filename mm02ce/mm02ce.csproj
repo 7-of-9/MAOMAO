@@ -100,11 +100,13 @@
     <Content Include="app\pages\ui.html" />
     <Content Include="app\pages\options.html" />
     <Content Include="app\pages\options.js" />
+    <Content Include="dunghd\content\src\scripts\components\modal\HelloModal.js" />
     <Content Include="dunghd\content\src\scripts\index.js" />
     <Content Include="dunghd\content\webpack.config.js" />
     <Content Include="dunghd\event\src\index.js" />
     <Content Include="dunghd\event\src\reducers\count.js" />
     <Content Include="dunghd\event\src\reducers\index.js" />
+    <Content Include="dunghd\event\src\reducers\modal.js" />
     <Content Include="dunghd\event\webpack.config.js" />
     <Content Include="gulpfile.babel.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
