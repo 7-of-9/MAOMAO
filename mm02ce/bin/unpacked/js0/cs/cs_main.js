@@ -205,7 +205,7 @@ console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs
     }
 
     function cslib_test_NextYouTubeVid(selector) {
-        if (cslib_isYouTubeSite) {
+        if (cslib_isYouTubeSite()) {
             setTimeout(function () {
 
                 var next = $(selector || ".yt-uix-sessionlink.content-link.spf-link.spf-link"); // def selector: for /watch related links

@@ -5,16 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.IO;
-using java.util;
-using java.io;
-using edu.stanford.nlp.pipeline;
+using System.Diagnostics;
+
+/*using edu.stanford.nlp.pipeline;
 using edu.stanford.nlp.sentiment;
 using edu.stanford.nlp.ling;
-using System.Diagnostics;
 using edu.stanford.nlp.util;
+using java.util;
+using java.io;
+*/
 
 namespace mm_svc.InternalNlp
 {
+    /*
     // http://stanfordnlp.github.io/CoreNLP/
     // https://sergey-tihon.github.io/Stanford.NLP.NET/StanfordCoreNLP.html
 
@@ -44,6 +47,7 @@ namespace mm_svc.InternalNlp
             Directory.SetCurrentDirectory(curDir);
         }
 
+        // only used for POS tagging -- find a lighter replacement, deployments (and perf) is ridiculous
         public static List<InternalNlp.Word> tokenize_pos(string text)
         {
             var annotation = new Annotation(text);
@@ -98,5 +102,6 @@ namespace mm_svc.InternalNlp
         //        stream.close();
         //    }
         //}
-    };
+        
+    };*/
 }

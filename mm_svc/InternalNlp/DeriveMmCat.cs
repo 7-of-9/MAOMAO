@@ -137,7 +137,8 @@ namespace mm_svc
             //}
 
             // parts of speach patterns
-            foreach (var t in all)
+            // TODO: replace with lightweight POS tagger
+            /*foreach (var t in all)
             {
                 var words = StanfordCoreNlp.tokenize_pos(t.term.name);
                 //foreach (var word in words)
@@ -178,7 +179,7 @@ namespace mm_svc
                     t.candidate_reason += $" POS_JJ_NN(S)({boost})";
                     t.topic_specifc_score += boost;
                 }
-            }
+            }*/
 
             //
             // DONE: (1) consider: taking top 3-4 terms, by score.

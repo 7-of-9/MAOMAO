@@ -26,7 +26,8 @@ namespace mm_svc.InternalNlp.Utils
         public static string TokenizeExStopwords(string s)
         {
             StringBuilder sb = new StringBuilder();
-            var words = StanfordCoreNlp.tokenize_pos(s);
+            var words_naive = s.Split(' ');
+            var words = words_naive.Select(p => new InternalNlp.Word() { pos = "?", text = p }); //StanfordCoreNlp.tokenize_pos(s);
             foreach (var word in words) {
                 if (!stopwords.Any(p => p.ToLower().Trim() == word.text.ToLower().Trim())) {
                     if (word.pos != "UH" && word.pos != "SYM" && word.pos != "IN" && word.pos != "," && word.pos != "." && word.pos != ":")

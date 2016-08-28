@@ -423,7 +423,8 @@ var nlp_test_run = false;
                     // TEST MODE: hit next button - or reseed if not english
                     if (content_lang != "http://d.opencalais.com/lid/DefaultLangId/English") {
                         console.info("content_lang != ENGLISH -- reseeding...");
-                        cslib_test_Reseed();
+                        if (cslib_isYouTubeSite())
+                            cslib_test_Reseed();
                     }
                     else cslib_test_NextYouTubeVid();
                 });
@@ -439,12 +440,17 @@ var nlp_test_run = false;
                     console.info("429 RATE LIMIT EXCEEDED! -- wait & reseeding...");
 
                     // TEST MODE: reseed the random walk -- wait 5
-                    setTimeout(function () { cslib_test_Reseed(); }, 1000 * 5);
+                    setTimeout(function () {
+                        if(cslib_isYouTubeSite())
+                            cslib_test_Reseed();
+                    }, 1000 * 5);
                 }
                 else if (jqXHR.status == 400) { // get this for non-english/unsupported langs
                     // TEST MODE: reseed the random walk
-                    console.info("400 BAD REQUEST! -- reseeding...");
-                    cslib_test_Reseed();
+                    if (cslib_isYouTubeSite()) {
+                        console.info("400 BAD REQUEST! -- reseeding...");
+                        cslib_test_Reseed();
+                    }
                 }
             }
         });

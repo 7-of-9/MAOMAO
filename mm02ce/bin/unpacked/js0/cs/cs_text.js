@@ -285,7 +285,8 @@ function process_text() {
         console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
         //cslib_test_NextYouTubeVid();
         console.info("NOT ENOUGH TEXT -- reseeding...");
-        cslib_test_Reseed();
+        if (cslib_isYouTubeSite())
+            cslib_test_Reseed();
     }
 
     //---
