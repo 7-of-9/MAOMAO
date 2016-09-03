@@ -9,20 +9,16 @@ import eventWebpackConfig from './dunghd/event/webpack.config';
 import contentWebpackConfig from './dunghd/content/webpack.config';
 
 gulp.task('event-js', ['clean'], (cb) => {
-  webpack(eventWebpackConfig, (err, stats) => {
-    if(err) throw new plugins.util.PluginError('webpack', err);
-
-    plugins.util.log('[webpack]', stats.toString());
+  webpack(eventWebpackConfig, (err) => {
+    if (err) throw new plugins.util.PluginError('webpack', err);
 
     cb();
   });
 });
 
 gulp.task('content-js', ['clean'], (cb) => {
-  webpack(contentWebpackConfig, (err, stats) => {
-    if(err) throw new plugins.util.PluginError('webpack', err);
-
-    plugins.util.log('[webpack]', stats.toString());
+  webpack(contentWebpackConfig, (err) => {
+    if (err) throw new plugins.util.PluginError('webpack', err);
 
     cb();
   });

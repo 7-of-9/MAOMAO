@@ -1,37 +1,24 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import HelloModal from '../modal/HelloModal';
+import React, { PropTypes } from 'react';
+import HelloModal from '../modal';
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    componentDidMount() {
-        document.addEventListener('click', () => {
-            this.props.dispatch({
-                type: 'ADD_COUNT'
-            });
-        });
-    }
-
-    render() {
-        return (
-          <div>
-            <HelloModal/>
-            Count: {this.props.count}
-            <br/>
-            <pre> {JSON.stringify(this.props,null,2)} </pre>
-          </div>
-    );
-      }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        count: state.count,
-        modalIsOpen: state.modal
-    };
+const propTypes = {
+  count: PropTypes.number,
+  dispatch: PropTypes.func,
 };
 
-export default connect(mapStateToProps)(App);
+const defaultProps = {
+  count: 0,
+};
+
+const App = ({ count }) => (
+  <div>
+    <HelloModal />
+    Count: {count}
+    <br />
+  </div>
+);
+
+App.propTypes = propTypes;
+App.defaultProps = defaultProps;
+
+export default App;
