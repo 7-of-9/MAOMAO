@@ -1,4 +1,5 @@
 ﻿import React, { PropTypes } from 'react';
+import ToggleDisplay from 'react-toggle-display';
 import Modal from 'react-modal';
 
 const customStyles = {
@@ -12,6 +13,7 @@ const customStyles = {
 };
 
 const propTypes = {
+  auth: PropTypes.object,
   modalIsOpen: PropTypes.bool.isRequired,
   onOpenModal: PropTypes.func.isRequired,
   onCloseModal: PropTypes.func.isRequired,
@@ -20,9 +22,12 @@ const propTypes = {
 
 const defaultProps = {
   modalIsOpen: true,
+  auth: {
+    isLogin: false,
+  },
 };
 
-const HelloModal = ({ modalIsOpen, onLogin, onOpenModal, onCloseModal }) => (
+const HelloModal = ({ auth, modalIsOpen, onLogin, onOpenModal, onCloseModal }) => (
   <div>
     <button onClick={onOpenModal}>Open Modal</button>
     <Modal
@@ -31,7 +36,12 @@ const HelloModal = ({ modalIsOpen, onLogin, onOpenModal, onCloseModal }) => (
       style={customStyles}
       >
       <h2>Connect with Google!</h2>
-      <a onClick={onLogin}> Click here to login</a>
+      <ToggleDisplay hide={auth.isLogin}>
+        <p><a onClick={onLogin}> Click here to login</a></p>
+      </ToggleDisplay>
+      <ToggleDisplay show={auth.isLogin}>
+        <p>Welcome back google chrome user</p>
+      </ToggleDisplay>
     </Modal>
   </div>
 );

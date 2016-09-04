@@ -13,6 +13,14 @@ const propTypes = {
   onLogin: PropTypes.func,
 };
 
+const checkAuth = () => {
+  const data = {
+    type: 'AUTH_LOGIN',
+    payload: {},
+  };
+  return data;
+};
+
 class App extends Component {
 
   constructor(props) {
@@ -39,15 +47,16 @@ class App extends Component {
 
   onLogin() {
     console.log('onLogin');
-    this.props.dispatch({
-      type: 'AUTH_LOGIN',
-    });
+    this.props.dispatch(checkAuth())
+      .then(token => console.log(token))
+      .catch(err => console.warn(err));
   }
 
   render() {
     return (
       <div>
         <HelloModal
+          auth={this.props.auth}
           modalIsOpen={this.props.modalIsOpen} onLogin={this.onLogin}
           onOpenModal={this.onOpenModal} onCloseModal={this.onCloseModal}
           />

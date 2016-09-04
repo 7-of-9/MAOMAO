@@ -4,49 +4,27 @@ const initialState = {
   isLogin: false,
   message: '',
   accessToken: '',
+  isPending: false,
 };
 
-function checkAuth() {
-  return new Promise((resolve, reject) => {
-    try {
-      chrome.identity.getAuthToken({ interactive: true }, (token) => {
-        resolve(token);
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
-}
-
-function succesToken(state, token) {
-  return {
-    type: 'AUTH_END',
-    state: Object.assign({}, state, { accessToken: token })
-  };
-}
-
-function failAuth(state, err) {
-  console.warn(err);
-  return {
-    type: 'AUTH_ERROR',
-    state,
-  };
-}
-
 export default (state = initialState, action) => {
-  console.info('state from bg', state);
-  console.info('action from bg', action);
   switch (action.type) {
-    case 'AUTH_LOGIN':
-      return (dispatch) => (
-        checkAuth()
-          .then((token) => (dispatch(succesToken(state, token))))
-          .catch((err) => (dispatch(failAuth(state, err))))
-      );
-    case 'AUTH_END':
-      return Object.assign({}, state, { message: 'authentication is done' });
-    case 'AUTH_ERROR':
-      return Object.assign({}, state, { message: 'authentication has error' });
+    case 'AUTH_PENDING':
+      return Object.assign({}, state, { isPending: true });
+    case 'AUTH_FULFILLED':
+      return Object.assign({}, state, {
+        message: 'authentication is done',
+        accessToken: action.payload.token,
+        isPending: false,
+        isLogin: true,
+      });
+    case 'AUTH_REJECTED':
+      return Object.assign({}, state, {
+        message: action.payload.error.message,
+        accessToken: '',
+        isPending: false,
+        isLogin: false,
+      });
     default:
       return state;
   }
