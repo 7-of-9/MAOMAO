@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
 
   entry: [
-    './dunghd/event/src/index.js'
+    './dunghd/event/src/index.js',
   ],
 
   output: {
@@ -13,7 +13,7 @@ module.exports = {
 
   resolve: {
     extensions: ['', '.js', '.json'],
-    modulesDirectories: ['node_modules']
+    modulesDirectories: ['node_modules'],
   },
 
   module: {
@@ -24,9 +24,9 @@ module.exports = {
         exclude: /(node_modules)/,
         include: path.join(__dirname, 'src'),
         query: {
-          presets: ['es2015', 'react']
-        }
-      }
-    ]
-  }
+          presets: ['es2015', 'react'],
+        },
+      },
+    ],
+  },
 };

@@ -1,24 +1,69 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import HelloModal from '../modal';
 
 const propTypes = {
-  count: PropTypes.number,
+  auth: PropTypes.object,
+  apiUrl: PropTypes.string,
+  clienId: PropTypes.string,
+  modalIsOpen: PropTypes.bool,
   dispatch: PropTypes.func,
+  onOpenModal: PropTypes.func,
+  onCloseModal: PropTypes.func,
+  onLogin: PropTypes.func,
 };
 
-const defaultProps = {
-  count: 0,
-};
+class App extends Component {
 
-const App = ({ count }) => (
-  <div>
-    <HelloModal />
-    Count: {count}
-    <br />
-  </div>
-);
+  constructor(props) {
+    super(props);
+    console.log('props', props);
+    this.onLogin = this.onLogin.bind(this);
+    this.onOpenModal = this.onOpenModal.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
+  }
+
+  onOpenModal() {
+    console.log('onOpenModal');
+    this.props.dispatch({
+      type: 'OPEN_MODAL',
+    });
+  }
+
+  onCloseModal() {
+    console.log('onCloseModal');
+    this.props.dispatch({
+      type: 'CLOSE_MODAL',
+    });
+  }
+
+  onLogin() {
+    console.log('onLogin');
+    this.props.dispatch({
+      type: 'AUTH_LOGIN',
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <HelloModal
+          modalIsOpen={this.props.modalIsOpen} onLogin={this.onLogin}
+          onOpenModal={this.onOpenModal} onCloseModal={this.onCloseModal}
+          />
+      </div>
+    );
+  }
+}
 
 App.propTypes = propTypes;
-App.defaultProps = defaultProps;
 
-export default App;
+const mapStateToProps = (state) => {
+  console.log('state', state);
+  return {
+    auth: state.auth,
+    modalIsOpen: state.modal,
+  };
+};
+
+export default connect(mapStateToProps)(App);

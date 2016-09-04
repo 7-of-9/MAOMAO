@@ -13,16 +13,16 @@ const customStyles = {
 
 const propTypes = {
   modalIsOpen: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func,
-  onOpenModal: PropTypes.func,
-  onCloseModal: PropTypes.func,
+  onOpenModal: PropTypes.func.isRequired,
+  onCloseModal: PropTypes.func.isRequired,
+  onLogin: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
   modalIsOpen: true,
 };
 
-const HelloModal = ({ onOpenModal, onCloseModal, modalIsOpen }) => (
+const HelloModal = ({ modalIsOpen, onLogin, onOpenModal, onCloseModal }) => (
   <div>
     <button onClick={onOpenModal}>Open Modal</button>
     <Modal
@@ -30,9 +30,8 @@ const HelloModal = ({ onOpenModal, onCloseModal, modalIsOpen }) => (
       onRequestClose={onCloseModal}
       style={customStyles}
       >
-      <h2>Hello Maomao!</h2>
-      <button onClick={onCloseModal}>close</button>
-      <div>I am a modal</div>
+      <h2>Connect with Google!</h2>
+      <a onClick={onLogin}> Click here to login</a>
     </Modal>
   </div>
 );

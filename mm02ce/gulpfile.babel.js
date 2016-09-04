@@ -1,4 +1,5 @@
-﻿import gulp from 'gulp';
+﻿require('dotenv').config();
+import gulp from 'gulp';
 import loadPlugins from 'gulp-load-plugins';
 import webpack from 'webpack';
 import rimraf from 'rimraf';

@@ -1,8 +1,23 @@
 {
   "presets": [
-    "es2015"
+    "es2015",
+    "react"
   ],
   "plugins": [
-    "transform-react-jsx-source"
-  ]
+    "transform-react-jsx-source",
+    "transform-inline-environment-variables"
+  ],
+  "env": {
+    "development": {
+      "presets": [
+        // "react-hmre"
+      ]
+    },
+    "production": {
+      "presets": []
+    },
+    "test": {
+      "presets": []
+    }
+  }
 }
