@@ -5,6 +5,7 @@ const initialState = {
   message: '',
   accessToken: '',
   isPending: false,
+  info: {},
 };
 
 export default (state = initialState, action) => {
@@ -15,6 +16,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, {
         message: 'authentication is done',
         accessToken: action.payload.token,
+        info: action.payload.info,
         isPending: false,
         isLogin: true,
       });
@@ -22,6 +24,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, {
         message: action.payload.error.message,
         accessToken: '',
+        info: {},
         isPending: false,
         isLogin: false,
       });

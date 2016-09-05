@@ -1,21 +1,30 @@
+import axios from 'axios';
+
 function checkAuth() {
   const promise = new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({ interactive: true }, (token) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        resolve(token);
+        // validate token
+        axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`)
+          .then((response) => {
+            resolve({ token, info: response.data });
+          }).catch((error) => {
+            reject(error);
+          });
       }
     });
   });
   return promise;
 }
 
-function succesToken(token) {
+function succesToken(token, info) {
   return {
     type: 'AUTH_FULFILLED',
     payload: {
       token,
+      info,
     },
   };
 }
@@ -37,10 +46,10 @@ const authLogin = () => (
         type: 'AUTH_PENDING',
       });
       return checkAuth()
-        .then(token => dispatch(succesToken(token)))
+        .then((data) => dispatch(succesToken(data.token, data.info)))
         .catch(error => (dispatch(failAuth(error))));
     }
-    return dispatch(succesToken(auth.token));
+    return dispatch(succesToken(auth.token, auth.info));
   }
 );
 

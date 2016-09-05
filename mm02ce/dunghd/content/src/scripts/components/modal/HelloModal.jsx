@@ -24,6 +24,8 @@ const defaultProps = {
   modalIsOpen: true,
   auth: {
     isLogin: false,
+    accessToken: '',
+    info: {},
   },
 };
 
@@ -40,7 +42,7 @@ const HelloModal = ({ auth, modalIsOpen, onLogin, onOpenModal, onCloseModal }) =
         <p><a onClick={onLogin}> Click here to login</a></p>
       </ToggleDisplay>
       <ToggleDisplay show={auth.isLogin}>
-        <p>Welcome back google chrome user</p>
+        <p>Welcome back {auth.info.email}</p>
       </ToggleDisplay>
     </Modal>
   </div>
