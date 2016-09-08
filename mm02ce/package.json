@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.14.0",
     "dotenv": "^2.0.0",
+    "mailgun": "^0.5.0",
     "react": "^15.3.1",
     "react-chrome-redux": "0.0.7",
     "react-dom": "^15.3.1",

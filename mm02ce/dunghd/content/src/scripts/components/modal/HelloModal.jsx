@@ -4,8 +4,8 @@ import Modal from 'react-modal';
 
 const customStyles = {
   content: {
-    top: '30%',
-    left: '70%',
+    top: '20%',
+    left: '80%',
     right: 'auto',
     bottom: 'auto',
     transform: 'translate(-50%, -50%)',
@@ -15,8 +15,8 @@ const customStyles = {
 const propTypes = {
   auth: PropTypes.object,
   modalIsOpen: PropTypes.bool.isRequired,
-  onOpenModal: PropTypes.func.isRequired,
-  onCloseModal: PropTypes.func.isRequired,
+  onShareModal: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   onLogin: PropTypes.func.isRequired,
 };
 
@@ -29,12 +29,10 @@ const defaultProps = {
   },
 };
 
-const HelloModal = ({ auth, modalIsOpen, onLogin, onOpenModal, onCloseModal }) => (
+const HelloModal = ({ auth, modalIsOpen, onLogin, onShareModal, onClose }) => (
   <div>
-    <button onClick={onOpenModal}>Open Modal</button>
     <Modal
       isOpen={modalIsOpen}
-      onRequestClose={onCloseModal}
       style={customStyles}
       >
       <h2>Connect with Google!</h2>
@@ -43,7 +41,9 @@ const HelloModal = ({ auth, modalIsOpen, onLogin, onOpenModal, onCloseModal }) =
       </ToggleDisplay>
       <ToggleDisplay show={auth.isLogin}>
         <p>Welcome back {auth.info.email}</p>
+        <p><a onClick={onShareModal}> Share with your friends</a></p>
       </ToggleDisplay>
+      <p><a onClick={onClose}>Close</a></p>
     </Modal>
   </div>
 );

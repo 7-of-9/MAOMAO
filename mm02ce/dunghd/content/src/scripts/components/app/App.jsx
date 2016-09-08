@@ -1,15 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import HelloModal from '../modal';
+import ToggleDisplay from 'react-toggle-display';
+
+import { HelloModal, ShareModal } from '../modal';
 
 const propTypes = {
   auth: PropTypes.object,
   apiUrl: PropTypes.string,
   clienId: PropTypes.string,
+  shareModalIsOpen: PropTypes.bool,
   modalIsOpen: PropTypes.bool,
   dispatch: PropTypes.func,
   onOpenModal: PropTypes.func,
   onCloseModal: PropTypes.func,
+  onCloseShareModal: PropTypes.func,
   onLogin: PropTypes.func,
 };
 
@@ -28,7 +32,9 @@ class App extends Component {
     console.log('props', props);
     this.onLogin = this.onLogin.bind(this);
     this.onOpenModal = this.onOpenModal.bind(this);
+    this.onShareModal = this.onShareModal.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.onCloseShareModal = this.onCloseShareModal.bind(this);
   }
 
   onOpenModal() {
@@ -38,10 +44,24 @@ class App extends Component {
     });
   }
 
+  onShareModal() {
+    console.log('onShareModal');
+    this.props.dispatch({
+      type: 'OPEN_SHARE_MODAL',
+    });
+  }
+
   onCloseModal() {
     console.log('onCloseModal');
     this.props.dispatch({
       type: 'CLOSE_MODAL',
+    });
+  }
+
+  onCloseShareModal() {
+    console.log('onCloseShareModal');
+    this.props.dispatch({
+      type: 'CLOSE_SHARE_MODAL',
     });
   }
 
@@ -58,8 +78,15 @@ class App extends Component {
         <HelloModal
           auth={this.props.auth}
           modalIsOpen={this.props.modalIsOpen} onLogin={this.onLogin}
-          onOpenModal={this.onOpenModal} onCloseModal={this.onCloseModal}
+          onShareModal={this.onShareModal} onClose={this.onCloseModal}
           />
+        <ToggleDisplay if={this.props.auth.isLogin}>
+          <ShareModal
+            auth={this.props.auth}
+            modalIsOpen={this.props.shareModalIsOpen}
+            onCloseModal={this.onCloseShareModal}
+            />
+        </ToggleDisplay>
       </div>
     );
   }
@@ -72,6 +99,7 @@ const mapStateToProps = (state) => {
   return {
     auth: state.auth,
     modalIsOpen: state.modal,
+    shareModalIsOpen: state.share,
   };
 };
 
