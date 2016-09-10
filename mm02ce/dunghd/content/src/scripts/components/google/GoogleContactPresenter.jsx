@@ -1,29 +1,48 @@
 import React, { Component, PropTypes } from 'react';
+import {
+  Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn,
+} from 'material-ui/Table';
 
 class GoogleContactPresenter extends Component {
   constructor(props) {
     super(props);
-    this.onClick = this.onClick.bind(this);
+    this.renderContact = this.renderContact.bind(this);
+    this.selectRowItem = this.selectRowItem.bind(this);
   }
 
-  onClick() {
-    this.props.selectAddress(this.props.email);
+  selectRowItem(rows) {
+    this.props.selectRecipient(rows);
+  }
+
+  renderContact(contact) {
+    return (
+      <TableRow key={contact.key}>
+        <TableRowColumn>{contact.name}</TableRowColumn>
+        <TableRowColumn>{contact.email}</TableRowColumn>
+      </TableRow>
+    );
   }
 
   render() {
     return (
-      <span>
-        <input type="checkbox" name="checkbox{this.props.email}" onClick={this.onClick} />
-        {this.props.email} ({this.props.name})
-      </span>
+      <Table selectable multiSelectable onRowSelection={this.selectRowItem}>
+        <TableHeader displaySelectAll enableSelectAll>
+          <TableRow>
+            <TableHeaderColumn tooltip="Name">Name</TableHeaderColumn>
+            <TableHeaderColumn tooltip="Email">Email</TableHeaderColumn>
+          </TableRow>
+        </TableHeader>
+        <TableBody showRowHover displayRowCheckbox>
+          {this.props.contacts.map(this.renderContact) }
+        </TableBody>
+      </Table>
     );
   }
 }
 
 GoogleContactPresenter.propTypes = {
-  email: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  selectAddress: PropTypes.func,
+  contacts: PropTypes.array.isRequired,
+  selectRecipient: PropTypes.func.isRequired,
 };
 
 export default GoogleContactPresenter;

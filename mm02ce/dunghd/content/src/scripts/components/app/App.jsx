@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
-
-import { HelloModal, ShareModal } from '../modal';
+import { WelcomeModal, ShareModal } from '../modal';
 
 const propTypes = {
   auth: PropTypes.object,
@@ -31,30 +30,14 @@ class App extends Component {
     super(props);
     console.log('props', props);
     this.onLogin = this.onLogin.bind(this);
-    this.onOpenModal = this.onOpenModal.bind(this);
     this.onShareModal = this.onShareModal.bind(this);
-    this.onCloseModal = this.onCloseModal.bind(this);
     this.onCloseShareModal = this.onCloseShareModal.bind(this);
-  }
-
-  onOpenModal() {
-    console.log('onOpenModal');
-    this.props.dispatch({
-      type: 'OPEN_MODAL',
-    });
   }
 
   onShareModal() {
     console.log('onShareModal');
     this.props.dispatch({
       type: 'OPEN_SHARE_MODAL',
-    });
-  }
-
-  onCloseModal() {
-    console.log('onCloseModal');
-    this.props.dispatch({
-      type: 'CLOSE_MODAL',
     });
   }
 
@@ -75,10 +58,10 @@ class App extends Component {
   render() {
     return (
       <div>
-        <HelloModal
+        <WelcomeModal
           auth={this.props.auth}
-          modalIsOpen={this.props.modalIsOpen} onLogin={this.onLogin}
-          onShareModal={this.onShareModal} onClose={this.onCloseModal}
+          modalIsOpen={this.props.shareModalIsOpen} onLogin={this.onLogin}
+          onShareModal={this.onShareModal}
           />
         <ToggleDisplay if={this.props.auth.isLogin}>
           <ShareModal
@@ -98,7 +81,6 @@ const mapStateToProps = (state) => {
   console.log('state', state);
   return {
     auth: state.auth,
-    modalIsOpen: state.modal,
     shareModalIsOpen: state.share,
   };
 };

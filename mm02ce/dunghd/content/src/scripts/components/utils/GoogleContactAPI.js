@@ -24,7 +24,8 @@ function buildUrlPath(params) {
     alt: 'json',
     projection: 'full',
     email: 'default',
-    limit: 500,
+    limit: 5000,
+    page: 1,
     v: '3.0',
   };
   options = Object.assign(options, params);
@@ -32,6 +33,7 @@ function buildUrlPath(params) {
   const query = {
     alt: options.alt,
     'max-results': options.limit,
+    'start-index': options.page,
     v: options.v,
   };
 
@@ -60,7 +62,11 @@ function fetchContacts(token, opts) {
         console.log('contacts data', response.data);
         const data = response.data;
         const contacts = [];
+        let total = 0;
+        let page = 1;
         if (data.feed && data.feed.entry) {
+          total = data.feed.openSearch$totalResults.$t;
+          page = data.feed.openSearch$startIndex.$t;
           data.feed.entry.forEach((item) => {
             const ref = item.gd$email;
             if (ref && ref[0] && ref[0].address) {
@@ -72,7 +78,11 @@ function fetchContacts(token, opts) {
             }
           });
         }
-        return resolve(contacts);
+        return resolve({
+          total,
+          page,
+          data: contacts,
+        });
       })
       .catch(error => reject(error));
   });

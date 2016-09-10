@@ -1,2 +1,2 @@
-export { default as HelloModal } from './HelloModal';
+export { default as WelcomeModal } from './WelcomeModal';
 export { default as ShareModal } from './ShareModal';
