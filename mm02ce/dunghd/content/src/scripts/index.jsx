@@ -10,7 +10,7 @@ import Config from './config';
 const config = new Config();
 const proxyStore = new Store({ portName: 'maomao-extension' });
 const anchor = document.createElement('div');
-anchor.id = 'rcr-anchor';
+anchor.id = 'maomao-extension-anchor';
 
 console.info('config', config);
 document.body.insertBefore(anchor, document.body.childNodes[0]);
@@ -25,5 +25,5 @@ const unsubscribe = proxyStore.subscribe(() => {
         <App {...config} />
       </Provider>
     </MuiThemeProvider>
-    , document.getElementById('rcr-anchor'));
+    , document.getElementById('maomao-extension-anchor'));
 });
