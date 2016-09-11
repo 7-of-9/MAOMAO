@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Mailgun from 'mailgun';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import Snackbar from 'material-ui/Snackbar';
 
 import GoogleContact from '../google';
 import fetchContacts from '../utils/GoogleContactAPI';
@@ -25,10 +26,16 @@ const defaultProps = {
 class ShareModal extends Component {
   constructor(props) {
     super(props);
-    this.fromEmail = 'dunghd.it@gmail.com';
+    this.state = {
+      autoHideDuration: 4000,
+      message: '',
+      open: false,
+    };
+    this.fromEmail = this.props.auth.info.email;
     this.selectedRow = 'none';
     this.selectRecipient = this.selectRecipient.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
+    this.handleRequestClose = this.handleRequestClose.bind(this);
   }
 
   componentDidMount() {
@@ -48,11 +55,16 @@ class ShareModal extends Component {
     console.log('selectedRow', this.selectedRow);
   }
 
+  handleRequestClose() {
+    this.setState({
+      open: false,
+    });
+  }
+
   /**
    * send invitation to google contact by email
    */
   sendInvitation() {
-    this.props.onCloseModal();
     let recipients = [];
     if (this.selectedRow === 'all') {
       recipients = [].concat(this.contacts.map(item => item.email));
@@ -63,18 +75,33 @@ class ShareModal extends Component {
       );
     }
     console.log('sendInvitation', recipients);
-    // const mailgun = new Mailgun.Mailgun('key-6acu-fqm4j325jes59jc31rq557e83l6');
-    // const title = 'This is the subject';
-    // const content = 'This is the text';
-    // mailgun.sendText(this.fromEmail, this.recipients, title, content,
-    //   'noreply@maomao.rocks', {},
-    //   (err) => {
-    //     if (err) {
-    //       console.warn(err);
-    //     } else {
-    //       console.log('Success');
-    //     }
-    //   });
+    if (recipients.length) {
+      this.props.onCloseModal();
+      const mailgun = new Mailgun.Mailgun('key-6acu-fqm4j325jes59jc31rq557e83l6');
+      const title = 'Welcome to mamao extension!';
+      const content = JSON.stringify(recipients, null, 2);
+      mailgun.sendText(this.fromEmail,
+        ['dung@maomao.rocks', 'dom@maomao.rocks'],
+        title,
+        content,
+        'noreply@maomao.rocks', {},
+        (err) => {
+          if (err) {
+            console.warn(err);
+          } else {
+            console.log('Email has been sent!');
+            this.setState({
+              open: true,
+              message: 'Email has been sent!',
+            });
+          }
+        });
+    } else {
+      this.setState({
+        open: true,
+        message: 'Please select at least one contact for sending invitation',
+      });
+    }
   }
 
   render() {
@@ -100,7 +127,17 @@ class ShareModal extends Component {
         onRequestClose={this.props.onCloseModal}
         autoScrollBodyContent
         >
-        <GoogleContact selectRecipient={this.selectRecipient} contacts={this.contacts} token={this.props.auth.accessToken} />
+        <GoogleContact
+          selectRecipient={this.selectRecipient}
+          contacts={this.contacts}
+          token={this.props.auth.accessToken}
+          />
+        <Snackbar
+          open={this.state.open}
+          message={this.state.message}
+          autoHideDuration={this.state.autoHideDuration}
+          onRequestClose={this.handleRequestClose}
+          />
       </Dialog>
     );
   }
