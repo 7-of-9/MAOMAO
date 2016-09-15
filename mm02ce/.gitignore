@@ -38,3 +38,6 @@ build/
 
 # Hide .env files
 .env
+
+# Visual Studio Code settings
+.vscode

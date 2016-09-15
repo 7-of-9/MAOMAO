@@ -5,7 +5,7 @@ import Paper from 'material-ui/Paper';
 
 const customStyles = {
   overlay: {
-    zIndex: 9999,
+    // zIndex: 9999,
     position: 'fixed',
     top: '0px',
     left: '0px',
