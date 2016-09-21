@@ -1,11 +1,12 @@
-﻿import React, { PropTypes } from 'react';
+﻿import React, { Component, PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
+
 import Paper from 'material-ui/Paper';
 
 const customStyles = {
   overlay: {
-    // zIndex: 9999,
+    zIndex: 9999,
     position: 'fixed',
     top: '0px',
     left: '0px',
@@ -15,9 +16,9 @@ const customStyles = {
   },
   content: {
     position: 'absolute',
-    top: '150px',
-    right: '20px',
-    left: 'auto',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
     bottom: 'auto',
     transform: 'translate(-50%, -50%)',
     padding: '20px',
@@ -45,22 +46,42 @@ const defaultProps = {
   },
 };
 
-const WelcomeModal = ({ auth, modalIsOpen, onLogin, onShareModal }) => (
-  <ToggleDisplay hide={modalIsOpen}>
-    <div style={customStyles.overlay}>
-      <Paper style={customStyles.content} zDepth={3}>
-        <h2>Connect with Google!</h2>
-        <ToggleDisplay hide={auth.isLogin}>
-          <RaisedButton onTouchTap={onLogin} label="Login" />
-        </ToggleDisplay>
-        <ToggleDisplay show={auth.isLogin}>
-          <p>Welcome back {auth.info.email}</p>
-          <RaisedButton onTouchTap={onShareModal} label="Invite" />
-        </ToggleDisplay>
-      </Paper>
-    </div>
-  </ToggleDisplay>
-);
+class WelcomeModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hidden: false,
+    };
+    this.onClose = this.onClose.bind(this);
+  }
+
+  onClose() {
+    this.setState({
+      hidden: true,
+    });
+  }
+
+  render() {
+    return (
+      <ToggleDisplay hide={this.props.modalIsOpen || this.state.hidden}>
+        <div style={customStyles.overlay}>
+          <Paper style={customStyles.content} zDepth={3}>
+            <h2>Connect with Google!</h2>
+            <ToggleDisplay hide={this.props.auth.isLogin}>
+              <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
+              <RaisedButton onTouchTap={this.onClose} label="Close" />
+            </ToggleDisplay>
+            <ToggleDisplay show={this.props.auth.isLogin}>
+              <p>Welcome back {this.props.auth.info.email}</p>
+              <RaisedButton onTouchTap={this.props.onShareModal} label="Invite" />
+              <RaisedButton onTouchTap={this.onClose} label="Close" />
+            </ToggleDisplay>
+          </Paper>
+        </div>
+      </ToggleDisplay>
+    );
+  }
+}
 
 WelcomeModal.propTypes = propTypes;
 WelcomeModal.defaultProps = defaultProps;
