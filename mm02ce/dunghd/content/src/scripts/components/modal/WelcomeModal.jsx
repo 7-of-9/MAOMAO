@@ -7,12 +7,12 @@ import Paper from 'material-ui/Paper';
 const customStyles = {
   title: {
     display: 'block',
-    fontSize: '1.5em',
+    fontSize: '20px',
     margin: '20px 0px',
   },
   welcome: {
     display: 'block',
-    fontSize: '1.2em',
+    fontSize: '14px',
     margin: '15px 0px',
   },
   overlay: {
