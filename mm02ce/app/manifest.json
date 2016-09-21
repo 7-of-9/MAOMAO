@@ -48,6 +48,8 @@
       "https://www.googleapis.com/auth/contacts.readonly"
     ]
   },
+
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0CBXCCaYg1oyXZw5pwgs1aqxahVwAwSE/m50B2i2w0nKwt+NQhdJq1uIfd6xKJv5aI2IzzGyS0Fnn0hpfI/Ixd15kBFXyhS78+dfbGymlvNBRew+iO3z33Ux6/fUF0rNQuHdxHveKwwChjVHJG0jZu4sl0vz3jdDjiYWllxR/73KenKT9C9J+bN0AyfvgKC0EpIDRiQBjeP4G5U3XmybJYW2/8HaKwx2+MhPvPSTYaTMGIPEJ401BpUSrrpg45U221/X28YiNWCsCmqmwATIMfCqui1SWeh+Cx915jDhhlV6Mu1EhHCgDE4B1J3tmyzcfxcI60+jhpiBsHTwaOxQQQIDAQAB",
+  
   "manifest_version": 2
 }
