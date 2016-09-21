@@ -1,10 +1,20 @@
 ﻿import React, { Component, PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
-
+import Radium from 'radium';
 import Paper from 'material-ui/Paper';
 
 const customStyles = {
+  title: {
+    display: 'block',
+    fontSize: '1.5em',
+    margin: '20px 0px',
+  },
+  welcome: {
+    display: 'block',
+    fontSize: '1.2em',
+    margin: '15px 0px',
+  },
   overlay: {
     zIndex: 9999,
     position: 'fixed',
@@ -12,38 +22,41 @@ const customStyles = {
     left: '0px',
     right: '0px',
     bottom: '0px',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
   },
   content: {
     position: 'absolute',
+    width: '300px',
     top: '50%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
     transform: 'translate(-50%, -50%)',
-    padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
-    overlay: 'auto',
+    overflow: 'auto',
+    WebkitOverflowScrolling: 'touch',
     borderRadius: '4px',
     outline: 'none',
+    padding: '20px',
+    textAlign: 'center',
   },
 };
 
 const propTypes = {
   auth: PropTypes.object,
-  modalIsOpen: PropTypes.bool.isRequired,
-  onShareModal: PropTypes.func.isRequired,
   onLogin: PropTypes.func.isRequired,
+  openInvite: PropTypes.func.isRequired,
+  isShareOpen: PropTypes.bool.isRequired,
 };
 
 const defaultProps = {
-  modalIsOpen: false,
   auth: {
     isLogin: false,
     accessToken: '',
     info: {},
   },
+  isShareOpen: false,
 };
 
 class WelcomeModal extends Component {
@@ -63,17 +76,17 @@ class WelcomeModal extends Component {
 
   render() {
     return (
-      <ToggleDisplay hide={this.props.modalIsOpen || this.state.hidden}>
+      <ToggleDisplay hide={this.props.isShareOpen || this.state.hidden}>
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
-            <h2>Connect with Google!</h2>
+            <h2 style={customStyles.title}>Connect with Google!</h2>
             <ToggleDisplay hide={this.props.auth.isLogin}>
               <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
-              <p>Welcome back {this.props.auth.info.email}</p>
-              <RaisedButton onTouchTap={this.props.onShareModal} label="Invite" />
+              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.email}</p>
+              <RaisedButton onTouchTap={this.props.openInvite} label="Invite" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />
             </ToggleDisplay>
           </Paper>
@@ -85,5 +98,6 @@ class WelcomeModal extends Component {
 
 WelcomeModal.propTypes = propTypes;
 WelcomeModal.defaultProps = defaultProps;
+WelcomeModal = Radium(WelcomeModal);
 
 export default WelcomeModal;

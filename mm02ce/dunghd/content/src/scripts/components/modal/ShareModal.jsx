@@ -9,12 +9,11 @@ import fetchContacts from '../utils/GoogleContactAPI';
 
 const propTypes = {
   auth: PropTypes.object,
-  modalIsOpen: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   onCloseModal: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
-  modalIsOpen: true,
   auth: {
     isLogin: false,
     accessToken: '',
@@ -22,6 +21,18 @@ const defaultProps = {
   },
 };
 
+const customStyles = {
+  title: {
+    textAlign: 'center',
+    margin: ' 0px 0px -1px',
+    padding: '24px 24px 20px',
+    color: 'rgba(0, 0, 0, 0.870588)',
+    fontSize: '22px',
+    lineHeight: '32px',
+    fontWeight: '400',
+    borderBottom: '1px solid rgb(224, 224, 224)',
+  },
+};
 
 class ShareModal extends Component {
   constructor(props) {
@@ -36,6 +47,7 @@ class ShareModal extends Component {
     this.selectRecipient = this.selectRecipient.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
     this.handleRequestClose = this.handleRequestClose.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
   }
 
   componentDidMount() {
@@ -53,6 +65,10 @@ class ShareModal extends Component {
   selectRecipient(selectedRow) {
     this.selectedRow = selectedRow;
     console.log('selectedRow', this.selectedRow);
+  }
+
+  onCloseModal() {
+    this.props.onCloseModal();
   }
 
   handleRequestClose() {
@@ -123,8 +139,9 @@ class ShareModal extends Component {
       <Dialog
         title="Invite your friends!"
         actions={actions}
-        open={this.props.modalIsOpen}
-        onRequestClose={this.props.onCloseModal}
+        titleStyle={customStyles.title}
+        open={this.props.isOpen}
+        onRequestClose={this.onCloseModal}
         autoScrollBodyContent
         >
         <GoogleContact

@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import { WelcomeModal, ShareModal } from '../modal';
 
+require('../../stylesheets/main.scss');
+
 const propTypes = {
   auth: PropTypes.object,
   apiUrl: PropTypes.string,
@@ -29,22 +31,23 @@ class App extends Component {
   constructor(props) {
     super(props);
     console.log('props', props);
+    this.state = {
+      openShare: false,
+    }
     this.onLogin = this.onLogin.bind(this);
-    this.onShareModal = this.onShareModal.bind(this);
-    this.onCloseShareModal = this.onCloseShareModal.bind(this);
+    this.openInvite = this.openInvite.bind(this);
+    this.closeInvite = this.closeInvite.bind(this);
   }
 
-  onShareModal() {
-    console.log('onShareModal');
-    this.props.dispatch({
-      type: 'OPEN_SHARE_MODAL',
+  openInvite() {
+    this.setState({
+      openShare: true,
     });
   }
 
-  onCloseShareModal() {
-    console.log('onCloseShareModal');
-    this.props.dispatch({
-      type: 'CLOSE_SHARE_MODAL',
+  closeInvite() {
+    this.setState({
+      openShare: false,
     });
   }
 
@@ -57,17 +60,18 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <div className="maomao-ext-component">
         <WelcomeModal
           auth={this.props.auth}
-          modalIsOpen={this.props.shareModalIsOpen} onLogin={this.onLogin}
-          onShareModal={this.onShareModal}
+          onLogin={this.onLogin}
+          openInvite={this.openInvite}
+          isShareOpen={this.state.openShare}
           />
         <ToggleDisplay if={this.props.auth.isLogin}>
           <ShareModal
             auth={this.props.auth}
-            modalIsOpen={this.props.shareModalIsOpen}
-            onCloseModal={this.onCloseShareModal}
+            isOpen={this.state.openShare}
+            onCloseModal={this.closeInvite}
             />
         </ToggleDisplay>
       </div>
@@ -81,7 +85,6 @@ const mapStateToProps = (state) => {
   console.log('state', state);
   return {
     auth: state.auth,
-    shareModalIsOpen: state.share,
   };
 };
 
