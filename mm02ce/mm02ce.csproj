@@ -100,13 +100,16 @@
     <Content Include="app\pages\ui.html" />
     <Content Include="app\pages\options.html" />
     <Content Include="app\pages\options.js" />
-    <Content Include="dunghd\content\src\scripts\components\modal\HelloModal.js" />
-    <Content Include="dunghd\content\src\scripts\index.js" />
+    <Content Include="dunghd\content\src\scripts\components\utils\GoogleContactAPI.js" />
+    <Content Include="dunghd\content\src\scripts\config.js" />
+    <Content Include="dunghd\content\src\scripts\test\App-test.js" />
+    <Content Include="dunghd\content\src\scripts\test\setup-jsdom.js" />
     <Content Include="dunghd\content\webpack.config.js" />
+    <Content Include="dunghd\event\src\aliases.js" />
     <Content Include="dunghd\event\src\index.js" />
-    <Content Include="dunghd\event\src\reducers\count.js" />
+    <Content Include="dunghd\event\src\reducers\auth.js" />
     <Content Include="dunghd\event\src\reducers\index.js" />
-    <Content Include="dunghd\event\src\reducers\modal.js" />
+    <Content Include="dunghd\event\src\reducers\share.js" />
     <Content Include="dunghd\event\webpack.config.js" />
     <Content Include="gulpfile.babel.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
@@ -116,6 +119,24 @@
     <Content Include="Properties\build\ligershark.chrome.targets" />
     <Content Include="package.json" />
     <Content Include="dunghd\content\src\scripts\components\app\App.jsx" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\base\_all.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\base\_color.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\base\_reset.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\components\_all.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\main.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\_all.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\utils\_all.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\utils\_clearfix.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\utils\_variables.scss" />
+    <Content Include="dunghd\content\src\scripts\index.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\google\GoogleContact.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\google\GoogleContactPresenter.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\google\index.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\app\index.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\modal\index.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\modal\ShareModal.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\modal\WelcomeModal.jsx" />
+    <Content Include=".env.example" />
     <None Include="scripts\_references.js" />
     <None Include="scripts\chrome-api-vsdoc.js" />
     <Content Include="web.config" />
@@ -162,7 +183,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2458</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
