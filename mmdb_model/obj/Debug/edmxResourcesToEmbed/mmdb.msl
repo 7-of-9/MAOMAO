@@ -17,14 +17,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="users">
-      <EntityTypeMapping TypeName="mm02Model.user">
-        <MappingFragment StoreEntitySet="user">
-          <ScalarProperty Name="username" ColumnName="username" />
-          <ScalarProperty Name="id" ColumnName="id" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="awis_cat">
       <EntityTypeMapping TypeName="mm02Model.awis_cat">
         <MappingFragment StoreEntitySet="awis_cat">
@@ -93,6 +85,24 @@
           <ScalarProperty Name="cal_entity_type_id" ColumnName="cal_entity_type_id" />
           <ScalarProperty Name="term_type_id" ColumnName="term_type_id" />
           <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="users">
+      <EntityTypeMapping TypeName="mm02Model.user">
+        <MappingFragment StoreEntitySet="users">
+          <ScalarProperty Name="google_user_id" ColumnName="google_user_id" />
+          <ScalarProperty Name="salt" ColumnName="salt" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="created" ColumnName="created" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="avatar" ColumnName="avatar" />
+          <ScalarProperty Name="gender" ColumnName="gender" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="lastname" ColumnName="lastname" />
+          <ScalarProperty Name="firstname" ColumnName="firstname" />
+          <ScalarProperty Name="username" ColumnName="username" />
           <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>

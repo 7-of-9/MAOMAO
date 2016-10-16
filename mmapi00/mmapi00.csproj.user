@@ -3,7 +3,7 @@
   <PropertyGroup>
     <NameOfLastUsedPublishProfile>mmapi01 - Web Deploy</NameOfLastUsedPublishProfile>
     <UseIISExpress>true</UseIISExpress>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectView>ProjectFiles</ProjectView>
     <IISExpressSSLPort>44384</IISExpressSSLPort>
   </PropertyGroup>
   <ProjectExtensions>

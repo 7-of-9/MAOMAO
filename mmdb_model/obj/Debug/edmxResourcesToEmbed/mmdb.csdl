@@ -2,7 +2,6 @@
 <Schema Namespace="mm02Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
   <EntityContainer Name="mm02Entities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="awis_site" EntityType="mm02Model.awis_site" />
-    <EntitySet Name="users" EntityType="mm02Model.user" />
     <EntitySet Name="awis_cat" EntityType="mm02Model.awis_cat" />
     <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
       <End Role="awis_cat" EntitySet="awis_cat" />
@@ -42,6 +41,7 @@
       <End Role="term" EntitySet="terms" />
       <End Role="url_term" EntitySet="url_term" />
     </AssociationSet>
+    <EntitySet Name="users" EntityType="mm02Model.user" />
   </EntityContainer>
   <EntityType Name="awis_site">
     <Key>
@@ -59,13 +59,6 @@
     <NavigationProperty Name="awis_cat" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_site" ToRole="awis_cat" />
     <Property Name="hard_disallow" Type="Boolean" />
     <NavigationProperty Name="urls" Relationship="mm02Model.FK_url_awis_site" FromRole="awis_site" ToRole="url" />
-  </EntityType>
-  <EntityType Name="user">
-    <Key>
-      <PropertyRef Name="id" />
-    </Key>
-    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-    <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="awis_cat">
     <Key>
@@ -242,4 +235,21 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <EntityType Name="user">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="email" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="true" />
+    <Property Name="gender" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="avatar" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+    <Property Name="created" Type="DateTime" Precision="3" />
+    <Property Name="password" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="salt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="google_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+  </EntityType>
 </Schema>

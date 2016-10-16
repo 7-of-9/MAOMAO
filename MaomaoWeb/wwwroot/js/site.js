@@ -4,7 +4,7 @@ function hasInstalledExtension() {
 
 function onInstallSucess() {
   // redirect to installed page
-  window.location.href = 'https://maomao-ext.ngrok.io/Extension/Installed';
+  window.location.href = 'http://maomaoweb.azurewebsites.net/Extension/Installed';
 }
 
 function onFail(err) {

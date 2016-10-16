@@ -165,3 +165,6 @@ Y:\src\MAOMAO\winmao\obj\Debug\winmao.Properties.Resources.resources
 Y:\src\MAOMAO\winmao\obj\Debug\winmao.csproj.GenerateResource.Cache
 Y:\src\MAOMAO\winmao\obj\Debug\winmao.exe
 Y:\src\MAOMAO\winmao\obj\Debug\winmao.pdb
+E:\BanhBao\Maomao\winmao\bin\Debug\winmao.exe.config
+E:\BanhBao\Maomao\winmao\obj\Debug\winmao.exe
+E:\BanhBao\Maomao\winmao\obj\Debug\winmao.pdb

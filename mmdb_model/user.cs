@@ -16,5 +16,15 @@ namespace mmdb_model
     {
         public long id { get; set; }
         public string username { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public string email { get; set; }
+        public string gender { get; set; }
+        public string avatar { get; set; }
+        public string status { get; set; }
+        public Nullable<System.DateTime> created { get; set; }
+        public string password { get; set; }
+        public string salt { get; set; }
+        public string google_user_id { get; set; }
     }
 }

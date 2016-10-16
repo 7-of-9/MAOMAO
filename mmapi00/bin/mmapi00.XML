@@ -30,5 +30,11 @@
             <param name="nlp_info">JSON of Calais NLP info.</param>
             <returns></returns>
         </member>
+        <member name="M:mmapi00.Controllers.UserController.CreateUser(mmdb_model.user)">
+            <summary>
+            Register new user by google
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

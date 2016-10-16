@@ -6,7 +6,6 @@
     <edmx:Diagrams>
       <Diagram DiagramId="954005b6bff442abbb576d1ee68fb989" Name="Diagram1">
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="1" PointY="0.5" />
-        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="10.25" PointY="0.5" />
         <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="0.5" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         <EntityTypeShape EntityType="mm02Model.term_type" Width="1.5" PointX="0.75" PointY="6.875" />
@@ -22,6 +21,7 @@
         <AssociationConnector Association="mm02Model.FK_term_matrix_term1" />
         <AssociationConnector Association="mm02Model.FK_term_term_type" />
         <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
+        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.625" PointY="0.5" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

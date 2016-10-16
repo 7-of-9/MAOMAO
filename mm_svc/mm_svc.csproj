@@ -68,6 +68,7 @@
     <Compile Include="ExternalNlp\TermPair\TermPair.cs" />
     <Compile Include="Info\UrlInfo.cs" />
     <Compile Include="Terms\Correlations.cs" />
+    <Compile Include="User\User.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\global\mm_global.csproj">
