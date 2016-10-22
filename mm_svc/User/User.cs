@@ -30,7 +30,7 @@ namespace mm_svc
                     db_user.email = email;
                     db_user.google_user_id = google_user_id;
                     db_user.gender = gender;
-                    // auto generate username and password
+                    // TODO: auto generate username and password/salt
 
                     db.users.Add(db_user);
                     db.SaveChangesTraceValidationErrors();
