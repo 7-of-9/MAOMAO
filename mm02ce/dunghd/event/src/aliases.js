@@ -19,22 +19,24 @@ function checkAuth() {
   return promise;
 }
 
-function succesToken(token, info) {
-  return {
-    type: 'AUTH_FULFILLED',
-    payload: {
-      token,
-      info,
-    },
-  };
+function logout(token) {
+  const promise = new Promise((resolve, reject) => {
+    chrome.identity.removeCachedAuthToken({ token }, () => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        // validate token
+        resolve({ token: '', info: {} });
+      }
+    });
+  });
+  return promise;
 }
 
-function failAuth(error) {
+function actionCreator(type, payload) {
   return {
-    type: 'AUTH_REJECTED',
-    payload: {
-      error,
-    },
+    type,
+    payload,
   };
 }
 
@@ -46,13 +48,37 @@ const authLogin = () => (
         type: 'AUTH_PENDING',
       });
       return checkAuth()
-        .then((data) => dispatch(succesToken(data.token, data.info)))
-        .catch(error => (dispatch(failAuth(error))));
+        .then(data => dispatch(
+          actionCreator('AUTH_FULFILLED', { token: data.token, info: data.info }))
+        )
+        .catch(error => dispatch(actionCreator('AUTH_REJECTED', error)));
     }
-    return dispatch(succesToken(auth.token, auth.info));
+    return dispatch(
+      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info })
+    );
+  }
+);
+
+const authLogout = () => (
+  (dispatch, getState) => {
+    const { auth } = getState();
+    if (!auth.isPending) {
+      dispatch({
+        type: 'AUTH_PENDING',
+      });
+      return logout(auth.accessToken)
+        .then(data => dispatch(
+          actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }))
+        )
+        .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
+    }
+    return dispatch(
+      actionCreator('LOGOUT_FULFILLED', { token: '', info: {} })
+    );
   }
 );
 
 export default {
   AUTH_LOGIN: authLogin,
+  AUTH_LOGOUT: authLogout,
 };

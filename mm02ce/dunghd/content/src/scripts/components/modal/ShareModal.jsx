@@ -51,12 +51,16 @@ class ShareModal extends Component {
   }
 
   componentDidMount() {
-    fetchContacts(this.props.auth.accessToken, { limit: 50 })
+    fetchContacts(this.props.auth.accessToken, { limit: 5000 })
       .then(result => {
         this.contacts = result.data;
         console.log('contacts is ready', result);
       })
       .catch(err => console.warn(err));
+  }
+
+  onCloseModal() {
+    this.props.onCloseModal();
   }
 
   /**
@@ -65,10 +69,6 @@ class ShareModal extends Component {
   selectRecipient(selectedRow) {
     this.selectedRow = selectedRow;
     console.log('selectedRow', this.selectedRow);
-  }
-
-  onCloseModal() {
-    this.props.onCloseModal();
   }
 
   handleRequestClose() {

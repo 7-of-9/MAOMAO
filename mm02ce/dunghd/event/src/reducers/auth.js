@@ -28,6 +28,19 @@ export default (state = initialState, action) => {
         isPending: false,
         isLogin: false,
       });
+    case 'LOGOUT_FULFILLED':
+      return Object.assign({}, state, {
+        message: 'user has been logout',
+        accessToken: action.payload.token,
+        info: action.payload.info,
+        isPending: false,
+        isLogin: false,
+      });
+    case 'LOGOUT_REJECTED':
+      return Object.assign({}, state, {
+        message: action.payload.error.message,
+        isPending: false,
+      });
     default:
       return state;
   }

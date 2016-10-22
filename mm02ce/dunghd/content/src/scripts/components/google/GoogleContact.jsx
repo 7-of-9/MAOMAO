@@ -14,7 +14,7 @@ const customStyles = {
   },
   content: {
     textAlign: 'center',
-  }
+  },
 };
 
 const GoogleContact = ({ contacts, selectRecipient }) => (
