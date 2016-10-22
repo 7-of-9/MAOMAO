@@ -6,8 +6,8 @@ function checkAuth() {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        // validate token
-        axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`)
+        // get user info base on access token
+        axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
           .then((response) => {
             resolve({ token, info: response.data });
           }).catch((error) => {

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import { WelcomeModal, ShareModal } from '../modal';
+import createUser from '../utils/UserApi';
 
 require('../../stylesheets/main.scss');
 
@@ -51,7 +52,18 @@ class App extends Component {
   onLogin() {
     console.log('onLogin');
     this.props.dispatch(checkAuth())
-      .then(token => console.log(token))
+      .then(token => {
+        console.log('token', token);
+        return createUser(`${this.props.apiUrl}/users/google`, {
+          email: token.info.email,
+          firstName: token.info.family_name,
+          lastName: token.info.given_name,
+          avatar: token.info.picture,
+          gender: token.info.gender,
+          google_user_id: token.info.sub,
+        });
+      })
+      .then(user => console.log('user', user))
       .catch(err => console.warn(err));
   }
 

@@ -17,7 +17,6 @@ function queryString(obj) {
   return str.join('&');
 }
 
-
 function buildUrlPath(params) {
   let options = {
     type: 'contacts',
