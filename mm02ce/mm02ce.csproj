@@ -101,6 +101,7 @@
     <Content Include="app\pages\options.html" />
     <Content Include="app\pages\options.js" />
     <Content Include="dunghd\content\src\scripts\components\utils\GoogleContactAPI.js" />
+    <Content Include="dunghd\content\src\scripts\components\utils\UserApi.js" />
     <Content Include="dunghd\content\src\scripts\config.js" />
     <Content Include="dunghd\content\src\scripts\test\App-test.js" />
     <Content Include="dunghd\content\src\scripts\test\setup-jsdom.js" />

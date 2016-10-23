@@ -246,9 +246,6 @@ E:\BanhBao\Maomao\mmapi00\bin\WebActivatorEx.dll
 E:\BanhBao\Maomao\mmapi00\bin\WebApi.OutputCache.Core.dll
 E:\BanhBao\Maomao\mmapi00\bin\WebApi.OutputCache.V2.dll
 E:\BanhBao\Maomao\mmapi00\bin\mm_aws.dll
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.WebPages.dll
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.Razor.dll
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.WebPages.Deployment.dll
 E:\BanhBao\Maomao\mmapi00\bin\global.pdb
 E:\BanhBao\Maomao\mmapi00\bin\mmdb_model.pdb
 E:\BanhBao\Maomao\mmapi00\bin\mm_svc.pdb
@@ -261,14 +258,10 @@ E:\BanhBao\Maomao\mmapi00\bin\Microsoft.AI.WindowsServer.xml
 E:\BanhBao\Maomao\mmapi00\bin\Microsoft.ApplicationInsights.xml
 E:\BanhBao\Maomao\mmapi00\bin\Newtonsoft.Json.xml
 E:\BanhBao\Maomao\mmapi00\bin\System.IdentityModel.Tokens.Jwt.xml
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.Helpers.xml
 E:\BanhBao\Maomao\mmapi00\bin\System.Net.Http.Formatting.xml
 E:\BanhBao\Maomao\mmapi00\bin\System.Web.Http.xml
 E:\BanhBao\Maomao\mmapi00\bin\System.Web.Http.WebHost.xml
 E:\BanhBao\Maomao\mmapi00\bin\mm_aws.pdb
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.WebPages.xml
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.Razor.xml
-E:\BanhBao\Maomao\mmapi00\bin\System.Web.WebPages.Deployment.xml
 E:\BanhBao\Maomao\mmapi00\obj\Debug\mmapi00.csprojResolveAssemblyReference.cache
 E:\BanhBao\Maomao\mmapi00\obj\Debug\mmapi00.dll
 E:\BanhBao\Maomao\mmapi00\obj\Debug\mmapi00.pdb
