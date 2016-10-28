@@ -1,4 +1,5 @@
-﻿require('dotenv').config();
+﻿/// <binding BeforeBuild='build' />
+require('dotenv').config();
 import gulp from 'gulp';
 import loadPlugins from 'gulp-load-plugins';
 import webpack from 'webpack';
