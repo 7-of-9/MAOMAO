@@ -4,6 +4,7 @@
 
 *   Install [NodeJS](https://nodejs.org/en/) v4 or v6 would be fine
 *   Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) globally: `npm install --global gulp-cli`
+*   "npm install" > run this in .\MAOMAO\mm02ce
 
 ## DotNet Core CLI
 
