@@ -8,6 +8,8 @@ require('../../stylesheets/main.scss');
 
 const propTypes = {
   auth: PropTypes.object,
+  siteUrl: PropTypes.string,
+  mailgunKey: PropTypes.string,
   apiUrl: PropTypes.string,
   clienId: PropTypes.string,
   shareModalIsOpen: PropTypes.bool,
@@ -99,6 +101,8 @@ class App extends Component {
         <ToggleDisplay if={this.props.auth.isLogin}>
           <ShareModal
             auth={this.props.auth}
+            mailgunKey={this.props.mailgunKey}
+            siteUrl={this.props.siteUrl}
             isOpen={this.state.openShare}
             onCloseModal={this.closeInvite}
             />

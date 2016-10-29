@@ -9,6 +9,8 @@ import fetchContacts from '../utils/GoogleContactAPI';
 
 const propTypes = {
   auth: PropTypes.object,
+  siteUrl: PropTypes.string,
+  mailgunKey: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   onCloseModal: PropTypes.func.isRequired,
 };
@@ -93,11 +95,11 @@ class ShareModal extends Component {
     console.log('sendInvitation', recipients);
     if (recipients.length) {
       this.props.onCloseModal();
-      const mailgun = new Mailgun.Mailgun('key-6acu-fqm4j325jes59jc31rq557e83l6');
+      const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       const title = 'Welcome to mamao extension!';
-      const content = JSON.stringify(recipients, null, 2);
+      const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl} to check it out now.`;
       mailgun.sendText(this.fromEmail,
-        ['dung@maomao.rocks', 'dom@maomao.rocks'],
+        recipients,
         title,
         content,
         'noreply@maomao.rocks', {},
