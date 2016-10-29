@@ -13,7 +13,7 @@ function onFail(err) {
 
 function installExtension() {
   chrome.webstore.install(
-    'https://chrome.google.com/webstore/detail/gennpkeookgnpcionphekmlgdgikklag',
+    'https://chrome.google.com/webstore/detail/mm02ce/onkinoggpeamajngpakinabahkomjcmk',
     onInstallSucess,
     onFail);
 }
