@@ -3,8 +3,7 @@ import {
   Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, TableFooter,
 } from 'material-ui/Table';
 import SearchInput, { createFilter } from 'react-search-input';
-import FlatButton from 'material-ui/FlatButton';
-import ToggleDisplay from 'react-toggle-display';
+import GoogleContactPagination from './GoogleContactPagination';
 
 const KEYS_TO_FILTERS = ['name'];
 
@@ -17,30 +16,16 @@ class GoogleContactPresenter extends Component {
     this.renderContact = this.renderContact.bind(this);
     this.selectRowItem = this.selectRowItem.bind(this);
     this.searchUpdated = this.searchUpdated.bind(this);
-    this.loadMore = this.loadMore.bind(this);
+    this.onPageChangeFromPagination = this.onPageChangeFromPagination.bind(this);
   }
 
-  loadMore() {
-    this.props.loadMore(this.props.page + 1);
+  onPageChangeFromPagination(newPage) {
+    this.props.loadMore(newPage);
   }
 
   selectRowItem(rows) {
     console.log('selectRowItem', rows);
     this.props.selectRecipient(rows);
-
-    // const filteredEmails = this.props.contacts.filter(
-    //   createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
-    // );
-    // let recipients = [];
-    // if (this.selectedRow === 'all') {
-    //   recipients = [].concat(filteredEmails.map(item => item.email));
-    // } else {
-    //   recipients = [].concat(filteredEmails
-    //     .filter((item, index) => rows.indexOf(index) !== -1)
-    //     .map(item => item.email)
-    //   );
-    // }
-    // console.log('recipients', recipients);
   }
 
   searchUpdated(term) {
@@ -77,13 +62,7 @@ class GoogleContactPresenter extends Component {
         <TableFooter>
           <TableRow>
             <TableRowColumn colSpan="2" style={{ textAlign: 'center' }}>
-              <ToggleDisplay show={this.props.hasMore}>
-                <FlatButton
-                  label="Load More"
-                  primary
-                  onTouchTap={this.loadMore}
-                  />
-              </ToggleDisplay>
+              <GoogleContactPagination totalPages={this.props.totalPages} currentPage={this.props.page} onChange={this.onPageChangeFromPagination} />
             </TableRowColumn>
           </TableRow>
         </TableFooter>
@@ -96,8 +75,8 @@ GoogleContactPresenter.propTypes = {
   contacts: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
   loadMore: PropTypes.func.isRequired,
-  hasMore: PropTypes.bool.isRequired,
 };
 
 export default GoogleContactPresenter;

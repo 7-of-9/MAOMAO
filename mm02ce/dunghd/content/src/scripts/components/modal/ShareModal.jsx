@@ -44,6 +44,7 @@ class ShareModal extends Component {
       message: '',
       contacts: [],
       page: 1,
+      totalPages: 0,
       open: false,
       hasMore: true,
     };
@@ -68,17 +69,13 @@ class ShareModal extends Component {
     const limit = 50;
     fetchContacts(this.props.auth.accessToken, { limit, page })
       .then(result => {
-        const contacts = this.state.contacts.concat(result.data);
+        const contacts = result.data || [];
         this.setState({
           contacts,
           page: Number(result.page),
+          totalPages: Math.ceil(result.total / limit),
         });
         console.log('contacts is ready', result);
-        if (result.total < Number(result.page * limit)) {
-          this.setState({
-            hasMore: false,
-          });
-        }
       })
       .catch(err => console.warn(err));
   }
@@ -167,7 +164,7 @@ class ShareModal extends Component {
         <GoogleContact
           selectRecipient={this.selectRecipient}
           contacts={this.state.contacts}
-          hasMore={this.state.hasMore}
+          totalPages={this.state.totalPages}
           loadMore={this.loadPage}
           page={this.state.page}
           />
