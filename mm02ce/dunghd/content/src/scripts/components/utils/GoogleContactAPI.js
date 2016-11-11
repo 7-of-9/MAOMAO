@@ -26,6 +26,8 @@ function buildUrlPath(params) {
     limit: 5000,
     page: 1,
     v: '3.0',
+    orderby: 'lastmodified',
+    sortby: 'descending',
   };
   options = Object.assign(options, params);
 
@@ -34,6 +36,8 @@ function buildUrlPath(params) {
     'max-results': options.limit,
     'start-index': options.page,
     v: options.v,
+    orderby: options.orderby,
+    sortorder: options.sortby,
   };
 
   const path = `https://www.google.com/m8/feeds/${options.type}/${options.email}/${options.projection}?${queryString(query)}`;
@@ -62,7 +66,7 @@ function fetchContacts(token, opts) {
         const data = response.data;
         const contacts = [];
         let total = 0;
-        let page = 1;
+        let page = opts.page || 1;
         if (data.feed && data.feed.entry) {
           total = data.feed.openSearch$totalResults.$t;
           page = data.feed.openSearch$startIndex.$t;

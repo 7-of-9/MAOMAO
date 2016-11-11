@@ -54,7 +54,8 @@ class ShareModal extends Component {
   }
 
   componentDidMount() {
-    fetchContacts(this.props.auth.accessToken, { limit: 50 })
+    const limit = 50;
+    fetchContacts(this.props.auth.accessToken, { limit })
       .then(result => {
         this.setState({ contacts: result.data });
         console.log('contacts is ready', result);
