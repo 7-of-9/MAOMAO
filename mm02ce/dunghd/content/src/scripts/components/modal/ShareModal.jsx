@@ -42,6 +42,7 @@ class ShareModal extends Component {
     this.state = {
       autoHideDuration: 4000,
       message: '',
+      contacts: [],
       open: false,
     };
     this.fromEmail = this.props.auth.info.email;
@@ -53,9 +54,9 @@ class ShareModal extends Component {
   }
 
   componentDidMount() {
-    fetchContacts(this.props.auth.accessToken, { limit: 5000 })
+    fetchContacts(this.props.auth.accessToken, { limit: 50 })
       .then(result => {
-        this.contacts = result.data;
+        this.setState({ contacts: result.data });
         console.log('contacts is ready', result);
       })
       .catch(err => console.warn(err));
@@ -85,9 +86,9 @@ class ShareModal extends Component {
   sendInvitation() {
     let recipients = [];
     if (this.selectedRow === 'all') {
-      recipients = [].concat(this.contacts.map(item => item.email));
+      recipients = [].concat(this.state.contacts.map(item => item.email));
     } else {
-      recipients = [].concat(this.contacts
+      recipients = [].concat(this.state.contacts
         .filter((item, index) => this.selectedRow.indexOf(index) !== -1)
         .map(item => item.email)
       );
@@ -139,7 +140,7 @@ class ShareModal extends Component {
 
     return (
       <Dialog
-        title="Invite your friends!"
+        title={`Invite your friends - ${this.fromEmail}!`}
         actions={actions}
         titleStyle={customStyles.title}
         open={this.props.isOpen}
@@ -148,7 +149,7 @@ class ShareModal extends Component {
         >
         <GoogleContact
           selectRecipient={this.selectRecipient}
-          contacts={this.contacts}
+          contacts={this.state.contacts}
           token={this.props.auth.accessToken}
           />
         <Snackbar

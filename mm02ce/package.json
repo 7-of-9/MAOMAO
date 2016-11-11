@@ -21,6 +21,7 @@
     "react-css-modules": "^3.7.10",
     "react-dom": "^15.3.1",
     "react-redux": "^4.0.0",
+    "react-search-input": "^0.10.3",
     "react-tap-event-plugin": "^1.0.0",
     "react-toggle-display": "^2.1.1",
     "redux": "^3.5.2",
