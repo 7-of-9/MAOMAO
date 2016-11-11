@@ -34,7 +34,7 @@ function buildUrlPath(params) {
   const query = {
     alt: options.alt,
     'max-results': options.limit,
-    'start-index': options.page,
+    'start-index': ((options.page - 1) * options.limit) + 1,
     v: options.v,
     orderby: options.orderby,
     sortorder: options.sortby,
@@ -66,10 +66,9 @@ function fetchContacts(token, opts) {
         const data = response.data;
         const contacts = [];
         let total = 0;
-        let page = opts.page || 1;
+        const page = opts.page || 1;
         if (data.feed && data.feed.entry) {
-          total = data.feed.openSearch$totalResults.$t;
-          page = data.feed.openSearch$startIndex.$t;
+          total = Number(data.feed.openSearch$totalResults.$t);
           data.feed.entry.forEach((item) => {
             const ref = item.gd$email;
             if (ref && ref[0] && ref[0].address) {

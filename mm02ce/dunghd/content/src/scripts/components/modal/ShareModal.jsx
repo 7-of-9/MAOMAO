@@ -43,7 +43,9 @@ class ShareModal extends Component {
       autoHideDuration: 4000,
       message: '',
       contacts: [],
+      page: 1,
       open: false,
+      hasMore: true,
     };
     this.fromEmail = this.props.auth.info.email;
     this.selectedRow = 'none';
@@ -51,20 +53,34 @@ class ShareModal extends Component {
     this.sendInvitation = this.sendInvitation.bind(this);
     this.handleRequestClose = this.handleRequestClose.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.loadPage = this.loadPage.bind(this);
   }
 
   componentDidMount() {
-    const limit = 50;
-    fetchContacts(this.props.auth.accessToken, { limit })
-      .then(result => {
-        this.setState({ contacts: result.data });
-        console.log('contacts is ready', result);
-      })
-      .catch(err => console.warn(err));
+    this.loadPage(this.state.page);
   }
 
   onCloseModal() {
     this.props.onCloseModal();
+  }
+
+  loadPage(page) {
+    const limit = 50;
+    fetchContacts(this.props.auth.accessToken, { limit, page })
+      .then(result => {
+        const contacts = this.state.contacts.concat(result.data);
+        this.setState({
+          contacts,
+          page: Number(result.page),
+        });
+        console.log('contacts is ready', result);
+        if (result.total < Number(result.page * limit)) {
+          this.setState({
+            hasMore: false,
+          });
+        }
+      })
+      .catch(err => console.warn(err));
   }
 
   /**
@@ -151,7 +167,9 @@ class ShareModal extends Component {
         <GoogleContact
           selectRecipient={this.selectRecipient}
           contacts={this.state.contacts}
-          token={this.props.auth.accessToken}
+          hasMore={this.state.hasMore}
+          loadMore={this.loadPage}
+          page={this.state.page}
           />
         <Snackbar
           open={this.state.open}
