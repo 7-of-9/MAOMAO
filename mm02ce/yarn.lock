@@ -2071,10 +2071,6 @@ function-bind@^1.0.2, function-bind@^1.1.0, function-bind@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
-fuse.js@^2.2.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-2.5.0.tgz#98295c2ac1684edbba22250d7049cb6f033e95ce"
-
 gauge@~2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/gauge/-/gauge-2.6.0.tgz#d35301ad18e96902b4751dcbbe40f4218b942a46"
@@ -3206,6 +3202,10 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
+material-ui-chip-input:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-0.10.0.tgz#a90ca9ee796d22b96b464fea4e640fc20e8ce021"
+
 material-ui@^0.15.4:
   version "0.15.4"
   resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.15.4.tgz#c66b210884f1584108526c498b2c462aee4c3dbb"
@@ -4116,7 +4116,7 @@ react-css-modules@^3.7.10:
     lodash "^4.6.1"
     object-unfreeze "^1.0.2"
 
-react-dom@^15.0.1, react-dom@^15.3.1:
+react-dom@^15.3.1:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.3.2.tgz#c46b0aa5380d7b838e7a59c4a7beff2ed315531f"
 
@@ -4135,12 +4135,6 @@ react-redux@^4.0.0:
     lodash "^4.2.0"
     loose-envify "^1.1.0"
 
-react-search-input@^0.10.3:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/react-search-input/-/react-search-input-0.10.3.tgz#10e9b44fe9cece20a4c28df07110ccd653c54fee"
-  dependencies:
-    fuse.js "^2.2.0"
-
 react-tap-event-plugin@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-tap-event-plugin/-/react-tap-event-plugin-1.0.0.tgz#7a248505a9e9abecc352b2dab313d17685c51adf"
@@ -4151,15 +4145,7 @@ react-toggle-display@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-toggle-display/-/react-toggle-display-2.1.1.tgz#8a36f6f482c8e3cc5283e7ecfed527cb251561dc"
 
-react-ultimate-pagination:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/react-ultimate-pagination/-/react-ultimate-pagination-0.8.0.tgz#b233317a98c0e5ca65128f90659c860b6bdb29fa"
-  dependencies:
-    react "^15.0.1"
-    react-dom "^15.0.1"
-    ultimate-pagination "0.7.0"
-
-react@^15.0.1, react@^15.3.1:
+react@^15.3.1:
   version "15.3.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.3.2.tgz#a7bccd2fee8af126b0317e222c28d1d54528d09e"
   dependencies:
@@ -4907,10 +4893,6 @@ uglify-to-browserify@~1.0.0:
 uid-number@~0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
-
-ultimate-pagination@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/ultimate-pagination/-/ultimate-pagination-0.7.0.tgz#35333a9b18bffac28741083394fc532bb3844b92"
 
 unc-path-regex@^0.1.0:
   version "0.1.2"

@@ -86,7 +86,7 @@ class WelcomeModal extends Component {
               <RaisedButton onTouchTap={this.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
-              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.name}</p>
+              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.name} ({this.props.auth.info.email})</p>
               <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
               <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />

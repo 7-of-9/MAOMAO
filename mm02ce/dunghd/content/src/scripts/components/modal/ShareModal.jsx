@@ -70,7 +70,7 @@ class ShareModal extends Component {
   }
 
   loadPage(page) {
-    const limit = 50;
+    const limit = 5000;
     fetchContacts(this.props.auth.accessToken, { limit, page })
       .then(result => {
         const contacts = result.data || [];
