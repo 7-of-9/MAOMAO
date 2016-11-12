@@ -46,10 +46,9 @@ class ShareModal extends Component {
       page: 1,
       totalPages: 0,
       open: false,
-      hasMore: true,
     };
     this.fromEmail = this.props.auth.info.email;
-    this.selectedRow = 'none';
+    this.recipients = [];
     this.selectRecipient = this.selectRecipient.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
     this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -83,9 +82,9 @@ class ShareModal extends Component {
   /**
    * send invitation to google contact by email
    */
-  selectRecipient(selectedRow) {
-    this.selectedRow = selectedRow;
-    console.log('selectedRow', this.selectedRow);
+  selectRecipient(recipients) {
+    console.log('selectRecipient', recipients);
+    this.recipients = recipients;
   }
 
   handleRequestClose() {
@@ -98,23 +97,14 @@ class ShareModal extends Component {
    * send invitation to google contact by email
    */
   sendInvitation() {
-    let recipients = [];
-    if (this.selectedRow === 'all') {
-      recipients = [].concat(this.state.contacts.map(item => item.email));
-    } else {
-      recipients = [].concat(this.state.contacts
-        .filter((item, index) => this.selectedRow.indexOf(index) !== -1)
-        .map(item => item.email)
-      );
-    }
-    console.log('sendInvitation', recipients);
-    if (recipients.length) {
+    console.log('sendInvitation', this.recipients);
+    if (this.recipients.length) {
       this.props.onCloseModal();
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       const title = 'Welcome to mamao extension!';
-      const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl} to check it out now.`;
+      const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl}?from=${this.fromEmail} to check it out now.`;
       mailgun.sendText(this.fromEmail,
-        recipients,
+        this.recipients,
         title,
         content,
         'noreply@maomao.rocks', {},

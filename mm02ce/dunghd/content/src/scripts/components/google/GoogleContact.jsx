@@ -17,7 +17,7 @@ const customStyles = {
   },
 };
 
-const GoogleContact = ({ contacts, selectRecipient, loadMore, page, totalPages }) => (
+const GoogleContact = ({ contacts, selected, selectRecipient, loadMore, page, totalPages }) => (
   <div style={customStyles.content}>
     <h3 style={customStyles.title}> Please select your friends to send invitation!</h3>
     <GoogleContactPresenter
@@ -25,6 +25,7 @@ const GoogleContact = ({ contacts, selectRecipient, loadMore, page, totalPages }
       totalPages={totalPages}
       loadMore={loadMore}
       contacts={contacts}
+      selected={selected}
       selectRecipient={selectRecipient}
       />
   </div>
@@ -32,6 +33,7 @@ const GoogleContact = ({ contacts, selectRecipient, loadMore, page, totalPages }
 
 GoogleContact.propTypes = {
   contacts: PropTypes.array.isRequired,
+  selected: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   totalPages: PropTypes.number.isRequired,
@@ -40,6 +42,7 @@ GoogleContact.propTypes = {
 
 GoogleContact.defaultProps = {
   contacts: [],
+  selected: [],
 };
 
 export default GoogleContact;

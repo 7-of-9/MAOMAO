@@ -12,6 +12,7 @@ class GoogleContactPresenter extends Component {
     super(props);
     this.state = {
       searchTerm: '',
+      recipients: [],
     };
     this.renderContact = this.renderContact.bind(this);
     this.selectRowItem = this.selectRowItem.bind(this);
@@ -25,7 +26,23 @@ class GoogleContactPresenter extends Component {
 
   selectRowItem(rows) {
     console.log('selectRowItem', rows);
-    this.props.selectRecipient(rows);
+    const filteredEmails = this.props.contacts.filter(
+      createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
+    );
+    let recipients = [];
+    if (rows === 'all') {
+      recipients = [].concat(filteredEmails.map(item => item.email));
+    } else {
+      recipients = [].concat(filteredEmails
+        .filter((item, index) => rows.indexOf(index) !== -1)
+        .map(item => item.email)
+      );
+    }
+
+    this.setState({
+      recipients,
+    });
+    this.props.selectRecipient(recipients);
   }
 
   searchUpdated(term) {
@@ -34,7 +51,7 @@ class GoogleContactPresenter extends Component {
 
   renderContact(contact) {
     return (
-      <TableRow key={contact.key}>
+      <TableRow key={contact.key} selected={this.state.recipients.indexOf(contact.email) !== -1}>
         <TableRowColumn>{contact.name}</TableRowColumn>
         <TableRowColumn>{contact.email}</TableRowColumn>
       </TableRow>
@@ -42,12 +59,12 @@ class GoogleContactPresenter extends Component {
   }
 
   render() {
-    console.log('render', this);
     const filteredEmails = this.props.contacts.filter(
       createFilter(this.state.searchTerm, KEYS_TO_FILTERS)
     );
+    console.log('render', filteredEmails);
     return (
-      <Table selectable multiSelectable onRowSelection={this.selectRowItem}>
+      <Table multiSelectable onRowSelection={this.selectRowItem}>
         <TableHeader displaySelectAll enableSelectAll>
           <TableRow>
             <TableHeaderColumn tooltip="Name">
@@ -56,7 +73,7 @@ class GoogleContactPresenter extends Component {
             <TableHeaderColumn tooltip="Email">Email</TableHeaderColumn>
           </TableRow>
         </TableHeader>
-        <TableBody showRowHover displayRowCheckbox>
+        <TableBody showRowHover displayRowCheckbox deselectOnClickaway={false}>
           {filteredEmails.map(this.renderContact)}
         </TableBody>
         <TableFooter>
