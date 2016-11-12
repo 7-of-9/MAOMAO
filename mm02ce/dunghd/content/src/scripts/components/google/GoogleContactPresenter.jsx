@@ -30,6 +30,8 @@ class GoogleContactPresenter extends Component {
     return (
       <div style={styles.wrapper}>
         <ChipInput
+          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+          targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           dataSource={this.props.contacts}
           dataSourceConfig={{ text: 'name', value: 'email' }}
           chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
@@ -45,6 +47,7 @@ class GoogleContactPresenter extends Component {
           )}
           onChange={this.handleChange}
           filter={AutoComplete.fuzzyFilter}
+          maxSearchResults={5}
           fullWidth
           openOnFocus
           />
@@ -56,9 +59,6 @@ class GoogleContactPresenter extends Component {
 GoogleContactPresenter.propTypes = {
   contacts: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  totalPages: PropTypes.number.isRequired,
-  loadMore: PropTypes.func.isRequired,
 };
 
 export default GoogleContactPresenter;

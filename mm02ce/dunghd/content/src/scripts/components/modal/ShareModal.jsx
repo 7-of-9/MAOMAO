@@ -35,8 +35,7 @@ const customStyles = {
     borderBottom: '1px solid rgb(224, 224, 224)',
   },
   content: {
-    resize: 'both',
-    overflow: 'auto',
+    transform: 'none',
   },
 };
 
@@ -160,9 +159,6 @@ class ShareModal extends Component {
         <GoogleContact
           selectRecipient={this.selectRecipient}
           contacts={this.state.contacts}
-          totalPages={this.state.totalPages}
-          loadMore={this.loadPage}
-          page={this.state.page}
           />
         <Snackbar
           open={this.state.open}
