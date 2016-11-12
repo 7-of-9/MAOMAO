@@ -37,6 +37,11 @@ class GoogleContactPresenter extends Component {
         .filter((item, index) => rows.indexOf(index) !== -1)
         .map(item => item.email)
       );
+      // keep old state if we are filtering
+      if (this.state.searchTerm && this.state.searchTerm.length) {
+        const emails = filteredEmails.map(item => item.email);
+        recipients = recipients.concat(this.state.recipients.filter(item => emails.indexOf(item) === -1));
+      }
     }
 
     this.setState({

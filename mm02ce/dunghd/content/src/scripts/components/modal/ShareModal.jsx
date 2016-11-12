@@ -48,6 +48,7 @@ class ShareModal extends Component {
       open: false,
     };
     this.fromEmail = this.props.auth.info.email;
+    this.fullName = this.props.auth.info.name;
     this.recipients = [];
     this.selectRecipient = this.selectRecipient.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
@@ -102,7 +103,7 @@ class ShareModal extends Component {
       this.props.onCloseModal();
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       const title = 'Welcome to mamao extension!';
-      const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl}?from=${this.fromEmail} to check it out now.`;
+      const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl}?from=${encodeURI(this.fullName)}&email=${encodeURI(this.fromEmail)} to check it out now.`;
       mailgun.sendText(this.fromEmail,
         this.recipients,
         title,
