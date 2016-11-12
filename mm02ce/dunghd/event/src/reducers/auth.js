@@ -8,11 +8,31 @@ const initialState = {
   info: {},
 };
 
+function ctxMenuLogin(userInfo) {
+  chrome.contextMenus.removeAll();
+  chrome.contextMenus.create({
+    title: `Hi ${userInfo.name} (${userInfo.email})`,
+    contexts: ['browser_action'],
+    id: 'mm-btn-welcome-back',
+  });
+  chrome.contextMenus.create({
+    title: 'Logout',
+    contexts: ['browser_action'],
+    id: 'mm-btn-logout',
+  });
+}
+
+function ctxMenuLogout() {
+  chrome.contextMenus.removeAll();
+}
+
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'AUTH_PENDING':
       return Object.assign({}, state, { isPending: true });
     case 'AUTH_FULFILLED':
+      ctxMenuLogin(action.payload.info);
       return Object.assign({}, state, {
         message: 'authentication is done',
         accessToken: action.payload.token,
@@ -29,6 +49,7 @@ export default (state = initialState, action) => {
         isLogin: false,
       });
     case 'LOGOUT_FULFILLED':
+      ctxMenuLogout();
       return Object.assign({}, state, {
         message: 'user has been logout',
         accessToken: action.payload.token,

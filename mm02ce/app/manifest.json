@@ -1,6 +1,6 @@
 {
   "name": "mm02ce",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Hope++!",
   "background": {
     "page": "bg.html"
@@ -11,6 +11,7 @@
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
+    "contextMenus",
     "activeTab",
     "tabs",
     "bookmarks",
