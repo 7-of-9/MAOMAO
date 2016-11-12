@@ -34,6 +34,10 @@ const customStyles = {
     fontWeight: '400',
     borderBottom: '1px solid rgb(224, 224, 224)',
   },
+  content: {
+    resize: 'both',
+    overflow: 'auto',
+  },
 };
 
 class ShareModal extends Component {
@@ -148,6 +152,7 @@ class ShareModal extends Component {
         title={`Invite your friends - ${this.fromEmail}!`}
         actions={actions}
         titleStyle={customStyles.title}
+        contentStyle={customStyles.content}
         open={this.props.isOpen}
         onRequestClose={this.onCloseModal}
         autoScrollBodyContent
