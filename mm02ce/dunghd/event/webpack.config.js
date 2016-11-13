@@ -4,7 +4,6 @@ module.exports = {
 
   entry: [
     './dunghd/event/src/index.js',
-    './dunghd/event/src/context.js',
   ],
 
   output: {

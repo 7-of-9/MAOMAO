@@ -11,7 +11,7 @@ const initialState = {
 function ctxMenuLogin(userInfo) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: `Hi ${userInfo.name} (${userInfo.email})`,
+    title: `Welcome back ${userInfo.name} (${userInfo.email})!`,
     contexts: ['browser_action'],
     id: 'mm-btn-welcome-back',
   });
