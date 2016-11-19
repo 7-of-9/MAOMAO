@@ -2,7 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import Mailgun from 'mailgun';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import Snackbar from 'material-ui/Snackbar';
+import { deepOrange500 } from 'material-ui/styles/colors';
+import ReactMaterialUiNotifications from 'react-materialui-notifications';
+import Message from 'material-ui/svg-icons/communication/message';
+import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
+import moment from 'moment';
 
 import GoogleContact from '../google';
 import fetchContacts from '../utils/GoogleContactAPI';
@@ -43,19 +47,15 @@ class ShareModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      autoHideDuration: 4000,
-      message: '',
       contacts: [],
       page: 1,
       totalPages: 0,
-      open: false,
     };
     this.fromEmail = this.props.auth.info.email;
     this.fullName = this.props.auth.info.name;
     this.recipients = [];
     this.selectRecipient = this.selectRecipient.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
-    this.handleRequestClose = this.handleRequestClose.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.loadPage = this.loadPage.bind(this);
   }
@@ -91,19 +91,12 @@ class ShareModal extends Component {
     this.recipients = recipients;
   }
 
-  handleRequestClose() {
-    this.setState({
-      open: false,
-    });
-  }
-
   /**
    * send invitation to google contact by email
    */
   sendInvitation() {
     console.log('sendInvitation', this.recipients);
     if (this.recipients.length) {
-      this.props.onCloseModal();
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       const title = 'Welcome to mamao extension!';
       const content = `Hi, this is awesome extention. Click on ${this.props.siteUrl}?from=${encodeURI(this.fullName)}&email=${encodeURI(this.fromEmail)} to check it out now.`;
@@ -114,20 +107,33 @@ class ShareModal extends Component {
         'noreply@maomao.rocks', {},
         (err) => {
           if (err) {
-            console.warn(err);
+            ReactMaterialUiNotifications.showNotification({
+              title: 'Error!',
+              icon: <ErrorOutline />,
+              iconBadgeColor: deepOrange500,
+              additionalText: err.message,
+              overflowText: this.fromEmail,
+              avatar: this.props.auth.info.picture,
+              personalised: true,
+              autoHide: 2000,
+              timestamp: moment().format('h:mm A'),
+            });
           } else {
-            console.log('Email has been sent!');
-            this.setState({
-              open: true,
-              message: 'Email has been sent!',
+            ReactMaterialUiNotifications.showNotification({
+              title: 'Sending invitation!',
+              icon: <Message />,
+              iconBadgeColor: deepOrange500,
+              additionalText: `Email has been sent to ${this.recipients.join(',')}`,
+              overflowText: this.fromEmail,
+              avatar: this.props.auth.info.picture,
+              personalised: true,
+              autoHide: 2000,
+              timestamp: moment().format('h:mm A'),
             });
           }
+          this.recipients = [];
+          this.props.onCloseModal();
         });
-    } else {
-      this.setState({
-        open: true,
-        message: 'Please select at least one contact for sending invitation',
-      });
     }
   }
 
@@ -159,12 +165,6 @@ class ShareModal extends Component {
         <GoogleContact
           selectRecipient={this.selectRecipient}
           contacts={this.state.contacts}
-          />
-        <Snackbar
-          open={this.state.open}
-          message={this.state.message}
-          autoHideDuration={this.state.autoHideDuration}
-          onRequestClose={this.handleRequestClose}
           />
       </Dialog>
     );

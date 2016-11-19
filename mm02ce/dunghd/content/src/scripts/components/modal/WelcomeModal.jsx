@@ -3,6 +3,7 @@ import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
 import Radium from 'radium';
 import Paper from 'material-ui/Paper';
+
 const customStyles = {
   title: {
     display: 'block',

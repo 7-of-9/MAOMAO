@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
+import ReactMaterialUiNotifications from 'react-materialui-notifications';
+
 import { WelcomeModal, ShareModal } from '../modal';
 import createUser from '../utils/UserApi';
 
@@ -91,6 +93,16 @@ class App extends Component {
   render() {
     return (
       <div className="maomao-ext-component">
+        <ReactMaterialUiNotifications
+          rootStyle={{
+            zIndex: 10000,
+            top: 20,
+            right: 25,
+          }}
+          desktop
+          transitionAppear={false}
+          transitionLeave={false}
+          />
         <WelcomeModal
           auth={this.props.auth}
           onLogin={this.onLogin}
