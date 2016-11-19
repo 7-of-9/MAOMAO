@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
+import moment from 'moment';
 
 import { WelcomeModal, ShareModal } from '../modal';
 import createUser from '../utils/UserApi';
@@ -55,6 +56,11 @@ class App extends Component {
 
   onLogin() {
     console.log('onLogin');
+    ReactMaterialUiNotifications.showNotification({
+      title: 'Prepare to login!',
+      autoHide: 1000,
+      timestamp: moment().format('h:mm A'),
+    });
     this.props.dispatch(checkAuth())
       .then(token => {
         console.log('token', token);

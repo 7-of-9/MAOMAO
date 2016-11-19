@@ -22,10 +22,7 @@ wrapStore(store, {
 
 // ctx menu handler
 
-function onClickHandler(info, tab) {
-  console.log("item " + info.menuItemId + " was clicked");
-  console.log("info: " + JSON.stringify(info));
-  console.log("tab: " + JSON.stringify(tab));
+function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-logout':
       console.log('trigger logout');
