@@ -9,7 +9,7 @@
   "icons": {
     "128": "img/ps_sirius_dog_blue.png"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src https://*.google.com 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "contextMenus",
     "activeTab",
@@ -22,6 +22,7 @@
     "https://ssl.gstatic.com/",
     "https://www.googleapis.com/",
     "https://accounts.google.com/",
+    "*://apis.google.com/*",
     "http://*/*",
     "https://*/*"
   ],
@@ -32,7 +33,8 @@
       ],
       "css": [],
       "js": [
-        "./build/content.js"
+        "./build/content.js",
+        "./lib/scriptTagContext.js"
       ]
     }
   ],
