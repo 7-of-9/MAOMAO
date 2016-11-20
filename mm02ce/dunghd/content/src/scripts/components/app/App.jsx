@@ -6,7 +6,6 @@ import moment from 'moment';
 
 import { WelcomeModal, ShareModal } from '../modal';
 import createUser from '../utils/UserApi';
-import GAuth2 from '../../lib/gauth2';
 
 require('../../stylesheets/main.scss');
 
@@ -49,47 +48,29 @@ class App extends Component {
     this.onLogout = this.onLogout.bind(this);
     this.openInvite = this.openInvite.bind(this);
     this.closeInvite = this.closeInvite.bind(this);
-    // init and setup gauth
-    this.gauth = new GAuth2();
-    this.gauth.setClient(this.props.webClientId);
-    this.gauth.setScope([
-      'https://www.googleapis.com/auth/plus.me',
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.google.com/m8/feeds/',
-      'https://www.googleapis.com/auth/contacts.readonly',
-    ].join(' '));
-    this.gauth.load();
   }
 
   onLogin() {
     console.log('onLogin');
-    this.gauth.login().then((user) => {
-      console.log(user, ' is logged in');
-    }, (err) => {
-      console.log('login failed', err);
+    ReactMaterialUiNotifications.showNotification({
+      title: 'Prepare to login!',
+      autoHide: 1000,
+      timestamp: moment().format('h:mm A'),
     });
-
-    // gapi.auth.authorize(options, () => console.log('login is done'));
-    // gapi.auth2.getAuthInstance().signIn({ prompt: 'select_account' });
-    // ReactMaterialUiNotifications.showNotification({
-    //   title: 'Prepare to login!',
-    //   autoHide: 1000,
-    //   timestamp: moment().format('h:mm A'),
-    // });
-    // this.props.dispatch(checkAuth())
-    //   .then(token => {
-    //     console.log('token', token);
-    //     return createUser(`${this.props.apiUrl}/users/google`, {
-    //       email: token.info.email,
-    //       firstName: token.info.family_name,
-    //       lastName: token.info.given_name,
-    //       avatar: token.info.picture,
-    //       gender: token.info.gender,
-    //       google_user_id: token.info.sub,
-    //     });
-    //   })
-    //   .then(user => console.log('user', user))
-    //   .catch(err => console.warn(err));
+    this.props.dispatch(checkAuth())
+      .then(token => {
+        console.log('token', token);
+        return createUser(`${this.props.apiUrl}/users/google`, {
+          email: token.info.email,
+          firstName: token.info.family_name,
+          lastName: token.info.given_name,
+          avatar: token.info.picture,
+          gender: token.info.gender,
+          google_user_id: token.info.sub,
+        });
+      })
+      .then(user => console.log('user', user))
+      .catch(err => console.warn(err));
   }
 
   onLogout() {

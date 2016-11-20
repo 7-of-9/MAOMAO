@@ -5,7 +5,9 @@ import { composeWithDevTools } from 'remote-redux-devtools';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
+import Config from './config';
 
+const config = new Config();
 const middleware = [
   alias(aliases),
   thunkMiddleware,
@@ -38,3 +40,24 @@ function onClickHandler(info) {
 }
 
 chrome.contextMenus.onClicked.addListener(onClickHandler);
+
+// firebase auth
+
+// init firebase
+firebase.initializeApp({
+  apiKey: config.firebaseKey,
+  databaseURL: config.firebaseDB,
+  storageBucket: config.firebaseStore,
+});
+
+function initFirebaseApp() {
+  console.log('initFirebaseApp');
+  // Listen for auth state changes.
+  firebase.auth().onAuthStateChanged((user) => {
+    console.log('firebase => User state change detected from the Background script of the Chrome Extension:', user);
+  });
+}
+
+window.onload = () => {
+  initFirebaseApp();
+};

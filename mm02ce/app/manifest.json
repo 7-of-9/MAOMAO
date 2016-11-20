@@ -1,6 +1,6 @@
 {
   "name": "mm02ce",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Hope++!",
   "background": {
     "page": "bg.html"
@@ -9,7 +9,7 @@
   "icons": {
     "128": "img/ps_sirius_dog_blue.png"
   },
-  "content_security_policy": "script-src https://*.google.com 'self' 'unsafe-eval'; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
   "permissions": [
     "contextMenus",
     "activeTab",

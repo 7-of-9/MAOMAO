@@ -7,17 +7,25 @@ function checkAuth() {
       chrome.identity.getAuthToken({ interactive: true }, (token) => {
         if (chrome.runtime.lastError) {
           return reject(chrome.runtime.lastError);
-        }
-        return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
-          .then((response) => resolve({ token, info: response.data }))
-          .catch((error) => {
-            if (error.response.status === 401 && retry) {
-              retry = false;
-              chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
-              return;
-            }
-            reject(error);
+        } else if (token) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
+          firebase.auth().signInWithCredential(credential).catch((error) => {
+            // The OAuth token might have been invalidated. Lets' remove it from cache.
+            console.warn('firebase => error', error);
           });
+
+          return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
+            .then((response) => resolve({ token, info: response.data }))
+            .catch((error) => {
+              if (error.response.status === 401 && retry) {
+                retry = false;
+                chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
+                return;
+              }
+              reject(error);
+            });
+        }
+        return reject(new Error('The OAuth Token was null'));
       });
     }
     getTokenAndXhr();
@@ -31,6 +39,11 @@ function logout(token) {
     axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${token}`)
       .then((response) => console.log('revoke', response))
       .catch((error) => console.log('revoke error', error));
+    // logout firebase
+    if (firebase.auth().currentUser) {
+      console.log('firebase logout');
+      firebase.auth().signOut();
+    }
 
     chrome.identity.removeCachedAuthToken({ token }, () => {
       if (chrome.runtime.lastError) {
