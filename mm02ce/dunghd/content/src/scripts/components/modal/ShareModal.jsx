@@ -55,6 +55,7 @@ class ShareModal extends Component {
     this.fullName = this.props.auth.info.name;
     this.recipients = [];
     this.selectRecipient = this.selectRecipient.bind(this);
+    this.changeSubject = this.changeSubject.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.loadPage = this.loadPage.bind(this);
@@ -100,11 +101,21 @@ class ShareModal extends Component {
   /**
    * send invitation to google contact by email
    */
+  changeSubject(subject) {
+    this.title = subject;
+  }
+
+  /**
+   * send invitation to google contact by email
+   */
   sendInvitation() {
     console.log('sendInvitation', this.recipients);
     if (this.recipients.length) {
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
-      const title = 'Welcome to mamao extension!';
+      // set default subject
+      if (this.title === '') {
+        this.title = 'Welcome to mamao extension!';
+      }
       const emailTemplate = `
       <!doctype html>
       <html>
@@ -288,7 +299,7 @@ class ShareModal extends Component {
         `From: ${this.fromEmail}
         \nTo: ${this.recipients.join(',')}
         \nContent-Type: text/html; charset=utf-8
-        \nSubject: ${title}
+        \nSubject: ${this.title}
         \n\n ${emailTemplate}`,
         (err) => {
           if (err) {
@@ -350,6 +361,7 @@ class ShareModal extends Component {
         <div className="maomao-logo" />
         <GoogleContact
           selectRecipient={this.selectRecipient}
+          changeSubject={this.changeSubject}
           contacts={this.state.contacts}
           />
       </Dialog>

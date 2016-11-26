@@ -17,12 +17,13 @@ const customStyles = {
   },
 };
 
-const GoogleContact = ({ contacts, selectRecipient }) => (
+const GoogleContact = ({ contacts, selectRecipient, changeSubject }) => (
   <div style={customStyles.content}>
     <h3 style={customStyles.title}> Please select your friends to send invitation!</h3>
     <GoogleContactPresenter
       contacts={contacts}
       selectRecipient={selectRecipient}
+      changeSubject={changeSubject}
       />
   </div>
 );
@@ -30,6 +31,7 @@ const GoogleContact = ({ contacts, selectRecipient }) => (
 GoogleContact.propTypes = {
   contacts: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
+  changeSubject: PropTypes.func.isRequired,
 };
 
 GoogleContact.defaultProps = {

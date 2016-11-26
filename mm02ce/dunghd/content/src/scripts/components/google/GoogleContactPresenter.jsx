@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ChipInput from 'material-ui-chip-input';
 import AutoComplete from 'material-ui/AutoComplete';
+import TextField from 'material-ui/TextField';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 
@@ -19,6 +20,11 @@ class GoogleContactPresenter extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
+    this.changeSubject = this.changeSubject.bind(this);
+  }
+
+  changeSubject(event) {
+    this.props.changeSubject(event.target.value);
   }
 
   handleChange(emails) {
@@ -29,6 +35,12 @@ class GoogleContactPresenter extends Component {
   render() {
     return (
       <div style={styles.wrapper}>
+        <TextField
+          hintText={'Welcome to MaoMao Extension'}
+          floatingLabelText={'Subject'}
+          fullWidth
+          onChange={this.changeSubject}
+          />
         <ChipInput
           fullWidth
           fullWidthInput
@@ -60,6 +72,7 @@ class GoogleContactPresenter extends Component {
 GoogleContactPresenter.propTypes = {
   contacts: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
+  changeSubject: PropTypes.func.isRequired,
 };
 
 export default GoogleContactPresenter;
