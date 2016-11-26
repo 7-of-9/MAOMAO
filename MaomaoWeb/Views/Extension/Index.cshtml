@@ -2,17 +2,9 @@
 <script>
         $(function() {
           function hasInstalledExtension() {
-            return document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
-          }
-          var hasInstalled = false;
-          setTimeout(function(){ hasInstalled = hasInstalledExtension(); }, 1000);
-
-          function onInstallSucess() {
-            hasInstalled = true;
-          }
-
-          function onFail(err) {
-            alert(err);
+            var isInstalled = document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
+            console.log('hasInstalledExtension',isInstalled);
+            return isInstalled;
           }
 
           // single page app
@@ -20,11 +12,11 @@
             el: '#app',
             data: {
               email: '',
-              hasInstalled: hasInstalled,
+              hasInstalled: hasInstalledExtension(),
             },
             watch: {
               hasInstalled: function(val) {
-                console.log('change hasInstalled', hasInstalled);
+                console.log('change hasInstalled', val);
                 this.hasInstalled = val;
               }
             },
@@ -38,6 +30,18 @@
               }
             }
           });
+
+          function onInstallSucess() {
+            mainApp.hasInstalled = true;
+            document.getElementById('installBtn').style.display= 'none';
+          }
+
+          function onFail(err) {
+            alert(err);
+          }
+
+          setTimeout(function(){ mainApp.hasInstalled = hasInstalledExtension(); }, 500);
+
         });
     </script> }
 
