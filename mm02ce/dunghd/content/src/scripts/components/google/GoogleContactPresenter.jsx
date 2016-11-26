@@ -30,6 +30,8 @@ class GoogleContactPresenter extends Component {
     return (
       <div style={styles.wrapper}>
         <ChipInput
+          fullWidth
+          fullWidthInput
           anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
           targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           dataSource={this.props.contacts}
@@ -42,13 +44,12 @@ class GoogleContactPresenter extends Component {
               onRequestDelete={handleRequestDelete}
               >
               <Avatar size={32}>{value[0].toUpperCase()}</Avatar>
-              {text}({value})
-          </Chip>
+              {text}
+            </Chip>
           )}
           onChange={this.handleChange}
           filter={AutoComplete.fuzzyFilter}
           maxSearchResults={5}
-          fullWidth
           openOnFocus
           />
       </div>

@@ -72,7 +72,13 @@ class ShareModal extends Component {
     const limit = 5000;
     fetchContacts(this.props.auth.accessToken, { limit, page })
       .then(result => {
-        const contacts = result.data || [];
+        const contacts = result.data.map((item) => {
+          const object = {
+            name: `${item.name} (${item.email})`,
+            email: item.email,
+          };
+          return object;
+        }) || [];
         this.setState({
           contacts,
           page: Number(result.page),
