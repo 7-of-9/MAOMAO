@@ -81,13 +81,14 @@ class WelcomeModal extends Component {
       <ToggleDisplay hide={this.props.isShareOpen || this.state.hidden}>
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
+            <div className="maomao-logo" />
             <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
             <ToggleDisplay hide={this.props.auth.isLogin}>
               <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
-              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.name} ({this.props.auth.info.email})</p>
+              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.name}({this.props.auth.info.email})</p>
               <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
               <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />

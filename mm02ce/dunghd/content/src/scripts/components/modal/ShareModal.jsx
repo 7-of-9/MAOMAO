@@ -168,6 +168,7 @@ class ShareModal extends Component {
         onRequestClose={this.onCloseModal}
         autoScrollBodyContent
         >
+        <div className="maomao-logo" />
         <GoogleContact
           selectRecipient={this.selectRecipient}
           contacts={this.state.contacts}
