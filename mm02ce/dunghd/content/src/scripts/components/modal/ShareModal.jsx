@@ -126,7 +126,7 @@ class ShareModal extends Component {
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       // set default subject
       if (this.title === '') {
-        this.title = 'Welcome to mamao extension!';
+        this.title = `${this.fullName} would like to share the MaoMao stream with you!`;
       }
       const emailTemplate = `
       <!doctype html>
@@ -355,13 +355,13 @@ class ShareModal extends Component {
       <FlatButton
         label="Send"
         primary
-        keyboardFocused
         onTouchTap={this.sendInvitation}
         />,
     ];
 
     return (
       <Dialog
+        modal
         title={`Invite your friends - ${this.fromEmail}!`}
         actions={actions}
         titleStyle={customStyles.title}
@@ -374,6 +374,8 @@ class ShareModal extends Component {
           maomao
             </h1>
         <GoogleContact
+          from={this.fromEmail}
+          subject={`${this.fullName} would like to share the MaoMao stream with you...`}
           selectRecipient={this.selectRecipient}
           changeSubject={this.changeSubject}
           contacts={this.state.contacts}

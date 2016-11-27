@@ -23,6 +23,11 @@ class GoogleContactPresenter extends Component {
     this.changeSubject = this.changeSubject.bind(this);
   }
 
+  componentDidMount() {
+    console.log('componentDidMount', this.chipInput);
+    this.chipInput.focus();
+  }
+
   changeSubject(event) {
     this.props.changeSubject(event.target.value);
   }
@@ -36,16 +41,21 @@ class GoogleContactPresenter extends Component {
     return (
       <div style={styles.wrapper}>
         <TextField
-          hintText={'Welcome to MaoMao Extension'}
-          floatingLabelText={'Subject'}
+          defaultValue={this.props.from}
+          floatingLabelText="From: "
+          disabled
+          />
+        <TextField
+          defaultValue={this.props.subject}
+          floatingLabelText="Subject"
           fullWidth
           onChange={this.changeSubject}
           />
         <ChipInput
+          ref={(input) => { this.chipInput = input; }}
           fullWidth
           fullWidthInput
-          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-          targetOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          autoFocus
           dataSource={this.props.contacts}
           dataSourceConfig={{ text: 'name', value: 'email' }}
           chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
@@ -59,10 +69,10 @@ class GoogleContactPresenter extends Component {
               {text}
             </Chip>
           )}
+          hintText="To: "
           onChange={this.handleChange}
-          filter={AutoComplete.fuzzyFilter}
+          filter={AutoComplete.caseInsensitiveFilter}
           maxSearchResults={5}
-          openOnFocus
           />
       </div>
     );
@@ -70,6 +80,8 @@ class GoogleContactPresenter extends Component {
 }
 
 GoogleContactPresenter.propTypes = {
+  from: PropTypes.string.isRequired,
+  subject: PropTypes.string.isRequired,
   contacts: PropTypes.array.isRequired,
   selectRecipient: PropTypes.func.isRequired,
   changeSubject: PropTypes.func.isRequired,
