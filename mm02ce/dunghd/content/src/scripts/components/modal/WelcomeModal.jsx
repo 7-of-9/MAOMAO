@@ -3,6 +3,7 @@ import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
 import Radium from 'radium';
 import Paper from 'material-ui/Paper';
+import { Card, CardActions, CardHeader, CardTitle } from 'material-ui/Card';
 
 const customStyles = {
   title: {
@@ -11,10 +12,12 @@ const customStyles = {
     margin: '20px 0px',
     color: '#000',
   },
-  welcome: {
-    display: 'block',
-    fontSize: '14px',
-    margin: '15px 0px',
+  card: {
+    backgroundColor: 'none',
+    boxShadow: 'none',
+  },
+  cardAction: {
+    padding: 'none',
   },
   overlay: {
     zIndex: 9999,
@@ -82,16 +85,26 @@ class WelcomeModal extends Component {
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
             <div className="maomao-logo" />
-            <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
             <ToggleDisplay hide={this.props.auth.isLogin}>
+              <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
               <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
               <RaisedButton onTouchTap={this.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
-              <p style={customStyles.welcome}>Welcome back {this.props.auth.info.name}({this.props.auth.info.email})</p>
-              <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
-              <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
-              <RaisedButton onTouchTap={this.onClose} label="Close" />
+              <Card style={customStyles.card}>
+                <CardHeader
+                  style={customStyles.cardAction}
+                  title={this.props.auth.info.name}
+                  subtitle={this.props.auth.info.email}
+                  avatar={this.props.auth.info.picture}
+                  />
+                <CardTitle title="Welcome back" subtitle="Maomao Extension" />
+                <CardActions style={customStyles.cardAction}>
+                  <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
+                  <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
+                  <RaisedButton onTouchTap={this.onClose} label="Close" />
+                </CardActions>
+              </Card>
             </ToggleDisplay>
           </Paper>
         </div>
