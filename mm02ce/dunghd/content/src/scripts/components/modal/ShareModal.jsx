@@ -125,7 +125,7 @@ class ShareModal extends Component {
     if (this.recipients.length) {
       const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
       // set default subject
-      if (this.title === '') {
+      if (!this.title) {
         this.title = `${this.fullName} would like to share the MaoMao stream with you!`;
       }
       const emailTemplate = `

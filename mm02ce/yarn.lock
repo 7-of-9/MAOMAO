@@ -3494,9 +3494,9 @@ macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
 
-mailgun@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/mailgun/-/mailgun-0.5.0.tgz#bce0f3134a6d788b6f2368f71784ef20277cd697"
+mailgun@shz/node-mailgun:
+  version "0.5.1"
+  resolved "https://codeload.github.com/shz/node-mailgun/tar.gz/97618fff6b1c11ce853f0c446c9cddb56c98b7ad"
 
 map-cache@^0.2.0:
   version "0.2.2"
