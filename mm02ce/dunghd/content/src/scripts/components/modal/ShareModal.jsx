@@ -7,6 +7,7 @@ import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import Message from 'material-ui/svg-icons/communication/message';
 import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
 import moment from 'moment';
+import $ from 'jquery';
 
 import GoogleContact from '../google';
 import fetchContacts from '../utils/GoogleContactAPI';
@@ -38,6 +39,12 @@ const customStyles = {
     fontWeight: '400',
     borderBottom: '1px solid rgb(224, 224, 224)',
   },
+  animateText: {
+    color: '#fff',
+    fontFamily: 'Rokkitt',
+    fontSize: '75px',
+    textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
+  },
   content: {
     transform: 'none',
   },
@@ -63,6 +70,11 @@ class ShareModal extends Component {
 
   componentDidMount() {
     this.loadPage(this.state.page);
+    $('.tlt').textillate();
+  }
+
+  componentDidUpdate() {
+    $('.tlt').textillate();
   }
 
   onCloseModal() {
@@ -358,7 +370,9 @@ class ShareModal extends Component {
         onRequestClose={this.onCloseModal}
         autoScrollBodyContent
         >
-        <div className="maomao-logo" />
+        <h1 className="tlt glow" style={customStyles.animateText}>
+          maomao
+            </h1>
         <GoogleContact
           selectRecipient={this.selectRecipient}
           changeSubject={this.changeSubject}

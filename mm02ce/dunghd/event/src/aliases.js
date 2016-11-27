@@ -55,7 +55,7 @@ function checkAuth(dispatch) {
 function logout(token, auth0, dispatch) {
   const promise = new Promise((resolve, reject) => {
     // logout auth0
-    axios.get(`https://${config.auth0Url}/v2/logout?federated&access_token=${auth0.access_token}`)
+    axios.get(`https://${config.auth0Url}/v2/logout?federated&client_id=${config.auth0Key}&access_token=${auth0.access_token}`)
       .then((response) => {
         dispatch(actionCreator('AUTH0_LOGOUT_FULFILLED', response));
       })

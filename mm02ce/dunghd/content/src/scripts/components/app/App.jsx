@@ -3,11 +3,16 @@ import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import moment from 'moment';
+import $ from 'jquery';
+window.jQuery = $;
 
 import { WelcomeModal, ShareModal } from '../modal';
 import createUser from '../utils/UserApi';
 
+require('../../stylesheets/animate.min.css');
 require('../../stylesheets/main.scss');
+require('../../vendors/jquery.lettering.js');
+require('../../vendors/jquery.textillate.js');
 
 const propTypes = {
   auth: PropTypes.object,

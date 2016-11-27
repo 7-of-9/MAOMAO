@@ -1,6 +1,7 @@
 ﻿import React, { Component, PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
+import $ from 'jquery';
 import Radium from 'radium';
 import Paper from 'material-ui/Paper';
 import { Card, CardActions, CardHeader, CardTitle } from 'material-ui/Card';
@@ -11,6 +12,12 @@ const customStyles = {
     fontSize: '20px',
     margin: '20px 0px',
     color: '#000',
+  },
+  animateText: {
+    color: '#fff',
+    fontFamily: 'Rokkitt',
+    fontSize: '75px',
+    textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
   },
   card: {
     backgroundColor: 'none',
@@ -73,6 +80,14 @@ class WelcomeModal extends Component {
     this.onClose = this.onClose.bind(this);
   }
 
+  componentDidMount() {
+    $('.tlt').textillate();
+  }
+
+  componentDidUpdate() {
+    $('.tlt').textillate();
+  }
+
   onClose() {
     this.setState({
       hidden: true,
@@ -84,7 +99,9 @@ class WelcomeModal extends Component {
       <ToggleDisplay hide={this.props.isShareOpen || this.state.hidden}>
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
-            <div className="maomao-logo" />
+            <h1 className="tlt glow" style={customStyles.animateText}>
+              maomao
+             </h1>
             <ToggleDisplay hide={this.props.auth.isLogin}>
               <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
               <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
@@ -98,7 +115,7 @@ class WelcomeModal extends Component {
                   subtitle={this.props.auth.info.email}
                   avatar={this.props.auth.info.picture}
                   />
-                <CardTitle title="Welcome back" subtitle="Maomao Extension" />
+                <CardTitle title="Welcome back!" />
                 <CardActions style={customStyles.cardAction}>
                   <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
                   <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
