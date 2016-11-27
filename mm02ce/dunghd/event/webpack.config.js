@@ -11,6 +11,8 @@ module.exports = {
     path: path.join(__dirname, '../../app/', 'build'),
   },
 
+  devtool: 'source-map',
+
   resolve: {
     extensions: ['', '.js', '.json'],
     modulesDirectories: ['node_modules'],

@@ -1,6 +1,6 @@
 {
   "name": "mm02ce",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "Hope++!",
   "background": {
     "page": "bg.html"
@@ -9,7 +9,7 @@
   "icons": {
     "128": "img/ps_sirius_dog_blue.png"
   },
-  "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
   "permissions": [
     "contextMenus",
     "activeTab",
@@ -23,6 +23,7 @@
     "https://www.googleapis.com/",
     "https://accounts.google.com/",
     "*://apis.google.com/*",
+    "https://dunghd.auth0.com/*",
     "http://*/*",
     "https://*/*"
   ],

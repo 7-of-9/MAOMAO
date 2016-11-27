@@ -6,6 +6,8 @@ const initialState = {
   accessToken: '',
   isPending: false,
   info: {},
+  auth0: {},
+  auth0social: {},
 };
 
 function ctxMenuLogin(userInfo) {
@@ -31,6 +33,14 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'AUTH_PENDING':
       return Object.assign({}, state, { isPending: true });
+    case 'AUTH0_FULFILLED':
+      return Object.assign({}, state, {
+        auth0: action.payload,
+      });
+    case 'AUTH0_SOCIAL_FULFILLED':
+      return Object.assign({}, state, {
+        auth0social: action.payload,
+      });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info);
       return Object.assign({}, state, {
@@ -48,6 +58,9 @@ export default (state = initialState, action) => {
         isPending: false,
         isLogin: false,
       });
+    case 'AUTH0_LOGOUT_FULFILLED':
+    case 'AUTH0_LOGOUT_REJECTED':
+      return Object.assign({}, state, { auth0: {}, auth0social: {} });
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();
       return Object.assign({}, state, {

@@ -1,12 +1,13 @@
 {
   "presets": [
-    "es2015",
-    "stage-1",
+    "es2015-sans-regenerator",
+    "stage-0",
     "react"
   ],
   "plugins": [
     "transform-react-jsx-source",
-    "transform-inline-environment-variables"
+    "transform-inline-environment-variables",
+    "transform-decorators-legacy"
   ],
   "env": {
     "development": {
