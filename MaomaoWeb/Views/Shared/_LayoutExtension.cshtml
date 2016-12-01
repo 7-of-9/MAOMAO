@@ -14,13 +14,16 @@
   </environment>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Rokkitt' rel='stylesheet' type='text/css'>
   <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk">
 </head>
 
 <body>
   <header>
-    <h2>
-      <a asp-area="" asp-controller="Extension" asp-action="Index"><img src="~/images/logo.png" />Maomao Extension</a></h2>
+    <h2 style="font-family:'Rokkitt'; font-size:150px; color:'#999'; textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)';">
+      <img src="~/images/logo.png" />
+      <a asp-area="" asp-controller="Extension" asp-action="Index" class="tlt">maomao</a>
+    </h2>
     <nav>
       <li><a asp-area="" asp-controller="Extension" asp-action="Index">Home</a></li>
       <li><a asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
@@ -52,7 +55,14 @@
     <script src="https://cdn.jsdelivr.net/vue.resource/1.0.3/vue-resource.min.js" asp-fallback-src="~/lib/vue-resource/dist/vue-resource.min.js">
         </script>
     <script src="~/js/site.min.js" asp-append-version="true"></script>
+    <script src="~/lib/letteringjs/jquery.lettering.js" asp-append-version="true"></script>
+    <script src="~/lib/textillate/jquery.textillate.js" asp-append-version="true"></script>
   </environment>
+  <script>
+    $(function () {
+        $('.tlt').textillate();
+    });
+  </script>
   @RenderSection("scripts", required: false)
 </body>
 
