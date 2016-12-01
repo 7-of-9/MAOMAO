@@ -3,7 +3,6 @@ import Mailgun from 'mailgun';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { deepOrange500 } from 'material-ui/styles/colors';
-import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import Message from 'material-ui/svg-icons/communication/message';
 import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
 import moment from 'moment';
@@ -18,6 +17,7 @@ const propTypes = {
   mailgunKey: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   onCloseModal: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
 };
 
 const defaultProps = {
@@ -40,7 +40,7 @@ const customStyles = {
     borderBottom: '1px solid rgb(224, 224, 224)',
   },
   animateText: {
-    color: '#fff',
+    color: '#999',
     fontFamily: 'Rokkitt',
     fontSize: '75px',
     textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
@@ -58,6 +58,7 @@ class ShareModal extends Component {
       page: 1,
       totalPages: 0,
     };
+    this.mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
     this.fromEmail = this.props.auth.info.email;
     this.fullName = this.props.auth.info.name;
     this.recipients = [];
@@ -66,15 +67,12 @@ class ShareModal extends Component {
     this.sendInvitation = this.sendInvitation.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.loadPage = this.loadPage.bind(this);
+    this.sendEmail = this.sendEmail.bind(this);
   }
 
   componentDidMount() {
     this.loadPage(this.state.page);
-    $('.tlt').textillate();
-  }
-
-  componentDidUpdate() {
-    $('.tlt').textillate();
+    $('.tlt').fitText(0.5).textillate();
   }
 
   onCloseModal() {
@@ -87,7 +85,8 @@ class ShareModal extends Component {
       .then(result => {
         const contacts = result.data.map((item) => {
           const object = {
-            name: `${item.name} (${item.email})`,
+            text: `${item.name} (${item.email})`,
+            name: item.name,
             email: item.email,
           };
           return object;
@@ -117,24 +116,16 @@ class ShareModal extends Component {
     this.title = subject;
   }
 
-  /**
-   * send invitation to google contact by email
-   */
-  sendInvitation() {
-    console.log('sendInvitation', this.recipients);
-    if (this.recipients.length) {
-      const mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
-      // set default subject
-      if (!this.title) {
-        this.title = `${this.fullName} would like to share the MaoMao stream with you!`;
-      }
-      const emailTemplate = `
+
+  sendEmail(name, email) {
+    const emailTemplate = `
       <!doctype html>
       <html>
         <head>
           <meta name="viewport" content="width=device-width">
           <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
           <title>MaoMao Extension</title>
+          <link href='https://fonts.googleapis.com/css?family=Rokkitt' rel='stylesheet' type='text/css'>
           <style media="all" type="text/css">
           @media all {
             .btn-primary table td:hover {
@@ -256,11 +247,12 @@ class ShareModal extends Component {
                     <tr>
                       <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
                         <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
+                          <tr><td style="font-family: 'Rokkitt', sans-serif; vertical-align: top;" valign="top"><h1> Maomao </h1></td></tr>
                           <tr><td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top"> <img src="https://maomaoweb.azurewebsites.net/images/logo.png" /> </td></tr>
                           <tr>
                             <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
-                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hi there,</p>
-                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.fullName} has invited to you to install this awesome extension.</p>
+                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hi ${name},</p>
+                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.fullName} would like to live-share the MaoMao stream with you.</p>
                               <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;" width="100%">
                                 <tbody>
                                   <tr>
@@ -268,7 +260,7 @@ class ShareModal extends Component {
                                       <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
                                         <tbody>
                                           <tr>
-                                            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;" valign="top" bgcolor="#3498db" align="center"> <a href="${this.props.siteUrl}?from=${encodeURI(this.fullName)}&email=${encodeURI(this.fromEmail)}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">MaoMao Extension</a> </td>
+                                            <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;" valign="top" bgcolor="#3498db" align="center"> <a href="${this.props.siteUrl}?from=${encodeURI(this.fullName)}&email=${encodeURI(this.fromEmail)}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Get ${this.fullName}'s MaoMao stream...</a> </td>
                                           </tr>
                                         </tbody>
                                       </table>
@@ -276,7 +268,7 @@ class ShareModal extends Component {
                                   </tr>
                                 </tbody>
                               </table>
-                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Good luck! Hope it works.</p>
+                              <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Check it out! ${this.fullName} shares this stream just with you. It's free and super easy.</p>
                             </td>
                           </tr>
                         </table>
@@ -306,42 +298,57 @@ class ShareModal extends Component {
           </table>
         </body>
       </html>`;
-      mailgun.sendRaw(this.fromEmail,
-        this.recipients,
-        `From: ${this.fromEmail}
-        \nTo: ${this.recipients.join(',')}
+    this.mailgun.sendRaw(this.fromEmail,
+      email,
+      `From: ${this.fromEmail}
+        \nTo: ${email}
         \nContent-Type: text/html; charset=utf-8
         \nSubject: ${this.title}
         \n\n ${emailTemplate}`,
-        (err) => {
-          if (err) {
-            ReactMaterialUiNotifications.showNotification({
-              title: 'Error!',
-              icon: <ErrorOutline />,
-              iconBadgeColor: deepOrange500,
-              additionalText: err.message,
-              overflowText: this.fromEmail,
-              avatar: this.props.auth.info.picture,
-              personalised: true,
-              autoHide: 2000,
-              timestamp: moment().format('h:mm A'),
-            });
-          } else {
-            ReactMaterialUiNotifications.showNotification({
-              title: 'Sending invitation!',
-              icon: <Message />,
-              iconBadgeColor: deepOrange500,
-              additionalText: `Email has been sent to ${this.recipients.join(',')}`,
-              overflowText: this.fromEmail,
-              avatar: this.props.auth.info.picture,
-              personalised: true,
-              autoHide: 2000,
-              timestamp: moment().format('h:mm A'),
-            });
-          }
-          this.recipients = [];
-          this.props.onCloseModal();
-        });
+      (err) => {
+        if (err) {
+          this.props.notify({
+            title: 'Sending error to ${email}',
+            icon: <ErrorOutline />,
+            iconBadgeColor: deepOrange500,
+            additionalText: err.message,
+            overflowText: this.fromEmail,
+            avatar: this.props.auth.info.picture,
+            personalised: true,
+            autoHide: 2500,
+            timestamp: moment().format('h:mm A'),
+          });
+        } else {
+          this.props.notify({
+            title: 'Sending invitation!',
+            icon: <Message />,
+            iconBadgeColor: deepOrange500,
+            additionalText: `Email has been sent to ${email}`,
+            overflowText: this.fromEmail,
+            avatar: this.props.auth.info.picture,
+            personalised: true,
+            autoHide: 2500,
+            timestamp: moment().format('h:mm A'),
+          });
+        }
+      });
+  }
+
+  /**
+   * send invitation to google contact by email
+   */
+  sendInvitation() {
+    console.log('sendInvitation', this.recipients);
+    if (this.recipients.length) {
+      // set default subject
+      if (!this.title) {
+        this.title = `${this.fullName} would like to share the MaoMao stream with you!`;
+      }
+      this.recipients.forEach(item => {
+        this.sendEmail(item.name, item.email);
+      });
+      this.recipients = [];
+      this.props.onCloseModal();
     }
   }
 
@@ -370,7 +377,8 @@ class ShareModal extends Component {
         onRequestClose={this.onCloseModal}
         autoScrollBodyContent
         >
-        <h1 className="tlt glow" style={customStyles.animateText}>
+        <div className="maomao-logo" />
+        <h1 className="tlt glow in" style={customStyles.animateText}>
           maomao
             </h1>
         <GoogleContact

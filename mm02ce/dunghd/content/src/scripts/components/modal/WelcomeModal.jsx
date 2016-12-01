@@ -14,7 +14,7 @@ const customStyles = {
     color: '#000',
   },
   animateText: {
-    color: '#fff',
+    color: '#999',
     fontFamily: 'Rokkitt',
     fontSize: '75px',
     textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
@@ -81,11 +81,7 @@ class WelcomeModal extends Component {
   }
 
   componentDidMount() {
-    $('.tlt').textillate();
-  }
-
-  componentDidUpdate() {
-    $('.tlt').textillate();
+    $('.tlt').fitText(0.5).textillate();
   }
 
   onClose() {
@@ -99,7 +95,8 @@ class WelcomeModal extends Component {
       <ToggleDisplay hide={this.props.isShareOpen || this.state.hidden}>
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
-            <h1 className="tlt glow" style={customStyles.animateText}>
+            <div className="maomao-logo" />
+            <h1 className="tlt glow in" style={customStyles.animateText}>
               maomao
              </h1>
             <ToggleDisplay hide={this.props.auth.isLogin}>

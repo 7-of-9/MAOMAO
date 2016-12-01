@@ -11,6 +11,7 @@ import createUser from '../utils/UserApi';
 
 require('../../stylesheets/animate.min.css');
 require('../../stylesheets/main.scss');
+require('../../vendors/jquery.fittext.js');
 require('../../vendors/jquery.lettering.js');
 require('../../vendors/jquery.textillate.js');
 
@@ -53,6 +54,7 @@ class App extends Component {
     this.onLogout = this.onLogout.bind(this);
     this.openInvite = this.openInvite.bind(this);
     this.closeInvite = this.closeInvite.bind(this);
+    this.notify = this.notify.bind(this);
   }
 
   onLogin() {
@@ -83,6 +85,12 @@ class App extends Component {
     this.props.dispatch(logout())
       .then(token => console.log(token))
       .catch(err => console.warn(err));
+  }
+
+  notify(msg) {
+    console.log('notify msg', msg);
+    ReactMaterialUiNotifications.showNotification(msg);
+    this.forceUpdate();
   }
 
   closeInvite() {
@@ -124,6 +132,7 @@ class App extends Component {
             siteUrl={this.props.siteUrl}
             isOpen={this.state.openShare}
             onCloseModal={this.closeInvite}
+            notify={this.notify}
             />
         </ToggleDisplay>
       </div>

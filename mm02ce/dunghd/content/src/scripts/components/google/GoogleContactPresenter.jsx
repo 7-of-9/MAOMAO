@@ -24,7 +24,6 @@ class GoogleContactPresenter extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount', this.chipInput);
     this.chipInput.focus();
   }
 
@@ -34,7 +33,7 @@ class GoogleContactPresenter extends Component {
 
   handleChange(emails) {
     console.log('handleChange', emails);
-    this.props.selectRecipient(emails.map(item => item.email));
+    this.props.selectRecipient(emails);
   }
 
   render() {
@@ -57,7 +56,7 @@ class GoogleContactPresenter extends Component {
           fullWidthInput
           autoFocus
           dataSource={this.props.contacts}
-          dataSourceConfig={{ text: 'name', value: 'email' }}
+          dataSourceConfig={{ text: 'text', value: 'email' }}
           chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
             <Chip
               style={styles.chip}
