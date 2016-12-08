@@ -298,17 +298,19 @@ class ShareModal extends Component {
           </table>
         </body>
       </html>`;
-    this.mailgun.sendRaw(this.fromEmail,
+    const joinEmailAddress = 'join@maomao.rocks';
+    this.mailgun.sendRaw(joinEmailAddress,
       email,
-      `From: ${this.fromEmail}
+      `From: ${joinEmailAddress}
         \nTo: ${email}
         \nContent-Type: text/html; charset=utf-8
         \nSubject: ${this.title}
         \n\n ${emailTemplate}`,
       (err) => {
         if (err) {
+          console.warn(err);
           this.props.notify({
-            title: 'Sending error to ${email}',
+            title: `Sending error to ${email}`,
             icon: <ErrorOutline />,
             iconBadgeColor: deepOrange500,
             additionalText: err.message,
