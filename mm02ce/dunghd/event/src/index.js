@@ -23,16 +23,33 @@ wrapStore(store, {
 });
 
 // ctx menu handler
+chrome.contextMenus.removeAll();
+chrome.contextMenus.create({
+  title: 'Show UI',
+  contexts: ['browser_action'],
+  id: 'mm-btn-show',
+});
 
 function onClickHandler(info) {
   switch (info.menuItemId) {
-    case 'mm-btn-logout':
+    case 'mm-btn-logout': {
       console.log('trigger logout');
       const data = {
         type: 'AUTH_LOGOUT',
         payload: {},
       };
       store.dispatch(data);
+    }
+      break;
+    case 'mm-btn-show':
+      {
+        console.log('show login form');
+        const data = {
+          type: 'OPEN_MODAL',
+          payload: {},
+        };
+        store.dispatch(data);
+      }
       break;
     default:
       console.log('No processing for this ctx menu event');

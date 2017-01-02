@@ -4,19 +4,20 @@ import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import moment from 'moment';
 import $ from 'jquery';
-window.jQuery = $;
-
 import { WelcomeModal, ShareModal } from '../modal';
 import createUser from '../utils/UserApi';
 
+window.jQuery = $;
+
 require('../../stylesheets/animate.min.css');
 require('../../stylesheets/main.scss');
-require('../../vendors/jquery.fittext.js');
-require('../../vendors/jquery.lettering.js');
-require('../../vendors/jquery.textillate.js');
+require('../../vendors/jquery.fittext');
+require('../../vendors/jquery.lettering');
+require('../../vendors/jquery.textillate');
 
 const propTypes = {
   auth: PropTypes.object,
+  isOpen: PropTypes.bool.isRequired,
   siteUrl: PropTypes.string,
   mailgunKey: PropTypes.string,
   apiUrl: PropTypes.string,
@@ -48,8 +49,9 @@ class App extends Component {
     super(props);
     console.log('props', props);
     this.state = {
-      openShare: false,
+      openShare: false, // hide on loading, trigger show login by ctx
     };
+    this.onClose = this.onClose.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.openInvite = this.openInvite.bind(this);
@@ -78,6 +80,12 @@ class App extends Component {
       })
       .then(user => console.log('user', user))
       .catch(err => console.warn(err));
+  }
+
+  onClose() {
+    this.props.dispatch({
+      type: 'CLOSE_MODAL',
+    });
   }
 
   onLogout() {
@@ -121,9 +129,11 @@ class App extends Component {
         <WelcomeModal
           auth={this.props.auth}
           onLogin={this.onLogin}
+          onClose={this.onClose}
           onLogout={this.onLogout}
           openInvite={this.openInvite}
           isShareOpen={this.state.openShare}
+          isOpen={this.props.isOpen}
           />
         <ToggleDisplay if={this.props.auth.isLogin}>
           <ShareModal
@@ -146,6 +156,7 @@ const mapStateToProps = (state) => {
   console.log('state', state);
   return {
     auth: state.auth,
+    isOpen: state.modal,
   };
 };
 

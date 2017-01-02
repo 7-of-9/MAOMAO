@@ -58,8 +58,10 @@ const propTypes = {
   auth: PropTypes.object,
   onLogin: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   openInvite: PropTypes.func.isRequired,
   isShareOpen: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
 };
 
 const defaultProps = {
@@ -69,30 +71,22 @@ const defaultProps = {
     info: {},
   },
   isShareOpen: false,
+  isOpen: false,
 };
 
 class WelcomeModal extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      hidden: false,
-    };
-    this.onClose = this.onClose.bind(this);
+    console.log('WelcomeModal props', props);
   }
 
   componentDidMount() {
     $('.tlt').fitText(0.5).textillate();
   }
 
-  onClose() {
-    this.setState({
-      hidden: true,
-    });
-  }
-
   render() {
     return (
-      <ToggleDisplay hide={this.props.isShareOpen || this.state.hidden}>
+      <ToggleDisplay hide={this.props.isShareOpen || !this.props.isOpen}>
         <div style={customStyles.overlay}>
           <Paper style={customStyles.content} zDepth={3}>
             <div className="maomao-logo" />
@@ -102,7 +96,7 @@ class WelcomeModal extends Component {
             <ToggleDisplay hide={this.props.auth.isLogin}>
               <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
               <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
-              <RaisedButton onTouchTap={this.onClose} label="Close" />
+              <RaisedButton onTouchTap={this.props.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
               <Card style={customStyles.card}>
@@ -116,7 +110,7 @@ class WelcomeModal extends Component {
                 <CardActions style={customStyles.cardAction}>
                   <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
                   <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
-                  <RaisedButton onTouchTap={this.onClose} label="Close" />
+                  <RaisedButton onTouchTap={this.props.onClose} label="Close" />
                 </CardActions>
               </Card>
             </ToggleDisplay>

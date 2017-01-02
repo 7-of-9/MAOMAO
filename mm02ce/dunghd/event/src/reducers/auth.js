@@ -11,6 +11,11 @@ const initialState = {
 function ctxMenuLogin(userInfo) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
+    title: 'Show UI',
+    contexts: ['browser_action'],
+    id: 'mm-btn-show',
+  });
+  chrome.contextMenus.create({
     title: `Welcome back ${userInfo.name} (${userInfo.email})!`,
     contexts: ['browser_action'],
     id: 'mm-btn-welcome-back',
@@ -24,6 +29,11 @@ function ctxMenuLogin(userInfo) {
 
 function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
+  chrome.contextMenus.create({
+    title: 'Show UI',
+    contexts: ['browser_action'],
+    id: 'mm-btn-show',
+  });
 }
 
 
