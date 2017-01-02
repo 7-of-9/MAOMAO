@@ -69,6 +69,9 @@ class App extends Component {
     this.props.dispatch(checkAuth())
       .then(token => {
         console.log('token', token);
+        this.props.dispatch({
+          type: 'USER_AFTER_LOGIN',
+        });
         return createUser(`${this.props.apiUrl}/users/google`, {
           email: token.info.email,
           firstName: token.info.family_name,
@@ -91,7 +94,12 @@ class App extends Component {
   onLogout() {
     console.log('onLogout');
     this.props.dispatch(logout())
-      .then(token => console.log(token))
+      .then(token => {
+        console.log(token);
+        this.props.dispatch({
+          type: 'USER_AFTER_LOGOUT',
+        });
+      })
       .catch(err => console.warn(err));
   }
 

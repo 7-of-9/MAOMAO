@@ -4440,9 +4440,9 @@ react-addons-transition-group@^15.2.1:
   version "15.4.1"
   resolved "https://registry.yarnpkg.com/react-addons-transition-group/-/react-addons-transition-group-15.4.1.tgz#27d92717089c5e2db202e654a85b76a41b703acc"
 
-react-chrome-redux@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/react-chrome-redux/-/react-chrome-redux-0.0.8.tgz#55816a2258fbc7d1da8846bb6a93f526ae8c033d"
+react-chrome-redux@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-chrome-redux/-/react-chrome-redux-1.0.0.tgz#81e7eb69b6739ec02295be0d450b8277eb1720fd"
   dependencies:
     lodash "^4.5.1"
 
