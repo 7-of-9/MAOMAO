@@ -22,10 +22,10 @@ function update_tabmap(callback) {
     chrome.tabs.query({}, function (tabs) {
         for (var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
-            if (!_.any(tabmap, function (a) { return a.id == tab.id; }))    
+            if (!_.any(tabmap, function (a) { return a.id == tab.id; }))
                 tabmap.push(tab);
         }
-        console.info("TABMAP: " + tabmap.length + " tab(s) known.");
+        console.info('TABMAP: ' + tabmap.length + ' tab(s) known.');
         if (callback)
             callback();
     });
