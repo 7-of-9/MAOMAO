@@ -33,7 +33,9 @@ node_modules
 .node_repl_history
 
 build/
-
+bin
+scripts
+Properties
 .DS_Store
 
 # Visual Studio Code settings
