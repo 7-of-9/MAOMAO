@@ -4,3 +4,5 @@ obj/
 TestResults/
 .vs/
 WebEssentials2015-Settings.json
+.vs/config/applicationhost.config
+*.cache
