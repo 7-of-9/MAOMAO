@@ -1,0 +1,55 @@
+{
+    "name": "mm02ce",
+    "version": "0.3.5",
+    "description": "Hope++!",
+    "background": {
+        "page": "bg.html"
+    },
+    "options_page": "pages/options.html",
+    "icons": {
+        "128": "img/ps_sirius_dog_blue.png"
+    },
+    "content_security_policy": "script-src 'self' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+    "permissions": [
+        "contextMenus",
+        "activeTab",
+        "tabs",
+        "bookmarks",
+        "webNavigation",
+        "storage",
+        "unlimitedStorage",
+        "identity",
+        "https://ssl.gstatic.com/",
+        "https://www.googleapis.com/",
+        "https://accounts.google.com/",
+        "*://apis.google.com/*",
+        "https://dunghd.auth0.com/*",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "content_scripts": [{
+        "matches": [
+            "*://*/*"
+        ],
+        "css": [],
+        "js": [
+            "./build/content.js",
+            "./lib/scriptTagContext.js"
+        ]
+    }],
+    "browser_action": {
+        "default_title": "FS browser action",
+        "default_icon": "img/icon.png"
+    },
+    "oauth2": {
+        "client_id": "323116239222-rgs4qqmu234iafmtg1s5jmbhpkppbv8a.apps.googleusercontent.com",
+        "scopes": [
+            "https://www.googleapis.com/auth/plus.me",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.google.com/m8/feeds/",
+            "https://www.googleapis.com/auth/contacts.readonly"
+        ]
+    },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7MBci5r4CUpLE3189gBTW1XJOUkokt8n+p03zYOwcHZk1ZclHFP/CMRnBsA9aFfZETenOQ97pliun5pMiowrmJ9nxf/kT+IERorcoYqa6XMqtE0fSX8td4EebQAdgS2kbjFp6inbwsjdTx0Q3ziokbCuP24gOWP+rSixg6N4e2XLJ3QGVsxlBaVsQkQ5vP/7KpaAeoPkkTg7MWQoBGkSgYe1wYR8ISrjsRM67URTbloDDMfQ8w4CdEyJ+7R/4mXxzxK7i4ODj2QAlgcDj5qRPXJN/7KhgADLlJe8OvyRSMQHIV5bTQ7GZfj1Wj32v+qEDBNWLnZehJVb2Ee5VZr3JQIDAQAB",
+    "manifest_version": 2
+}
