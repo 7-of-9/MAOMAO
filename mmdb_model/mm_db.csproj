@@ -104,6 +104,9 @@
     <Compile Include="user.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="user_url.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="mmdb.edmx">

@@ -4,7 +4,9 @@
 
 *   Install [NodeJS](https://nodejs.org/en/) v4 or v6 would be fine
 *   Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) globally: `npm install --global gulp-cli`
-*   "npm install" > run this in .\MAOMAO\mm02ce
+*   Install [node-gyp](https://github.com/nodejs/node-gyp) globally: `npm install -g node-gyp`
+*   Run `npm install` command at directory .\MAOMAO\mm02ce
+*   Finally, run build `gulp build`
 
 ## DotNet Core CLI
 
@@ -18,3 +20,7 @@
 # UI package for chrome extension
 
 * [React Components that Implement Google's Material Design](http://www.material-ui.com)
+
+# Troubleshooting
+
+If you meet any [issues](https://github.com/webpack/css-loader/issues/240) with `node-sass`, please type `npm rebuild node-sass` at `mm02ce` directory before running build command `gulp build`
