@@ -34,5 +34,6 @@ namespace mmdb_model
         public virtual DbSet<term_matrix> term_matrix { get; set; }
         public virtual DbSet<term> terms { get; set; }
         public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<user_url> user_url { get; set; }
     }
 }

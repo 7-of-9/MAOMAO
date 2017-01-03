@@ -22,6 +22,9 @@
         <AssociationConnector Association="mm02Model.FK_term_term_type" />
         <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.625" PointY="0.5" />
+        <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.875" PointY="1.375" />
+        <AssociationConnector Association="mm02Model.fk_url" />
+        <AssociationConnector Association="mm02Model.fk_user" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

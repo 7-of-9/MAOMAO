@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web1", "web1\web1.csproj", "{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
@@ -58,10 +56,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A14FBEE-79BC-4845-9129-0F3527426A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2A14FBEE-79BC-4845-9129-0F3527426A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A14FBEE-79BC-4845-9129-0F3527426A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -107,7 +101,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{1AE8E20D-FC66-4C18-9C0C-DFC9468FCDF9} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
 		{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
 		{84595920-CF25-481D-A8FF-8D47BBF1BB9F} = {E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}
 		{2A14FBEE-79BC-4845-9129-0F3527426A4E} = {BB2DF415-8703-467C-BABB-763B99582B3F}
