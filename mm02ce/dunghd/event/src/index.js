@@ -25,9 +25,9 @@ wrapStore(store, {
 // ctx menu handler
 chrome.contextMenus.removeAll();
 chrome.contextMenus.create({
-  title: 'Show UI',
+  title: 'Login',
   contexts: ['browser_action'],
-  id: 'mm-btn-show',
+  id: 'mm-btn-login',
 });
 
 function onClickHandler(info) {
@@ -41,6 +41,7 @@ function onClickHandler(info) {
       store.dispatch(data);
     }
       break;
+    case 'mm-btn-login':
     case 'mm-btn-show':
       {
         console.log('show login form');
