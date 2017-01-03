@@ -7,7 +7,7 @@
 // handle authentication
 var isGuest = true;
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  console.trace();
+  console.trace('checking authentication');
   console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
   console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {

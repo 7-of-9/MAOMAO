@@ -6,6 +6,6 @@ const Config = () => (
     webClientId: process.env.WEB_CLIENT_ID,
     siteUrl: process.env.SITE_URL,
     mailgunKey: process.env.MAILGUN_KEY,
-  }
+  } 
 );
 export default Config;
