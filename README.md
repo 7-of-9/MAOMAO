@@ -1,15 +1,17 @@
 # Tools
 
 ## NodeJS
-
 *   Install [NodeJS](https://nodejs.org/en/) v4 or v6 would be fine
 *   Install [gulp-cli](https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md) globally: `npm install --global gulp-cli`
 *   Install [node-gyp](https://github.com/nodejs/node-gyp) globally: `npm install -g node-gyp`
 *   Run `npm install` command at directory .\MAOMAO\mm02ce
 *   Finally, run build `gulp build`
 
-## DotNet Core CLI
+## NPM Windows Madness
+*   Install special NPM upgrader for Windoze[nlp-win-pgrader](https://github.com/felixrieseberg/npm-windows-upgrade)
+*   Pray
 
+## DotNet Core CLI
 *  Install [DotNet Core CLI](https://www.microsoft.com/net/core#windows)
 
 # Architecture
