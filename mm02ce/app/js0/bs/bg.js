@@ -4,7 +4,7 @@
 //
 
 var isGuest = true;
-
+var userId = -1;
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
@@ -59,6 +59,7 @@ function setIconEnabledLive() {
 }
 
 function setIconTextNeutral() {
+  // TODO: Need to verify again for guest/user icon
   if (isGuest) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Guest', '#999999');
@@ -174,9 +175,11 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
 
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
     isGuest = false;
+    userId = parseInt(message.payload.payload.userId);
   }
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
     isGuest = true;
+    userId = -1;
     setIconTextNeutral();
   }
 

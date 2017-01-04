@@ -6,15 +6,19 @@
 
 // handle authentication
 var isGuest = true;
+var userId = -1;
+
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
   console.trace('checking authentication');
   console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
   console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
     isGuest = false;
+    userId = parseInt(message.payload.payload.userId);
   }
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
     isGuest = true;
+    userId = -1;
   }
 });
 
@@ -70,6 +74,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
   var session = null;
   // turn off for guest
   console.log('isGuest', isGuest);
+  console.log('userId', userId);
   if (isGuest) {
     return session;
   }

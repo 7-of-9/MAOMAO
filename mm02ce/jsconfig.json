@@ -8,6 +8,7 @@
 	},
 	"exclude": [
     "bin",
+    "unpacked",
 		"node_modules",
 		"bower_components",
 		"jspm_packages",

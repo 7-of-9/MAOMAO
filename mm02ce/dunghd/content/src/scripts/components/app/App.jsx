@@ -69,9 +69,6 @@ class App extends Component {
     this.props.dispatch(checkAuth())
       .then(token => {
         console.log('token', token);
-        this.props.dispatch({
-          type: 'USER_AFTER_LOGIN',
-        });
         return createUser(`${this.props.apiUrl}/users/google`, {
           email: token.info.email,
           firstName: token.info.family_name,
@@ -81,7 +78,19 @@ class App extends Component {
           google_user_id: token.info.sub,
         });
       })
-      .then(user => console.log('user', user))
+      .then(user => {
+        console.log('user', user);
+        let userId = -1;
+        if (user.data && user.data.id) {
+          userId = user.data.id;
+        }
+        this.props.dispatch({
+          type: 'USER_AFTER_LOGIN',
+          payload: {
+            userId,
+          },
+        });
+      })
       .catch(err => console.warn(err));
   }
 

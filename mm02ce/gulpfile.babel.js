@@ -1,4 +1,4 @@
-﻿/// <binding BeforeBuild='build' ProjectOpened='watch' />
+﻿/// <binding BeforeBuild='build' />
 require('dotenv').config();
 import gulp from 'gulp';
 import loadPlugins from 'gulp-load-plugins';
