@@ -16,9 +16,8 @@ var mm_last_save_at = 0;
 // get/load from chrome.storage.local
 //
 function mm_load() {
-    console.info("%c mm_load - NOP", mm_logstyle);
     mm = { all_sessions: [], last_save_at: 0 }; // don't get from local storage
-
+    console.info("%c mm_load - NOP", mm_logstyle, mm);
     /*chrome.storage.local.get(null, function (items) {
         mm = items;
         if (!mm.hasOwnProperty("all_sessions")) mm.all_sessions = [];
@@ -34,7 +33,7 @@ function mm_load() {
             set_meta_accessors(a.page_meta);
 
             // force re-inject full CS on new instances
-            a.injected_cs_timestamp = null; 
+            a.injected_cs_timestamp = null;
 
             // setup time on tab
             a.TOT_cur_start_at = 0;
@@ -104,7 +103,7 @@ function mm_load() {
 // add/update to chrome.storage.local
 //
 function mm_update(session, force) {
-    console.info("%c mm_update - NOP", mm_logstyle);
+    console.info("%c mm_update - NOP", mm_logstyle, session, force);
 
     /*if (session == null) {
         console.error("%c ### mm_update -- PASSED NULL SESSION!", mm_logstyle_err);
@@ -132,7 +131,7 @@ function mm_update(session, force) {
 // naive save all - no deltas, no syncing
 //
 function mm_save(force) {
-    console.info("%c mm_save - NOP", mm_logstyle);
+    console.info("%c mm_save - NOP", mm_logstyle, force);
 
     /*
     if (!mm_dirty) {
@@ -171,7 +170,7 @@ function mm_save(force) {
 
 function mm_dbg_cleanup() {
 
-    // (dbg cleanup) dedupe (sorted up to n-1, look next) 
+    // (dbg cleanup) dedupe (sorted up to n-1, look next)
     mm.all_sessions = _.sortBy(mm.all_sessions, function (a) { return a.url });
     for (var i = 0; i < mm.all_sessions.length - 1; i++) {
         if (mm.all_sessions[i].url == mm.all_sessions[i + 1].url) {
@@ -184,9 +183,9 @@ function mm_dbg_cleanup() {
 
     for (var i = 0; i < mm.all_sessions.length; i++) {
         var a = mm.all_sessions[i];
-        if (a.page_meta == null           
-         || !process_url(a.url)          
-         || typeof a.sid == "undefined"    
+        if (a.page_meta == null
+         || !process_url(a.url)
+         || typeof a.sid == "undefined"
          || typeof a.im_score == "undefined"
          || a.page_meta.image() == null
          || a.nlps == null || a.topic_specific == "?"
