@@ -60,7 +60,7 @@ function setIconEnabledLive() {
 
 function setIconTextNeutral() {
   if (isGuest) {
-    chrome.browserAction.setIcon({ path: 'img/smile_icon.png' });
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Guest', '#999999');
   }
 }
