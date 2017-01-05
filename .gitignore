@@ -8,6 +8,6 @@ WebEssentials2015-Settings.json
 .vs/config/applicationhost.config
 *.cache
 *.DS_Store
-*.suo
 mm02ce/bin/maomao.zip
 mm02ce/mm02ce.csproj.user
+.vs/maomao/v14/.suo
