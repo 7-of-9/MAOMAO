@@ -10,7 +10,7 @@ var userId = -1;
 //
 $(document).ready(function () {
 
-  setIconEnabledLive();
+  setIconTextNeutral(); //***
 
   update_tabmap(function () {
 
@@ -48,28 +48,32 @@ $(document).ready(function () {
   });
 });
 
+// black dog (inactive) for URL disallowed, no CS injected
 function setIconDisabledSafe() {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
   setIconText('', '#ff0000');
 }
 
+// blue dog (live) with pending meta score; for injected CS
 function setIconEnabledLive() {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-  setIconText('', '#999999');
+   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+   setIconText('...', '#999999');
 }
 
+// gray dog; not logged in
 function setIconForGuest() {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText('Guest', '#999999');
+  setIconText('Login!', '#ff0000');
 }
 
+// default 
 function setIconTextNeutral() {
-  // TODO: Need to verify again for guest/user icon
   if (isGuest) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-    setIconText('Guest', '#999999');
+    setIconText('Login!', '#ff0000');
   } else {
-    setIconText(' ', '#999999');
+      chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' }); 
+      setIconText('', '#999999');
   }
 }
 
@@ -299,7 +303,7 @@ function handle_cs_doc_event(data, sender) {
         if (data.eventName == 'got_page_meta') {  // update session page meta
           var page_meta = data.eventValue;
           var nlp_suitability_score = page_meta['nlp_suitability_score'];
-          setIconText(String(nlp_suitability_score), nlp_suitability_score > 3 ? '#00ff00' : '#999999');
+          setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
           session_update_page_meta(session, data.eventValue);
         }
       }
