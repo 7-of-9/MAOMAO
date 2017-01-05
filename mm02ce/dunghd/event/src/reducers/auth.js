@@ -67,6 +67,10 @@ export default (state = initialState, action) => {
         message: action.payload.error.message,
         isPending: false,
       });
+    case 'USER_AFTER_LOGIN':
+      // call bg function
+      window.setIconEnabledLive();
+      return state;
     default:
       return state;
   }

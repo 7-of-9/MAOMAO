@@ -45,6 +45,11 @@ function logout(token) {
       firebase.auth().signOut();
     }
 
+    // set value for bg.js
+    window.isGuest = true;
+    window.userId = -1;
+    window.setIconForGuest();
+
     chrome.identity.removeCachedAuthToken({ token }, () => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);

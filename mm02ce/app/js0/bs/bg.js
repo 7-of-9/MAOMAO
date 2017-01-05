@@ -58,11 +58,18 @@ function setIconEnabledLive() {
   setIconText('', '#999999');
 }
 
+function setIconForGuest() {
+  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
+  setIconText('Guest', '#999999');
+}
+
 function setIconTextNeutral() {
   // TODO: Need to verify again for guest/user icon
   if (isGuest) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Guest', '#999999');
+  } else {
+    setIconText(' ', '#999999');
   }
 }
 
@@ -180,7 +187,7 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
     isGuest = true;
     userId = -1;
-    setIconTextNeutral();
+    setIconForGuest();
   }
 
   // replaces deprecated sendRequest
@@ -343,7 +350,7 @@ function inject_cs(session, tab_id, skip_text) {
         var current_tab = tabs[0];
 
       var process = process_url(tab.url);
-      if (process) {
+      if (process && !isGuest) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(tab.url, function (data) {
           console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
@@ -376,7 +383,7 @@ function inject_cs(session, tab_id, skip_text) {
     chrome.tabs.get(tab_id, function (tab) {
       if (tab != null) {
         var process = process_url(tab.url);
-        if (process) {
+        if (process && !isGuest) {
           // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
           ajax_isTldAllowable(tab.url, function (data) {
             console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
