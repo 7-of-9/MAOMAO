@@ -10,3 +10,7 @@ mm02ce/bin/
 *.DS_Store
 .vs/config/applicationhost.config
 *.cache
+.vs/config/applicationhost.config
+*.suo
+global/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
+*.cache
