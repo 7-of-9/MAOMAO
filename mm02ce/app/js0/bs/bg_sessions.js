@@ -69,7 +69,7 @@ function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 //
 function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
   console.info('%c >>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, session_style_hi);
-  console.trace();
+  console.trace('checking session for tab', tab);
 
   var session = null;
   // turn off for guest

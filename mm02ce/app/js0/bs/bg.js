@@ -74,6 +74,7 @@ function setIconTextNeutral() {
 }
 
 function setIconText(s, c) {
+  console.trace('calling icon text');
   chrome.browserAction.setBadgeText({ text: s });
   chrome.browserAction.setTitle({ title: s });
   chrome.browserAction.setBadgeBackgroundColor({ color: c });
