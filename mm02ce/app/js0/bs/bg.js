@@ -3,8 +3,6 @@
 // ENTRY POINT
 //
 
-var isGuest = true;
-var userId = -1;
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
@@ -66,13 +64,13 @@ function setIconForGuest() {
   setIconText('Login!', '#ff0000');
 }
 
-// default 
+// default
 function setIconTextNeutral() {
   if (isGuest) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Login!', '#ff0000');
   } else {
-      chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' }); 
+      chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
       setIconText('', '#999999');
   }
 }
