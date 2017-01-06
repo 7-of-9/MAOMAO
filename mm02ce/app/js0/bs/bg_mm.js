@@ -29,6 +29,7 @@ function mm_save_imscore() {
   }
 }
 
+// http://jsonviewer.stack.hu/
 
 //
 // get/load from chrome.storage.local
@@ -127,6 +128,7 @@ function mm_update(session, force) {
     sessionObservable.urls.set(session.url, session.im_score);
     sessionObservable.activeUrl = session.url;
   }
+
   /*if (session == null) {
       console.error("%c ### mm_update -- PASSED NULL SESSION!", mm_logstyle_err);
       return;
