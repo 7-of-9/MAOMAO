@@ -116,6 +116,14 @@ $(document).ready(function () {
                 , millisecondsToWait);
                 }
             });
+
+            //... ++ save user_url nav history...  + thumbnail
+            // [id] back from the server user_url row (new)
+
+          
+            //     ... update im_score by id ...
+            // bg.js
+            // 
         }
         else {
             console.log("%c mm_cs_text_haveFiredDocReady // NOP.", cs_log_style_hi);

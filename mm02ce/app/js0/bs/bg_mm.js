@@ -18,6 +18,7 @@ var mm_last_save_at = 0;
 function mm_load() {
     mm = { all_sessions: [], last_save_at: 0 }; // don't get from local storage
     console.info("%c mm_load - NOP", mm_logstyle, mm);
+
     /*chrome.storage.local.get(null, function (items) {
         mm = items;
         if (!mm.hasOwnProperty("all_sessions")) mm.all_sessions = [];
@@ -104,6 +105,8 @@ function mm_load() {
 //
 function mm_update(session, force) {
     console.info("%c mm_update - NOP", mm_logstyle, session, force);
+
+    //...
 
     /*if (session == null) {
         console.error("%c ### mm_update -- PASSED NULL SESSION!", mm_logstyle_err);

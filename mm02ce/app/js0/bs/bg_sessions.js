@@ -213,14 +213,23 @@ function session_update_NLP(session, nlp, page_meta) {
 
 function session_add_IM(session, data, tab) {
   if (session == null) return;
-  if (session.hasOwnProperty('nlps')) { // only process session events for tagged pages
+  if (session.hasOwnProperty('nlps')) { // only process IM session events for tagged pages
+
+      // { TOT: seconds
+      //   im_score: n 
+      //   audible_pings: n }
+      // -> user_url
+      // --> "user engagement value" with the page
+      // ****
+      // *
+      // 0
+      // *****
 
     var audible_weighting = tab.audible ? 2.0 : 0.5;
     var score_mod = 0;
 
     // init session properties
     if (!session.hasOwnProperty('events')) session.events = [];
-
     if (!session.hasOwnProperty('clicks')) session.clicks = 0;
     if (!session.hasOwnProperty('scrolls')) session.scrolls = 0;
     if (!session.hasOwnProperty('resizes')) session.resizes = 0;
