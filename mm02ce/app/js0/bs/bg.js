@@ -612,7 +612,7 @@ function tabNavigated(tabId, changeInfo, tab) {
     var tab = tabs[0];
     if (tab != null) {
       console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
-
+      sessionObservable.activeUrl = tab.url;
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
       if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
         var session = session_get_by_tab(tab, true);
@@ -680,6 +680,8 @@ function tabActivated(o) { // why getting object here?!
       console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
     else if (new_tab != null) {
       console.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
+      // set current tab session
+      sessionObservable.activeUrl = new_tab.url;
 
       // stop TOT for previously focused
       if (TOT_active_tab != null && TOT_active_tab.id != new_tab.id) {

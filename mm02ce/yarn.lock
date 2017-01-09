@@ -3088,7 +3088,7 @@ js-yaml@~3.6.1:
     argparse "^1.0.7"
     esprima "^2.6.0"
 
-jsan@^3.1.3:
+jsan@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/jsan/-/jsan-3.1.5.tgz#8144b968ace7db092914a3639e9768181d686f61"
 
@@ -3323,7 +3323,7 @@ lodash.camelcase@^3.0.1:
   dependencies:
     lodash._createcompounder "^3.0.0"
 
-lodash.clonedeep@^4.3.2:
+lodash.clonedeep@4.5.0, lodash.clonedeep@^4.3.2:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
 
@@ -4620,12 +4620,12 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "~0.1.0"
 
-redux-devtools-instrument@^1.3.1:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/redux-devtools-instrument/-/redux-devtools-instrument-1.3.3.tgz#4a17c80cc23465646460b2da3ee438a4ac0b28ae"
+redux-devtools-instrument@^1.3.3:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/redux-devtools-instrument/-/redux-devtools-instrument-1.6.0.tgz#a16678a6c3338db10cd5e0b8801e294c52466eb8"
   dependencies:
     lodash "^4.2.0"
-    symbol-observable "^0.2.4"
+    symbol-observable "^1.0.2"
 
 redux-logger@^2.7.4:
   version "2.7.4"
@@ -4691,22 +4691,24 @@ regjsparser@^0.1.4:
   dependencies:
     jsesc "~0.5.0"
 
-remote-redux-devtools@^0.5.4:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/remote-redux-devtools/-/remote-redux-devtools-0.5.4.tgz#40e4c1b423d2802803331abdfd0228a69b0d50a7"
+remote-redux-devtools@^0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/remote-redux-devtools/-/remote-redux-devtools-0.5.7.tgz#bc3219ed4eef347a5b4162acad8c9424e692df02"
   dependencies:
-    jsan "^3.1.3"
+    jsan "^3.1.5"
     querystring "^0.2.0"
-    redux-devtools-instrument "^1.3.1"
-    remotedev-utils "0.0.5"
-    socketcluster-client "^5.0.17"
+    redux-devtools-instrument "^1.3.3"
+    remotedev-utils "^0.1.1"
+    socketcluster-client "^5.1.1"
 
-remotedev-utils@0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/remotedev-utils/-/remotedev-utils-0.0.5.tgz#51816a7b856f3b5a161ac74bd91f6f00b2522c74"
+remotedev-utils@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/remotedev-utils/-/remotedev-utils-0.1.1.tgz#b4dc44d780cf4ef3656dda519b3d12246f5da825"
   dependencies:
     get-params "^0.1.2"
+    jsan "^3.1.5"
     lodash "^4.0.0"
+    shortid "^2.2.6"
 
 repeat-element@^1.1.2:
   version "1.1.2"
@@ -4850,7 +4852,7 @@ sc-channel@1.0.x:
   dependencies:
     sc-emitter "1.0.x"
 
-sc-emitter@1.0.x:
+sc-emitter@1.0.x, sc-emitter@1.x.x:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sc-emitter/-/sc-emitter-1.0.1.tgz#0fbf52950c9c6816235cec99544cec38a5010763"
   dependencies:
@@ -4898,6 +4900,10 @@ shelljs@^0.7.5:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
+shortid@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/shortid/-/shortid-2.2.6.tgz#3abbefc6c51074cf2c1f1e72f6216a1b45876d72"
+
 sigmund@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sigmund/-/sigmund-1.0.1.tgz#3ff21f198cad2175f9f3b781853fd94d0d19b590"
@@ -4924,15 +4930,16 @@ sntp@1.x.x:
   dependencies:
     hoek "2.x.x"
 
-socketcluster-client@^5.0.17:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/socketcluster-client/-/socketcluster-client-5.1.0.tgz#afe6be0fa08c936f992bc1870610100e4577866d"
+socketcluster-client@^5.1.1:
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/socketcluster-client/-/socketcluster-client-5.2.4.tgz#8d4f87b85073be9ab1f2a0100f07867bdf246b59"
   dependencies:
     base-64 "0.1.0"
     linked-list "0.1.0"
+    lodash.clonedeep "4.5.0"
     querystring "0.2.0"
     sc-channel "1.0.x"
-    sc-emitter "1.0.x"
+    sc-emitter "1.x.x"
     sc-errors "1.0.x"
     sc-formatter "3.0.x"
     ws "1.1.1"

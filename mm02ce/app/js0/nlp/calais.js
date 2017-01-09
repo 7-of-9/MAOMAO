@@ -430,7 +430,7 @@ function nlp_calais(page_meta, test_data, url) {
               cslib_test_Reseed();
           } else cslib_test_NextYouTubeVid();
         } else {
-          console.info("Disable youtube test", "background:orange; color:black; font-weight:bold;");
+          console.info("Disable youtube test");
         }
       });
 

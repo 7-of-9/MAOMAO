@@ -2,15 +2,18 @@ import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
+import createLogger from 'redux-logger';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 
+const logger = createLogger();
 const config = new Config();
 const middleware = [
   alias(aliases),
   thunkMiddleware,
+  logger,
 ];
 const composeEnhancers = composeWithDevTools({ realtime: true });
 
@@ -85,6 +88,18 @@ function onClickHandler(info) {
 }
 
 chrome.contextMenus.onClicked.addListener(onClickHandler);
+
+// user change tab
+window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
+  console.info('reaction url', url);
+  store.dispatch({
+    type: 'IM_SCORE',
+    payload: {
+      url,
+    },
+  });
+});
+
 
 // firebase auth
 

@@ -17,17 +17,45 @@ var sessionObservable = mobx.observable({
 });
 
 mobx.autorun(function autorun_onChange_im_score() {
-  console.info('autorun sessionObservable:' + sessionObservable.urls.toJSON());
+  console.info('autorun sessionObservable:' + sessionObservable.urls);
   mm_save_imscore();
 });
 
+/**
+ * Save im_score to api server
+ */
 function mm_save_imscore() {
   var url = sessionObservable.activeUrl;
-  var score = Number(sessionObservable.urls.get(url));
-  if (score) {
+  var score = sessionObservable.urls.get(url);
+  if (score && score.im_score) {
     console.info('autorun sessionObservable - READY to send user', url, score);
   }
 }
+
+/**
+ * get im_score base url
+ */
+function mm_get_imscore(url) {
+  var score = sessionObservable.urls.get(url);
+  var result = {
+    im_score: 0,
+    audible_pings: 0,
+    time_on_tabs: 0,
+    url: url,
+  };
+  if (score) {
+    var tot = Number(score.TOT_total_millis / 1000);
+    result = {
+      im_score: score.im_score,
+      audible_pings: score.audible_pings,
+      time_on_tabs: isNaN(tot) ? 0 : tot,
+      url: score.url,
+    }
+  }
+  console.info('mm_get_imscore', result);
+  return result;
+}
+
 
 // http://jsonviewer.stack.hu/
 
@@ -125,13 +153,7 @@ function mm_load() {
 function mm_update(session, force) {
   console.info("%c mm_update - NOP", mm_logstyle, session, force);
   if (session && session.url) {
-    sessionObservable.urls.set(session.url, {
-      im_score: session.im_score,
-      audible_pings: session.im_score,
-      TOT_total_millis: session.TOT_total_millis,
-      url: session.url,
-    });
-    sessionObservable.activeUrl = session.url;
+    sessionObservable.urls.set(session.url, session);
   }
 
   /*if (session == null) {
