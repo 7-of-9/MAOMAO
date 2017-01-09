@@ -6,10 +6,11 @@
 
 // handle authentication
 var isGuest = true;
+var enableTestYoutube = false;
 var userId = -1;
 
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  console.trace('checking authentication');
+  console.trace('extension.onMessage');
   console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
   console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
@@ -215,15 +216,15 @@ function session_add_IM(session, data, tab) {
   if (session == null) return;
   if (session.hasOwnProperty('nlps')) { // only process IM session events for tagged pages
 
-      // { TOT: seconds
-      //   im_score: n 
-      //   audible_pings: n }
-      // -> user_url
-      // --> "user engagement value" with the page
-      // ****
-      // *
-      // 0
-      // *****
+    // { TOT: seconds
+    //   im_score: n
+    //   audible_pings: n }
+    // -> user_url
+    // --> "user engagement value" with the page
+    // ****
+    // *
+    // 0
+    // *****
 
     var audible_weighting = tab.audible ? 2.0 : 0.5;
     var score_mod = 0;

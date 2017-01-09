@@ -30,6 +30,7 @@ chrome.contextMenus.create({
   id: 'mm-btn-login',
 });
 
+// NOTE: Handler all browser action events
 function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-logout': {
@@ -40,6 +41,32 @@ function onClickHandler(info) {
       };
       store.dispatch(data);
     }
+      break;
+    case 'mm-btn-disable-youtube':
+      window.enableTestYoutube = false;
+      {
+        console.log('disable youtube');
+        const data = {
+          type: 'YOUTUBE_TEST',
+          payload: {
+            enable: window.enableTestYoutube,
+          },
+        };
+        store.dispatch(data);
+      }
+      break;
+    case 'mm-btn-enable-youtube':
+      window.enableTestYoutube = true;
+      {
+        console.log('enable youtube');
+        const data = {
+          type: 'YOUTUBE_TEST',
+          payload: {
+            enable: window.enableTestYoutube,
+          },
+        };
+        store.dispatch(data);
+      }
       break;
     case 'mm-btn-login':
     case 'mm-btn-show':

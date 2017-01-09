@@ -45,9 +45,10 @@ function logout(token) {
       firebase.auth().signOut();
     }
 
-    // set value for bg.js
+    // NOTE: set value for bg_session.js
     window.isGuest = true;
     window.userId = -1;
+    window.enableTestYoutube = false;
     window.setIconForGuest();
 
     chrome.identity.removeCachedAuthToken({ token }, () => {

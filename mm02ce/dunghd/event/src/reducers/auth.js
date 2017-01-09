@@ -15,6 +15,19 @@ function ctxMenuLogin(userInfo) {
     contexts: ['browser_action'],
     id: 'mm-btn-show',
   });
+  if (!window.enableTestYoutube) {
+    chrome.contextMenus.create({
+      title: 'Enable Test Youtube!',
+      contexts: ['browser_action'],
+      id: 'mm-btn-enable-youtube',
+    });
+  } else {
+    chrome.contextMenus.create({
+      title: 'Disable Test Youtube!',
+      contexts: ['browser_action'],
+      id: 'mm-btn-disable-youtube',
+    });
+  }
   chrome.contextMenus.create({
     title: 'Logout',
     contexts: ['browser_action'],
@@ -70,6 +83,10 @@ export default (state = initialState, action) => {
     case 'USER_AFTER_LOGIN':
       // call bg function
       window.setIconEnabledLive();
+      return state;
+    case 'YOUTUBE_TEST':
+      // call bg function
+      ctxMenuLogin(state.info);
       return state;
     default:
       return state;

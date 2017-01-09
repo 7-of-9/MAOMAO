@@ -54,8 +54,8 @@ function setIconDisabledSafe() {
 
 // blue dog (live) with pending meta score; for injected CS
 function setIconEnabledLive() {
-   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-   setIconText('...', '#999999');
+  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+  setIconText('...', '#999999');
 }
 
 // gray dog; not logged in
@@ -70,8 +70,8 @@ function setIconTextNeutral() {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Login!', '#ff0000');
   } else {
-      chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-      setIconText('', '#999999');
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+    setIconText('', '#999999');
   }
 }
 
@@ -329,16 +329,20 @@ function inject_cs(session, tab_id, skip_text) {
       'js0/lib/wait_key_elements.js',
       'js0/nlp/stopwords.js',
       'js0/lib/nlp.js',
-
       'js0/ajax/mm_api.js',
       'js0/nlp/calais.js',
       'js0/cs/cs_meta.js',
       'js0/cs/cs_main.js',
-      'js0/cs/cs_youtube.js',
       'js0/cs/cs_retok.js',
     ];
-  if (!skip_text)
+  if (!skip_text) {
     cs_files.push('js0/cs/cs_text.js');
+  }
+
+  if (enableTestYoutube) {
+    cs_files.push('js0/cs/cs_youtube.js');
+  }
+
   var log_style = !skip_text ? 'background: #555; color: #bada55; font-size:larger;'
     : 'background: #555; color: #bada55;';
 
