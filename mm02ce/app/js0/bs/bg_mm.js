@@ -17,7 +17,7 @@ var sessionObservable = mobx.observable({
 });
 
 mobx.autorun(function autorun_onChange_im_score() {
-  console.info('autorun sessionObservable:' + sessionObservable.urls);
+  console.info('autorun sessionObservable:' + sessionObservable.urls.toJSON());
   mm_save_imscore();
 });
 
@@ -125,7 +125,12 @@ function mm_load() {
 function mm_update(session, force) {
   console.info("%c mm_update - NOP", mm_logstyle, session, force);
   if (session && session.url) {
-    sessionObservable.urls.set(session.url, session.im_score);
+    sessionObservable.urls.set(session.url, {
+      im_score: session.im_score,
+      audible_pings: session.im_score,
+      TOT_total_millis: session.TOT_total_millis,
+      url: session.url,
+    });
     sessionObservable.activeUrl = session.url;
   }
 

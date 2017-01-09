@@ -2,6 +2,17 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
+
+const style = {
+  margin: 0,
+  top: 'auto',
+  right: 20,
+  bottom: 20,
+  left: 'auto',
+  position: 'fixed',
+};
+
 import moment from 'moment';
 import $ from 'jquery';
 import { WelcomeModal, ShareModal } from '../modal';
@@ -47,9 +58,9 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    console.log('props', props);
     this.state = {
       openShare: false, // hide on loading, trigger show login by ctx
+      expanded: false,
     };
     this.onClose = this.onClose.bind(this);
     this.onLogin = this.onLogin.bind(this);
@@ -57,10 +68,10 @@ class App extends Component {
     this.openInvite = this.openInvite.bind(this);
     this.closeInvite = this.closeInvite.bind(this);
     this.notify = this.notify.bind(this);
+    this.handleExpandChange = this.handleExpandChange.bind(this);
   }
 
   onLogin() {
-    console.log('onLogin');
     ReactMaterialUiNotifications.showNotification({
       title: 'Prepare to login!',
       autoHide: 1000,
@@ -112,6 +123,10 @@ class App extends Component {
       .catch(err => console.warn(err));
   }
 
+  handleExpandChange(expanded) {
+    this.setState({ expanded });
+  }
+
   notify(msg) {
     console.log('notify msg', msg);
     ReactMaterialUiNotifications.showNotification(msg);
@@ -152,7 +167,7 @@ class App extends Component {
           isShareOpen={this.state.openShare}
           isOpen={this.props.isOpen}
           />
-        <ToggleDisplay if={this.props.auth.isLogin}>
+        <ToggleDisplay show={this.props.auth.isLogin}>
           <ShareModal
             auth={this.props.auth}
             mailgunKey={this.props.mailgunKey}
@@ -161,6 +176,20 @@ class App extends Component {
             onCloseModal={this.closeInvite}
             notify={this.notify}
             />
+          <Card style={style} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
+            <CardHeader
+              title="IM SCORE"
+              subtitle="0.0"
+              actAsExpander
+              showExpandableButton
+              />
+            <CardText expandable>
+              Time on tab: 0
+            </CardText>
+            <CardText expandable>
+              Ping audible:0
+            </CardText>
+          </Card>
         </ToggleDisplay>
       </div>
     );
