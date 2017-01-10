@@ -124,7 +124,34 @@ function checkImScore(url, updateAt) {
 
 window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
-  checkImScore(url, Date.now());
+  const now = Date.now();
+  checkImScore(url, now);
+  if (window.sessionObservable.urls.get(url)) {
+    const data = Object.assign({}, window.mm_get_imscore(url), { userId: window.userId });
+    window.ajax_put_UrlHistory(data,
+      err => store.dispatch({
+        type: 'IM_SAVE_ERROR',
+        payload: {
+          url,
+          history: {
+            data,
+            err,
+            saveAt: now,
+          },
+        },
+      }),
+      result => store.dispatch({
+        type: 'IM_SAVE_SUCCESS',
+        payload: {
+          url,
+          history: {
+            data,
+            result,
+            saveAt: now,
+          },
+        },
+      }));
+  }
 });
 
 window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
@@ -135,7 +162,7 @@ window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
 
 // firebase auth
 // init firebase
-firebase.initializeApp({
+window.firebase.initializeApp({
   apiKey: config.firebaseKey,
   databaseURL: config.firebaseDB,
   storageBucket: config.firebaseStore,
@@ -144,7 +171,7 @@ firebase.initializeApp({
 function initFirebaseApp() {
   console.log('initFirebaseApp');
   // Listen for auth state changes.
-  firebase.auth().onAuthStateChanged((user) => {
+  window.firebase.auth().onAuthStateChanged((user) => {
     console.log('firebase => User state change detected from the Background script of the Chrome Extension:', user);
   });
 }
