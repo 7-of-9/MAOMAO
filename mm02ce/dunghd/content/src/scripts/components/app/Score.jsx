@@ -21,6 +21,7 @@ const defaultProps = {
     audible_pings: 0,
     time_on_tabs: 0,
     url: '',
+    isOpen: false,
   },
 };
 

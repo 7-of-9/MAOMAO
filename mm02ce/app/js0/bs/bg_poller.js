@@ -17,7 +17,7 @@ $(document).ready(function () {
           var session = session_get_by_tab(a, false);
           if (session != null) {
             session_inc_audible_pings(session);
-            console.warn(' >> audible: [' + session.url + '] est_audible_time=' + session.est_audible_time() + ' sec(s) sid=' + session.sid);
+            // console.warn(' >> audible: [' + session.url + '] est_audible_time=' + session.est_audible_time() + ' sec(s) sid=' + session.sid);
           }
         });
       }
