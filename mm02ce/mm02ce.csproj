@@ -121,6 +121,7 @@
     <Content Include="dunghd\event\src\reducers\auth.js" />
     <Content Include="dunghd\event\src\reducers\index.js" />
     <Content Include="dunghd\event\src\reducers\modal.js" />
+    <Content Include="dunghd\event\src\reducers\score.js" />
     <Content Include="dunghd\event\webpack.config.js" />
     <Content Include="gulpfile.babel.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
@@ -148,6 +149,7 @@
     <Content Include="dunghd\content\src\scripts\components\modal\ShareModal.jsx" />
     <Content Include="dunghd\content\src\scripts\components\modal\WelcomeModal.jsx" />
     <Content Include=".env" />
+    <Content Include="dunghd\content\src\scripts\components\app\Score.jsx" />
     <None Include="scripts\_references.js" />
     <None Include="scripts\chrome-api-vsdoc.js" />
     <Content Include="web.config" />
