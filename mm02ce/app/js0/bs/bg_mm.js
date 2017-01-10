@@ -13,7 +13,8 @@ var mm_last_save_at = 0;
 // TODO: Observe change for mm
 var sessionObservable = mobx.observable({
   urls: mobx.asMap({}),
-  activeUrl: ''
+  activeUrl: '',
+  updateAt: new Date(),
 });
 
 mobx.autorun(function autorun_onChange_im_score() {
@@ -28,6 +29,7 @@ function mm_save_imscore() {
   var url = sessionObservable.activeUrl;
   var score = sessionObservable.urls.get(url);
   if (score && score.im_score) {
+    sessionObservable.updateAt = new Date();
     console.info('autorun sessionObservable - READY to send user', url, score);
   }
 }
@@ -44,11 +46,10 @@ function mm_get_imscore(url) {
     url: url,
   };
   if (score) {
-    var tot = Number(score.TOT_total_millis / 1000);
     result = {
       im_score: score.im_score,
       audible_pings: score.audible_pings,
-      time_on_tabs: isNaN(tot) ? 0 : tot,
+      time_on_tabs: score.TOT_total_millis,
       url: score.url,
     }
   }

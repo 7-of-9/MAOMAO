@@ -90,19 +90,49 @@ function onClickHandler(info) {
 chrome.contextMenus.onClicked.addListener(onClickHandler);
 
 // user change tab
-window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
-  console.info('reaction url', url);
+
+/**
+ * Check im_score base on active url and update time
+ */
+function checkImScore(url) {
   store.dispatch({
     type: 'IM_SCORE',
     payload: {
       url,
     },
   });
+  // checking current url is allow or not
+  if (window.sessionObservable.urls.get(url)) {
+    store.dispatch({
+      type: 'IM_ALLOWABLE',
+      payload: {
+        url,
+        isOpen: true,
+      },
+    });
+  } else {
+    store.dispatch({
+      type: 'IM_ALLOWABLE',
+      payload: {
+        url,
+        isOpen: false,
+      },
+    });
+  }
+}
+
+window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
+  console.info('reaction url', url);
+  checkImScore(url);
 });
 
+window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
+  console.info('reaction updateAt', updateAt);
+  const url = window.sessionObservable.activeUrl;
+  checkImScore(url);
+});
 
 // firebase auth
-
 // init firebase
 firebase.initializeApp({
   apiKey: config.firebaseKey,

@@ -378,6 +378,8 @@ function inject_cs(session, tab_id, skip_text) {
             console.trace();
             if (session != null)
               session.injected_cs_timestamp = Date.now();
+          } else {
+            setIconDisabledSafe();
           }
         });
       }
