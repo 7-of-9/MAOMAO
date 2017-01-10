@@ -32,17 +32,21 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.tvw = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addRootTermToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuiCtxName = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleGolden1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.findAtL1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tvw
             // 
+            this.tvw.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.tvw.CheckBoxes = true;
             this.tvw.ContextMenuStrip = this.contextMenuStrip1;
             this.tvw.Location = new System.Drawing.Point(12, 12);
             this.tvw.Name = "tvw";
-            this.tvw.Size = new System.Drawing.Size(557, 462);
+            this.tvw.Size = new System.Drawing.Size(1166, 624);
             this.tvw.TabIndex = 0;
             this.tvw.BeforeCheck += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvw_BeforeCheck);
             this.tvw.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.tvw_AfterCheck);
@@ -55,16 +59,32 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addRootTermToolStripMenuItem});
+            this.mnuiCtxName,
+            this.toggleGolden1ToolStripMenuItem,
+            this.findAtL1MenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(155, 26);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 92);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
-            // addRootTermToolStripMenuItem
+            // mnuiCtxName
             // 
-            this.addRootTermToolStripMenuItem.Name = "addRootTermToolStripMenuItem";
-            this.addRootTermToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.addRootTermToolStripMenuItem.Text = "Add Root Term";
-            this.addRootTermToolStripMenuItem.Click += new System.EventHandler(this.addRootTermToolStripMenuItem_Click);
+            this.mnuiCtxName.Name = "mnuiCtxName";
+            this.mnuiCtxName.Size = new System.Drawing.Size(180, 22);
+            this.mnuiCtxName.Text = "toolStripMenuItem1";
+            // 
+            // toggleGolden1ToolStripMenuItem
+            // 
+            this.toggleGolden1ToolStripMenuItem.Name = "toggleGolden1ToolStripMenuItem";
+            this.toggleGolden1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toggleGolden1ToolStripMenuItem.Text = "Toggle Golden";
+            this.toggleGolden1ToolStripMenuItem.Click += new System.EventHandler(this.addRootTermToolStripMenuItem_Click);
+            // 
+            // findAtL1MenuItem
+            // 
+            this.findAtL1MenuItem.Name = "findAtL1MenuItem";
+            this.findAtL1MenuItem.Size = new System.Drawing.Size(180, 22);
+            this.findAtL1MenuItem.Text = "Find @L1";
+            this.findAtL1MenuItem.Click += new System.EventHandler(this.findAtL1_Click);
             // 
             // frmMain
             // 
@@ -87,7 +107,9 @@
 
         private System.Windows.Forms.TreeView tvw;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem addRootTermToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleGolden1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnuiCtxName;
+        private System.Windows.Forms.ToolStripMenuItem findAtL1MenuItem;
     }
 }
 

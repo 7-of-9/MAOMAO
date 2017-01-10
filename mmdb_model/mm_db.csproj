@@ -67,9 +67,13 @@
     <Compile Include="Extensions\DbContext.cs" />
     <Compile Include="Extensions\Factory.cs" />
     <Compile Include="Extensions\NoLock.cs" />
+    <Compile Include="Extensions\ObjectPartialExtensions\golden_term_extension.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\term_extensions.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\term_matrix_extensions.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\url_term_extensions.cs" />
+    <Compile Include="golden_term.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="mmdb.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

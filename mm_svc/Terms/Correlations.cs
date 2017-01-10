@@ -18,6 +18,15 @@ namespace mm_svc.Terms
 
         public List<term> corr_terms { get { return corr_matrix.Select(p => p.related_term).Distinct().ToList(); } }
 
+        public bool is_golden_child { get { return corr_terms.Any(p => p.golden_parents.Any()); } }
+
+        public IEnumerable<golden_term> golden_parents { get { return corr_terms.SelectMany(p => p.golden_parents); } }//.Select(p => p.parent_term).Distinct(); } }
+
+        //public bool is_mm_cat(int mmcat) { return corr_terms.All(p => p.mmcat == mmcat); }
+        //public bool is_golden_1 { get { return is_mm_cat(1); } }
+        //public bool is_golden_2 { get { return is_mm_cat(2); } }
+        //public bool has_mm_cat() { return corr_terms.All(p => p.mmcat != null); }
+
         public long sum_XX = -1;
         public double max_corr = -1;
 
@@ -34,6 +43,8 @@ namespace mm_svc.Terms
 
     public static class Correlations
     {
+        //public static mm02Entities db = null;
+
         public class corr_input {
             public string main_term;
             public string corr_term_eq;
@@ -42,6 +53,7 @@ namespace mm_svc.Terms
         public static List<corr_result> Get3(List<corr_input> inputs)
         {
             Stopwatch sw = new Stopwatch(); sw.Start();
+            //if (db == null) db = mm02Entities.Create();
             using (var db = mm02Entities.Create())
             {
                 var results = new List<corr_result>();
@@ -52,12 +64,16 @@ namespace mm_svc.Terms
                 // look up relations (both sides), with exclusions
                 var a = db.term_matrix
                     .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                    //.Include("term.golden_term").Include("term.golden_term1")
                     .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+                    //.Include("term1.golden_term").Include("term1.golden_term1")
                     .Where(p => main_terms_list.Contains(p.term.name.ToLower()) 
                             && !g.EXCLUDE_TERM_IDs.Contains(p.term_b_id));
                 var b = db.term_matrix
                     .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                    //.Include("term.golden_term").Include("term.golden_term1")
                     .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+                    //.Include("term1.golden_term").Include("term1.golden_term1")
                     .Where(p => main_terms_list.Contains(p.term1.name.ToLower()) 
                             && !g.EXCLUDE_TERM_IDs.Contains(p.term_a_id));
                 var c = a.Union(b)
@@ -145,33 +161,45 @@ namespace mm_svc.Terms
             }
         }
 
-        public static List<correlation> Get2(string main_term, string corr_term_eq = null, double? max_appears_together_count_normalized = null)
+        public static List<correlation> Get2(string main_term, string corr_term_eq = null, int? max_appears_together_count = null)
         {
             Stopwatch sw = new Stopwatch(); sw.Start();
+            //if (db == null) db = mm02Entities.Create();
+
             using (var db = mm02Entities.Create())
             {
                 var correlated = new List<correlation>();
 
                 // look up relations (both sides), with exclusions
-                var a = db.term_matrix.AsNoTracking()
+                var a = db.term_matrix//.AsNoTracking()
                     .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                    .Include("term.golden_term.term").Include("term.golden_term.term1")
+                    .Include("term.golden_term1.term").Include("term.golden_term1.term1")
                     .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+                    .Include("term1.golden_term.term").Include("term1.golden_term.term1")
+                    .Include("term1.golden_term1.term").Include("term1.golden_term1.term1")
                     .Where(p => p.term.name.ToLower() == main_term.ToLower() && !g.EXCLUDE_TERM_IDs.Contains(p.term_b_id));
-                var b = db.term_matrix.AsNoTracking()
+
+                var b = db.term_matrix//.AsNoTracking()
                     .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                    .Include("term.golden_term.term").Include("term.golden_term.term1")
+                    .Include("term.golden_term1.term").Include("term.golden_term1.term1")
                     .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+                    .Include("term1.golden_term.term").Include("term1.golden_term.term1")
+                    .Include("term1.golden_term1.term").Include("term1.golden_term1.term1")
                     .Where(p => p.term1.name.ToLower() == main_term.ToLower() && !g.EXCLUDE_TERM_IDs.Contains(p.term_a_id));
 
                 // cap results by max_appears_together_count_normalized
-                if (max_appears_together_count_normalized != null) {
-                    long max_a = db.term_matrix.Where(p => p.term.name.ToLower() == main_term.ToLower() && p.term1.name.ToLower() != main_term.ToLower()).Max(p => p.occurs_together_count);
-                    long max_b = db.term_matrix.Where(p => p.term1.name.ToLower() == main_term.ToLower() && p.term.name.ToLower() != main_term.ToLower()).Max(p => p.occurs_together_count);
-                    long max = (long)(Math.Max((double)max_a, (double)max_b) * max_appears_together_count_normalized);
+                if (max_appears_together_count != null) {
+                    //long max_a = db.term_matrix.Where(p => p.term.name.ToLower() == main_term.ToLower() && p.term1.name.ToLower() != main_term.ToLower()).Max(p => p.occurs_together_count);
+                    //long max_b = db.term_matrix.Where(p => p.term1.name.ToLower() == main_term.ToLower() && p.term.name.ToLower() != main_term.ToLower()).Max(p => p.occurs_together_count);
+                    //long max = (long)(Math.Max((double)max_a, (double)max_b) * max_appears_together_count_normalized);
+                    int max = (int)max_appears_together_count;
                     a = a.Where(p => p.occurs_together_count >= max);
                     b = b.Where(p => p.occurs_together_count >= max);
                 }
                 var c = a.Union(b).OrderByDescending(p => p.occurs_together_count);
-                //Debug.WriteLine(c.ToString());
+                Debug.WriteLine(c.ToString());
                 var data = c.ToListNoLock();
                 Debug.WriteLine($"> Get2('{main_term}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
 
