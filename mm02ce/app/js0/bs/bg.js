@@ -614,10 +614,10 @@ function tabNavigated(tabId, changeInfo, tab) {
     var tab = tabs[0];
     if (tab != null) {
       console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
-      sessionObservable.activeUrl = tab.url;
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
       if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
         var session = session_get_by_tab(tab, true);
+        sessionObservable.activeUrl = changeInfo.url;
         session_add_view_instance(session);
       }
     }

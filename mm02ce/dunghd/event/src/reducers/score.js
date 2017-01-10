@@ -3,7 +3,9 @@ const initialState = {
   audible_pings: 0,
   time_on_tabs: 0,
   isOpen: false,
-  url: window.sessionObservable.activeUrl,
+  url: '',
+  updateAt: Date.now(),
+  histories: [],
 };
 
 export default (score = initialState, action) => {
@@ -11,7 +13,7 @@ export default (score = initialState, action) => {
     case 'IM_ALLOWABLE':
       return Object.assign({}, score, action.payload);
     case 'IM_SCORE':
-      return Object.assign({}, score, window.mm_get_imscore(window.sessionObservable.activeUrl));
+      return Object.assign({}, score, action.payload, window.mm_get_imscore(window.sessionObservable.activeUrl));
     default:
       return score;
   }

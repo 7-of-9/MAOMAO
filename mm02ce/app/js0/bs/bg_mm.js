@@ -14,7 +14,7 @@ var mm_last_save_at = 0;
 var sessionObservable = mobx.observable({
   urls: mobx.asMap({}),
   activeUrl: '',
-  updateAt: new Date(),
+  updateAt: Date.now(),
 });
 
 mobx.autorun(function autorun_onChange_im_score() {
@@ -29,7 +29,7 @@ function mm_save_imscore() {
   var url = sessionObservable.activeUrl;
   var score = sessionObservable.urls.get(url);
   if (score && score.im_score) {
-    sessionObservable.updateAt = new Date();
+    sessionObservable.updateAt = Date.now();
     console.info('autorun sessionObservable - READY to send user', url, score);
   }
 }

@@ -18,7 +18,7 @@ const middleware = [
 const composeEnhancers = composeWithDevTools({ realtime: true });
 
 const store = createStore(rootReducer, {}, composeEnhancers(
-  applyMiddleware(...middleware)
+  applyMiddleware(...middleware),
 ));
 
 wrapStore(store, {
@@ -94,14 +94,15 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
 /**
  * Check im_score base on active url and update time
  */
-function checkImScore(url) {
+function checkImScore(url, updateAt) {
+  // checking current url is allow or not
   store.dispatch({
     type: 'IM_SCORE',
     payload: {
       url,
+      updateAt,
     },
   });
-  // checking current url is allow or not
   if (window.sessionObservable.urls.get(url)) {
     store.dispatch({
       type: 'IM_ALLOWABLE',
@@ -123,13 +124,13 @@ function checkImScore(url) {
 
 window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
-  checkImScore(url);
+  checkImScore(url, Date.now());
 });
 
 window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
   console.info('reaction updateAt', updateAt);
   const url = window.sessionObservable.activeUrl;
-  checkImScore(url);
+  checkImScore(url, updateAt);
 });
 
 // firebase auth
