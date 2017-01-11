@@ -126,7 +126,7 @@ function checkImScore(url, updateAt) {
 
 window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
-  const now = Date.now();
+  const now = new Date().toISOString();
   checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
     const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });

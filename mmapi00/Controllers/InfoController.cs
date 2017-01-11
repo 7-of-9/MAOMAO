@@ -2,6 +2,8 @@
 using System.Web.Http;
 using WebApi.OutputCache.V2;
 using System.Threading.Tasks;
+using System;
+using System.Globalization;
 
 namespace mmapi00.Controllers
 {
@@ -106,18 +108,50 @@ namespace mmapi00.Controllers
         /// <summary>
         /// Stores user history
         /// </summary>
-        /// <param name="user_history">JSON of user history.</param>
+        /// <param name="history">JSON of user history.</param>
         /// <returns></returns>
         [Route("api/url_history")]
         [HttpPost]
-        public IHttpActionResult PostUserHistory([FromBody]dynamic user_history)
+        public IHttpActionResult PostUserHistory([FromBody]dynamic history)
         {
-            if (user_history == null) return BadRequest("bad user_history");
+            if (history == null) return BadRequest("bad user_history");
 
-            return Ok(new
+            if (history.url == null) return BadRequest("missing url");
+
+            if (history.userId == null) return BadRequest("missing user id");
+            string url = history.url;
+            string saveAt = history.saveAt;
+            int userId = history.userId;
+            int score = 0;
+            int tot = 0;
+            int pings = 0;
+            if (history.im_score != null)
             {
-                url = user_history.url,
-            });
+                score = history.im_score;
+            }
+            
+            if (history.time_on_tabs != null)
+            {
+                tot = history.time_on_tabs;
+            }
+            
+            if (history.audible_pings != null)
+            {
+                pings = history.audible_pings;
+            }
+           
+            var db_history = mm_svc.User.History.TrackingByUrl(url, userId, score, tot, pings, saveAt);
+            if (db_history != null)
+            {
+                return Ok(new
+                {
+                    url = db_history.url,
+                    im_score = db_history.im_score,
+                    id = db_history.id,
+                });
+
+            }
+            return BadRequest("Oops! Something is not right. Please try again!");
         }
     }
 }

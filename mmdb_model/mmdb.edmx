@@ -97,11 +97,11 @@
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="bigint" Nullable="false" />
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="userId" Type="bigint" Nullable="false" />
           <Property Name="urlId" Type="bigint" Nullable="false" />
           <Property Name="navUtc" Type="datetime" Nullable="false" />
-          <Property Name="im_score" Type="int" Nullable="false" />
+          <Property Name="im_score" Type="int" />
           <Property Name="audible_pings" Type="int" />
           <Property Name="time_on_tabs" Type="bigint" />
         </EntityType>
@@ -158,6 +158,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="fk_tbl_url">
+          <End Role="url" Type="Self.url" Multiplicity="1" />
+          <End Role="user_url" Type="Self.user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
+              <PropertyRef Name="urlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tbl_user">
+          <End Role="users" Type="Self.users" Multiplicity="1" />
+          <End Role="user_url" Type="Self.user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_term_cal_entity_type">
           <End Role="cal_entity_type" Type="Self.cal_entity_type" Multiplicity="0..1" />
           <End Role="term" Type="Self.term" Multiplicity="*" />
@@ -206,18 +230,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_url">
-          <End Role="url" Type="Self.url" Multiplicity="1" />
-          <End Role="user_url" Type="Self.user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="urlId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_url_awis_site">
           <End Role="awis_site" Type="Self.awis_site" Multiplicity="1" />
           <End Role="url" Type="Self.url" Multiplicity="*" />
@@ -254,18 +266,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_user">
-          <End Role="users" Type="Self.users" Multiplicity="1" />
-          <End Role="user_url" Type="Self.user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="userId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="mm02ModelStoreContainer">
           <EntitySet Name="awis_cat" EntityType="Self.awis_cat" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="awis_site" EntityType="Self.awis_site" Schema="dbo" store:Type="Tables" />
@@ -290,6 +290,14 @@
             <End Role="term" EntitySet="term" />
             <End Role="golden_term" EntitySet="golden_term" />
           </AssociationSet>
+          <AssociationSet Name="fk_tbl_url" Association="Self.fk_tbl_url">
+            <End Role="url" EntitySet="url" />
+            <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tbl_user" Association="Self.fk_tbl_user">
+            <End Role="users" EntitySet="users" />
+            <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
           <AssociationSet Name="FK_term_cal_entity_type" Association="Self.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
             <End Role="term" EntitySet="term" />
@@ -306,10 +314,6 @@
             <End Role="term_type" EntitySet="term_type" />
             <End Role="term" EntitySet="term" />
           </AssociationSet>
-          <AssociationSet Name="fk_url" Association="Self.fk_url">
-            <End Role="url" EntitySet="url" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
           <AssociationSet Name="FK_url_awis_site" Association="Self.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="url" EntitySet="url" />
@@ -321,10 +325,6 @@
           <AssociationSet Name="FK_urlTerms_url" Association="Self.FK_urlTerms_url">
             <End Role="url" EntitySet="url" />
             <End Role="url_term" EntitySet="url_term" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user" Association="Self.fk_user">
-            <End Role="users" EntitySet="users" />
-            <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -535,7 +535,7 @@
           <Property Name="userId" Type="Int64" Nullable="false" />
           <Property Name="urlId" Type="Int64" Nullable="false" />
           <Property Name="navUtc" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="im_score" Type="Int32" Nullable="false" />
+          <Property Name="im_score" Type="Int32" />
           <NavigationProperty Name="url" Relationship="mm02Model.fk_url" FromRole="user_url" ToRole="url" />
           <NavigationProperty Name="user" Relationship="mm02Model.fk_user" FromRole="user_url" ToRole="user" />
           <Property Name="audible_pings" Type="Int32" />

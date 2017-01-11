@@ -26,7 +26,7 @@ public partial class user_url
 
     public System.DateTime navUtc { get; set; }
 
-    public int im_score { get; set; }
+    public Nullable<int> im_score { get; set; }
 
     public Nullable<int> audible_pings { get; set; }
 

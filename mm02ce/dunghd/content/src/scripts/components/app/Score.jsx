@@ -46,7 +46,7 @@ class Score extends Component {
     let lastSave = `${score.im_score} - Last saved ${moment(Date.now()).fromNow()}`;
     if (score.histories && score.histories.length) {
       for (let counter = score.histories.length; counter > 0; --counter) {
-        if (score.histories[counter] && score.histories[counter].url === url && score.histories[counter].result) {
+        if (score.histories[counter] && score.histories[counter].url == url && score.histories[counter].result) {
           const history = score.histories[counter].history;
           console.log('found history', history);
           lastSave = `${score.im_score} - Last saved ${moment(history.saveAt).fromNow()}`;

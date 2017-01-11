@@ -4,7 +4,7 @@ const initialState = {
   time_on_tabs: 0,
   isOpen: false,
   url: '',
-  updateAt: Date.now(),
+  updateAt: new Date().toISOString(),
   histories: [],
 };
 
