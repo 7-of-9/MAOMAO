@@ -49,7 +49,7 @@ function mm_get_imscore(url) {
     result = {
       im_score: score.im_score,
       audible_pings: score.audible_pings,
-      time_on_tabs: score.TOT_total_millis,
+      time_on_tabs: score.time_on_tabs,
       url: score.url,
     }
   }
@@ -154,7 +154,37 @@ function mm_load() {
 function mm_update(session, force) {
   console.info("%c mm_update - NOP", mm_logstyle, session, force);
   if (session && session.url) {
-    sessionObservable.urls.set(session.url, session);
+    // TODO: Save NLP data
+    var data = Object.assign({},
+      {
+        sid: session.sid,
+        im_score: session.im_score,
+        audible_pings: session.audible_pings,
+        time_on_tabs: session.TOT_total_millis,
+        url: session.url,
+      });
+    var existSession = sessionObservable.urls.get(session.url);
+    if (existSession) {
+      // TODO: Change im_score when the change > 1.0
+      if (Number(data.im_score) > Number(existSession.im_score + 1)) {
+        existSession.im_score = data.im_score;
+      }
+
+      if (data.audible_pings > existSession.audible_pings) {
+        existSession.audible_pings = data.audible_pings;
+      }
+
+      if (data.time_on_tabs !== existSession.time_on_tabs) {
+        existSession.time_on_tabs = data.time_on_tabs;
+      }
+
+      if (data.url !== existSession.url) {
+        existSession.url = data.url;
+      }
+
+    } else {
+      sessionObservable.urls.set(session.url, data);
+    }
   }
 
   /*if (session == null) {
