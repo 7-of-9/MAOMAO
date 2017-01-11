@@ -1,6 +1,6 @@
 {
     "name": "mm02ce",
-    "version": "0.3.9",
+    "version": "0.3.10",
     "description": "Hope++!",
     "background": {
         "page": "bg.html"

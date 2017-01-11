@@ -3,6 +3,8 @@ import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
+import { batchedSubscribe } from 'redux-batched-subscribe';
+import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
@@ -16,9 +18,9 @@ const middleware = [
   logger,
 ];
 const composeEnhancers = composeWithDevTools({ realtime: true });
-
 const store = createStore(rootReducer, {}, composeEnhancers(
   applyMiddleware(...middleware),
+  batchedSubscribe(batchedUpdates),
 ));
 
 wrapStore(store, {
