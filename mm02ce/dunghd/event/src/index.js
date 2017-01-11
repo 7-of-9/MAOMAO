@@ -127,15 +127,15 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   const now = Date.now();
   checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
-    const data = Object.assign({}, window.mm_get_imscore(url), { userId: window.userId });
+    const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });
     window.ajax_put_UrlHistory(data,
-      err => store.dispatch({
+      error => store.dispatch({
         type: 'IM_SAVE_ERROR',
         payload: {
           url,
           history: {
             data,
-            err,
+            error,
             saveAt: now,
           },
         },
