@@ -1,15 +1,6 @@
-﻿using Microsoft.ApplicationInsights;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Diagnostics;
 using System.Web.Http;
-using mm_global;
 using WebApi.OutputCache.V2;
-using System.Dynamic;
-using WebApi.OutputCache.Core.Cache;
 using System.Threading.Tasks;
 
 namespace mmapi00.Controllers
@@ -110,6 +101,23 @@ namespace mmapi00.Controllers
                       new_terms = new_terms,
                       new_pairs = new_pairs,
                              ms = sw.ElapsedMilliseconds });
+        }
+
+        /// <summary>
+        /// Stores user history
+        /// </summary>
+        /// <param name="user_history">JSON of user history.</param>
+        /// <returns></returns>
+        [Route("api/url_history")]
+        [HttpPost]
+        public IHttpActionResult PostUserHistory([FromBody]dynamic user_history)
+        {
+            if (user_history == null) return BadRequest("bad user_history");
+
+            return Ok(new
+            {
+                url = user_history.url,
+            });
         }
     }
 }

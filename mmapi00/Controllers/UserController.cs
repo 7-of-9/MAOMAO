@@ -26,7 +26,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUser([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.User.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.google_user_id);
+            var db_user = mm_svc.User.Register.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.google_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }

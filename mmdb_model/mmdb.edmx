@@ -102,6 +102,8 @@
           <Property Name="urlId" Type="bigint" Nullable="false" />
           <Property Name="navUtc" Type="datetime" Nullable="false" />
           <Property Name="im_score" Type="int" Nullable="false" />
+          <Property Name="audible_pings" Type="int" />
+          <Property Name="time_on_tabs" Type="bigint" />
         </EntityType>
         <EntityType Name="users">
           <Key>
@@ -536,6 +538,8 @@
           <Property Name="im_score" Type="Int32" Nullable="false" />
           <NavigationProperty Name="url" Relationship="mm02Model.fk_url" FromRole="user_url" ToRole="url" />
           <NavigationProperty Name="user" Relationship="mm02Model.fk_user" FromRole="user_url" ToRole="user" />
+          <Property Name="audible_pings" Type="Int32" />
+          <Property Name="time_on_tabs" Type="Int64" />
         </EntityType>
         <Association Name="fk_url">
           <End Type="mm02Model.url" Role="url" Multiplicity="1" />
@@ -776,6 +780,8 @@
           <EntitySetMapping Name="user_url">
             <EntityTypeMapping TypeName="mm02Model.user_url">
               <MappingFragment StoreEntitySet="user_url">
+                <ScalarProperty Name="time_on_tabs" ColumnName="time_on_tabs" />
+                <ScalarProperty Name="audible_pings" ColumnName="audible_pings" />
                 <ScalarProperty Name="im_score" ColumnName="im_score" />
                 <ScalarProperty Name="navUtc" ColumnName="navUtc" />
                 <ScalarProperty Name="urlId" ColumnName="urlId" />
