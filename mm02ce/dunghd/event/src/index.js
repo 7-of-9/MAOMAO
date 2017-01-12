@@ -135,13 +135,23 @@ function checkImScore(url, updateAt) {
   }
 }
 
+// tracking latest success record
+const histories = {};
+
 window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
   const now = new Date().toISOString();
   checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
     const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });
-    // TODO: Save history whenever user has visited at least few minitues
+
+    // find which changes from last time
+    if (histories[url]) {
+      data.im_score -= Number(histories[url].im_score);
+      data.audible_pings -= Number(histories[url].audible_pings);
+      data.time_on_tabs -= Number(histories[url].time_on_tabs);
+    }
+
     window.ajax_put_UrlHistory(data,
       error => store.dispatch({
         type: 'IM_SAVE_ERROR',
@@ -154,17 +164,20 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
           },
         },
       }),
-      result => store.dispatch({
-        type: 'IM_SAVE_SUCCESS',
-        payload: {
-          url,
-          history: {
-            data,
-            result,
-            saveAt: now,
+      (result) => {
+        histories[url] = data;
+        store.dispatch({
+          type: 'IM_SAVE_SUCCESS',
+          payload: {
+            url,
+            history: {
+              data,
+              result,
+              saveAt: now,
+            },
           },
-        },
-      }));
+        });
+      });
   }
 });
 

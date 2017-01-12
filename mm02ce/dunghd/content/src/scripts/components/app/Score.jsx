@@ -27,7 +27,7 @@ function lastSave(score) {
   let message = `${score.im_score}`;
   if (score.histories && score.histories.length) {
     for (let counter = score.histories.length; counter > 0; --counter) {
-      if (score.histories[counter] && String(score.histories[counter].url) === String(url) && score.histories[counter].result) {
+      if (score.histories[counter] && String(score.histories[counter].url) === String(url) && score.histories[counter].history && score.histories[counter].history.result) {
         const history = score.histories[counter].history;
         console.log('found history', history);
         message = `${score.im_score} - Last saved ${moment(history.saveAt).fromNow()}`;
