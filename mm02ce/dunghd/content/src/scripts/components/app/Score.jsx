@@ -24,8 +24,7 @@ const enhance = compose(
 
 function lastSave(score) {
   const url = score.url;
-  let message = `${score.im_score} - Last saved ${moment(Date.now()).fromNow()}`;
-  console.log('histories', score.histories);
+  let message = `${score.im_score}`;
   if (score.histories && score.histories.length) {
     for (let counter = score.histories.length; counter > 0; --counter) {
       if (score.histories[counter] && String(score.histories[counter].url) === String(url) && score.histories[counter].result) {

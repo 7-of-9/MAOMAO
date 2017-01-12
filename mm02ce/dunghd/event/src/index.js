@@ -3,6 +3,7 @@ import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
+import { batchActions, enableBatching } from 'redux-batched-actions';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
@@ -16,7 +17,7 @@ const middleware = [
   logger,
 ];
 const composeEnhancers = composeWithDevTools({ realtime: true });
-const store = createStore(rootReducer, {}, composeEnhancers(
+const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
   applyMiddleware(...middleware),
 ));
 
@@ -95,29 +96,42 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
  */
 function checkImScore(url, updateAt) {
   // checking current url is allow or not
-  store.dispatch({
-    type: 'IM_SCORE',
-    payload: {
-      url,
-      updateAt,
-    },
-  });
   if (window.sessionObservable.urls.get(url)) {
-    store.dispatch({
-      type: 'IM_ALLOWABLE',
-      payload: {
-        url,
-        isOpen: true,
-      },
-    });
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: true,
+          },
+        },
+      ]));
   } else {
-    store.dispatch({
-      type: 'IM_ALLOWABLE',
-      payload: {
-        url,
-        isOpen: false,
-      },
-    });
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: false,
+          },
+        },
+      ]));
   }
 }
 
