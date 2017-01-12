@@ -3,8 +3,6 @@ import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
-import { batchedSubscribe } from 'redux-batched-subscribe';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
@@ -20,7 +18,6 @@ const middleware = [
 const composeEnhancers = composeWithDevTools({ realtime: true });
 const store = createStore(rootReducer, {}, composeEnhancers(
   applyMiddleware(...middleware),
-  batchedSubscribe(batchedUpdates),
 ));
 
 wrapStore(store, {
@@ -130,6 +127,7 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
     const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });
+    // TODO: Save history whenever user has visited at least few minitues
     window.ajax_put_UrlHistory(data,
       error => store.dispatch({
         type: 'IM_SAVE_ERROR',
