@@ -100,7 +100,7 @@ $(document).ready(function () {
               //
 
               get_page_metadata(true, function () { // force-refresh of page_meta
-                process_text();
+                process_text(); // DUNG*** use jsJusText (1)
               })
             }
           }
