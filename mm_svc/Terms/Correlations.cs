@@ -192,12 +192,14 @@ order by occurs_together_count desc
                                         .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
                                         .Include("term1.golden_term.term").Include("term1.golden_term.term1")
                                         .Include("term1.golden_term1.term").Include("term1.golden_term1.term1")
-                                        .Where(p => all_ids.Contains(p.id))
-                                        .OrderByDescending(p => p.occurs_together_count) // important
+                                        .Where(p => all_ids.Contains(p.id) 
+                                            && p.term_a_id != g.MAOMAO_ROOT_TERM_ID
+                                            && p.term_b_id != g.MAOMAO_ROOT_TERM_ID)
+                                        .OrderByDescending(p => p.occurs_together_count)// important
                                         .ToListNoLock();
 
                 foreach (var term_matrix in all_term_matrix)
-                    if (!ret.Select(p => p.id).Contains(term_matrix.term.id))
+                    if (!ret.Select(p => p.id).Contains(term_matrix.term.id) && term_matrix.term.name.ToLower() != main_term.ToLower())
                         ret.Add(term_matrix.term);
                 return ret;
             }

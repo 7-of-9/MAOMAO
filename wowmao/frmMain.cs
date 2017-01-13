@@ -119,43 +119,51 @@ namespace wowmao
                   .Include("term.cal_entity_type")
                   .Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
 
-                // derive MM CAT!
+                // meta for buest-guess entities/terms (TSS production) (MM CAT)
                 var cat = new mm_svc.MmCat();
-                var final = cat.GetCat(meta_all, url_terms) as List<string>;
-                item.SubItems[3].Text = string.Join(" / ", final);
+                cat.GetCat(meta_all, url_terms);
                 txtInfo.AppendText(cat.log);
 
                 // display -- each URL-term
                 ttUrlTerms.Nodes.Clear();
                 lvwUrlTerms.Items.Clear();
                 lvwUrlTerms.BeginUpdate();
-                List<ListViewItem> ut_items = new List<ListViewItem>();
+                var ut_items = new List<ListViewItem>();
+                var direct_goldens = new List<url_term>();
+                var best_correlated_golden_term_ids_count = new Dictionary<long, int>();
+                var correlated_golden_terms = new List<term>();
                 foreach (var ut in url_terms.OrderByDescending(p => p.topic_specifc_score)) {
                     ttUrlTerms.AddRootTerm(ut.term);
 
                     // is term directly golden?
                     var direct_golden = Golden.IsGolden(ut.term.name);
+                    if (direct_golden)
+                        direct_goldens.Add(ut);
 
-                    // get any correlated golden term(s) -- dedupe
-                    var correlated_goldens = Correlations.GetGorrelatedGoldenTerms_Ordered(ut.term.name);
+                    // get any correlated golden term(s)
+                    List<term> correlated_goldens = null;
+                    if (ut.topic_specifc_score > 0)
+                    {
+                        correlated_goldens = Correlations.GetGorrelatedGoldenTerms_Ordered(ut.term.name)
+                            .Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC).ToList();
 
-                    // ***
-                    // plan -- should auto-golden high TSS terms to the closest (deepest)
-                    //         golden term (either correlated or direct)
-                    //
-                    // intent -- 2-level hierarchy on all URLs
-                    //
-                    // first: simple extraction of best-golden
-                    //      * prefer any direct golden terms
-                    //      * if no golden terms, need heuristic for picking a single best corrleated golden term
-                    //          (maybe average of top n high TSS corrleated goldens)
-                    //
-                    // only after this: can think about auto-suggesting L2 golden terms for high TSS scores
-                    //  (would be children of best-golden above).
+                        //foreach (var cg in correlated_goldens) {
+                        if (correlated_goldens.Count > 0) {
+                            var cg = correlated_goldens[0];
+                            // keep counts
+                            if (best_correlated_golden_term_ids_count.ContainsKey(cg.id))
+                                best_correlated_golden_term_ids_count[cg.id]++;
+                            else
+                                best_correlated_golden_term_ids_count.Add(cg.id, 1);
+
+                            if (!correlated_golden_terms.Any(p => p.id == cg.id))
+                                correlated_golden_terms.Add(cg);
+                        }
+                    }
 
                     var ut_item = new ListViewItem(new string[] {
                         direct_golden ? "*" : "",
-                        correlated_goldens.Count.ToString(), //"?",
+                        correlated_goldens == null ? "-" : correlated_goldens.Count.ToString(),
                         ut.topic_specifc_score.ToString(),
                         ut.term.name + " [" + ut.term.id + "] #" + ut.term.occurs_count,
                         ut.term.term_type.type,
@@ -174,22 +182,60 @@ namespace wowmao
                         ut.words_common_to_title_stemmed != null ? string.Join("/", ut.words_common_to_title_stemmed.Select(p => p + "/")) : "",
                         ut.words_common_to_desc_stemmed != null ? string.Join("/", ut.words_common_to_desc_stemmed.Select(p => p + "/")) : "",
                     });
-                    ut_item.Tag = ut;
+                    ut_item.Tag = new lvwUrlTermTag() { ut = ut, correlated_goldens = correlated_goldens };
                     ut_items.Add(ut_item);
                 }
                 lvwUrlTerms.Items.AddRange(ut_items.ToArray());
                 lvwUrlTerms.EndUpdate();
                 SetCols(lvwUrlTerms);
+
+                // extraction of best golden
+                var mm_cats = new List<term>();
+                if (direct_goldens.Count > 0) {
+                    // prefer any direct golden terms - rank by TSS, top 1
+                    mm_cats.Add(direct_goldens.OrderByDescending(p => p.topic_specifc_score).First().term);
+                }
+                else
+                {
+                    // no direct golden, take highest occuring correlated golden 
+                    Debug.WriteLine(best_correlated_golden_term_ids_count.Count());
+                    var list = best_correlated_golden_term_ids_count.ToList();
+                    list.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value)); // orded by desc
+                    mm_cats.Add(correlated_golden_terms.Single(p => p.id == list[0].Key));
+                }
+                item.SubItems[3].Text = mm_cats[0].name;
+
+                // suggested new goldens based on TSS
+                //...
+
+                // ***
+                // plan -- should auto-golden high TSS terms to the closest (deepest)
+                //         golden term (either correlated or direct)
+                //
+                // intent -- 2-level hierarchy on all URLs
+                //
+                // first: simple extraction of best-golden
+                //      * prefer any direct golden terms
+                //      * if no golden terms, need heuristic for picking a single best corrleated golden term
+                //          > most frequently occuring correlated golden across top TSS terms
+                //
+                // only after this: can think about auto-suggesting L2 golden terms for high TSS scores
+                //  (would be children of best-golden above).
             }
 
             this.Cursor = Cursors.Default;
         }
 
+        private class lvwUrlTermTag {
+            public url_term ut;
+            public List<term> correlated_goldens;
+        }
+
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
-            var url_term = lvwUrlTerms.SelectedItems[0].Tag as url_term;
-            var ordered_correlated_golden = Correlations.GetGorrelatedGoldenTerms_Ordered(url_term.term.name);
+            var tag = lvwUrlTerms.SelectedItems[0].Tag as lvwUrlTermTag;
+            var ordered_correlated_golden = Correlations.GetGorrelatedGoldenTerms_Ordered(tag.ut.term.name); // tag.correlated_goldens; // 
             ttDirectGoldens.Nodes.Clear();
             foreach(var golden_term in ordered_correlated_golden) {
                 ttDirectGoldens.AddRootTerm(golden_term);
