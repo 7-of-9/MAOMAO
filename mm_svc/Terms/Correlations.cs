@@ -35,11 +35,11 @@ namespace mm_svc.Terms
         }
     }
 
-    public class corr_result
-    {
-        public string main_term;
-        public List<correlation> correlations = new List<correlation>();
-    }
+    //public class corr_result
+    //{
+    //    public string main_term;
+    //    public List<correlation> correlations = new List<correlation>();
+    //}
 
     public static class Correlations
     {
@@ -50,124 +50,164 @@ namespace mm_svc.Terms
             public string corr_term_eq;
         }
 
-        public static List<corr_result> Get3(List<corr_input> inputs)
-        {
-            Stopwatch sw = new Stopwatch(); sw.Start();
-            //if (db == null) db = mm02Entities.Create();
-            using (var db = mm02Entities.Create())
-            {
-                var results = new List<corr_result>();
-                var main_terms = string.Join(", ", inputs.Select(p => p.main_term.ToLower()));
-                var main_terms_list = inputs.Select(p => p.main_term.ToLower());
-                //var cor_term_eq_list = inputs.Select(p => p.corr_term_eq.ToLower());
+        //public static List<corr_result> Get3(List<corr_input> inputs)
+        //{
+        //    Stopwatch sw = new Stopwatch(); sw.Start();
+        //    //if (db == null) db = mm02Entities.Create();
+        //    using (var db = mm02Entities.Create())
+        //    {
+        //        var results = new List<corr_result>();
+        //        var main_terms = string.Join(", ", inputs.Select(p => p.main_term.ToLower()));
+        //        var main_terms_list = inputs.Select(p => p.main_term.ToLower());
+        //        //var cor_term_eq_list = inputs.Select(p => p.corr_term_eq.ToLower());
 
-                // look up relations (both sides), with exclusions
-                var a = db.term_matrix
-                    .Include("term").Include("term.term_type").Include("term.cal_entity_type")
-                    //.Include("term.golden_term").Include("term.golden_term1")
-                    .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
-                    //.Include("term1.golden_term").Include("term1.golden_term1")
-                    .Where(p => main_terms_list.Contains(p.term.name.ToLower()) 
-                            && !g.EXCLUDE_TERM_IDs.Contains(p.term_b_id));
-                var b = db.term_matrix
-                    .Include("term").Include("term.term_type").Include("term.cal_entity_type")
-                    //.Include("term.golden_term").Include("term.golden_term1")
-                    .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
-                    //.Include("term1.golden_term").Include("term1.golden_term1")
-                    .Where(p => main_terms_list.Contains(p.term1.name.ToLower()) 
-                            && !g.EXCLUDE_TERM_IDs.Contains(p.term_a_id));
-                var c = a.Union(b)
-                         .OrderByDescending(p => p.occurs_together_count);
-                //Debug.WriteLine(c.ToString());  
-                var data = c.ToListNoLock();
-                Debug.WriteLine($"> Get3('{main_terms}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
+        //        // look up relations (both sides), with exclusions
+        //        var a = db.term_matrix
+        //            .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+        //            //.Include("term.golden_term").Include("term.golden_term1")
+        //            .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+        //            //.Include("term1.golden_term").Include("term1.golden_term1")
+        //            .Where(p => main_terms_list.Contains(p.term.name.ToLower()) 
+        //                    && !g.EXCLUDE_TERM_IDs.Contains(p.term_b_id));
+        //        var b = db.term_matrix
+        //            .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+        //            //.Include("term.golden_term").Include("term.golden_term1")
+        //            .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+        //            //.Include("term1.golden_term").Include("term1.golden_term1")
+        //            .Where(p => main_terms_list.Contains(p.term1.name.ToLower()) 
+        //                    && !g.EXCLUDE_TERM_IDs.Contains(p.term_a_id));
+        //        var c = a.Union(b)
+        //                 .OrderByDescending(p => p.occurs_together_count);
+        //        //Debug.WriteLine(c.ToString());  
+        //        var data = c.ToListNoLock();
+        //        Debug.WriteLine($"> Get3('{main_terms}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
 
-                int dbg1 = 0;
-                foreach (var mat in data)
-                {
-                    var max_term_occurs_count = Math.Max(mat.term.occurs_count, mat.term1.occurs_count);
+        //        int dbg1 = 0;
+        //        foreach (var mat in data)
+        //        {
+        //            var max_term_occurs_count = Math.Max(mat.term.occurs_count, mat.term1.occurs_count);
 
-                    // get main & related terms from matrix
-                    term related_term;
-                    string main_term;
-                    if (main_terms_list.Contains(mat.term.name.ToLower()))
-                       { related_term = mat.term1; main_term = mat.term.name; }
-                    else if (main_terms_list.Contains(mat.term1.name.ToLower()))
-                       { related_term = mat.term; main_term = mat.term1.name; }
-                    else continue; //?
-                    dbg1++;
+        //            // get main & related terms from matrix
+        //            term related_term;
+        //            string main_term;
+        //            if (main_terms_list.Contains(mat.term.name.ToLower()))
+        //               { related_term = mat.term1; main_term = mat.term.name; }
+        //            else if (main_terms_list.Contains(mat.term1.name.ToLower()))
+        //               { related_term = mat.term; main_term = mat.term1.name; }
+        //            else continue; //?
+        //            dbg1++;
 
-                            //term related_term;
-                            //if (related_term_matrix.term.name.ToLower() != main_term.ToLower())
-                            //    related_term = related_term_matrix.term;
-                            //else if (related_term_matrix.term1.name.ToLower() != main_term.ToLower())
-                            //    related_term = related_term_matrix.term1;
-                            //else continue; // exclude self by id
+        //                    //term related_term;
+        //                    //if (related_term_matrix.term.name.ToLower() != main_term.ToLower())
+        //                    //    related_term = related_term_matrix.term;
+        //                    //else if (related_term_matrix.term1.name.ToLower() != main_term.ToLower())
+        //                    //    related_term = related_term_matrix.term1;
+        //                    //else continue; // exclude self by id
 
-                    mat.related_term = related_term;
+        //            mat.related_term = related_term;
 
-                    // optional: related term exclusion, if supplied
-                    var corr_term_eq = inputs.Single(p => p.main_term.ToLower() == main_term.ToLower()).corr_term_eq;
-                    if (!string.IsNullOrEmpty(corr_term_eq))
-                        if (related_term.name.ToLower() != corr_term_eq.ToLower())
-                            continue;
+        //            // optional: related term exclusion, if supplied
+        //            var corr_term_eq = inputs.Single(p => p.main_term.ToLower() == main_term.ToLower()).corr_term_eq;
+        //            if (!string.IsNullOrEmpty(corr_term_eq))
+        //                if (related_term.name.ToLower() != corr_term_eq.ToLower())
+        //                    continue;
 
-                    // add/update correlations output
-                    //Debug.WriteLine($"{main_term}: tm.id={mat.id}");
-                    corr_result res = results.SingleOrDefault(p => p.main_term.ToLower() == main_term.ToLower());
-                    if (res == null) { 
-                        res = new corr_result() { main_term = main_term };
-                        results.Add(res);
-                    }
+        //            // add/update correlations output
+        //            //Debug.WriteLine($"{main_term}: tm.id={mat.id}");
+        //            corr_result res = results.SingleOrDefault(p => p.main_term.ToLower() == main_term.ToLower());
+        //            if (res == null) { 
+        //                res = new corr_result() { main_term = main_term };
+        //                results.Add(res);
+        //            }
 
-                    correlation corr = res.correlations.SingleOrDefault(p => p.main_term.ToLower() == main_term.ToLower() && p.corr_term.ToLower() == related_term.name.ToLower());
-                    if (corr == null) {
-                        corr = new correlation() { main_term = main_term, corr_term = related_term.name };
-                        res.correlations.Add(corr);
-                    }
+        //            correlation corr = res.correlations.SingleOrDefault(p => p.main_term.ToLower() == main_term.ToLower() && p.corr_term.ToLower() == related_term.name.ToLower());
+        //            if (corr == null) {
+        //                corr = new correlation() { main_term = main_term, corr_term = related_term.name };
+        //                res.correlations.Add(corr);
+        //            }
 
-                    if (!corr.corr_matrix.Any(p => p.id == mat.id)) // only add term_matrix once, by id
-                        corr.corr_matrix.Add(mat);
+        //            if (!corr.corr_matrix.Any(p => p.id == mat.id)) // only add term_matrix once, by id
+        //                corr.corr_matrix.Add(mat);
 
-                    mat.corr = (double)mat.occurs_together_count / (double)max_term_occurs_count; // calc corr.
-                }
-                Debug.WriteLine($"> Get3('{main_terms}'): dbg1={dbg1}]");
+        //            mat.corr = (double)mat.occurs_together_count / (double)max_term_occurs_count; // calc corr.
+        //        }
+        //        Debug.WriteLine($"> Get3('{main_terms}'): dbg1={dbg1}]");
 
-                // remove self
-                foreach (var result in results) {
-                    result.correlations.RemoveAll(p => p.corr_term == p.main_term);
+        //        // remove self
+        //        foreach (var result in results) {
+        //            result.correlations.RemoveAll(p => p.corr_term == p.main_term);
 
-                    // calc max correlation & sum of appears_together_count
-                    foreach (var x in result.correlations) {
-                        x.sum_XX = x.corr_matrix.Sum(p => p.occurs_together_count);
-                        x.max_corr = x.corr_matrix.Max(p => p.corr); // probably should be a weighted average
+        //            // calc max correlation & sum of appears_together_count
+        //            foreach (var x in result.correlations) {
+        //                x.sum_XX = x.corr_matrix.Sum(p => p.occurs_together_count);
+        //                x.max_corr = x.corr_matrix.Max(p => p.corr); // probably should be a weighted average
 
-                        //Debug.WriteLine($"main_term={x.main_term} corr_term={x.corr_term} sum_XX={x.sum_XX} max_corr={x.max_corr.ToString("0.0000")}");
-                        //foreach (var tm in x.corr_matrix) {
-                        //    Debug.WriteLine($"\tTM: id={tm.id.ToString().PadLeft(10)} " + 
-                        //                    $"{tm.term.name.PadLeft(20)}[{tm.term.id.ToString().PadLeft(6)}] #{tm.term.occurs_count.ToString().PadLeft(4)}" +
-                        //                    $"  X  " + 
-                        //                    $"{tm.term1.name.PadLeft(20)}[{tm.term1.id.ToString().PadLeft(6)}] #{tm.term1.occurs_count.ToString().PadLeft(4)}   " +
-                        //                    $"->   XX={tm.occurs_together_count.ToString().PadLeft(4)}  " +
-                        //                    $"corr={tm.corr.ToString("0.0000")} ==> {tm.related_term.name}[{tm.related_term.id}]");
-                        //}
-                    }
+        //                //Debug.WriteLine($"main_term={x.main_term} corr_term={x.corr_term} sum_XX={x.sum_XX} max_corr={x.max_corr.ToString("0.0000")}");
+        //                //foreach (var tm in x.corr_matrix) {
+        //                //    Debug.WriteLine($"\tTM: id={tm.id.ToString().PadLeft(10)} " + 
+        //                //                    $"{tm.term.name.PadLeft(20)}[{tm.term.id.ToString().PadLeft(6)}] #{tm.term.occurs_count.ToString().PadLeft(4)}" +
+        //                //                    $"  X  " + 
+        //                //                    $"{tm.term1.name.PadLeft(20)}[{tm.term1.id.ToString().PadLeft(6)}] #{tm.term1.occurs_count.ToString().PadLeft(4)}   " +
+        //                //                    $"->   XX={tm.occurs_together_count.ToString().PadLeft(4)}  " +
+        //                //                    $"corr={tm.corr.ToString("0.0000")} ==> {tm.related_term.name}[{tm.related_term.id}]");
+        //                //}
+        //            }
 
-                    result.correlations = result.correlations.OrderByDescending(p => p.max_corr).ToList();
-                }
+        //            result.correlations = result.correlations.OrderByDescending(p => p.max_corr).ToList();
+        //        }
 
-                Debug.WriteLine($">>> Get3('{main_terms}'): {sw.ElapsedMilliseconds} ms");
-                return results;
+        //        Debug.WriteLine($">>> Get3('{main_terms}'): {sw.ElapsedMilliseconds} ms");
+        //        return results;
+        //    }
+        //}
+
+        public static List<term> GetGorrelatedGoldenTerms_Ordered(string main_term) {
+            var ret = new List<term>();
+            using (var db = mm02Entities.Create()) {
+                var a_ids = db.ObjectContext().ExecuteStoreQuery<long>($@"
+select term_matrix.id
+--term_matrix.*, (select name from term where id = term_matrix.term_b_id) 'term_b', (select name from term where id = term_matrix.term_a_id) 'term_a'
+--(select child_term_id from golden_term where child_term_id = term_matrix.term_b_id) 'golden correlation?'
+from term_matrix
+where (select name from term where id = term_a_id) = '{main_term}'
+and(select child_term_id from golden_term where child_term_id = term_matrix.term_b_id) is not null
+order by occurs_together_count desc
+                ");
+
+                var b_ids = db.ObjectContext().ExecuteStoreQuery<long>($@"
+select term_matrix.id
+--term_matrix.*, (select name from term where id = term_matrix.term_a_id) 'term_a', (select name from term where id = term_matrix.term_b_id) 'term_b'
+--(select child_term_id from golden_term where child_term_id = term_matrix.term_a_id) 'golden correlation?'
+from term_matrix
+where (select name from term where id = term_b_id) = '{main_term}'
+and (select child_term_id from golden_term where child_term_id = term_matrix.term_a_id) is not null
+order by occurs_together_count desc
+                ");
+
+                var all_ids = a_ids.Union(b_ids).ToList();
+                var all_term_matrix = db.term_matrix
+                                        .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                                        .Include("term.golden_term.term").Include("term.golden_term.term1")
+                                        .Include("term.golden_term1.term").Include("term.golden_term1.term1")
+                                        .Include("term1").Include("term1.term_type").Include("term1.cal_entity_type")
+                                        .Include("term1.golden_term.term").Include("term1.golden_term.term1")
+                                        .Include("term1.golden_term1.term").Include("term1.golden_term1.term1")
+                                        .Where(p => all_ids.Contains(p.id))
+                                        .OrderByDescending(p => p.occurs_together_count) // important
+                                        .ToListNoLock();
+
+                foreach (var term_matrix in all_term_matrix)
+                    if (!ret.Select(p => p.id).Contains(term_matrix.term.id))
+                        ret.Add(term_matrix.term);
+                return ret;
             }
         }
 
-        public static List<correlation> Get2(string main_term, string corr_term_eq = null, int? max_appears_together_count = null)
+        public static List<correlation> GetTermCorrelations(string main_term, string corr_term_eq = null, int? max_appears_together_count = null)
         {
             Stopwatch sw = new Stopwatch(); sw.Start();
             //if (db == null) db = mm02Entities.Create();
-
-            using (var db = mm02Entities.Create())
-            {
+            using (var db = mm02Entities.Create()) {
                 var correlated = new List<correlation>();
 
                 // look up relations (both sides), with exclusions

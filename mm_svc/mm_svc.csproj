@@ -67,6 +67,7 @@
     <Compile Include="ExternalNlp\TermPair\TermPair.cs" />
     <Compile Include="Info\UrlInfo.cs" />
     <Compile Include="Terms\Correlations.cs" />
+    <Compile Include="Terms\Golden.cs" />
     <Compile Include="User\History.cs" />
     <Compile Include="User\Register.cs" />
   </ItemGroup>

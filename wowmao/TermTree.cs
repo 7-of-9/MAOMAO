@@ -24,8 +24,52 @@ namespace wowmao
             InitializeComponent();
             this.AfterSelect += TermTree_AfterSelect;
             this.ContextMenuStrip = this.contextMenuStrip1;
+            this.AllowDrop = true;
+            this.ItemDrag += TermTree_ItemDrag;
+            this.DragEnter += TermTree_DragEnter;
+            this.DragDrop += TermTree_DragDrop;
+            this.DragOver += TermTree_DragOver;
         }
 
+        private void TermTree_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            // can only drag golden children
+            var draggedNode = (TreeNode)e.Item as TreeNode;
+            var corr = draggedNode.Tag as correlation;
+            if (corr == null || !corr.is_golden_child)
+                return;// DoDragDrop(e.Item, DragDropEffects.None);
+            else
+                DoDragDrop(e.Item, DragDropEffects.Move | DragDropEffects.None);
+        }
+
+        private void TermTree_DragEnter(object sender, DragEventArgs e)
+        {
+        }
+
+        private void TermTree_DragOver(object sender, DragEventArgs e)
+        {
+            // can only drop onto golden children
+            var targetPoint = this.PointToClient(new Point(e.X, e.Y));
+            var targetNode = this.GetNodeAt(targetPoint);
+            var corr = targetNode.Tag as correlation;
+            if (corr == null || !corr.is_golden_child)
+                e.Effect = DragDropEffects.None;
+            else
+                e.Effect = DragDropEffects.Move;
+        }
+
+        private void TermTree_DragDrop(object sender, DragEventArgs e)
+        {
+            var targetPoint = this.PointToClient(new Point(e.X, e.Y));
+            var targetNode = this.GetNodeAt(targetPoint);
+            var draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
+            if (!draggedNode.Equals(targetNode) && targetNode != null) {
+                draggedNode.Remove();
+                targetNode.Nodes.Add(draggedNode);
+                targetNode.Expand();
+            }
+        }
+     
         private void TermTree_AfterSelect(object sender, TreeViewEventArgs e) {
             var tn = this.SelectedNode;
             if (tn == null) return;
@@ -38,7 +82,7 @@ namespace wowmao
                 if (tn.Tag is term) {
                     this.Cursor = Cursors.WaitCursor;
                     var parent_term = tn.Tag as term;
-                    var correlations = Correlations.Get2(parent_term.name, null, tn.Level == 0 ? XX_max_L1 : XX_max_GT_L1);
+                    var correlations = Correlations.GetTermCorrelations(parent_term.name, null, tn.Level == 0 ? XX_max_L1 : XX_max_GT_L1);
                     List<correlation> filtered;
 
                     // exclude golden children whose parent is not this correlation
@@ -74,7 +118,7 @@ namespace wowmao
 
         private term FirstGoldenParent(TreeNode tn) {
             if (tn.Parent == null) { using (var db = mm02Entities.Create()) {
-                    return db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
+                return db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
             } }
             var corr = tn.Parent.Tag as correlation;
             if (corr != null && corr.is_golden_child) return corr.corr_terms.First();
@@ -181,7 +225,7 @@ namespace wowmao
                 this.BeginUpdate();
                 var old_ndx = tn.Index;
                 var old_parent = tn.Parent;
-                var new_corr = Correlations.Get2(corr.main_term, corr.corr_term, XX_max_GT_L1);
+                var new_corr = Correlations.GetTermCorrelations(corr.main_term, corr.corr_term, XX_max_GT_L1);
                 var tn_new = TreeNodeFromCorrelation(new_corr.First());
                 old_parent.Nodes.Insert(old_ndx, tn_new);
                 old_parent.Nodes.Remove(tn);

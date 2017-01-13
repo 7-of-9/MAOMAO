@@ -16,9 +16,9 @@ namespace tests
         public void Correlations_Test1()
         {
             // GET3 == GET2
-            var get2_angus = mm_svc.Terms.Correlations.Get2("angus deayton", "richard curtis");
-            var get2_paul = mm_svc.Terms.Correlations.Get2("paul merton", "ian hislop");
-            var get2_magnus = mm_svc.Terms.Correlations.Get2("magnus carlsen", "chess");
+            var get2_angus = mm_svc.Terms.Correlations.GetTermCorrelations("angus deayton", "richard curtis");
+            var get2_paul = mm_svc.Terms.Correlations.GetTermCorrelations("paul merton", "ian hislop");
+            var get2_magnus = mm_svc.Terms.Correlations.GetTermCorrelations("magnus carlsen", "chess");
 
             var get3 = mm_svc.Terms.Correlations.Get3(new List<corr_input>() {
                     new corr_input() { main_term = "angus deayton", corr_term_eq = "richard curtis" },

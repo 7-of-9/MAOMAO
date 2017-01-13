@@ -208,7 +208,7 @@ namespace mm_svc
             //var other_terms = url_terms.Except(top_terms);
             foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
                 // get correlated terms
-                var correlations = Terms.Correlations.Get2(top_term.term.name).OrderByDescending(p => p.max_corr);
+                var correlations = Terms.Correlations.GetTermCorrelations(top_term.term.name).OrderByDescending(p => p.max_corr);
 
                 // take top n correlations
                 foreach (var correlation in correlations.Take(8)) { 
