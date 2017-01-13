@@ -42,14 +42,14 @@ function mm_get_imscore(url) {
   var result = {
     im_score: 0,
     audible_pings: 0,
-    time_on_tabs: 0,
+    time_on_tab: 0,
     url: url,
   };
   if (score) {
     result = {
       im_score: score.im_score,
       audible_pings: score.audible_pings,
-      time_on_tabs: score.time_on_tabs,
+      time_on_tab: score.time_on_tab,
       url: score.url,
     }
   }
@@ -160,7 +160,7 @@ function mm_update(session, force) {
         sid: session.sid,
         im_score: session.im_score,
         audible_pings: session.audible_pings,
-        time_on_tabs: session.TOT_total_millis,
+        time_on_tab: session.TOT_total_millis,
         url: session.url,
       });
     var existSession = sessionObservable.urls.get(session.url);
@@ -174,8 +174,8 @@ function mm_update(session, force) {
         existSession.audible_pings = data.audible_pings;
       }
 
-      if (data.time_on_tabs !== existSession.time_on_tabs) {
-        existSession.time_on_tabs = data.time_on_tabs;
+      if (data.time_on_tab !== existSession.time_on_tab) {
+        existSession.time_on_tab = data.time_on_tab;
       }
 
       if (data.url !== existSession.url) {

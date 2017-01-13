@@ -149,7 +149,7 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
     if (histories[url]) {
       data.im_score -= Number(histories[url].im_score);
       data.audible_pings -= Number(histories[url].audible_pings);
-      data.time_on_tabs -= Number(histories[url].time_on_tabs);
+      data.time_on_tab -= Number(histories[url].time_on_tab);
     }
 
     window.ajax_put_UrlHistory(data,

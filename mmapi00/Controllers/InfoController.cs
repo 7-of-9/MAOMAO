@@ -115,43 +115,13 @@ namespace mmapi00.Controllers
         public IHttpActionResult PostUserHistory([FromBody]dynamic history)
         {
             if (history == null) return BadRequest("bad user_history");
-
             if (history.url == null) return BadRequest("missing url");
-
             if (history.userId == null) return BadRequest("missing user id");
-            string url = history.url;
-            string saveAt = history.saveAt;
-            int userId = history.userId;
-            int score = 0;
-            int tot = 0;
-            int pings = 0;
-            if (history.im_score != null)
-            {
-                score = history.im_score;
-            }
-            
-            if (history.time_on_tabs != null)
-            {
-                tot = history.time_on_tabs;
-            }
-            
-            if (history.audible_pings != null)
-            {
-                pings = history.audible_pings;
-            }
-           
-            var db_history = mm_svc.User.History.TrackingByUrl(url, userId, score, tot, pings, saveAt);
-            if (db_history != null)
-            {
-                return Ok(new
-                {
-                    url = db_history.url,
-                    im_score = db_history.im_score,
-                    id = db_history.id,
-                });
 
-            }
-            return BadRequest("Oops! Something is not right. Please try again!");
+            var history_id = mm_svc.User.UserHistory.TrackingByUrl(
+                (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
+
+            return Ok( new { id = history_id });
         }
     }
 }
