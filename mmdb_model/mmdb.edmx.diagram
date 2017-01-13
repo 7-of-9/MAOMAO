@@ -15,10 +15,7 @@
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         <EntityTypeShape EntityType="mm02Model.term_matrix" Width="1.5" PointX="5.625" PointY="5.625" />
-        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.625" PointY="0.5" />
-        <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.875" PointY="1.375" />
-        <AssociationConnector Association="mm02Model.fk_url" />
-        <AssociationConnector Association="mm02Model.fk_user" />
+        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="0.5" />
         <EntityTypeShape EntityType="mm02Model.golden_term" Width="1.5" PointX="0.5" PointY="9.125" />
         <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="2.75" PointY="7.375" />
         <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
@@ -28,6 +25,9 @@
         <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <AssociationConnector Association="mm02Model.FK_golden_term_child" />
         <AssociationConnector Association="mm02Model.FK_golden_term_parent" />
+        <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.375" PointY="0.75" />
+        <AssociationConnector Association="mm02Model.fk_tbl_url" />
+        <AssociationConnector Association="mm02Model.fk_tbl_user" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

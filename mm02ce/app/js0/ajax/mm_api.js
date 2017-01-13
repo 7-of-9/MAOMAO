@@ -55,6 +55,9 @@ function ajax_get_UrlNlpInfo(url, callback_success) {
  */
 function ajax_put_UrlNlpInfoCalais(nlp_info, callback_success) {
 
+    // DUNG*** pass the NLP text to the server (2)
+    // --> tell me when you're ready, i'll add the DB tables and url_nlpinfo_calais server.
+
   $.ajax(api_base + '/url_nlpinfo_calais', {
     'type': 'PUT',
     'contentType': 'application/json',

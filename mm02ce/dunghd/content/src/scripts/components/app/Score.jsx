@@ -37,7 +37,7 @@ const Score = pure(({ score }) =>
       showExpandableButton
       />
     <CardText expandable>
-      Time on tab: {moment.duration(score.time_on_tabs).humanize()}
+      Time on tab: {moment.duration(score.time_on_tab).humanize()}
     </CardText>
     <CardText expandable>
       Ping audible: {score.audible_pings}

@@ -101,9 +101,9 @@
           <Property Name="userId" Type="bigint" Nullable="false" />
           <Property Name="urlId" Type="bigint" Nullable="false" />
           <Property Name="navUtc" Type="datetime" Nullable="false" />
-          <Property Name="im_score" Type="int" />
+          <Property Name="im_score" Type="float" />
           <Property Name="audible_pings" Type="int" />
-          <Property Name="time_on_tabs" Type="bigint" />
+          <Property Name="time_on_tab" Type="bigint" />
         </EntityType>
         <EntityType Name="users">
           <Key>
@@ -352,15 +352,6 @@
           </AssociationSet>
           <EntitySet Name="term_matrix" EntityType="mm02Model.term_matrix" />
           <EntitySet Name="users" EntityType="mm02Model.user" />
-          <EntitySet Name="user_url" EntityType="mm02Model.user_url" />
-          <AssociationSet Name="fk_url" Association="mm02Model.fk_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user" Association="mm02Model.fk_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
           <EntitySet Name="golden_term" EntityType="mm02Model.golden_term" />
           <EntitySet Name="terms" EntityType="mm02Model.term" />
           <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
@@ -390,6 +381,15 @@
           <AssociationSet Name="FK_golden_term_parent" Association="mm02Model.FK_golden_term_parent">
             <End Role="term" EntitySet="terms" />
             <End Role="golden_term" EntitySet="golden_term" />
+          </AssociationSet>
+          <EntitySet Name="user_url" EntityType="mm02Model.user_url" />
+          <AssociationSet Name="fk_tbl_url" Association="mm02Model.fk_tbl_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
+          <AssociationSet Name="fk_tbl_user" Association="mm02Model.fk_tbl_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -472,7 +472,7 @@
           <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
-          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_url" FromRole="url" ToRole="user_url" />
+          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_tbl_url" FromRole="url" ToRole="user_url" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -525,46 +525,8 @@
           <Property Name="password" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="salt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="google_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user" FromRole="user" ToRole="user_url" />
+          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_tbl_user" FromRole="user" ToRole="user_url" />
         </EntityType>
-        <EntityType Name="user_url">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" />
-          <Property Name="userId" Type="Int64" Nullable="false" />
-          <Property Name="urlId" Type="Int64" Nullable="false" />
-          <Property Name="navUtc" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="im_score" Type="Int32" />
-          <NavigationProperty Name="url" Relationship="mm02Model.fk_url" FromRole="user_url" ToRole="url" />
-          <NavigationProperty Name="user" Relationship="mm02Model.fk_user" FromRole="user_url" ToRole="user" />
-          <Property Name="audible_pings" Type="Int32" />
-          <Property Name="time_on_tabs" Type="Int64" />
-        </EntityType>
-        <Association Name="fk_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="urlId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
-          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="userId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="golden_term">
           <Key>
             <PropertyRef Name="id" />
@@ -677,6 +639,44 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="user_url">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="userId" Type="Int64" Nullable="false" />
+          <Property Name="urlId" Type="Int64" Nullable="false" />
+          <Property Name="navUtc" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="im_score" Type="Double" />
+          <Property Name="audible_pings" Type="Int32" />
+          <Property Name="time_on_tab" Type="Int64" />
+          <NavigationProperty Name="url" Relationship="mm02Model.fk_tbl_url" FromRole="user_url" ToRole="url" />
+          <NavigationProperty Name="user" Relationship="mm02Model.fk_tbl_user" FromRole="user_url" ToRole="user" />
+        </EntityType>
+        <Association Name="fk_tbl_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
+              <PropertyRef Name="urlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_tbl_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
+              <PropertyRef Name="userId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -777,19 +777,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="user_url">
-            <EntityTypeMapping TypeName="mm02Model.user_url">
-              <MappingFragment StoreEntitySet="user_url">
-                <ScalarProperty Name="time_on_tabs" ColumnName="time_on_tabs" />
-                <ScalarProperty Name="audible_pings" ColumnName="audible_pings" />
-                <ScalarProperty Name="im_score" ColumnName="im_score" />
-                <ScalarProperty Name="navUtc" ColumnName="navUtc" />
-                <ScalarProperty Name="urlId" ColumnName="urlId" />
-                <ScalarProperty Name="userId" ColumnName="userId" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="golden_term">
             <EntityTypeMapping TypeName="mm02Model.golden_term">
               <MappingFragment StoreEntitySet="golden_term">
@@ -807,6 +794,19 @@
                 <ScalarProperty Name="cal_entity_type_id" ColumnName="cal_entity_type_id" />
                 <ScalarProperty Name="term_type_id" ColumnName="term_type_id" />
                 <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="user_url">
+            <EntityTypeMapping TypeName="mm02Model.user_url">
+              <MappingFragment StoreEntitySet="user_url">
+                <ScalarProperty Name="time_on_tab" ColumnName="time_on_tab" />
+                <ScalarProperty Name="audible_pings" ColumnName="audible_pings" />
+                <ScalarProperty Name="im_score" ColumnName="im_score" />
+                <ScalarProperty Name="navUtc" ColumnName="navUtc" />
+                <ScalarProperty Name="urlId" ColumnName="urlId" />
+                <ScalarProperty Name="userId" ColumnName="userId" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

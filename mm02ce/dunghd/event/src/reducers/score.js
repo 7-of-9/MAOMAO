@@ -1,7 +1,7 @@
 const initialState = {
   im_score: 0,
   audible_pings: 0,
-  time_on_tabs: 0,
+  time_on_tab: 0,
   isOpen: false,
   url: '',
   updateAt: new Date().toISOString(),
