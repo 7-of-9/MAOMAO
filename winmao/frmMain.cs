@@ -21,7 +21,6 @@ namespace winmao
         {
             InitializeComponent();
             InitUrls();
-
         }
 
         private void chkCrunch_CheckedChanged(object sender, EventArgs e) { Crunch(); }
