@@ -135,21 +135,28 @@ function checkImScore(url, updateAt) {
   }
 }
 
-// tracking latest success record
+
+// tracking latest record for by url
 const histories = {};
 
-window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
-  console.info('reaction url', url);
+/**
+ * Save im_score and save latest record on for tracking history
+ */
+function saveImScore(url) {
   const now = new Date().toISOString();
-  checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
-    const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });
+    const data = Object.assign({}, window.mm_get_imscore(url), { userId: window.userId });
 
     // find which changes from last time
     if (histories[url]) {
       data.im_score -= Number(histories[url].im_score);
       data.audible_pings -= Number(histories[url].audible_pings);
-      data.time_on_tab -= Number(histories[url].time_on_tab);
+      data.time_on_tab -= Number(histories[url].time_on_tab || 0);
+    }
+
+    // fix time_on_tab is null
+    if (isNaN(parseFloat(data.time_on_tab))) {
+      data.time_on_tab = 0;
     }
 
     window.ajax_put_UrlHistory(data,
@@ -159,10 +166,10 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
           type: 'IM_SAVE_ERROR',
           payload: {
             url,
+            saveAt: now,
             history: {
               data,
               error,
-              saveAt: now,
             },
           },
         });
@@ -173,15 +180,22 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
           type: 'IM_SAVE_SUCCESS',
           payload: {
             url,
+            saveAt: now,
             history: {
               data,
               result,
-              saveAt: now,
             },
           },
         });
       });
   }
+}
+
+window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
+  console.info('reaction url', url);
+  const now = new Date().toISOString();
+  checkImScore(url, now);
+  saveImScore(url);
 });
 
 window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
@@ -189,6 +203,14 @@ window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
   const url = window.sessionObservable.activeUrl;
   checkImScore(url, updateAt);
 });
+
+// save im_score every 30 seconds
+const ROUND_CLOCK = 30;
+setInterval(() => {
+  const url = window.sessionObservable.activeUrl;
+  console.log('Save im_score every ', ROUND_CLOCK, ' seconds');
+  saveImScore(url);
+}, ROUND_CLOCK * 1000);
 
 // firebase auth
 // init firebase
