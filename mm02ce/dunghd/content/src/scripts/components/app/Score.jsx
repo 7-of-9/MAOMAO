@@ -1,5 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+// import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
+import { compose, withState, withProps, withHandlers } from 'recompose';
 import moment from 'moment';
 
 const style = {
@@ -8,73 +10,48 @@ const style = {
   right: 20,
   bottom: 20,
   left: 'auto',
+  zIndex: 1000,
   position: 'fixed',
 };
 
-const propTypes = {
-  score: PropTypes.object,
-};
+const enhance = compose(
+  withState('expanded', 'handleExpandChange', false),
+  withProps('score', 'score'),
+  withHandlers({
+    onChange: props => () => props.handleExpandChange(isExpand => !isExpand),
+  }),
+);
 
-const defaultProps = {
-  score: {
-    im_score: 0,
-    audible_pings: 0,
-    time_on_tabs: 0,
-    url: '',
-    isOpen: false,
-  },
-};
-
-
-class Score extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      expanded: false,
-    };
-    this.handleExpandChange = this.handleExpandChange.bind(this);
-  }
-
-  handleExpandChange(expanded) {
-    this.setState({ expanded });
-  }
-
-  render() {
-    console.log('im_score', this.props.score);
-    const score = this.props.score;
-    const url = this.props.score.url;
-    let lastSave = `${score.im_score} - Last saved ${moment(Date.now()).fromNow()}`;
-    if (score.histories && score.histories.length) {
-      for (let counter = score.histories.length; counter > 0; --counter) {
-        if (score.histories[counter] && score.histories[counter].url == url && score.histories[counter].result) {
-          const history = score.histories[counter].history;
-          console.log('found history', history);
-          lastSave = `${score.im_score} - Last saved ${moment(history.saveAt).fromNow()}`;
-          break;
-        }
+function lastSave(score) {
+  const url = score.url;
+  let message = `${score.im_score}`;
+  if (score.histories && score.histories.length) {
+    for (let counter = score.histories.length; counter > 0; --counter) {
+      if (score.histories[counter] && String(score.histories[counter].url) === String(url) && score.histories[counter].history && score.histories[counter].history.result) {
+        const history = score.histories[counter].history;
+        console.log('found history', history);
+        message = `${score.im_score} - Last saved ${moment(history.saveAt).fromNow()}`;
+        break;
       }
     }
-
-    return (
-      <Card style={style} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
-        <CardHeader
-          title="IM SCORE"
-          subtitle={lastSave}
-          actAsExpander
-          showExpandableButton
-          />
-        <CardText expandable>
-          Time on tab: {moment.duration(this.props.score.time_on_tabs).humanize()}
-        </CardText>
-        <CardText expandable>
-          Ping audible: {this.props.score.audible_pings}
-        </CardText>
-      </Card>
-    );
   }
+  return message;
 }
 
-Score.propTypes = propTypes;
-Score.defaultProps = defaultProps;
-
+const Score = enhance(({ expanded, score, onChange }) =>
+  <Card style={style} expanded={expanded} onExpandChange={onChange}>
+    <CardHeader
+      title="IM SCORE"
+      subtitle={lastSave(score)}
+      actAsExpander
+      showExpandableButton
+      />
+    <CardText expandable>
+      Time on tab: {moment.duration(score.time_on_tabs).humanize()}
+    </CardText>
+    <CardText expandable>
+      Ping audible: {score.audible_pings}
+    </CardText>
+  </Card>,
+);
 export default Score;

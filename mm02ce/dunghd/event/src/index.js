@@ -3,8 +3,7 @@ import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
-import { batchedSubscribe } from 'redux-batched-subscribe';
-import { unstable_batchedUpdates as batchedUpdates } from 'react-dom';
+import { batchActions, enableBatching } from 'redux-batched-actions';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
@@ -18,9 +17,8 @@ const middleware = [
   logger,
 ];
 const composeEnhancers = composeWithDevTools({ realtime: true });
-const store = createStore(rootReducer, {}, composeEnhancers(
+const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
   applyMiddleware(...middleware),
-  batchedSubscribe(batchedUpdates),
 ));
 
 wrapStore(store, {
@@ -98,31 +96,47 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
  */
 function checkImScore(url, updateAt) {
   // checking current url is allow or not
-  store.dispatch({
-    type: 'IM_SCORE',
-    payload: {
-      url,
-      updateAt,
-    },
-  });
   if (window.sessionObservable.urls.get(url)) {
-    store.dispatch({
-      type: 'IM_ALLOWABLE',
-      payload: {
-        url,
-        isOpen: true,
-      },
-    });
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: true,
+          },
+        },
+      ]));
   } else {
-    store.dispatch({
-      type: 'IM_ALLOWABLE',
-      payload: {
-        url,
-        isOpen: false,
-      },
-    });
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: false,
+          },
+        },
+      ]));
   }
 }
+
+// tracking latest success record
+const histories = {};
 
 window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
@@ -130,6 +144,14 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   checkImScore(url, now);
   if (window.sessionObservable.urls.get(url) && Number(window.userId) > 0) {
     const data = Object.assign({ saveAt: now }, window.mm_get_imscore(url), { userId: window.userId });
+
+    // find which changes from last time
+    if (histories[url]) {
+      data.im_score -= Number(histories[url].im_score);
+      data.audible_pings -= Number(histories[url].audible_pings);
+      data.time_on_tabs -= Number(histories[url].time_on_tabs);
+    }
+
     window.ajax_put_UrlHistory(data,
       error => store.dispatch({
         type: 'IM_SAVE_ERROR',
@@ -142,17 +164,20 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
           },
         },
       }),
-      result => store.dispatch({
-        type: 'IM_SAVE_SUCCESS',
-        payload: {
-          url,
-          history: {
-            data,
-            result,
-            saveAt: now,
+      (result) => {
+        histories[url] = data;
+        store.dispatch({
+          type: 'IM_SAVE_SUCCESS',
+          payload: {
+            url,
+            history: {
+              data,
+              result,
+              saveAt: now,
+            },
           },
-        },
-      }));
+        });
+      });
   }
 });
 
