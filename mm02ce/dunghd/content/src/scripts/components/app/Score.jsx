@@ -1,7 +1,7 @@
 // import React, { Component, PropTypes } from 'react';
 import React from 'react';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import { compose, withState, withProps, withHandlers } from 'recompose';
+import { pure } from 'recompose';
 import moment from 'moment';
 
 const style = {
@@ -13,14 +13,6 @@ const style = {
   zIndex: 1000,
   position: 'fixed',
 };
-
-const enhance = compose(
-  withState('expanded', 'handleExpandChange', false),
-  withProps('score', 'score'),
-  withHandlers({
-    onChange: props => () => props.handleExpandChange(isExpand => !isExpand),
-  }),
-);
 
 function lastSave(score) {
   const url = score.url;
@@ -38,8 +30,8 @@ function lastSave(score) {
   return message;
 }
 
-const Score = enhance(({ expanded, score, onChange }) =>
-  <Card style={style} expanded={expanded} onExpandChange={onChange}>
+const Score = pure(({ score }) =>
+  <Card style={style}>
     <CardHeader
       title="IM SCORE"
       subtitle={lastSave(score)}
