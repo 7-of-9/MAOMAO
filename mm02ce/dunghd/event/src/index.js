@@ -153,17 +153,20 @@ window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
     }
 
     window.ajax_put_UrlHistory(data,
-      error => store.dispatch({
-        type: 'IM_SAVE_ERROR',
-        payload: {
-          url,
-          history: {
-            data,
-            error,
-            saveAt: now,
+      (error) => {
+        histories[url] = data;
+        store.dispatch({
+          type: 'IM_SAVE_ERROR',
+          payload: {
+            url,
+            history: {
+              data,
+              error,
+              saveAt: now,
+            },
           },
-        },
-      }),
+        });
+      },
       (result) => {
         histories[url] = data;
         store.dispatch({
