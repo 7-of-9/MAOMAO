@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static mm_svc.Terms.Correlations;
 
 namespace mm_svc
 {
@@ -29,7 +30,7 @@ namespace mm_svc
             const int MIN_STEMMING_LEN = 5;
 
             var title = meta_all.html_title.ToString();
-            var description = meta_all.ip_description.ToString();
+            var description = (meta_all.ip_description ?? "").ToString();
             Porter2_English stemmer = new Porter2_English();
 
             // remove tags that are entities
@@ -61,18 +62,20 @@ namespace mm_svc
                 }
             }
 
-            // ** all fully contained in description - no stemming
-            foreach (var t in all.Where(p => description.ToLower().IndexOf(p.term.name.ToLower().Trim()) != -1)) {
-                var boost = 5 * t.term.name.Length * (int)t.S;
-                t.candidate_reason += $" DESC_EXACT({boost}) ";
-                t.topic_specifc_score += boost; // (int)(10 * Math.Log(Math.Max(20, tag.term.name.Length), 2)); 
-            }
-            // ** all fully contained in description - w/ stemming
-            foreach (var t in all.Where(p => stemmer.stem(description.ToLower()).IndexOf(stemmer.stem(p.term.name.ToLower().Trim())) != -1)) {
-                if (t.term.name.Length >= MIN_STEMMING_LEN) {
+            if (!string.IsNullOrEmpty(description)) {
+                // ** all fully contained in description - no stemming
+                foreach (var t in all.Where(p => description.ToLower().IndexOf(p.term.name.ToLower().Trim()) != -1)) {
                     var boost = 5 * t.term.name.Length * (int)t.S;
-                    t.candidate_reason += $" DESC_STEMMED({boost}) ";
-                    t.topic_specifc_score += boost;
+                    t.candidate_reason += $" DESC_EXACT({boost}) ";
+                    t.topic_specifc_score += boost; // (int)(10 * Math.Log(Math.Max(20, tag.term.name.Length), 2)); 
+                }
+                // ** all fully contained in description - w/ stemming
+                foreach (var t in all.Where(p => stemmer.stem(description.ToLower()).IndexOf(stemmer.stem(p.term.name.ToLower().Trim())) != -1)) {
+                    if (t.term.name.Length >= MIN_STEMMING_LEN) {
+                        var boost = 5 * t.term.name.Length * (int)t.S;
+                        t.candidate_reason += $" DESC_STEMMED({boost}) ";
+                        t.topic_specifc_score += boost;
+                    }
                 }
             }
 
@@ -208,7 +211,7 @@ namespace mm_svc
             //var other_terms = url_terms.Except(top_terms);
             foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
                 // get correlated terms
-                var correlations = Terms.Correlations.GetTermCorrelations(top_term.term.name).OrderByDescending(p => p.max_corr);
+                var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.max_corr);
 
                 // take top n correlations
                 foreach (var correlation in correlations.Take(8)) { 

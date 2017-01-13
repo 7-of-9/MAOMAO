@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExternalNlp\TermPair\TermPair.cs" />
     <Compile Include="Info\UrlInfo.cs" />
+    <Compile Include="Terms\CorrelatedGoldens.cs" />
     <Compile Include="Terms\Correlations.cs" />
     <Compile Include="Terms\Golden.cs" />
     <Compile Include="User\History.cs" />

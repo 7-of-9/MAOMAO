@@ -15,8 +15,8 @@ namespace mmdb_model
         public double? corr { get; set; }
 
         // # of times this term and adjacent term have appeared together
-        [NotMapped]
-        public long? XX { get; set; }
+        //[NotMapped]
+        //public long? XX { get; set; }
 
         // parent term
         //[NotMapped]
@@ -27,6 +27,9 @@ namespace mmdb_model
 
         [NotMapped]
         public ICollection<golden_term> golden_parents { get { return this.golden_term; } }
+
+        [NotMapped]
+        public bool is_golden { get { return this.golden_parents.Count > 0; } }
 
         [NotMapped]
         public int golden_mmcat_level { get {

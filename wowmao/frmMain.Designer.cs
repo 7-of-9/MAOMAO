@@ -31,24 +31,20 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.pnlTermTree = new System.Windows.Forms.Panel();
+            this.ttAll = new wowmao.TermTree();
             this.cmdRefresh = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.pnlTestMode = new System.Windows.Forms.Panel();
-            this.splitter2 = new System.Windows.Forms.Splitter();
-            this.pnlURLs = new System.Windows.Forms.Panel();
-            this.splitter3 = new System.Windows.Forms.Splitter();
-            this.pnlURL_List = new System.Windows.Forms.Panel();
-            this.lvwUrls = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.txtURLSearch = new System.Windows.Forms.TextBox();
-            this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.pnlUrlTerms = new System.Windows.Forms.Panel();
-            this.txtInfo = new System.Windows.Forms.TextBox();
-            this.splitter4 = new System.Windows.Forms.Splitter();
+            this.splitter5 = new System.Windows.Forms.Splitter();
+            this.pnlDirectGoldenCorrelations = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.splitter6 = new System.Windows.Forms.Splitter();
+            this.ttDirectGoldens = new wowmao.TermTree();
+            this.lblDirectGoldenCorrelations = new System.Windows.Forms.Label();
             this.lvwUrlTerms = new System.Windows.Forms.ListView();
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -56,28 +52,39 @@
             this.columnHeader21 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader18 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader19 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader20 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.splitter2 = new System.Windows.Forms.Splitter();
+            this.pnlURLs = new System.Windows.Forms.Panel();
+            this.pnlUrlTerms = new System.Windows.Forms.Panel();
             this.pnlUrlAllTermCorrelations = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.pnlDirectGoldenCorrelations = new System.Windows.Forms.Panel();
-            this.lblDirectGoldenCorrelations = new System.Windows.Forms.Label();
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.splitter5 = new System.Windows.Forms.Splitter();
-            this.ttDirectGoldens = new wowmao.TermTree();
             this.ttUrlTerms = new wowmao.TermTree();
-            this.ttAll = new wowmao.TermTree();
+            this.splitter4 = new System.Windows.Forms.Splitter();
+            this.txtInfo = new System.Windows.Forms.TextBox();
+            this.splitter3 = new System.Windows.Forms.Splitter();
+            this.pnlURL_List = new System.Windows.Forms.Panel();
+            this.cboTop = new System.Windows.Forms.ComboBox();
+            this.cmdWalk = new System.Windows.Forms.Button();
+            this.lvwUrls = new System.Windows.Forms.ListView();
+            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.txtURLSearch = new System.Windows.Forms.TextBox();
+            this.cmdSearchURLs = new System.Windows.Forms.Button();
+            this.termList1 = new wowmao.TermList();
             this.pnlTermTree.SuspendLayout();
             this.pnlTestMode.SuspendLayout();
+            this.pnlDirectGoldenCorrelations.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.pnlURLs.SuspendLayout();
-            this.pnlURL_List.SuspendLayout();
             this.pnlUrlTerms.SuspendLayout();
             this.pnlUrlAllTermCorrelations.SuspendLayout();
-            this.pnlDirectGoldenCorrelations.SuspendLayout();
+            this.pnlURL_List.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlTermTree
@@ -89,6 +96,17 @@
             this.pnlTermTree.Name = "pnlTermTree";
             this.pnlTermTree.Size = new System.Drawing.Size(532, 761);
             this.pnlTermTree.TabIndex = 2;
+            // 
+            // ttAll
+            // 
+            this.ttAll.AllowDrop = true;
+            this.ttAll.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ttAll.Location = new System.Drawing.Point(3, 25);
+            this.ttAll.Name = "ttAll";
+            this.ttAll.Size = new System.Drawing.Size(529, 733);
+            this.ttAll.TabIndex = 3;
             // 
             // cmdRefresh
             // 
@@ -123,141 +141,64 @@
             this.pnlTestMode.Size = new System.Drawing.Size(774, 761);
             this.pnlTestMode.TabIndex = 4;
             // 
-            // splitter2
+            // splitter5
             // 
-            this.splitter2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter2.Location = new System.Drawing.Point(0, 350);
-            this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(774, 6);
-            this.splitter2.TabIndex = 4;
-            this.splitter2.TabStop = false;
+            this.splitter5.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.splitter5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter5.Location = new System.Drawing.Point(0, 611);
+            this.splitter5.Name = "splitter5";
+            this.splitter5.Size = new System.Drawing.Size(774, 6);
+            this.splitter5.TabIndex = 10;
+            this.splitter5.TabStop = false;
             // 
-            // pnlURLs
+            // pnlDirectGoldenCorrelations
             // 
-            this.pnlURLs.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.pnlURLs.Controls.Add(this.pnlUrlTerms);
-            this.pnlURLs.Controls.Add(this.splitter3);
-            this.pnlURLs.Controls.Add(this.pnlURL_List);
-            this.pnlURLs.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlURLs.Location = new System.Drawing.Point(0, 0);
-            this.pnlURLs.Name = "pnlURLs";
-            this.pnlURLs.Size = new System.Drawing.Size(774, 350);
-            this.pnlURLs.TabIndex = 0;
+            this.pnlDirectGoldenCorrelations.Controls.Add(this.panel1);
+            this.pnlDirectGoldenCorrelations.Controls.Add(this.lblDirectGoldenCorrelations);
+            this.pnlDirectGoldenCorrelations.Location = new System.Drawing.Point(0, 611);
+            this.pnlDirectGoldenCorrelations.Name = "pnlDirectGoldenCorrelations";
+            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(774, 150);
+            this.pnlDirectGoldenCorrelations.TabIndex = 9;
             // 
-            // splitter3
+            // panel1
             // 
-            this.splitter3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter3.Location = new System.Drawing.Point(347, 0);
-            this.splitter3.Name = "splitter3";
-            this.splitter3.Size = new System.Drawing.Size(6, 350);
-            this.splitter3.TabIndex = 4;
-            this.splitter3.TabStop = false;
-            // 
-            // pnlURL_List
-            // 
-            this.pnlURL_List.Controls.Add(this.lvwUrls);
-            this.pnlURL_List.Controls.Add(this.txtURLSearch);
-            this.pnlURL_List.Controls.Add(this.cmdSearchURLs);
-            this.pnlURL_List.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlURL_List.Location = new System.Drawing.Point(0, 0);
-            this.pnlURL_List.Name = "pnlURL_List";
-            this.pnlURL_List.Size = new System.Drawing.Size(347, 350);
-            this.pnlURL_List.TabIndex = 1;
-            // 
-            // lvwUrls
-            // 
-            this.lvwUrls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvwUrls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader11});
-            this.lvwUrls.FullRowSelect = true;
-            this.lvwUrls.GridLines = true;
-            this.lvwUrls.HideSelection = false;
-            this.lvwUrls.Location = new System.Drawing.Point(3, 25);
-            this.lvwUrls.MultiSelect = false;
-            this.lvwUrls.Name = "lvwUrls";
-            this.lvwUrls.Size = new System.Drawing.Size(344, 325);
-            this.lvwUrls.TabIndex = 5;
-            this.lvwUrls.UseCompatibleStateImageBehavior = false;
-            this.lvwUrls.View = System.Windows.Forms.View.Details;
-            this.lvwUrls.SelectedIndexChanged += new System.EventHandler(this.lvwUrls_SelectedIndexChanged);
+            this.panel1.Controls.Add(this.termList1);
+            this.panel1.Controls.Add(this.splitter6);
+            this.panel1.Controls.Add(this.ttDirectGoldens);
+            this.panel1.Location = new System.Drawing.Point(8, 24);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(757, 117);
+            this.panel1.TabIndex = 10;
             // 
-            // columnHeader1
+            // splitter6
             // 
-            this.columnHeader1.Text = "url";
-            this.columnHeader1.Width = 49;
+            this.splitter6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.splitter6.Location = new System.Drawing.Point(301, 0);
+            this.splitter6.Name = "splitter6";
+            this.splitter6.Size = new System.Drawing.Size(6, 117);
+            this.splitter6.TabIndex = 10;
+            this.splitter6.TabStop = false;
             // 
-            // columnHeader2
+            // ttDirectGoldens
             // 
-            this.columnHeader2.Text = "meta_title";
-            this.columnHeader2.Width = 204;
+            this.ttDirectGoldens.AllowDrop = true;
+            this.ttDirectGoldens.Dock = System.Windows.Forms.DockStyle.Left;
+            this.ttDirectGoldens.Location = new System.Drawing.Point(0, 0);
+            this.ttDirectGoldens.Name = "ttDirectGoldens";
+            this.ttDirectGoldens.Size = new System.Drawing.Size(301, 117);
+            this.ttDirectGoldens.TabIndex = 9;
             // 
-            // columnHeader3
+            // lblDirectGoldenCorrelations
             // 
-            this.columnHeader3.Text = "terms";
-            this.columnHeader3.Width = 40;
-            // 
-            // columnHeader11
-            // 
-            this.columnHeader11.Text = "MM_CAT";
-            this.columnHeader11.Width = 296;
-            // 
-            // txtURLSearch
-            // 
-            this.txtURLSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtURLSearch.Location = new System.Drawing.Point(93, 1);
-            this.txtURLSearch.Name = "txtURLSearch";
-            this.txtURLSearch.Size = new System.Drawing.Size(251, 21);
-            this.txtURLSearch.TabIndex = 4;
-            this.txtURLSearch.Text = "chess";
-            // 
-            // cmdSearchURLs
-            // 
-            this.cmdSearchURLs.Location = new System.Drawing.Point(3, 3);
-            this.cmdSearchURLs.Name = "cmdSearchURLs";
-            this.cmdSearchURLs.Size = new System.Drawing.Size(84, 19);
-            this.cmdSearchURLs.TabIndex = 3;
-            this.cmdSearchURLs.Text = "Search meta:";
-            this.cmdSearchURLs.UseVisualStyleBackColor = true;
-            this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
-            // 
-            // pnlUrlTerms
-            // 
-            this.pnlUrlTerms.BackColor = System.Drawing.Color.Yellow;
-            this.pnlUrlTerms.Controls.Add(this.pnlUrlAllTermCorrelations);
-            this.pnlUrlTerms.Controls.Add(this.splitter4);
-            this.pnlUrlTerms.Controls.Add(this.txtInfo);
-            this.pnlUrlTerms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlUrlTerms.Location = new System.Drawing.Point(353, 0);
-            this.pnlUrlTerms.Name = "pnlUrlTerms";
-            this.pnlUrlTerms.Size = new System.Drawing.Size(421, 350);
-            this.pnlUrlTerms.TabIndex = 6;
-            // 
-            // txtInfo
-            // 
-            this.txtInfo.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtInfo.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtInfo.Location = new System.Drawing.Point(0, 0);
-            this.txtInfo.Multiline = true;
-            this.txtInfo.Name = "txtInfo";
-            this.txtInfo.Size = new System.Drawing.Size(421, 100);
-            this.txtInfo.TabIndex = 6;
-            // 
-            // splitter4
-            // 
-            this.splitter4.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter4.Location = new System.Drawing.Point(0, 100);
-            this.splitter4.Name = "splitter4";
-            this.splitter4.Size = new System.Drawing.Size(421, 6);
-            this.splitter4.TabIndex = 7;
-            this.splitter4.TabStop = false;
+            this.lblDirectGoldenCorrelations.AutoSize = true;
+            this.lblDirectGoldenCorrelations.Location = new System.Drawing.Point(5, 8);
+            this.lblDirectGoldenCorrelations.Name = "lblDirectGoldenCorrelations";
+            this.lblDirectGoldenCorrelations.Size = new System.Drawing.Size(166, 13);
+            this.lblDirectGoldenCorrelations.TabIndex = 1;
+            this.lblDirectGoldenCorrelations.Text = "Directly Correlated Golden Terms:";
             // 
             // lvwUrlTerms
             // 
@@ -286,6 +227,18 @@
             this.lvwUrlTerms.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms.View = System.Windows.Forms.View.Details;
             this.lvwUrlTerms.SelectedIndexChanged += new System.EventHandler(this.lvwUrlTerms_SelectedIndexChanged);
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "dir-gold";
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "corr-gold";
+            // 
+            // columnHeader12
+            // 
+            this.columnHeader12.Text = "*TSS";
             // 
             // columnHeader4
             // 
@@ -318,10 +271,6 @@
             // 
             this.columnHeader13.Text = "reasons";
             // 
-            // columnHeader12
-            // 
-            this.columnHeader12.Text = "*TSS";
-            // 
             // columnHeader15
             // 
             this.columnHeader15.Text = "words_X_title";
@@ -337,6 +286,40 @@
             // columnHeader20
             // 
             this.columnHeader20.Text = "words_X_desc_stemmed";
+            // 
+            // splitter2
+            // 
+            this.splitter2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter2.Location = new System.Drawing.Point(0, 350);
+            this.splitter2.Name = "splitter2";
+            this.splitter2.Size = new System.Drawing.Size(774, 6);
+            this.splitter2.TabIndex = 4;
+            this.splitter2.TabStop = false;
+            // 
+            // pnlURLs
+            // 
+            this.pnlURLs.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.pnlURLs.Controls.Add(this.pnlUrlTerms);
+            this.pnlURLs.Controls.Add(this.splitter3);
+            this.pnlURLs.Controls.Add(this.pnlURL_List);
+            this.pnlURLs.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlURLs.Location = new System.Drawing.Point(0, 0);
+            this.pnlURLs.Name = "pnlURLs";
+            this.pnlURLs.Size = new System.Drawing.Size(774, 350);
+            this.pnlURLs.TabIndex = 0;
+            // 
+            // pnlUrlTerms
+            // 
+            this.pnlUrlTerms.BackColor = System.Drawing.Color.Yellow;
+            this.pnlUrlTerms.Controls.Add(this.pnlUrlAllTermCorrelations);
+            this.pnlUrlTerms.Controls.Add(this.splitter4);
+            this.pnlUrlTerms.Controls.Add(this.txtInfo);
+            this.pnlUrlTerms.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlUrlTerms.Location = new System.Drawing.Point(353, 0);
+            this.pnlUrlTerms.Name = "pnlUrlTerms";
+            this.pnlUrlTerms.Size = new System.Drawing.Size(421, 350);
+            this.pnlUrlTerms.TabIndex = 6;
             // 
             // pnlUrlAllTermCorrelations
             // 
@@ -357,54 +340,6 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "All URL-Term Correlations:";
             // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "corr-gold";
-            // 
-            // pnlDirectGoldenCorrelations
-            // 
-            this.pnlDirectGoldenCorrelations.Controls.Add(this.ttDirectGoldens);
-            this.pnlDirectGoldenCorrelations.Controls.Add(this.lblDirectGoldenCorrelations);
-            this.pnlDirectGoldenCorrelations.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlDirectGoldenCorrelations.Location = new System.Drawing.Point(0, 611);
-            this.pnlDirectGoldenCorrelations.Name = "pnlDirectGoldenCorrelations";
-            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(774, 150);
-            this.pnlDirectGoldenCorrelations.TabIndex = 9;
-            // 
-            // lblDirectGoldenCorrelations
-            // 
-            this.lblDirectGoldenCorrelations.AutoSize = true;
-            this.lblDirectGoldenCorrelations.Location = new System.Drawing.Point(5, 8);
-            this.lblDirectGoldenCorrelations.Name = "lblDirectGoldenCorrelations";
-            this.lblDirectGoldenCorrelations.Size = new System.Drawing.Size(166, 13);
-            this.lblDirectGoldenCorrelations.TabIndex = 1;
-            this.lblDirectGoldenCorrelations.Text = "Directly Correlated Golden Terms:";
-            // 
-            // columnHeader9
-            // 
-            this.columnHeader9.Text = "dir-gold";
-            // 
-            // splitter5
-            // 
-            this.splitter5.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitter5.Location = new System.Drawing.Point(0, 611);
-            this.splitter5.Name = "splitter5";
-            this.splitter5.Size = new System.Drawing.Size(774, 6);
-            this.splitter5.TabIndex = 10;
-            this.splitter5.TabStop = false;
-            // 
-            // ttDirectGoldens
-            // 
-            this.ttDirectGoldens.AllowDrop = true;
-            this.ttDirectGoldens.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ttDirectGoldens.Location = new System.Drawing.Point(8, 24);
-            this.ttDirectGoldens.Name = "ttDirectGoldens";
-            this.ttDirectGoldens.Size = new System.Drawing.Size(759, 118);
-            this.ttDirectGoldens.TabIndex = 9;
-            // 
             // ttUrlTerms
             // 
             this.ttUrlTerms.AllowDrop = true;
@@ -416,16 +351,149 @@
             this.ttUrlTerms.Size = new System.Drawing.Size(410, 214);
             this.ttUrlTerms.TabIndex = 8;
             // 
-            // ttAll
+            // splitter4
             // 
-            this.ttAll.AllowDrop = true;
-            this.ttAll.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.splitter4.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.splitter4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitter4.Location = new System.Drawing.Point(0, 100);
+            this.splitter4.Name = "splitter4";
+            this.splitter4.Size = new System.Drawing.Size(421, 6);
+            this.splitter4.TabIndex = 7;
+            this.splitter4.TabStop = false;
+            // 
+            // txtInfo
+            // 
+            this.txtInfo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtInfo.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtInfo.Location = new System.Drawing.Point(0, 0);
+            this.txtInfo.Multiline = true;
+            this.txtInfo.Name = "txtInfo";
+            this.txtInfo.Size = new System.Drawing.Size(421, 100);
+            this.txtInfo.TabIndex = 6;
+            // 
+            // splitter3
+            // 
+            this.splitter3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.splitter3.Location = new System.Drawing.Point(347, 0);
+            this.splitter3.Name = "splitter3";
+            this.splitter3.Size = new System.Drawing.Size(6, 350);
+            this.splitter3.TabIndex = 4;
+            this.splitter3.TabStop = false;
+            // 
+            // pnlURL_List
+            // 
+            this.pnlURL_List.Controls.Add(this.cboTop);
+            this.pnlURL_List.Controls.Add(this.cmdWalk);
+            this.pnlURL_List.Controls.Add(this.lvwUrls);
+            this.pnlURL_List.Controls.Add(this.txtURLSearch);
+            this.pnlURL_List.Controls.Add(this.cmdSearchURLs);
+            this.pnlURL_List.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlURL_List.Location = new System.Drawing.Point(0, 0);
+            this.pnlURL_List.Name = "pnlURL_List";
+            this.pnlURL_List.Size = new System.Drawing.Size(347, 350);
+            this.pnlURL_List.TabIndex = 1;
+            // 
+            // cboTop
+            // 
+            this.cboTop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboTop.FormattingEnabled = true;
+            this.cboTop.Items.AddRange(new object[] {
+            "1",
+            "10",
+            "100",
+            "1000",
+            "100000"});
+            this.cboTop.Location = new System.Drawing.Point(142, 1);
+            this.cboTop.Name = "cboTop";
+            this.cboTop.Size = new System.Drawing.Size(79, 21);
+            this.cboTop.TabIndex = 7;
+            // 
+            // cmdWalk
+            // 
+            this.cmdWalk.Location = new System.Drawing.Point(89, 3);
+            this.cmdWalk.Name = "cmdWalk";
+            this.cmdWalk.Size = new System.Drawing.Size(52, 19);
+            this.cmdWalk.TabIndex = 6;
+            this.cmdWalk.Text = "walk...";
+            this.cmdWalk.UseVisualStyleBackColor = true;
+            this.cmdWalk.Click += new System.EventHandler(this.cmdWalk_Click);
+            // 
+            // lvwUrls
+            // 
+            this.lvwUrls.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ttAll.Location = new System.Drawing.Point(3, 25);
-            this.ttAll.Name = "ttAll";
-            this.ttAll.Size = new System.Drawing.Size(529, 733);
-            this.ttAll.TabIndex = 3;
+            this.lvwUrls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader10,
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader11});
+            this.lvwUrls.FullRowSelect = true;
+            this.lvwUrls.GridLines = true;
+            this.lvwUrls.HideSelection = false;
+            this.lvwUrls.Location = new System.Drawing.Point(3, 25);
+            this.lvwUrls.MultiSelect = false;
+            this.lvwUrls.Name = "lvwUrls";
+            this.lvwUrls.Size = new System.Drawing.Size(344, 325);
+            this.lvwUrls.TabIndex = 5;
+            this.lvwUrls.UseCompatibleStateImageBehavior = false;
+            this.lvwUrls.View = System.Windows.Forms.View.Details;
+            this.lvwUrls.SelectedIndexChanged += new System.EventHandler(this.lvwUrls_SelectedIndexChanged);
+            // 
+            // columnHeader10
+            // 
+            this.columnHeader10.Text = "id";
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "url";
+            this.columnHeader1.Width = 49;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "meta_title";
+            this.columnHeader2.Width = 204;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "terms";
+            this.columnHeader3.Width = 40;
+            // 
+            // columnHeader11
+            // 
+            this.columnHeader11.Text = "MM_CAT";
+            this.columnHeader11.Width = 296;
+            // 
+            // txtURLSearch
+            // 
+            this.txtURLSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtURLSearch.Location = new System.Drawing.Point(227, 1);
+            this.txtURLSearch.Name = "txtURLSearch";
+            this.txtURLSearch.Size = new System.Drawing.Size(117, 21);
+            this.txtURLSearch.TabIndex = 4;
+            this.txtURLSearch.Text = "chess";
+            // 
+            // cmdSearchURLs
+            // 
+            this.cmdSearchURLs.Location = new System.Drawing.Point(3, 3);
+            this.cmdSearchURLs.Name = "cmdSearchURLs";
+            this.cmdSearchURLs.Size = new System.Drawing.Size(84, 19);
+            this.cmdSearchURLs.TabIndex = 3;
+            this.cmdSearchURLs.Text = "Search meta:";
+            this.cmdSearchURLs.UseVisualStyleBackColor = true;
+            this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
+            // 
+            // termList1
+            // 
+            this.termList1.FullRowSelect = true;
+            this.termList1.HideSelection = false;
+            this.termList1.Location = new System.Drawing.Point(345, 3);
+            this.termList1.Name = "termList1";
+            this.termList1.Size = new System.Drawing.Size(352, 111);
+            this.termList1.TabIndex = 11;
+            this.termList1.UseCompatibleStateImageBehavior = false;
             // 
             // frmMain
             // 
@@ -443,15 +511,16 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlTermTree.ResumeLayout(false);
             this.pnlTestMode.ResumeLayout(false);
+            this.pnlDirectGoldenCorrelations.ResumeLayout(false);
+            this.pnlDirectGoldenCorrelations.PerformLayout();
+            this.panel1.ResumeLayout(false);
             this.pnlURLs.ResumeLayout(false);
-            this.pnlURL_List.ResumeLayout(false);
-            this.pnlURL_List.PerformLayout();
             this.pnlUrlTerms.ResumeLayout(false);
             this.pnlUrlTerms.PerformLayout();
             this.pnlUrlAllTermCorrelations.ResumeLayout(false);
             this.pnlUrlAllTermCorrelations.PerformLayout();
-            this.pnlDirectGoldenCorrelations.ResumeLayout(false);
-            this.pnlDirectGoldenCorrelations.PerformLayout();
+            this.pnlURL_List.ResumeLayout(false);
+            this.pnlURL_List.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -498,6 +567,12 @@
         private System.Windows.Forms.Label lblDirectGoldenCorrelations;
         private System.Windows.Forms.Splitter splitter5;
         private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ColumnHeader columnHeader10;
+        private System.Windows.Forms.Button cmdWalk;
+        private System.Windows.Forms.ComboBox cboTop;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Splitter splitter6;
+        private TermList termList1;
     }
 }
 

@@ -12,13 +12,13 @@ using System.Windows.Forms;
 using mm_global;
 using mm_svc.Terms;
 using System.Diagnostics;
+using static mm_svc.Terms.Correlations;
 
 namespace winmao
 {
     public partial class frmMain : Form
     {
-        public frmMain()
-        {
+        public frmMain() {
             InitializeComponent();
             InitUrls();
         }
@@ -175,7 +175,7 @@ namespace winmao
             if (term == null) return;
             using (var db = mm02Entities.Create())
             {
-                var correlated_terms = mm_svc.Terms.Correlations.GetTermCorrelations(term.name); 
+                var correlated_terms = mm_svc.Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = term.name }); 
                 var correlated_term_nodes = new List<TreeNode>();
                 foreach (var correlation in correlated_terms) {
                     TreeNode tn_related = TreeNodeFromCorrelation(correlation);

@@ -11,6 +11,7 @@ using mmdb_model;
 using mm_svc.Terms;
 using System.Diagnostics;
 using mm_global;
+using static mm_svc.Terms.Correlations;
 
 namespace wowmao
 {
@@ -82,7 +83,7 @@ namespace wowmao
                 if (tn.Tag is term) {
                     this.Cursor = Cursors.WaitCursor;
                     var parent_term = tn.Tag as term;
-                    var correlations = Correlations.GetTermCorrelations(parent_term.name, null, tn.Level == 0 ? XX_max_L1 : XX_max_GT_L1);
+                    var correlations = Correlations.GetTermCorrelations(new corr_input { main_term = parent_term.name, corr_term_eq = null, max_appears_together_count = tn.Level == 0 ? XX_max_L1 : XX_max_GT_L1 });
                     List<correlation> filtered;
 
                     // exclude golden children whose parent is not this correlation
@@ -126,7 +127,7 @@ namespace wowmao
         }
 
         TreeNode TreeNodeFromTerm(term t) {
-            var tn = new TreeNode($"{t.name} ... [{t.id}] #{t.occurs_count} ({((g.TT)t.term_type_id).ToString()})");
+            var tn = new TreeNode($"{t.name} ... [{t.id}] #{t.occurs_count} corr={t.corr} ({((g.TT)t.term_type_id).ToString()})");
             if (t.golden_parents.Count > 0) {
                 tn.Text += $" / golden child of [{string.Join(" / ", t.golden_parents.Select(p => p.parent_desc))}]";
             }
@@ -225,7 +226,7 @@ namespace wowmao
                 this.BeginUpdate();
                 var old_ndx = tn.Index;
                 var old_parent = tn.Parent;
-                var new_corr = Correlations.GetTermCorrelations(corr.main_term, corr.corr_term, XX_max_GT_L1);
+                var new_corr = Correlations.GetTermCorrelations(new corr_input() { main_term = corr.main_term, corr_term_eq = corr.corr_term, max_appears_together_count = XX_max_GT_L1 });
                 var tn_new = TreeNodeFromCorrelation(new_corr.First());
                 old_parent.Nodes.Insert(old_ndx, tn_new);
                 old_parent.Nodes.Remove(tn);
