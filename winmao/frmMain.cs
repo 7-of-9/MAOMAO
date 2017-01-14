@@ -98,15 +98,15 @@ namespace winmao
 
                 // derive MM CAT!
                 var cat = new mm_svc.MmCat();
-                var final = cat.GetCat(meta_all, url_terms) as List<string>;
-                item.SubItems[3].Text = string.Join(" / ", final);
+                cat.CalcTSS(meta_all, url_terms, run_l2_boost: true);
+                //item.SubItems[3].Text = string.Join(" / ", final);
                 txtInfo.AppendText(cat.log);
 
                 // display
                 lvwUrlTerms.Items.Clear();
                 lvwUrlTerms.BeginUpdate();
                 List<ListViewItem> ut_items = new List<ListViewItem>();
-                foreach(var ut in url_terms.OrderByDescending(p => p.topic_specifc_score)) {
+                foreach(var ut in url_terms.OrderByDescending(p => p.tss)) {
                     var ut_item = new ListViewItem(new string[] {
                         ut.term.name + " [" + ut.term.id + "] #" + ut.term.occurs_count,
                         ut.term.term_type.type,
@@ -118,7 +118,7 @@ namespace winmao
                         ut.S.ToString(),
                         ut.appearance_count.ToString(),
                         ut.candidate_reason,
-                        ut.topic_specifc_score.ToString(),
+                        ut.tss.ToString(),
                         ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
                         ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
                         //ut.words_common_to_title_and_entities != null ? string.Join("/", ut.words_common_to_title_and_entities.Select(p => p + "/")) : "",

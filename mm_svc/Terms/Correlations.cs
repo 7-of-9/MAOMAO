@@ -40,15 +40,18 @@ namespace mm_svc.Terms
         public static Dictionary<string, List<correlation>> cache = new Dictionary<string, List<correlation>>();
         public static event EventHandler cache_add = delegate { };
 
+        private const int MIN_CORR_TERM_OCCURS_COUNT = 10;
+
         public class corr_input {
             public string main_term, corr_term_eq;
             public int? max_appears_together_count = null;
+            public double min_corr = 0;
 
             public override bool Equals(object obj) {
                 var other = obj as corr_input;
                 return other != null && other.main_term == this.main_term && other.corr_term_eq == this.corr_term_eq && other.max_appears_together_count == this.max_appears_together_count;
             }
-            public string cache_key {  get { return $"mt:{main_term}_cte:{corr_term_eq}_matc:{max_appears_together_count}"; } }
+            public string cache_key {  get { return $"mt:{main_term}_cte:{corr_term_eq}_matc:{max_appears_together_count}_mc:{min_corr}"; } }
             public override int GetHashCode() { return cache_key.GetHashCode(); }
         }
 
@@ -94,7 +97,6 @@ namespace mm_svc.Terms
                 var data = c.ToListNoLock();
                 Debug.WriteLine($"> Get2('{inp.main_term}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
 
-                int dbg1 = 0;
                 foreach (var term_matrix in data) {
                     var max_term_occurs_count = Math.Max(term_matrix.term.occurs_count, term_matrix.term1.occurs_count);
 
@@ -104,26 +106,31 @@ namespace mm_svc.Terms
                     else if (term_matrix.term1.name.ToLower() != inp.main_term.ToLower())
                         related_term = term_matrix.term1;
                     else continue; // exclude self by id
-                    dbg1++;
 
                     term_matrix.related_term = related_term;
 
+                    term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count; // calc corr.
+                    term_matrix.related_term.corr = term_matrix.corr;
+
+                    if (term_matrix.corr < inp.min_corr)
+                        continue;
+
+                    if (term_matrix.related_term.occurs_count < MIN_CORR_TERM_OCCURS_COUNT)
+                        continue; // exclude low sample sizes 
+
                     if (!string.IsNullOrEmpty(inp.corr_term_eq))
-                        if (related_term.name.ToLower() != inp.corr_term_eq.ToLower())//.IndexOf(corr_term_like.ToLower()) == -1)
+                        if (related_term.name.ToLower() != inp.corr_term_eq.ToLower())
                             continue;
 
-                    correlation corr = ret.SingleOrDefault(p => p.corr_term.ToLower() == related_term.name.ToLower());
-                    //Debug.WriteLine($"dbg1={dbg1} correlated.Count={correlated.Count}...");
+                    var corr = ret.SingleOrDefault(p => p.corr_term.ToLower() == related_term.name.ToLower());
                     if (corr == null) { 
                         corr = new correlation() { main_term = inp.main_term, corr_term = related_term.name };
                         ret.Add(corr);
-                        //Debug.WriteLine($"added new correlation: {corr.ToString()}");
                     }
 
                     if (!corr.corr_matrix.Any(p => p.id == term_matrix.id))
                         corr.corr_matrix.Add(term_matrix);
 
-                    term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count; // calc corr.
                 }
                 //Debug.WriteLine($"> Get2('{inp.main_term}'): dbg1={dbg1}]");
 

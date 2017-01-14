@@ -17,8 +17,8 @@ namespace wowmao
 {
     public partial class TermTree : TreeView
     {
-        private const int XX_max_L1 = 10;
-        private const int XX_max_GT_L1 = 1;
+        public int XX_max_L1 = 1;
+        public int XX_max_GT_L1 = 1;
 
         public TermTree()
         {

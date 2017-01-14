@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mm_global;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ namespace mm_svc.InternalNlp.Utils
             var words_naive = s.Split(' ');
             var words = words_naive.Select(p => new InternalNlp.Word() { pos = "?", text = p }); //StanfordCoreNlp.tokenize_pos(s);
             foreach (var word in words) {
-                if (!stopwords.Any(p => p.ToLower().Trim() == word.text.ToLower().Trim())) {
+                if (!stopwords.Any(p => p.ltrim() == word.text.ltrim())) {
                     if (word.pos != "UH" && word.pos != "SYM" && word.pos != "IN" && word.pos != "," && word.pos != "." && word.pos != ":")
                         sb.Append(Regex.Replace(word.text, @"[., -\/#!$%\^&\*;:{}=\-_`~()]/g", "") + " ");
                 }

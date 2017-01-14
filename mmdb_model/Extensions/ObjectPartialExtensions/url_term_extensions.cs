@@ -10,26 +10,56 @@ namespace mmdb_model
 {
     public partial class url_term
     {
+        public override string ToString() {
+            return $"{term.name} S={S} tss={tss}";
+        }
+
         public void InitExtensionFields()
         {
             appearance_count = 0;
             candidate_reason = "";
-            topic_specifc_score = 0;
+            tss = 0;
             words_common_to_title = new List<string>();
             words_common_to_desc = new List<string>();
             words_common_to_title_stemmed = new List<string>();
             words_common_to_desc_stemmed = new List<string>();
         }
 
+        // type-agnostic representation of the relevance/score/importance: base is 0-10 with multipliers for special types
         [NotMapped]
-        public double S // type-agnostic representation of the relevance/score/importance
+        public double S 
         {
             get {
-                if (this.term.term_type_id == (int)g.TT.CALAIS_ENTITY) return (double)this.cal_entity_relevance * 10;
-                else if (this.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) return ((3 - (int)this.cal_socialtag_importance) * 3) + 1;
-                else return this.cal_topic_score??0 * 10;
+                // for L2 url terms, this "fully inherits" the correlated parent term's S value
+                // probably it should be a blend of some inheritence based on the correlation, and also 
+                // a factor (below) for this term's type and sub-type
+                //if (this.term.parent_url_term != null)
+                //    return this.term.parent_url_term.S * 1; // Math.Pow(this.term.corr??0, 0.9);
+
+                if (this.term.term_type_id == (int)g.TT.CALAIS_ENTITY) { 
+                    var ret = (double)this.cal_entity_relevance * 10; // 0-10
+                    return ret;
+                }
+
+                else if (this.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) {
+                    return ((3 - (int)this.cal_socialtag_importance) * 3) + 1; // 0-10
+                }
+
+                else if (this.term.term_type_id == (int)g.TT.CALAIS_TOPIC) {
+                    return this.cal_topic_score ?? 0 * 10; // 0-10
+                }
+
+                return 0;
             }
         }
+
+        // boosted S (for special types and subtypes)
+        [NotMapped]
+        public double S2 { get; set; }
+
+        // scaled S (for L2 terms: term corr/max of L2 term corr's)
+        [NotMapped]
+        public double s = 1;
 
         [NotMapped]
         public int appearance_count { get; set; }
@@ -37,8 +67,12 @@ namespace mmdb_model
         [NotMapped]
         public string candidate_reason { get; set; }
 
+        // topic-score-specific
         [NotMapped]
-        public int topic_specifc_score { get; set; }
+        public double tss { get; set; }
+
+        [NotMapped]
+        public double tss_norm { get; set; }
 
         [NotMapped]
         public List<string> words_common_to_title { get; set; }

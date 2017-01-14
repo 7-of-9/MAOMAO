@@ -20,7 +20,24 @@ namespace mm_svc
         private IEnumerable<url_term> topics;
         private IEnumerable<url_term> all;
 
-        public List<string> GetCat(dynamic meta_all, List<url_term> url_terms)
+        private const double SOCIAL_TAG_BOOST = 6;
+
+        private Dictionary<g.ET, double> entity_type_boosts = new Dictionary<g.ET, double>() {
+            { g.ET.Movie,                SOCIAL_TAG_BOOST },
+            { g.ET.MusicAlbum,           SOCIAL_TAG_BOOST },
+            { g.ET.MusicGroup,           SOCIAL_TAG_BOOST },
+            { g.ET.NaturalFeature,       SOCIAL_TAG_BOOST },
+            { g.ET.OperatingSystem,      SOCIAL_TAG_BOOST },
+            { g.ET.Person,               SOCIAL_TAG_BOOST * 2},
+            { g.ET.Product,              SOCIAL_TAG_BOOST },
+            { g.ET.ProgrammingLanguage , SOCIAL_TAG_BOOST },
+            { g.ET.SportsGame,           SOCIAL_TAG_BOOST },
+            { g.ET.SportsLeague,         SOCIAL_TAG_BOOST },
+            { g.ET.Technology,           SOCIAL_TAG_BOOST },
+            { g.ET.TVShow ,              SOCIAL_TAG_BOOST } 
+        };
+
+        public void CalcTSS(dynamic meta_all, List<url_term> url_terms, bool run_l2_boost)
         {
             url_terms.ForEach(p => p.InitExtensionFields());
             this.tags = url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG);
@@ -37,44 +54,67 @@ namespace mm_svc
             //int tags_removed = RemoveSocialTagsThatAreEntities(url_terms);
             //log += $"removed {tags_removed} social tags\r\n";
 
-            // most repeated 
-            SetTagsRepeatedCount(all);
-            foreach (var t in all.OrderByDescending(p => p.appearance_count).Take(3)) {
-                if (t.appearance_count > 1) {
-                    var boost = (t.appearance_count * 2) * (int)t.S;
-                    t.candidate_reason += $" RECURRING({boost}) ";
-                    t.topic_specifc_score += boost;
+            // S2 -- baseline S relevance boosted and scaled
+            foreach (var x in all) {
+                x.S2 = x.S * x.s;
+                if (x.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) {
+                    x.S2 = x.S * SOCIAL_TAG_BOOST;
+                }
+                else if (x.term.term_type_id == (int)g.TT.CALAIS_ENTITY) {
+                    if (entity_type_boosts.ContainsKey((g.ET)x.term.cal_entity_type_id))
+                        x.S2 = x.S * entity_type_boosts[(g.ET)x.term.cal_entity_type_id];
                 }
             }
 
             // all fully contained in title - no stemming
-            foreach (var t in all.Where(p => title.ToLower().IndexOf(p.term.name.ToLower().Trim()) != -1)) {
-                var boost = 5 * t.term.name.Length * (int)t.S;
-                t.candidate_reason += $" TITLE_EXACT({boost}) ";
-                t.topic_specifc_score += boost;
+            const int max_boost_len = 4;
+            foreach (var t in all.Where(p => title.ToLower().IndexOf(p.term.name.ltrim()) != -1)) {
+                var boost = 5 
+                            * t.term.name.LengthNorm(max_boost_len)
+                            * t.S2;
+                t.candidate_reason += $" TITLE_EXACT({(int)boost}) ";
+                t.tss += boost;
             }
-            // all fully contained in title - w/ stemming
-            foreach (var t in all.Where(p => stemmer.stem(title.ToLower()).IndexOf(stemmer.stem(p.term.name.ToLower().Trim())) != -1)) {
+            // fully contained in title -- at start
+            foreach (var t in all.Where(p => title.ToLower().StartsWith(p.term.name.ltrim()))) {
+                var boost = 10
+                            * t.term.name.LengthNorm(max_boost_len)
+                            * t.S2;
+                t.candidate_reason += $" TITLE_EXACT_START({(int)boost}) ";
+                t.tss += boost;
+            }
+
+            //
+            // (TODO: stemming not working; this is just duplicating title_exact dynamics -- also POS not working: ditch this NLP lib.)
+            //
+            // all fully contained in title - w/ stemming 
+            foreach (var t in all.Where(p => stemmer.stem(title.ToLower()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
                 if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                    var boost = 5 * t.term.name.Length * (int)t.S;
-                    t.candidate_reason += $" TITLE_STEMMED({boost}) ";
-                    t.topic_specifc_score += boost;
+                    var boost = 5
+                                * t.term.name.LengthNorm(max_boost_len)
+                                * t.S2;
+                    t.candidate_reason += $" TITLE_STEMMED({(int)boost}) ";
+                    t.tss += boost;
                 }
             }
 
             if (!string.IsNullOrEmpty(description)) {
                 // ** all fully contained in description - no stemming
-                foreach (var t in all.Where(p => description.ToLower().IndexOf(p.term.name.ToLower().Trim()) != -1)) {
-                    var boost = 5 * t.term.name.Length * (int)t.S;
-                    t.candidate_reason += $" DESC_EXACT({boost}) ";
-                    t.topic_specifc_score += boost; // (int)(10 * Math.Log(Math.Max(20, tag.term.name.Length), 2)); 
+                foreach (var t in all.Where(p => description.ToLower().IndexOf(p.term.name.ltrim()) != -1)) {
+                    var boost = 5
+                                * t.term.name.LengthNorm(max_boost_len)
+                                * t.S2;
+                    t.candidate_reason += $" DESC_EXACT({(int)boost}) ";
+                    t.tss += boost; // (int)(10 * Math.Log(Math.Max(20, tag.term.name.Length), 2)); 
                 }
                 // ** all fully contained in description - w/ stemming
-                foreach (var t in all.Where(p => stemmer.stem(description.ToLower()).IndexOf(stemmer.stem(p.term.name.ToLower().Trim())) != -1)) {
+                foreach (var t in all.Where(p => stemmer.stem(description.ToLower()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
                     if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                        var boost = 5 * t.term.name.Length * (int)t.S;
-                        t.candidate_reason += $" DESC_STEMMED({boost}) ";
-                        t.topic_specifc_score += boost;
+                        var boost = 5
+                                    * t.term.name.LengthNorm(max_boost_len)
+                                    * t.S2;
+                        t.candidate_reason += $" DESC_STEMMED({(int)boost}) ";
+                        t.tss += boost;
                     }
                 }
             }
@@ -93,39 +133,44 @@ namespace mm_svc
                     t.words_common_to_desc_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), description_ex_stopwords_stemmed); //**
                 }
 
-                // any common words also in entities?
-                //t.words_common_to_title_and_entities = t.words_common_to_title.Where(p =>
-                //    entities.Any(q => q.term.name.ToLower() == p.ToLower() && q.cal_entity_relevance > 0.5)).ToList();
-
-                //// name common to entities, exact match?
-                //t.common_to_entities_exact = entities.Where(
-                //    p => p.term.name.ToLower() == t.term.name.ToLower() && t.cal_entity_relevance > 0.1)
-                //    .Select(p => p.term.name).ToList();
-
                 // boost
                 if (t.words_common_to_title.Count > 0) {
-                    var boost = (4 * t.words_common_to_title.Count) * (int)t.S;
-                    t.candidate_reason += $" TITLE({boost}) ";
-                    t.topic_specifc_score += boost;
+                    var boost = 4 
+                                * t.words_common_to_title.Count
+                                * t.S2;
+                    t.candidate_reason += $" TITLE({(int)boost}) ";
+                    t.tss += boost;
                 }
                 if (t.words_common_to_desc.Count > 0) {
-                    var boost = (4 * t.words_common_to_desc.Count) * (int)t.S;
-                    t.candidate_reason += $" DESC({boost}) ";
-                    t.topic_specifc_score += boost;
+                    var boost = 4
+                                * t.words_common_to_desc.Count
+                                * t.S2;
+                    t.candidate_reason += $" DESC({(int)boost}) ";
+                    t.tss += boost;
                 }
             }
-            var x = all.OrderByDescending(p => p.words_common_to_title.Count).First();
-            if (x.words_common_to_title.Count > 0) {
-                var boost = (4 * x.words_common_to_title.Count) * (int)x.S;
-                x.candidate_reason += $" TITLE_BEST({boost}) ";
-                x.topic_specifc_score += boost;
+            var tt = all.Where(p => p.words_common_to_title.Count == all.Max(p2 => p2.words_common_to_title.Count));
+            foreach(var t in tt) {
+                if (t.words_common_to_title.Count > 0)
+                {
+                    var boost = 4 
+                                * t.words_common_to_title.Count
+                                * t.S2;
+                    t.candidate_reason += $" TITLE_BEST({(int)boost}) ";
+                    t.tss += boost;
+                }
             }
-            x = all.OrderByDescending(p => p.words_common_to_desc.Count).First();
-            if (x.words_common_to_desc.Count > 0) {
-                var boost = (4 * x.words_common_to_desc.Count) * (int)x.S;
-                x.candidate_reason += $" DESC_BEST({boost}) ";
-                x.topic_specifc_score += boost;
+            tt = all.Where(p => p.words_common_to_desc.Count == all.Max(p2 => p2.words_common_to_desc.Count));
+            foreach(var t in tt) {
+                    if (t.words_common_to_desc.Count > 0) {
+                    var boost = 4
+                                * t.words_common_to_desc.Count
+                                * t.S2;
+                    t.candidate_reason += $" DESC_BEST({(int)boost}) ";
+                    t.tss += boost;
+                }
             }
+
             //x = all.OrderByDescending(p => p.words_common_to_title_and_entities.Count).First();
             //if (x.words_common_to_title_and_entities.Count > 0) {
             //    x.candidate_reason += " TITLE_ENTITIES_BEST_MATCH ";
@@ -149,20 +194,20 @@ namespace mm_svc
 
                 if (words.Count == 1 && words[0].pos == "JJ")
                 { // e.g "astrobioliogy" classified as an adjective for som reason!
-                    var boost = 12 *(int)t.S;
-                    t.candidate_reason += $" POS_JJ({boost})";
+                    var boost = 12 *t.S2;
+                    t.candidate_reason += $" POS_JJ({(int)boost})";
                     t.topic_specifc_score += boost;
                 }
                 if (words.Count == 1 && words[0].pos == "NN")
                 { // e.g "Skyscraper"
-                    var boost = 2 * (int)t.S;
-                    t.candidate_reason += $" POS_NN({boost})";
+                    var boost = 2 * t.S2;
+                    t.candidate_reason += $" POS_NN({(int)boost})";
                     t.topic_specifc_score += boost;
                 }
                 if (words.Count == 1 && words[0].pos == "NNS")
                 { // e.g "Skyscrapers"
-                    var boost = 8 * (int)t.S;
-                    t.candidate_reason += $" POS_NNS({boost})";
+                    var boost = 8 * t.S2;
+                    t.candidate_reason += $" POS_NNS({(int)boost})";
                     t.topic_specifc_score += boost;
                 }
                 if (words.Count == 1 && words[0].pos == "NNP")
@@ -172,14 +217,14 @@ namespace mm_svc
                 }
                 if (words.Count == 2 && words[0].pos == "NNP" && words[1].pos == "NNP")
                 { // e.g "Amy Schumer" -- favour meaningful name
-                    var boost = 5 * (int)t.S;
-                    t.candidate_reason += $" +POS_NNP({boost})";
+                    var boost = 5 * t.S2;
+                    t.candidate_reason += $" +POS_NNP({(int)boost})";
                     t.topic_specifc_score += boost;
                 }
                 if (words.Count == 2 && words[0].pos == "JJ" && (words[1].pos == "NN" || words[1].pos == "NNS"))
                 { // e.g "giant planets"
-                    var boost = 11 * (int)t.S;
-                    t.candidate_reason += $" POS_JJ_NN(S)({boost})";
+                    var boost = 11 * t.S2;
+                    t.candidate_reason += $" POS_JJ_NN(S)({(int)boost})";
                     t.topic_specifc_score += boost;
                 }
             }*/
@@ -206,28 +251,43 @@ namespace mm_svc
             // a simple admin view that exposes URLs that don't have first or second level MARKED terms means it will be easy to administer.
             //**************
 
-            // order by score desc -- for top few terms by score, get correlated terms from DB (first-level correlated terms)
-            var top_terms = url_terms.Except(topics).OrderByDescending(p => p.topic_specifc_score).Take(3);  //**** DO MORE!
-            //var other_terms = url_terms.Except(top_terms);
-            foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
-                // get correlated terms
-                var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.max_corr);
+            // l2 boosting -- for top few terms, get correlated terms: boost non-top root terms matching correlated l2 terms exactly by name
+            if (run_l2_boost) { 
+                var top_terms = url_terms.Except(topics).OrderByDescending(p => p.tss).Take(3);  // take more??
+                foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
 
-                // take top n correlations
-                foreach (var correlation in correlations.Take(8)) { 
+                    var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.max_corr);
 
-                    // get NLP non-top terms that match top n correlated terms, by name
-                    foreach (var other_term in url_terms.Except(topics).Where(p => p.term.name.ToLower() == correlation.corr_term.ToLower() && p.topic_specifc_score >= 0))
-                    { // skip hard-excluded -ve's
+                    foreach (var correlation in correlations.Take(8)) { // top n by correlation
 
-                        // boost non-top correlated term by correlation * top term's score
-                        Debug.WriteLine($"boosting {other_term.term.name} corr={correlation.max_corr} for top term {top_term.term.name}");
-                        var boost = (int)((double)top_term.topic_specifc_score * correlation.max_corr);
-                        other_term.candidate_reason += $" L1_BOOST({boost}:{top_term.term.name})";
-                        //other_term.topic_specifc_score += boost;
+                        // boost terms that match correlations of top top terms (exactly by name)
+                        foreach (var non_top_term in url_terms.Except(topics).Where(p => p.term.name.ToLower() == correlation.corr_term.ToLower() && p.tss >= 0)) {
+                            
+                            Debug.WriteLine($"{non_top_term.term.name}x{top_term.term.name} corr={correlation.max_corr}");
+
+                            var other_term_boost = 1
+                                                   * (int)(Math.Pow((double)top_term.tss * correlation.max_corr, 0.5) 
+                                                   * non_top_term.S2);
+                            non_top_term.candidate_reason += $" L2_BOOST({other_term_boost}:{top_term.term.name})";
+
+                            non_top_term.tss += other_term_boost; // **** was commented out!! note: this can't introduce *new* terms to the equation (only calling L2 stuff is doing that...)
+                        }
                     }
                 }
             }
+
+            // recurrance boost -- scale sum of all other boosts relative to direct recurrances of the term in other terms
+            SetTagsRepeatedCount(all);
+            foreach (var t in all.Where(p => p.term.name.Length > 3).OrderByDescending(p => p.appearance_count).Take(3)) {
+                if (t.appearance_count > 1) {
+                    var boost = t.tss * 0.15
+                                * Math.Pow((double)t.appearance_count, 0.25)
+                                ;
+                    t.candidate_reason += $" >>> RECURRING({(int)boost}:{t.tss}:{t.appearance_count}) ";
+                    t.tss += boost;
+                }
+            }
+
 
             //       (2) want to arrive at BROADLY bucketed "approved" MM CATS, e.g. for sample set: 
             //              * chess, astronomy, atheism, US politics, comedy, maths,  > and not much more than that ...
@@ -237,17 +297,21 @@ namespace mm_svc
             //
 
             // final 3 cats
-            var final = new List<string>();
-            foreach (var term in url_terms.OrderByDescending(p => p.topic_specifc_score).Take(3))
-                final.Add(term.term.name);
+            //var final = new List<string>();
+            //foreach (var term in url_terms.OrderByDescending(p => p.TSS).Take(3))
+            //    final.Add(term.term.name);
 
-            return final;
+            //return final;
+
+            // normalize TSS
+            var max_tss = url_terms.Max(p => p.tss);
+            url_terms.ForEach(p => p.tss_norm = max_tss == 0 ? 0 : p.tss / max_tss);
         }
 
         private void SetTagsRepeatedCount(IEnumerable<url_term> uts)
         {
             foreach (var ut in uts) {
-                var appears_in = tags.Where(p => p.term.name.IndexOf(ut.term.name) != -1);
+                var appears_in = tags.Where(p => p.term.name.ltrim().IndexOf(ut.term.name.ltrim()) != -1);
                 ut.appearance_count = appears_in.Count();
                 //log += $"tag {ut.term.name} appears in {ut.appearance_count} tags\r\n";
             }

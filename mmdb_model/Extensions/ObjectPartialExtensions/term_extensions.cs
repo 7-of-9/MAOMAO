@@ -14,6 +14,9 @@ namespace mmdb_model
         [NotMapped]
         public double? corr { get; set; }
 
+        [NotMapped]
+        public url_term parent_url_term { get; set; }
+
         // # of times this term and adjacent term have appeared together
         //[NotMapped]
         //public long? XX { get; set; }

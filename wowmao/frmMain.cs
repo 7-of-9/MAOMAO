@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using mm_global;
 using mm_svc.Terms;
 using System.Diagnostics;
+using static mm_svc.Terms.Correlations;
 
 namespace wowmao
 {
@@ -30,7 +31,8 @@ namespace wowmao
             Correlations.cache_add += Correlations_cache_add;
             CorrelatedGoldens.cache_add += CorrelatedGoldens_cache_add;
             InitializeComponent();
-            this.cboTop.SelectedIndex = 0;
+            this.cboTop.SelectedIndex = 1;
+            this.ttAll.XX_max_L1 = 10;
             InitTvwRootNodes();
         }
 
@@ -80,6 +82,9 @@ namespace wowmao
                         x.meta_title,
                         x.url_term.Count().ToString(),
                         "-",
+                        "-",
+                        "-",
+                        "-",
                     });
                     item.Tag = x;
                     items.Add(item);
@@ -94,6 +99,10 @@ namespace wowmao
             for (int i = 0; i < lvw.Columns.Count; i++) {
                 var col = lvw.Columns[i];
                 col.Width = -2;
+            }
+            if (lvw == this.lvwUrls) {
+                lvw.Columns[1].Width = 50;
+                lvw.Columns[2].Width = 200;
             }
         }
 
@@ -121,6 +130,7 @@ namespace wowmao
             var url = item.Tag as url;
 
             this.Cursor = Cursors.WaitCursor;
+            ttL2Terms.Nodes.Clear();
 
             // get meta
             dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
@@ -130,106 +140,146 @@ namespace wowmao
 
             using (var db = mm02Entities.Create()) {
                 // get url_terms 
-                List<url_term> url_terms;
+                List<url_term> l1_url_terms;
                 if (this.url_term_cache.ContainsKey(url.id))
-                    url_terms = url_term_cache[url.id];
+                    l1_url_terms = url_term_cache[url.id];
                 else {
-                    url_terms = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type").Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
-                    url_term_cache.Add(url.id, url_terms);
+                    l1_url_terms = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type").Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
+                    url_term_cache.Add(url.id, l1_url_terms);
                     SetCaption();
                 }
 
-                // meta for buest-guess entities/terms (TSS production) (MM CAT)
+                // meta-heuristics: TSS for L1 terms
                 var cat = new mm_svc.MmCat();
-                cat.GetCat(meta_all, url_terms);
+                cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
                 txtInfo.AppendText(cat.log);
 
-                // display -- each URL-term
+                // display -- each L1 URL-term
                 ttUrlTerms.Nodes.Clear();
                 lvwUrlTerms.Items.Clear();
                 lvwUrlTerms.BeginUpdate();
                 var ut_items = new List<ListViewItem>();
                 var direct_goldens = new List<url_term>();
-                //var best_correlated_golden_term_ids_count = new Dictionary<long, int>();
-                var golden_second_level = new List<term>();
-                foreach (var ut in url_terms.OrderByDescending(p => p.topic_specifc_score)) {
-                    ttUrlTerms.AddRootTerm(ut.term);
+                var all_l2_term_ids_by_count = new Dictionary<long, int>();
+                var all_l2_terms = new List<term>();
+                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.tss)) {
+                    ttUrlTerms.AddRootTerm(l1_url_term.term);
 
-                    List<term> correlated_goldens = null;
-                    if (ut.topic_specifc_score > 0) {
+                    List<term> l2_terms = null;
+                    if (l1_url_term.tss > 0) {
                         // is term directly golden?
-                        if (ut.term.is_golden)
-                            direct_goldens.Add(ut);
+                        if (l1_url_term.term.is_golden)
+                            direct_goldens.Add(l1_url_term);
 
                         // get any correlated golden term(s) (2nd level terms)
                         // todo -- (1) order/rank in aggregate by degree of correlation to parent term
                         //         (2) consider not restricting to current goldens, i.e. all 2nd-level terms, ranked/weighted by corr. & golden
-                        correlated_goldens = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(ut.term.name)
-                            .Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC).ToList();
 
-                        //foreach (var cg in correlated_goldens) {
-                        if (correlated_goldens.Count > 0) {
-                            var cg = correlated_goldens[0];
-                            // keep counts
-                            //if (best_correlated_golden_term_ids_count.ContainsKey(cg.id))
-                            //    best_correlated_golden_term_ids_count[cg.id]++;
-                            //else
-                            //    best_correlated_golden_term_ids_count.Add(cg.id, 1);
+                        // l2 terms: all
+                        l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term=l1_url_term.term.name, min_corr=0.1 }).OrderByDescending(p => p.max_corr).SelectMany(p => p.corr_terms).ToList();
 
-                            if (!golden_second_level.Any(p => p.id == cg.id))
-                                golden_second_level.Add(cg);
+                        // l2 terms: just golden
+                        //l2_terms = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(l1_url_term.term.name)
+                        //    .Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC /*&& p.corr > 0.1*/).ToList();
+
+                        // map S value underlyers from parent url-term, to the l2 url-term
+                        l2_terms.ForEach(p => {
+                            p.parent_url_term = l1_url_term;
+                        });
+
+                        // keep counts
+                        foreach (var l2_term in l2_terms) { 
+                            if (all_l2_term_ids_by_count.ContainsKey(l2_term.id))
+                                all_l2_term_ids_by_count[l2_term.id]++;
+                            else
+                                all_l2_term_ids_by_count.Add(l2_term.id, 1);
+
+                            if (!all_l2_terms.Any(p => p.id == l2_term.id))
+                                all_l2_terms.Add(l2_term);
                         }
                     }
 
-                    var ut_item = new ListViewItem(new string[] {
-                        ut.term.is_golden ? "*" : "",
-                        correlated_goldens == null ? "-" : correlated_goldens.Count.ToString(),
-                        ut.topic_specifc_score.ToString(),
-                        ut.term.name + " [" + ut.term.id + "] #" + ut.term.occurs_count,
-                        ut.term.term_type.type,
-                        ut.term.cal_entity_type != null ? ut.term.cal_entity_type.name : "-",
-                        ut.term.occurs_count.ToString(),
-                        ut.S.ToString(),
-                        ut.appearance_count.ToString(),
-                        ut.candidate_reason,
-                        ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
-                        ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
-                        ut.words_common_to_title_stemmed != null ? string.Join("/", ut.words_common_to_title_stemmed.Select(p => p + "/")) : "",
-                        ut.words_common_to_desc_stemmed != null ? string.Join("/", ut.words_common_to_desc_stemmed.Select(p => p + "/")) : "",
-                    });
-                    ut_item.Tag = new lvwUrlTermTag() { ut = ut, correlated_goldens = correlated_goldens };
-                    ut_items.Add(ut_item);
+                    ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, l2_terms));
                 }
                 lvwUrlTerms.Items.AddRange(ut_items.ToArray());
                 lvwUrlTerms.EndUpdate();
                 SetCols(lvwUrlTerms);
 
-                // extraction of best golden
-                var mm_cats = new List<term>();
-                if (direct_goldens.Count > 0) {
-                    // prefer any direct golden terms - rank by TSS, top 1
-                    mm_cats.Add(direct_goldens.OrderByDescending(p => p.topic_specifc_score).First().term);
-                }
-                else
-                {
-                    // no direct golden, take highest occuring correlated golden by count
-                    // TODO: use degree of correlation with parent term (new: term.corr, set by CorrelatedGoldens)
-                    if (golden_second_level.Count > 0) {
-                        var filtered_golden_second_level = golden_second_level.OrderByDescending(p => p.corr).Where(p => p.corr > 0.4);
-                        if (filtered_golden_second_level.Count() > 0)
-                            mm_cats.Add(filtered_golden_second_level.First());
+                //
+                // L2 TSS
+                lvwUrlTerms2.Items.Clear();
+                var l2_url_terms = new List<url_term>();
+                if (all_l2_terms.Count > 0) {
+                    var l1_term_ids = l1_url_terms.Select(p => p.term.id).Distinct();
+                    l2_url_terms = all_l2_terms.Where(p => !l1_term_ids.Contains(p.id)).Select(p => new url_term() { term = p }).ToList();
 
-                        //Debug.WriteLine(best_correlated_golden_term_ids_count.Count());
-                        //var list = best_correlated_golden_term_ids_count.ToList();
-                        //list.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-                        //mm_cats.Add(correlated_golden_terms.Single(p => p.id == list[0].Key));
+                    // L2.S = L1.S
+                    l2_url_terms.ForEach(p => {
+                        if (p.term.term_type_id == (int)g.TT.CALAIS_ENTITY) p.cal_entity_relevance = p.term.parent_url_term.S / 10;
+                        if (p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) p.cal_socialtag_importance = (int)(p.term.parent_url_term.S / 3.0);
+                        if (p.term.term_type_id == (int)g.TT.CALAIS_TOPIC) p.cal_topic_score = (int)(p.term.parent_url_term.S / 10);
+                    });
+
+                    // scale L2.S by corr/L2.Max(corr)
+                    var l2_max_corr = l2_url_terms.Max(p => p.term.corr);
+                    l2_url_terms.ForEach(p => p.s = (p.term.corr??0) / (l2_max_corr??1));
+
+                    // DeriveMmCat (produce TSS) for L2 terms
+                    cat.CalcTSS(meta_all, l2_url_terms, run_l2_boost: false);
+                    lvwUrlTerms2.BeginUpdate();
+                    foreach (var l2_url_term in l2_url_terms.OrderByDescending(p => p.tss)) {
+                        lvwUrlTerms2.Items.Add(lvwUrlTerms2.NewLvi(l2_url_term, null));
                     }
+                    lvwUrlTerms2.EndUpdate();
+                    SetCols(lvwUrlTerms2);
                 }
-                if (mm_cats.Count > 0)
-                    item.SubItems[4].Text = mm_cats[0].name;
 
-                // suggested new goldens based on TSS
-                //...
+                //
+                // output/suggest phase
+                //
+
+                // existing gold at L1 - all over TSS norm threshold
+                var out_existing_l1_gold = new List<term>();
+                if (direct_goldens.Count > 0) {
+                    out_existing_l1_gold = direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > 0.1).Select(p => p.term).ToList();
+                    item.SubItems[4].Text = string.Join("/", out_existing_l1_gold.Select(p => p.name));
+                }
+
+                // new gold suggestions
+
+                // TODO:
+                // analogs -- "Chess" being same as "chess" is functionally identical to "World Trade Center" being same as "WTC"
+                //  treat them identically, i.e. an admin-mapping of analogs is needed; programmatic case-handling will only cover half of it.
+                //
+
+                // gold suggestion 1 -- xtop L1 terms by TSS norm threshold
+                var out_suggest_l1_gold = new List<term>();
+                out_suggest_l1_gold = l1_url_terms.OrderByDescending(p => p.tss_norm)
+                                                  .Where(p => p.tss_norm > 0.8).Select(p => p.term)
+                                                  .Where(p => !out_existing_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
+                                                  .ToList();
+                item.SubItems[5].Text = string.Join("/", out_suggest_l1_gold.Select(p => p.name));
+
+                if (l2_url_terms.Count > 0) {
+
+                    // suggestion 2 -- highest TSS ranked L2 all terms 
+                    var out_suggest_l2_gold = new List<term>();
+                    out_suggest_l2_gold = l2_url_terms.OrderByDescending(p => p.tss_norm)
+                                                       .Where(p => p.tss_norm > 0.8).Select(p => p.term)
+                                                       .Where(p => !out_existing_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
+                                                       .Where(p => !out_suggest_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
+                                                       .ToList();
+                    item.SubItems[6].Text = string.Join("/", out_suggest_l2_gold.Select(p => p.name));
+                    
+                    // suggestion 3 -- highest L2 golden by count (very restrictive dataset?)
+                    //var mm_cats = new List<term>();
+                    //if (all_l2_terms.Count > 0) {
+                    //    var list = all_l2_term_ids_by_count.ToList();
+                    //    list.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
+                    //    item.SubItems[7].Text = all_l2_terms.Single(p => p.id == list[0].Key).name;
+                    //}
+                }
+                SetCols(lvwUrls);
 
                 // ***
                 // plan -- should auto-golden high TSS terms to the closest (deepest)
@@ -249,19 +299,15 @@ namespace wowmao
             this.Cursor = Cursors.Default;
         }
 
-        private class lvwUrlTermTag {
-            public url_term ut;
-            public List<term> correlated_goldens;
-        }
-
+   
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
-            var tag = lvwUrlTerms.SelectedItems[0].Tag as lvwUrlTermTag;
-            var ordered_correlated_golden = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(tag.ut.term.name); // tag.correlated_goldens; // 
-            ttDirectGoldens.Nodes.Clear();
-            foreach(var golden_term in ordered_correlated_golden) {
-                ttDirectGoldens.AddRootTerm(golden_term);
+            var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
+            var l2_terms = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(tag.ut.term.name).Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC);
+            ttL2Terms.Nodes.Clear();
+            foreach(var golden_term in l2_terms) {
+                ttL2Terms.AddRootTerm(golden_term);
             }
         }
 
