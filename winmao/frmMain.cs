@@ -156,7 +156,7 @@ namespace winmao
         }
 
         TreeNode TreeNodeFromCorrelation(correlation c) {
-            var tn = new TreeNode($"max_corr={c.max_corr.ToString("0.0000")} {c.corr_term} XX={c.sum_XX}");
+            var tn = new TreeNode($"corr_for_main={c.corr_for_main.ToString("0.0000")} {c.corr_term} XX={c.sum_XX}");
             foreach(var term in c.corr_terms) {
                 var tn2 = TreeNodeFromTerm(term);
                 tn.Nodes.Add(tn2);

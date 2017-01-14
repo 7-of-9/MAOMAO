@@ -87,8 +87,9 @@ namespace wowmao
                     List<correlation> filtered;
 
                     // exclude golden children whose parent is not this correlation
-                    filtered = correlations.Where(p => p.is_golden_child == false ||
-                                                       p.golden_parents.Any(p2 => p2.parent_term.id == parent_term.id)).ToList();
+                    filtered = correlations.Where(p => p.is_golden_child == false
+                                                    //|| p.golden_parents.Any(p2 => p2.parent_term.id == parent_term.id)
+                                                    ).ToList();
 
                     // order golden to top
                     filtered = filtered.OrderByDescending(p => p.is_golden_child).ToList();
@@ -136,7 +137,7 @@ namespace wowmao
         }
 
         TreeNode TreeNodeFromCorrelation(correlation c) {
-            var tn = new TreeNode($"{c.corr_term} ... max_corr={c.max_corr.ToString("0.0000")} XX={c.sum_XX} corr_terms={c.corr_terms.Count}");
+            var tn = new TreeNode($"{c.corr_term} ... corr={c.corr_for_main.ToString("0.0000")} XX={c.sum_XX} corr_terms={c.corr_terms.Count}"); //**max_corr
             if (c.is_golden_child) { 
                 var boldFont = new Font(this.Font, FontStyle.Bold);
                 tn.NodeFont = boldFont;

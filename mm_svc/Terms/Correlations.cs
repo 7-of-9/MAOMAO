@@ -28,10 +28,13 @@ namespace mm_svc.Terms
         //public bool has_mm_cat() { return corr_terms.All(p => p.mmcat != null); }
 
         public long sum_XX = -1;
-        public double max_corr = -1;
+        //public double max_corr = -1;
+
+        public double corr_for_main = -1;
+        public double corr_for_related = -1;
 
         public override string ToString() {
-            return $"{main_term} x {corr_term}: corr_matrix[{corr_matrix.Count}] sum_XX={sum_XX} max_corr={max_corr}";
+            return $"{main_term} x {corr_term}: corr_matrix[{corr_matrix.Count}] sum_XX={sum_XX} corr_for_main={corr_for_main}"; // max_corr={max_corr}";
         }
     }
 
@@ -39,8 +42,10 @@ namespace mm_svc.Terms
     {
         public static Dictionary<string, List<correlation>> cache = new Dictionary<string, List<correlation>>();
         public static event EventHandler cache_add = delegate { };
+        public static bool cache_disable = false;
 
         private const int MIN_CORR_TERM_OCCURS_COUNT = 10;
+        private const int MIN_CORR_OCCURS_TOGETHER_COUNT = 5;
 
         public class corr_input {
             public string main_term, corr_term_eq;
@@ -57,7 +62,7 @@ namespace mm_svc.Terms
 
         public static List<correlation> GetTermCorrelations(corr_input inp)
         {
-            if (cache.Keys.Contains(inp.cache_key))
+            if (!cache_disable && cache.Keys.Contains(inp.cache_key))
                 return cache[inp.cache_key];
 
             var sw = new Stopwatch(); sw.Start();
@@ -97,26 +102,38 @@ namespace mm_svc.Terms
                 var data = c.ToListNoLock();
                 Debug.WriteLine($"> Get2('{inp.main_term}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
 
-                foreach (var term_matrix in data) {
-                    var max_term_occurs_count = Math.Max(term_matrix.term.occurs_count, term_matrix.term1.occurs_count);
+                foreach (var tm in data) {
 
-                    term related_term;
-                    if (term_matrix.term.name.ToLower() != inp.main_term.ToLower())
-                        related_term = term_matrix.term;
-                    else if (term_matrix.term1.name.ToLower() != inp.main_term.ToLower())
-                        related_term = term_matrix.term1;
-                    else continue; // exclude self by id
+                    // define main & related terms
+                    term related_term, main_term;
+                    if (tm.term.name.ltrim() != inp.main_term.ltrim()) { related_term = tm.term; main_term = tm.term1; }
+                    else if (tm.term1.name.ltrim() != inp.main_term.ltrim()) { related_term = tm.term1; main_term = tm.term; }
+                    else continue; // exclude self
+                    tm.related_term = related_term;
+                    tm.main_term = main_term;
 
-                    term_matrix.related_term = related_term;
+                    // this is wrong!! probably stemming from this not being a true "correlation", namely:
+                    //  "chess" may appear 217 times in total, Lichess may appear 11 times in total.
+                    //  "liches" may appear with "chess" all 11 times - it's correlation *to* "chess" is 1.0 (XX/lichess.#)
+                    //  but "chess" correlation *to* "lichess" is only 11/217
+                    // i.e. correlations are not the same in both directions!!
+                    //var max_term_occurs_count = Math.Max(term_matrix.term.occurs_count, term_matrix.term1.occurs_count);
+                    //term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count; 
 
-                    term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count; // calc corr.
-                    term_matrix.related_term.corr = term_matrix.corr;
+                    // this must be correct:
+                    tm.corr_for_main = (double)tm.occurs_together_count / tm.main_term.occurs_count;
+                    tm.corr_for_related = (double)tm.occurs_together_count / tm.related_term.occurs_count;
 
-                    if (term_matrix.corr < inp.min_corr)
+                    tm.related_term.corr_for_main = tm.corr_for_main; 
+                    tm.related_term.corr_for_related = tm.corr_for_related; 
+
+                    // exclude very poorly correlated
+                    if (tm.corr_for_main < inp.min_corr)
                         continue;
 
-                    if (term_matrix.related_term.occurs_count < MIN_CORR_TERM_OCCURS_COUNT)
-                        continue; // exclude low sample sizes 
+                    // exclude low sample sizes 
+                    if (tm.related_term.occurs_count < MIN_CORR_TERM_OCCURS_COUNT || tm.occurs_together_count < MIN_CORR_OCCURS_TOGETHER_COUNT)
+                        continue;
 
                     if (!string.IsNullOrEmpty(inp.corr_term_eq))
                         if (related_term.name.ToLower() != inp.corr_term_eq.ToLower())
@@ -128,11 +145,10 @@ namespace mm_svc.Terms
                         ret.Add(corr);
                     }
 
-                    if (!corr.corr_matrix.Any(p => p.id == term_matrix.id))
-                        corr.corr_matrix.Add(term_matrix);
+                    if (!corr.corr_matrix.Any(p => p.id == tm.id))
+                        corr.corr_matrix.Add(tm);
 
                 }
-                //Debug.WriteLine($"> Get2('{inp.main_term}'): dbg1={dbg1}]");
 
                 // remove self
                 ret.RemoveAll(p => p.corr_term == p.main_term);
@@ -140,13 +156,24 @@ namespace mm_svc.Terms
                 // calc max correlation & sum of appears_together_count
                 foreach (var x in ret) {
                     x.sum_XX = x.corr_matrix.Sum(p => p.occurs_together_count);
-                    x.max_corr = x.corr_matrix.Max(p => p.corr); // probably should be a weighted average
+
+                    //x.max_corr = x.corr_matrix.Max(p => p.corr); // plain wrong
+
+                    x.corr_for_main = x.corr_matrix.Average(p => p.corr_for_main);
+                    x.corr_for_related = x.corr_matrix.Average(p => p.corr_for_related);
+
+                    // probably should be a weighted average
+                    //x.corr_for_main_weighted = ...
+                    //x.corr_for_related_weighted = ...
                 }
 
-                ret = ret.OrderByDescending(p => p.max_corr).ToList();
+                ret = ret.OrderByDescending(p => p.corr_for_main).ToList(); //*
+
                 Debug.WriteLine($">>> Get2('{inp.main_term}'): {sw.ElapsedMilliseconds} ms");
-                cache.Add(inp.cache_key, ret);
-                cache_add?.Invoke(typeof(Correlations), EventArgs.Empty);
+                if (!cache_disable) {
+                    cache.Add(inp.cache_key, ret);
+                    cache_add?.Invoke(typeof(Correlations), EventArgs.Empty);
+                }
                 return ret;
             }
         }

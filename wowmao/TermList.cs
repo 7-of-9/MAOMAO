@@ -77,7 +77,7 @@ namespace wowmao
                 ut.term.term_type.type,
                 ut.term.cal_entity_type != null ? ut.term.cal_entity_type.name : "-",
                 ut.term.occurs_count.ToString(),
-                ut.term.corr?.ToString("0.000"),
+                ut.term.corr_for_main?.ToString("0.000"),
                 ut.S.ToString(),
                 ut.s.ToString("0.00"),
                 ut.S2.ToString("0.00"),

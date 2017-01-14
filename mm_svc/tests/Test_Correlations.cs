@@ -13,6 +13,22 @@ namespace tests
     public class Test_Correlations
     {
         [TestMethod]
+        public void Correlations_Test3()
+        {
+            mm_svc.Terms.CorrelatedGoldens.cache_disable = true;
+            var data = mm_svc.Terms.CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered("Lichess");
+        }
+        
+        [TestMethod]
+        public void Correlations_Test2()
+        {
+            mm_svc.Terms.Correlations.cache_disable = true;
+            var data = mm_svc.Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = "chess", corr_term_eq = null });
+            var terms = data.SelectMany(p => p.corr_terms).OrderByDescending(p => p.corr_for_main);
+            //var data2 = mm_svc.Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = "Lichess", corr_term_eq = "chess" });
+        }
+
+        [TestMethod]
         public void Correlations_Test1()
         {
             // GET3 == GET2

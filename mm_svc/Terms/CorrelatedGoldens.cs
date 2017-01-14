@@ -13,13 +13,13 @@ namespace mm_svc.Terms
     {
         public static Dictionary<string, List<term>> cache = new Dictionary<string, List<term>>();
         public static event EventHandler cache_add = delegate { };
+        public static bool cache_disable = false;
 
         public static List<term> GetGorrelatedGoldenTerms_Ordered(string main_term)
         {
-            if (cache.Keys.Contains(main_term))
+            if (!cache_disable && cache.Keys.Contains(main_term))
                 return cache[main_term];
 
-            var ret = new List<term>();
             var sw = new Stopwatch(); sw.Start();
             using (var db = mm02Entities.Create()) {
                 var a_ids = db.ObjectContext().ExecuteStoreQuery<long>($@"
@@ -53,22 +53,31 @@ order by occurs_together_count desc
                                         .Where(p => all_ids.Contains(p.id)
                                             && p.term_a_id != g.MAOMAO_ROOT_TERM_ID
                                             && p.term_b_id != g.MAOMAO_ROOT_TERM_ID)
-                                        .OrderByDescending(p => p.occurs_together_count)// important
+                                        .OrderByDescending(p => p.occurs_together_count)
                                         .ToListNoLock();
                 Debug.WriteLine($"> GetCorrelatedGoldenTerms('{main_term}'): {sw.ElapsedMilliseconds} ms for data [{data.Count} row(s)]");
 
-                foreach (var term_matrix in data) {
-                    var max_term_occurs_count = Math.Max(term_matrix.term.occurs_count, term_matrix.term1.occurs_count);
-                    term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count;
+                var ret = new List<term>();
+                foreach (var tm in data) {
+                    //var max_term_occurs_count = Math.Max(term_matrix.term.occurs_count, term_matrix.term1.occurs_count);
+                    //term_matrix.corr = (double)term_matrix.occurs_together_count / max_term_occurs_count;
 
-                    if (!ret.Select(p => p.id).Contains(term_matrix.term.id) && term_matrix.term.name.ToLower() != main_term.ToLower()) {
-                        term_matrix.term.corr = term_matrix.corr;
-                        ret.Add(term_matrix.term);
-                    }
+                    if (tm.term.name.ltrim() != main_term.ltrim()) { tm.related_term = tm.term; tm.main_term = tm.term1; }
+                    else if (tm.term1.name.ltrim() != main_term.ltrim()) { tm.related_term = tm.term1; tm.main_term = tm.term; }
+                    //else continue; // exclude self
+
+                    tm.corr_for_main = (double)tm.occurs_together_count / tm.main_term.occurs_count;
+                    tm.corr_for_related = (double)tm.occurs_together_count / tm.related_term.occurs_count;
+
+                    tm.related_term.corr_for_main = tm.corr_for_main;
+                    tm.related_term.corr_for_related = tm.corr_for_related;
+                    ret.Add(tm.related_term);
                 }
 
-                cache.Add(main_term, ret);
-                cache_add?.Invoke(typeof(CorrelatedGoldens), EventArgs.Empty);
+                if (!cache_disable) { 
+                    cache.Add(main_term, ret);
+                    cache_add?.Invoke(typeof(CorrelatedGoldens), EventArgs.Empty);
+                }
                 return ret;
             }
         }

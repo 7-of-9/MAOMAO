@@ -177,7 +177,10 @@ namespace wowmao
                         //         (2) consider not restricting to current goldens, i.e. all 2nd-level terms, ranked/weighted by corr. & golden
 
                         // l2 terms: all
-                        l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term=l1_url_term.term.name, min_corr=0.1 }).OrderByDescending(p => p.max_corr).SelectMany(p => p.corr_terms).ToList();
+                        l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = l1_url_term.term.name, min_corr = 0.1 })
+                                                .SelectMany(p => p.corr_terms)
+                                                .OrderByDescending(p => p.corr_for_main)
+                                                .ToList();
 
                         // l2 terms: just golden
                         //l2_terms = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(l1_url_term.term.name)
@@ -222,8 +225,8 @@ namespace wowmao
                     });
 
                     // scale L2.S by corr/L2.Max(corr)
-                    var l2_max_corr = l2_url_terms.Max(p => p.term.corr);
-                    l2_url_terms.ForEach(p => p.s = (p.term.corr??0) / (l2_max_corr??1));
+                    var l2_max_corr = l2_url_terms.Max(p => p.term.corr_for_main);
+                    l2_url_terms.ForEach(p => p.s = (p.term.corr_for_main ?? 0) / (l2_max_corr??1));
 
                     // DeriveMmCat (produce TSS) for L2 terms
                     cat.CalcTSS(meta_all, l2_url_terms, run_l2_boost: false);

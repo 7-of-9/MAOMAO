@@ -255,17 +255,17 @@ namespace mm_svc
                 var top_terms = url_terms.Except(topics).OrderByDescending(p => p.tss).Take(3);  // take more??
                 foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
 
-                    var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.max_corr);
+                    var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.corr_for_main); 
 
                     foreach (var correlation in correlations.Take(8)) { // top n by correlation
 
                         // boost terms that match correlations of top top terms (exactly by name)
                         foreach (var non_top_term in url_terms.Except(topics).Where(p => p.term.name.ToLower() == correlation.corr_term.ToLower() && p.tss >= 0)) {
                             
-                            Debug.WriteLine($"{non_top_term.term.name}x{top_term.term.name} corr={correlation.max_corr}");
+                            Debug.WriteLine($"{top_term.term.name}x{non_top_term.term.name} corr={correlation.corr_for_main}");
 
                             var other_term_boost = 1
-                                                   * (int)(Math.Pow((double)top_term.tss * correlation.max_corr, 0.5) 
+                                                   * (int)(Math.Pow((double)top_term.tss * correlation.corr_for_main, 0.5)
                                                    * non_top_term.S2);
                             non_top_term.candidate_reason += $" L2_BOOST({other_term_boost}:{top_term.term.name})";
 

@@ -11,8 +11,9 @@ namespace mmdb_model
     public partial class term
     {
         // correlation between this term and adjacent term
-        [NotMapped]
-        public double? corr { get; set; }
+        [NotMapped] public double? corr_for_main { get; set; }
+        
+        [NotMapped] public double? corr_for_related { get; set; }
 
         [NotMapped]
         public url_term parent_url_term { get; set; }
@@ -45,7 +46,7 @@ namespace mmdb_model
         }}
 
         public override string ToString() {
-            return $"{this.name} ... [{this.id}] #{this.occurs_count} corr={this.corr} ({((g.TT)this.term_type_id).ToString()})";
+            return $"{this.name} ... [{this.id}] #{this.occurs_count} corr_for_main={this.corr_for_main?.ToString("0.000")} corr_for_main={this.corr_for_related?.ToString("0.000")} ({((g.TT)this.term_type_id).ToString()})";
         }
     }
 }
