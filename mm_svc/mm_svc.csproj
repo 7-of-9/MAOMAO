@@ -58,9 +58,8 @@
   <ItemGroup>
     <Compile Include="ExternalNlp\CalaisNlp.cs" />
     <Compile Include="Info\SiteInfo.cs" />
-    <Compile Include="InternalNlp\DeriveMmCat.cs" />
+    <Compile Include="InternalNlp\TssProduction.cs" />
     <Compile Include="InternalNlp\Porter2_English.cs" />
-    <Compile Include="InternalNlp\StanfordCoreNlp.cs" />
     <Compile Include="InternalNlp\Utils\Words.cs" />
     <Compile Include="InternalNlp\Utils\Word.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

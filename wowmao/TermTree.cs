@@ -127,9 +127,9 @@ namespace wowmao
         }
 
         TreeNode TreeNodeFromTerm(term t) {
-            var tn = new TreeNode($"{t.name} ... [{t.id}] #{t.occurs_count} corr={t.corr} ({((g.TT)t.term_type_id).ToString()})");
-            if (t.golden_parents.Count > 0) {
-                tn.Text += $" / golden child of [{string.Join(" / ", t.golden_parents.Select(p => p.parent_desc))}]";
+            var tn = new TreeNode(t.ToString());
+            if (t.is_golden) {
+                tn.Text += $" / *GL={t.gold_level} golden child of [{string.Join(" / ", t.golden_parents.Select(p => p.parent_desc))}]";
             }
             tn.Tag = t;
             return tn;
@@ -198,7 +198,7 @@ namespace wowmao
             var parent_term = FirstGoldenParent(tn);
             Debug.WriteLine("node.Level=" + tn.Level);
             Debug.WriteLine("parent_term=" + parent_term.name);
-            Debug.WriteLine("parent_term.golden_mmcat_level=" + parent_term.golden_mmcat_level);
+            Debug.WriteLine("parent_term.golden_mmcat_level=" + parent_term.gold_level);
             using (var db = mm02Entities.Create()) {
                 this.Cursor = Cursors.WaitCursor;
                 foreach (var term in corr.corr_terms) {
@@ -213,7 +213,7 @@ namespace wowmao
                         golden_term = new golden_term() {
                             child_term_id = term.id,
                             parent_term_id = parent_term.id,
-                            mmcat_level = parent_term.golden_mmcat_level + 1
+                            mmcat_level = parent_term.gold_level + 1
                         };
                         db.golden_term.Add(golden_term);
                         db.SaveChangesTraceValidationErrors();

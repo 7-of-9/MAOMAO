@@ -13,6 +13,7 @@ using mm_global;
 using mm_svc.Terms;
 using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
+using mm_svc;
 
 namespace wowmao
 {
@@ -150,7 +151,7 @@ namespace wowmao
                 }
 
                 // meta-heuristics: TSS for L1 terms
-                var cat = new mm_svc.MmCat();
+                var cat = new mm_svc.TssProduction();
                 cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
                 txtInfo.AppendText(cat.log);
 
@@ -235,41 +236,58 @@ namespace wowmao
                 }
 
                 //
+                // (NOTE/TODO:
+                //
+                //   "analogs" -- "Chess" being same as "chess" is functionally identical to "World Trade Center" being same as "WTC"
+                //    treat them identically, i.e. an admin-mapping of analogs is needed; programmatic case-handling will only cover half of it.
+                //
+                //   "exclusions" -- kind of similar - need admin fn. to mark terms as excluded from presentation, e.g. "outline of chess" will appear v.
+                //       frequently as gold suggestion (compare: "computer chess", which is actually good - very hard to programatically dismabiguate them)
+                //     so, must want admin fn. to mark a gold-term as "excluded" -- it lives as normal, the only difference being that its excluded flag
+                //     will remove it from presentation.
+                //
+                // both of these are presentation-level issues: marking gold terms as analogs, and marking gold terms as excluded from presentation)
+                //
+
+                //
                 // output/suggest phase
                 //
 
-                // existing gold at L1 - all over TSS norm threshold
-                var out_existing_l1_gold = new List<term>();
+                // existing gold: L1 & L2 - over TSS norm threshold (varies by gold level)
+                var out_existing_l1_l2_gold = new List<term>();
                 if (direct_goldens.Count > 0) {
-                    out_existing_l1_gold = direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > 0.1).Select(p => p.term).ToList();
-                    item.SubItems[4].Text = string.Join("/", out_existing_l1_gold.Select(p => p.name));
+
+                        // existing L1 
+                         out_existing_l1_l2_gold = direct_goldens.OrderByDescending(p => p.tss_norm)
+                        .Where(p =>  p.tss_norm > p.term.existing_gold_min_tss_norm)
+
+                        // existing L2 
+                        .Union(l2_url_terms.Where(p => p.term.is_golden && p.tss_norm > p.term.existing_gold_min_tss_norm))
+                        .Select(p => p.term)
+                        .ToList();
+                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
                 }
 
                 // new gold suggestions
 
-                // TODO:
-                // analogs -- "Chess" being same as "chess" is functionally identical to "World Trade Center" being same as "WTC"
-                //  treat them identically, i.e. an admin-mapping of analogs is needed; programmatic case-handling will only cover half of it.
-                //
-
-                // gold suggestion 1 -- xtop L1 terms by TSS norm threshold
+                // gold suggest L1 -- top L1 terms by TSS norm threshold
                 var out_suggest_l1_gold = new List<term>();
                 out_suggest_l1_gold = l1_url_terms.OrderByDescending(p => p.tss_norm)
-                                                  .Where(p => p.tss_norm > 0.8).Select(p => p.term)
-                                                  .Where(p => !out_existing_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
+                                                  .Where(p => p.tss_norm > 0.7 && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
+                                                  .Where(p => !p.is_golden)
                                                   .ToList();
-                item.SubItems[5].Text = string.Join("/", out_suggest_l1_gold.Select(p => p.name));
+                item.SubItems[5].Text = string.Join(" / ", out_suggest_l1_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
 
                 if (l2_url_terms.Count > 0) {
 
-                    // suggestion 2 -- highest TSS ranked L2 all terms 
+                    // gold suggest L2 -- highest TSS ranked L2 all terms 
                     var out_suggest_l2_gold = new List<term>();
                     out_suggest_l2_gold = l2_url_terms.OrderByDescending(p => p.tss_norm)
-                                                       .Where(p => p.tss_norm > 0.8).Select(p => p.term)
-                                                       .Where(p => !out_existing_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
+                                                       .Where(p => p.tss_norm > 0.8 && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
+                                                       .Where(p => !p.is_golden)
                                                        .Where(p => !out_suggest_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
                                                        .ToList();
-                    item.SubItems[6].Text = string.Join("/", out_suggest_l2_gold.Select(p => p.name));
+                    item.SubItems[6].Text = string.Join(" / ", out_suggest_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
                     
                     // suggestion 3 -- highest L2 golden by count (very restrictive dataset?)
                     //var mm_cats = new List<term>();

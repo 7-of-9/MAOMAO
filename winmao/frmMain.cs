@@ -97,7 +97,7 @@ namespace winmao
                     //  .Where(p => p.url_id == url.id).ToListNoLock();
 
                 // derive MM CAT!
-                var cat = new mm_svc.MmCat();
+                var cat = new mm_svc.TssProduction();
                 cat.CalcTSS(meta_all, url_terms, run_l2_boost: true);
                 //item.SubItems[3].Text = string.Join(" / ", final);
                 txtInfo.AppendText(cat.log);

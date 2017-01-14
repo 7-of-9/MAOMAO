@@ -115,7 +115,7 @@
             this.pnlTestMode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlTestMode.Location = new System.Drawing.Point(306, 0);
             this.pnlTestMode.Name = "pnlTestMode";
-            this.pnlTestMode.Size = new System.Drawing.Size(1006, 761);
+            this.pnlTestMode.Size = new System.Drawing.Size(1206, 761);
             this.pnlTestMode.TabIndex = 4;
             // 
             // splitter5
@@ -124,7 +124,7 @@
             this.splitter5.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter5.Location = new System.Drawing.Point(0, 511);
             this.splitter5.Name = "splitter5";
-            this.splitter5.Size = new System.Drawing.Size(1006, 6);
+            this.splitter5.Size = new System.Drawing.Size(1206, 6);
             this.splitter5.TabIndex = 10;
             this.splitter5.TabStop = false;
             // 
@@ -134,7 +134,7 @@
             this.pnlDirectGoldenCorrelations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDirectGoldenCorrelations.Location = new System.Drawing.Point(0, 511);
             this.pnlDirectGoldenCorrelations.Name = "pnlDirectGoldenCorrelations";
-            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1006, 250);
+            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1206, 250);
             this.pnlDirectGoldenCorrelations.TabIndex = 9;
             // 
             // pnlLevel2Terms
@@ -145,7 +145,7 @@
             this.pnlLevel2Terms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLevel2Terms.Location = new System.Drawing.Point(0, 0);
             this.pnlLevel2Terms.Name = "pnlLevel2Terms";
-            this.pnlLevel2Terms.Size = new System.Drawing.Size(1006, 250);
+            this.pnlLevel2Terms.Size = new System.Drawing.Size(1206, 250);
             this.pnlLevel2Terms.TabIndex = 10;
             // 
             // splitter6
@@ -163,7 +163,7 @@
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter2.Location = new System.Drawing.Point(0, 350);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(1006, 6);
+            this.splitter2.Size = new System.Drawing.Size(1206, 6);
             this.splitter2.TabIndex = 4;
             this.splitter2.TabStop = false;
             // 
@@ -176,7 +176,7 @@
             this.pnlURLs.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlURLs.Location = new System.Drawing.Point(0, 0);
             this.pnlURLs.Name = "pnlURLs";
-            this.pnlURLs.Size = new System.Drawing.Size(1006, 350);
+            this.pnlURLs.Size = new System.Drawing.Size(1206, 350);
             this.pnlURLs.TabIndex = 0;
             // 
             // pnlUrlTerms
@@ -186,7 +186,7 @@
             this.pnlUrlTerms.Controls.Add(this.splitter4);
             this.pnlUrlTerms.Controls.Add(this.txtInfo);
             this.pnlUrlTerms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlUrlTerms.Location = new System.Drawing.Point(806, 0);
+            this.pnlUrlTerms.Location = new System.Drawing.Point(1006, 0);
             this.pnlUrlTerms.Name = "pnlUrlTerms";
             this.pnlUrlTerms.Size = new System.Drawing.Size(200, 350);
             this.pnlUrlTerms.TabIndex = 6;
@@ -233,7 +233,7 @@
             // splitter3
             // 
             this.splitter3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter3.Location = new System.Drawing.Point(800, 0);
+            this.splitter3.Location = new System.Drawing.Point(1000, 0);
             this.splitter3.Name = "splitter3";
             this.splitter3.Size = new System.Drawing.Size(6, 350);
             this.splitter3.TabIndex = 4;
@@ -249,7 +249,7 @@
             this.pnlURL_List.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlURL_List.Location = new System.Drawing.Point(0, 0);
             this.pnlURL_List.Name = "pnlURL_List";
-            this.pnlURL_List.Size = new System.Drawing.Size(800, 350);
+            this.pnlURL_List.Size = new System.Drawing.Size(1000, 350);
             this.pnlURL_List.TabIndex = 1;
             // 
             // cboTop
@@ -297,7 +297,7 @@
             this.lvwUrls.Location = new System.Drawing.Point(3, 25);
             this.lvwUrls.MultiSelect = false;
             this.lvwUrls.Name = "lvwUrls";
-            this.lvwUrls.Size = new System.Drawing.Size(797, 325);
+            this.lvwUrls.Size = new System.Drawing.Size(997, 325);
             this.lvwUrls.TabIndex = 5;
             this.lvwUrls.UseCompatibleStateImageBehavior = false;
             this.lvwUrls.View = System.Windows.Forms.View.Details;
@@ -324,7 +324,7 @@
             // 
             // columnHeader11
             // 
-            this.columnHeader11.Text = "MM_CAT";
+            this.columnHeader11.Text = "cur-gold";
             this.columnHeader11.Width = 50;
             // 
             // txtURLSearch
@@ -333,7 +333,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtURLSearch.Location = new System.Drawing.Point(227, 1);
             this.txtURLSearch.Name = "txtURLSearch";
-            this.txtURLSearch.Size = new System.Drawing.Size(570, 21);
+            this.txtURLSearch.Size = new System.Drawing.Size(770, 21);
             this.txtURLSearch.TabIndex = 4;
             this.txtURLSearch.Text = "chess";
             // 
@@ -349,11 +349,11 @@
             // 
             // columnHeader16
             // 
-            this.columnHeader16.Text = "new-gold-1";
+            this.columnHeader16.Text = "new-gold-L1";
             // 
             // columnHeader17
             // 
-            this.columnHeader17.Text = "new-gold-2";
+            this.columnHeader17.Text = "new-gold-L2";
             // 
             // columnHeader22
             // 
@@ -366,7 +366,7 @@
             this.lvwUrlTerms2.HideSelection = false;
             this.lvwUrlTerms2.Location = new System.Drawing.Point(406, 0);
             this.lvwUrlTerms2.Name = "lvwUrlTerms2";
-            this.lvwUrlTerms2.Size = new System.Drawing.Size(600, 250);
+            this.lvwUrlTerms2.Size = new System.Drawing.Size(800, 250);
             this.lvwUrlTerms2.TabIndex = 11;
             this.lvwUrlTerms2.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms2.View = System.Windows.Forms.View.Details;
@@ -387,7 +387,7 @@
             this.lvwUrlTerms.HideSelection = false;
             this.lvwUrlTerms.Location = new System.Drawing.Point(0, 356);
             this.lvwUrlTerms.Name = "lvwUrlTerms";
-            this.lvwUrlTerms.Size = new System.Drawing.Size(1006, 155);
+            this.lvwUrlTerms.Size = new System.Drawing.Size(1206, 155);
             this.lvwUrlTerms.TabIndex = 8;
             this.lvwUrlTerms.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms.View = System.Windows.Forms.View.Details;
@@ -419,7 +419,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1312, 761);
+            this.ClientSize = new System.Drawing.Size(1512, 761);
             this.Controls.Add(this.pnlTestMode);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.pnlTermTree);

@@ -11,7 +11,10 @@ using static mm_svc.Terms.Correlations;
 
 namespace mm_svc
 {
-    public  class MmCat
+    /// <summary>
+    /// Calculates topic specific scores (TSS) for url_terms
+    /// </summary>
+    public class TssProduction
     {
         public string log = "";
 
@@ -20,8 +23,10 @@ namespace mm_svc
         private IEnumerable<url_term> topics;
         private IEnumerable<url_term> all;
 
-        private const double SOCIAL_TAG_BOOST = 6;
+        public const int MIN_GOLD_TSS = 100;
 
+        // TSS boosts 
+        public const double SOCIAL_TAG_BOOST = 6;
         private Dictionary<g.ET, double> entity_type_boosts = new Dictionary<g.ET, double>() {
             { g.ET.Movie,                SOCIAL_TAG_BOOST },
             { g.ET.MusicAlbum,           SOCIAL_TAG_BOOST },
@@ -36,6 +41,11 @@ namespace mm_svc
             { g.ET.Technology,           SOCIAL_TAG_BOOST },
             { g.ET.TVShow ,              SOCIAL_TAG_BOOST } 
         };
+        // boosts
+        public const double BASE_BOOST = 5;
+        public const double TITLE_EXACT_START_BOOST = BASE_BOOST * 2;
+        public const double TITLE_DESC_BOOST = 4;
+
 
         public void CalcTSS(dynamic meta_all, List<url_term> url_terms, bool run_l2_boost)
         {
@@ -67,51 +77,51 @@ namespace mm_svc
             }
 
             // all fully contained in title - no stemming
-            const int max_boost_len = 4;
+            const int MAX_BOOST_LEN = 4;
             foreach (var t in all.Where(p => title.ToLower().IndexOf(p.term.name.ltrim()) != -1)) {
-                var boost = 5 
-                            * t.term.name.LengthNorm(max_boost_len)
+                var boost = BASE_BOOST
+                            * t.term.name.LengthNorm(MAX_BOOST_LEN)
                             * t.S2;
                 t.candidate_reason += $" TITLE_EXACT({(int)boost}) ";
                 t.tss += boost;
             }
             // fully contained in title -- at start
             foreach (var t in all.Where(p => title.ToLower().StartsWith(p.term.name.ltrim()))) {
-                var boost = 10
-                            * t.term.name.LengthNorm(max_boost_len)
+                var boost = TITLE_EXACT_START_BOOST
+                            * t.term.name.LengthNorm(MAX_BOOST_LEN)
                             * t.S2;
                 t.candidate_reason += $" TITLE_EXACT_START({(int)boost}) ";
                 t.tss += boost;
             }
 
             //
-            // (TODO: stemming not working; this is just duplicating title_exact dynamics -- also POS not working: ditch this NLP lib.)
+            // TODO: stemming not working; this is just duplicating title_exact dynamics -- also POS not working: ditch this NLP lib. ***
             //
             // all fully contained in title - w/ stemming 
-            foreach (var t in all.Where(p => stemmer.stem(title.ToLower()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
+            /*foreach (var t in all.Where(p => stemmer.stem(title.ToLower()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
                 if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                    var boost = 5
-                                * t.term.name.LengthNorm(max_boost_len)
+                    var boost = BASE_BOOST
+                                * t.term.name.LengthNorm(MAX_BOOST_LEN)
                                 * t.S2;
                     t.candidate_reason += $" TITLE_STEMMED({(int)boost}) ";
                     t.tss += boost;
                 }
-            }
+            }*/
 
             if (!string.IsNullOrEmpty(description)) {
                 // ** all fully contained in description - no stemming
                 foreach (var t in all.Where(p => description.ToLower().IndexOf(p.term.name.ltrim()) != -1)) {
-                    var boost = 5
-                                * t.term.name.LengthNorm(max_boost_len)
+                    var boost = BASE_BOOST
+                                * t.term.name.LengthNorm(MAX_BOOST_LEN)
                                 * t.S2;
                     t.candidate_reason += $" DESC_EXACT({(int)boost}) ";
-                    t.tss += boost; // (int)(10 * Math.Log(Math.Max(20, tag.term.name.Length), 2)); 
+                    t.tss += boost; 
                 }
                 // ** all fully contained in description - w/ stemming
                 foreach (var t in all.Where(p => stemmer.stem(description.ToLower()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
                     if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                        var boost = 5
-                                    * t.term.name.LengthNorm(max_boost_len)
+                        var boost = BASE_BOOST
+                                    * t.term.name.LengthNorm(MAX_BOOST_LEN)
                                     * t.S2;
                         t.candidate_reason += $" DESC_STEMMED({(int)boost}) ";
                         t.tss += boost;
@@ -120,29 +130,31 @@ namespace mm_svc
             }
 
             // title best partial match 
+            // TODO: porter2 stemming is not working...***
             var title_ex_stopwords = InternalNlp.Utils.Words.TokenizeExStopwords(title).ToString();
             var title_ex_stopwords_stemmed = stemmer.stem(title_ex_stopwords);
             var description_ex_stopwords = InternalNlp.Utils.Words.TokenizeExStopwords(description).ToString();
             var description_ex_stopwords_stemmed = stemmer.stem(description_ex_stopwords);
             foreach (var t in all) {
                 t.words_common_to_title = InternalNlp.Utils.Words.WordsInCommon(t.term.name, title_ex_stopwords);
-                t.words_common_to_desc = InternalNlp.Utils.Words.WordsInCommon(t.term.name, description_ex_stopwords); //**
+                t.words_common_to_desc = InternalNlp.Utils.Words.WordsInCommon(t.term.name, description_ex_stopwords); 
 
+                //***
                 if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                    t.words_common_to_title_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), title_ex_stopwords_stemmed); //**
-                    t.words_common_to_desc_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), description_ex_stopwords_stemmed); //**
+                    t.words_common_to_title_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), title_ex_stopwords_stemmed); 
+                    t.words_common_to_desc_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), description_ex_stopwords_stemmed); 
                 }
 
                 // boost
                 if (t.words_common_to_title.Count > 0) {
-                    var boost = 4 
+                    var boost = TITLE_DESC_BOOST 
                                 * t.words_common_to_title.Count
                                 * t.S2;
                     t.candidate_reason += $" TITLE({(int)boost}) ";
                     t.tss += boost;
                 }
                 if (t.words_common_to_desc.Count > 0) {
-                    var boost = 4
+                    var boost = TITLE_DESC_BOOST
                                 * t.words_common_to_desc.Count
                                 * t.S2;
                     t.candidate_reason += $" DESC({(int)boost}) ";
@@ -153,7 +165,7 @@ namespace mm_svc
             foreach(var t in tt) {
                 if (t.words_common_to_title.Count > 0)
                 {
-                    var boost = 4 
+                    var boost = TITLE_DESC_BOOST
                                 * t.words_common_to_title.Count
                                 * t.S2;
                     t.candidate_reason += $" TITLE_BEST({(int)boost}) ";
@@ -163,7 +175,7 @@ namespace mm_svc
             tt = all.Where(p => p.words_common_to_desc.Count == all.Max(p2 => p2.words_common_to_desc.Count));
             foreach(var t in tt) {
                     if (t.words_common_to_desc.Count > 0) {
-                    var boost = 4
+                    var boost = TITLE_DESC_BOOST
                                 * t.words_common_to_desc.Count
                                 * t.S2;
                     t.candidate_reason += $" DESC_BEST({(int)boost}) ";
@@ -171,21 +183,8 @@ namespace mm_svc
                 }
             }
 
-            //x = all.OrderByDescending(p => p.words_common_to_title_and_entities.Count).First();
-            //if (x.words_common_to_title_and_entities.Count > 0) {
-            //    x.candidate_reason += " TITLE_ENTITIES_BEST_MATCH ";
-            //    // no score?
-            //}
-            //var y = all.OrderByDescending(p => p.common_to_entities_exact.Count);
-            //foreach(var yy in y) { 
-            //    if (x.common_to_entities_exact.Count > 0) {
-            //        x.candidate_reason += " TAGNAME_ENTITIES_EXACT ";
-            //        x.topic_specifc_score += 5;
-            //    }
-            //}
-
             // parts of speach patterns
-            // TODO: replace with lightweight POS tagger
+            // TODO: replace with lightweight POS tagger - stanfordcore v. hard and slow
             /*foreach (var t in all)
             {
                 var words = StanfordCoreNlp.tokenize_pos(t.term.name);
@@ -280,8 +279,8 @@ namespace mm_svc
             SetTagsRepeatedCount(all);
             foreach (var t in all.Where(p => p.term.name.Length > 3).OrderByDescending(p => p.appearance_count).Take(3)) {
                 if (t.appearance_count > 1) {
-                    var boost = t.tss * 0.15
-                                * Math.Pow((double)t.appearance_count, 0.25)
+                    var boost = t.tss * 0.5
+                                * Math.Pow((double)t.appearance_count, 0.45)
                                 ;
                     t.candidate_reason += $" >>> RECURRING({(int)boost}:{t.tss}:{t.appearance_count}) ";
                     t.tss += boost;

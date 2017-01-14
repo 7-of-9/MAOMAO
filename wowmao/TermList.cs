@@ -69,7 +69,7 @@ namespace wowmao
         internal ListViewItem NewLvi(url_term ut, List<term> l2_terms)
         {
             var lvi = new ListViewItem(new string[] {
-                ut.term.is_golden ? "*" : "",
+                ut.term.is_golden ? ($"*GL={ut.term.gold_level}") : "",
                 l2_terms == null ? "-" : l2_terms.Count.ToString(),
                 ut.tss.ToString("0"),
                 ut.tss_norm.ToString("0.00"),
@@ -77,10 +77,10 @@ namespace wowmao
                 ut.term.term_type.type,
                 ut.term.cal_entity_type != null ? ut.term.cal_entity_type.name : "-",
                 ut.term.occurs_count.ToString(),
-                ut.term.corr.ToString(),
+                ut.term.corr?.ToString("0.000"),
                 ut.S.ToString(),
                 ut.s.ToString("0.00"),
-                ut.S2.ToString(),
+                ut.S2.ToString("0.00"),
                 ut.appearance_count.ToString(),
                 ut.candidate_reason,
                 ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
