@@ -11,12 +11,6 @@ var mm_dirty = false;
 var mm_last_save_at = 0;
 
 // TODO: Observe change for mm
-var sessionObservable = mobx.observable({
-  urls: mobx.asMap({}),
-  activeUrl: '',
-  updateAt: new Date().toISOString(),
-});
-
 mobx.autorun(function autorun_onChange_im_score() {
   console.info('autorun sessionObservable:' + sessionObservable.urls);
   mm_save_imscore();

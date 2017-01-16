@@ -4,7 +4,7 @@
 
 var ping_interval_secs = 3;
 
-$(document).ready(function () {
+// $(document).ready(function () {
 
   var poll_loop = setInterval(function () {
     //console.warn('poll_loop');
@@ -25,4 +25,4 @@ $(document).ready(function () {
 
   }, ping_interval_secs * 1000);
 
-});
+// });

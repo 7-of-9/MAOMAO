@@ -20,6 +20,10 @@ module.exports = {
 
   module: {
     loaders: [
+      // { test: require.resolve('moment'), loader: 'expose-loader?moment' },
+      // { test: require.resolve('underscore'), loader: 'expose-loader?_!expose-loader?underscore' },
+      // { test: require.resolve('jquery'), loader: 'expose-loader?$!expose-loader?jQuery' },
+      // { test: require.resolve('underscore'), loader: 'expose-loader?_!expose-loader?underscore' },
       {
         test: /\.(js)?$/,
         loader: 'babel',

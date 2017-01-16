@@ -1,3 +1,5 @@
+import firebase from 'firebase';
+import mobx from 'mobx';
 import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
@@ -8,6 +10,15 @@ import { batchActions, enableBatching } from 'redux-batched-actions';
 import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
+
+// NOTE: Expose global modules for bg.js
+/* eslint-disable */
+require('expose?$!expose?jQuery!jquery');
+require('expose?_!underscore');
+require('expose?moment!moment');
+require('expose?firebase!firebase');
+require('expose?mobx!mobx');
+/* eslint-enable */
 
 const logger = createLogger();
 const config = new Config();
@@ -191,14 +202,20 @@ function saveImScore(url) {
   }
 }
 
-window.mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
+window.sessionObservable = mobx.observable({
+  urls: mobx.asMap({}),
+  activeUrl: '',
+  updateAt: new Date().toISOString(),
+});
+
+mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
   const now = new Date().toISOString();
   checkImScore(url, now);
   saveImScore(url);
 });
 
-window.mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
+mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
   console.info('reaction updateAt', updateAt);
   const url = window.sessionObservable.activeUrl;
   checkImScore(url, updateAt);
@@ -214,7 +231,7 @@ setInterval(() => {
 
 // firebase auth
 // init firebase
-window.firebase.initializeApp({
+firebase.initializeApp({
   apiKey: config.firebaseKey,
   databaseURL: config.firebaseDB,
   storageBucket: config.firebaseStore,
@@ -223,7 +240,7 @@ window.firebase.initializeApp({
 function initFirebaseApp() {
   console.log('initFirebaseApp');
   // Listen for auth state changes.
-  window.firebase.auth().onAuthStateChanged((user) => {
+  firebase.auth().onAuthStateChanged((user) => {
     console.log('firebase => User state change detected from the Background script of the Chrome Extension:', user);
   });
 }

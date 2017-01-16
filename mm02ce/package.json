@@ -16,11 +16,13 @@
     "bluebird": "^3.4.6",
     "core-decorators": "^0.14.0",
     "dotenv": "^2.0.0",
+    "firebase": "^3.6.5",
     "jquery": "^3.1.1",
     "jwt-decode": "^2.1.0",
     "mailgun": "shz/node-mailgun",
     "material-ui": "^0.16.6",
     "material-ui-chip-input": "^0.12.0",
+    "mobx": "^3.0.0",
     "moment": "^2.16.0",
     "qs": "^6.3.0",
     "radium": "^0.18.1",
@@ -38,7 +40,8 @@
     "redux-batched-actions": "^0.1.5",
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.1.0",
-    "remote-redux-devtools": "^0.5.7"
+    "remote-redux-devtools": "^0.5.7",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.1.0",
@@ -76,7 +79,7 @@
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "tape": "^4.6.0",
-    "webpack": "^1.12.11",
+    "webpack": "^1.14.0",
     "webpack-env-loader": "^0.1.1"
   },
   "license": "ISC"
