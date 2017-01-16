@@ -70,6 +70,7 @@ function setIconTextNeutral() {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
     setIconText('Login!', '#ff0000');
   } else {
+    // TODO: Checking that JUSTEXT is ready or not
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
     setIconText('', '#999999');
   }

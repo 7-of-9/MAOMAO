@@ -1,4 +1,5 @@
 import axios from 'axios';
+import firebase from 'firebase';
 
 function checkAuth() {
   const promise = new Promise((resolve, reject) => {
@@ -9,13 +10,9 @@ function checkAuth() {
           return reject(chrome.runtime.lastError);
         } else if (token) {
           const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-          firebase.auth().signInWithCredential(credential).catch((error) => {
-            // The OAuth token might have been invalidated. Lets' remove it from cache.
-            console.warn('firebase => error', error);
-          });
-
+          firebase.auth().signInWithCredential(credential).catch(error => reject(error));
           return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
-            .then((response) => resolve({ token, info: response.data }))
+            .then(response => resolve({ token, info: response.data }))
             .catch((error) => {
               if (error.response.status === 401 && retry) {
                 retry = false;
@@ -37,8 +34,8 @@ function logout(token) {
   const promise = new Promise((resolve, reject) => {
     // revoke token
     axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${token}`)
-      .then((response) => console.log('revoke', response))
-      .catch((error) => console.log('revoke error', error));
+      .then(response => console.log('revoke', response))
+      .catch(error => console.log('revoke error', error));
     // logout firebase
     if (firebase.auth().currentUser) {
       console.log('firebase logout');
@@ -73,19 +70,18 @@ function actionCreator(type, payload) {
 const authLogin = () => (
   (dispatch, getState) => {
     const { auth } = getState();
-    console.log('auth', auth);
     if (!auth.isPending || auth.accessToken === '') {
       dispatch({
         type: 'AUTH_PENDING',
       });
       return checkAuth()
         .then(data => dispatch(
-          actionCreator('AUTH_FULFILLED', { token: data.token, info: data.info }))
-        )
+          actionCreator('AUTH_FULFILLED', { token: data.token, info: data.info })),
+      )
         .catch(error => dispatch(actionCreator('AUTH_REJECTED', error)));
     }
     return dispatch(
-      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info })
+      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
     );
   }
 );

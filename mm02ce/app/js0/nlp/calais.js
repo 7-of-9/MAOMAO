@@ -312,6 +312,19 @@ function calais_process(nlp) {
   // send NLP result to background
   chrome.extension.sendMessage({ "session_nlp_result": true, "nlp": nlp, "page_meta": page_meta });
 
+  // NOTE: send NLP to store
+  chrome.extension.sendMessage({
+    type: 'chromex.dispatch',
+    payload: {
+      type: 'NLP',
+      payload: {
+        url: nlp.url.href,
+        topic_specific: nlp.topic_specific,
+        topic_general: nlp.topic_general,
+        social_tags: nlp.social_tags,
+      }
+    }
+  });
   return nlp;
 }
 
@@ -416,7 +429,6 @@ function nlp_calais(page_meta, test_data, url) {
       };
 
       cslib_info(JSON.stringify(nlp, null, 2));
-
       // put NLP packet to DB
       ajax_put_UrlNlpInfoCalais(nlp, function (data) {
 
