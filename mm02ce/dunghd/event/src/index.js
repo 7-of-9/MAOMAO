@@ -15,6 +15,7 @@ import Config from './config';
 /* eslint-disable */
 require('expose?$!expose?jQuery!jquery');
 require('expose?_!underscore');
+require('expose?justext!justext');
 require('expose?moment!moment');
 require('expose?firebase!firebase');
 require('expose?mobx!mobx');
