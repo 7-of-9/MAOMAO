@@ -5,11 +5,9 @@ import { pure } from 'recompose';
 import moment from 'moment';
 
 const style = {
-  margin: 0,
-  top: 'auto',
-  right: 20,
-  bottom: 20,
-  left: 'auto',
+  top: '80%',
+  left: '35%',
+  right: 'auto',
   zIndex: 1000,
   position: 'fixed',
 };
