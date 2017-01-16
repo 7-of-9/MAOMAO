@@ -14,21 +14,36 @@ namespace mmdb_model
     {
         public mm02Entities(string conStr) : base(conStr) {}
 
+        public static mm02Entities static_instance = null;
+
+        //public void Dispose()
+        //{
+        //    if (this != static_instance)
+        //        base.Dispose();
+        //}
+
         public static mm02Entities Create(bool log = false)
         {
             string connectionString = GetDbConnectionString("mm02Entities");
-            var db = new mm02Entities(connectionString);
+            if (static_instance == null) {
+                var db = new mm02Entities(connectionString);
 
-            if (log && Debugger.IsAttached)
-                db.Database.Log = s => Debug.WriteLine(s);
+                //db.ObjectContext().ContextOptions.ProxyCreationEnabled = false;
+                //db.ObjectContext().ContextOptions.LazyLoadingEnabled = false;
 
-            //db.Configuration.UseDatabaseNullSemantics = UseDatabaseNullSemantics;
-            //db.ObjectContext().ContextOptions.LazyLoadingEnabled = false; // to provide reliable serialization
+                if (log && Debugger.IsAttached)
+                    db.Database.Log = s => Debug.WriteLine(s);
 
-            if (log)
-                g.LogLine("created object-context for main DB [" + db.Database.Connection.Database + "]");
+                //db.Configuration.UseDatabaseNullSemantics = UseDatabaseNullSemantics;
+                //db.ObjectContext().ContextOptions.LazyLoadingEnabled = false; // to provide reliable serialization
 
-            return db;
+                if (log)
+                    g.LogLine("created object-context for main DB [" + db.Database.Connection.Database + "]");
+
+                return db;
+            }
+
+            return static_instance;
         }
 
         public static string GetDbConnectionString(string configConStrKey)

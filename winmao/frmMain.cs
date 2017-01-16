@@ -87,7 +87,7 @@ namespace winmao
                            "ip_description: " + meta_all.ip_description.ToString() + "\r\n";
                            //pretty_meta_all;
 
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 // get url_terms 
                 var url_terms = url.url_term.ToList();
                     //db.url_term
@@ -119,12 +119,10 @@ namespace winmao
                         ut.appearance_count.ToString(),
                         ut.candidate_reason,
                         ut.tss.ToString(),
-                        ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
-                        ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
-                        //ut.words_common_to_title_and_entities != null ? string.Join("/", ut.words_common_to_title_and_entities.Select(p => p + "/")) : "",
-                        //ut.common_to_entities_exact != null ? string.Join("/", ut.common_to_entities_exact.Select(p => p + "/")) : "",
-                        ut.words_common_to_title_stemmed != null ? string.Join("/", ut.words_common_to_title_stemmed.Select(p => p + "/")) : "",
-                        ut.words_common_to_desc_stemmed != null ? string.Join("/", ut.words_common_to_desc_stemmed.Select(p => p + "/")) : "",
+                        //ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
+                        //ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
+                        ut.words_X_title_stemmed != null ? string.Join("/", ut.words_X_title_stemmed.Select(p => p + "/")) : "",
+                        ut.words_X_desc_stemmed != null ? string.Join("/", ut.words_X_desc_stemmed.Select(p => p + "/")) : "",
                     });
                     ut_item.Tag = ut;
                     ut_items.Add(ut_item);
@@ -143,7 +141,7 @@ namespace winmao
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
             var item = lvwUrlTerms.SelectedItems[0];
             var ut = item.Tag as url_term;
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 tvwTermCorr.Nodes.Clear();
                 tvwTermCorr.Nodes.Add(TreeNodeFromTerm(ut.term));
             }
@@ -156,7 +154,7 @@ namespace winmao
         }
 
         TreeNode TreeNodeFromCorrelation(correlation c) {
-            var tn = new TreeNode($"corr_for_main={c.corr_for_main.ToString("0.0000")} {c.corr_term} XX={c.sum_XX}");
+            var tn = new TreeNode($"corr_for_main={c.corr_for_main.ToString("0.0000")} {c.corr_term_name} XX={c.sum_XX}");
             foreach(var term in c.corr_terms) {
                 var tn2 = TreeNodeFromTerm(term);
                 tn.Nodes.Add(tn2);

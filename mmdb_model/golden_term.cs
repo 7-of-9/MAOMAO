@@ -14,12 +14,23 @@ namespace mmdb_model
     
     public partial class golden_term
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public golden_term()
+        {
+            this.url_golden_term = new HashSet<url_golden_term>();
+        }
+    
         public long id { get; set; }
         public long parent_term_id { get; set; }
         public long child_term_id { get; set; }
         public int mmcat_level { get; set; }
+        public Nullable<System.DateTime> autosuggested_at_utc { get; set; }
+        public Nullable<long> url_id { get; set; }
     
         public virtual term term { get; set; }
         public virtual term term1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<url_golden_term> url_golden_term { get; set; }
+        public virtual url url { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,23 +19,19 @@ namespace mmdb_model
         [NotMapped]
         public url_term parent_url_term { get; set; }
 
-        // # of times this term and adjacent term have appeared together
-        //[NotMapped]
-        //public long? XX { get; set; }
+        public string gold_desc { get { return this.is_gold ? $" (*GL={this.gold_level})" : ""; } }
 
-        // parent term
-        //[NotMapped]
-        //public term parent_term { get { return this.term2; } }
+        [NotMapped] public ICollection<golden_term> parent_in_golden_terms { get { return this.golden_term1; } } //was: golden_children
 
-        [NotMapped] public ICollection<golden_term> golden_children { get { return this.golden_term1; } }
+        [NotMapped] public ICollection<golden_term> child_in_golden_terms { get { return this.golden_term; } } //was: golden_parents
 
-        [NotMapped] public ICollection<golden_term> golden_parents { get { return this.golden_term; } }
-
-        [NotMapped] public bool is_golden { get { return this.golden_parents.Count > 0; } }
+        [NotMapped] public bool is_gold { get {
+            return child_in_golden_terms.Count > 0 || this.parent_in_golden_terms.Count > 0;
+        } }
 
         [NotMapped] public int gold_level { get {
-            if (golden_parents.Count > 0)
-                return golden_parents.Single(p => p.child_term_id == this.id).mmcat_level;
+            if (child_in_golden_terms.Count > 0)
+                return child_in_golden_terms.Single(p => p.child_term_id == this.id).mmcat_level; // would fail if term is a child of more than one golden parent?
             else
                 return 0;
         }}
@@ -45,8 +42,20 @@ namespace mmdb_model
             return 0.9;
         }}
 
+        [NotMapped] public term suggested_gold_parent { get; set; }
+
+        [NotMapped] public bool is_countrylike { get {
+            return this.cal_entity_type_id == (int)g.ET.Country || this.cal_entity_type_id == (int)g.ET.Continent || this.cal_entity_type_id == (int)g.ET.ProvinceOrState;
+        }}
+
         public override string ToString() {
-            return $"{this.name} ... [{this.id}] #{this.occurs_count} corr_for_main={this.corr_for_main?.ToString("0.000")} corr_for_main={this.corr_for_related?.ToString("0.000")} ({((g.TT)this.term_type_id).ToString()})";
+            var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count}";
+            if (corr_for_main != null)
+                ret += $"corr_for_main={this.corr_for_main?.ToString("0.0000")}";
+            if (corr_for_related != null)
+                ret += $"corr_for_related={this.corr_for_related?.ToString("0.0000")}";
+            ret += $" ({((g.TT)this.term_type_id).ToString()})";
+            return ret;
         }
     }
 }

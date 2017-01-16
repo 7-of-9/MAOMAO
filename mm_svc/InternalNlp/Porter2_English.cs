@@ -421,7 +421,7 @@ namespace mm_svc.InternalNlp
             var words = text.Split(' ');
             foreach (var word in words)
                 sb.Append(stem_word(word) + " ");
-            return sb.ToString();
+            return sb.ToString().Trim();
         }
 
         public string stem_word(string word)

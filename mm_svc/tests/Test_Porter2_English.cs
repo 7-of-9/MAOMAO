@@ -16,6 +16,7 @@ namespace tests
         {
             Porter2_English stemmer = new Porter2_English();
             var result = stemmer.stem("optimizations");
+            var result1 = stemmer.stem("superheroes superhero");
             var result2 = stemmer.stem("optimizations result in better code");
             var result3 = stemmer.stem("Got News Series 36 Episode 5 hosted Jack Dee Joining Ian Hislop Miranda Hart & Paul 's absence Frank");
             var result4 = stemmer.stem("Series");

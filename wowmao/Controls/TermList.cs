@@ -27,10 +27,10 @@ namespace wowmao
         ColumnHeader columnHeader26 =new System.Windows.Forms.ColumnHeader() { Text = "s" };
         ColumnHeader columnHeader14 =new System.Windows.Forms.ColumnHeader() { Text = "appears_count" };
         ColumnHeader columnHeader13 =new System.Windows.Forms.ColumnHeader() { Text = "reasons" };
-        ColumnHeader columnHeader15 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_title" };
-        ColumnHeader columnHeader18 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_desc" };
-        ColumnHeader columnHeader19 =new System.Windows.Forms.ColumnHeader() { Text = "wordswords_X_title_stemmed" };
-        ColumnHeader columnHeader20 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_desc_stemmed" };
+        //ColumnHeader columnHeader15 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_title" };
+        //ColumnHeader columnHeader18 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_desc" };
+        ColumnHeader columnHeader19 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_title(S)" };
+        ColumnHeader columnHeader20 =new System.Windows.Forms.ColumnHeader() { Text = "words_X_desc(S)" };
 
         public TermList()
         {
@@ -51,8 +51,8 @@ namespace wowmao
                   columnHeader25,
                   columnHeader14,
                   columnHeader13,
-                  columnHeader15,
-                  columnHeader18,
+                  //columnHeader15,
+                  //columnHeader18,
                   columnHeader19,
                   columnHeader20});
 
@@ -69,7 +69,7 @@ namespace wowmao
         internal ListViewItem NewLvi(url_term ut, List<term> l2_terms)
         {
             var lvi = new ListViewItem(new string[] {
-                ut.term.is_golden ? ($"*GL={ut.term.gold_level}") : "",
+                ut.term.is_gold ? ($"{ut.term.gold_desc}") : "",
                 l2_terms == null ? "-" : l2_terms.Count.ToString(),
                 ut.tss.ToString("0"),
                 ut.tss_norm.ToString("0.00"),
@@ -83,10 +83,10 @@ namespace wowmao
                 ut.S2.ToString("0.00"),
                 ut.appearance_count.ToString(),
                 ut.candidate_reason,
-                ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
-                ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
-                ut.words_common_to_title_stemmed != null ? string.Join("/", ut.words_common_to_title_stemmed.Select(p => p + "/")) : "",
-                ut.words_common_to_desc_stemmed != null ? string.Join("/", ut.words_common_to_desc_stemmed.Select(p => p + "/")) : "",
+                //ut.words_common_to_title != null ? string.Join("/", ut.words_common_to_title.Select(p => p + "/")) : "",
+                //ut.words_common_to_desc != null ? string.Join("/", ut.words_common_to_desc.Select(p => p + "/")) : "",
+                ut.words_X_title_stemmed != null ? string.Join("/", ut.words_X_title_stemmed.Select(p => p + "/")) : "",
+                ut.words_X_desc_stemmed != null ? string.Join("/", ut.words_X_desc_stemmed.Select(p => p + "/")) : "",
             });
             lvi.Tag = new lvwUrlTermTag() { ut = ut, correlated_goldens = l2_terms };
             return lvi;

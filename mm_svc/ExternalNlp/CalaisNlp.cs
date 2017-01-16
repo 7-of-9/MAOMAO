@@ -29,7 +29,7 @@ namespace mm_svc
             if (db_url != null) throw new ApplicationException("url already known");
 
             // create new URL record 
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 // get calais language
                 var cal_langs = ((IEnumerable<dynamic>)nlp_info.items).Where(p => p.type == "LANG").ToList();
                 string cal_lang = null;

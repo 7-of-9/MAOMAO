@@ -16,7 +16,7 @@ namespace mm_svc.User
             int time_on_tab_delta,
             int audible_pings_delta)
         {
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 var db_user = db.users.Find(userId);
                 if (db_user == null)
                     throw new ApplicationException("bad user");

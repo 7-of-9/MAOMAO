@@ -1,0 +1,7 @@
+
+url_search_result: to save GT results (and other top terms?) for each URL, i.e. result of frmMain processing
+
+gtTreeView to then allow right-click "View Matching URLs..."
+gtTreeView to allow manual reordering
+
+run for full sample size...

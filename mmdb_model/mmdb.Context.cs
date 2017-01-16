@@ -30,11 +30,12 @@ namespace mmdb_model
         public virtual DbSet<term_type> term_type { get; set; }
         public virtual DbSet<cal_entity_type> cal_entity_type { get; set; }
         public virtual DbSet<url_term> url_term { get; set; }
-        public virtual DbSet<url> urls { get; set; }
         public virtual DbSet<term_matrix> term_matrix { get; set; }
         public virtual DbSet<user> users { get; set; }
-        public virtual DbSet<golden_term> golden_term { get; set; }
         public virtual DbSet<term> terms { get; set; }
         public virtual DbSet<user_url> user_url { get; set; }
+        public virtual DbSet<golden_term> golden_term { get; set; }
+        public virtual DbSet<url_golden_term> url_golden_term { get; set; }
+        public virtual DbSet<url> urls { get; set; }
     }
 }

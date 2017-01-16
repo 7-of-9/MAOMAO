@@ -18,10 +18,10 @@ namespace mmdb_model
         public long url_id { get; set; }
         public long term_id { get; set; }
         public Nullable<double> cal_topic_score { get; set; }
-        public Nullable<int> cal_socialtag_importance { get; set; } // relevance -- 1: very, 2: somewhat, 3: not much
+        public Nullable<int> cal_socialtag_importance { get; set; }
         public Nullable<double> cal_entity_relevance { get; set; }
     
-        public virtual url url { get; set; }
         public virtual term term { get; set; }
+        public virtual url url { get; set; }
     }
 }

@@ -19,10 +19,10 @@ namespace mmdb_model
             appearance_count = 0;
             candidate_reason = "";
             tss = 0;
-            words_common_to_title = new List<string>();
-            words_common_to_desc = new List<string>();
-            words_common_to_title_stemmed = new List<string>();
-            words_common_to_desc_stemmed = new List<string>();
+            //words_common_to_title = new List<string>();
+            //words_common_to_desc = new List<string>();
+            words_X_title_stemmed = new List<string>();
+            words_X_desc_stemmed = new List<string>();
         }
 
         // type-agnostic representation of the relevance/score/importance: base is 0-10 with multipliers for special types
@@ -74,17 +74,14 @@ namespace mmdb_model
         [NotMapped]
         public double tss_norm { get; set; }
 
-        [NotMapped]
-        public List<string> words_common_to_title { get; set; }
+        //[NotMapped] public List<string> words_common_to_title { get; set; }
+
+        //[NotMapped] public List<string> words_common_to_desc { get; set; }
 
         [NotMapped]
-        public List<string> words_common_to_desc { get; set; }
-
-
-        [NotMapped]
-        public List<string> words_common_to_title_stemmed { get; set; }
+        public List<string> words_X_title_stemmed { get; set; }
 
         [NotMapped]
-        public List<string> words_common_to_desc_stemmed { get; set; }
+        public List<string> words_X_desc_stemmed { get; set; }
     }
 }

@@ -10,6 +10,12 @@ namespace mm_svc.InternalNlp.Utils
 {
     public static class Words
     {
+        public static List<string> SplitWords(string s)
+        {
+            var words = s.Split(' ');
+            return words.ToList();
+        }
+
         public static List<string> WordsInCommon(string a, string b)
         {
             if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return new List<string>();

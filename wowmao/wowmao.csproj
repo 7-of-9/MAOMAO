@@ -65,18 +65,24 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\GoldenTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GoldenTree.Designer.cs">
+      <DependentUpon>GoldenTree.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TermList.cs">
+    <Compile Include="Controls\TermList.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TermList.Designer.cs">
+    <Compile Include="Controls\TermList.Designer.cs">
       <DependentUpon>TermList.cs</DependentUpon>
     </Compile>
-    <Compile Include="TermTree.cs">
+    <Compile Include="Controls\TermTree.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="TermTree.Designer.cs">
+    <Compile Include="Controls\TermTree.Designer.cs">
       <DependentUpon>TermTree.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="frmMain.resx">
@@ -92,7 +98,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="TermTree.resx">
+    <EmbeddedResource Include="Controls\TermTree.resx">
       <DependentUpon>TermTree.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

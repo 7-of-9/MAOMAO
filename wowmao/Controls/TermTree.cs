@@ -84,24 +84,15 @@ namespace wowmao
                     this.Cursor = Cursors.WaitCursor;
                     var parent_term = tn.Tag as term;
                     var correlations = Correlations.GetTermCorrelations(new corr_input { main_term = parent_term.name, corr_term_eq = null, max_appears_together_count = tn.Level == 0 ? XX_max_L1 : XX_max_GT_L1 });
-                    List<correlation> filtered;
+                    List<correlation> filtered = correlations;
 
                     // exclude golden children whose parent is not this correlation
                     filtered = correlations.Where(p => p.is_golden_child == false
-                                                    //|| p.golden_parents.Any(p2 => p2.parent_term.id == parent_term.id)
+                                                    || p.child_in_golden_terms.Any(p2 => p2.parent_term.id == parent_term.id)
                                                     ).ToList();
 
                     // order golden to top
                     filtered = filtered.OrderByDescending(p => p.is_golden_child).ToList();
-
-                    // exclude golden 1 correlations for children of golden 1 nodes
-                    //if (AnyParentHasMmCat(1, tn))
-                    //    filtered = correlations.Where(p => p.is_mm_cat(1) == false).OrderByDescending(p => p.is_golden_2).ThenByDescending(p => p.max_corr).ToList();
-                    //// exclude golden 2 correlations for children of MM root
-                    //else if (tn.Level == 0)
-                    //    filtered = correlations.Where(p => p.is_mm_cat(2) == false).OrderByDescending(p => p.is_golden_1).ThenByDescending(p => p.max_corr).ToList();
-                    //else
-                    //    filtered = correlations;
 
                     foreach (var correlation in filtered) {
                         tn.Nodes.Add(TreeNodeFromCorrelation(correlation));
@@ -112,14 +103,16 @@ namespace wowmao
             }
         }
 
-        public void AddRootTerm(term t) {
+        public void AddRootTerm(term t, string extra = null) {
             this.BeginUpdate();
-            this.Nodes.Add(TreeNodeFromTerm(t));
+            var tn = TreeNodeFromTerm(t);
+            tn.Text += extra;
+            this.Nodes.Add(tn);
             this.EndUpdate();
         }
 
         private term FirstGoldenParent(TreeNode tn) {
-            if (tn.Parent == null) { using (var db = mm02Entities.Create()) {
+            if (tn.Parent == null) { var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 return db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
             } }
             var corr = tn.Parent.Tag as correlation;
@@ -129,21 +122,21 @@ namespace wowmao
 
         TreeNode TreeNodeFromTerm(term t) {
             var tn = new TreeNode(t.ToString());
-            if (t.is_golden) {
-                tn.Text += $" / *GL={t.gold_level} golden child of [{string.Join(" / ", t.golden_parents.Select(p => p.parent_desc))}]";
+            if (t.is_gold) {
+                tn.Text += $" / *GL={t.gold_level} GC of [{string.Join(" / ", t.child_in_golden_terms.Select(p => p.parent_desc))}]";
             }
             tn.Tag = t;
             return tn;
         }
 
         TreeNode TreeNodeFromCorrelation(correlation c) {
-            var tn = new TreeNode($"{c.corr_term} ... corr={c.corr_for_main.ToString("0.0000")} XX={c.sum_XX} corr_terms={c.corr_terms.Count}"); //**max_corr
+            var tn = new TreeNode($"{c.corr_term_name} ... corr={c.corr_for_main.ToString("0.0000")} XX={c.sum_XX} corr_terms={c.corr_terms.Count}"); //**max_corr
             if (c.is_golden_child) { 
                 var boldFont = new Font(this.Font, FontStyle.Bold);
                 tn.NodeFont = boldFont;
-                var parents = c.golden_parents;
+                var parents = c.child_in_golden_terms;
                 var parents_desc = new List<string>();
-                foreach(var golden_parent in c.golden_parents) {
+                foreach(var golden_parent in c.child_in_golden_terms) {
                     if (!parents_desc.Contains(golden_parent.parent_desc))
                         parents_desc.Add(golden_parent.parent_desc);
                 }
@@ -180,12 +173,12 @@ namespace wowmao
             var node = this.SelectedNode;
             if (node != null && node.Tag != null && node.Tag is correlation) {
                 var corr = node.Tag as correlation;
-                Debug.Write($"find @l1 for {corr.corr_term}");
+                Debug.Write($"find @l1 for {corr.corr_term_name}");
                 this.Cursor = Cursors.WaitCursor;
                 for (int i = 0; i < this.Nodes[0].Nodes.Count; i++) {
                     var tnL1 = this.Nodes[0].Nodes[i];
                     var corrL1 = tnL1.Tag as correlation;
-                    if (corrL1.corr_term == corr.corr_term) {
+                    if (corrL1.corr_term_name == corr.corr_term_name) {
                         this.SelectedNode = tnL1;
                         break;
                     }
@@ -200,7 +193,7 @@ namespace wowmao
             Debug.WriteLine("node.Level=" + tn.Level);
             Debug.WriteLine("parent_term=" + parent_term.name);
             Debug.WriteLine("parent_term.golden_mmcat_level=" + parent_term.gold_level);
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 this.Cursor = Cursors.WaitCursor;
                 foreach (var term in corr.corr_terms) {
                     var golden_term = db.golden_term.Where(p => p.parent_term_id == parent_term.id && p.child_term_id == term.id).SingleOrDefault();
@@ -227,7 +220,7 @@ namespace wowmao
                 this.BeginUpdate();
                 var old_ndx = tn.Index;
                 var old_parent = tn.Parent;
-                var new_corr = Correlations.GetTermCorrelations(new corr_input() { main_term = corr.main_term, corr_term_eq = corr.corr_term, max_appears_together_count = XX_max_GT_L1 });
+                var new_corr = Correlations.GetTermCorrelations(new corr_input() { main_term = corr.main_term.name, corr_term_eq = corr.corr_term_name, max_appears_together_count = XX_max_GT_L1 });
                 var tn_new = TreeNodeFromCorrelation(new_corr.First());
                 old_parent.Nodes.Insert(old_ndx, tn_new);
                 old_parent.Nodes.Remove(tn);

@@ -29,16 +29,26 @@ namespace wowmao
         private Dictionary<long, List<url_term>> url_term_cache = new Dictionary<long, List<url_term>>();
 
         public frmMain() {
-            Correlations.cache_add += Correlations_cache_add;
-            CorrelatedGoldens.cache_add += CorrelatedGoldens_cache_add;
+            mm02Entities.static_instance = mm02Entities.Create();
+
+            Correlations.OnCacheAdd += Correlations_cache_add;
             InitializeComponent();
             this.cboTop.SelectedIndex = 1;
             this.ttAll.XX_max_L1 = 10;
             InitTvwRootNodes();
+            gtGoldTree.BuildTree();
+
+            txtUrlSearch.SelectedIndex = 0;
+            this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
+        }
+
+        private void GtGoldTree_OnSearchGoldenTerm(object sender, GoldenTree.SearchGoldenTermEventArgs e)
+        {
+            InitUrls(null, e.golden_term_id);
         }
 
         private void SetCaption() {
-            this.Text = $"wowmao ~ corr.cache={Correlations.cache.Count} / corr_goldens.cache={CorrelatedGoldens.cache.Count} / url_term_cache.cache={url_term_cache.Count}";
+            this.Text = $"wowmao ~ corr.cache={Correlations.cache.Count} (cache_tot_terms={Correlations.cache_tot_terms} // url_term_cache.cache={url_term_cache.Count}";
         }
 
         private void CorrelatedGoldens_cache_add(object sender, EventArgs e) { SetCaption(); }
@@ -47,11 +57,11 @@ namespace wowmao
 
         private void cmdSearchURLs_Click(object sender, EventArgs e) {
             this.Cursor = Cursors.WaitCursor;
-            InitUrls(txtURLSearch.Text);
+            InitUrls(txtUrlSearch.Text);
             this.Cursor = Cursors.Default;
         }
 
-        void InitUrls(string search_term) {
+        void InitUrls(string search_term, long? golden_term_id = null) {
             //
             // 8533: la la land -> suggest: golden globes top TSS - suggest TSS boost for SOCIAL_TAG type
             //       entity-type movie: strong suggest candidate
@@ -62,18 +72,23 @@ namespace wowmao
             //
 
             lvwUrls.Items.Clear();
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 lvwUrls.BeginUpdate();
                 var items = new List<ListViewItem>();
                 var qry = db.urls
                     .AsNoTracking()
-                    .Include("url_term")
-                    .Include("url_term.term")
                     .Include("url_term.term.term_type")
                     .Include("url_term.term.cal_entity_type")
-                    .Where(p => p.meta_all.ToLower().Contains(search_term.ToLower()))
-                    .OrderByDescending(p => p.id)
-                    .Take(Convert.ToInt32(this.cboTop.Text));
+                    .Include("url_golden_term")
+                    .AsQueryable();
+
+                if (search_term != null)
+                    qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
+                else if (golden_term_id != null)
+                    qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
+
+                qry = qry.OrderByDescending(p => p.id).Take(Convert.ToInt32(this.cboTop.Text));
+
                 Debug.WriteLine(qry.ToString());
                 var data = qry.ToListNoLock();
                 foreach (var x in data) {
@@ -85,7 +100,7 @@ namespace wowmao
                         "-",
                         "-",
                         "-",
-                        "-",
+                        x.processed_golden_terms?.ToString("dd MMM yyyy HH:mm"),
                     });
                     item.Tag = x;
                     items.Add(item);
@@ -109,11 +124,11 @@ namespace wowmao
 
         void InitTvwRootNodes() {
             this.Cursor = Cursors.WaitCursor;
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 root_term = db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
                 ttAll.Nodes.Clear();
-                ttAll.AddRootTerm(root_term);
-                ttAll.SelectedNode = ttAll.Nodes[0];
+                //ttAll.AddRootTerm(root_term);
+                //ttAll.SelectedNode = ttAll.Nodes[0];
                 this.db_name = "winmao ~ " + db.Database.Connection.Database;
                 SetCaption();
             }
@@ -121,7 +136,17 @@ namespace wowmao
         }
 
         private void cmdRefresh_Click_1(object sender, EventArgs e) {
+
+            // clear cache & recycle object context
+            Correlations.cache = new Dictionary<string, List<correlation>>();
+            this.url_term_cache = new Dictionary<long, List<url_term>>();
+            mm02Entities.static_instance.Dispose();
+            mm02Entities.static_instance = null;
+            mm02Entities.static_instance = mm02Entities.Create();
+            this.SetCaption();
+
             InitTvwRootNodes();
+            gtGoldTree.BuildTree();
         }
 
         private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e)
@@ -132,6 +157,7 @@ namespace wowmao
 
             this.Cursor = Cursors.WaitCursor;
             ttL2Terms.Nodes.Clear();
+            var new_gold_count = 0;
 
             // get meta
             dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
@@ -139,7 +165,7 @@ namespace wowmao
             txtInfo.Text = "html_title: " + meta_all.html_title.ToString() + "\r\n" +
                            "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n";
 
-            using (var db = mm02Entities.Create()) {
+            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 // get url_terms 
                 List<url_term> l1_url_terms;
                 if (this.url_term_cache.ContainsKey(url.id))
@@ -163,28 +189,22 @@ namespace wowmao
                 var direct_goldens = new List<url_term>();
                 var all_l2_term_ids_by_count = new Dictionary<long, int>();
                 var all_l2_terms = new List<term>();
+
+                l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
+
                 foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.tss)) {
-                    ttUrlTerms.AddRootTerm(l1_url_term.term);
 
                     List<term> l2_terms = null;
                     if (l1_url_term.tss > 0) {
                         // is term directly golden?
-                        if (l1_url_term.term.is_golden)
+                        if (l1_url_term.term.is_gold)
                             direct_goldens.Add(l1_url_term);
 
-                        // get any correlated golden term(s) (2nd level terms)
-                        // todo -- (1) order/rank in aggregate by degree of correlation to parent term
-                        //         (2) consider not restricting to current goldens, i.e. all 2nd-level terms, ranked/weighted by corr. & golden
-
-                        // l2 terms: all
+                        // L2 terms: all -- rank by correlation
                         l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = l1_url_term.term.name, min_corr = 0.1 })
                                                 .SelectMany(p => p.corr_terms)
                                                 .OrderByDescending(p => p.corr_for_main)
                                                 .ToList();
-
-                        // l2 terms: just golden
-                        //l2_terms = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(l1_url_term.term.name)
-                        //    .Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC /*&& p.corr > 0.1*/).ToList();
 
                         // map S value underlyers from parent url-term, to the l2 url-term
                         l2_terms.ForEach(p => {
@@ -256,42 +276,30 @@ namespace wowmao
                 // output/suggest phase
                 //
 
-                // existing gold: L1 & L2 - over TSS norm threshold (varies by gold level)
-                var out_existing_l1_l2_gold = new List<term>();
-                if (direct_goldens.Count > 0) {
-
-                        // existing L1 
-                         out_existing_l1_l2_gold = direct_goldens.OrderByDescending(p => p.tss_norm)
-                        .Where(p =>  p.tss_norm > p.term.existing_gold_min_tss_norm)
-
-                        // existing L2 
-                        .Union(l2_url_terms.Where(p => p.term.is_golden && p.tss_norm > p.term.existing_gold_min_tss_norm))
-                        .Select(p => p.term)
-                        .ToList();
-                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
-                }
-
-                // new gold suggestions
-
-                // gold suggest L1 -- top L1 terms by TSS norm threshold
-                var out_suggest_l1_gold = new List<term>();
+                //
+                // process new gold suggestions
+                //
+                var out_suggest_l1_gold = new List<term>(); // gold suggest L1 -- top L1 terms by TSS norm threshold
                 out_suggest_l1_gold = l1_url_terms.OrderByDescending(p => p.tss_norm)
-                                                  .Where(p => p.tss_norm > 0.7 && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
-                                                  .Where(p => !p.is_golden)
+                                                  .Where(p => p.tss_norm > 0.7 // *** min_tss_norm for L1 suggest gold (was: 0.5)
+                                                           && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
+                                                  .Where(p => !p.is_gold)
                                                   .ToList();
-                item.SubItems[5].Text = string.Join(" / ", out_suggest_l1_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
+                new_gold_count += Golden.ProcessSuggested(out_suggest_l1_gold, url.id);
+                item.SubItems[5].Text = string.Join(" / ", out_suggest_l1_gold.Where(p => p.suggested_gold_parent != null).Select(p => $"{p.name} [{p.id}] {p.gold_desc} -> {p.suggested_gold_parent?.name}"));
 
-                if (l2_url_terms.Count > 0) {
-
-                    // gold suggest L2 -- highest TSS ranked L2 all terms 
-                    var out_suggest_l2_gold = new List<term>();
+                var out_suggest_l2_gold = new List<term>();
+                if (l2_url_terms.Count > 0) {              // gold suggest L2 -- highest TSS ranked L2 all terms 
+                    
                     out_suggest_l2_gold = l2_url_terms.OrderByDescending(p => p.tss_norm)
-                                                       .Where(p => p.tss_norm > 0.8 && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
-                                                       .Where(p => !p.is_golden)
+                                                       .Where(p => p.tss_norm > 0.9 // *** min_tss_norm for L2 suggest gold (was: 0.7)
+                                                                && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
+                                                       .Where(p => !p.is_gold)
                                                        .Where(p => !out_suggest_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
                                                        .ToList();
-                    item.SubItems[6].Text = string.Join(" / ", out_suggest_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
-                    
+                    new_gold_count += Golden.ProcessSuggested(out_suggest_l2_gold, url.id);
+                    item.SubItems[6].Text = string.Join(" / ", out_suggest_l2_gold.Where(p => p.suggested_gold_parent != null).Select(p => $"{p.name} [{p.id}] {p.gold_desc} -> {p.suggested_gold_parent?.name}"));
+
                     // suggestion 3 -- highest L2 golden by count (very restrictive dataset?)
                     //var mm_cats = new List<term>();
                     //if (all_l2_terms.Count > 0) {
@@ -300,7 +308,43 @@ namespace wowmao
                     //    item.SubItems[7].Text = all_l2_terms.Single(p => p.id == list[0].Key).name;
                     //}
                 }
+
+                //
+                // final outputs -- existing gold @ L1 & L2 - over TSS norm threshold (varies by gold level)
+                // note: this will *not* include auggested gold that was processed immediately above (caching issues) - probably doesn't matter a great deal, only affects first time
+                // gold is suggested and processed.
+                //
+                var out_existing_l1_l2_gold = new List<term>();
+                if (direct_goldens.Count > 0)
+                {
+                    out_existing_l1_l2_gold =
+                    
+                        // existing L1 
+                        direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > p.term.existing_gold_min_tss_norm)
+
+                       // existing L2 
+                       .Union(l2_url_terms.OrderByDescending(p => p.tss_norm).Where(p => p.term.is_gold && p.tss_norm > p.term.existing_gold_min_tss_norm))
+
+                       // rank
+                       .Select(p => p.term)
+                       .ToList();
+
+                    // save result for URL -- NOTE: just taking first child appearance in GT tree; this will *not* work
+                    // if the term is a GC of multiple golden parents! i.e. -- should for now maintain logic of term only appears once in the GT tree
+                    Golden.RecordUrlGoldenTerms(url.id, out_existing_l1_l2_gold.Select(p => p.child_in_golden_terms.First()).ToList());
+                    item.SubItems[7].Text = DateTime.UtcNow.ToString("dd MMM yyyy");
+
+                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
+                }
+
+                //
+                // TODO -- move this into the service layer
+                //         winform can now either just query urls for processed state (read from url-golden-term) or it can
+                //          walk ([re]process) each url, as above, i.e. find new gold and record output
+                //      
+
                 SetCols(lvwUrls);
+
 
                 // ***
                 // plan -- should auto-golden high TSS terms to the closest (deepest)
@@ -317,15 +361,19 @@ namespace wowmao
                 //  (would be children of best-golden above).
             }
 
+            if (new_gold_count > 0)
+                gtGoldTree.BuildTree();
+
             this.Cursor = Cursors.Default;
         }
-
    
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
             var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
-            var l2_terms = CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered(tag.ut.term.name).Where(p => p.term_type_id != (int)g.TT.CALAIS_TOPIC);
+            var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
+                                       .SelectMany(p => p.corr_terms)
+                                       .OrderByDescending(p => p.corr_for_main).ToList();
             ttL2Terms.Nodes.Clear();
             foreach(var golden_term in l2_terms) {
                 ttL2Terms.AddRootTerm(golden_term);
@@ -335,11 +383,20 @@ namespace wowmao
         private void cmdWalk_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.AppStarting;
-            for (int i = 0; i < lvwUrls.Items.Count; i++) { 
+            if (lvwUrls.SelectedItems.Count == 0)
+                lvwUrls.Items[0].Selected = true;
+
+            for (int i = lvwUrls.SelectedIndices[0]; i < lvwUrls.Items.Count; i++) { 
                 lvwUrls.Items[i].Selected = true;
+                lvwUrls.Items[i].EnsureVisible();
                 Application.DoEvents();
             }
             this.Cursor = Cursors.Default;
+        }
+
+        private void txtURLSearch_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

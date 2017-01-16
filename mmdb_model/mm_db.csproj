@@ -102,6 +102,9 @@
     <Compile Include="url.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="url_golden_term.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="url_term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

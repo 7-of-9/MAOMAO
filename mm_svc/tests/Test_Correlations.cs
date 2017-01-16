@@ -12,12 +12,12 @@ namespace tests
     [TestClass]
     public class Test_Correlations
     {
-        [TestMethod]
-        public void Correlations_Test3()
-        {
-            mm_svc.Terms.CorrelatedGoldens.cache_disable = true;
-            var data = mm_svc.Terms.CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered("Lichess");
-        }
+        //[TestMethod]
+        //public void Correlations_Test3()
+        //{
+        //    mm_svc.Terms.CorrelatedGoldens.cache_disable = true;
+        //    var data = mm_svc.Terms.CorrelatedGoldens.GetGorrelatedGoldenTerms_Ordered("Lichess");
+        //}
         
         [TestMethod]
         public void Correlations_Test2()
