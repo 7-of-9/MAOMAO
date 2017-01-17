@@ -11,14 +11,22 @@
 
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
-
   console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
   console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady"], cs_log_style_info);
   console.info("%c > document.location=" + document.location, cs_log_style_info);
-
+  chrome.extension.sendMessage({
+    type: 'chromex.dispatch',
+    payload: {
+      type: 'JUSTEXT_READY',
+      payload: {
+        url: document.location.href
+      }
+    }
+  });
   //document.addEventListener("DOMContentLoaded", function (event)
   {
 
+    // FIXME: Use sessionStorage is not stable
     //if (!have_run_text_proc) {
     if (document.location != sessionStorage["mm_cs_text_haveFiredDocReady"]) {
       //have_run_text_proc = true;
@@ -31,6 +39,16 @@ $(document).ready(function () {
 
         console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
         if (data.is_known == true) {
+          chrome.extension.sendMessage({
+            type: 'chromex.dispatch',
+            payload: {
+              type: 'JUSTEXT',
+              payload: {
+                url: document.location.href,
+                status: true,
+              }
+            }
+          });
           console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
           if (document.getElementById('maomao-extension-youtube-test')) {
             cslib_test_NextYouTubeVid();

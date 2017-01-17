@@ -1,0 +1,32 @@
+{
+  "name": "maomao-crawler",
+  "version": "0.0.1",
+  "author": "Dung Huynh (dunghd.it@gmail.com)",
+  "main": "build/index.js",
+  "dependencies": {
+    "bluebird": "^3.4.7",
+    "crawler": "^1.0.2",
+    "url": "^0.11.0",
+    "uuid": "^3.0.1",
+    "write-json-file": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.13.1",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0",
+    "gulp": "^3.9.1",
+    "gulp-shell": "^0.5.2",
+    "gulp-tsc": "^1.2.6",
+    "gulp-tslint": "^7.0.1",
+    "mocha": "^3.2.0",
+    "run-sequence": "^1.2.2",
+    "tslint": "^4.3.1",
+    "typescript": "^2.1.5"
+  },
+  "scripts": {
+    "main": "gulp buildrun",
+    "test": "gulp build && mocha"
+  }
+}
