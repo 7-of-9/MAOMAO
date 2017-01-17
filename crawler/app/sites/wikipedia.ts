@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import * as _ from 'lodash';
 import { AllHtmlEntities } from 'html-entities';
 /**
  *
@@ -103,9 +104,7 @@ export default class WikiPedia {
       const items = [];
       const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
       const anchorTags = content.match(reg);
-      const forEach = Array.prototype.forEach;
-      console.log('anchorTags', anchorTags);
-      forEach.call(anchorTags, (tag) => {
+      _.forEach(anchorTags, (tag) => {
         // e.g: "<a href="/wiki/Portal:Religion" title="Portal:Religion">Religion</a>"
         /*
         0: "<a href="/wiki/Portal:Religion" title="Portal:Religion">Religion</a>"
@@ -136,26 +135,32 @@ export default class WikiPedia {
    * Get all urls and title from wiki detail page
    *
    * @param string rootUrl
-   * @param string heading
+   * @param string title
    * @param CrawlerReponse result
    * @returns
    *
    * @memberOf WikiPedia
    */
-  parsePortalDetail(rootUrl: string, heading: string, result: CrawlerReponse) {
+  parsePortalDetail(rootUrl: string, title: string, result: CrawlerReponse) {
     return new Promise((resolve, reject) => {
       const entities = new AllHtmlEntities();
       const $ = result.$;
+      const trim = String.prototype.trim;
+
       let contents = [];
       this.sites.push(rootUrl);
-      // First paragraph is Introduction
-      const content = $('h2 .mw-headline').first().parent().parent().next().html();
-      contents = this.parseContent(content, heading, rootUrl);
-      this.responses.push({
-        rootUrl,
-        contents
+
+      const that = this;
+      const paragraphes = $('h2 .mw-headline').each(function (index) {
+        const ingoreHeadings = ['Selected picture', 'Related portals', 'Associated Wikimedia', 'Portals?'];
+        let heading = $(this).text();
+        heading = trim.call(heading);
+        if (ingoreHeadings.indexOf(heading) === -1) {
+          const content = $(this).parent().parent().next().html();
+          contents = contents.concat(that.parseContent(content, heading, rootUrl));
+        }
       });
-      resolve(contents);
+      resolve({ title, contents });
     });
   }
 
@@ -175,14 +180,8 @@ export default class WikiPedia {
       const trim = String.prototype.trim;
       const replace = String.prototype.replace;
       const that = this;
-      /**
-       *
-       *
-       * @param {any} index
-       */
       const paragraphes = $('h2 .mw-headline').each(function (index) {
         // Ignore fisrt heading
-        console.log('index', index, $(this).text());
         if (index > 0) {
           let heading = $(this).text();
           heading = replace.call(heading, '(see in all page types)', '');

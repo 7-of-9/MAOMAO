@@ -2,6 +2,7 @@ import * as Crawler from 'crawler';
 import * as uuid from 'uuid';
 import * as writeJsonFile from 'write-json-file';
 import * as querystring from 'querystring';
+import * as _ from 'lodash';
 import url from 'url';
 import WikiPedia from './sites/WikiPedia';
 
@@ -16,10 +17,9 @@ const crawler = new Crawler({
 const handler = new WikiPedia();
 
 function generateTopic(result) {
-  const forEach = Array.prototype.forEach;
-  forEach.call(result, portal => {
+  _.forEach(result, function (portal) {
     const heading = portal.heading;
-    forEach.call(portal.items, item => {
+    _.forEach(portal.items, function (item) {
       crawler.queue([{
         uri: item.link,
         limiter: uuid.v1(),
@@ -28,7 +28,6 @@ function generateTopic(result) {
             console.error(error);
           } else {
             const $ = result.$;
-            console.log($('title').text());
             handler.parsePortalDetail('https://en.wikipedia.org', item.title, result)
               .then(content => {
                 writeJsonFile(`./build/json/${heading}/${querystring.escape(item.title)}.json`, content).then(() => {
@@ -52,12 +51,11 @@ crawler.queue([{
       console.error(error);
     } else {
       const $ = result.$;
-      console.log($('title').text());
       handler.parsePortalContent('https://en.wikipedia.org', result)
         .then(content => {
           generateTopic(content);
           writeJsonFile('./build/portal.json', content).then(() => {
-            console.log('done');
+            console.log('Main Portal done');
           });
         })
         .catch(error => console.warn(error));
