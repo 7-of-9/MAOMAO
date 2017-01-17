@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-
+import { AllHtmlEntities } from 'html-entities';
 interface CrawlerReponse {
   statusCode: number;
   body: string;
@@ -20,18 +20,22 @@ export default class WikiPedia {
   parsePortalContent(rootUrl: string, result: CrawlerReponse) {
     return new Promise((resolve, reject) => {
       // TODO: Parse content on fly
+      const entities = new AllHtmlEntities();
       const $ = result.$;
       let contents = [];
-      const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
       const trim = String.prototype.trim;
+      const replace = String.prototype.replace;
       const paragraphes = $('h2 .mw-headline').each(function (index) {
         // Ignore fisrt heading
         if (index > 0) {
-          const heading = trim.call($(this).text());
+          let heading = $(this).text();
+          heading = replace.call(heading, '(see in all page types)', '');
+          heading = trim.call(heading);
           const content = $(this).parent().parent().next().html();
           if (content) {
             // find all tags
             const items = [];
+            const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
             const anchorTags = content.match(reg);
             const forEach = Array.prototype.forEach;
             forEach.call(anchorTags, (tag) => {
@@ -42,10 +46,11 @@ export default class WikiPedia {
               2: "title="Portal:Religion""
               3 : "Religion"
               */
+              const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
               const findUrlAndTitle = reg.exec(tag);
-              if (findUrlAndTitle && findUrlAndTitle.length >= 3) {
+              if (findUrlAndTitle.length >= 3) {
                 items.push({
-                  title: trim.call(findUrlAndTitle[findUrlAndTitle.length - 1]),
+                  title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
                   link: `${rootUrl}${findUrlAndTitle[1]}`,
                 })
               }
