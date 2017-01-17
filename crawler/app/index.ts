@@ -1,8 +1,8 @@
 import * as Crawler from 'crawler';
 import * as uuid from 'uuid';
 import * as writeJsonFile from 'write-json-file';
+import * as querystring from 'querystring';
 import url from 'url';
-
 import WikiPedia from './sites/WikiPedia';
 
 const MAX_CONNECTIONS = 10;
@@ -31,7 +31,7 @@ function generateTopic(result) {
             console.log($('title').text());
             handler.parsePortalDetail('https://en.wikipedia.org', item.title, result)
               .then(content => {
-                writeJsonFile(`./build/json/${heading}/${item.title}.json`, content).then(() => {
+                writeJsonFile(`./build/json/${heading}/${querystring.escape(item.title)}.json`, content).then(() => {
                   console.log(`${item.title} done`);
                 });
               })
