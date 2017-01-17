@@ -1,7 +1,22 @@
 
-url_search_result: to save GT results (and other top terms?) for each URL, i.e. result of frmMain processing
+
+>>>
+now adding suggested golds directly to root!
+exercise then becomes to automatically reorganize the gold tree such that each gold term is moved to be adjacent to its most closely 
+correlated other gold term, except for root <<<
+
+
+> parallel mode - to process entire sample size in reasonable time to view resulting tree
+run for full sample size...
+
+(dung to provide non-skewed corpus from wikipedia...)
+
+--
 
 gtTreeView to then allow right-click "View Matching URLs..."
 gtTreeView to allow manual reordering
 
-run for full sample size...
+---
+
+when Dung's ready --
+NLP put: record Calais language on URL for proper filtering

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static mm_svc.Terms.Correlations;
+using mm_global.Extensions;
 
 namespace mm_svc
 {
@@ -266,7 +267,7 @@ namespace mm_svc
 
             // l2 boosting -- for top few terms, get correlated terms: boost non-top root terms matching correlated l2 terms exactly by name
             if (run_l2_boost) { 
-                var top_terms = url_terms.Except(topics).OrderByDescending(p => p.tss).Take(3);  // take more??
+                var top_terms = url_terms.Except(topics).DistinctBy(p => p.term.name.ltrim()).OrderByDescending(p => p.tss).Take(3);  // take more??
                 foreach (var top_term in top_terms.Where(p => p.term_id != g.MAOMAO_ROOT_TERM_ID)) {
 
                     var correlations = Terms.Correlations.GetTermCorrelations(new corr_input() { main_term = top_term.term.name }).OrderByDescending(p => p.corr_for_main); 
@@ -274,7 +275,10 @@ namespace mm_svc
                     foreach (var correlation in correlations.Take(8)) { // top n by correlation
 
                         // boost terms that match correlations of top top terms (exactly by name)
-                        foreach (var non_top_term in url_terms.Except(topics).Where(p => p.term.name.ToLower() == correlation.corr_term_name.ToLower() && p.tss >= 0)) {
+                        foreach (var non_top_term in url_terms
+                            .Except(topics).DistinctBy(p => p.term.name.ltrim()) // only boost once per correlation
+                            .Where(p => p.term.name.ltrim() == correlation.corr_term_name.ltrim() && p.tss >= 0)
+                        ) {
                             
                             Debug.WriteLine($"{top_term.term.name}x{non_top_term.term.name} corr={correlation.corr_for_main}");
 
@@ -317,7 +321,7 @@ namespace mm_svc
             //return final;
 
             // normalize TSS
-            var max_tss = url_terms.Max(p => p.tss);
+            var max_tss = url_terms.Count > 0 ? url_terms.Max(p => p.tss) : 0;
             url_terms.ForEach(p => p.tss_norm = max_tss == 0 ? 0 : p.tss / max_tss);
         }
 
