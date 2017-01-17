@@ -9,6 +9,8 @@ var cs_log_style_hi = "background: blue; color: white; font-weight:bold;";
 
 console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
 
+// TODO: Handling of 'mousewheel' input event was delayed for 2834 ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
+
 //
 // doc.ready
 //

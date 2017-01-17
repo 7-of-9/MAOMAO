@@ -64,6 +64,12 @@ function setIconForGuest() {
   setIconText('Login!', '#ff0000');
 }
 
+// gray dog, and !TXT when it turn off
+function setIconForJusText() {
+  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
+  setIconText('!TXT', '#ff0000');
+}
+
 // default
 function setIconTextNeutral() {
   if (isGuest) {
