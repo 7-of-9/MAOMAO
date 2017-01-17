@@ -1,13 +1,39 @@
 
+>>>> breakthrough?!
+if seeding the tree with decent starting point is the key (it seems to be!)
+THEN: https://en.wikipedia.org/wiki/Portal:Contents/Portals
+
+need a custom crawler to crawl this root page to create the initial golden term tree from wiki
+THIS would need the terms in wiki to already be in the DB, i.e. to be resultant from NLP PUT actions
+so, need to wait for a full NLP crawl of all topics (!) under wiki root for a reasonable chance at most terms being present
+
+but -- can still work on the hierarchy extraction in advance; the static resultant tree of terms will need to be ready
+when the NLP PUTs are finished...
+ 
+  >> could [terms] of type "wiki_term" be imported (singularly, so without any starting correlations)? need GT crawler!
+  >> then, a recurse of wiki could def. populate the GT very well
+  >> as long as the TEXT NAMES of wiki terms matched Calais terms, they should correlate 
+
+// bingo! https://kodingnotes.wordpress.com/2014/12/03/parsing-wikipedia-page-hierarchy/
+
 
 >>>
 now adding suggested golds directly to root!
 exercise then becomes to automatically reorganize the gold tree such that each gold term is moved to be adjacent to its most closely 
 correlated other gold term, except for root <<<
 
+almost certainly: need to mark all calais topics (only about ~12) manually as GCs of MMR.
+that way, almost all suggestions should end up as children of these 12 GTs. surely better than them ending up under root.
+basically, the tree needs some kind of reasonable default structurebefore leaf nodes are added.
+
+at the moment it's dumb luck of ordering that determines which term ends up as the parent, e.g. if "fisher" comes up first it will go as a new
+parent node, if "chess" comes second, then it ends up as a child of fischer.
+
+MAYBE: reorder the tree on the fly, i.e. when adding "chess" as a child of "fisher", determine at that time if it should be the other way around!
 
 > parallel mode - to process entire sample size in reasonable time to view resulting tree
 run for full sample size...
+(~1.1 url's per sec. with single threaded UI-off, "e" top 100k)
 
 (dung to provide non-skewed corpus from wikipedia...)
 
