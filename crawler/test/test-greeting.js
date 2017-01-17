@@ -1,6 +1,6 @@
 /* global describe, it, beforeEach */
 'use strict';
-var assert  = require('assert');
+var assert = require('assert');
 
 
 /**
@@ -16,7 +16,7 @@ describe('typescript greeter', function () {
     self.result = '';
 
     self.testView = {
-      display : function (msg) {
+      display: function (msg) {
         self.result = msg;
       }
     };

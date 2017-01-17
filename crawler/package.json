@@ -4,7 +4,11 @@
   "author": "Dung Huynh (dunghd.it@gmail.com)",
   "main": "build/index.js",
   "dependencies": {
-    "crawler": "^1.0.2"
+    "bluebird": "^3.4.7",
+    "crawler": "^1.0.2",
+    "url": "^0.11.0",
+    "uuid": "^3.0.1",
+    "write-json-file": "^2.0.0"
   },
   "devDependencies": {
     "eslint": "^3.13.1",

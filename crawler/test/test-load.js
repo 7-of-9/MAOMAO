@@ -7,7 +7,7 @@ describe('typescript greeter', function () {
 	/**
 	 * Test 1: Project is successfully compiled, and can be imported.
 	 */
-	it('can be imported without blowing up', function () {
-	  assert(require('../build/app.js') !== undefined);
-	});
+  it('can be imported without blowing up', function () {
+    assert(require('../build/app.js') !== undefined);
+  });
 });
