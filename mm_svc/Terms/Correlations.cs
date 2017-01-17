@@ -47,8 +47,8 @@ namespace mm_svc.Terms
         public static int cache_tot_correlations { get { return cache.Values.Select(p => p.Count).Sum(); } }
         public static int cache_tot_terms { get { return cache.Values.Select(p => p.Select(p2 => p2.corr_terms.Count).Sum()).Sum(); } }
 
-        private const int MIN_CORR_TERM_OCCURS_COUNT = 10;
-        private const int MIN_CORR_OCCURS_TOGETHER_COUNT = 5;
+        private const int MIN_CORR_TERM_OCCURS_COUNT = 3; //10;
+        private const int MIN_CORR_OCCURS_TOGETHER_COUNT = 2; //5;
 
         public class corr_input {
             public string main_term, corr_term_eq;
@@ -148,7 +148,8 @@ namespace mm_svc.Terms
                         continue;
 
                     // exclude low sample sizes 
-                    if (tm.related_term.occurs_count < MIN_CORR_TERM_OCCURS_COUNT || tm.occurs_together_count < MIN_CORR_OCCURS_TOGETHER_COUNT)
+                    if (tm.related_term.occurs_count < MIN_CORR_TERM_OCCURS_COUNT 
+                     || tm.occurs_together_count < MIN_CORR_OCCURS_TOGETHER_COUNT)
                         continue;
 
                     if (!string.IsNullOrEmpty(inp.corr_term_eq))

@@ -30,7 +30,8 @@ namespace mmdb_model
         public string cal_lang { get; set; }
         public string meta_title { get; set; }
         public string meta_all { get; set; }
-        public Nullable<System.DateTime> processed_golden_terms { get; set; }
+        public Nullable<System.DateTime> processed_at_utc { get; set; }
+        public int processed_golden_count { get; set; }
     
         public virtual awis_site awis_site { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -18,6 +18,9 @@ namespace wowmao
         public event EventHandler<SearchGoldenTermEventArgs> OnSearchGoldenTerm = delegate { };
         public class SearchGoldenTermEventArgs : EventArgs { public long golden_term_id { get; set; } }
 
+        public event EventHandler<OnSearchGoogleEventArgs> OnSearchGoogle = delegate { };
+        public class OnSearchGoogleEventArgs : EventArgs { public string search_term { get; set; } }
+
         private class NodeTag { public term term; public golden_term golden_term; }
 
         public GoldenTree()
@@ -71,6 +74,13 @@ namespace wowmao
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
+        }
+
+        private void mnuSearchGoogle_Click(object sender, EventArgs e)
+        {
+            if (this.SelectedNode == null) return;
+            var term = (this.SelectedNode.Tag as NodeTag).term;
+            OnSearchGoogle?.Invoke(typeof(Correlations), new OnSearchGoogleEventArgs() { search_term = term.name });
         }
 
         private void mnuMatchingUrls_Click(object sender, EventArgs e)

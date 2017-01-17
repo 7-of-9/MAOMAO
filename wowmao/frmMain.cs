@@ -38,8 +38,14 @@ namespace wowmao
             InitTvwRootNodes();
             gtGoldTree.BuildTree();
 
-            txtUrlSearch.SelectedIndex = 0;
+            txtUrlSearch.SelectedIndex = 1;
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
+            this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
+        }
+
+        private void GtGoldTree_OnSearchGoogle(object sender, GoldenTree.OnSearchGoogleEventArgs e)
+        {
+            Process.Start($"https://www.google.com/#q={e.search_term}");
         }
 
         private void GtGoldTree_OnSearchGoldenTerm(object sender, GoldenTree.SearchGoldenTermEventArgs e)
@@ -75,6 +81,7 @@ namespace wowmao
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 lvwUrls.BeginUpdate();
                 var items = new List<ListViewItem>();
+                var rnd = new Random();
                 var qry = db.urls
                     .AsNoTracking()
                     .Include("url_term.term.term_type")
@@ -82,12 +89,22 @@ namespace wowmao
                     .Include("url_golden_term")
                     .AsQueryable();
 
-                if (search_term != null)
+                if (search_term != null) {
                     qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
+                    if (chkExcludeProcessed.Checked)
+                        qry = qry.Where(p => p.processed_at_utc == null);
+                }
                 else if (golden_term_id != null)
                     qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
 
-                qry = qry.OrderByDescending(p => p.id).Take(Convert.ToInt32(this.cboTop.Text));
+                qry = qry.OrderByDescending(p => p.id);
+
+                var count_urls = qry.Count();
+                var take = Convert.ToInt32(this.cboTop.Text);
+                if (chkRndOrder.Checked)
+                    qry = qry.Skip(rnd.Next(0, count_urls - take));
+
+                qry = qry.Take(take);
 
                 Debug.WriteLine(qry.ToString());
                 var data = qry.ToListNoLock();
@@ -100,7 +117,8 @@ namespace wowmao
                         "-",
                         "-",
                         "-",
-                        x.processed_golden_terms?.ToString("dd MMM yyyy HH:mm"),
+                        x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
+                        x.processed_golden_count.ToString(),
                     });
                     item.Tag = x;
                     items.Add(item);
@@ -181,16 +199,18 @@ namespace wowmao
                 cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
                 txtInfo.AppendText(cat.log);
 
-                // display -- each L1 URL-term
-                ttUrlTerms.Nodes.Clear();
-                lvwUrlTerms.Items.Clear();
-                lvwUrlTerms.BeginUpdate();
+                // for each L1 URL-term
+                if (chkUpdateUi.Checked) { 
+                    ttUrlTerms.Nodes.Clear();
+                    l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
+
+                    lvwUrlTerms.Items.Clear();
+                    lvwUrlTerms.BeginUpdate();
+                }
                 var ut_items = new List<ListViewItem>();
                 var direct_goldens = new List<url_term>();
                 var all_l2_term_ids_by_count = new Dictionary<long, int>();
                 var all_l2_terms = new List<term>();
-
-                l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
 
                 foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.tss)) {
 
@@ -223,15 +243,19 @@ namespace wowmao
                         }
                     }
 
-                    ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, l2_terms));
+                    if (chkUpdateUi.Checked)
+                        ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, l2_terms));
                 }
-                lvwUrlTerms.Items.AddRange(ut_items.ToArray());
-                lvwUrlTerms.EndUpdate();
-                SetCols(lvwUrlTerms);
+                if (chkUpdateUi.Checked) {
+                    lvwUrlTerms.Items.AddRange(ut_items.ToArray());
+                    lvwUrlTerms.EndUpdate();
+                    SetCols(lvwUrlTerms);
+                }
 
                 //
                 // L2 TSS
-                lvwUrlTerms2.Items.Clear();
+                if (chkUpdateUi.Checked)
+                    lvwUrlTerms2.Items.Clear();
                 var l2_url_terms = new List<url_term>();
                 if (all_l2_terms.Count > 0) {
                     var l1_term_ids = l1_url_terms.Select(p => p.term.id).Distinct();
@@ -250,12 +274,15 @@ namespace wowmao
 
                     // DeriveMmCat (produce TSS) for L2 terms
                     cat.CalcTSS(meta_all, l2_url_terms, run_l2_boost: false);
-                    lvwUrlTerms2.BeginUpdate();
-                    foreach (var l2_url_term in l2_url_terms.OrderByDescending(p => p.tss)) {
-                        lvwUrlTerms2.Items.Add(lvwUrlTerms2.NewLvi(l2_url_term, null));
+
+                    if (chkUpdateUi.Checked) { 
+                        lvwUrlTerms2.BeginUpdate();
+                        foreach (var l2_url_term in l2_url_terms.OrderByDescending(p => p.tss)) {
+                            lvwUrlTerms2.Items.Add(lvwUrlTerms2.NewLvi(l2_url_term, null));
+                        }
+                        lvwUrlTerms2.EndUpdate();
+                        SetCols(lvwUrlTerms2);
                     }
-                    lvwUrlTerms2.EndUpdate();
-                    SetCols(lvwUrlTerms2);
                 }
 
                 //
@@ -331,11 +358,18 @@ namespace wowmao
 
                     // save result for URL -- NOTE: just taking first child appearance in GT tree; this will *not* work
                     // if the term is a GC of multiple golden parents! i.e. -- should for now maintain logic of term only appears once in the GT tree
-                    Golden.RecordUrlGoldenTerms(url.id, out_existing_l1_l2_gold.Select(p => p.child_in_golden_terms.First()).ToList());
+                    var final_mmcats = out_existing_l1_l2_gold.Select(p => p.child_in_golden_terms.First()).ToList();
+                    Golden.RecordUrlGoldenTerms(url.id, final_mmcats);
+
                     item.SubItems[7].Text = DateTime.UtcNow.ToString("dd MMM yyyy");
+                    item.SubItems[8].Text = final_mmcats.Count().ToString();
 
                     item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
                 }
+
+                // done
+                db.urls.Find(url.id).processed_at_utc = DateTime.UtcNow;
+                db.SaveChangesTraceValidationErrors();
 
                 //
                 // TODO -- move this into the service layer
@@ -343,7 +377,7 @@ namespace wowmao
                 //          walk ([re]process) each url, as above, i.e. find new gold and record output
                 //      
 
-                SetCols(lvwUrls);
+                //SetCols(lvwUrls);
 
 
                 // ***
@@ -380,23 +414,35 @@ namespace wowmao
             }
         }
 
+        // walk & process...
+        private bool walking = false;
         private void cmdWalk_Click(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.AppStarting;
-            if (lvwUrls.SelectedItems.Count == 0)
-                lvwUrls.Items[0].Selected = true;
+            var sw = new Stopwatch(); sw.Start();
+            if (!walking) {
+                walking = true;
+                cmdWalk.Text = "STOP";
+                this.Cursor = Cursors.WaitCursor;
+                int n = 0;
+                for (int i = lvwUrls.SelectedIndices.Count > 0 ? lvwUrls.SelectedIndices[0] : 0; i < lvwUrls.Items.Count; i++) {
+                    if (!walking) break;
 
-            for (int i = lvwUrls.SelectedIndices[0]; i < lvwUrls.Items.Count; i++) { 
-                lvwUrls.Items[i].Selected = true;
-                lvwUrls.Items[i].EnsureVisible();
-                Application.DoEvents();
+                    lvwUrls.Items[i].Selected = true; // process
+                    lvwUrls.Items[i].EnsureVisible();
+                    Application.DoEvents();
+                    n++;
+
+                    var url_per_sec = n / sw.Elapsed.TotalSeconds;
+                    lblWalkInfo.Text = $"Walking... url_per_sec={url_per_sec.ToString("0.00")}";
+                }
+                this.Cursor = Cursors.Default;
+                cmdWalk.Text = "Walk...";
+                walking = false;
             }
-            this.Cursor = Cursors.Default;
-        }
-
-        private void txtURLSearch_TextChanged(object sender, EventArgs e)
-        {
-
+            else {
+                cmdWalk.Text = "Walk...";
+                walking = false;
+            }
         }
     }
 }

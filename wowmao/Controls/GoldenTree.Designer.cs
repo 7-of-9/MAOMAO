@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.mnuiCtxName = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuSearchGoogle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMatchingUrls = new System.Windows.Forms.ToolStripMenuItem();
             this.findAtL1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
@@ -39,7 +39,7 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuiCtxName,
+            this.mnuSearchGoogle,
             this.mnuMatchingUrls,
             this.findAtL1MenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
@@ -48,9 +48,10 @@
             // 
             // mnuiCtxName
             // 
-            this.mnuiCtxName.Name = "mnuiCtxName";
-            this.mnuiCtxName.Size = new System.Drawing.Size(180, 22);
-            this.mnuiCtxName.Text = "toolStripMenuItem1";
+            this.mnuSearchGoogle.Name = "mnu0";
+            this.mnuSearchGoogle.Size = new System.Drawing.Size(180, 22);
+            this.mnuSearchGoogle.Text = "Search Google...";
+            this.mnuSearchGoogle.Click += new System.EventHandler(this.mnuSearchGoogle_Click);
             // 
             // toggleGolden1ToolStripMenuItem
             // 
@@ -77,7 +78,7 @@
         #endregion
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem mnuiCtxName;
+        private System.Windows.Forms.ToolStripMenuItem mnuSearchGoogle;
         private System.Windows.Forms.ToolStripMenuItem mnuMatchingUrls;
         private System.Windows.Forms.ToolStripMenuItem findAtL1MenuItem;
     }

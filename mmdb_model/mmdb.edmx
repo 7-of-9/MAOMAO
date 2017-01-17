@@ -83,7 +83,8 @@
           <Property Name="cal_lang" Type="nvarchar" MaxLength="256" />
           <Property Name="meta_title" Type="nvarchar" MaxLength="256" />
           <Property Name="meta_all" Type="nvarchar(max)" />
-          <Property Name="processed_golden_terms" Type="datetime" />
+          <Property Name="processed_at_utc" Type="datetime" />
+          <Property Name="processed_golden_count" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="url_golden_term">
           <Key>
@@ -740,7 +741,8 @@
           <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="processed_golden_terms" Type="DateTime" Precision="3" />
+          <Property Name="processed_at_utc" Type="DateTime" Precision="3" />
+          <Property Name="processed_golden_count" Type="Int32" Nullable="false" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
           <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url" ToRole="url_golden_term" />
@@ -944,7 +946,8 @@
           <EntitySetMapping Name="urls">
             <EntityTypeMapping TypeName="mm02Model.url">
               <MappingFragment StoreEntitySet="url">
-                <ScalarProperty Name="processed_golden_terms" ColumnName="processed_golden_terms" />
+                <ScalarProperty Name="processed_golden_count" ColumnName="processed_golden_count" />
+                <ScalarProperty Name="processed_at_utc" ColumnName="processed_at_utc" />
                 <ScalarProperty Name="meta_all" ColumnName="meta_all" />
                 <ScalarProperty Name="meta_title" ColumnName="meta_title" />
                 <ScalarProperty Name="cal_lang" ColumnName="cal_lang" />

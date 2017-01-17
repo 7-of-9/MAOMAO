@@ -23,17 +23,23 @@ namespace mm_svc.Terms
                 if (suggested.is_countrylike) // *** exclude country like terms from being gold
                     continue;
 
-                // get best parent for suggested
+                // get best gold parent for suggested
                 var correlated = Correlations.GetTermCorrelations(new corr_input() { main_term = suggested.name, min_corr = 0.1 });
                 if (correlated.Any(p => p.main_term.is_countrylike)) // *** exclude country like terms from being gold
-                    continue; 
+                    continue;
                 var correlated_terms = correlated.SelectMany(p => p.corr_terms)
                                                  .OrderByDescending(p => p.corr_for_main)
-                                                 .Where(p => p.id != g.MAOMAO_ROOT_TERM_ID);
-                
-                suggested.suggested_gold_parent = correlated_terms.Where(
-                                                    p => p.gold_level < MAX_GOLD_LEVEL - 1  // *** cap gold level
-                                                      && p.is_gold).FirstOrDefault();
+                                                 .Where(p => p.is_gold);//p.id != g.MAOMAO_ROOT_TERM_ID);
+
+                if (correlated_terms.Count() == 1) 
+                    // only gold correlation is mmroot, use it
+                    suggested.suggested_gold_parent = correlated_terms.First();
+                else
+                    // got other correlated gold terms; remove mmroot and pick most correlated as parent
+                    suggested.suggested_gold_parent = correlated_terms.Where(
+                                                        p => p.id != g.MAOMAO_ROOT_TERM_ID
+                                                        && p.gold_level < MAX_GOLD_LEVEL - 1  // *** cap gold level
+                                                      ).OrderByDescending(p => p.corr_for_main).FirstOrDefault();
 
                 // create golden relation
                 if (suggested.suggested_gold_parent != null ) { 
@@ -76,7 +82,6 @@ namespace mm_svc.Terms
                 });
             }
 
-            db.urls.Find(url_id).processed_golden_terms = DateTime.UtcNow;
             db.SaveChangesTraceValidationErrors();
         }
     }
