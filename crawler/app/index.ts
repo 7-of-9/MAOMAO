@@ -15,6 +15,35 @@ const crawler = new Crawler({
 
 const handler = new WikiPedia();
 
+function generateTopic(result) {
+  const forEach = Array.prototype.forEach;
+  forEach.call(result, portal => {
+    const heading = portal.heading;
+    forEach.call(portal.items, item => {
+      crawler.queue([{
+        uri: item.link,
+        limiter: uuid.v1(),
+        callback: (error, result, done) => {
+          if (error) {
+            console.error(error);
+          } else {
+            const $ = result.$;
+            console.log($('title').text());
+            handler.parsePortalDetail('https://en.wikipedia.org', item.title, result)
+              .then(content => {
+                writeJsonFile(`./build/json/${heading}/${item.title}.json`, content).then(() => {
+                  console.log(`${item.title} done`);
+                });
+              })
+              .catch(error => console.warn(error));
+          }
+          done();
+        }
+      }]);
+    });
+  });
+}
+
 crawler.queue([{
   uri: STARTED_URL,
   limiter: uuid.v1(),
@@ -23,9 +52,10 @@ crawler.queue([{
       console.error(error);
     } else {
       const $ = result.$;
-      console.log($("title").text());
+      console.log($('title').text());
       handler.parsePortalContent('https://en.wikipedia.org', result)
         .then(content => {
+          generateTopic(content);
           writeJsonFile('./build/portal.json', content).then(() => {
             console.log('done');
           });
