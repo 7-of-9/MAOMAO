@@ -100,7 +100,6 @@ export default class WikiPedia {
     const entities = new AllHtmlEntities();
     const trim = String.prototype.trim;
     if (content) {
-      // find all tags
       const items = [];
       const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
       const anchorTags = content.match(reg);
@@ -112,20 +111,22 @@ export default class WikiPedia {
         2: "title="Portal:Religion""
         3 : "Religion"
         */
-        const reg = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
-        const findUrlAndTitle = reg.exec(tag);
+        const regex = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
+        const findUrlAndTitle = regex.exec(tag);
         if (findUrlAndTitle.length >= 3) {
           items.push({
-            title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
+            doneNLP: false,
             link: `${rootUrl}${findUrlAndTitle[1]}`,
-          })
+            title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
+          });
         }
       });
       if (items.length) {
         contents.push({
           heading,
           items,
-        })
+          total: items.length,
+        });
       }
     }
     return contents;
@@ -143,7 +144,6 @@ export default class WikiPedia {
    */
   parsePortalDetail(rootUrl: string, title: string, result: CrawlerReponse) {
     return new Promise((resolve, reject) => {
-      const entities = new AllHtmlEntities();
       const $ = result.$;
       const trim = String.prototype.trim;
 
@@ -151,7 +151,7 @@ export default class WikiPedia {
       this.sites.push(rootUrl);
 
       const that = this;
-      const paragraphes = $('h2 .mw-headline').each(function (index) {
+      $('h2 .mw-headline').each(function (index) {
         const ingoreHeadings = ['Selected picture', 'Related portals', 'Associated Wikimedia', 'Portals?'];
         let heading = $(this).text();
         heading = trim.call(heading);
@@ -180,7 +180,7 @@ export default class WikiPedia {
       const trim = String.prototype.trim;
       const replace = String.prototype.replace;
       const that = this;
-      const paragraphes = $('h2 .mw-headline').each(function (index) {
+      $('h2 .mw-headline').each(function (index) {
         // Ignore fisrt heading
         if (index > 0) {
           let heading = $(this).text();
