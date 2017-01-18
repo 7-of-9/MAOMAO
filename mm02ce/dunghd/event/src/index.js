@@ -38,11 +38,6 @@ wrapStore(store, {
 
 // ctx menu handler
 chrome.contextMenus.removeAll();
-chrome.contextMenus.create({
-  title: 'Login',
-  contexts: ['browser_action'],
-  id: 'mm-btn-login',
-});
 
 // NOTE: Handler all browser action events
 function onClickHandler(info) {
@@ -211,6 +206,24 @@ window.sessionObservable = mobx.observable({
 mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   console.info('reaction url', url);
   const now = new Date().toISOString();
+  const startsWith = String.prototype.startsWith;
+
+  if (startsWith.call(url, 'chrome://extensions/')) {
+    store.dispatch({
+      type: 'MAOMAO_DISABLE',
+      payload: {
+        url,
+      },
+    });
+  } else {
+    store.dispatch({
+      type: 'MAOMAO_ENABLE',
+      payload: {
+        url,
+      },
+    });
+  }
+
   checkImScore(url, now);
   saveImScore(url);
 });

@@ -88,6 +88,16 @@ export default (state = initialState, action) => {
       // call bg function
       ctxMenuLogin(state.info);
       return state;
+    case 'MAOMAO_DISABLE':
+      chrome.contextMenus.removeAll();
+      return state;
+    case 'MAOMAO_ENABLE':
+      if (state.isLogin) {
+        ctxMenuLogin(state.info);
+      } else {
+        ctxMenuLogout();
+      }
+      return state;
     default:
       return state;
   }
