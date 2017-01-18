@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="wikiModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="categorylinks">
+          <Key>
+            <PropertyRef Name="cl_from" />
+            <PropertyRef Name="cl_to" />
+          </Key>
+          <Property Name="cl_from" Type="uint" Nullable="false" />
+          <Property Name="cl_to" Type="varbinary" MaxLength="255" Nullable="false" />
+          <Property Name="cl_sortkey" Type="varbinary" MaxLength="230" Nullable="false" />
+          <Property Name="cl_timestamp" Type="timestamp" Precision="0" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cl_sortkey_prefix" Type="varbinary" MaxLength="255" Nullable="false" />
+          <Property Name="cl_collation" Type="varbinary" MaxLength="32" Nullable="false" />
+          <Property Name="cl_type" Type="enum" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6005: The data type 'udouble' is currently not supported for the target Entity Framework version; the column 'page_random' in the table 'def.wiki.page' was excluded.-->
+        <EntityType Name="page">
+          <Key>
+            <PropertyRef Name="page_id" />
+          </Key>
+          <Property Name="page_id" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="page_namespace" Type="int" Nullable="false" />
+          <Property Name="page_title" Type="varbinary" MaxLength="255" Nullable="false" />
+          <Property Name="page_restrictions" Type="tinyblob" Nullable="false" />
+          <Property Name="page_counter" Type="ubigint" Nullable="false" />
+          <Property Name="page_is_redirect" Type="bool" Nullable="false" />
+          <Property Name="page_is_new" Type="bool" Nullable="false" />
+          <Property Name="page_touched" Type="varbinary" MaxLength="14" Nullable="false" />
+          <Property Name="page_links_updated" Type="varbinary" MaxLength="14" />
+          <Property Name="page_latest" Type="uint" Nullable="false" />
+          <Property Name="page_len" Type="uint" Nullable="false" />
+          <Property Name="page_content_model" Type="varbinary" MaxLength="32" />
+          <Property Name="page_lang" Type="varbinary" MaxLength="35" />
+        </EntityType>
+        <EntityContainer Name="wikiModelStoreContainer">
+          <EntitySet Name="categorylinks" EntityType="Self.categorylinks" Schema="wiki" store:Type="Tables" />
+          <EntitySet Name="page" EntityType="Self.page" Schema="wiki" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="wikiModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="categorylink">
+          <Key>
+            <PropertyRef Name="cl_from" />
+            <PropertyRef Name="cl_to" />
+          </Key>
+          <Property Name="cl_from" Type="Int64" Nullable="false" />
+          <Property Name="cl_to" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="cl_sortkey" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="cl_timestamp" Type="DateTime" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cl_sortkey_prefix" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="cl_collation" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="cl_type" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+        </EntityType>
+        <EntityType Name="page">
+          <Key>
+            <PropertyRef Name="page_id" />
+          </Key>
+          <Property Name="page_id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="page_namespace" Type="Int32" Nullable="false" />
+          <Property Name="page_title" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="page_restrictions" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="page_counter" Type="Decimal" Nullable="false" />
+          <Property Name="page_is_redirect" Type="Boolean" Nullable="false" />
+          <Property Name="page_is_new" Type="Boolean" Nullable="false" />
+          <Property Name="page_touched" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="page_links_updated" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="page_latest" Type="Int64" Nullable="false" />
+          <Property Name="page_len" Type="Int64" Nullable="false" />
+          <Property Name="page_content_model" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="page_lang" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityContainer Name="wikiEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="categorylinks" EntityType="Self.categorylink" />
+          <EntitySet Name="pages" EntityType="Self.page" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="wikiModelStoreContainer" CdmEntityContainer="wikiEntities">
+          <EntitySetMapping Name="categorylinks">
+            <EntityTypeMapping TypeName="wikiModel.categorylink">
+              <MappingFragment StoreEntitySet="categorylinks">
+                <ScalarProperty Name="cl_from" ColumnName="cl_from" />
+                <ScalarProperty Name="cl_to" ColumnName="cl_to" />
+                <ScalarProperty Name="cl_sortkey" ColumnName="cl_sortkey" />
+                <ScalarProperty Name="cl_timestamp" ColumnName="cl_timestamp" />
+                <ScalarProperty Name="cl_sortkey_prefix" ColumnName="cl_sortkey_prefix" />
+                <ScalarProperty Name="cl_collation" ColumnName="cl_collation" />
+                <ScalarProperty Name="cl_type" ColumnName="cl_type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="pages">
+            <EntityTypeMapping TypeName="wikiModel.page">
+              <MappingFragment StoreEntitySet="page">
+                <ScalarProperty Name="page_id" ColumnName="page_id" />
+                <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
+                <ScalarProperty Name="page_title" ColumnName="page_title" />
+                <ScalarProperty Name="page_restrictions" ColumnName="page_restrictions" />
+                <ScalarProperty Name="page_counter" ColumnName="page_counter" />
+                <ScalarProperty Name="page_is_redirect" ColumnName="page_is_redirect" />
+                <ScalarProperty Name="page_is_new" ColumnName="page_is_new" />
+                <ScalarProperty Name="page_touched" ColumnName="page_touched" />
+                <ScalarProperty Name="page_links_updated" ColumnName="page_links_updated" />
+                <ScalarProperty Name="page_latest" ColumnName="page_latest" />
+                <ScalarProperty Name="page_len" ColumnName="page_len" />
+                <ScalarProperty Name="page_content_model" ColumnName="page_content_model" />
+                <ScalarProperty Name="page_lang" ColumnName="page_lang" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
