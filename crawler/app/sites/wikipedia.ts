@@ -141,7 +141,7 @@ export default class WikiPedia {
                     title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
                   });
                 }
-              } else if (url.indexOf(':') === -1 && url.indexOf('//') !== 0) {
+              } else if (url.indexOf(':') === -1 && url.indexOf('//') !== 0 && url.indexOf('index.php') === -1) {
                 items.push({
                   doneNLP: false,
                   link: `${rootUrl}${url}`,
