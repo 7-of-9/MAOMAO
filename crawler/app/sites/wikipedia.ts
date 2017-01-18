@@ -95,7 +95,7 @@ export default class WikiPedia {
    *
    * @memberOf WikiPedia
    */
-  parseContent(content: string, heading: string, rootUrl: string) {
+  parseContent(content: string, heading: string, rootUrl: string, isPortal = true) {
     let contents = [];
     const entities = new AllHtmlEntities();
     const trim = String.prototype.trim;
@@ -114,11 +114,42 @@ export default class WikiPedia {
         const regex = new RegExp(/<a\s+(?:[^>]*?\s+)?href="([^"]*)"\s?([^>]*)>([^<]*)<\/a>/g);
         const findUrlAndTitle = regex.exec(tag);
         if (findUrlAndTitle.length >= 3) {
-          items.push({
-            doneNLP: false,
-            link: `${rootUrl}${findUrlAndTitle[1]}`,
-            title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
-          });
+          const url = String(findUrlAndTitle[1]);
+          // Ignore all href='#sth'
+          if (url && url[0] !== '#') {
+            // Portal page
+            if (isPortal) {
+              let link = '';
+              if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {
+                link = url;
+              } else {
+                link = `${rootUrl}${url}`;
+              }
+              items.push({
+                link,
+                doneNLP: false,
+                title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
+              });
+            } else {
+              // No process for sub link such as abc:demo
+              if (url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1) {
+                // Only process for https://en.wikipedia.org
+                if (url.indexOf(rootUrl) !== -1 && url.indexOf('index.php') === -1) {
+                  items.push({
+                    doneNLP: false,
+                    link: url,
+                    title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
+                  });
+                }
+              } else if (url.indexOf(':') === -1 && url.indexOf('//') !== 0) {
+                items.push({
+                  doneNLP: false,
+                  link: `${rootUrl}${url}`,
+                  title: entities.decode(trim.call(findUrlAndTitle[findUrlAndTitle.length - 1])),
+                });
+              }
+            }
+          }
         }
       });
       if (items.length) {
@@ -152,12 +183,23 @@ export default class WikiPedia {
 
       const that = this;
       $('h2 .mw-headline').each(function (index) {
-        const ingoreHeadings = ['Selected picture', 'Related portals', 'Associated Wikimedia', 'Portals?'];
+        const ingoreHeadings = [
+          'Interested editors',
+          'Featured picture',
+          'Selected picture',
+          'Related Portals',
+          'WikiProjects',
+          'Associated Wikimedia',
+          'Subportals',
+          'Portals?',
+        ];
         let heading = $(this).text();
         heading = trim.call(heading);
-        if (ingoreHeadings.indexOf(heading) === -1) {
+
+        // Adhoc for speical case 'Related portals'
+        if (ingoreHeadings.indexOf(heading) === -1 && heading.toLowerCase().indexOf('related portals') === -1) {
           const content = $(this).parent().parent().next().html();
-          contents = contents.concat(that.parseContent(content, heading, rootUrl));
+          contents = contents.concat(that.parseContent(content, heading, rootUrl, false));
         }
       });
       resolve({ title, contents });
@@ -181,8 +223,8 @@ export default class WikiPedia {
       const replace = String.prototype.replace;
       const that = this;
       $('h2 .mw-headline').each(function (index) {
-        // Ignore fisrt heading
-        if (index > 0) {
+        // Ignore Portal and general reference
+        if (index > 1) {
           let heading = $(this).text();
           heading = replace.call(heading, '(see in all page types)', '');
           heading = trim.call(heading);

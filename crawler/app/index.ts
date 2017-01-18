@@ -37,6 +37,11 @@ function generateTopic(result) {
     });
   }).then(resp => {
     let data = _.flatten(resp);
+    let count = 0;
+    _.forEach(data, item => {
+      count += Array.prototype.reduce.call(item.contents, (total, next) => total + next.total, 0);
+    });
+    console.log('total', count);
     writeJsonFile('./build/topics.json', data).then(() => {
       console.log('Topics done');
     });
@@ -50,9 +55,10 @@ crawler.queue([{
     if (error) {
       console.error(error);
     } else {
-      const $ = result.$;
       handler.parsePortalContent('https://en.wikipedia.org', result)
         .then(content => {
+          const count = Array.prototype.reduce.call(content, (total, next) => total + next.total, 0);
+          console.log('total', count);
           generateTopic(content);
           writeJsonFile('./build/portal.json', content).then(() => {
             console.log('Main Portal done');
