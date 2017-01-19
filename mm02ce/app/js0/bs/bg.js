@@ -7,9 +7,11 @@
 // STARTUP !!!
 //
 $(document).ready(function () {
-
-  setIconTextNeutral(); //***
-
+  if(isGuest) {
+    setIconForDisable();
+  } else {
+    setIconReady();
+  }
   update_tabmap(function () {
 
     // Listen for messages from content scripts.
@@ -46,6 +48,12 @@ $(document).ready(function () {
   });
 });
 
+// gray for guest or ready
+function setIconReady() {
+  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+  setIconText('', '#999999');
+}
+
 // black dog (inactive) for URL disallowed, no CS injected
 function setIconDisabledSafe() {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
@@ -54,6 +62,7 @@ function setIconDisabledSafe() {
 
 // blue dog (live) with pending meta score; for injected CS
 function setIconEnabledLive() {
+  console.trace('setIconEnabledLive');
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
   setIconText('...', '#999999');
 }
@@ -64,26 +73,23 @@ function setIconForGuest() {
   setIconText('Login!', '#ff0000')
 }
 
-// gray dog, and !TXT when it turn off
-function setIconForJusText() {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText('!TXT', '#ff0000');
+// gray dog, and !TXT and NLP when it turn off
+function setIconForNLP(jusTextSuccues, msg) {
+  var color = '#999999';
+  if(!jusTextSuccues) {
+    color = '#ff0000'
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
+  } else {
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+  }
+  console.trace('setIconForNLP');
+  setIconText(msg, color);
 }
 
+// turn off for chrome internal tab
 function setIconForDisable() {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
   setIconText('', '#ff0000');
-}
-
-// default
-function setIconTextNeutral() {
-  if (isGuest) {
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  } else {
-    // TODO: Checking that JUSTEXT is ready or not
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-    setIconText('', '#999999');
-  }
 }
 
 function setIconText(s, c) {
@@ -164,7 +170,6 @@ function eatEvent(name) {
 // http://stackoverflow.com/questions/27109344/content-script-isnt-firing-on-twitch )
 //
 chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-  // setIconTextNeutral(); //***
 
   var tab = get_tab(details.tabId);
   if (tab != null)
@@ -212,7 +217,7 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   // actually neeed? have forgotten what calls this!!
   // vk.com -- history.pushState() navigation
   // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
-  if (message == 'Rerun script' || (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN')) {
+  if (message == 'Rerun script' || (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN' && process_url(sender.tab.url))) {
     console.trace('Rerun script');
     session = session_get_by_url(sender.tab.url);
     if (session != null)
@@ -311,8 +316,8 @@ function handle_cs_doc_event(data, sender) {
       else if (data.type == 'OTHER') {
         if (data.eventName == 'got_page_meta') {  // update session page meta
           var page_meta = data.eventValue;
-          var nlp_suitability_score = page_meta['nlp_suitability_score'];
-          setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
+          // var nlp_suitability_score = page_meta['nlp_suitability_score'];
+          // setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
           session_update_page_meta(session, data.eventValue);
         }
       }
@@ -324,8 +329,7 @@ function inject_cs(session, tab_id, skip_text) {
   console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
   console.trace('inject_cs');
 
-  // setIconTextNeutral();
-   //***
+  //***
 
   //if (session.hasOwnProperty('injected_cs_timestamp')) {
   //    console.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
@@ -566,7 +570,6 @@ function playNavSound(id) {
 
 // TABMAP: chrome.tabs.onCreated
 function tabCreated(tab) {
-  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -580,7 +583,6 @@ function tabCreated(tab) {
 
 // TABMAP: chrome.tabs.onRemoved
 function tabRemoved(tabId) {
-  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -594,7 +596,6 @@ function tabRemoved(tabId) {
 }
 
 function windowCreated(window) {
-  // setIconTextNeutral(); //***
 
   if (eatEvent('windowCreated'))
     return false;
@@ -612,7 +613,6 @@ var events_style = 'background: white; color: orange;';
 var events_style_err = 'background: red; color: white;';
 
 function tabNavigated(tabId, changeInfo, tab) {
-  // setIconTextNeutral(); //***
 
   console.log('%c >tabNavigated tabId=' + tabId +
     ' ci.status=' + changeInfo.status +
@@ -651,7 +651,6 @@ function tabNavigated(tabId, changeInfo, tab) {
 // TABMAP: chrome.tabs.onSelectionChanged (Deprecated since Chrome 33. Please use tabs.onActivated)
 var selectedTabId = -1;
 function tabSelectionChanged(tabId) {
-  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -685,7 +684,6 @@ function tabSelectionChanged(tabId) {
 var TOT_active_tab = null;
 var TOT_active_window_id = 0;
 function tabActivated(o) { // why getting object here?!
-  // setIconTextNeutral(); //***
 
   var tabId = o.tabId;
   console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
@@ -718,7 +716,6 @@ function tabActivated(o) { // why getting object here?!
 
 var selectedWindowId = -1;
 function windowFocusChanged(windowId) {
-  //setIconTextNeutral(); //***
 
   if (windowId == selectedWindowId) return false;
   selectedWindowId = windowId;
@@ -762,7 +759,6 @@ function TOT_start_current_focused() {
 
 // DM**
 function windowRemoved(window) {
-  // setIconTextNeutral(); //***
 
   //TOT_start_current_focused();
   return true;

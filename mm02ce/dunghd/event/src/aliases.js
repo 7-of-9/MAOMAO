@@ -67,24 +67,6 @@ function actionCreator(type, payload) {
   };
 }
 
-const authLogin = () => (
-  (dispatch, getState) => {
-    const { auth } = getState();
-    if (!auth.isPending || auth.accessToken === '') {
-      dispatch({
-        type: 'AUTH_PENDING',
-      });
-      return checkAuth()
-        .then(data => dispatch(
-          actionCreator('AUTH_FULFILLED', { token: data.token, info: data.info })),
-      )
-        .catch(error => dispatch(actionCreator('AUTH_REJECTED', error)));
-    }
-    return dispatch(
-      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
-    );
-  }
-);
 
 const authLogout = () => (
   (dispatch, getState) => {
@@ -95,12 +77,44 @@ const authLogout = () => (
       });
       return logout(auth.accessToken)
         .then(data => dispatch(
-          actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }))
-        )
+          actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info })),
+      )
         .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
     }
     return dispatch(
-      actionCreator('LOGOUT_FULFILLED', { token: '', info: {} })
+      actionCreator('LOGOUT_FULFILLED', { token: '', info: {} }),
+    );
+  }
+);
+
+
+const authLogin = () => (
+  (dispatch, getState) => {
+    const { auth } = getState();
+    if (!auth.isPending || auth.accessToken === '') {
+      dispatch({
+        type: 'AUTH_PENDING',
+      });
+      return checkAuth()
+        .then(data => dispatch(
+          actionCreator('AUTH_FULFILLED', { token: data.token, info: data.info })),
+      ).catch((error) => {
+        // Try to logout and remove cache token
+        if (firebase.auth().currentUser) {
+          firebase.auth().signOut();
+        }
+
+        chrome.identity.removeCachedAuthToken({ token: '' }, () => {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+          }
+        });
+
+        dispatch(actionCreator('AUTH_REJECTED', error));
+      });
+    }
+    return dispatch(
+      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
     );
   }
 );

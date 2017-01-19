@@ -51,6 +51,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { isPending: true });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info);
+      window.setIconReady();
       return Object.assign({}, state, {
         message: 'authentication is done',
         accessToken: action.payload.token,
@@ -80,10 +81,6 @@ export default (state = initialState, action) => {
         message: action.payload.error.message,
         isPending: false,
       });
-    case 'USER_AFTER_LOGIN':
-      // call bg function
-      window.setIconEnabledLive();
-      return state;
     case 'YOUTUBE_TEST':
       // call bg function
       ctxMenuLogin(state.info);
@@ -93,8 +90,10 @@ export default (state = initialState, action) => {
       window.setIconForDisable();
       return state;
     case 'MAOMAO_ENABLE':
+      // TODO: Should check active url
       if (state.isLogin) {
         ctxMenuLogin(state.info);
+        window.setIconText('', '#ff0000');
       } else {
         ctxMenuLogout();
         window.setIconText('Login!', '#ff0000');

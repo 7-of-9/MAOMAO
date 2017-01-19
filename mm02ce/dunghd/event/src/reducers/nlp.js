@@ -1,16 +1,28 @@
 const initialState = {
   nlps: [],
   justexts: [],
+  scores: [],
 };
 
 export default (nlp = initialState, action) => {
   switch (action.type) {
+    case 'NLP_SCORE': {
+      const url = action.payload.url;
+      let scores = [];
+      if (nlp.scores.length) {
+        scores = nlp.scores.filter(item => item.url !== url);
+      }
+
+      scores = scores.concat(action.payload);
+      return Object.assign({}, nlp, { scores });
+    }
     case 'NLP': {
       const url = action.payload.url;
       let nlps = [];
       if (nlp.nlps.length) {
         nlps = nlp.nlps.filter(item => item.url !== url);
       }
+
       nlps = nlps.concat(action.payload);
       return Object.assign({}, nlp, { nlps });
     }
@@ -23,20 +35,34 @@ export default (nlp = initialState, action) => {
           status = justext.status;
         }
       }
-      if (!status) {
-        window.setIconForJusText();
+
+      let score = 'N/A';
+      if (nlp.scores.length) {
+        const hasScore = nlp.scores.find(item => item.url === url);
+        if (hasScore) {
+          score = hasScore.score;
+        }
       }
+
+      window.setIconForNLP(status, `${status ? 'ok' : '!jt'}:${score}`);
       return nlp;
     }
     case 'JUSTEXT': {
       const url = action.payload.url;
-      if (!action.payload.status) {
-        window.setIconForJusText();
+      let score = 'N/A';
+      if (nlp.scores.length) {
+        const hasScore = nlp.scores.find(item => item.url === url);
+        if (hasScore) {
+          score = hasScore.score;
+        }
       }
+
+      window.setIconForNLP(status, `${action.payload.status ? 'ok' : '!jt'}:${score}`);
       let justexts = [];
       if (nlp.justexts.length) {
         justexts = nlp.justexts.filter(item => item.url !== url);
       }
+
       justexts = justexts.concat(action.payload);
       return Object.assign({}, nlp, { justexts });
     }
