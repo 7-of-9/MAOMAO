@@ -14,11 +14,11 @@ export default (nlp = initialState, action) => {
       nlps = nlps.concat(action.payload);
       return Object.assign({}, nlp, { nlps });
     }
-    case 'JUSTEXT_READY': {
+    case 'JUSTEXT_IS_READY': {
       const url = action.payload.url;
       let status = false;
       if (nlp.justexts.length) {
-        const justext = nlp.items.find(item => item.url === url);
+        const justext = nlp.justexts.find(item => item.url === url);
         if (justext) {
           status = justext.status;
         }

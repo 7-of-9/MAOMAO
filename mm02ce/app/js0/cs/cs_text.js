@@ -14,15 +14,6 @@ $(document).ready(function () {
   console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
   console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady"], cs_log_style_info);
   console.info("%c > document.location=" + document.location, cs_log_style_info);
-  chrome.extension.sendMessage({
-    type: 'chromex.dispatch',
-    payload: {
-      type: 'JUSTEXT_READY',
-      payload: {
-        url: document.location.href
-      }
-    }
-  });
   //document.addEventListener("DOMContentLoaded", function (event)
   {
 
@@ -85,7 +76,7 @@ $(document).ready(function () {
                 }
                 else {
                   // if comments are enabled, wait for comments load
-                  // TODO -- FIXME -- can wait forever if they're offscreen!!
+                  // TODO: -- FIXME -- can wait forever if they're offscreen!!
                   console.info("YT -- comments enabled; waiting for load (2)...");
 
                   waitForKeyElements(".comment-section-header-renderer",
@@ -137,6 +128,15 @@ $(document).ready(function () {
     }
     else {
       console.log("%c mm_cs_text_haveFiredDocReady // NOP.", cs_log_style_hi);
+      chrome.extension.sendMessage({
+        type: 'chromex.dispatch',
+        payload: {
+          type: 'JUSTEXT_IS_READY',
+          payload: {
+            url: document.location.href
+          }
+        }
+      });
     }
 
   }

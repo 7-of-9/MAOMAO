@@ -153,7 +153,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
     } else {
       console.info('%c (get_session_by_tab - rejecting non-process URL [' + tab.url + '])', session_style);
-      setIconDisabledSafe();
+      // NOTE: Don't show icon for internal tab
+      var startsWith = String.prototype.startsWith;
+      if (!startsWith.call(tab.url, 'chrome://')) {
+        setIconDisabledSafe();
+      }
     }
   }
 

@@ -90,12 +90,14 @@ export default (state = initialState, action) => {
       return state;
     case 'MAOMAO_DISABLE':
       chrome.contextMenus.removeAll();
+      window.setIconForDisable();
       return state;
     case 'MAOMAO_ENABLE':
       if (state.isLogin) {
         ctxMenuLogin(state.info);
       } else {
         ctxMenuLogout();
+        window.setIconText('Login!', '#ff0000');
       }
       return state;
     default:

@@ -61,7 +61,7 @@ function setIconEnabledLive() {
 // gray dog; not logged in
 function setIconForGuest() {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText('Login!', '#ff0000');
+  setIconText('Login!', '#ff0000')
 }
 
 // gray dog, and !TXT when it turn off
@@ -70,11 +70,15 @@ function setIconForJusText() {
   setIconText('!TXT', '#ff0000');
 }
 
+function setIconForDisable() {
+  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
+  setIconText('', '#ff0000');
+}
+
 // default
 function setIconTextNeutral() {
   if (isGuest) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-    setIconText('Login!', '#ff0000');
   } else {
     // TODO: Checking that JUSTEXT is ready or not
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
@@ -160,7 +164,7 @@ function eatEvent(name) {
 // http://stackoverflow.com/questions/27109344/content-script-isnt-firing-on-twitch )
 //
 chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   var tab = get_tab(details.tabId);
   if (tab != null)
@@ -320,7 +324,8 @@ function inject_cs(session, tab_id, skip_text) {
   console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
   console.trace('inject_cs');
 
-  setIconTextNeutral(); //***
+  // setIconTextNeutral();
+   //***
 
   //if (session.hasOwnProperty('injected_cs_timestamp')) {
   //    console.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
@@ -561,7 +566,7 @@ function playNavSound(id) {
 
 // TABMAP: chrome.tabs.onCreated
 function tabCreated(tab) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -575,7 +580,7 @@ function tabCreated(tab) {
 
 // TABMAP: chrome.tabs.onRemoved
 function tabRemoved(tabId) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -589,7 +594,7 @@ function tabRemoved(tabId) {
 }
 
 function windowCreated(window) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   if (eatEvent('windowCreated'))
     return false;
@@ -607,7 +612,7 @@ var events_style = 'background: white; color: orange;';
 var events_style_err = 'background: red; color: white;';
 
 function tabNavigated(tabId, changeInfo, tab) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   console.log('%c >tabNavigated tabId=' + tabId +
     ' ci.status=' + changeInfo.status +
@@ -646,7 +651,7 @@ function tabNavigated(tabId, changeInfo, tab) {
 // TABMAP: chrome.tabs.onSelectionChanged (Deprecated since Chrome 33. Please use tabs.onActivated)
 var selectedTabId = -1;
 function tabSelectionChanged(tabId) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   update_tabmap();
 
@@ -680,7 +685,7 @@ function tabSelectionChanged(tabId) {
 var TOT_active_tab = null;
 var TOT_active_window_id = 0;
 function tabActivated(o) { // why getting object here?!
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   var tabId = o.tabId;
   console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
@@ -757,7 +762,7 @@ function TOT_start_current_focused() {
 
 // DM**
 function windowRemoved(window) {
-  setIconTextNeutral(); //***
+  // setIconTextNeutral(); //***
 
   //TOT_start_current_focused();
   return true;

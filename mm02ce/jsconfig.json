@@ -7,8 +7,9 @@
 		"allowSyntheticDefaultImports": true
 	},
 	"exclude": [
-    "bin",
-    "unpacked",
+		"app/build",
+		"bin",
+		"unpacked",
 		"node_modules",
 		"bower_components",
 		"jspm_packages",

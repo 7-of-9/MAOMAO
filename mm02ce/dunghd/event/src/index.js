@@ -208,24 +208,25 @@ mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   const now = new Date().toISOString();
   const startsWith = String.prototype.startsWith;
 
-  if (startsWith.call(url, 'chrome://extensions/')) {
+  if (startsWith.call(url, 'chrome://extensions')) {
     store.dispatch({
       type: 'MAOMAO_DISABLE',
       payload: {
         url,
       },
     });
-  } else {
+  } else if (!startsWith.call(url, 'chrome-extension://')) {
     store.dispatch({
       type: 'MAOMAO_ENABLE',
       payload: {
         url,
       },
     });
+    if (Number(window.userId) > 0) {
+      checkImScore(url, now);
+      saveImScore(url);
+    }
   }
-
-  checkImScore(url, now);
-  saveImScore(url);
 });
 
 mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
@@ -237,6 +238,7 @@ mobx.reaction(() => window.sessionObservable.updateAt, (updateAt) => {
 // save im_score every 30 seconds
 const ROUND_CLOCK = 30;
 setInterval(() => {
+  // TODO: Should send data when its changes
   const url = window.sessionObservable.activeUrl;
   console.log('Save im_score every ', ROUND_CLOCK, ' seconds');
   saveImScore(url);
