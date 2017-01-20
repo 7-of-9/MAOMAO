@@ -40,6 +40,23 @@ $(document).ready(function () {
               }
             }
           });
+
+          // send nlps to bg for exist url
+          // FIXME: Need to remove 'nlp'
+          chrome.extension.sendMessage({
+            session_nlp_result: true,
+            nlp: {
+              topic_general: '',
+              topic_specific: '',
+              entities: [],
+              items: [],
+              social_tags: [],
+            },
+            page_meta: {
+              html_title: document.title,
+            }
+          });
+
           console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
           if (document.getElementById('maomao-extension-youtube-test')) {
             cslib_test_NextYouTubeVid();
@@ -221,7 +238,6 @@ function process_text() {
   //
   //
 
-  var isReady = true;
   //
   // Custom site handlers
   //
@@ -288,7 +304,6 @@ function process_text() {
       t = texts.join(' ');
     } else {
       t = '';
-      isReady = false;
     }
   }
 
@@ -308,27 +323,22 @@ function process_text() {
     payload: {
       type: 'JUSTEXT',
       payload: {
-        status: isReady,
+        status: t.length > 200 ? true : false,
         url: document.location.href
       }
     }
   });
-  if (isReady) {
-    // exec calais processing !
-    //
-    if (t.length > 200)
-      nlp_calais(page_meta, t, document.location);
-    else {
-      console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
-      //cslib_test_NextYouTubeVid();
-      console.info("NOT ENOUGH TEXT -- reseeding...");
-      if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeSite()) {
-        cslib_test_Reseed();
-      }
-    }
+  if (t.length > 200) {
+    nlp_calais(page_meta, t, document.location);
   } else {
-    // TODO: Change browser icon and text to grey and !TXT
     console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
+    //cslib_test_NextYouTubeVid();
+    console.info("NOT ENOUGH TEXT -- reseeding...");
+    // TODO: turn off im_score popup
+    console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
+    if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeSite()) {
+      cslib_test_Reseed();
+    }
   }
 
   //---
@@ -348,59 +358,6 @@ function process_text() {
 // TODO: log (server) TLDs and counts to see which sites need custom handlers or custom preferred elements
 //       quite easy to get maximum bang for buck this way
 //
-var dumb_preferred_root_elements = [
-  ".story-body__inner",      // bbc.com
-  ".content-column"          // http://news.sky.com/story/1551991/exclusive-watch-moment-raf-jets-get-scrambled
-];
-
-function allDescendants(node, parent_node_text) {
-  if (node.childNodes != null) {
-    for (var i = 0; i < node.childNodes.length; i++) {
-      var x = node.childNodes[i];
-      //if (nodes.indexOf(x) !== -1) {
-      //    console.log("skipping " + x.nodeType + " " + x.nodeName + " already traversed.");
-      //} else {
-      if (x.offsetParent === null) {
-        // hidden;
-      } else {
-        if (x.nodeName !== "SCRIPT" && x.nodeName !== "STYLE") {
-          if (x.innerText != null && x.innerText.trim().length > 0) {
-            var txt0 = x.innerText.trim();
-            var txt1 = txt0.replace(/[\n\r]/g, " ");
-
-            // TODO: should not push texts if within % similarity to ALL EXISTING texts blocks...
-
-            if (texts_already_contains(txt1) === false) {
-              //if (parent_node_text != null && parent_node_text.indexOf(txt1) > -1) {
-              //console.info("! " + x.nodeType + " " + x.nodeName + " [" + txt1 + "]");
-              dumb_texts.push(txt1);
-              //nodes.push(x);
-
-              //} else {
-              //    console.log("skipping node; texts contained in parent_node_text");
-              //}
-            } else {
-              //console.log("skipping node; identical text already contained in pushed texts [" + txt1 + "]");
-            }
-
-            //} else {
-            allDescendants(x, txt1); // no innerText, keep recursing
-          }
-        }
-      }
-      //}
-    }
-  }
-}
-
-function texts_already_contains(text) {
-  for (var i = 0; i < dumb_texts.length; i++) {
-    var x = dumb_texts[i];
-    if (x.indexOf(text) !== -1)
-      return true;
-  }
-  return false;
-}
 
 function remove_urls(text) {
   var urlRegex = /(https?:\/\/[^\s]+)/g;

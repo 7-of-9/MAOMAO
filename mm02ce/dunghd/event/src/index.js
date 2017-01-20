@@ -165,35 +165,38 @@ function saveImScore(url) {
       data.time_on_tab = 0;
     }
 
-    window.ajax_put_UrlHistory(data,
-      (error) => {
-        histories[url] = data;
-        store.dispatch({
-          type: 'IM_SAVE_ERROR',
-          payload: {
-            url,
-            saveAt: now,
-            history: {
-              data,
-              error,
+    // TODO: only save when im_score change
+    if (Number(data.im_score) > 0) {
+      window.ajax_put_UrlHistory(data,
+        (error) => {
+          histories[url] = data;
+          store.dispatch({
+            type: 'IM_SAVE_ERROR',
+            payload: {
+              url,
+              saveAt: now,
+              history: {
+                data,
+                error,
+              },
             },
-          },
-        });
-      },
-      (result) => {
-        histories[url] = data;
-        store.dispatch({
-          type: 'IM_SAVE_SUCCESS',
-          payload: {
-            url,
-            saveAt: now,
-            history: {
-              data,
-              result,
+          });
+        },
+        (result) => {
+          histories[url] = data;
+          store.dispatch({
+            type: 'IM_SAVE_SUCCESS',
+            payload: {
+              url,
+              saveAt: now,
+              history: {
+                data,
+                result,
+              },
             },
-          },
+          });
         });
-      });
+    }
   }
 }
 
