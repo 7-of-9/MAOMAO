@@ -20,6 +20,7 @@ function ajax_isTldAllowable(tld, callback_success) {
   try {
     domain = new URL(tld).hostname;
   } catch (err) { console.log('%c /allowable, BAD TLD: [' + tld + '] - ' + err, ajax_style_err); }
+  console.trace('ajax_isTldAllowable');
 
   if (domain != null) {
     $.get(

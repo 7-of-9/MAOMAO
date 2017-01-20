@@ -1,3 +1,5 @@
+import { getImScore } from '../imscore';
+
 const initialState = {
   im_score: 0,
   audible_pings: 0,
@@ -24,7 +26,7 @@ export default (score = initialState, action) => {
     }
     case 'IM_SCORE':
       return Object.assign({}, score, action.payload,
-        window.mm_get_imscore(window.sessionObservable.activeUrl));
+        getImScore(window.sessionObservable, action.payload.url));
     default:
       return score;
   }

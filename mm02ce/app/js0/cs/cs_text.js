@@ -160,7 +160,6 @@ $(document).ready(function () {
   //);
 });
 
-var dumb_texts = [];
 function process_text() {
 
   // prevent running text processing more than once (see above: $.ready firing more than once on a variety of conditions)
@@ -272,7 +271,7 @@ function process_text() {
     //
     // generic all-text handler
     //
-    console.info(" (using dumb all text handler)");
+    console.info("jusText - processing");
     //return; //dbg NOP
     var parseTextOption = {
       noHeadings: false,
