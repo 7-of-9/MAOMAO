@@ -10,48 +10,6 @@ var mm_logstyle_err = "background: red; color: white";
 var mm_dirty = false;
 var mm_last_save_at = 0;
 
-// TODO: Observe change for mm
-mobx.autorun(function autorun_onChange_im_score() {
-  console.info('autorun sessionObservable:' + sessionObservable.urls);
-  mm_save_imscore();
-});
-
-/**
- * Save im_score to api server
- */
-function mm_save_imscore() {
-  var url = sessionObservable.activeUrl;
-  var score = sessionObservable.urls.get(url);
-  if (score && score.im_score) {
-    sessionObservable.updateAt = new Date().toISOString();
-    console.info('autorun sessionObservable - READY to send user', url, score);
-  }
-}
-
-/**
- * get im_score base url
- */
-function mm_get_imscore(url) {
-  var score = sessionObservable.urls.get(url);
-  var result = {
-    im_score: 0,
-    audible_pings: 0,
-    time_on_tab: 0,
-    url: url,
-  };
-  if (score) {
-    result = {
-      im_score: score.im_score,
-      audible_pings: score.audible_pings,
-      time_on_tab: score.time_on_tab,
-      url: score.url,
-    }
-  }
-  console.info('mm_get_imscore', result);
-  return result;
-}
-
-
 // http://jsonviewer.stack.hu/
 
 //

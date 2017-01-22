@@ -8,7 +8,7 @@
 //
 $(document).ready(function () {
   if(isGuest) {
-    setIconForDisable();
+    setIconForDisable('');
   } else {
     setIconReady();
   }
@@ -78,7 +78,7 @@ function setIconForNLP(jusTextSuccues, msg) {
   var color = '#999999';
   if(!jusTextSuccues) {
     color = '#ff0000'
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
   } else {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
   }
@@ -87,9 +87,9 @@ function setIconForNLP(jusTextSuccues, msg) {
 }
 
 // turn off for chrome internal tab
-function setIconForDisable() {
+function setIconForDisable(msg) {
   chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText('', '#ff0000');
+  setIconText(msg, '#ff0000');
 }
 
 function setIconText(s, c) {
@@ -202,7 +202,10 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
     isGuest = false;
     userId = parseInt(message.payload.payload.userId);
+    session = session_get_by_tab(sender.tab, true);
+    session_add_view_instance(session);
   }
+
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
     isGuest = true;
     userId = -1;
@@ -217,7 +220,7 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   // actually neeed? have forgotten what calls this!!
   // vk.com -- history.pushState() navigation
   // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
-  if (message == 'Rerun script' || (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN' && process_url(sender.tab.url))) {
+  if (message == 'Rerun script') {
     console.trace('Rerun script');
     session = session_get_by_url(sender.tab.url);
     if (session != null)

@@ -16,8 +16,6 @@ console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs
 //
 $(document).ready(function () { // fires more than once! observed; proven. lol.
 
-  get_page_metadata();
-
   // setup up IM events
   listenAndCoalesce(document, "scroll");
 

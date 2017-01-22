@@ -51,7 +51,6 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { isPending: true });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info);
-      window.setIconReady();
       return Object.assign({}, state, {
         message: 'authentication is done',
         accessToken: action.payload.token,
@@ -87,18 +86,21 @@ export default (state = initialState, action) => {
       return state;
     case 'MAOMAO_DISABLE':
       chrome.contextMenus.removeAll();
-      window.setIconForDisable();
-      return state;
-    case 'MAOMAO_ENABLE':
-      // TODO: Should check active url
       if (state.isLogin) {
-        ctxMenuLogin(state.info);
-        window.setIconText('', '#ff0000');
+        window.setIconDisabledSafe();
       } else {
-        ctxMenuLogout();
-        window.setIconText('Login!', '#ff0000');
+        window.setIconForDisable('');
       }
       return state;
+    case 'MAOMAO_ENABLE': {
+      if (state.isLogin) {
+        ctxMenuLogin(state.info);
+      } else {
+        ctxMenuLogout();
+        window.setIconForDisable('Login!');
+      }
+      return state;
+    }
     default:
       return state;
   }

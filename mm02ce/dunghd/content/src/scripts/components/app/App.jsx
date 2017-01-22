@@ -162,7 +162,7 @@ class App extends Component {
             notify={this.notify}
             />
         </ToggleDisplay>
-        <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen}>
+        <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score > 0}>
           <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
         </ToggleDisplay>
       </div>
