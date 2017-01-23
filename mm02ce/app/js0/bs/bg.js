@@ -97,6 +97,8 @@ function setIconText(s, c) {
   chrome.browserAction.setBadgeText({ text: s });
   chrome.browserAction.setTitle({ title: s });
   chrome.browserAction.setBadgeBackgroundColor({ color: c });
+
+    // *** TODO: update current session object with: s, c + getIconPath(...)
 }
 
 //////////////////////////////////////////////////////
@@ -237,10 +239,19 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   //            session.process_text_start_timestamp = message.timestamp;
   //        } else console.info('%c ### process_text_start: NO KNOWN SESION!', 'background: red; color: white');
   //    }
-  //}
+    //}
+
+    //
+    // *** TODO: handle "set_track_im"
+    //
+    // session_update_track_im() new fn.
+
+    //
+    // *** TODO: handle "got_page_meta"
+    // ...
 
   //
-  // session: got NLP result from context script
+  // session: got NLP result (Calais return) from context script
   //
   if (message.session_nlp_result == true) {
     if (sender != null) {
@@ -251,8 +262,6 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
         console.info('%c message.nlp = ' + JSON.stringify(message.nlp, null, 2), events_style_hi);
 
         // post result to server
-
-
         session_update_NLP(session, message.nlp, message.page_meta);
 
         if (message.result == 'NLP_TEST_PASS') {

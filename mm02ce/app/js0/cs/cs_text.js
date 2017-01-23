@@ -25,39 +25,37 @@ $(document).ready(function () {
             sessionStorage["mm_cs_text_haveFiredDocReady"] = document.location;
             console.info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location, cs_log_style_info);
 
+            // *** TODO: get NSS from meta, if < MIN, then exit; (can avoid url_nlpinfo)
+
             // got DB-cached NLP info for the URL? [see bglib_remove_hash_url if needed?]
             ajax_get_UrlNlpInfo(document.location, function (data) {
 
                 console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
                 if (data.is_known == true) {
-                    chrome.extension.sendMessage({
-                        type: 'chromex.dispatch',
-                        payload: {
-                            type: 'JUSTEXT',
-                            payload: {
-                                url: document.location.href,
-                                status: true,
-                            }
-                        }
-                    });
 
+                    // no need to text process, no need for calais
+
+                    // ***
+                    //chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLPINFO_KNOWN_TRUE',   payload: { url: document.location.href, status: true, } } });
+
+                    // *** ??? TODO: clean up???
                     // send nlps to bg for exist url
-                    // FIXME: Need to remove 'nlp'
-                    chrome.extension.sendMessage({
-                        session_nlp_result: true,
-                        nlp: {
-                            topic_general: '',
-                            topic_specific: '',
-                            entities: [],
-                            items: [],
-                            social_tags: [],
-                        },
-                        page_meta: {
-                            html_title: document.title,
-                        }
-                    });
+                    //chrome.extension.sendMessage({
+                    //    session_nlp_result: true,
+                    //    nlp: {
+                    //        topic_general: '',
+                    //        topic_specific: '',
+                    //        entities: [],
+                    //        items: [],
+                    //        social_tags: [],
+                    //    },
+                    //    page_meta: {
+                    //        html_title: document.title,
+                    //    }
+                    //});
 
                     console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
+
                     if (document.getElementById('maomao-extension-youtube-test')) {
                         cslib_test_NextYouTubeVid();
                     } else {

@@ -279,7 +279,9 @@ function get_page_metadata(fast_refresh, callback) {
       if ((page_meta["al_ios_app_store_id"] = $('meta[property="al:ios:app_store_id"]').attr('content')))
         ;
       if ((page_meta["al_ios_url"] = $('meta[property="al:ios:url"]').attr('content')))
-        ;
+            ;
+
+        // *** TODO: message BG thread w/ results of page_meta
     }
 
     //
