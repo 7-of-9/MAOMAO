@@ -8,7 +8,6 @@
 // need some kind of robust and fault-tolerant way of only doing the text procesing once only!
 // maybe read session.did_text_proc flag? how CS can get data from BG?
 //var have_run_text_proc = false;
-
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
     console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
@@ -82,11 +81,15 @@ $(document).ready(function () {
                                 // YT -- comments disabled?
                                 var comments_disabled = $(".comments-disabled-message");
                                 if (comments_disabled.length > 0 ||
-                                  document.documentElement.innerHTML.indexOf("Comments are disabled for this video") != -1) {
+                                    document.documentElement.innerHTML.indexOf("Comments are disabled for this video") != -1) {
                                     console.info("YT -- comments disabled");
 
-                                    get_page_metadata(true, function () { // force-refresh of page_meta
-                                        process_text();
+                                    get_page_metadata(true, function (error, page_meta) { // force-refresh of page_meta
+                                        if(error) {
+
+                                        } else {
+                                            process_text();
+                                        }
                                     });
                                 }
                                 else {
@@ -96,20 +99,20 @@ $(document).ready(function () {
 
                                     waitForKeyElements(".comment-section-header-renderer",
 
-                                      function () { // element found
-                                          get_page_metadata(true, function () { // force-refresh of page_meta
-                                              process_text();
-                                          })
-                                      },
-                                      5000,        // wait max millis
+                                        function () { // element found
+                                            get_page_metadata(true, function () { // force-refresh of page_meta
+                                                process_text();
+                                            })
+                                        },
+                                        5000,        // wait max millis
 
-                                      function () { // element not found
-                                          get_page_metadata(true, function () { // force-refresh of page_meta
-                                              process_text();
-                                          });
-                                      }
+                                        function () { // element not found
+                                            get_page_metadata(true, function () { // force-refresh of page_meta
+                                                process_text();
+                                            });
+                                        }
 
-                                      , true // *** bWaitOnce --  very important, otherwise will not stop waiting!
+                                        , true // *** bWaitOnce --  very important, otherwise will not stop waiting!
                                     );
                                 }
                             }
@@ -129,8 +132,12 @@ $(document).ready(function () {
                         }
                     }
 
-                      , millisecondsToWait);
+                        , millisecondsToWait);
                 }
+            }, function (error) {
+                chrome.extension.sendMessage({
+                    type: 'chromex.dispatch', payload: { type: 'NLP_INFO_ERROR', payload: { url: document.location.href, error: error, } }
+                });
             });
 
             //... ++ save user_url nav history...  + thumbnail

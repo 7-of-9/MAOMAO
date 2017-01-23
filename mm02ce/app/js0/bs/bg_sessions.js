@@ -112,8 +112,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
         } else {
           console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-          setIconDisabledSafe();
+          //TODO: remove setIconDisabledSafe('');
         }
+      }, function(error) {
+          console.error(error);
+          setIconApp('black','*EX1', '#999999');
       });
 
     } else {
@@ -147,8 +150,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
         } else {
           console.info('%c (get_session_by_tab - rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-          setIconDisabledSafe();
+          // TODO: remove setIconDisabledSafe('');
         }
+      }, function(error) {
+          console.error(error);
+          setIconApp('black','*EX1', '#999999');
       });
 
     } else {
@@ -156,7 +162,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
       // NOTE: Don't show icon for internal tab
       var startsWith = String.prototype.startsWith;
       if (!startsWith.call(tab.url, 'chrome://')) {
-        setIconDisabledSafe();
+        // TODO: emove setIconDisabledSafe('');
       }
     }
   }

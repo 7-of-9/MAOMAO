@@ -7,96 +7,79 @@
 // STARTUP !!!
 //
 $(document).ready(function () {
-  if(isGuest) {
-    setIconForDisable('');
-  } else {
-    setIconReady();
-  }
-  update_tabmap(function () {
+    setIconApp('gray', '', 'white');
+    update_tabmap(function () {
 
-    // Listen for messages from content scripts.
-    //chrome.extension.onRequest.addListener(contentScriptHandler);
+        // Listen for messages from content scripts.
+        //chrome.extension.onRequest.addListener(contentScriptHandler);
 
-    // Load the sounds and register event listeners.
-    for (var list in soundLists)
-      for (var id in soundLists[list])
-        loadSound(soundLists[list][id], id);
-    for (var name in extensionEvents)
-      registerExtensionEventListeners(extensionEvents[name], name);
+        // Load the sounds and register event listeners.
+        for (var list in soundLists)
+            for (var id in soundLists[list])
+                loadSound(soundLists[list][id], id);
+        for (var name in extensionEvents)
+            registerExtensionEventListeners(extensionEvents[name], name);
 
-    // load master data
-    mm_load();
+        // load master data
+        mm_load();
 
-    // DBG: if only extension tab is open -- trigger test library for topics
-    //if (tabmap.length == 1 && tabmap[0].url == 'chrome://extensions/') {
-    //    var i = 0;
-    //    var run_test_delayed = function() {
-    //        var test = nlp_tests[i];
-    //        chrome.tabs.create({ url: test.url, selected: false }, function (tab) {
-    //            mm.all_sessions.push({ url: test.url });
-    //            chrome.tabs.executeScript(tab.id, {
-    //                code: 'var nlp_test_ok1='' + test.ok1 + ''; ' +
-    //                      'var nlp_test_ok2='' + test.ok2 + '';',
-    //               runAt: 'document_start'
-    //            });
-    //        });
-    //        if (++i < nlp_tests.length)
-    //            setTimeout(run_test_delayed, 1000);
-    //    };
-    //    run_test_delayed();
-    //}
-  });
+        // DBG: if only extension tab is open -- trigger test library for topics
+        //if (tabmap.length == 1 && tabmap[0].url == 'chrome://extensions/') {
+        //    var i = 0;
+        //    var run_test_delayed = function() {
+        //        var test = nlp_tests[i];
+        //        chrome.tabs.create({ url: test.url, selected: false }, function (tab) {
+        //            mm.all_sessions.push({ url: test.url });
+        //            chrome.tabs.executeScript(tab.id, {
+        //                code: 'var nlp_test_ok1='' + test.ok1 + ''; ' +
+        //                      'var nlp_test_ok2='' + test.ok2 + '';',
+        //               runAt: 'document_start'
+        //            });
+        //        });
+        //        if (++i < nlp_tests.length)
+        //            setTimeout(run_test_delayed, 1000);
+        //    };
+        //    run_test_delayed();
+        //}
+    });
 });
-
-// gray for guest or ready
-function setIconReady() {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-  setIconText('', '#999999');
-}
-
-// black dog (inactive) for URL disallowed, no CS injected
-function setIconDisabledSafe() {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
-  setIconText('', '#ff0000');
-}
-
-// blue dog (live) with pending meta score; for injected CS
-function setIconEnabledLive() {
-  console.trace('setIconEnabledLive');
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-  setIconText('...', '#999999');
-}
-
-// gray dog; not logged in
-function setIconForGuest() {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText('Login!', '#ff0000')
-}
 
 // gray dog, and !TXT and NLP when it turn off
 function setIconForNLP(jusTextSuccues, msg) {
-  var color = '#999999';
-  if(!jusTextSuccues) {
-    color = '#ff0000'
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
-  } else {
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-  }
-  console.trace('setIconForNLP');
-  setIconText(msg, color);
+    var color = '#999999';
+    if (!jusTextSuccues) {
+        color = '#ff0000'
+        chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
+    } else {
+        chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
+    }
+    console.trace('setIconForNLP');
+    setIconText(msg, color);
 }
 
-// turn off for chrome internal tab
-function setIconForDisable(msg) {
-  chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_gray.png' });
-  setIconText(msg, '#ff0000');
+/**
+ * Set browser icon with image, text and color
+ * @param image string 3 kinds of image: grey/blue/black
+ * @param msg string
+ * @param color string text color
+ */
+function setIconApp(image, msg, color) {
+    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_' + image + '.png' });
+    setIconText(msg, color);
+    if (sessionObservable.activeUrl) {
+        sessionObservable.icons.set(sessionObservable.activeUrl, {
+            image: image,
+            text: msg,
+            color: color,
+        });
+    }
 }
 
 function setIconText(s, c) {
-  console.trace('calling icon text');
-  chrome.browserAction.setBadgeText({ text: s });
-  chrome.browserAction.setTitle({ title: s });
-  chrome.browserAction.setBadgeBackgroundColor({ color: c });
+    console.trace('calling icon text');
+    chrome.browserAction.setBadgeText({ text: s });
+    chrome.browserAction.setTitle({ title: s });
+    chrome.browserAction.setBadgeBackgroundColor({ color: c });
 
     // *** TODO: update current session object with: s, c + getIconPath(...)
 }
@@ -117,48 +100,48 @@ function setIconText(s, c) {
 // EXTENSION EVENTS
 //
 function registerExtensionEventListeners(event, name) {
-  if (event) {
-    var validator = eventValidator[name];
-    if (validator) {
-      event.addListener(function () {
-        //console.log('extension event: ' + name);
+    if (event) {
+        var validator = eventValidator[name];
+        if (validator) {
+            event.addListener(function () {
+                //console.log('extension event: ' + name);
 
-        // Check this first since the validator may bump the count for future
-        // events.
-        var canPlay = (eventsToEat == 0);
-        if (validator.apply(this, arguments)) {
-          if (!canPlay) {
-            //console.log('ate event: ' + name);
-            eventsToEat--;
-            return;
-          }
-          playSound(name);
+                // Check this first since the validator may bump the count for future
+                // events.
+                var canPlay = (eventsToEat == 0);
+                if (validator.apply(this, arguments)) {
+                    if (!canPlay) {
+                        //console.log('ate event: ' + name);
+                        eventsToEat--;
+                        return;
+                    }
+                    playSound(name);
+                }
+            });
+        } else {
+            event.addListener(function () {
+                //console.log('handling event: ' + name);
+                if (eatEvent(name)) {
+                    return;
+                }
+                playSound(name);
+            });
         }
-      });
     } else {
-      event.addListener(function () {
-        //console.log('handling event: ' + name);
-        if (eatEvent(name)) {
-          return;
-        }
-        playSound(name);
-      });
+        console.log('no event for ' + name);
     }
-  } else {
-    console.log('no event for ' + name);
-  }
 }
 
 // Remember the last event so that we can avoid multiple events firing
 // unnecessarily (e.g. selection changed due to close).
 var eventsToEat = 0;
 function eatEvent(name) {
-  if (eventsToEat > 0) {
-    console.log('ate event: ' + name);
-    eventsToEat--;
-    return true;
-  }
-  return false;
+    if (eventsToEat > 0) {
+        console.log('ate event: ' + name);
+        eventsToEat--;
+        return true;
+    }
+    return false;
 }
 
 
@@ -173,23 +156,23 @@ function eatEvent(name) {
 //
 chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 
-  var tab = get_tab(details.tabId);
-  if (tab != null)
-    if (tab.url != details.url && process_url(tab.url)) {
-      console.info('onHistoryStateUpdated - ' + JSON.stringify(details));
-      console.info('onHistoryStateUpdated - tabId=' + details.tabId + ' frameId=' + details.frameId + ' transitionType=' + details.transitionType + ' [' + details.url + ']');
-      console.info('known URL=' + tab.url);
-      console.info('details.url=' + details.url);
-      console.info('%c >> onHistoryStateUpdated << ', 'background: #222; color: #bada55');
+    var tab = get_tab(details.tabId);
+    if (tab != null)
+        if (tab.url != details.url && process_url(tab.url)) {
+            console.info('onHistoryStateUpdated - ' + JSON.stringify(details));
+            console.info('onHistoryStateUpdated - tabId=' + details.tabId + ' frameId=' + details.frameId + ' transitionType=' + details.transitionType + ' [' + details.url + ']');
+            console.info('known URL=' + tab.url);
+            console.info('details.url=' + details.url);
+            console.info('%c >> onHistoryStateUpdated << ', 'background: #222; color: #bada55');
 
-      //var session_new = session_get_by_tab(details, true);
-      //session_start_TOT(session_new);
-      TOT_start_current_focused(); // update TOT current tab info; required for YT onHistoryStateUpdated...
+            //var session_new = session_get_by_tab(details, true);
+            //session_start_TOT(session_new);
+            TOT_start_current_focused(); // update TOT current tab info; required for YT onHistoryStateUpdated...
 
-      update_tabmap();
-    }
-    else
-      console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
+            update_tabmap();
+        }
+        else
+            console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
 });
 
 
@@ -197,48 +180,47 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 // MESSAGE HANDLING :: master callback from content script
 //
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
-  // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
-  var session;
+    // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
+    // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
+    var session;
 
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
-    isGuest = false;
-    userId = parseInt(message.payload.payload.userId);
-    session = session_get_by_tab(sender.tab, true);
-    session_add_view_instance(session);
-  }
+    if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
+        isGuest = false;
+        userId = parseInt(message.payload.payload.userId);
+        session = session_get_by_tab(sender.tab, true);
+        session_add_view_instance(session);
+    }
 
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
-    isGuest = true;
-    userId = -1;
-    setIconForGuest();
-  }
+    if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
+        isGuest = true;
+        userId = -1;
+    }
 
-  // replaces deprecated sendRequest
-  if (message.doc_event == true) {
-    handle_cs_doc_event(message, sender);
-  }
+    // replaces deprecated sendRequest
+    if (message.doc_event == true) {
+        handle_cs_doc_event(message, sender);
+    }
 
-  // actually neeed? have forgotten what calls this!!
-  // vk.com -- history.pushState() navigation
-  // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
-  if (message == 'Rerun script') {
-    console.trace('Rerun script');
-    session = session_get_by_url(sender.tab.url);
-    if (session != null)
-      inject_cs(session, null, false);
-  }
+    // actually neeed? have forgotten what calls this!!
+    // vk.com -- history.pushState() navigation
+    // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
+    if (message == 'Rerun script') {
+        console.trace('Rerun script');
+        session = session_get_by_url(sender.tab.url);
+        if (session != null)
+            inject_cs(session, null, false);
+    }
 
-  // session: CS process_text started callback
-  //if (message.process_text_start == true) {
-  //    if (sender != null) {
-  //        //console.info('%c >>> process_text_start', 'background: blue; color: white');
-  //        session = get_session_by_url(sender.tab.url);
-  //        if (session != null) {
-  //            console.info('%c >>> process_text_start [' + session.url + ']', 'background: blue; color: white');
-  //            session.process_text_start_timestamp = message.timestamp;
-  //        } else console.info('%c ### process_text_start: NO KNOWN SESION!', 'background: red; color: white');
-  //    }
+    // session: CS process_text started callback
+    //if (message.process_text_start == true) {
+    //    if (sender != null) {
+    //        //console.info('%c >>> process_text_start', 'background: blue; color: white');
+    //        session = get_session_by_url(sender.tab.url);
+    //        if (session != null) {
+    //            console.info('%c >>> process_text_start [' + session.url + ']', 'background: blue; color: white');
+    //            session.process_text_start_timestamp = message.timestamp;
+    //        } else console.info('%c ### process_text_start: NO KNOWN SESION!', 'background: red; color: white');
+    //    }
     //}
 
     //
@@ -250,201 +232,207 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
     // *** TODO: handle "got_page_meta"
     // ...
 
-  //
-  // session: got NLP result (Calais return) from context script
-  //
-  if (message.session_nlp_result == true) {
-    if (sender != null) {
-      console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
-      session = session_get_by_url(sender.tab.url);
-      if (session != null) {
+    //
+    // session: got NLP result (Calais return) from context script
+    //
+    if (message.session_nlp_result == true) {
+        if (sender != null) {
+            console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
+            session = session_get_by_url(sender.tab.url);
+            if (session != null) {
 
-        console.info('%c message.nlp = ' + JSON.stringify(message.nlp, null, 2), events_style_hi);
+                console.info('%c message.nlp = ' + JSON.stringify(message.nlp, null, 2), events_style_hi);
 
-        // post result to server
-        session_update_NLP(session, message.nlp, message.page_meta);
+                // post result to server
+                session_update_NLP(session, message.nlp, message.page_meta);
 
-        if (message.result == 'NLP_TEST_PASS') {
-          console.info('%c NLP_TEST_PASS: [' + sender.url + ']', 'background: yellow; color: white');
+                if (message.result == 'NLP_TEST_PASS') {
+                    console.info('%c NLP_TEST_PASS: [' + sender.url + ']', 'background: yellow; color: white');
+                }
+                if (message.result == 'NLP_TEST_FAIL') {
+                    console.info('%c NLP_TEST_FAIL: [' + sender.url + ']', 'background: yellow; color: white');
+                    console.info('%c expected: [' + message.ok1 + '] or [' + message.ok2 + ']', 'background: yellow; color: white');
+                    console.info('%c got: [' + message.got + ']', 'background: yellow; color: white');
+                }
+            }
         }
-        if (message.result == 'NLP_TEST_FAIL') {
-          console.info('%c NLP_TEST_FAIL: [' + sender.url + ']', 'background: yellow; color: white');
-          console.info('%c expected: [' + message.ok1 + '] or [' + message.ok2 + ']', 'background: yellow; color: white');
-          console.info('%c got: [' + message.got + ']', 'background: yellow; color: white');
-        }
-      }
     }
-  }
 
-  // CS console echoing
-  if (message.console_log == true)
-    console.log('\t\t' + message.console_msg, message.console_format);
-  if (message.console_info == true)
-    console.info('\t\t' + message.console_msg, message.console_format);
-  if (message.console_warn == true)
-    console.warn('\t\t' + message.console_msg, message.console_format);
-  if (message.console_error == true)
-    console.error('\t\t' + message.console_msg, message.console_format);
+    // CS console echoing
+    if (message.console_log == true)
+        console.log('\t\t' + message.console_msg, message.console_format);
+    if (message.console_info == true)
+        console.info('\t\t' + message.console_msg, message.console_format);
+    if (message.console_warn == true)
+        console.warn('\t\t' + message.console_msg, message.console_format);
+    if (message.console_error == true)
+        console.error('\t\t' + message.console_msg, message.console_format);
 });
 
 function handle_cs_doc_event(data, sender) {
-  // dbg sounds
-  if (contentSounds[data.eventName])
-    if (data.eventValue == 'started')
-      playSound(data.eventName, true);
-    else if (data.eventValue == 'stopped')
-      stopSound(data.eventName);
-    else
-      playSound(data.eventName);
+    // dbg sounds
+    if (contentSounds[data.eventName])
+        if (data.eventValue == 'started')
+            playSound(data.eventName, true);
+        else if (data.eventValue == 'stopped')
+            stopSound(data.eventName);
+        else
+            playSound(data.eventName);
 
-  // handle event
-  if (sender.tab != null) {
-    var tab = sender.tab;
-    console.log('tab ' + tab.id + ' (audible=' + tab.audible + ') REQ ' + JSON.stringify(data) + ' [' + tab.url + ']');
-    var session = session_get_by_tab(tab, false);
+    // handle event
+    if (sender.tab != null) {
+        var tab = sender.tab;
+        console.log('tab ' + tab.id + ' (audible=' + tab.audible + ') REQ ' + JSON.stringify(data) + ' [' + tab.url + ']');
+        var session = session_get_by_tab(tab, false);
 
-    // maintain session IMs
-    if (data.type == 'IM')
-      session_add_IM(session, data, tab);
-    else {
-      // TOT tracking
-      if (data.type == 'WINDOW') {
+        // maintain session IMs
+        if (data.type == 'IM')
+            session_add_IM(session, data, tab);
+        else {
+            // TOT tracking
+            if (data.type == 'WINDOW') {
 
-        if (data.eventName == 'onbeforeunload') {
-          console.warn('onbeforeunload!');
-          session_stop_TOT(session);
+                if (data.eventName == 'onbeforeunload') {
+                    console.warn('onbeforeunload!');
+                    session_stop_TOT(session);
+                }
+                if (data.eventName == 'onload') {
+                    console.warn('onload!');
+                    session_start_TOT(session);
+
+                    // update TOT active tab
+                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                        if (tabs != null && tabs.length > 0)
+                            TOT_active_tab = tabs[0];
+                    });
+                }
+            }
+            else if (data.type == 'OTHER') {
+                if (data.eventName == 'got_page_meta') {  // update session page meta
+                    var page_meta = data.eventValue;
+                    // var nlp_suitability_score = page_meta['nlp_suitability_score'];
+                    // setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
+                    session_update_page_meta(session, data.eventValue);
+                }
+            }
         }
-        if (data.eventName == 'onload') {
-          console.warn('onload!');
-          session_start_TOT(session);
-
-          // update TOT active tab
-          chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (tabs != null && tabs.length > 0)
-              TOT_active_tab = tabs[0];
-          });
-        }
-      }
-      else if (data.type == 'OTHER') {
-        if (data.eventName == 'got_page_meta') {  // update session page meta
-          var page_meta = data.eventValue;
-          // var nlp_suitability_score = page_meta['nlp_suitability_score'];
-          // setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
-          session_update_page_meta(session, data.eventValue);
-        }
-      }
     }
-  }
 }
 
 function inject_cs(session, tab_id, skip_text) {
-  console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
-  console.trace('inject_cs');
+    console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
+    console.trace('inject_cs');
 
-  //***
+    //***
 
-  //if (session.hasOwnProperty('injected_cs_timestamp')) {
-  //    console.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
-  //        ' [' + session.url + '])', 'background: #111; color: #bada55;');
-  //    return;
-  //}
+    //if (session.hasOwnProperty('injected_cs_timestamp')) {
+    //    console.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
+    //        ' [' + session.url + '])', 'background: #111; color: #bada55;');
+    //    return;
+    //}
 
-  //var manifest = chrome.runtime.getManifest();
-  var cs_files =
-    [
-      'js0/lib/jquery-1.11.3.js',
-      'js0/lib/underscore.js',
-      'js0/lib/wait_key_elements.js',
-      'js0/nlp/stopwords.js',
-      'js0/lib/nlp.js',
-      'js0/ajax/mm_api.js',
-      'js0/nlp/calais.js',
-      'js0/cs/cs_meta.js',
-      'js0/cs/cs_main.js',
-      'js0/cs/cs_retok.js',
-    ];
-  if (!skip_text) {
-    cs_files.push('js0/cs/cs_text.js');
-  }
+    //var manifest = chrome.runtime.getManifest();
+    var cs_files =
+        [
+            'js0/lib/jquery-1.11.3.js',
+            'js0/lib/underscore.js',
+            'js0/lib/wait_key_elements.js',
+            'js0/nlp/stopwords.js',
+            'js0/lib/nlp.js',
+            'js0/ajax/mm_api.js',
+            'js0/nlp/calais.js',
+            'js0/cs/cs_meta.js',
+            'js0/cs/cs_main.js',
+            'js0/cs/cs_retok.js',
+        ];
+    if (!skip_text) {
+        cs_files.push('js0/cs/cs_text.js');
+    }
 
-  if (enableTestYoutube) {
-    cs_files.push('js0/cs/cs_youtube.js');
-  }
+    if (enableTestYoutube) {
+        cs_files.push('js0/cs/cs_youtube.js');
+    }
 
-  var log_style = !skip_text ? 'background: #555; color: #bada55; font-size:larger;'
-    : 'background: #555; color: #bada55;';
+    var log_style = !skip_text ? 'background: #555; color: #bada55; font-size:larger;'
+        : 'background: #555; color: #bada55;';
 
-  var run_at = 'document_end'; // document_idle
+    var run_at = 'document_end'; // document_idle
 
-  if (tab_id == null) {
-    //
-    // inject current tab
-    //
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs != null && tabs.length > 0)
-        var current_tab = tabs[0];
+    if (tab_id == null) {
+        //
+        // inject current tab
+        //
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if (tabs != null && tabs.length > 0)
+                var current_tab = tabs[0];
 
-      var process = process_url(tab.url);
-      if (process && !isGuest) {
-        // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
-        ajax_isTldAllowable(tab.url, function (data) {
-          console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
+            var process = process_url(tab.url);
+            if (process && !isGuest) {
+                // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
+                ajax_isTldAllowable(tab.url, function (data) {
+                    console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
 
-          if (data.allowable) {
-            setIconEnabledLive();
-            $.each(cs_files, function (ndx, cs) {
-              try {
-                chrome.tabs.executeScript({ file: cs, runAt: run_at },
-                  function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
-              } catch (err) {
-                console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                console.trace();
-                console.warn(err);
-              }
-            });
-            console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
-            console.trace();
-            if (session != null)
-              session.injected_cs_timestamp = Date.now();
-          } else {
-            setIconDisabledSafe();
-          }
-        });
-      }
-    });
-  }
-  else {
-    //
-    // inject specific tab id
-    //
-    chrome.tabs.get(tab_id, function (tab) {
-      if (tab != null) {
-        var process = process_url(tab.url);
-        if (process && !isGuest) {
-          // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
-          ajax_isTldAllowable(tab.url, function (data) {
-            console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
-            if (data.allowable) {
-              setIconEnabledLive();
-              $.each(cs_files, function (ndx, cs) {
-                try {
-                  chrome.tabs.executeScript(tab_id, { file: cs, runAt: run_at },
-                    function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
-                } catch (err) {
-                  console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                  console.trace();
-                  console.warn(err);
-                }
-              });
-              console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-              if (session != null)
-                session.injected_cs_timestamp = Date.now();
+                    if (data.allowable) {
+                        //TODO: remove setIconEnabledLive();
+                        $.each(cs_files, function (ndx, cs) {
+                            try {
+                                chrome.tabs.executeScript({ file: cs, runAt: run_at },
+                                    function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
+                            } catch (err) {
+                                console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                                console.trace();
+                                console.warn(err);
+                            }
+                        });
+                        console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
+                        console.trace();
+                        if (session != null)
+                            session.injected_cs_timestamp = Date.now();
+                    } else {
+                        // TODO: remove setIconDisabledSafe('');
+                    }
+                }, function (error) {
+                    console.error(error);
+                    setIconApp('black', '*EX1', '#999999');
+                });
             }
-          });
-        }
-      }
-    });
-  }
+        });
+    }
+    else {
+        //
+        // inject specific tab id
+        //
+        chrome.tabs.get(tab_id, function (tab) {
+            if (tab != null) {
+                var process = process_url(tab.url);
+                if (process && !isGuest) {
+                    // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
+                    ajax_isTldAllowable(tab.url, function (data) {
+                        console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
+                        if (data.allowable) {
+                            // TODO: remove setIconEnabledLive();
+                            $.each(cs_files, function (ndx, cs) {
+                                try {
+                                    chrome.tabs.executeScript(tab_id, { file: cs, runAt: run_at },
+                                        function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
+                                } catch (err) {
+                                    console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                                    console.trace();
+                                    console.warn(err);
+                                }
+                            });
+                            console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                            if (session != null)
+                                session.injected_cs_timestamp = Date.now();
+                        }
+                    }, function (error) {
+                        console.error(error);
+                        setIconApp('black', '*EX1', '#999999');
+                    });
+                }
+            }
+        });
+    }
 }
 
 
@@ -454,125 +442,125 @@ function inject_cs(session, tab_id, skip_text) {
 
 // dbg sound handler uses this to fwd events to main handlers ('validators')
 var eventValidator = {
-  'tabCreated': tabCreated,
-  'tabNavigated': tabNavigated,
-  'tabRemoved': tabRemoved,
-  'tabSelectionChanged': tabSelectionChanged,
-  'tabActivated': tabActivated,
-  'windowCreated': windowCreated,
-  'windowRemoved': windowRemoved,
-  'windowFocusChanged': windowFocusChanged,
+    'tabCreated': tabCreated,
+    'tabNavigated': tabNavigated,
+    'tabRemoved': tabRemoved,
+    'tabSelectionChanged': tabSelectionChanged,
+    'tabActivated': tabActivated,
+    'windowCreated': windowCreated,
+    'windowRemoved': windowRemoved,
+    'windowFocusChanged': windowFocusChanged,
 };
 
 var started = false;
 
 function shouldPlay(id) {
-  if (id != 'startup' && !started) // Ignore all events until the startup sound has finished.
-    return false;
-  var val = localStorage.getItem(id);
-  if (val && val != 'enabled')
-    return false;
-  return true;
+    if (id != 'startup' && !started) // Ignore all events until the startup sound has finished.
+        return false;
+    var val = localStorage.getItem(id);
+    if (val && val != 'enabled')
+        return false;
+    return true;
 }
 
 function didPlay(id) {
-  if (!localStorage.getItem(id))
-    localStorage.setItem(id, 'enabled');
+    if (!localStorage.getItem(id))
+        localStorage.setItem(id, 'enabled');
 }
 
 // ** DM -- see below the ignore fast replay is required by current logic! don't remove!
 function playSound(id, loop) {
-  if (!shouldPlay(id))
-    return;
+    if (!shouldPlay(id))
+        return;
 
-  var sound = sounds[id];
-  //console.log('playsound: ' + id);
-  if (sound && sound.src) {
-    if (!sound.paused) {
-      //if (sound.currentTime < 0.2) {
-      //  console.log('ignoring fast replay: ' + id + '/' + sound.currentTime);
-      //  return;
-      //}
-      sound.pause();
-      sound.currentTime = 0;
-    }
-    if (loop)
-      sound.loop = loop;
+    var sound = sounds[id];
+    //console.log('playsound: ' + id);
+    if (sound && sound.src) {
+        if (!sound.paused) {
+            //if (sound.currentTime < 0.2) {
+            //  console.log('ignoring fast replay: ' + id + '/' + sound.currentTime);
+            //  return;
+            //}
+            sound.pause();
+            sound.currentTime = 0;
+        }
+        if (loop)
+            sound.loop = loop;
 
-    // Sometimes, when playing multiple times, readyState is HAVE_METADATA.
-    if (sound.readyState == 0) {  // HAVE_NOTHING
-      console.log('bad ready state: ' + sound.readyState);
-    } else if (sound.error) {
-      console.log('media error: ' + sound.error);
+        // Sometimes, when playing multiple times, readyState is HAVE_METADATA.
+        if (sound.readyState == 0) {  // HAVE_NOTHING
+            console.log('bad ready state: ' + sound.readyState);
+        } else if (sound.error) {
+            console.log('media error: ' + sound.error);
+        } else {
+            didPlay(id);
+            sound.play();
+        }
     } else {
-      didPlay(id);
-      sound.play();
+        console.log('bad playSound: ' + id);
     }
-  } else {
-    console.log('bad playSound: ' + id);
-  }
 }
 
 function stopSound(id) {
-  //console.log('stopSound: ' + id);
-  var sound = sounds[id];
-  if (sound && sound.src && !sound.paused) {
-    sound.pause();
-    sound.currentTime = 0;
-  }
+    //console.log('stopSound: ' + id);
+    var sound = sounds[id];
+    if (sound && sound.src && !sound.paused) {
+        sound.pause();
+        sound.currentTime = 0;
+    }
 }
 
 var base_url = 'http://dl.google.com/dl/chrome/extensions/audio/';
 
 function soundLoadError(audio, id) {
-  console.error('failed to load sound: ' + id + '-' + audio.src);
-  audio.src = '';
-  if (id == 'startup')
-    started = true;
+    console.error('failed to load sound: ' + id + '-' + audio.src);
+    audio.src = '';
+    if (id == 'startup')
+        started = true;
 }
 
 function soundLoaded(audio, id) {
-  //console.log('loaded sound: ' + id);
-  sounds[id] = audio;
-  if (id == 'startup')
-    playSound(id);
+    //console.log('loaded sound: ' + id);
+    sounds[id] = audio;
+    if (id == 'startup')
+        playSound(id);
 }
 
 // Hack to keep a reference to the objects while we're waiting for them to load.
 var notYetLoaded = {};
 
 function loadSound(file, id) {
-  if (!file.length) {
-    console.log('no sound for ' + id);
-    return;
-  }
-  var audio = new Audio();
-  audio.id = id;
-  audio.onerror = function () { soundLoadError(audio, id); };
-  audio.addEventListener('canplaythrough',
-    function () { soundLoaded(audio, id); }, false);
-  if (id == 'startup') {
-    audio.addEventListener('ended', function () { started = true; });
-  }
-  audio.src = base_url + file;
-  audio.load();
-  notYetLoaded[id] = audio;
+    if (!file.length) {
+        console.log('no sound for ' + id);
+        return;
+    }
+    var audio = new Audio();
+    audio.id = id;
+    audio.onerror = function () { soundLoadError(audio, id); };
+    audio.addEventListener('canplaythrough',
+        function () { soundLoaded(audio, id); }, false);
+    if (id == 'startup') {
+        audio.addEventListener('ended', function () { started = true; });
+    }
+    audio.src = base_url + file;
+    audio.load();
+    notYetLoaded[id] = audio;
 }
 
 
 var navSound;
 
 function stopNavSound() {
-  if (navSound) {
-    stopSound(navSound);
-    navSound = null;
-  }
+    if (navSound) {
+        stopSound(navSound);
+        navSound = null;
+    }
 }
 
 function playNavSound(id) {
-  stopNavSound();
-  navSound = id;
-  playSound(id);
+    stopNavSound();
+    navSound = id;
+    playSound(id);
 }
 
 
@@ -583,40 +571,40 @@ function playNavSound(id) {
 // TABMAP: chrome.tabs.onCreated
 function tabCreated(tab) {
 
-  update_tabmap();
+    update_tabmap();
 
-  if (eatEvent('tabCreated'))
-    return false;
-  eventsToEat++;  // tabNavigated or tabSelectionChanged
-  // TODO - unfortunately, we can't detect whether this tab will get focus, so
-  // we can't decide whether or not to eat a second event.
-  return true;
+    if (eatEvent('tabCreated'))
+        return false;
+    eventsToEat++;  // tabNavigated or tabSelectionChanged
+    // TODO - unfortunately, we can't detect whether this tab will get focus, so
+    // we can't decide whether or not to eat a second event.
+    return true;
 }
 
 // TABMAP: chrome.tabs.onRemoved
 function tabRemoved(tabId) {
 
-  update_tabmap();
+    update_tabmap();
 
-  if (eatEvent('tabRemoved'))
-    return false;
-  if (tabId == selectedTabId) {
-    eventsToEat++;  // tabSelectionChanged
-    stopNavSound();
-  }
-  return true;
+    if (eatEvent('tabRemoved'))
+        return false;
+    if (tabId == selectedTabId) {
+        eventsToEat++;  // tabSelectionChanged
+        stopNavSound();
+    }
+    return true;
 }
 
 function windowCreated(window) {
 
-  if (eatEvent('windowCreated'))
-    return false;
-  eventsToEat += 3;  // tabNavigated, tabSelectionChanged, windowFocusChanged
-  if (window.incognito) {
-    playSound('windowCreatedIncognito');
-    return false;
-  }
-  return true;
+    if (eatEvent('windowCreated'))
+        return false;
+    eventsToEat += 3;  // tabNavigated, tabSelectionChanged, windowFocusChanged
+    if (window.incognito) {
+        playSound('windowCreatedIncognito');
+        return false;
+    }
+    return true;
 }
 
 // TABMAP: chrome.tabs.onUpdated
@@ -626,70 +614,70 @@ var events_style_err = 'background: red; color: white;';
 
 function tabNavigated(tabId, changeInfo, tab) {
 
-  console.log('%c >tabNavigated tabId=' + tabId +
-    ' ci.status=' + changeInfo.status +
-    ' ci.url=' + changeInfo.url +
-    ' ci.pinned=' + changeInfo.pinned +
-    ' ci.audible=' + changeInfo.audible +
-    ' ci.mutedInfo=' + changeInfo.mutedInfo +
-    ' ci.favIconUrl=' + changeInfo.favIconUrl, events_style_hi);
+    console.log('%c >tabNavigated tabId=' + tabId +
+        ' ci.status=' + changeInfo.status +
+        ' ci.url=' + changeInfo.url +
+        ' ci.pinned=' + changeInfo.pinned +
+        ' ci.audible=' + changeInfo.audible +
+        ' ci.mutedInfo=' + changeInfo.mutedInfo +
+        ' ci.favIconUrl=' + changeInfo.favIconUrl, events_style_hi);
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    var tab = tabs[0];
-    if (tab != null) {
-      console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
-      // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
-      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
-        var session = session_get_by_tab(tab, true);
-        sessionObservable.activeUrl = changeInfo.url;
-        session_add_view_instance(session);
-      }
-    }
-  });
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        var tab = tabs[0];
+        if (tab != null) {
+            console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
+            // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
+            if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
+                var session = session_get_by_tab(tab, true);
+                sessionObservable.activeUrl = changeInfo.url;
+                session_add_view_instance(session);
+            }
+        }
+    });
 
-  stopSound('keypress'); // hack
+    stopSound('keypress'); // hack
 
-  if (changeInfo.status != 'complete') // ???
-    return false;
+    if (changeInfo.status != 'complete') // ???
+        return false;
 
-  if (eatEvent('tabNavigated'))
-    return false;
+    if (eatEvent('tabNavigated'))
+        return false;
 
-  if (navSound)
-    stopSound(navSound);
-  return true;
+    if (navSound)
+        stopSound(navSound);
+    return true;
 }
 
 // TABMAP: chrome.tabs.onSelectionChanged (Deprecated since Chrome 33. Please use tabs.onActivated)
 var selectedTabId = -1;
 function tabSelectionChanged(tabId) {
 
-  update_tabmap();
+    update_tabmap();
 
-  console.info('%c >tabSelectionChanged: [' + tabId + ']', 'color: gray;');
+    console.info('%c >tabSelectionChanged: [' + tabId + ']', 'color: gray;');
 
-  selectedTabId = tabId;
+    selectedTabId = tabId;
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    var tab = tabs[0];
-    if (tab != null && process_url(tab.url)) {
-      console.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
-      var session = session_get_by_tab(tab, true);
-      session_add_view_instance(session);
-    }
-    mm_save(true);
-  });
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        var tab = tabs[0];
+        if (tab != null && process_url(tab.url)) {
+            console.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
+            var session = session_get_by_tab(tab, true);
+            session_add_view_instance(session);
+        }
+        mm_save(true);
+    });
 
-  if (eatEvent('tabSelectionChanged'))
+    if (eatEvent('tabSelectionChanged'))
+        return false;
+    var count = 7;
+    chrome.tabs.get(tabId, function (tab) {
+        if (tab != null) {
+            var index = tab.index % count;
+            playSound('tab' + index);
+        }
+    });
     return false;
-  var count = 7;
-  chrome.tabs.get(tabId, function (tab) {
-    if (tab != null) {
-      var index = tab.index % count;
-      playSound('tab' + index);
-    }
-  });
-  return false;
 }
 
 // time on tab (TOT) tracking
@@ -697,83 +685,83 @@ var TOT_active_tab = null;
 var TOT_active_window_id = 0;
 function tabActivated(o) { // why getting object here?!
 
-  var tabId = o.tabId;
-  console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
-  chrome.tabs.get(tabId, function (new_tab) {
-    if (chrome.runtime.lastError)
-      console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
-    else if (new_tab != null) {
-      console.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
-      // set current tab session
-      sessionObservable.activeUrl = new_tab.url;
+    var tabId = o.tabId;
+    console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
+    chrome.tabs.get(tabId, function (new_tab) {
+        if (chrome.runtime.lastError)
+            console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+        else if (new_tab != null) {
+            console.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
+            // set current tab session
+            sessionObservable.activeUrl = new_tab.url;
 
-      // stop TOT for previously focused
-      if (TOT_active_tab != null && TOT_active_tab.id != new_tab.id) {
-        var prev_session = session_get_by_tab(TOT_active_tab, false);
-        session_stop_TOT(prev_session);
-      }
+            // stop TOT for previously focused
+            if (TOT_active_tab != null && TOT_active_tab.id != new_tab.id) {
+                var prev_session = session_get_by_tab(TOT_active_tab, false);
+                session_stop_TOT(prev_session);
+            }
 
-      // start TOT for newly focused
-      var new_session = session_get_by_tab(new_tab, true); //***
-      if (new_session != null) {
-        session_start_TOT(new_session);
-      }
+            // start TOT for newly focused
+            var new_session = session_get_by_tab(new_tab, true); //***
+            if (new_session != null) {
+                session_start_TOT(new_session);
+            }
 
-      // update new active tab
-      TOT_active_tab = new_tab;
-    }
-    mm_save(true);
-  });
+            // update new active tab
+            TOT_active_tab = new_tab;
+        }
+        mm_save(true);
+    });
 }
 
 var selectedWindowId = -1;
 function windowFocusChanged(windowId) {
 
-  if (windowId == selectedWindowId) return false;
-  selectedWindowId = windowId;
+    if (windowId == selectedWindowId) return false;
+    selectedWindowId = windowId;
 
-  console.info('%c >windowFocusChanged: [' + selectedWindowId + ']', 'color: gray;');
+    console.info('%c >windowFocusChanged: [' + selectedWindowId + ']', 'color: gray;');
 
-  if (TOT_active_tab != null) {
+    if (TOT_active_tab != null) {
 
-    var prev_session = session_get_by_tab(TOT_active_tab, false);
-    if (prev_session != null)
-      console.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
+        var prev_session = session_get_by_tab(TOT_active_tab, false);
+        if (prev_session != null)
+            console.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
 
-    // stop TOT for previously focused
-    session_stop_TOT(prev_session);
-  }
+        // stop TOT for previously focused
+        session_stop_TOT(prev_session);
+    }
 
-  // update TOT active tab
-  TOT_start_current_focused();
+    // update TOT active tab
+    TOT_start_current_focused();
 
-  return true;
+    return true;
 }
 
 function TOT_start_current_focused() {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    if (chrome.runtime.lastError)
-      console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
-    else {
-      if (tabs.length > 0) {
-        TOT_active_tab = tabs[0];
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (chrome.runtime.lastError)
+            console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+        else {
+            if (tabs.length > 0) {
+                TOT_active_tab = tabs[0];
 
-        // start TOT for newly focused
-        var new_session = session_get_by_tab(TOT_active_tab, true); //***
-        if (new_session != null) {
-          console.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
-          session_start_TOT(new_session);
+                // start TOT for newly focused
+                var new_session = session_get_by_tab(TOT_active_tab, true); //***
+                if (new_session != null) {
+                    console.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
+                    session_start_TOT(new_session);
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
 // DM**
 function windowRemoved(window) {
 
-  //TOT_start_current_focused();
-  return true;
+    //TOT_start_current_focused();
+    return true;
 }
 
 
@@ -783,19 +771,19 @@ function windowRemoved(window) {
 // BG libs
 //
 function bglib_remove_hash_url(url) { // remove trailing page anchor # from tab URLs
-  var url_ex_hash = url;
-  var hash_ndx = url_ex_hash.indexOf('#');
-  if (hash_ndx != -1)
-    url_ex_hash = url_ex_hash.substring(0, hash_ndx);
-  return url_ex_hash;
+    var url_ex_hash = url;
+    var hash_ndx = url_ex_hash.indexOf('#');
+    if (hash_ndx != -1)
+        url_ex_hash = url_ex_hash.substring(0, hash_ndx);
+    return url_ex_hash;
 }
 
 function new_guid() {
-  var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-  return guid;
+    var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+    return guid;
 }
 
 
