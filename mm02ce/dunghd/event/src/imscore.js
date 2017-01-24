@@ -43,7 +43,7 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, url, userI
     data.time_on_tab = 0;
   }
 
-  // TODO: only save when im_score change
+  // Only save when im_score change
   if (Number(data.im_score) > 0) {
     apiSaveImScore(data,
       (error) => {

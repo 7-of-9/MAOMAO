@@ -106,7 +106,6 @@ function mm_load() {
 function mm_update(session, force) {
   console.info("%c mm_update - NOP", mm_logstyle, session, force);
   if (session && session.url) {
-    // TODO: Save NLP data
     var data = Object.assign({},
       {
         sid: session.sid,
@@ -117,8 +116,7 @@ function mm_update(session, force) {
       });
     var existSession = sessionObservable.urls.get(session.url);
     if (existSession) {
-      // TODO: Change im_score when the change > 1.0
-      if (Number(data.im_score) > Number(existSession.im_score + 1)) {
+      if (Number(data.im_score) > Number(existSession.im_score)) {
         existSession.im_score = data.im_score;
       }
 

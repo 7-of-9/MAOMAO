@@ -160,11 +160,6 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
         } else {
             console.info('%c (get_session_by_tab - rejecting non-process URL [' + tab.url + '])', session_style);
-            // NOTE: Don't show icon for internal tab
-            var startsWith = String.prototype.startsWith;
-            if (!startsWith.call(tab.url, 'chrome://')) {
-                // TODO: emove setIconDisabledSafe('');
-            }
         }
     }
 
@@ -186,6 +181,13 @@ function session_get_by_url(url) {
     return null;
 }
 
+function session_update_exist_NLP(session, page_meta) {
+    if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
+    session.page_meta = page_meta;
+    console.info('%c >> session[' + session.url + ']', session_style_hi);
+    mm_update(session, true);
+}
+
 function session_update_NLP(session, nlp, page_meta) {
     if (nlp.topic_specific == '?') {
         console.info('%c >> session[' + session.url + ']', session_style_hi);
@@ -194,6 +196,7 @@ function session_update_NLP(session, nlp, page_meta) {
         return;
     }
     if (!session.hasOwnProperty('nlps')) session.nlps = [];
+    if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
 
     // save session page_meta
     session.page_meta = page_meta;
@@ -225,7 +228,7 @@ function session_update_NLP(session, nlp, page_meta) {
 
 function session_add_IM(session, data, tab) {
     if (session == null) return;
-    if (session.hasOwnProperty('nlps')) { // only process IM session events for tagged pages
+    if (session.hasOwnProperty('track_im')) {
 
         // { TOT: seconds
         //   im_score: n

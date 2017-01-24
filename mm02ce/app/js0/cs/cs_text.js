@@ -277,7 +277,7 @@ function process_text(page_meta) {
             console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
             if (data.is_known == true) {
                 // no need to text process, no need for calais
-                chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { url: document.location.href, status: true, } } });
+                chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { url: document.location.href, status: true, page_meta: page_meta, } } });
                 console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
 
                 if (document.getElementById('maomao-extension-youtube-test')) {
@@ -297,7 +297,6 @@ function process_text(page_meta) {
         console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
         //cslib_test_NextYouTubeVid();
         console.info("NOT ENOUGH TEXT -- reseeding...");
-        // TODO: turn off im_score popup
         console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
         if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeSite()) {
             cslib_test_Reseed();

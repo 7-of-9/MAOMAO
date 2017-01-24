@@ -310,8 +310,7 @@ function calais_process(nlp) {
     //}
 
     // send NLP result to background
-    //TODO: remove chrome.extension.sendMessage({ "session_nlp_result": true, "nlp": nlp, "page_meta": page_meta });
-    chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_RESULT', payload: { url: nlp.url.href, topic_specific: nlp.topic_specific, topic_general: nlp.topic_general, social_tags: nlp.social_tags, } } });
+    chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_RESULT', payload: { url: nlp.url.href, "nlp": nlp, "page_meta": page_meta, } } });
     return nlp;
 }
 

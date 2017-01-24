@@ -72,8 +72,6 @@ function setIconText(s, c) {
     chrome.browserAction.setBadgeText({ text: s });
     chrome.browserAction.setTitle({ title: s });
     chrome.browserAction.setBadgeBackgroundColor({ color: c });
-
-    // *** TODO: update current session object with: s, c + getIconPath(...)
 }
 
 //////////////////////////////////////////////////////
@@ -216,36 +214,29 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
     //}
 
     //
-    // *** TODO: handle "set_track_im"
-    //
-    // session_update_track_im() new fn.
-
-    //
-    // *** TODO: handle "got_page_meta"
-    // ...
-
-    //
     // session: got NLP result (Calais return) from context script
     //
-    if (message.session_nlp_result == true) {
+    if (message && message.payload && message.payload.type && message.payload.type === 'NLP_INFO_KNOWN') {
+        if (sender != null) {
+            console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
+            session = session_get_by_url(sender.tab.url);
+            if (session != null) {
+                console.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
+                // post result to server
+                session_update_exist_NLP(session, message.payload.payload.page_meta);
+            }
+        }
+    }
+
+    if (message && message.payload && message.payload.type && message.payload.type === 'NLP_RESULT') {
         if (sender != null) {
             console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
             session = session_get_by_url(sender.tab.url);
             if (session != null) {
 
-                console.info('%c message.nlp = ' + JSON.stringify(message.nlp, null, 2), events_style_hi);
-
+                console.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
                 // post result to server
-                session_update_NLP(session, message.nlp, message.page_meta);
-
-                if (message.result == 'NLP_TEST_PASS') {
-                    console.info('%c NLP_TEST_PASS: [' + sender.url + ']', 'background: yellow; color: white');
-                }
-                if (message.result == 'NLP_TEST_FAIL') {
-                    console.info('%c NLP_TEST_FAIL: [' + sender.url + ']', 'background: yellow; color: white');
-                    console.info('%c expected: [' + message.ok1 + '] or [' + message.ok2 + ']', 'background: yellow; color: white');
-                    console.info('%c got: [' + message.got + ']', 'background: yellow; color: white');
-                }
+                session_update_NLP(session, message.payload.payload.nlp, message.payload.payload.page_meta);
             }
         }
     }

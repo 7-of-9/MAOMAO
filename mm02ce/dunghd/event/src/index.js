@@ -107,8 +107,8 @@ mobx.reaction(() => window.sessionObservable.activeUrl, (activeUrl) => {
                 url = tabs[0].url;
                 console.info('reaction url - active tab', url);
             }
-            const now = new Date().toISOString();
-            if (!window.process_url(url)) {
+            const startsWith = String.prototype.startsWith;
+            if (startsWith.call(url, 'chrome://') || startsWith.call(url, 'chrome-extension://')) {
                 store.dispatch({
                     type: 'MAOMAO_DISABLE',
                     payload: {
@@ -154,6 +154,7 @@ function initFirebaseApp() {
     console.log('initFirebaseApp');
     // Listen for auth state changes.
     firebase.auth().onAuthStateChanged((user) => {
+        // TODO: Auto login
         console.log('firebase => User state change detected from the Background script of the Chrome Extension:', user);
     });
 }
