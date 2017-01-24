@@ -19,29 +19,22 @@ export default (state = initialState, action, auth) => {
                 if (startsWith.call(url, 'chrome://') || startsWith.call(url, 'chrome-extension://')) {
                     isInternalTab = true;
                 }
-                window.setIconApp('black', isInternalTab ? '!(int)' : '', '#999999');
+                window.setIconApp('black', isInternalTab ? '!(int)' : '', window.BG_ERROR_COLOR);
             } else {
-                window.setIconApp('gray', '', 'white');
+                window.setIconApp('gray', '', window.BG_SUCCESS_COLOR);
             }
             return Object.assign({}, state, { isEnable: false });
         case 'MAOMAO_ENABLE': {
             if (auth.isLogin) {
                 ctxMenuLogin(auth.info);
                 const url = action.payload.url;
-                let activeTabUrl = window.sessionObservable.icons.get(url);
-                console.info('activeTabUrl', activeTabUrl);
-                if (!activeTabUrl) {
-                    activeTabUrl = {
-                        image: 'black',
-                        text: '',
-                        color: 'white',
-                    };
+                const activeTabUrl = window.sessionObservable.icons.get(url);
+                if (activeTabUrl) {
+                    window.setIconApp(activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
                 }
-
-                window.setIconApp(activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
             } else {
                 ctxMenuLogout();
-                window.setIconApp('gray', '', 'white');
+                window.setIconApp('gray', '', window.BG_SUCCESS_COLOR);
             }
             return Object.assign({}, state, { isEnable: true });
         }

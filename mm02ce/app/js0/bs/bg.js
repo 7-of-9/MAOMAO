@@ -2,12 +2,15 @@
 //
 // ENTRY POINT
 //
+// color
+var BG_SUCCESS_COLOR = '#009900';
+var BG_ERROR_COLOR = '#999999';
 
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
 $(document).ready(function () {
-    setIconApp('gray', '', 'white');
+    setIconApp('gray', '', BG_SUCCESS_COLOR);
     update_tabmap(function () {
 
         // Listen for messages from content scripts.
@@ -43,19 +46,6 @@ $(document).ready(function () {
         //}
     });
 });
-
-// gray dog, and !TXT and NLP when it turn off
-function setIconForNLP(jusTextSuccues, msg) {
-    var color = '#999999';
-    if (!jusTextSuccues) {
-        color = '#ff0000'
-        chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_black.png' });
-    } else {
-        chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_blue.png' });
-    }
-    console.trace('setIconForNLP');
-    setIconText(msg, color);
-}
 
 /**
  * Set browser icon with image, text and color
@@ -310,8 +300,6 @@ function handle_cs_doc_event(data, sender) {
             else if (data.type == 'OTHER') {
                 if (data.eventName == 'got_page_meta') {  // update session page meta
                     var page_meta = data.eventValue;
-                    // var nlp_suitability_score = page_meta['nlp_suitability_score'];
-                    // setIconText(String(nlp_suitability_score), nlp_suitability_score > 9 ? '#009900' : '#999999');
                     session_update_page_meta(session, data.eventValue);
                 }
             }
@@ -373,7 +361,7 @@ function inject_cs(session, tab_id, skip_text) {
                     console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
 
                     if (data.allowable) {
-                        //TODO: remove setIconEnabledLive();
+                        setIconApp('black', '', BG_SUCCESS_COLOR);
                         $.each(cs_files, function (ndx, cs) {
                             try {
                                 chrome.tabs.executeScript({ file: cs, runAt: run_at },
@@ -389,11 +377,11 @@ function inject_cs(session, tab_id, skip_text) {
                         if (session != null)
                             session.injected_cs_timestamp = Date.now();
                     } else {
-                        // TODO: remove setIconDisabledSafe('');
+                        setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
                     }
                 }, function (error) {
                     console.error(error);
-                    setIconApp('black', '*EX1', '#999999');
+                    setIconApp('black', '*EX1', BG_ERROR_COLOR);
                 });
             }
         });
@@ -410,7 +398,7 @@ function inject_cs(session, tab_id, skip_text) {
                     ajax_isTldAllowable(tab.url, function (data) {
                         console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
                         if (data.allowable) {
-                            // TODO: remove setIconEnabledLive();
+                            setIconApp('black', '', BG_SUCCESS_COLOR);
                             $.each(cs_files, function (ndx, cs) {
                                 try {
                                     chrome.tabs.executeScript(tab_id, { file: cs, runAt: run_at },
@@ -424,10 +412,12 @@ function inject_cs(session, tab_id, skip_text) {
                             console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
                             if (session != null)
                                 session.injected_cs_timestamp = Date.now();
+                        } else {
+                            setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
                         }
                     }, function (error) {
                         console.error(error);
-                        setIconApp('black', '*EX1', '#999999');
+                        setIconApp('black', '*EX1', BG_ERROR_COLOR);
                     });
                 }
             }

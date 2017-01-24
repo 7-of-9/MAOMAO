@@ -1,19 +1,27 @@
 const initialState = {
     nlps: [],
-    justexts: [],
+    texts: [],
     scores: [],
 };
+
+const MIN_NSS = 10;
 
 export default (nlp = initialState, action) => {
     switch (action.type) {
         case 'NLP_INFO_ERROR':
-            window.setIconApp('black', '*EX2', '#999999');
+            window.setIconApp('black', '*EX2', window.BG_ERROR_COLOR);
             return nlp;
-        case 'NLP_SCORE': {
+        case 'NNS_SCORE': {
             const url = action.payload.url;
             let scores = [];
             if (nlp.scores.length) {
                 scores = nlp.scores.filter(item => item.url !== url);
+            }
+
+            if (Number(action.payload.score) <= MIN_NSS) {
+                window.setIconApp('black', `!(${Number(action.payload.score)}nss)`, window.BG_ERROR_COLOR);
+            } else {
+                window.setIconApp('blue', `${Number(action.payload.score)}nss`, window.BG_SUCCESS_COLOR);
             }
 
             scores = scores.concat(action.payload);
@@ -29,45 +37,16 @@ export default (nlp = initialState, action) => {
             nlps = nlps.concat(action.payload);
             return Object.assign({}, nlp, { nlps });
         }
-        case 'JUSTEXT_IS_READY': {
+        case 'PROCESS_TEXT_RESULT': {
             const url = action.payload.url;
-            let status = false;
-            if (nlp.justexts.length) {
-                const justext = nlp.justexts.find(item => item.url === url);
-                if (justext) {
-                    status = justext.status;
-                }
+            let texts = [];
+            if (nlp.texts.length) {
+                texts = nlp.texts.filter(item => item.url !== url);
             }
 
-            let score = 'N/A';
-            if (nlp.scores.length) {
-                const hasScore = nlp.scores.find(item => item.url === url);
-                if (hasScore) {
-                    score = hasScore.score;
-                }
-            }
-
-            // TODO: remove window.setIconForNLP(status, `${status ? 'ok' : '!jt'}:${score}`);
-            return nlp;
-        }
-        case 'JUSTEXT': {
-            const url = action.payload.url;
-            let score = 'N/A';
-            if (nlp.scores.length) {
-                const hasScore = nlp.scores.find(item => item.url === url);
-                if (hasScore) {
-                    score = hasScore.score;
-                }
-            }
-
-            // TOOD: remove window.setIconForNLP(status, `${action.payload.status ? 'ok' : '!jt'}:${score}`);
-            let justexts = [];
-            if (nlp.justexts.length) {
-                justexts = nlp.justexts.filter(item => item.url !== url);
-            }
-
-            justexts = justexts.concat(action.payload);
-            return Object.assign({}, nlp, { justexts });
+            // TODO: set icon
+            texts = texts.concat(action.payload);
+            return Object.assign({}, nlp, { texts });
         }
         default:
             return nlp;
