@@ -92,17 +92,12 @@ function onClickHandler(info) {
 
 chrome.contextMenus.onClicked.addListener(onClickHandler);
 
-window.sessionObservable = mobx.observable({
-    urls: mobx.observable.map({}),
-    icons: mobx.observable.map({}),
-    activeUrl: '',
-});
 
-mobx.reaction(() => window.sessionObservable.activeUrl, (activeUrl) => {
-    console.info('reaction url', activeUrl);
+function syncImScore(forceSave) {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs != null && tabs.length > 0) {
-            let url = activeUrl;
+            let url = '';
+            const now = new Date().toISOString();
             if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
                 url = tabs[0].url;
                 console.info('reaction url - active tab', url);
@@ -124,21 +119,39 @@ mobx.reaction(() => window.sessionObservable.activeUrl, (activeUrl) => {
                 });
                 if (Number(window.userId) > 0) {
                     checkImScore(window.sessionObservable, batchActions, store, url, now);
-                    saveImScore(window.sessionObservable, window.ajax_put_UrlHistory, store, url, Number(window.userId));
+                    if (forceSave) {
+                        saveImScore(window.sessionObservable, window.ajax_put_UrlHistory, store, url, Number(window.userId));
+                    }
                 }
             }
         }
     });
+}
+
+window.sessionObservable = mobx.observable({
+    urls: mobx.observable.map({}),
+    icons: mobx.observable.map({}),
+    activeUrl: '',
+    lastUpdate: Date.now(),
+});
+
+mobx.reaction(() => window.sessionObservable.lastUpdate, (lastUpdate) => {
+    console.info('reaction lastUpdate', lastUpdate);
+    syncImScore(false);
+});
+
+mobx.reaction(() => window.sessionObservable.activeUrl, (activeUrl) => {
+    console.info('reaction url', activeUrl);
+    // save db when user change url
+    syncImScore(true);
 });
 
 // save im_score every 30 seconds
 const ROUND_CLOCK = 30;
 setInterval(() => {
-    // TODO: Should send data when its changes
-    const url = window.sessionObservable.activeUrl;
     if (Number(window.userId) > 0) {
-        console.log('Save im_score every ', ROUND_CLOCK, ' seconds', url);
-        saveImScore(window.sessionObservable, window.ajax_put_UrlHistory, store, url, Number(window.userId));
+        console.log('... Save im_score every ', ROUND_CLOCK, ' seconds');
+        syncImScore(true);
     }
 }, ROUND_CLOCK * 1000);
 
@@ -150,12 +163,34 @@ firebase.initializeApp({
     storageBucket: config.firebaseStore,
 });
 
+let autoLogin = true;
+
 function initFirebaseApp() {
     console.log('initFirebaseApp');
     // Listen for auth state changes.
-    firebase.auth().onAuthStateChanged((user) => {
-        // TODO: Auto login
-        console.log('firebase => User state change detected from the Background script of the Chrome Extension:', user);
+    firebase.auth().onAuthStateChanged((googleUser) => {
+        if (googleUser && autoLogin) {
+            console.log('firebase => User state change detected from the Background script of the Chrome Extension:', googleUser);
+            autoLogin = false;
+            /*
+            let token = '';
+            store.dispatch(
+                {
+                    type: 'AUTH_FULFILLED',
+                    payload: {
+                        token,
+                        info: {
+                            email: googleUser.email,
+                            email_verified: googleUser.emailVerified,
+                            name: googleUser.displayName,
+                            picture: googleUser.photoURL,
+                            sub: googleUser.providerData.uid,
+                        },
+                    },
+                },
+            );
+            */
+        }
     });
 }
 

@@ -315,6 +315,12 @@ function session_add_IM(session, data, tab) {
             console.info('%c ..... session.events.length = ' + session.events.length, session_style);
             console.info('%c ..... session.session_millis = ' + session.session_millis, session_style);
             console.info('%c ..... session.im_score = ' + session.im_score, session_style);
+            // Update im_score on screen after 5 seconds
+            var UPDATE_TIME_ON_SCREEN = 5;
+            setTimeout(function () {
+                console.log('... UPDATE_TIME_ON_SCREEN', UPDATE_TIME_ON_SCREEN);
+                sessionObservable.lastUpdate = Date.now();
+            }, UPDATE_TIME_ON_SCREEN * 1000);
         }
 
         mm_update(session);
