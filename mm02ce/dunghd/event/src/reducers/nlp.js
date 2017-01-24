@@ -8,8 +8,41 @@ const MIN_NSS = 10;
 
 export default (nlp = initialState, action) => {
     switch (action.type) {
+        case 'NLP_RESULT':
+            {
+                const url = action.payload.url;
+                let score = 'N/A';
+                const hasExist = nlp.scores.find(item => item.url === url);
+                if (hasExist) {
+                    score = hasExist.score;
+                }
+                window.setIconApp(url, 'blue', `${score}nss **`, window.BG_SUCCESS_COLOR);
+                return nlp;
+            }
+        case 'NLP_INFO_KNOWN':
+            {
+                const url = action.payload.url;
+                let score = 'N/A';
+                const hasExist = nlp.scores.find(item => item.url === url);
+                if (hasExist) {
+                    score = hasExist.score;
+                }
+                window.setIconApp(url, 'blue', `${score}nss`, window.BG_SUCCESS_COLOR);
+                return nlp;
+            }
+        case 'NLP_INFO_UNKNOWN':
+            {
+                const url = action.payload.url;
+                let score = 'N/A';
+                const hasExist = nlp.scores.find(item => item.url === url);
+                if (hasExist) {
+                    score = hasExist.score;
+                }
+                window.setIconApp(url, 'black', `${score}nss *`, window.BG_SUCCESS_COLOR);
+                return nlp;
+            }
         case 'NLP_INFO_ERROR':
-            window.setIconApp('black', '*EX2', window.BG_ERROR_COLOR);
+            window.setIconApp(action.payload.url, 'black', '*EX2', window.BG_ERROR_COLOR);
             return nlp;
         case 'NNS_SCORE': {
             const url = action.payload.url;
@@ -19,9 +52,9 @@ export default (nlp = initialState, action) => {
             }
 
             if (Number(action.payload.score) <= MIN_NSS) {
-                window.setIconApp('black', `!(${Number(action.payload.score)}nss)`, window.BG_ERROR_COLOR);
+                window.setIconApp(url, 'black', `!(${Number(action.payload.score)}nss)`, window.BG_ERROR_COLOR);
             } else {
-                window.setIconApp('blue', `${Number(action.payload.score)}nss`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'black', `${Number(action.payload.score)}nss`, window.BG_SUCCESS_COLOR);
             }
 
             scores = scores.concat(action.payload);
@@ -44,7 +77,15 @@ export default (nlp = initialState, action) => {
                 texts = nlp.texts.filter(item => item.url !== url);
             }
 
-            // TODO: set icon
+            if (!action.payload.status) {
+                let score = 'N/A';
+                const hasExist = nlp.scores.find(item => item.url === url);
+                if (hasExist) {
+                    score = hasExist.score;
+                }
+                window.setIconApp(url, 'black', `${score}nss !T`, window.BG_SUCCESS_COLOR);
+            }
+
             texts = texts.concat(action.payload);
             return Object.assign({}, nlp, { texts });
         }

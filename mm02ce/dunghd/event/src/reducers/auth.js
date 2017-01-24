@@ -15,7 +15,6 @@ export default (state = initialState, action) => {
             return Object.assign({}, state, { isPending: true });
         case 'AUTH_FULFILLED':
             ctxMenuLogin(action.payload.info, window.enableTestYoutube);
-            window.setIconApp('black', '', window.BG_SUCCESS_COLOR);
             return Object.assign({}, state, {
                 message: 'authentication is done',
                 accessToken: action.payload.token,
@@ -33,7 +32,8 @@ export default (state = initialState, action) => {
             });
         case 'LOGOUT_FULFILLED':
             ctxMenuLogout();
-            window.setIconApp('gray', '', window.BG_SUCCESS_COLOR);
+            // TODO: clear all sessions on bg and tracking tab
+            window.setIconApp('', 'gray', '', window.BG_SUCCESS_COLOR);
             return Object.assign({}, state, {
                 message: 'user has been logout',
                 accessToken: action.payload.token,

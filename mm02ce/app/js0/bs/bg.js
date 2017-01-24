@@ -2,7 +2,7 @@
 //
 // ENTRY POINT
 //
-// color
+// color constant
 var BG_SUCCESS_COLOR = '#009900';
 var BG_ERROR_COLOR = '#999999';
 
@@ -10,7 +10,7 @@ var BG_ERROR_COLOR = '#999999';
 // STARTUP !!!
 //
 $(document).ready(function () {
-    setIconApp('gray', '', BG_SUCCESS_COLOR);
+    setIconApp('', 'gray', '', BG_SUCCESS_COLOR);
     update_tabmap(function () {
 
         // Listen for messages from content scripts.
@@ -49,15 +49,17 @@ $(document).ready(function () {
 
 /**
  * Set browser icon with image, text and color
+ * @param string url
  * @param image string 3 kinds of image: grey/blue/black
  * @param msg string
  * @param color string text color
  */
-function setIconApp(image, msg, color) {
+function setIconApp(url, image, msg, color) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_' + image + '.png' });
     setIconText(msg, color);
-    if (sessionObservable.activeUrl) {
-        sessionObservable.icons.set(sessionObservable.activeUrl, {
+    if (url) {
+        console.trace('set icon for', url);
+        sessionObservable.icons.set(url, {
             image: image,
             text: msg,
             color: color,
@@ -361,7 +363,6 @@ function inject_cs(session, tab_id, skip_text) {
                     console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
 
                     if (data.allowable) {
-                        setIconApp('black', '', BG_SUCCESS_COLOR);
                         $.each(cs_files, function (ndx, cs) {
                             try {
                                 chrome.tabs.executeScript({ file: cs, runAt: run_at },
@@ -377,11 +378,11 @@ function inject_cs(session, tab_id, skip_text) {
                         if (session != null)
                             session.injected_cs_timestamp = Date.now();
                     } else {
-                        setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
+                        setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
                     }
                 }, function (error) {
                     console.error(error);
-                    setIconApp('black', '*EX1', BG_ERROR_COLOR);
+                    setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
                 });
             }
         });
@@ -398,7 +399,6 @@ function inject_cs(session, tab_id, skip_text) {
                     ajax_isTldAllowable(tab.url, function (data) {
                         console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
                         if (data.allowable) {
-                            setIconApp('black', '', BG_SUCCESS_COLOR);
                             $.each(cs_files, function (ndx, cs) {
                                 try {
                                     chrome.tabs.executeScript(tab_id, { file: cs, runAt: run_at },
@@ -413,11 +413,11 @@ function inject_cs(session, tab_id, skip_text) {
                             if (session != null)
                                 session.injected_cs_timestamp = Date.now();
                         } else {
-                            setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
+                            setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
                         }
                     }, function (error) {
                         console.error(error);
-                        setIconApp('black', '*EX1', BG_ERROR_COLOR);
+                        setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
                     });
                 }
             }

@@ -109,16 +109,15 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                 if (data.allowable) {
 
                     console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + session.url + '] >> injecting (again) ...', session_style);
-                    setIconApp('black', '', BG_SUCCESS_COLOR);
                     inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
                 } else {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
+                    setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
                 }
             }, function (error) {
                 console.error(error);
-                setIconApp('black', '*EX1', BG_ERROR_COLOR);
+                setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
             });
 
         } else {
@@ -148,16 +147,15 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                 if (data.allowable) {
 
                     console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + session.url + '] >> injecting (again) ...', session_style);
-                    setIconApp('black', '', BG_SUCCESS_COLOR);
                     inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
                 } else {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp('black', '!(MM)', BG_SUCCESS_COLOR);
+                    setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
                 }
             }, function (error) {
                 console.error(error);
-                setIconApp('black', '*EX1', BG_ERROR_COLOR);
+                setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
             });
 
         } else {
