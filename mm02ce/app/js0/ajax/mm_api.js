@@ -23,7 +23,8 @@ function ajax_isTldAllowable(tld, successFn, errorFn) {
     } catch (err) { console.log('%c /allowable, BAD TLD: [' + tld + '] - ' + err, ajax_style_err); }
 
     if (domain != null) {
-        $.get({
+        $.ajax({
+            type: 'GET',
             url: api_base + '/allowable?tld=' + domain,
             success: successFn,
             error: errorFn,
@@ -45,7 +46,8 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
     } catch (err) { console.log('%c /url_nlpinfo, BAD URL: [' + url + '] - ' + err, ajax_style_err); }
 
     if (parsed_url != null) {
-        $.get({
+        $.ajax({
+            type: 'GET',
             url: api_base + '/url_nlpinfo?url=' + url,
             success: successFn,
             error: errorFn,
