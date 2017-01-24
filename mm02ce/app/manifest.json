@@ -51,6 +51,5 @@
             "https://www.googleapis.com/auth/contacts.readonly"
         ]
     },
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7MBci5r4CUpLE3189gBTW1XJOUkokt8n+p03zYOwcHZk1ZclHFP/CMRnBsA9aFfZETenOQ97pliun5pMiowrmJ9nxf/kT+IERorcoYqa6XMqtE0fSX8td4EebQAdgS2kbjFp6inbwsjdTx0Q3ziokbCuP24gOWP+rSixg6N4e2XLJ3QGVsxlBaVsQkQ5vP/7KpaAeoPkkTg7MWQoBGkSgYe1wYR8ISrjsRM67URTbloDDMfQ8w4CdEyJ+7R/4mXxzxK7i4ODj2QAlgcDj5qRPXJN/7KhgADLlJe8OvyRSMQHIV5bTQ7GZfj1Wj32v+qEDBNWLnZehJVb2Ee5VZr3JQIDAQAB",
     "manifest_version": 2
 }

@@ -44,6 +44,12 @@ export default (nlp = initialState, action) => {
         case 'NLP_INFO_ERROR':
             window.setIconApp(action.payload.url, 'black', '*EX2', window.BG_ERROR_COLOR);
             return nlp;
+        case 'API_CALAIS_ERROR':
+            window.setIconApp(action.payload.url, 'black', '*EX3', window.BG_ERROR_COLOR);
+            return nlp;
+        case 'NLP_CALAIS_ERROR':
+            window.setIconApp(action.payload.url, 'black', '*EX4', window.BG_ERROR_COLOR);
+            return nlp;
         case 'NNS_SCORE': {
             const url = action.payload.url;
             let scores = [];
