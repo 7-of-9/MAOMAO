@@ -320,7 +320,7 @@ function get_page_metadata(fast_refresh, callback) {
         chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NNS_SCORE', payload: { url: document.location.href, score: page_meta.nlp_suitability_score, } } });
 
         if (page_meta.nlp_suitability_score <= MIN_NSS) {
-            return callback && callback(new Error('No text processing'), page_meta);
+            return callback && callback(new Error('Too low NSS!'), page_meta);
         } else {
             return callback(null, page_meta);
         }

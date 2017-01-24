@@ -1,3 +1,4 @@
+import axios from 'axios';
 import firebase from 'firebase';
 import mobx from 'mobx';
 import { wrapStore, alias } from 'react-chrome-redux';
@@ -165,31 +166,67 @@ firebase.initializeApp({
 
 let autoLogin = true;
 
+function queryString(obj) {
+    const str = [];
+    Object.keys(obj).forEach(prop => {
+        str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
+    });
+    return str.join('&');
+}
+
 function initFirebaseApp() {
     console.log('initFirebaseApp');
     // Listen for auth state changes.
     firebase.auth().onAuthStateChanged((googleUser) => {
         if (googleUser && autoLogin) {
-            console.log('firebase => User state change detected from the Background script of the Chrome Extension:', googleUser);
+            console.log('...Auto login for :', googleUser);
             autoLogin = false;
-            /*
-            let token = '';
-            store.dispatch(
-                {
-                    type: 'AUTH_FULFILLED',
-                    payload: {
-                        token,
-                        info: {
-                            email: googleUser.email,
-                            email_verified: googleUser.emailVerified,
-                            name: googleUser.displayName,
-                            picture: googleUser.photoURL,
-                            sub: googleUser.providerData.uid,
-                        },
-                    },
-                },
-            );
-            */
+            chrome.identity.getAuthToken({ interactive: false }, (token) => {
+                if (chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
+                } else if (token) {
+                    const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
+                    firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
+                    axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
+                        .then((response) => {
+                            store.dispatch({
+                                type: 'AUTH_FULFILLED',
+                                payload: { token, info: response.data },
+                            });
+                            syncImScore(false);
+                            // register user
+                            axios({
+                                method: 'post',
+                                url: `${config.apiUrl}/users/google`,
+                                data: queryString({
+                                    email: response.data.email,
+                                    firstName: response.data.family_name,
+                                    lastName: response.data.given_name,
+                                    avatar: response.data.picture,
+                                    gender: response.data.gender,
+                                    google_user_id: response.data.sub,
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                            }).then((user) => {
+                                let userId = -1;
+                                if (user.data && user.data.id) {
+                                    userId = user.data.id;
+                                }
+                                store.dispatch({
+                                    type: 'USER_AFTER_LOGIN',
+                                    payload: {
+                                        userId,
+                                    },
+                                });
+                                window.userId = userId;
+                                window.isGuest = false;
+                            }).catch(error => console.error(error));
+                        })
+                        .catch(error => console.error(error));
+                } else console.warn('The OAuth Token was null');
+            });
         }
     });
 }
