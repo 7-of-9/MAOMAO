@@ -697,7 +697,8 @@ function tabActivated(o) { // why getting object here?!
 
 var selectedWindowId = -1;
 function windowFocusChanged(windowId) {
-
+    // Fix for edge case: user change google chrome window
+    sessionObservable.activeUrl = '';
     if (windowId == selectedWindowId) return false;
     selectedWindowId = windowId;
 
