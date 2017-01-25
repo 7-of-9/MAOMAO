@@ -113,11 +113,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
                 } else {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
+                    setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
                 console.error(error);
-                setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
+                setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 
         } else {
@@ -151,11 +151,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
                 } else {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
+                    setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
                 console.error(error);
-                setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
+                setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 
         } else {

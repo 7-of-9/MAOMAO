@@ -4,13 +4,14 @@
 //
 // color constant
 var BG_SUCCESS_COLOR = '#009900';
-var BG_ERROR_COLOR = '#999999';
+var BG_INACTIVE_COLOR = '#999999';
+var BG_EXCEPTION_COLOR = '#990000';
 
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
 $(document).ready(function () {
-    setIconApp('', 'gray', '', BG_SUCCESS_COLOR);
+    setIconApp('', 'gray', '', BG_INACTIVE_COLOR);
     update_tabmap(function () {
 
         // Listen for messages from content scripts.
@@ -369,11 +370,11 @@ function inject_cs(session, tab_id, skip_text) {
                         if (session != null)
                             session.injected_cs_timestamp = Date.now();
                     } else {
-                        setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
+                        setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                     }
                 }, function (error) {
                     console.error(error);
-                    setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
+                    setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                 });
             }
         });
@@ -404,11 +405,11 @@ function inject_cs(session, tab_id, skip_text) {
                             if (session != null)
                                 session.injected_cs_timestamp = Date.now();
                         } else {
-                            setIconApp(tab.url, 'black', '!(MM)', BG_SUCCESS_COLOR);
+                            setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                         }
                     }, function (error) {
                         console.error(error);
-                        setIconApp(tab.url, 'black', '*EX1', BG_ERROR_COLOR);
+                        setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                     });
                 }
             }
