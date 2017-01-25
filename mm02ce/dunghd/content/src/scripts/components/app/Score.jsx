@@ -10,6 +10,9 @@ const style = {
         right: '10px',
         zIndex: 1000,
         position: 'fixed',
+        color: '#FFF',
+        background: 'rgba(230,240,255,0.4)',
+        boxShadow: '0px 0px 1px 1px rgba(0,0,0,0.15)',
     },
     header: {
         padding: '8px',
@@ -33,7 +36,7 @@ function lastSave(score) {
 }
 
 const Score = pure(({ score }) =>
-    <Card style={style.card}>
+    <Card className="blur" style={style.card}>
         <CardHeader
             style={style.header}
             title={score.im_score}
@@ -41,8 +44,8 @@ const Score = pure(({ score }) =>
             showExpandableButton
             />
         <CardText style={style.text} expandable>
-            Time on tab: {moment.duration(score.time_on_tab).humanize()}<br/>
-            Ping audible: {score.audible_pings}<br/>
+            Time on tab: {moment.duration(score.time_on_tab).humanize()}<br />
+            Ping audible: {score.audible_pings}<br />
             {lastSave(score)}
         </CardText>
     </Card>,
