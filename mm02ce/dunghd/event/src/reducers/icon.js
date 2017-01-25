@@ -30,7 +30,11 @@ export default (state = initialState, action, auth) => {
                 const url = action.payload.url;
                 const activeTabUrl = window.sessionObservable.icons.get(url);
                 if (activeTabUrl) {
-                    window.setIconApp(url, activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
+                    if (activeTabUrl.image === 'gray') {
+                        window.setIconApp(url, 'black', activeTabUrl.text, activeTabUrl.color);
+                    } else {
+                        window.setIconApp(url, activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
+                    }
                 } else {
                     window.setIconApp(url, 'black', '', window.BG_SUCCESS_COLOR);
                 }

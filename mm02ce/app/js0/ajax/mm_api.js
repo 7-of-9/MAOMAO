@@ -44,7 +44,7 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
     try {
         parsed_url = new URL(url);
     } catch (err) { console.log('%c /url_nlpinfo, BAD URL: [' + url + '] - ' + err, ajax_style_err); }
-
+    url = remove_hash_url(url);
     if (parsed_url != null) {
         $.ajax({
             type: 'GET',
@@ -95,4 +95,12 @@ function ajax_put_UrlHistory(history, errorFn, successFn) {
         error: errorFn,
         success: successFn,
     });
+}
+
+function remove_hash_url(url) { // remove trailing page anchor # from URL
+    var url_ex_hash = url;
+    var hash_ndx = url_ex_hash.indexOf('#');
+    if (hash_ndx != -1)
+        url_ex_hash = url_ex_hash.substring(0, hash_ndx);
+    return url_ex_hash;
 }

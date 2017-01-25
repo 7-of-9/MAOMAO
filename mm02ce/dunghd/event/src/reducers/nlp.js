@@ -16,7 +16,7 @@ export default (nlp = initialState, action) => {
                 if (hasExist) {
                     score = hasExist.score;
                 }
-                window.setIconApp(url, 'blue', `${score}nss **`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'blue', `${score} **`, window.BG_SUCCESS_COLOR);
                 return nlp;
             }
         case 'NLP_INFO_KNOWN':
@@ -38,7 +38,7 @@ export default (nlp = initialState, action) => {
                 if (hasExist) {
                     score = hasExist.score;
                 }
-                window.setIconApp(url, 'black', `${score}nss *`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'black', `${score} *`, window.BG_SUCCESS_COLOR);
                 return nlp;
             }
         case 'NLP_INFO_ERROR':
@@ -89,7 +89,7 @@ export default (nlp = initialState, action) => {
                 if (hasExist) {
                     score = hasExist.score;
                 }
-                window.setIconApp(url, 'black', `${score}nss !T`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'black', `${score} !T`, window.BG_SUCCESS_COLOR);
             }
 
             texts = texts.concat(action.payload);

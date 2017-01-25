@@ -103,6 +103,7 @@ function syncImScore(forceSave) {
                 url = tabs[0].url;
                 console.info('reaction url - active tab', url);
             }
+            url = window.bglib_remove_hash_url(url);
             const startsWith = String.prototype.startsWith;
             if (startsWith.call(url, 'chrome://') || startsWith.call(url, 'chrome-extension://')) {
                 store.dispatch({
@@ -168,7 +169,7 @@ let autoLogin = true;
 
 function queryString(obj) {
     const str = [];
-    Object.keys(obj).forEach(prop => {
+    Object.keys(obj).forEach((prop) => {
         str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
     });
     return str.join('&');
