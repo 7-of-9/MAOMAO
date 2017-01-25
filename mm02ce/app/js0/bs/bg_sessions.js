@@ -189,6 +189,9 @@ function session_update_exist_NLP(session, page_meta) {
 }
 
 function session_update_NLP(session, nlp, page_meta) {
+    // save session page_meta
+    session.page_meta = page_meta;
+    if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
     if (nlp.topic_specific == '?') {
         console.info('%c >> session[' + session.url + ']', session_style_hi);
         console.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
@@ -196,10 +199,6 @@ function session_update_NLP(session, nlp, page_meta) {
         return;
     }
     if (!session.hasOwnProperty('nlps')) session.nlps = [];
-    if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
-
-    // save session page_meta
-    session.page_meta = page_meta;
 
     // save NLP result for dbg/diag
     session.nlps = []; // clear -- keep most recent only

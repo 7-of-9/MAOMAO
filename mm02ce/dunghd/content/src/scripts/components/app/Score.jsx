@@ -5,41 +5,46 @@ import { pure } from 'recompose';
 import moment from 'moment';
 
 const style = {
-  top: '80%',
-  left: '35%',
-  right: 'auto',
-  zIndex: 1000,
-  position: 'fixed',
+    card: {
+        top: '5px',
+        right: '10px',
+        zIndex: 1000,
+        position: 'fixed',
+    },
+    header: {
+        padding: '8px',
+    },
+    text: {
+        padding: '8px',
+    },
 };
 
 function lastSave(score) {
-  const url = score.url;
-  let message = `${score.im_score}`;
-  if (score.histories.length) {
-    const hasSuccessRecord = Array.prototype.find.call(score.histories,
-      item => String(item.url) === String(url) && item.history && item.history.result);
-    if (hasSuccessRecord) {
-      console.log('hasSuccessRecord', hasSuccessRecord);
-      message = `${score.im_score} - Last saved ${moment(hasSuccessRecord.saveAt).fromNow()}`;
+    const url = score.url;
+    let message = '';
+    if (score.histories.length) {
+        const hasSuccessRecord = Array.prototype.find.call(score.histories,
+            item => String(item.url) === String(url) && item.history && item.history.result);
+        if (hasSuccessRecord) {
+            message = `Last saved ${moment(hasSuccessRecord.saveAt).fromNow()}`;
+        }
     }
-  }
-  return message;
+    return message;
 }
 
 const Score = pure(({ score }) =>
-  <Card style={style}>
-    <CardHeader
-      title="IM SCORE"
-      subtitle={lastSave(score)}
-      actAsExpander
-      showExpandableButton
-      />
-    <CardText expandable>
-      Time on tab: {moment.duration(score.time_on_tab).humanize()}
-    </CardText>
-    <CardText expandable>
-      Ping audible: {score.audible_pings}
-    </CardText>
-  </Card>,
+    <Card style={style.card}>
+        <CardHeader
+            style={style.header}
+            title={score.im_score}
+            actAsExpander
+            showExpandableButton
+            />
+        <CardText style={style.text} expandable>
+            Time on tab: {moment.duration(score.time_on_tab).humanize()}<br/>
+            Ping audible: {score.audible_pings}<br/>
+            {lastSave(score)}
+        </CardText>
+    </Card>,
 );
 export default Score;

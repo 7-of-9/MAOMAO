@@ -12,6 +12,11 @@ export default (state = initialState, action, auth) => {
             return Object.assign({}, state, { isYoutubeTest: window.enableTestYoutube });
         case 'MAOMAO_DISABLE':
             chrome.contextMenus.removeAll();
+            chrome.contextMenus.create({
+                title: 'v0.4.7',
+                contexts: ['browser_action'],
+                id: 'mm-btn-version',
+            });
             if (auth.isLogin) {
                 let isInternalTab = false;
                 const url = action.payload.url;

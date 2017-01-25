@@ -27,7 +27,7 @@ export default (nlp = initialState, action) => {
                 if (hasExist) {
                     score = hasExist.score;
                 }
-                window.setIconApp(url, 'blue', `${score}nss`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
                 return nlp;
             }
         case 'NLP_INFO_UNKNOWN':
@@ -58,9 +58,9 @@ export default (nlp = initialState, action) => {
             }
 
             if (Number(action.payload.score) <= MIN_NSS) {
-                window.setIconApp(url, 'black', `!(${Number(action.payload.score)}nss)`, window.BG_ERROR_COLOR);
+                window.setIconApp(url, 'black', `!(${Number(action.payload.score)})`, window.BG_ERROR_COLOR);
             } else {
-                window.setIconApp(url, 'black', `${Number(action.payload.score)}nss`, window.BG_SUCCESS_COLOR);
+                window.setIconApp(url, 'black', `${Number(action.payload.score)}`, window.BG_SUCCESS_COLOR);
             }
 
             scores = scores.concat(action.payload);

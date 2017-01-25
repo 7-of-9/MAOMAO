@@ -2,6 +2,11 @@
 export function ctxMenuLogin(userInfo, enableTestYoutube) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
+    title: 'v0.4.7',
+    contexts: ['browser_action'],
+    id: 'mm-btn-version',
+  });
+  chrome.contextMenus.create({
     title: `Welcome back ${userInfo.name} (${userInfo.email})!`,
     contexts: ['browser_action'],
     id: 'mm-btn-show',
@@ -28,6 +33,11 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
 
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
+  chrome.contextMenus.create({
+    title: 'v0.4.7',
+    contexts: ['browser_action'],
+    id: 'mm-btn-version',
+  });
   chrome.contextMenus.create({
     title: 'Login',
     contexts: ['browser_action'],
