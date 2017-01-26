@@ -1,17 +1,31 @@
 import axios from 'axios';
 import firebase from 'firebase';
 import mobx from 'mobx';
-import { wrapStore, alias } from 'react-chrome-redux';
+import {
+    wrapStore,
+    alias
+} from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from 'remote-redux-devtools';
+import {
+    createStore,
+    applyMiddleware
+} from 'redux';
+import {
+    composeWithDevTools
+} from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
-import { batchActions, enableBatching } from 'redux-batched-actions';
+import {
+    batchActions,
+    enableBatching
+} from 'redux-batched-actions';
 
 import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
-import { saveImScore, checkImScore } from './imscore';
+import {
+    saveImScore,
+    checkImScore
+} from './imscore';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -29,7 +43,9 @@ const middleware = [
     thunkMiddleware,
     logger,
 ];
-const composeEnhancers = composeWithDevTools({ realtime: true });
+const composeEnhancers = composeWithDevTools({
+    realtime: true
+});
 const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
     applyMiddleware(...middleware),
 ));
@@ -44,17 +60,17 @@ chrome.contextMenus.removeAll();
 // NOTE: Handler all browser action events
 function onClickHandler(info) {
     switch (info.menuItemId) {
-        case 'mm-btn-logout': {
-            const data = {
-                type: 'AUTH_LOGOUT',
-                payload: {},
-            };
-            store.dispatch(data);
-        }
+        case 'mm-btn-logout':
+            {
+                const data = {
+                    type: 'AUTH_LOGOUT',
+                    payload: {},
+                };
+                store.dispatch(data);
+            }
             break;
         case 'mm-btn-disable-youtube':
-            window.enableTestYoutube = false;
-            {
+            window.enableTestYoutube = false; {
                 const data = {
                     type: 'YOUTUBE_TEST',
                     payload: {
@@ -65,8 +81,7 @@ function onClickHandler(info) {
             }
             break;
         case 'mm-btn-enable-youtube':
-            window.enableTestYoutube = true;
-            {
+            window.enableTestYoutube = true; {
                 const data = {
                     type: 'YOUTUBE_TEST',
                     payload: {
@@ -95,7 +110,10 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
 
 
 function syncImScore(forceSave) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, (tabs) => {
         if (tabs != null && tabs.length > 0) {
             let url = '';
             const now = new Date().toISOString();
@@ -165,8 +183,6 @@ firebase.initializeApp({
     storageBucket: config.firebaseStore,
 });
 
-let autoLogin = true;
-
 function queryString(obj) {
     const str = [];
     Object.keys(obj).forEach((prop) => {
@@ -175,63 +191,72 @@ function queryString(obj) {
     return str.join('&');
 }
 
+function autoLogin() {
+    console.log('autoLogin');
+    chrome.identity.getAuthToken({
+        interactive: false,
+    }, (token) => {
+        if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+        } else if (token) {
+            const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
+            firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
+            axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
+                .then((response) => {
+                    store.dispatch({
+                        type: 'AUTH_FULFILLED',
+                        payload: {
+                            token,
+                            info: response.data,
+                        },
+                    });
+                    syncImScore(false);
+                    // register user
+                    axios({
+                        method: 'post',
+                        url: `${config.apiUrl}/users/google`,
+                        data: queryString({
+                            email: response.data.email,
+                            firstName: response.data.family_name,
+                            lastName: response.data.given_name,
+                            avatar: response.data.picture,
+                            gender: response.data.gender,
+                            google_user_id: response.data.sub,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                    }).then((user) => {
+                        let userId = -1;
+                        if (user.data && user.data.id) {
+                            userId = user.data.id;
+                        }
+                        store.dispatch({
+                            type: 'USER_AFTER_LOGIN',
+                            payload: {
+                                userId,
+                            },
+                        });
+                        window.userId = userId;
+                        window.isGuest = false;
+                    }).catch(error => console.error(error));
+                })
+                .catch(error => console.error(error));
+        } else console.warn('The OAuth Token was null');
+    });
+}
+
 function initFirebaseApp() {
     console.log('initFirebaseApp');
     // Listen for auth state changes.
     firebase.auth().onAuthStateChanged((googleUser) => {
-        if (googleUser && autoLogin) {
-            console.log('...Auto login for :', googleUser);
-            autoLogin = false;
-            chrome.identity.getAuthToken({ interactive: false }, (token) => {
-                if (chrome.runtime.lastError) {
-                    console.error(chrome.runtime.lastError);
-                } else if (token) {
-                    const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-                    firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
-                    axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
-                        .then((response) => {
-                            store.dispatch({
-                                type: 'AUTH_FULFILLED',
-                                payload: { token, info: response.data },
-                            });
-                            syncImScore(false);
-                            // register user
-                            axios({
-                                method: 'post',
-                                url: `${config.apiUrl}/users/google`,
-                                data: queryString({
-                                    email: response.data.email,
-                                    firstName: response.data.family_name,
-                                    lastName: response.data.given_name,
-                                    avatar: response.data.picture,
-                                    gender: response.data.gender,
-                                    google_user_id: response.data.sub,
-                                }),
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                            }).then((user) => {
-                                let userId = -1;
-                                if (user.data && user.data.id) {
-                                    userId = user.data.id;
-                                }
-                                store.dispatch({
-                                    type: 'USER_AFTER_LOGIN',
-                                    payload: {
-                                        userId,
-                                    },
-                                });
-                                window.userId = userId;
-                                window.isGuest = false;
-                            }).catch(error => console.error(error));
-                        })
-                        .catch(error => console.error(error));
-                } else console.warn('The OAuth Token was null');
-            });
+        if (googleUser) {
+            console.log('... firebase googleUser :', googleUser);
         }
     });
 }
 
 window.onload = () => {
     initFirebaseApp();
+    autoLogin();
 };
