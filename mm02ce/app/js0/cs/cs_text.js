@@ -15,7 +15,7 @@ $(document).ready(function () {
     console.info("%c > document.location=" + document.location, cs_log_style_info);
     //document.addEventListener("DOMContentLoaded", function (event)
     {
-
+        // TODO: Try to clear sessionStorage when extension reload
         // FIXME: Use sessionStorage is not stable
         //if (!have_run_text_proc) {
         if (document.location != sessionStorage["mm_cs_text_haveFiredDocReady"]) {

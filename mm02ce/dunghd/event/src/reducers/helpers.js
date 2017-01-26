@@ -2,7 +2,7 @@
 export function ctxMenuLogin(userInfo, enableTestYoutube) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.4.7',
+    title: 'v0.4.8',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });
@@ -34,7 +34,7 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.4.7',
+    title: 'v0.4.8',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });

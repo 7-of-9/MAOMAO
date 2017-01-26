@@ -57,9 +57,9 @@ $(document).ready(function () {
  */
 function setIconApp(url, image, msg, color) {
     chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_' + image + '.png' });
-    setIconText(msg, color);
+    setIconText(msg, color || '');
     if (url) {
-        console.trace('set icon for', url);
+        console.trace('set icon for', url, msg, color, image);
         sessionObservable.icons.set(url, {
             image: image,
             text: msg,

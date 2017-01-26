@@ -6,13 +6,14 @@ import moment from 'moment';
 
 const style = {
     card: {
-        top: '5px',
+        top: '50px',
         right: '10px',
         zIndex: 1000,
         position: 'fixed',
         color: '#FFF',
-        background: 'rgba(230,240,255,0.4)',
-        boxShadow: '0px 0px 1px 1px rgba(0,0,0,0.15)',
+        borderRadius: '6px',
+        background: 'rgba(242,242,242,0.63)',
+        boxShadow: 'rgba(0, 0, 0, 0.14902) 3px 3px 11px 3px',
     },
     header: {
         padding: '8px',
