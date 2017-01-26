@@ -1,6 +1,6 @@
-﻿namespace wowmao
+﻿namespace wowmao.Controls
 {
-    partial class GoldenTree
+    partial class WikiGoldenTree
     {
         /// <summary> 
         /// Required designer variable.
@@ -43,33 +43,25 @@
             this.mnuMatchingUrls,
             this.findAtL1MenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 70);
-            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 70);
             // 
-            // mnuiCtxName
+            // mnuSearchGoogle
             // 
-            this.mnuSearchGoogle.Name = "mnu0";
-            this.mnuSearchGoogle.Size = new System.Drawing.Size(180, 22);
+            this.mnuSearchGoogle.Name = "mnuSearchGoogle";
+            this.mnuSearchGoogle.Size = new System.Drawing.Size(189, 22);
             this.mnuSearchGoogle.Text = "Search Google...";
-            this.mnuSearchGoogle.Click += new System.EventHandler(this.mnuSearchGoogle_Click);
             // 
-            // toggleGolden1ToolStripMenuItem
+            // mnuMatchingUrls
             // 
-            this.mnuMatchingUrls.Name = "mnu1";
-            this.mnuMatchingUrls.Size = new System.Drawing.Size(180, 22);
+            this.mnuMatchingUrls.Name = "mnuMatchingUrls";
+            this.mnuMatchingUrls.Size = new System.Drawing.Size(189, 22);
             this.mnuMatchingUrls.Text = "Find matching URLs...";
-            this.mnuMatchingUrls.Click += new System.EventHandler(this.mnuMatchingUrls_Click);
             // 
             // findAtL1MenuItem
             // 
-            this.findAtL1MenuItem.Name = "mnu2";
-            this.findAtL1MenuItem.Size = new System.Drawing.Size(180, 22);
+            this.findAtL1MenuItem.Name = "findAtL1MenuItem";
+            this.findAtL1MenuItem.Size = new System.Drawing.Size(189, 22);
             this.findAtL1MenuItem.Text = "todo 2";
-            this.findAtL1MenuItem.Click += new System.EventHandler(this.mnu2_Click);
-            // 
-            // TermTree
-            // 
-            this.LineColor = System.Drawing.Color.Black;
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 

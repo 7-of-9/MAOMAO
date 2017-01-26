@@ -23,10 +23,12 @@ select * from wiki_page where page_id in
 
 
 -- walk to top examples...
-select * from wiki_catlink where cl_from = 12 order by cl_to -- *always returns titles of type 14, i.e. cats*
-select * from wiki_page where page_namespace = 14 and page_title='Political_culture' -- 21722732
+select * from wiki_page where page_id = 38788193 -- Pachyceras
 
-select * from wiki_catlink where cl_from = 21722732 order by cl_to
+select * from wiki_catlink where cl_from = 11705105 order by cl_to -- *always returns titles of type 14, i.e. cats*
+select * from wiki_page where  page_title='Professional_studies' -- 21722732
+
+select * from wiki_catlink where cl_from = 11705105 order by cl_to
 select * from wiki_page where page_namespace = 14 and page_title='Culture' -- 694861
 
 select * from wiki_catlink where cl_from = 694861 order by cl_to

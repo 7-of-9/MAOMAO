@@ -13,7 +13,7 @@ using mm_global;
 
 namespace wowmao
 {
-    public partial class GoldenTree : TreeView
+    public partial class MmGoldenTree : TreeView
     {
         public event EventHandler<SearchGoldenTermEventArgs> OnSearchGoldenTerm = delegate { };
         public class SearchGoldenTermEventArgs : EventArgs { public long golden_term_id { get; set; } }
@@ -23,13 +23,13 @@ namespace wowmao
 
         private class NodeTag { public term term; public golden_term golden_term; }
 
-        public GoldenTree()
+        public MmGoldenTree()
         {
             InitializeComponent();
             this.ContextMenuStrip = this.contextMenuStrip1;
         }
 
-        public void BuildTree()
+        public void BuildTree(long root_term_id)
         {
             this.BeginUpdate();
             this.Nodes.Clear();
@@ -40,7 +40,7 @@ namespace wowmao
                                 .Include("term1.golden_term").Include("term1.golden_term1")
                                 .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name)
                                 .ToListNoLock();
-                var root_term = db.terms.Find(g.MAOMAO_ROOT_TERM_ID);
+                var root_term = db.terms.Find(root_term_id);
                 var root_node = NodeFromTerm(root_term);
                 this.Nodes.Add(root_node);
 

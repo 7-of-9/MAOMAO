@@ -30,10 +30,12 @@ namespace mmdb_model
         } }
 
         [NotMapped] public int gold_level { get {
-            if (child_in_golden_terms.Count > 0)
-                return child_in_golden_terms.Single(p => p.child_term_id == this.id).mmcat_level; // would fail if term is a child of more than one golden parent?
-            else
-                return 0;
+            // NOTE -- this can't work now that term can have >1 golden parent! (wiki)
+            //if (child_in_golden_terms.Count > 0)
+            //    return child_in_golden_terms.Single(p => p.child_term_id == this.id).mmcat_level; 
+            //else
+            //    return 0;
+            return -1;
         }}
 
         [NotMapped] public double existing_gold_min_tss_norm { get {

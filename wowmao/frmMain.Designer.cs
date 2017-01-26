@@ -50,6 +50,9 @@
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.pnlURL_List = new System.Windows.Forms.Panel();
+            this.chkExcludeProcessed = new System.Windows.Forms.CheckBox();
+            this.chkRndOrder = new System.Windows.Forms.CheckBox();
+            this.chkUpdateUi = new System.Windows.Forms.CheckBox();
             this.lblWalkInfo = new System.Windows.Forms.Label();
             this.txtUrlSearch = new System.Windows.Forms.ComboBox();
             this.cboTop = new System.Windows.Forms.ComboBox();
@@ -65,15 +68,13 @@
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.chkUpdateUi = new System.Windows.Forms.CheckBox();
             this.lvwUrlTerms2 = new wowmao.TermList();
             this.ttL2Terms = new wowmao.TermTree();
             this.lvwUrlTerms = new wowmao.TermList();
             this.ttUrlTerms = new wowmao.TermTree();
-            this.gtGoldTree = new wowmao.GoldenTree();
+            this.gtGoldTree = new wowmao.MmGoldenTree();
             this.ttAll = new wowmao.TermTree();
-            this.chkRndOrder = new System.Windows.Forms.CheckBox();
-            this.chkExcludeProcessed = new System.Windows.Forms.CheckBox();
+            this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
@@ -94,17 +95,18 @@
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlLeft.Location = new System.Drawing.Point(0, 0);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(300, 761);
+            this.pnlLeft.Size = new System.Drawing.Size(300, 752);
             this.pnlLeft.TabIndex = 2;
             // 
             // pnlGoldenTree
             // 
             this.pnlGoldenTree.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.pnlGoldenTree.Controls.Add(this.wikiGoldTree);
             this.pnlGoldenTree.Controls.Add(this.gtGoldTree);
             this.pnlGoldenTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGoldenTree.Location = new System.Drawing.Point(0, 240);
             this.pnlGoldenTree.Name = "pnlGoldenTree";
-            this.pnlGoldenTree.Size = new System.Drawing.Size(300, 521);
+            this.pnlGoldenTree.Size = new System.Drawing.Size(300, 512);
             this.pnlGoldenTree.TabIndex = 6;
             // 
             // splitter7
@@ -142,7 +144,7 @@
             this.splitter1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.splitter1.Location = new System.Drawing.Point(300, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(6, 761);
+            this.splitter1.Size = new System.Drawing.Size(6, 752);
             this.splitter1.TabIndex = 3;
             this.splitter1.TabStop = false;
             // 
@@ -157,7 +159,7 @@
             this.pnlTestMode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlTestMode.Location = new System.Drawing.Point(306, 0);
             this.pnlTestMode.Name = "pnlTestMode";
-            this.pnlTestMode.Size = new System.Drawing.Size(1127, 761);
+            this.pnlTestMode.Size = new System.Drawing.Size(1122, 752);
             this.pnlTestMode.TabIndex = 4;
             // 
             // splitter5
@@ -166,7 +168,7 @@
             this.splitter5.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter5.Location = new System.Drawing.Point(0, 511);
             this.splitter5.Name = "splitter5";
-            this.splitter5.Size = new System.Drawing.Size(1127, 6);
+            this.splitter5.Size = new System.Drawing.Size(1122, 6);
             this.splitter5.TabIndex = 10;
             this.splitter5.TabStop = false;
             // 
@@ -176,7 +178,7 @@
             this.pnlDirectGoldenCorrelations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDirectGoldenCorrelations.Location = new System.Drawing.Point(0, 511);
             this.pnlDirectGoldenCorrelations.Name = "pnlDirectGoldenCorrelations";
-            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1127, 250);
+            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1122, 241);
             this.pnlDirectGoldenCorrelations.TabIndex = 9;
             // 
             // pnlLevel2Terms
@@ -187,7 +189,7 @@
             this.pnlLevel2Terms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLevel2Terms.Location = new System.Drawing.Point(0, 0);
             this.pnlLevel2Terms.Name = "pnlLevel2Terms";
-            this.pnlLevel2Terms.Size = new System.Drawing.Size(1127, 250);
+            this.pnlLevel2Terms.Size = new System.Drawing.Size(1122, 241);
             this.pnlLevel2Terms.TabIndex = 10;
             // 
             // splitter6
@@ -195,7 +197,7 @@
             this.splitter6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.splitter6.Location = new System.Drawing.Point(400, 0);
             this.splitter6.Name = "splitter6";
-            this.splitter6.Size = new System.Drawing.Size(6, 250);
+            this.splitter6.Size = new System.Drawing.Size(6, 241);
             this.splitter6.TabIndex = 10;
             this.splitter6.TabStop = false;
             // 
@@ -205,7 +207,7 @@
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter2.Location = new System.Drawing.Point(0, 350);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(1127, 6);
+            this.splitter2.Size = new System.Drawing.Size(1122, 6);
             this.splitter2.TabIndex = 4;
             this.splitter2.TabStop = false;
             // 
@@ -218,7 +220,7 @@
             this.pnlURLs.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlURLs.Location = new System.Drawing.Point(0, 0);
             this.pnlURLs.Name = "pnlURLs";
-            this.pnlURLs.Size = new System.Drawing.Size(1127, 350);
+            this.pnlURLs.Size = new System.Drawing.Size(1122, 350);
             this.pnlURLs.TabIndex = 0;
             // 
             // pnlUrlTerms
@@ -230,7 +232,7 @@
             this.pnlUrlTerms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlUrlTerms.Location = new System.Drawing.Point(1006, 0);
             this.pnlUrlTerms.Name = "pnlUrlTerms";
-            this.pnlUrlTerms.Size = new System.Drawing.Size(121, 350);
+            this.pnlUrlTerms.Size = new System.Drawing.Size(116, 350);
             this.pnlUrlTerms.TabIndex = 6;
             // 
             // pnlUrlAllTermCorrelations
@@ -240,7 +242,7 @@
             this.pnlUrlAllTermCorrelations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlUrlAllTermCorrelations.Location = new System.Drawing.Point(0, 106);
             this.pnlUrlAllTermCorrelations.Name = "pnlUrlAllTermCorrelations";
-            this.pnlUrlAllTermCorrelations.Size = new System.Drawing.Size(121, 244);
+            this.pnlUrlAllTermCorrelations.Size = new System.Drawing.Size(116, 244);
             this.pnlUrlAllTermCorrelations.TabIndex = 9;
             // 
             // label1
@@ -258,7 +260,7 @@
             this.splitter4.Dock = System.Windows.Forms.DockStyle.Top;
             this.splitter4.Location = new System.Drawing.Point(0, 100);
             this.splitter4.Name = "splitter4";
-            this.splitter4.Size = new System.Drawing.Size(121, 6);
+            this.splitter4.Size = new System.Drawing.Size(116, 6);
             this.splitter4.TabIndex = 7;
             this.splitter4.TabStop = false;
             // 
@@ -269,7 +271,7 @@
             this.txtInfo.Location = new System.Drawing.Point(0, 0);
             this.txtInfo.Multiline = true;
             this.txtInfo.Name = "txtInfo";
-            this.txtInfo.Size = new System.Drawing.Size(121, 100);
+            this.txtInfo.Size = new System.Drawing.Size(116, 100);
             this.txtInfo.TabIndex = 6;
             // 
             // splitter3
@@ -297,6 +299,42 @@
             this.pnlURL_List.Name = "pnlURL_List";
             this.pnlURL_List.Size = new System.Drawing.Size(1000, 350);
             this.pnlURL_List.TabIndex = 1;
+            // 
+            // chkExcludeProcessed
+            // 
+            this.chkExcludeProcessed.AutoSize = true;
+            this.chkExcludeProcessed.Checked = true;
+            this.chkExcludeProcessed.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkExcludeProcessed.Location = new System.Drawing.Point(321, 5);
+            this.chkExcludeProcessed.Name = "chkExcludeProcessed";
+            this.chkExcludeProcessed.Size = new System.Drawing.Size(71, 17);
+            this.chkExcludeProcessed.TabIndex = 12;
+            this.chkExcludeProcessed.Text = "ex. proc\'d";
+            this.chkExcludeProcessed.UseVisualStyleBackColor = true;
+            // 
+            // chkRndOrder
+            // 
+            this.chkRndOrder.AutoSize = true;
+            this.chkRndOrder.Checked = true;
+            this.chkRndOrder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkRndOrder.Location = new System.Drawing.Point(228, 5);
+            this.chkRndOrder.Name = "chkRndOrder";
+            this.chkRndOrder.Size = new System.Drawing.Size(85, 17);
+            this.chkRndOrder.TabIndex = 11;
+            this.chkRndOrder.Text = "order-by-rnd";
+            this.chkRndOrder.UseVisualStyleBackColor = true;
+            // 
+            // chkUpdateUi
+            // 
+            this.chkUpdateUi.AutoSize = true;
+            this.chkUpdateUi.Checked = true;
+            this.chkUpdateUi.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkUpdateUi.Location = new System.Drawing.Point(617, 5);
+            this.chkUpdateUi.Name = "chkUpdateUi";
+            this.chkUpdateUi.Size = new System.Drawing.Size(72, 17);
+            this.chkUpdateUi.TabIndex = 10;
+            this.chkUpdateUi.Text = "update UI";
+            this.chkUpdateUi.UseVisualStyleBackColor = true;
             // 
             // lblWalkInfo
             // 
@@ -423,18 +461,6 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
-            // chkUpdateUi
-            // 
-            this.chkUpdateUi.AutoSize = true;
-            this.chkUpdateUi.Checked = true;
-            this.chkUpdateUi.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkUpdateUi.Location = new System.Drawing.Point(617, 5);
-            this.chkUpdateUi.Name = "chkUpdateUi";
-            this.chkUpdateUi.Size = new System.Drawing.Size(72, 17);
-            this.chkUpdateUi.TabIndex = 10;
-            this.chkUpdateUi.Text = "update UI";
-            this.chkUpdateUi.UseVisualStyleBackColor = true;
-            // 
             // lvwUrlTerms2
             // 
             this.lvwUrlTerms2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -442,7 +468,7 @@
             this.lvwUrlTerms2.HideSelection = false;
             this.lvwUrlTerms2.Location = new System.Drawing.Point(406, 0);
             this.lvwUrlTerms2.Name = "lvwUrlTerms2";
-            this.lvwUrlTerms2.Size = new System.Drawing.Size(721, 250);
+            this.lvwUrlTerms2.Size = new System.Drawing.Size(716, 241);
             this.lvwUrlTerms2.TabIndex = 11;
             this.lvwUrlTerms2.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms2.View = System.Windows.Forms.View.Details;
@@ -453,7 +479,7 @@
             this.ttL2Terms.Dock = System.Windows.Forms.DockStyle.Left;
             this.ttL2Terms.Location = new System.Drawing.Point(0, 0);
             this.ttL2Terms.Name = "ttL2Terms";
-            this.ttL2Terms.Size = new System.Drawing.Size(400, 250);
+            this.ttL2Terms.Size = new System.Drawing.Size(400, 241);
             this.ttL2Terms.TabIndex = 9;
             // 
             // lvwUrlTerms
@@ -463,7 +489,7 @@
             this.lvwUrlTerms.HideSelection = false;
             this.lvwUrlTerms.Location = new System.Drawing.Point(0, 356);
             this.lvwUrlTerms.Name = "lvwUrlTerms";
-            this.lvwUrlTerms.Size = new System.Drawing.Size(1127, 155);
+            this.lvwUrlTerms.Size = new System.Drawing.Size(1122, 155);
             this.lvwUrlTerms.TabIndex = 8;
             this.lvwUrlTerms.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms.View = System.Windows.Forms.View.Details;
@@ -477,7 +503,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ttUrlTerms.Location = new System.Drawing.Point(6, 25);
             this.ttUrlTerms.Name = "ttUrlTerms";
-            this.ttUrlTerms.Size = new System.Drawing.Size(110, 214);
+            this.ttUrlTerms.Size = new System.Drawing.Size(105, 214);
             this.ttUrlTerms.TabIndex = 8;
             // 
             // gtGoldTree
@@ -487,7 +513,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gtGoldTree.Location = new System.Drawing.Point(7, 5);
             this.gtGoldTree.Name = "gtGoldTree";
-            this.gtGoldTree.Size = new System.Drawing.Size(287, 510);
+            this.gtGoldTree.Size = new System.Drawing.Size(287, 123);
             this.gtGoldTree.TabIndex = 0;
             // 
             // ttAll
@@ -501,35 +527,18 @@
             this.ttAll.Size = new System.Drawing.Size(294, 208);
             this.ttAll.TabIndex = 3;
             // 
-            // chkRndOrder
+            // wikiGoldTree
             // 
-            this.chkRndOrder.AutoSize = true;
-            this.chkRndOrder.Checked = true;
-            this.chkRndOrder.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRndOrder.Location = new System.Drawing.Point(228, 5);
-            this.chkRndOrder.Name = "chkRndOrder";
-            this.chkRndOrder.Size = new System.Drawing.Size(85, 17);
-            this.chkRndOrder.TabIndex = 11;
-            this.chkRndOrder.Text = "order-by-rnd";
-            this.chkRndOrder.UseVisualStyleBackColor = true;
-            // 
-            // chkExcludeProcessed
-            // 
-            this.chkExcludeProcessed.AutoSize = true;
-            this.chkExcludeProcessed.Checked = true;
-            this.chkExcludeProcessed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkExcludeProcessed.Location = new System.Drawing.Point(321, 5);
-            this.chkExcludeProcessed.Name = "chkExcludeProcessed";
-            this.chkExcludeProcessed.Size = new System.Drawing.Size(71, 17);
-            this.chkExcludeProcessed.TabIndex = 12;
-            this.chkExcludeProcessed.Text = "ex. proc\'d";
-            this.chkExcludeProcessed.UseVisualStyleBackColor = true;
+            this.wikiGoldTree.Location = new System.Drawing.Point(7, 134);
+            this.wikiGoldTree.Name = "wikiGoldTree";
+            this.wikiGoldTree.Size = new System.Drawing.Size(287, 370);
+            this.wikiGoldTree.TabIndex = 1;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1433, 761);
+            this.ClientSize = new System.Drawing.Size(1428, 752);
             this.Controls.Add(this.pnlTestMode);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.pnlLeft);
@@ -606,7 +615,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader17;
         private System.Windows.Forms.Panel pnlTermTreeAll;
         private System.Windows.Forms.Panel pnlGoldenTree;
-        private GoldenTree gtGoldTree;
+        private MmGoldenTree gtGoldTree;
         private System.Windows.Forms.Splitter splitter7;
         private System.Windows.Forms.ComboBox txtUrlSearch;
         private System.Windows.Forms.ColumnHeader columnHeader25;
@@ -615,6 +624,7 @@
         private System.Windows.Forms.CheckBox chkUpdateUi;
         private System.Windows.Forms.CheckBox chkExcludeProcessed;
         private System.Windows.Forms.CheckBox chkRndOrder;
+        private Controls.WikiGoldenTree wikiGoldTree;
     }
 }
 

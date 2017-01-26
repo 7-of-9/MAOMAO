@@ -36,19 +36,20 @@ namespace wowmao
             this.cboTop.SelectedIndex = 1;
             this.ttAll.XX_max_L1 = 10;
             InitTvwRootNodes();
-            gtGoldTree.BuildTree();
+            //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
+            wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID); 
 
             txtUrlSearch.SelectedIndex = 1;
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
             this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
         }
 
-        private void GtGoldTree_OnSearchGoogle(object sender, GoldenTree.OnSearchGoogleEventArgs e)
+        private void GtGoldTree_OnSearchGoogle(object sender, MmGoldenTree.OnSearchGoogleEventArgs e)
         {
             Process.Start($"https://www.google.com/#q={e.search_term}");
         }
 
-        private void GtGoldTree_OnSearchGoldenTerm(object sender, GoldenTree.SearchGoldenTermEventArgs e)
+        private void GtGoldTree_OnSearchGoldenTerm(object sender, MmGoldenTree.SearchGoldenTermEventArgs e)
         {
             InitUrls(null, e.golden_term_id);
         }
@@ -164,7 +165,8 @@ namespace wowmao
             this.SetCaption();
 
             InitTvwRootNodes();
-            gtGoldTree.BuildTree();
+            //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
+            wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID);
         }
 
         private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e)
@@ -395,8 +397,10 @@ namespace wowmao
                 //  (would be children of best-golden above).
             }
 
-            if (new_gold_count > 0)
-                gtGoldTree.BuildTree();
+            if (new_gold_count > 0) {
+                //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
+                wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID);
+            }
 
             this.Cursor = Cursors.Default;
         }

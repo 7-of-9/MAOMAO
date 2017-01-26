@@ -37,6 +37,8 @@ namespace mm_global
 
         public const long MAOMAO_ROOT_TERM_ID = 20098;
 
+        public const long WIKI_ROOT_TERM_ID = 150471;
+
         public static List<long> EXCLUDE_TERM_IDs = new List<long>()
         {
             // YouTube & PayPal

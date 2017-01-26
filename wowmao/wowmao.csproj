@@ -85,17 +85,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\WikiGoldenTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\WikiGoldenTree.Designer.cs">
+      <DependentUpon>WikiGoldenTree.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\GoldenTree.cs">
+    <Compile Include="Controls\MmGoldenTree.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\GoldenTree.Designer.cs">
-      <DependentUpon>GoldenTree.cs</DependentUpon>
+    <Compile Include="Controls\MmGoldenTree.Designer.cs">
+      <DependentUpon>MmGoldenTree.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -111,6 +117,9 @@
     <Compile Include="Controls\TermTree.Designer.cs">
       <DependentUpon>TermTree.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Controls\WikiGoldenTree.resx">
+      <DependentUpon>WikiGoldenTree.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>

@@ -5,7 +5,7 @@ CREATE INDEX IX_wiki_namespace ON wiki_page (page_namespace)
 
 alter database mm02_local set recovery simple
 dbcc shrinkfile('mm02_log',100)
-DBCC SHRINKDATABASE('mm02_local') 
+--DBCC SHRINKDATABASE('mm02_local') 
 alter database mm02_local set recovery full
 
 select count(*) from wiki_catlink

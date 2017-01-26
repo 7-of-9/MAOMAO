@@ -15,6 +15,7 @@ using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
 using System.Data.SqlClient;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace wiki_walker
 {
@@ -25,6 +26,68 @@ namespace wiki_walker
 
         public static void Main()
         {
+            ConsoleTraceListener listener = new ConsoleTraceListener();
+            Trace.Listeners.Add(listener);
+            sw.Start();
+
+            var parent_page_ids = new List<long>();
+            WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
+
+            Trace.WriteLine("DONE!! Press any key...");
+            Console.ReadKey();
+
+            //WalkUpTreeRandom(); // run first to find/populate root
+        }
+
+        private static void WalkDownTree(List<long> parent_page_ids, string page_name, int level)
+        {
+            using (var db = mm02Entities.Create())
+            {
+                // ... *if* the dataset can be managed (searched in reasonable time) then maybe go the whole hog and import
+                // pages too, i.e. leaf nodes --> could we mark them as such?
+                // just because they're in the taxonomy, doesn't mean that the mmcat selector has to pick the leaf nodes, it can select a bit higher
+                //
+                var pages = db.wiki_page.AsNoTracking().Where(p => p.page_title == page_name 
+                    && (//p.page_namespace == 0 || // **** EXCLUDE PAGES! otherwise we get everything up to leaf nodes
+                        p.page_namespace == 14) // target: ~4.3m subcats for now wtf should be ample
+                ).ToListNoLock();
+
+                //foreach (var page in pages) {
+                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (page) => {
+                    using (var db2 = mm02Entities.Create()) { 
+                        var children = db2.wiki_catlink.AsNoTracking().Where(p => p.cl_to == page_name).ToListNoLock();
+
+                        //foreach (var child_page_cl in children) {
+                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (child_page_cl) =>
+                        {
+                            using (var db3 = mm02Entities.Create())
+                            {
+                                var child_page = db3.wiki_page.AsNoTracking().Where(p => p.page_id == child_page_cl.cl_from).SingleOrDefault();
+                                if (child_page == null)
+                                    return;// continue;
+
+                                var exclude = exclude_page(child_page.page_title.ltrim());
+                                if (exclude) return;// continue;
+
+                                RecordTerms(page.page_title, page.page_id, child_page.page_title, child_page.page_id, level, page_name);
+
+                                // recurse
+                                if (!parent_page_ids.Contains(child_page.page_id))
+                                {
+                                    parent_page_ids.Add(child_page.page_id);
+                                    WalkDownTree(parent_page_ids, child_page.page_title, level + 1);
+                                }
+                                //else
+                                //    Trace.WriteLine($"({page_name} seen child {child_page.page_title}[{child_page.page_id} in parent list; nop.");
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        private static void WalkUpTreeRandom()
+        {
             // get wiki leaf nodes, random order
             var rnd = new Random();
             using (var db = mm02Entities.Create())
@@ -34,7 +97,6 @@ namespace wiki_walker
                                .OrderBy(p => p.id).Skip(rnd.Next(0, 1000)).Take(100).ToListNoLock();
 
                 //foreach (var leaf in leaves) {
-                sw.Start();
                 Parallel.ForEach(leaves, new ParallelOptions() { MaxDegreeOfParallelism = 100 }, (leaf) =>
                 {
                     using (var db2 = mm02Entities.Create())
@@ -53,6 +115,8 @@ namespace wiki_walker
             }
         }
 
+        private static ConcurrentBag<term> known_terms = new ConcurrentBag<term>();
+
         private static void Walk(List<long> parent_ids, string orig_page_title, long page_id, string child_name)
         {
             using (var db = mm02Entities.Create())
@@ -70,188 +134,233 @@ namespace wiki_walker
 
                         foreach (var cat_page in cat_pages)
                         {
-                            var not_a_topic = false;
-                            if (cat_page.page_title.ltrim().Contains("articles_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("_articles")) not_a_topic = true;
+                            var exclude = exclude_page(cat_page.page_title.ltrim());
+                            if (exclude)
+                                continue;
 
-                            else if (cat_page.page_title.ltrim() == ("articles")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim() == ("contents")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim() == ("wikiboxes")) not_a_topic = true;
+                            RecordTerms(cat_name, cat_page.page_id, child_name, page_id, -1, orig_page_title);
 
-                            // include: could be interesting
-                          //else if (cat_page.page_title.ltrim() == ("good_articles")) not_a_topic = true; //***
-                          //else if (cat_page.page_title.ltrim() == ("featured_articles")) not_a_topic = true; //***
-                          //else if (cat_page.page_title.ltrim() == ("featured_content")) not_a_topic = true;  //***
-                          //else if (cat_page.page_title.ltrim() == ("featured_lists")) not_a_topic = true;  //***
-                          //else if (cat_page.page_title.ltrim().Contains("disambiguation")) not_a_topic = true; // prevent otherwise orphaned things
-
-                            else if (cat_page.page_title.ltrim().Contains("accuracy_disputes")) not_a_topic = true; 
-
-                            else if (cat_page.page_title.ltrim().StartsWith("commons_category_with")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("creative_commons")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("categories_")) not_a_topic = true;
-                          //else if (cat_page.page_title.ltrim().Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
-                            else if (cat_page.page_title.ltrim().Contains("underpopulated_")
-                                  && cat_page.page_title.ltrim().Contains("_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("very_large_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("hidden_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("all_redirect_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("tracking_categories")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("pages_")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("wikipedia_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("wikipedia_administration")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("use_") 
-                                 && cat_page.page_title.ltrim().Contains("_english")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("use_dmy")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("use_mdy")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("use_harvard")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("-centric")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("engvar")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("cs1_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("cs2_")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("npov")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("blp")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("m_w")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("g7")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("vague_or_ambiguous")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("unverifiable_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("to_be_merged")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("biography_with_signature")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("image_galleries")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("incomplete_lists")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("related_lists")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("lists_")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("infobox")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("chembox")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("_needing_confirmation")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("requests_for")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("wikiproject_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("wikidata_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("_wikidata")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("Wikiquote")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("taxoboxes_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("drugboxes_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("interlanguage_")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("GraySubject")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("GrayPage")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("_template")) not_a_topic = true; // "Geobox2 template"
-                            else if (cat_page.page_title.ltrim().Contains("template:")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("geobox")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("clean_up")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("cleanup")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("monitored_short")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("sources_needing")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("subscription_required")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("location_maps")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("region_topic")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().Contains("languages_with")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("languages_which")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("redirect_tracking")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("redirects")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("main_namespace")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("webarchive_")) not_a_topic = true;
-
-                            else if (cat_page.page_title.ltrim().StartsWith("all_stub_articles")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("container_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("fundamental_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().StartsWith("counter_categories")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().EndsWith("_stubs")) not_a_topic = true;
-
-                            if (not_a_topic)
-                                continue; // return;// continue;
-
-                            //if (cat_page.page_title.ltrim().Contains("_by_")) not_a_topic = true; // e.g. Ammonites_by_classificatio
-
-                            var cleaned_cat_name = cat_name.Replace("_", " ");
-                            var cleaned_child_name = child_name.Replace("_", " ");
-
-                            // create terms, type=wikicat
-                            again1:
-                            var child_term = db2.terms.Where(p => p.name == cleaned_child_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
-                            if (child_term == null)
-                            {
-                                child_term = new term() { cal_entity_type_id = null, name = cleaned_child_name, occurs_count = -1, term_type_id = (int)g.TT.WIKI_CAT };
-                                db2.terms.Add(child_term);
-                                if (!db.SaveChanges_IgnoreDupeKeyEx()) goto again1;
-                            }
-                            again2:
-                            var parent_term = db2.terms.Where(p => p.name == cleaned_cat_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
-                            if (parent_term == null)
-                            {
-                                parent_term = new term() { cal_entity_type_id = null, name = cleaned_cat_name, occurs_count = -1, term_type_id = (int)g.TT.WIKI_CAT };
-                                db2.terms.Add(parent_term);
-                                if (!db2.SaveChanges_IgnoreDupeKeyEx()) goto again2;
-                            }
-                            var added = RecordGoldenTerm(parent_term.id, child_term.id);
-                            if (added)
-                            {
-                                var per_sec = (++added_count) / sw.Elapsed.TotalSeconds;
-                                Console.WriteLine($"({orig_page_title}) ... {child_name}[{page_id}] --> {cat_name}[{cat_page.page_id}] ({added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {per_sec.ToString("0.0")} per/sec)");
-                            }
-
-                            // recurse
+                            // recurse - stop at root
                             if (parent_ids.Contains(cat_page.page_id))
-                            {
-                                //Debug.WriteLine($"(seen; skipping.)");
-                                continue; // return;// continue;
-                            }
+                                continue;
                             else
                                 parent_ids.Add(cat_page.page_id);
 
-                            if (cat_name == "Main_topic_classifications" || cat_name == "Wikipedia_categories")
-                            { // suffices for root node
-                                Console.WriteLine($"(root; stopping.)");
-                                continue; // return;// break; //****
+                            if (cat_name == "Main_topic_classifications" || cat_name == "Wikipedia_categories") {
+                                Trace.WriteLine($"(root; stopping.)");
+                                continue;
                             }
                             else
                                 Walk(parent_ids, orig_page_title, cat_page.page_id, cat_name);
                         }
-
-                        if (cat_names.Count == 0) // "Main_topic_classifications"
-                            Console.WriteLine($"child_page_id={page_id} ** no parent cats **");
+                        if (cat_names.Count == 0) 
+                            Trace.WriteLine($"child_page_id={page_id} ** no parent cats **");
                     }
                 });
             }
         }
 
-        private static bool RecordGoldenTerm(long parent_term_id, long child_term_id)
+        private static void RecordTerms(string parent_name, long parent_page_id, string child_name, long child_page_id, int level = -1, string info = null)
         {
+            var cleaned_cat_name = parent_name.Replace("_", " ");
+            var cleaned_child_name = child_name.Replace("_", " ");
             using (var db = mm02Entities.Create())
             {
-                // term pair already exists? nop.
-                if (db.golden_term.Any(p => p.parent_term_id == parent_term_id && p.child_term_id == child_term_id))
-                    return false;
+                // create terms, type=wikicat
+                term child_term, parent_term;
+                child_term = known_terms.FirstOrDefault(p => p.name == cleaned_child_name);
+                if (child_term == null) {
+                    again1:
+                    child_term = db.terms.AsNoTracking().Where(p => p.name == cleaned_child_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
+                    //Trace.WriteLine($"checking: child={cleaned_child_name}");
+                    if (child_term == null) {
+                        child_term = new term() { cal_entity_type_id = null, name = cleaned_child_name, occurs_count = -1, term_type_id = (int)g.TT.WIKI_CAT };
+                        db.terms.Add(child_term);
+                        if (!db.SaveChanges_IgnoreDupeKeyEx()) goto again1;
+                    }
+                    known_terms.Add(child_term);
+                }
 
-                // record term pair, assign mmcat level = -1 for now (need to calc it later, when tree is complete, by walking from root(s)
-                var new_gt = new golden_term() { parent_term_id = parent_term_id, child_term_id = child_term_id, from_wiki = true, mmcat_level = -1 };
-                db.golden_term.Add(new_gt);
-                db.SaveChanges_IgnoreDupeKeyEx();
+                parent_term = known_terms.FirstOrDefault(p => p.name == cleaned_cat_name);
+                if (parent_term == null) {
+                    again2:
+                    parent_term = db.terms.AsNoTracking().Where(p => p.name == cleaned_cat_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
+                    //Trace.WriteLine($"checking: parent={cleaned_cat_name}");
+                    if (parent_term == null) {
+                        parent_term = new term() { cal_entity_type_id = null, name = cleaned_cat_name, occurs_count = -1, term_type_id = (int)g.TT.WIKI_CAT };
+                        db.terms.Add(parent_term);
+                        if (!db.SaveChanges_IgnoreDupeKeyEx()) goto again2;
+                    }
+                    known_terms.Add(parent_term);
+                }
 
-                return true;
+                // record relation
+                var added = RecordGoldenTerm(parent_term.id, child_term.id, level);
+                if (added) {
+                    var per_sec = (++added_count) / sw.Elapsed.TotalSeconds;
+                    Trace.WriteLine($"({info}) ... {child_name}[{child_page_id}] --> {parent_name}[{parent_page_id}] ({added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {per_sec.ToString("0.0")} per/sec)");
+                }
             }
         }
+
+        private static ConcurrentBag<golden_term> known_gts = new ConcurrentBag<golden_term>();
+
+        private static bool RecordGoldenTerm(long parent_term_id, long child_term_id, int level = -1)
+        {
+            if (parent_term_id == child_term_id) return false;
+
+            var gt = known_gts.FirstOrDefault(p => p.parent_term_id == parent_term_id && p.child_term_id == child_term_id);
+            if (gt == null) {
+                using (var db = mm02Entities.Create())
+                {
+                    //Trace.WriteLine($"checking: gt {parent_term_id}x{child_term_id} (known_gts={known_gts.Count})");
+
+                    //if (child_term_id == 132560)
+                    //    Debugger.Break();
+
+                    // term pair already exists? nop.
+                    var known_gt = db.golden_term.FirstOrDefault(p => p.parent_term_id == parent_term_id && p.child_term_id == child_term_id);
+                    if (known_gt != null)
+                    {
+                        if (known_gt.mmcat_level != level)
+                        {
+                            known_gt.mmcat_level = level;
+                            db.SaveChangesTraceValidationErrors();
+                        }
+                        known_gts.Add(known_gt);
+                        return false;
+                    }
+
+                    // record term pair, assign mmcat level = -1 for now (need to calc it later, when tree is complete, by walking from root(s)
+                    var new_gt = new golden_term() { parent_term_id = parent_term_id, child_term_id = child_term_id, from_wiki = true, mmcat_level = level };
+                    db.golden_term.Add(new_gt);
+                    db.SaveChanges_IgnoreDupeKeyEx();
+
+                    known_gts.Add(new_gt);
+                    return true;
+                }
+            }
+            //Trace.WriteLine($"(nop: known GT)");
+            return false;
+        }
+
+        private static bool exclude_page(string page_name_ltrim)
+        {
+            var exclude = false;
+
+            if (page_name_ltrim.Contains("articles_")) exclude = true;
+            else if (page_name_ltrim.Contains("_articles")) exclude = true;
+
+            else if (page_name_ltrim == ("articles")) exclude = true;
+            else if (page_name_ltrim == ("contents")) exclude = true;
+            else if (page_name_ltrim == ("wikiboxes")) exclude = true;
+
+            // include: could be interesting
+            //else if (page_name_ltrim == ("good_articles")) not_a_topic = true; //***
+            //else if (page_name_ltrim == ("featured_articles")) not_a_topic = true; //***
+            //else if (page_name_ltrim == ("featured_content")) not_a_topic = true;  //***
+            //else if (page_name_ltrim == ("featured_lists")) not_a_topic = true;  //***
+            //else if (page_name_ltrim.Contains("disambiguation")) not_a_topic = true; // prevent otherwise orphaned things
+
+            else if (page_name_ltrim.Contains("accuracy_disputes")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("commons_category_with")) exclude = true;
+            else if (page_name_ltrim.StartsWith("creative_commons")) exclude = true;
+
+            else if (page_name_ltrim.Contains("categories_")) exclude = true;
+            //else if (page_name_ltrim.Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
+            else if (page_name_ltrim.Contains("underpopulated_")
+                  && page_name_ltrim.Contains("_categories")) exclude = true;
+            else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
+            else if (page_name_ltrim.StartsWith("hidden_categories")) exclude = true;
+            else if (page_name_ltrim.StartsWith("all_redirect_categories")) exclude = true;
+            else if (page_name_ltrim.StartsWith("tracking_categories")) exclude = true;
+
+            else if (page_name_ltrim.Contains("pages_")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("wikipedia_")) exclude = true;
+            else if (page_name_ltrim.Contains("wikipedia_administration")) exclude = true;
+
+            else if (page_name_ltrim.Contains("use_")
+                 && page_name_ltrim.Contains("_english")) exclude = true;
+            else if (page_name_ltrim.StartsWith("use_dmy")) exclude = true;
+            else if (page_name_ltrim.StartsWith("use_mdy")) exclude = true;
+            else if (page_name_ltrim.StartsWith("use_harvard")) exclude = true;
+
+            else if (page_name_ltrim.Contains("-centric")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("engvar")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("cs1_")) exclude = true;
+            else if (page_name_ltrim.StartsWith("cs2_")) exclude = true;
+
+            else if (page_name_ltrim.Contains("npov")) exclude = true;
+
+            else if (page_name_ltrim.Contains("blp")) exclude = true;
+
+            else if (page_name_ltrim.Contains("m_w")) exclude = true;
+            else if (page_name_ltrim.Contains("g7")) exclude = true;
+
+            else if (page_name_ltrim.Contains("vague_or_ambiguous")) exclude = true;
+            else if (page_name_ltrim.Contains("unverifiable_")) exclude = true;
+            else if (page_name_ltrim.Contains("to_be_merged")) exclude = true;
+
+            else if (page_name_ltrim.Contains("biography_with_signature")) exclude = true;
+            else if (page_name_ltrim.Contains("image_galleries")) exclude = true;
+
+            else if (page_name_ltrim.Contains("incomplete_lists")) exclude = true;
+            else if (page_name_ltrim.Contains("related_lists")) exclude = true;
+            else if (page_name_ltrim.Contains("lists_")) exclude = true;
+
+            else if (page_name_ltrim.Contains("infobox")) exclude = true;
+            else if (page_name_ltrim.Contains("chembox")) exclude = true;
+
+            else if (page_name_ltrim.Contains("_needing_confirmation")) exclude = true;
+            else if (page_name_ltrim.Contains("requests_for")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("wikiproject_")) exclude = true;
+            else if (page_name_ltrim.Contains("wikidata_")) exclude = true;
+            else if (page_name_ltrim.Contains("_wikidata")) exclude = true;
+            else if (page_name_ltrim.Contains("Wikiquote")) exclude = true;
+
+            else if (page_name_ltrim.Contains("taxoboxes_")) exclude = true;
+            else if (page_name_ltrim.Contains("drugboxes_")) exclude = true;
+            else if (page_name_ltrim.Contains("interlanguage_")) exclude = true;
+            else if (page_name_ltrim.Contains("GraySubject")) exclude = true;
+            else if (page_name_ltrim.Contains("GrayPage")) exclude = true;
+
+            else if (page_name_ltrim.Contains("_template")) exclude = true; // "Geobox2 template"
+            else if (page_name_ltrim.Contains("template:")) exclude = true;
+            else if (page_name_ltrim.Contains("geobox")) exclude = true;
+
+            else if (page_name_ltrim.Contains("clean_up")) exclude = true;
+            else if (page_name_ltrim.Contains("cleanup")) exclude = true;
+
+            else if (page_name_ltrim.Contains("monitored_short")) exclude = true;
+            else if (page_name_ltrim.Contains("sources_needing")) exclude = true;
+            else if (page_name_ltrim.Contains("subscription_required")) exclude = true;
+            else if (page_name_ltrim.Contains("location_maps")) exclude = true;
+            else if (page_name_ltrim.Contains("region_topic")) exclude = true;
+
+            else if (page_name_ltrim.Contains("languages_with")) exclude = true;
+            else if (page_name_ltrim.Contains("languages_which")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("redirect_tracking")) exclude = true;
+            else if (page_name_ltrim.Contains("redirects")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("main_namespace")) exclude = true;
+            else if (page_name_ltrim.StartsWith("webarchive_")) exclude = true;
+
+            else if (page_name_ltrim.StartsWith("all_stub_articles")) exclude = true;
+            else if (page_name_ltrim.StartsWith("container_categories")) exclude = true;
+            else if (page_name_ltrim.StartsWith("fundamental_categories")) exclude = true;
+            else if (page_name_ltrim.StartsWith("counter_categories")) exclude = true;
+            else if (page_name_ltrim.EndsWith("_stubs")) exclude = true;
+
+            return exclude;
+        }
+
+
+       
     }
 }
