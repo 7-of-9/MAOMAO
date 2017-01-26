@@ -60,7 +60,7 @@ namespace wiki_walker
                 var cat_names = db.wiki_catlink.AsNoTracking().Where(p => p.cl_from == page_id).Select(p => p.cl_to).ToListNoLock();
                 //foreach (var cat_name in cat_names)
 
-                Parallel.ForEach(cat_names, new ParallelOptions() { MaxDegreeOfParallelism = 100 }, (cat_name) =>
+                Parallel.ForEach(cat_names, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (cat_name) =>
                 {
                     using (var db2 = mm02Entities.Create())
                     {
@@ -78,11 +78,12 @@ namespace wiki_walker
                             else if (cat_page.page_title.ltrim() == ("contents")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim() == ("wikiboxes")) not_a_topic = true;
 
+                            // include: could be interesting
                           //else if (cat_page.page_title.ltrim() == ("good_articles")) not_a_topic = true; //***
                           //else if (cat_page.page_title.ltrim() == ("featured_articles")) not_a_topic = true; //***
                           //else if (cat_page.page_title.ltrim() == ("featured_content")) not_a_topic = true;  //***
                           //else if (cat_page.page_title.ltrim() == ("featured_lists")) not_a_topic = true;  //***
-                          //else if (cat_page.page_title.ltrim().Contains("disambiguation")) not_a_topic = true;
+                          //else if (cat_page.page_title.ltrim().Contains("disambiguation")) not_a_topic = true; // prevent otherwise orphaned things
 
                             else if (cat_page.page_title.ltrim().Contains("accuracy_disputes")) not_a_topic = true; 
 
@@ -90,8 +91,10 @@ namespace wiki_walker
                             else if (cat_page.page_title.ltrim().StartsWith("creative_commons")) not_a_topic = true;
 
                             else if (cat_page.page_title.ltrim().Contains("categories_")) not_a_topic = true;
-                            //else if (cat_page.page_title.ltrim().Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
-
+                          //else if (cat_page.page_title.ltrim().Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
+                            else if (cat_page.page_title.ltrim().Contains("underpopulated_")
+                                  && cat_page.page_title.ltrim().Contains("_categories")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("very_large_categories")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().StartsWith("hidden_categories")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().StartsWith("all_redirect_categories")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().StartsWith("tracking_categories")) not_a_topic = true;
@@ -116,15 +119,21 @@ namespace wiki_walker
 
                             else if (cat_page.page_title.ltrim().Contains("npov")) not_a_topic = true;
 
+                            else if (cat_page.page_title.ltrim().Contains("blp")) not_a_topic = true;
+
+                            else if (cat_page.page_title.ltrim().Contains("m_w")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("g7")) not_a_topic = true;
+
                             else if (cat_page.page_title.ltrim().Contains("vague_or_ambiguous")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("unverifiable_")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("to_be_merged")) not_a_topic = true;
 
-                            else if (cat_page.page_title.ltrim().Contains("Biography_with_signature")) not_a_topic = true;
-                            else if (cat_page.page_title.ltrim().Contains("Image_galleries")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("biography_with_signature")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("image_galleries")) not_a_topic = true;
 
                             else if (cat_page.page_title.ltrim().Contains("incomplete_lists")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("related_lists")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("lists_")) not_a_topic = true;
 
                             else if (cat_page.page_title.ltrim().Contains("infobox")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("chembox")) not_a_topic = true;
@@ -143,8 +152,9 @@ namespace wiki_walker
                             else if (cat_page.page_title.ltrim().Contains("GraySubject")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("GrayPage")) not_a_topic = true;
 
-                            else if (cat_page.page_title.ltrim().Contains("_templates")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("_template")) not_a_topic = true; // "Geobox2 template"
                             else if (cat_page.page_title.ltrim().Contains("template:")) not_a_topic = true;
+                            else if (cat_page.page_title.ltrim().Contains("geobox")) not_a_topic = true;
 
                             else if (cat_page.page_title.ltrim().Contains("clean_up")) not_a_topic = true;
                             else if (cat_page.page_title.ltrim().Contains("cleanup")) not_a_topic = true;
