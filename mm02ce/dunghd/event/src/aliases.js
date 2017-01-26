@@ -109,7 +109,7 @@ const authLogin = () => (
                     }
                 });
 
-                dispatch(actionCreator('AUTH_REJECTED', error));
+                dispatch(actionCreator('AUTH_REJECTED', { error }));
             });
         }
         return dispatch(

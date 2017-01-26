@@ -1,4 +1,3 @@
-
 //
 // ENTRY POINT
 //
@@ -56,8 +55,10 @@ $(document).ready(function () {
  * @param color string text color
  */
 function setIconApp(url, image, msg, color) {
-    chrome.browserAction.setIcon({ path: 'img/ps_sirius_dog_' + image + '.png' });
-    setIconText(msg, color || '');
+    chrome.browserAction.setIcon({
+        path: 'img/ps_sirius_dog_' + image + '.png'
+    });
+    setIconText(msg, color);
     if (url) {
         console.trace('set icon for', url, msg, color, image);
         sessionObservable.icons.set(url, {
@@ -70,9 +71,17 @@ function setIconApp(url, image, msg, color) {
 
 function setIconText(s, c) {
     console.trace('calling icon text');
-    chrome.browserAction.setBadgeText({ text: s });
-    chrome.browserAction.setTitle({ title: s });
-    chrome.browserAction.setBadgeBackgroundColor({ color: c });
+    chrome.browserAction.setBadgeText({
+        text: s
+    });
+    chrome.browserAction.setTitle({
+        title: s
+    });
+    if (c) {
+        chrome.browserAction.setBadgeBackgroundColor({
+            color: c
+        });
+    }
 }
 
 //////////////////////////////////////////////////////
@@ -126,6 +135,7 @@ function registerExtensionEventListeners(event, name) {
 // Remember the last event so that we can avoid multiple events firing
 // unnecessarily (e.g. selection changed due to close).
 var eventsToEat = 0;
+
 function eatEvent(name) {
     if (eventsToEat > 0) {
         console.log('ate event: ' + name);
@@ -162,8 +172,8 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 
             update_tabmap();
         }
-        else
-            console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
+    else
+        console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
 });
 
 
@@ -259,9 +269,9 @@ function handle_cs_doc_event(data, sender) {
         if (data.eventValue == 'started')
             playSound(data.eventName, true);
         else if (data.eventValue == 'stopped')
-            stopSound(data.eventName);
-        else
-            playSound(data.eventName);
+        stopSound(data.eventName);
+    else
+        playSound(data.eventName);
 
     // handle event
     if (sender.tab != null) {
@@ -285,14 +295,16 @@ function handle_cs_doc_event(data, sender) {
                     session_start_TOT(session);
 
                     // update TOT active tab
-                    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                    chrome.tabs.query({
+                        active: true,
+                        currentWindow: true
+                    }, function (tabs) {
                         if (tabs != null && tabs.length > 0)
                             TOT_active_tab = tabs[0];
                     });
                 }
-            }
-            else if (data.type == 'OTHER') {
-                if (data.eventName == 'got_page_meta') {  // update session page meta
+            } else if (data.type == 'OTHER') {
+                if (data.eventName == 'got_page_meta') { // update session page meta
                     var page_meta = data.eventValue;
                     session_update_page_meta(session, data.eventValue);
                 }
@@ -314,19 +326,18 @@ function inject_cs(session, tab_id, skip_text) {
     //}
 
     //var manifest = chrome.runtime.getManifest();
-    var cs_files =
-        [
-            'js0/lib/jquery-1.11.3.js',
-            'js0/lib/underscore.js',
-            'js0/lib/wait_key_elements.js',
-            'js0/nlp/stopwords.js',
-            'js0/lib/nlp.js',
-            'js0/ajax/mm_api.js',
-            'js0/nlp/calais.js',
-            'js0/cs/cs_meta.js',
-            'js0/cs/cs_main.js',
-            'js0/cs/cs_retok.js',
-        ];
+    var cs_files = [
+        'js0/lib/jquery-1.11.3.js',
+        'js0/lib/underscore.js',
+        'js0/lib/wait_key_elements.js',
+        'js0/nlp/stopwords.js',
+        'js0/lib/nlp.js',
+        'js0/ajax/mm_api.js',
+        'js0/nlp/calais.js',
+        'js0/cs/cs_meta.js',
+        'js0/cs/cs_main.js',
+        'js0/cs/cs_retok.js',
+    ];
     if (!skip_text) {
         cs_files.push('js0/cs/cs_text.js');
     }
@@ -335,8 +346,8 @@ function inject_cs(session, tab_id, skip_text) {
         cs_files.push('js0/cs/cs_youtube.js');
     }
 
-    var log_style = !skip_text ? 'background: #555; color: #bada55; font-size:larger;'
-        : 'background: #555; color: #bada55;';
+    var log_style = !skip_text ? 'background: #555; color: #bada55; font-size:larger;' :
+        'background: #555; color: #bada55;';
 
     var run_at = 'document_end'; // document_idle
 
@@ -344,7 +355,10 @@ function inject_cs(session, tab_id, skip_text) {
         //
         // inject current tab
         //
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, function (tabs) {
             if (tabs != null && tabs.length > 0)
                 var current_tab = tabs[0];
 
@@ -357,7 +371,10 @@ function inject_cs(session, tab_id, skip_text) {
                     if (data.allowable) {
                         $.each(cs_files, function (ndx, cs) {
                             try {
-                                chrome.tabs.executeScript({ file: cs, runAt: run_at },
+                                chrome.tabs.executeScript({
+                                        file: cs,
+                                        runAt: run_at
+                                    },
                                     function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
                             } catch (err) {
                                 console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
@@ -378,8 +395,7 @@ function inject_cs(session, tab_id, skip_text) {
                 });
             }
         });
-    }
-    else {
+    } else {
         //
         // inject specific tab id
         //
@@ -393,7 +409,10 @@ function inject_cs(session, tab_id, skip_text) {
                         if (data.allowable) {
                             $.each(cs_files, function (ndx, cs) {
                                 try {
-                                    chrome.tabs.executeScript(tab_id, { file: cs, runAt: run_at },
+                                    chrome.tabs.executeScript(tab_id, {
+                                            file: cs,
+                                            runAt: run_at
+                                        },
                                         function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
                                 } catch (err) {
                                     console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
@@ -470,7 +489,7 @@ function playSound(id, loop) {
             sound.loop = loop;
 
         // Sometimes, when playing multiple times, readyState is HAVE_METADATA.
-        if (sound.readyState == 0) {  // HAVE_NOTHING
+        if (sound.readyState == 0) { // HAVE_NOTHING
             console.log('bad ready state: ' + sound.readyState);
         } else if (sound.error) {
             console.log('media error: ' + sound.error);
@@ -518,11 +537,17 @@ function loadSound(file, id) {
     }
     var audio = new Audio();
     audio.id = id;
-    audio.onerror = function () { soundLoadError(audio, id); };
+    audio.onerror = function () {
+        soundLoadError(audio, id);
+    };
     audio.addEventListener('canplaythrough',
-        function () { soundLoaded(audio, id); }, false);
+        function () {
+            soundLoaded(audio, id);
+        }, false);
     if (id == 'startup') {
-        audio.addEventListener('ended', function () { started = true; });
+        audio.addEventListener('ended', function () {
+            started = true;
+        });
     }
     audio.src = base_url + file;
     audio.load();
@@ -557,7 +582,7 @@ function tabCreated(tab) {
 
     if (eatEvent('tabCreated'))
         return false;
-    eventsToEat++;  // tabNavigated or tabSelectionChanged
+    eventsToEat++; // tabNavigated or tabSelectionChanged
     // TODO - unfortunately, we can't detect whether this tab will get focus, so
     // we can't decide whether or not to eat a second event.
     return true;
@@ -571,7 +596,7 @@ function tabRemoved(tabId) {
     if (eatEvent('tabRemoved'))
         return false;
     if (tabId == selectedTabId) {
-        eventsToEat++;  // tabSelectionChanged
+        eventsToEat++; // tabSelectionChanged
         stopNavSound();
     }
     return true;
@@ -581,7 +606,7 @@ function windowCreated(window) {
 
     if (eatEvent('windowCreated'))
         return false;
-    eventsToEat += 3;  // tabNavigated, tabSelectionChanged, windowFocusChanged
+    eventsToEat += 3; // tabNavigated, tabSelectionChanged, windowFocusChanged
     if (window.incognito) {
         playSound('windowCreatedIncognito');
         return false;
@@ -604,7 +629,10 @@ function tabNavigated(tabId, changeInfo, tab) {
         ' ci.mutedInfo=' + changeInfo.mutedInfo +
         ' ci.favIconUrl=' + changeInfo.favIconUrl, events_style_hi);
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
         var tab = tabs[0];
         if (tab != null) {
             console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
@@ -632,6 +660,7 @@ function tabNavigated(tabId, changeInfo, tab) {
 
 // TABMAP: chrome.tabs.onSelectionChanged (Deprecated since Chrome 33. Please use tabs.onActivated)
 var selectedTabId = -1;
+
 function tabSelectionChanged(tabId) {
 
     update_tabmap();
@@ -640,7 +669,10 @@ function tabSelectionChanged(tabId) {
 
     selectedTabId = tabId;
 
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
         var tab = tabs[0];
         if (tab != null && process_url(tab.url)) {
             console.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
@@ -665,6 +697,7 @@ function tabSelectionChanged(tabId) {
 // time on tab (TOT) tracking
 var TOT_active_tab = null;
 var TOT_active_window_id = 0;
+
 function tabActivated(o) { // why getting object here?!
 
     var tabId = o.tabId;
@@ -697,6 +730,7 @@ function tabActivated(o) { // why getting object here?!
 }
 
 var selectedWindowId = -1;
+
 function windowFocusChanged(windowId) {
     // Fix for edge case: user change google chrome window
     sessionObservable.activeUrl = '';
@@ -722,7 +756,10 @@ function windowFocusChanged(windowId) {
 }
 
 function TOT_start_current_focused() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
         if (chrome.runtime.lastError)
             console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
         else {
@@ -763,25 +800,22 @@ function bglib_remove_hash_url(url) { // remove trailing page anchor # from tab 
 
 function new_guid() {
     var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
     return guid;
 }
 
 
-    //var test_ids = [];
-    //for (var i = 0; i < 100000; i++) {
-    //    var id = new_guid();
-    //    if (_.any(test_ids, function (a) { return a == id })) {
-    //        console.error('COLLISION!');
-    //    }
+//var test_ids = [];
+//for (var i = 0; i < 100000; i++) {
+//    var id = new_guid();
+//    if (_.any(test_ids, function (a) { return a == id })) {
+//        console.error('COLLISION!');
+//    }
 
-    //    test_ids.push(id);
-    //}
-    //console.info('test_ids.len=' + test_ids.length);
-    //console.dir(test_ids);
-
-
-
-
+//    test_ids.push(id);
+//}
+//console.info('test_ids.len=' + test_ids.length);
+//console.dir(test_ids);
