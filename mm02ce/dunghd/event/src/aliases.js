@@ -7,10 +7,11 @@ function checkAuth() {
         function getTokenAndXhr() {
             chrome.identity.getAuthToken({ interactive: true }, (token) => {
                 if (chrome.runtime.lastError) {
+                    console.error(chrome.runtime.lastError);
                     return reject(chrome.runtime.lastError);
                 } else if (token) {
                     const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-                    firebase.auth().signInWithCredential(credential).catch(error => reject(error));
+                    firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
                     return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
                         .then(response => resolve({ token, info: response.data }))
                         .catch((error) => {
@@ -19,6 +20,7 @@ function checkAuth() {
                                 chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
                                 return;
                             }
+                            console.error(error);
                             reject(error);
                         });
                 }
@@ -102,12 +104,6 @@ const authLogin = () => (
                 if (firebase.auth().currentUser) {
                     firebase.auth().signOut();
                 }
-
-                chrome.identity.removeCachedAuthToken({ token: '' }, () => {
-                    if (chrome.runtime.lastError) {
-                        console.error(chrome.runtime.lastError);
-                    }
-                });
 
                 dispatch(actionCreator('AUTH_REJECTED', { error }));
             });
