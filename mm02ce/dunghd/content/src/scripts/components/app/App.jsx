@@ -79,7 +79,7 @@ class App extends Component {
                         google_user_id: token.info.sub,
                     });
                 }
-                throw new Error('Oops! The user did not approve access.');
+                throw new Error(this.props.auth.message);
             })
             .then((user) => {
                 console.log('user', user);
@@ -98,7 +98,7 @@ class App extends Component {
                 console.warn(err);
                 this.notify({
                     title: err.message,
-                    autoHide: 1000,
+                    autoHide: 3000,
                     timestamp: moment().format('h:mm A'),
                 });
             });
