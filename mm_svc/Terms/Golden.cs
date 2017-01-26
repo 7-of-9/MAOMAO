@@ -54,7 +54,7 @@ namespace mm_svc.Terms
                                 parent_term_id = suggested.suggested_gold_parent.id,
                                 mmcat_level = suggested.suggested_gold_parent.gold_level + 1,
                                 autosuggested_at_utc = DateTime.UtcNow,
-                                url_id = originating_url_id,
+                                url_id = originating_url_id, // todo: remove autosuggest -- use wiki cats
                             };
                             db.golden_term.Add(golden_term);
                             db.SaveChangesTraceValidationErrors();

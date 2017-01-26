@@ -7,19 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace mm_wikidb
+namespace mmdb_model
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class categorylink
+    public partial class wiki_catlink
     {
         public long cl_from { get; set; }
-        public byte[] cl_to { get; set; }
-        public byte[] cl_sortkey { get; set; }
-        public System.DateTime cl_timestamp { get; set; }
-        public byte[] cl_sortkey_prefix { get; set; }
-        public byte[] cl_collation { get; set; }
+        public string cl_to { get; set; }
         public string cl_type { get; set; }
+        public System.Guid id { get; set; }
+        public Nullable<bool> processed { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace mm_global
             CALAIS_TOPIC = 1,
             CALAIS_ENTITY = 2,
             CALAIS_SOCIALTAG = 3,
+            WIKI_CAT = 10,
         }
 
         public enum ET {
