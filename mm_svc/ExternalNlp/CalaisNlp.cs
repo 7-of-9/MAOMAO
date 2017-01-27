@@ -16,7 +16,7 @@ namespace mm_svc
             if (nlp_info.url == null) throw new ArgumentException("missing url");
             if (nlp_info.meta == null) throw new ArgumentException("missing meta");
             if (nlp_info.items == null) throw new ArgumentException("missing items");
-            var url = nlp_info.url.href.ToString();
+            var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
 
             // get awis site -- prep/sanity checking
             bool returned_from_db;
@@ -83,7 +83,11 @@ namespace mm_svc
                     p => p.type == "ENTITY" || p.type == "SOCIAL_TAG" || p.type == "TOPIC"))
                 {
                     string item_name = item.name.ToString();
+                    if (string.IsNullOrEmpty(item_name) || item_name.Length > 128)
+                        continue;
+
                     string item_type = item.type.ToString();
+
                     int term_type_id;
                     switch (item_type) {
                         case "ENTITY": term_type_id = (int)g.TT.CALAIS_ENTITY; break;

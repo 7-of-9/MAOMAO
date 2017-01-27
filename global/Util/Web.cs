@@ -20,5 +20,15 @@ namespace mm_global
 
             return uri.Host;    
         }
+
+        public static string RemoveHashFromUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return null;
+
+            if (url.Contains("#"))
+                return url.Substring(0, url.IndexOf("#"));
+            else
+                return url;
+        }
     }
 }

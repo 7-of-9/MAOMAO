@@ -21,7 +21,6 @@
         <AssociationConnector Association="mm02Model.FK_url_golden_term_url" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
-        <EntityTypeShape EntityType="mm02Model.wiki_page" Width="1.5" PointX="10.375" PointY="2.75" />
         <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="3.375" PointY="7" />
         <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term" />
@@ -34,6 +33,7 @@
         <AssociationConnector Association="mm02Model.fk_golden_term_url" />
         <AssociationConnector Association="mm02Model.FK_url_golden_term_golden_term" />
         <EntityTypeShape EntityType="mm02Model.wiki_catlink" Width="1.5" PointX="10.375" PointY="0.75" />
+        <EntityTypeShape EntityType="mm02Model.wiki_page" Width="1.5" PointX="10.375" PointY="2.875" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

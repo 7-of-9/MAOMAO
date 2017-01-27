@@ -8,9 +8,17 @@ namespace tests
     public class Test_SiteInfo
     {
         [TestMethod]
+        public void GetSiteAllowable()
+        {
+            bool returned_from_db;
+            var awis_site = mm_svc.SiteInfo.GetOrQueryAwis("docs.google.com", out returned_from_db);
+            bool allowable = mm_svc.SiteInfo.IsSiteAllowable(awis_site);
+        }
+
+        [TestMethod]
         public void GetSiteInfo()
         {
-            bool  returned_from_db;
+            bool  returned_from_db;    
 
             mm_svc.SiteInfo.GetOrQueryAwis("www.hungry-girl.com", out returned_from_db);
 

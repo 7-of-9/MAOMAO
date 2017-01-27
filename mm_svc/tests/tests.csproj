@@ -75,6 +75,10 @@
     <EmbeddedResource Include="Resources\cal_nlp2.json" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\global\mm_global.csproj">
+      <Project>{17d58e56-2a83-4552-8afe-664d78183a6b}</Project>
+      <Name>mm_global</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\mmdb_model\mm_db.csproj">
       <Project>{2a14fbee-79bc-4845-9129-0f3527426a4e}</Project>
       <Name>mm_db</Name>

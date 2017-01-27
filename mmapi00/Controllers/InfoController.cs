@@ -19,7 +19,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/allowable")]
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 60 * 60 * 24 * 30, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days
+        [CacheOutput(ClientTimeSpan = 30, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 seconds / 30 days
         public IHttpActionResult IsAllowable(string tld)
         {
             if (string.IsNullOrEmpty(tld)) return BadRequest("bad tld");

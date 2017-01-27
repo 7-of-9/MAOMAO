@@ -154,6 +154,7 @@
           <Property Name="page_id" Type="bigint" Nullable="false" />
           <Property Name="page_namespace" Type="int" Nullable="false" />
           <Property Name="page_title" Type="nvarchar" MaxLength="255" />
+          <Property Name="processed" Type="bit" />
         </EntityType>
         <Association Name="FK_awis_site_awis_cat">
           <End Role="awis_cat" Type="Self.awis_cat" Multiplicity="0..1" />
@@ -450,7 +451,6 @@
             <End Role="url" EntitySet="urls" />
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
-          <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
           <EntitySet Name="terms" EntityType="mm02Model.term" />
           <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
@@ -490,6 +490,7 @@
             <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
           <EntitySet Name="wiki_catlink" EntityType="mm02Model.wiki_catlink" />
+          <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
           </EntityContainer>
         <EntityType Name="awis_site">
           <Key>
@@ -692,14 +693,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="wiki_page">
-          <Key>
-            <PropertyRef Name="page_id" />
-          </Key>
-          <Property Name="page_id" Type="Int64" Nullable="false" />
-          <Property Name="page_namespace" Type="Int32" Nullable="false" />
-          <Property Name="page_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="term">
           <Key>
             <PropertyRef Name="id" />
@@ -851,6 +844,15 @@
           <Property Name="id" Type="Guid" Nullable="false" />
           <Property Name="processed" Type="Boolean" />
         </EntityType>
+        <EntityType Name="wiki_page">
+          <Key>
+            <PropertyRef Name="page_id" />
+          </Key>
+          <Property Name="page_id" Type="Int64" Nullable="false" />
+          <Property Name="page_namespace" Type="Int32" Nullable="false" />
+          <Property Name="page_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="processed" Type="Boolean" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -977,15 +979,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="wiki_page">
-            <EntityTypeMapping TypeName="mm02Model.wiki_page">
-              <MappingFragment StoreEntitySet="wiki_page">
-                <ScalarProperty Name="page_title" ColumnName="page_title" />
-                <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
-                <ScalarProperty Name="page_id" ColumnName="page_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="terms">
             <EntityTypeMapping TypeName="mm02Model.term">
               <MappingFragment StoreEntitySet="term">
@@ -1018,6 +1011,16 @@
                 <ScalarProperty Name="cl_type" ColumnName="cl_type" />
                 <ScalarProperty Name="cl_to" ColumnName="cl_to" />
                 <ScalarProperty Name="cl_from" ColumnName="cl_from" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="wiki_page">
+            <EntityTypeMapping TypeName="mm02Model.wiki_page">
+              <MappingFragment StoreEntitySet="wiki_page">
+                <ScalarProperty Name="processed" ColumnName="processed" />
+                <ScalarProperty Name="page_title" ColumnName="page_title" />
+                <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
+                <ScalarProperty Name="page_id" ColumnName="page_id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -22,5 +22,11 @@ namespace tests
                 //mm_svc.CalaisNlp.MaintainTerms(nlp_info);
             }
         }
+
+        [TestMethod]
+        public void RemoveHashUrl_Calais()
+        {
+            var ret = mm_global.Util.RemoveHashFromUrl("https://medium.com/@jico/the-fine-art-of-javascript-error-tracking-bc031f24c659#.56mhnbp1w");
+        }
     }
 }
