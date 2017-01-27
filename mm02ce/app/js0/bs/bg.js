@@ -58,17 +58,18 @@ $(document).ready(function () {
 
 /**
  * Set browser icon with image, text and color
- * @param string url
+ * @param string rawUrl
  * @param image string 3 kinds of image: grey/blue/black
  * @param msg string
  * @param color string text color
  */
-function setIconApp(url, image, msg, color) {
+function setIconApp(rawUrl, image, msg, color) {
     chrome.browserAction.setIcon({
         path: 'img/ps_sirius_dog_' + image + '.png'
     });
     setIconText(msg, color);
-    if (url) {
+    if (rawUrl) {
+        var url = bglib_remove_hash_url(rawUrl);
         console.trace('set icon for', url, msg, color, image);
         sessionObservable.icons.set(url, {
             image: image,
@@ -380,7 +381,7 @@ function inject_cs(session, tab_id, skip_text) {
                         if (chrome.runtime.lastError) {
                             console.warn(chrome.runtime.lastError);
                         }
-                        if (existTab) {
+                        if (existTab && existTab.url === tab.url) {
                             if (data.allowable) {
                                 $.each(cs_files, function (ndx, cs) {
                                     try {
@@ -429,7 +430,7 @@ function inject_cs(session, tab_id, skip_text) {
                             if (chrome.runtime.lastError) {
                                 console.warn(chrome.runtime.lastError);
                             }
-                            if (existTab) {
+                            if (existTab && existTab.url === tab.url) {
                                 if (data.allowable) {
                                     $.each(cs_files, function (ndx, cs) {
                                         try {

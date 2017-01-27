@@ -123,6 +123,7 @@ function syncImScore(forceSave) {
                 console.info('reaction url - active tab', url);
             }
             url = window.bglib_remove_hash_url(url);
+            console.info('syncImScore', forceSave, url);
             const startsWith = String.prototype.startsWith;
             if (startsWith.call(url, 'chrome://') || startsWith.call(url, 'chrome-extension://')) {
                 store.dispatch({
@@ -140,6 +141,9 @@ function syncImScore(forceSave) {
                 });
                 if (Number(window.userId) > 0) {
                     checkImScore(window.sessionObservable, batchActions, store, url, now);
+                    // blue icon means success
+                    const currentIcon = window.sessionObservable.icons.get(url);
+                    console.info('currentIcon', currentIcon);
                     if (forceSave) {
                         saveImScore(window.sessionObservable, window.ajax_put_UrlHistory, store, url, Number(window.userId));
                     }
