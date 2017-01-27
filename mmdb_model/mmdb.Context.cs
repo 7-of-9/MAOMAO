@@ -35,9 +35,9 @@ namespace mmdb_model
         public virtual DbSet<user_url> user_url { get; set; }
         public virtual DbSet<url_golden_term> url_golden_term { get; set; }
         public virtual DbSet<url> urls { get; set; }
-        public virtual DbSet<wiki_page> wiki_page { get; set; }
         public virtual DbSet<term> terms { get; set; }
         public virtual DbSet<golden_term> golden_term { get; set; }
         public virtual DbSet<wiki_catlink> wiki_catlink { get; set; }
+        public virtual DbSet<wiki_page> wiki_page { get; set; }
     }
 }

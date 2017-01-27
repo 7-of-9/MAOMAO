@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -30,7 +31,7 @@ namespace wiki_walker
             Trace.Listeners.Add(listener);
             sw.Start();
 
-            var parent_page_ids = new List<long>();
+            var parent_page_ids = new ConcurrentDictionary<long, int>();
             WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
             //WalkDownTree(parent_page_ids, "Art_genres", -9);
 
@@ -40,7 +41,7 @@ namespace wiki_walker
             //WalkUpTreeRandom(); // run first to find/populate root
         }
 
-        private static void WalkDownTree(List<long> parent_page_ids, string page_name, int level)
+        private static void WalkDownTree(ConcurrentDictionary<long, int> parent_page_ids, string page_name, int level)
         {
             int par_max = Debugger.IsAttached ? 1 : 15;
             using (var db = mm02Entities.Create())
@@ -49,25 +50,30 @@ namespace wiki_walker
                 // pages too, i.e. leaf nodes --> could we mark them as such?
                 // just because they're in the taxonomy, doesn't mean that the mmcat selector has to pick the leaf nodes, it can select a bit higher
                 //
-                var pages = db.wiki_page.AsNoTracking().Where(p => p.page_title == page_name 
+                var pages = db.wiki_page.Where(p => p.page_title == page_name 
                     && (//p.page_namespace == 0 || // **** EXCLUDE PAGES! otherwise we get everything up to leaf nodes
-                        p.page_namespace == 14) // target: ~4.3m subcats for now wtf should be ample
-                ).ToListNoLock();
+                        p.page_namespace == 14)) // target: ~4.3m subcats for now wtf should be ample
+                .Where(p => (p.processed ?? false) == false)
+                .ToListNoLock();
 
                 //foreach (var page in pages) {
-                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (page) => {
+                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (page) =>
+                {
                     using (var db2 = mm02Entities.Create()) { 
-                        var children = db2.wiki_catlink.AsNoTracking().Where(p => p.cl_to == page_name)
-                                          .OrderBy(p => p.cl_to)
+                        var children = db2.wiki_catlink
+                                          .Where(p => p.cl_to == page_name
+                                                  && (p.processed ?? false) == false) //**
+                                          .OrderBy(p => p.id) //.cl_to)
                                           .ToListNoLock();
 
-                        //foreach (var child_page_cl in children) {
                         var child_pages_to_walk = new List<wiki_page>();
                         Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
                         {
                             using (var db3 = mm02Entities.Create())
                             {
-                                var child_page = db3.wiki_page.AsNoTracking().Where(p => p.page_id == child_page_cl.cl_from).SingleOrDefault();
+                                var child_page = db3.wiki_page
+                                                    .Where(p => p.page_id == child_page_cl.cl_from)
+                                                    .SingleOrDefault();
                                 if (child_page == null)
                                     return;
 
@@ -81,17 +87,32 @@ namespace wiki_walker
                         });
 
                         // recurse
-                        //foreach (var child_page_to_walk in child_pages_to_walk)
                         Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_to_walk) =>
                         {
-                            if (!parent_page_ids.Contains(child_page_to_walk.page_id))
+                            if (!parent_page_ids.ContainsKey(child_page_to_walk.page_id))
                             {
-                                parent_page_ids.Add(child_page_to_walk.page_id);
+                                parent_page_ids.TryAdd(child_page_to_walk.page_id, 42);
                                 WalkDownTree(parent_page_ids, child_page_to_walk.page_title, level + 1);
                             }
                         });
+
+                        // mark catlinks as processed
+                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
+                        {
+                            using (var db3 = mm02Entities.Create())
+                            {
+                                var cl = db3.wiki_catlink.Find(child_page_cl.id);
+                                cl.processed = true;
+                                db3.SaveChangesTraceValidationErrors();
+                            }
+                        });
+
                     }
+
+                    page.processed = true; //**
                 });
+
+                db.SaveChangesTraceValidationErrors(); //** page
             }
         }
 

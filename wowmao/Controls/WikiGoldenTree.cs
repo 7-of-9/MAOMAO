@@ -34,42 +34,54 @@ namespace wowmao.Controls
             this.AfterExpand += WikiGoldenTree_AfterExpand;
             this.AfterSelect += WikiGoldenTree_AfterSelect;
             this.MouseMove += WikiGoldenTree_MouseMove;
+            this.NodeMouseHover += WikiGoldenTree_NodeMouseHover;
         }
 
-        private void WikiGoldenTree_MouseMove(object sender, MouseEventArgs e)
+        private void WikiGoldenTree_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
         {
-            TreeNode theNode = this.GetNodeAt(e.X, e.Y);
+            var theNode = e.Node; //this.GetNodeAt(e.X, e.Y);
             if ((theNode != null)) {
                 if (theNode.ToolTipText != null) {
-                    if (theNode.ToolTipText != this.toolTip1.GetToolTip(this))
-                    {
-                        this.toolTip1.SetToolTip(this, theNode.ToolTipText);
+                    if (theNode.ToolTipText != this.toolTip1.GetToolTip(this)) {
+                        var p = this.PointToClient(Cursor.Position);
+                        this.toolTip1.Show(theNode.ToolTipText, this, p.X+5, p.Y+5, 2000);
                     }
-                }
-                else
-                    this.toolTip1.SetToolTip(this, "");
-            }
-            else
-                this.toolTip1.SetToolTip(this, "");
+                } else this.toolTip1.Show("", this);
+            } else this.toolTip1.Show("", this);
         }
 
-        public void BuildTree(string search_text_root = null)
+        private void WikiGoldenTree_MouseMove(object sender, MouseEventArgs e) {}
+
+        public void BuildTree(string search = null, bool whole_word = false)
         {
             total_gts_loaded = 0;
             this.BeginUpdate();
             this.Nodes.Clear();
             this.Cursor = Cursors.WaitCursor;
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                List<term> root_wiki_terms;
-                if (string.IsNullOrEmpty(search_text_root))
-                    root_wiki_terms = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                List<term> wiki_terms;
+                if (string.IsNullOrEmpty(search))
+                    wiki_terms = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
                 else
-                    root_wiki_terms = db.terms.Where(p => p.name.Contains(search_text_root) && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                    if (whole_word)
+                        wiki_terms = db.terms.Where(p => (p.name == search || p.name.Contains(" " + search + " ")) && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                    else
+                        wiki_terms = db.terms.Where(p => p.name.Contains(search) && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
 
-                foreach (var root_wiki_term in root_wiki_terms) {
-                    var gts = GoldenTermsFromParentTermId(root_wiki_term.id);
-                    var nodes = NodesFromGoldenTerms(gts);
-                    this.Nodes.AddRange(nodes.ToArray());
+                foreach (var wiki_term in wiki_terms) {
+                    var gts = GoldenTermsFromParentTermId(wiki_term.id);
+                    if (gts.Count > 0) {
+                        var nodes = NodesFromGoldenTerms(gts);
+
+                        if (wiki_term.name == g.WIKI_ROOT_TERM_NAME_CLEANED)
+                            this.Nodes.AddRange(nodes.ToArray()); // add single root term
+                        else { 
+                            GetParentTreeForParentTermId(wiki_term.id, nodes); // search terms -- build parent tree for each search result
+                            var root_parent = GetRootParentNode(nodes[0]);
+                            nodes[0].Parent.ForeColor = Color.Red;
+                            this.Nodes.Add(root_parent);
+                        }
+                    }
                     Application.DoEvents();
                 }
             }
@@ -77,17 +89,37 @@ namespace wowmao.Controls
             this.Cursor = Cursors.Default;
         }
 
-        private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts)
+        private TreeNode GetRootParentNode(TreeNode node)
         {
-            var nodes = new List<TreeNode>();
-            foreach(var gt in gts)
+            if (node.Parent != null) return GetRootParentNode(node.Parent);
+            return node;
+        }
+
+        private void GetParentTreeForParentTermId(long term_id, List<TreeNode> nodes)
+        {
+            // immediate parent(s)
+            var gts = GoldenTermsFromChildTermId(term_id);
+            foreach (var gt_parent in gts)
             {
-                var node = new TreeNode(gt.ToString());
-                node.Tag = gt;
-                node.ToolTipText = $"{gt.parent_term.name}[{gt.parent_term.id}] --> {gt.child_term.name}[{gt.child_term.id}]";
-                nodes.Add(node);
+                var parent_node = NodesFromGoldenTerms(new List<golden_term>() { gt_parent }).First();
+                parent_node.Nodes.AddRange(nodes.ToArray());
+                GetParentTreeForParentTermId(gt_parent.parent_term_id, new List<TreeNode>() { parent_node }); // recurse
             }
-            return nodes;
+        }
+
+        private List<golden_term> GoldenTermsFromChildTermId(long child_term_id)
+        {
+            var db = mm02Entities.Create();
+            var qry = db.golden_term
+                            .Include("term.golden_term").Include("term.golden_term1")
+                            .Include("term1.golden_term").Include("term1.golden_term1")
+                            .Where(p => p.child_term_id == child_term_id)
+                            .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
+            //Debug.WriteLine(qry.ToString());
+            var gts = qry.ToListNoLock();
+            this.total_gts_loaded += gts.Count;
+            OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
+            return gts;
         }
 
         private List<golden_term> GoldenTermsFromParentTermId(long parent_term_id)
@@ -104,6 +136,20 @@ namespace wowmao.Controls
             OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
             return gts;
         }
+
+        private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts)
+        {
+            var nodes = new List<TreeNode>();
+            foreach(var gt in gts)
+            {
+                var node = new TreeNode(gt.ToString());
+                node.Tag = gt;
+                node.ToolTipText = $"{gt.parent_term.name}[{gt.parent_term.id}] --> {gt.child_term.name}[{gt.child_term.id}]";
+                nodes.Add(node);
+            }
+            return nodes;
+        }
+
 
         private void WikiGoldenTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -147,7 +193,7 @@ namespace wowmao.Controls
         #endregion
 
         #region Search
-        internal void Search(string searchText) { BuildTree(searchText); }
+        internal void Search(string searchText, bool whole_word) { BuildTree(searchText, whole_word); }
 
         //private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
         //private int LastNodeIndex = 0;

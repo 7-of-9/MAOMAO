@@ -17,5 +17,6 @@ namespace mmdb_model
         public long page_id { get; set; }
         public int page_namespace { get; set; }
         public string page_title { get; set; }
+        public Nullable<bool> processed { get; set; }
     }
 }

@@ -454,7 +454,7 @@ namespace wowmao
 
         private void cmdGtSearch_Click(object sender, EventArgs e)
         {
-            wikiGoldTree.Search(this.txtGtSearch.Text);
+            wikiGoldTree.Search(this.txtGtSearch.Text, chkSearchWholeWord.Checked);
         }
 
         bool getting_all_gts = false;
