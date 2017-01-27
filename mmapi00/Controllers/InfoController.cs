@@ -19,7 +19,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/allowable")]
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 30, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 seconds / 30 days
+        [CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
         public IHttpActionResult IsAllowable(string tld)
         {
             if (string.IsNullOrEmpty(tld)) return BadRequest("bad tld");
@@ -55,7 +55,8 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/url_nlpinfo")]
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days
+        // FIXME: NO CACHE!! seeing weird behavior on Dung's testing
+        //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days 
         public IHttpActionResult GetNlpInfo(string url)
         {
             if (string.IsNullOrEmpty(url)) return BadRequest("bad url");
@@ -74,7 +75,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/url_nlpinfo_calais")]
         [HttpPut]
-      //[InvalidateCacheOutput("GetNlpInfo")] // really not ideal; invalidates the cache for all URL params!!
+        //[InvalidateCacheOutput("GetNlpInfo")] // not desired - invalidates the cache for all URL params!! see below fixme
         public IHttpActionResult PutNlpInfoCalais([FromBody]dynamic nlp_info)
         {
             //g.LogLine(System.Web.Helpers.Json.Encode(nlp_info));
@@ -88,6 +89,7 @@ namespace mmapi00.Controllers
                 mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_terms, out new_pairs);
 
                 // decache GetNlpInfo() for this url 
+                // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
                 string url = nlp_info.url.href.ToString();
                 var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
                 this.RemoveCacheVariants(cacheKey + "-url=" + url);
