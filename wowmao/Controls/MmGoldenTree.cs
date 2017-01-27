@@ -74,6 +74,7 @@ namespace wowmao
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
+
         }
 
         private void mnuSearchGoogle_Click(object sender, EventArgs e)

@@ -68,13 +68,17 @@
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
+            this.txtGtSearch = new System.Windows.Forms.TextBox();
+            this.cmdGtSearch = new System.Windows.Forms.Button();
+            this.cmdExpandAll = new System.Windows.Forms.Button();
             this.lvwUrlTerms2 = new wowmao.TermList();
             this.ttL2Terms = new wowmao.TermTree();
             this.lvwUrlTerms = new wowmao.TermList();
             this.ttUrlTerms = new wowmao.TermTree();
+            this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.ttAll = new wowmao.TermTree();
-            this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
+            this.lblTotGtsLoaded = new System.Windows.Forms.Label();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
@@ -101,6 +105,10 @@
             // pnlGoldenTree
             // 
             this.pnlGoldenTree.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.pnlGoldenTree.Controls.Add(this.lblTotGtsLoaded);
+            this.pnlGoldenTree.Controls.Add(this.cmdExpandAll);
+            this.pnlGoldenTree.Controls.Add(this.cmdGtSearch);
+            this.pnlGoldenTree.Controls.Add(this.txtGtSearch);
             this.pnlGoldenTree.Controls.Add(this.wikiGoldTree);
             this.pnlGoldenTree.Controls.Add(this.gtGoldTree);
             this.pnlGoldenTree.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -461,6 +469,33 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
+            // txtGtSearch
+            // 
+            this.txtGtSearch.Location = new System.Drawing.Point(88, 8);
+            this.txtGtSearch.Name = "txtGtSearch";
+            this.txtGtSearch.Size = new System.Drawing.Size(118, 21);
+            this.txtGtSearch.TabIndex = 2;
+            // 
+            // cmdGtSearch
+            // 
+            this.cmdGtSearch.Location = new System.Drawing.Point(7, 8);
+            this.cmdGtSearch.Name = "cmdGtSearch";
+            this.cmdGtSearch.Size = new System.Drawing.Size(74, 21);
+            this.cmdGtSearch.TabIndex = 3;
+            this.cmdGtSearch.Text = "Search GTs:";
+            this.cmdGtSearch.UseVisualStyleBackColor = true;
+            this.cmdGtSearch.Click += new System.EventHandler(this.cmdGtSearch_Click);
+            // 
+            // cmdExpandAll
+            // 
+            this.cmdExpandAll.Location = new System.Drawing.Point(7, 35);
+            this.cmdExpandAll.Name = "cmdExpandAll";
+            this.cmdExpandAll.Size = new System.Drawing.Size(74, 21);
+            this.cmdExpandAll.TabIndex = 4;
+            this.cmdExpandAll.Text = "get all...";
+            this.cmdExpandAll.UseVisualStyleBackColor = true;
+            this.cmdExpandAll.Click += new System.EventHandler(this.cmdExpandAll_Click);
+            // 
             // lvwUrlTerms2
             // 
             this.lvwUrlTerms2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -506,14 +541,25 @@
             this.ttUrlTerms.Size = new System.Drawing.Size(105, 214);
             this.ttUrlTerms.TabIndex = 8;
             // 
+            // wikiGoldTree
+            // 
+            this.wikiGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.wikiGoldTree.Location = new System.Drawing.Point(7, 61);
+            this.wikiGoldTree.Name = "wikiGoldTree";
+            this.wikiGoldTree.Size = new System.Drawing.Size(287, 445);
+            this.wikiGoldTree.TabIndex = 1;
+            // 
             // gtGoldTree
             // 
             this.gtGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gtGoldTree.Location = new System.Drawing.Point(7, 5);
+            this.gtGoldTree.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.gtGoldTree.Location = new System.Drawing.Point(287, 6);
             this.gtGoldTree.Name = "gtGoldTree";
-            this.gtGoldTree.Size = new System.Drawing.Size(287, 123);
+            this.gtGoldTree.Size = new System.Drawing.Size(10, 23);
             this.gtGoldTree.TabIndex = 0;
             // 
             // ttAll
@@ -527,12 +573,14 @@
             this.ttAll.Size = new System.Drawing.Size(294, 208);
             this.ttAll.TabIndex = 3;
             // 
-            // wikiGoldTree
+            // lblTotGtsLoaded
             // 
-            this.wikiGoldTree.Location = new System.Drawing.Point(7, 134);
-            this.wikiGoldTree.Name = "wikiGoldTree";
-            this.wikiGoldTree.Size = new System.Drawing.Size(287, 370);
-            this.wikiGoldTree.TabIndex = 1;
+            this.lblTotGtsLoaded.AutoSize = true;
+            this.lblTotGtsLoaded.Location = new System.Drawing.Point(87, 39);
+            this.lblTotGtsLoaded.Name = "lblTotGtsLoaded";
+            this.lblTotGtsLoaded.Size = new System.Drawing.Size(45, 13);
+            this.lblTotGtsLoaded.TabIndex = 5;
+            this.lblTotGtsLoaded.Text = "count ...";
             // 
             // frmMain
             // 
@@ -550,6 +598,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlLeft.ResumeLayout(false);
             this.pnlGoldenTree.ResumeLayout(false);
+            this.pnlGoldenTree.PerformLayout();
             this.pnlTermTreeAll.ResumeLayout(false);
             this.pnlTestMode.ResumeLayout(false);
             this.pnlDirectGoldenCorrelations.ResumeLayout(false);
@@ -625,6 +674,10 @@
         private System.Windows.Forms.CheckBox chkExcludeProcessed;
         private System.Windows.Forms.CheckBox chkRndOrder;
         private Controls.WikiGoldenTree wikiGoldTree;
+        private System.Windows.Forms.Button cmdGtSearch;
+        private System.Windows.Forms.TextBox txtGtSearch;
+        private System.Windows.Forms.Button cmdExpandAll;
+        private System.Windows.Forms.Label lblTotGtsLoaded;
     }
 }
 

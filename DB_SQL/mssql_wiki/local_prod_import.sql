@@ -13,7 +13,9 @@ select * from term where id in (
   select parent_term_id from golden_term where from_wiki=1 and parent_term_id not in
     (select child_term_id from golden_term where from_wiki=1))
 
-select *, (select name from term where id=child_term_id) from golden_term where parent_term_id = 98493 --***
+-- root->first level in golden terms
+select * from term where name = 'Main topic classifications'
+select *, (select name from term where id=child_term_id) from golden_term where parent_term_id = 150471 --***
 
 select * from wiki_page where page_title = 'Jokes'
 select * from wiki_catlink where cl_to = 'Set_categories'

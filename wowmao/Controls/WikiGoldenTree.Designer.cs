@@ -30,20 +30,36 @@
         {
             this.components = new System.ComponentModel.Container();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuInfo = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuSep1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuSearchGoogle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMatchingUrls = new System.Windows.Forms.ToolStripMenuItem();
-            this.findAtL1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuInfo,
+            this.mnuSep1,
             this.mnuSearchGoogle,
-            this.mnuMatchingUrls,
-            this.findAtL1MenuItem});
+            this.mnuMatchingUrls});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 76);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            // 
+            // mnuInfo
+            // 
+            this.mnuInfo.Enabled = false;
+            this.mnuInfo.Name = "mnuInfo";
+            this.mnuInfo.Size = new System.Drawing.Size(189, 22);
+            this.mnuInfo.Text = "(info)";
+            // 
+            // mnuSep1
+            // 
+            this.mnuSep1.Name = "mnuSep1";
+            this.mnuSep1.Size = new System.Drawing.Size(186, 6);
             // 
             // mnuSearchGoogle
             // 
@@ -57,11 +73,9 @@
             this.mnuMatchingUrls.Size = new System.Drawing.Size(189, 22);
             this.mnuMatchingUrls.Text = "Find matching URLs...";
             // 
-            // findAtL1MenuItem
+            // WikiGoldenTree
             // 
-            this.findAtL1MenuItem.Name = "findAtL1MenuItem";
-            this.findAtL1MenuItem.Size = new System.Drawing.Size(189, 22);
-            this.findAtL1MenuItem.Text = "todo 2";
+            this.LineColor = System.Drawing.Color.Black;
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -72,6 +86,8 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem mnuSearchGoogle;
         private System.Windows.Forms.ToolStripMenuItem mnuMatchingUrls;
-        private System.Windows.Forms.ToolStripMenuItem findAtL1MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnuInfo;
+        private System.Windows.Forms.ToolStripSeparator mnuSep1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

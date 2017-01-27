@@ -36,12 +36,15 @@ namespace wowmao
             this.cboTop.SelectedIndex = 1;
             this.ttAll.XX_max_L1 = 10;
             InitTvwRootNodes();
-            //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
-            wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID); 
 
             txtUrlSearch.SelectedIndex = 1;
+
+            //this.gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
             this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
+
+            this.wikiGoldTree.OnGtsLoaded += WikiGoldTree_OnGtsLoaded;
+            this.wikiGoldTree.BuildTree();
         }
 
         private void GtGoldTree_OnSearchGoogle(object sender, MmGoldenTree.OnSearchGoogleEventArgs e)
@@ -166,7 +169,7 @@ namespace wowmao
 
             InitTvwRootNodes();
             //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
-            wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID);
+            wikiGoldTree.BuildTree();
         }
 
         private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e)
@@ -399,7 +402,7 @@ namespace wowmao
 
             if (new_gold_count > 0) {
                 //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
-                wikiGoldTree.BuildTree(g.WIKI_ROOT_TERM_ID);
+                wikiGoldTree.BuildTree();
             }
 
             this.Cursor = Cursors.Default;
@@ -447,6 +450,31 @@ namespace wowmao
                 cmdWalk.Text = "Walk...";
                 walking = false;
             }
+        }
+
+        private void cmdGtSearch_Click(object sender, EventArgs e)
+        {
+            wikiGoldTree.Search(this.txtGtSearch.Text);
+        }
+
+        bool getting_all_gts = false;
+        private void cmdExpandAll_Click(object sender, EventArgs e)
+        {
+            if (!getting_all_gts) {
+                getting_all_gts = true;
+                cmdExpandAll.Text = "STOP";
+                wikiGoldTree.StartGetAll(wikiGoldTree.Nodes);
+            }
+            else {
+                getting_all_gts = false;
+                wikiGoldTree.StopGetAll();
+                cmdExpandAll.Text = "get all...";
+            }
+        }
+
+        private void WikiGoldTree_OnGtsLoaded(object sender, Controls.WikiGoldenTree.OnGtsLoadedEventArgs e)
+        {
+            this.lblTotGtsLoaded.Text = e.count_loaded.ToString() + " GTs loaded.";
         }
     }
 }

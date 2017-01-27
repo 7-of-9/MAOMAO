@@ -32,6 +32,7 @@ namespace wiki_walker
 
             var parent_page_ids = new List<long>();
             WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
+            //WalkDownTree(parent_page_ids, "Art_genres", -9);
 
             Trace.WriteLine("DONE!! Press any key...");
             Console.ReadKey();
@@ -41,6 +42,7 @@ namespace wiki_walker
 
         private static void WalkDownTree(List<long> parent_page_ids, string page_name, int level)
         {
+            int par_max = Debugger.IsAttached ? 1 : 15;
             using (var db = mm02Entities.Create())
             {
                 // ... *if* the dataset can be managed (searched in reasonable time) then maybe go the whole hog and import
@@ -53,32 +55,39 @@ namespace wiki_walker
                 ).ToListNoLock();
 
                 //foreach (var page in pages) {
-                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (page) => {
+                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (page) => {
                     using (var db2 = mm02Entities.Create()) { 
-                        var children = db2.wiki_catlink.AsNoTracking().Where(p => p.cl_to == page_name).ToListNoLock();
+                        var children = db2.wiki_catlink.AsNoTracking().Where(p => p.cl_to == page_name)
+                                          .OrderBy(p => p.cl_to)
+                                          .ToListNoLock();
 
                         //foreach (var child_page_cl in children) {
-                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (child_page_cl) =>
+                        var child_pages_to_walk = new List<wiki_page>();
+                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
                         {
                             using (var db3 = mm02Entities.Create())
                             {
                                 var child_page = db3.wiki_page.AsNoTracking().Where(p => p.page_id == child_page_cl.cl_from).SingleOrDefault();
                                 if (child_page == null)
-                                    return;// continue;
+                                    return;
 
-                                var exclude = exclude_page(child_page.page_title.ltrim());
-                                if (exclude) return;// continue;
+                                if (exclude_page(child_page.page_title.ltrim()))
+                                    return;
 
                                 RecordTerms(page.page_title, page.page_id, child_page.page_title, child_page.page_id, level, page_name);
 
-                                // recurse
-                                if (!parent_page_ids.Contains(child_page.page_id))
-                                {
-                                    parent_page_ids.Add(child_page.page_id);
-                                    WalkDownTree(parent_page_ids, child_page.page_title, level + 1);
-                                }
-                                //else
-                                //    Trace.WriteLine($"({page_name} seen child {child_page.page_title}[{child_page.page_id} in parent list; nop.");
+                                child_pages_to_walk.Add(child_page);
+                            }
+                        });
+
+                        // recurse
+                        //foreach (var child_page_to_walk in child_pages_to_walk)
+                        Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_to_walk) =>
+                        {
+                            if (!parent_page_ids.Contains(child_page_to_walk.page_id))
+                            {
+                                parent_page_ids.Add(child_page_to_walk.page_id);
+                                WalkDownTree(parent_page_ids, child_page_to_walk.page_title, level + 1);
                             }
                         });
                     }
@@ -115,7 +124,7 @@ namespace wiki_walker
             }
         }
 
-        private static ConcurrentBag<term> known_terms = new ConcurrentBag<term>();
+        //private static ConcurrentBag<term> known_terms = new ConcurrentBag<term>();
 
         private static void Walk(List<long> parent_ids, string orig_page_title, long page_id, string child_name)
         {
@@ -168,8 +177,8 @@ namespace wiki_walker
             {
                 // create terms, type=wikicat
                 term child_term, parent_term;
-                child_term = known_terms.FirstOrDefault(p => p.name == cleaned_child_name);
-                if (child_term == null) {
+                //child_term = known_terms.FirstOrDefault(p => p.name == cleaned_child_name);
+                //if (child_term == null) {
                     again1:
                     child_term = db.terms.AsNoTracking().Where(p => p.name == cleaned_child_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
                     //Trace.WriteLine($"checking: child={cleaned_child_name}");
@@ -178,11 +187,11 @@ namespace wiki_walker
                         db.terms.Add(child_term);
                         if (!db.SaveChanges_IgnoreDupeKeyEx()) goto again1;
                     }
-                    known_terms.Add(child_term);
-                }
+                //    known_terms.Add(child_term);
+                //}
 
-                parent_term = known_terms.FirstOrDefault(p => p.name == cleaned_cat_name);
-                if (parent_term == null) {
+                //parent_term = known_terms.FirstOrDefault(p => p.name == cleaned_cat_name);
+                //if (parent_term == null) {
                     again2:
                     parent_term = db.terms.AsNoTracking().Where(p => p.name == cleaned_cat_name && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefault();
                     //Trace.WriteLine($"checking: parent={cleaned_cat_name}");
@@ -191,31 +200,31 @@ namespace wiki_walker
                         db.terms.Add(parent_term);
                         if (!db.SaveChanges_IgnoreDupeKeyEx()) goto again2;
                     }
-                    known_terms.Add(parent_term);
-                }
+                //    known_terms.Add(parent_term);
+                //}
 
                 // record relation
                 var added = RecordGoldenTerm(parent_term.id, child_term.id, level);
                 if (added) {
                     var per_sec = (++added_count) / sw.Elapsed.TotalSeconds;
-                    Trace.WriteLine($"({info}) ... {child_name}[{child_page_id}] --> {parent_name}[{parent_page_id}] ({added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {per_sec.ToString("0.0")} per/sec)");
+                    if (added_count % 100 == 0)
+                        Trace.WriteLine($"({info}) ... {child_name}[{child_page_id}] --> {parent_name}[{parent_page_id}] ({added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {per_sec.ToString("0.0")} per/sec)");
                 }
             }
         }
 
-        private static ConcurrentBag<golden_term> known_gts = new ConcurrentBag<golden_term>();
+        //private static ConcurrentBag<golden_term> known_gts = new ConcurrentBag<golden_term>();
 
         private static bool RecordGoldenTerm(long parent_term_id, long child_term_id, int level = -1)
         {
             if (parent_term_id == child_term_id) return false;
 
-            var gt = known_gts.FirstOrDefault(p => p.parent_term_id == parent_term_id && p.child_term_id == child_term_id);
-            if (gt == null) {
+            //var gt = known_gts.FirstOrDefault(p => p.parent_term_id == parent_term_id && p.child_term_id == child_term_id);
+            //if (gt == null) {
                 using (var db = mm02Entities.Create())
                 {
-                    //Trace.WriteLine($"checking: gt {parent_term_id}x{child_term_id} (known_gts={known_gts.Count})");
-
-                    //if (child_term_id == 132560)
+                //Trace.WriteLine($"checking: gt {parent_term_id}x{child_term_id} (known_gts={known_gts.Count})");
+                    //if (child_term_id == 456922 && parent_term_id == 150471)
                     //    Debugger.Break();
 
                     // term pair already exists? nop.
@@ -227,7 +236,7 @@ namespace wiki_walker
                             known_gt.mmcat_level = level;
                             db.SaveChangesTraceValidationErrors();
                         }
-                        known_gts.Add(known_gt);
+                        //known_gts.Add(known_gt);
                         return false;
                     }
 
@@ -236,10 +245,10 @@ namespace wiki_walker
                     db.golden_term.Add(new_gt);
                     db.SaveChanges_IgnoreDupeKeyEx();
 
-                    known_gts.Add(new_gt);
+                    //known_gts.Add(new_gt);
                     return true;
                 }
-            }
+            //}
             //Trace.WriteLine($"(nop: known GT)");
             return false;
         }
