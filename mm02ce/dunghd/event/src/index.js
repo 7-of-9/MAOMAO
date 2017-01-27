@@ -3,20 +3,20 @@ import firebase from 'firebase';
 import mobx from 'mobx';
 import {
     wrapStore,
-    alias
+    alias,
 } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import {
     createStore,
-    applyMiddleware
+    applyMiddleware,
 } from 'redux';
 import {
-    composeWithDevTools
+    composeWithDevTools,
 } from 'remote-redux-devtools';
 import createLogger from 'redux-logger';
 import {
     batchActions,
-    enableBatching
+    enableBatching,
 } from 'redux-batched-actions';
 
 import aliases from './aliases';
@@ -24,13 +24,14 @@ import rootReducer from './reducers';
 import Config from './config';
 import {
     saveImScore,
-    checkImScore
+    checkImScore,
 } from './imscore';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
 require('expose?$!expose?jQuery!jquery');
 require('expose?_!underscore');
+require('expose?StackTrace!stacktrace-js');
 require('expose?moment!moment');
 require('expose?firebase!firebase');
 require('expose?mobx!mobx');
@@ -44,7 +45,7 @@ const middleware = [
     logger,
 ];
 const composeEnhancers = composeWithDevTools({
-    realtime: true
+    realtime: true,
 });
 const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
     applyMiddleware(...middleware),
@@ -112,7 +113,7 @@ chrome.contextMenus.onClicked.addListener(onClickHandler);
 function syncImScore(forceSave) {
     chrome.tabs.query({
         active: true,
-        currentWindow: true
+        currentWindow: true,
     }, (tabs) => {
         if (tabs != null && tabs.length > 0) {
             let url = '';
@@ -200,7 +201,7 @@ function autoLogin() {
             console.error(chrome.runtime.lastError);
         } else if (token) {
             const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-            firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
+            firebase.auth().signInWithCredential(credential).catch(error => console.warn(error));
             axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
                 .then((response) => {
                     store.dispatch({
@@ -239,9 +240,9 @@ function autoLogin() {
                         });
                         window.userId = userId;
                         window.isGuest = false;
-                    }).catch(error => console.error(error));
+                    }).catch(error => console.warn(error));
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.warn(error));
         } else console.warn('The OAuth Token was null');
     });
 }

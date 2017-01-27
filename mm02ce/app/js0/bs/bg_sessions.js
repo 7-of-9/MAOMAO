@@ -116,7 +116,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                     setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
-                console.error(error);
+                console.warn(error);
                 setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 
@@ -154,7 +154,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                     setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
-                console.error(error);
+                console.warn(error);
                 setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 

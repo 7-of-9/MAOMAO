@@ -6,6 +6,15 @@ var BG_SUCCESS_COLOR = '#009900';
 var BG_INACTIVE_COLOR = '#999999';
 var BG_EXCEPTION_COLOR = '#990000';
 
+// ERROR handler
+
+window.onerror = function (msg, file, line, col, error) {
+    // callback is called with an Array[StackFrame]
+    console.trace('onerror');
+    StackTrace.fromError(error).then(callback).catch(errback);
+};
+
+
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
@@ -172,8 +181,8 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 
             update_tabmap();
         }
-    else
-        console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
+        else
+            console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
 });
 
 
@@ -269,9 +278,9 @@ function handle_cs_doc_event(data, sender) {
         if (data.eventValue == 'started')
             playSound(data.eventName, true);
         else if (data.eventValue == 'stopped')
-        stopSound(data.eventName);
-    else
-        playSound(data.eventName);
+            stopSound(data.eventName);
+        else
+            playSound(data.eventName);
 
     // handle event
     if (sender.tab != null) {
@@ -367,30 +376,40 @@ function inject_cs(session, tab_id, skip_text) {
                 // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
                 ajax_isTldAllowable(tab.url, function (data) {
                     console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
-
-                    if (data.allowable) {
-                        $.each(cs_files, function (ndx, cs) {
-                            try {
-                                chrome.tabs.executeScript({
-                                        file: cs,
-                                        runAt: run_at
-                                    },
-                                    function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
-                            } catch (err) {
-                                console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                    chrome.tabs.get(tab_id, function (existTab) {
+                        if (chrome.runtime.lastError) {
+                            console.warn(chrome.runtime.lastError);
+                        }
+                        if (existTab) {
+                            if (data.allowable) {
+                                $.each(cs_files, function (ndx, cs) {
+                                    try {
+                                        chrome.tabs.executeScript({
+                                            file: cs,
+                                            runAt: run_at
+                                        }, function (result) {
+                                            if (chrome.runtime.lastError) {
+                                                console.warn(chrome.runtime.lastError);
+                                            }
+                                            console.info('inject file', cs, run_at, result);
+                                        });
+                                    } catch (err) {
+                                        console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                                        console.trace();
+                                        console.warn(err);
+                                    }
+                                });
+                                console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
                                 console.trace();
-                                console.warn(err);
+                                if (session != null)
+                                    session.injected_cs_timestamp = Date.now();
+                            } else {
+                                setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                             }
-                        });
-                        console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
-                        console.trace();
-                        if (session != null)
-                            session.injected_cs_timestamp = Date.now();
-                    } else {
-                        setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
-                    }
+                        }
+                    });
                 }, function (error) {
-                    console.error(error);
+                    console.warn(error);
                     setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                 });
             }
@@ -406,28 +425,39 @@ function inject_cs(session, tab_id, skip_text) {
                     // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
                     ajax_isTldAllowable(tab.url, function (data) {
                         console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
-                        if (data.allowable) {
-                            $.each(cs_files, function (ndx, cs) {
-                                try {
-                                    chrome.tabs.executeScript(tab_id, {
-                                            file: cs,
-                                            runAt: run_at
-                                        },
-                                        function (result) { /*console.log('result = ' + JSON.stringify(result))*/ });
-                                } catch (err) {
-                                    console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                                    console.trace();
-                                    console.warn(err);
+                        chrome.tabs.get(tab_id, function (existTab) {
+                            if (chrome.runtime.lastError) {
+                                console.warn(chrome.runtime.lastError);
+                            }
+                            if (existTab) {
+                                if (data.allowable) {
+                                    $.each(cs_files, function (ndx, cs) {
+                                        try {
+                                            chrome.tabs.executeScript(tab_id, {
+                                                file: cs,
+                                                runAt: run_at
+                                            }, function (result) {
+                                                if (chrome.runtime.lastError) {
+                                                    console.warn(chrome.runtime.lastError);
+                                                }
+                                                console.info('inject file', cs, run_at, result);
+                                            });
+                                        } catch (err) {
+                                            console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                                            console.trace();
+                                            console.warn(err);
+                                        }
+                                    });
+                                    console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                                    if (session != null)
+                                        session.injected_cs_timestamp = Date.now();
+                                } else {
+                                    setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
                                 }
-                            });
-                            console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                            if (session != null)
-                                session.injected_cs_timestamp = Date.now();
-                        } else {
-                            setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
-                        }
+                            }
+                        });
                     }, function (error) {
-                        console.error(error);
+                        console.warn(error);
                         setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                     });
                 }

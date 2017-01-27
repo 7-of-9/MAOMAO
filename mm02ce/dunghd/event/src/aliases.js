@@ -11,7 +11,9 @@ function checkAuth() {
                     return reject(chrome.runtime.lastError);
                 } else if (token) {
                     const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-                    firebase.auth().signInWithCredential(credential).catch(error => console.error(error));
+                    firebase.auth()
+                        .signInWithCredential(credential)
+                        .catch(error => console.warn(error));
                     return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
                         .then(response => resolve({ token, info: response.data }))
                         .catch((error) => {
@@ -20,7 +22,7 @@ function checkAuth() {
                                 chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
                                 return;
                             }
-                            console.error(error);
+                            console.warn(error);
                             reject(error);
                         });
                 }
