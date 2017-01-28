@@ -103,21 +103,21 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         if (!session_injected_cs) { // never injected
 
             // only inject CS if the TLD is allowable
-            ajax_isTldAllowable(tab.url, function (data) {
+            ajax_isTldAllowable(url_ex_hash, function (data) {
                 console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
                 if (data.allowable) {
 
-                    console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + session.url + '] >> injecting (again) ...', session_style);
+                    console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
                     inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
                 } else {
-                    console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+                    console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
+                    setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
                 console.warn(error);
-                setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
+                setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 
         } else {
@@ -141,25 +141,25 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
             mm_update(session, true);
 
             // inject CS only if TLD is allowable
-            ajax_isTldAllowable(tab.url, function (data) {
+            ajax_isTldAllowable(url_ex_hash, function (data) {
                 console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
                 if (data.allowable) {
 
-                    console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + session.url + '] >> injecting (again) ...', session_style);
+                    console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
                     inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
                 } else {
-                    console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + tab.url + '])', session_style);
-                    setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+                    console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
+                    setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
             }, function (error) {
                 console.warn(error);
-                setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
+                setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
 
         } else {
-            console.info('%c (get_session_by_tab - rejecting non-process URL [' + tab.url + '])', session_style);
+            console.info('%c (get_session_by_tab - rejecting non-process URL [' + url_ex_hash + '])', session_style);
         }
     }
 

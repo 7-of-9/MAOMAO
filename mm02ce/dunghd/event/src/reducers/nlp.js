@@ -66,7 +66,7 @@ export default (nlp = initialState, action) => {
 
                 scores = scores.concat(action.payload);
                 return Object.assign({}, nlp, {
-                    scores
+                    scores,
                 });
             }
         case 'NLP':
@@ -79,7 +79,7 @@ export default (nlp = initialState, action) => {
 
                 nlps = nlps.concat(action.payload);
                 return Object.assign({}, nlp, {
-                    nlps
+                    nlps,
                 });
             }
         case 'PROCESS_TEXT_RESULT':
@@ -101,7 +101,7 @@ export default (nlp = initialState, action) => {
 
                 texts = texts.concat(action.payload);
                 return Object.assign({}, nlp, {
-                    texts
+                    texts,
                 });
             }
         default:
