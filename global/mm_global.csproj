@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="DbGlobal.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\ExceptionExtension.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="global.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

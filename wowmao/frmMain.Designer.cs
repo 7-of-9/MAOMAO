@@ -32,6 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlGoldenTree = new System.Windows.Forms.Panel();
+            this.chkSearchWholeWord = new System.Windows.Forms.CheckBox();
             this.lblTotGtsLoaded = new System.Windows.Forms.Label();
             this.cmdExpandAll = new System.Windows.Forms.Button();
             this.cmdGtSearch = new System.Windows.Forms.Button();
@@ -79,7 +80,6 @@
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.chkSearchWholeWord = new System.Windows.Forms.CheckBox();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
@@ -100,7 +100,7 @@
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlLeft.Location = new System.Drawing.Point(0, 0);
             this.pnlLeft.Name = "pnlLeft";
-            this.pnlLeft.Size = new System.Drawing.Size(300, 752);
+            this.pnlLeft.Size = new System.Drawing.Size(300, 746);
             this.pnlLeft.TabIndex = 2;
             // 
             // pnlGoldenTree
@@ -116,8 +116,20 @@
             this.pnlGoldenTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGoldenTree.Location = new System.Drawing.Point(0, 240);
             this.pnlGoldenTree.Name = "pnlGoldenTree";
-            this.pnlGoldenTree.Size = new System.Drawing.Size(300, 512);
+            this.pnlGoldenTree.Size = new System.Drawing.Size(300, 506);
             this.pnlGoldenTree.TabIndex = 6;
+            // 
+            // chkSearchWholeWord
+            // 
+            this.chkSearchWholeWord.AutoSize = true;
+            this.chkSearchWholeWord.Checked = true;
+            this.chkSearchWholeWord.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSearchWholeWord.Location = new System.Drawing.Point(211, 10);
+            this.chkSearchWholeWord.Name = "chkSearchWholeWord";
+            this.chkSearchWholeWord.Size = new System.Drawing.Size(81, 17);
+            this.chkSearchWholeWord.TabIndex = 6;
+            this.chkSearchWholeWord.Text = "whole word";
+            this.chkSearchWholeWord.UseVisualStyleBackColor = true;
             // 
             // lblTotGtsLoaded
             // 
@@ -163,7 +175,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.wikiGoldTree.Location = new System.Drawing.Point(7, 61);
             this.wikiGoldTree.Name = "wikiGoldTree";
-            this.wikiGoldTree.Size = new System.Drawing.Size(287, 445);
+            this.wikiGoldTree.Size = new System.Drawing.Size(287, 439);
             this.wikiGoldTree.TabIndex = 1;
             // 
             // gtGoldTree
@@ -174,7 +186,7 @@
             this.gtGoldTree.BackColor = System.Drawing.SystemColors.HotTrack;
             this.gtGoldTree.Location = new System.Drawing.Point(287, 6);
             this.gtGoldTree.Name = "gtGoldTree";
-            this.gtGoldTree.Size = new System.Drawing.Size(10, 23);
+            this.gtGoldTree.Size = new System.Drawing.Size(10, 17);
             this.gtGoldTree.TabIndex = 0;
             // 
             // splitter7
@@ -223,7 +235,7 @@
             this.splitter1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.splitter1.Location = new System.Drawing.Point(300, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(6, 752);
+            this.splitter1.Size = new System.Drawing.Size(6, 746);
             this.splitter1.TabIndex = 3;
             this.splitter1.TabStop = false;
             // 
@@ -238,7 +250,7 @@
             this.pnlTestMode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlTestMode.Location = new System.Drawing.Point(306, 0);
             this.pnlTestMode.Name = "pnlTestMode";
-            this.pnlTestMode.Size = new System.Drawing.Size(1122, 752);
+            this.pnlTestMode.Size = new System.Drawing.Size(1122, 746);
             this.pnlTestMode.TabIndex = 4;
             // 
             // splitter5
@@ -257,7 +269,7 @@
             this.pnlDirectGoldenCorrelations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDirectGoldenCorrelations.Location = new System.Drawing.Point(0, 511);
             this.pnlDirectGoldenCorrelations.Name = "pnlDirectGoldenCorrelations";
-            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1122, 241);
+            this.pnlDirectGoldenCorrelations.Size = new System.Drawing.Size(1122, 235);
             this.pnlDirectGoldenCorrelations.TabIndex = 9;
             // 
             // pnlLevel2Terms
@@ -268,7 +280,7 @@
             this.pnlLevel2Terms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLevel2Terms.Location = new System.Drawing.Point(0, 0);
             this.pnlLevel2Terms.Name = "pnlLevel2Terms";
-            this.pnlLevel2Terms.Size = new System.Drawing.Size(1122, 241);
+            this.pnlLevel2Terms.Size = new System.Drawing.Size(1122, 235);
             this.pnlLevel2Terms.TabIndex = 10;
             // 
             // lvwUrlTerms2
@@ -278,7 +290,7 @@
             this.lvwUrlTerms2.HideSelection = false;
             this.lvwUrlTerms2.Location = new System.Drawing.Point(406, 0);
             this.lvwUrlTerms2.Name = "lvwUrlTerms2";
-            this.lvwUrlTerms2.Size = new System.Drawing.Size(716, 241);
+            this.lvwUrlTerms2.Size = new System.Drawing.Size(716, 235);
             this.lvwUrlTerms2.TabIndex = 11;
             this.lvwUrlTerms2.UseCompatibleStateImageBehavior = false;
             this.lvwUrlTerms2.View = System.Windows.Forms.View.Details;
@@ -288,7 +300,7 @@
             this.splitter6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.splitter6.Location = new System.Drawing.Point(400, 0);
             this.splitter6.Name = "splitter6";
-            this.splitter6.Size = new System.Drawing.Size(6, 241);
+            this.splitter6.Size = new System.Drawing.Size(6, 235);
             this.splitter6.TabIndex = 10;
             this.splitter6.TabStop = false;
             // 
@@ -298,7 +310,7 @@
             this.ttL2Terms.Dock = System.Windows.Forms.DockStyle.Left;
             this.ttL2Terms.Location = new System.Drawing.Point(0, 0);
             this.ttL2Terms.Name = "ttL2Terms";
-            this.ttL2Terms.Size = new System.Drawing.Size(400, 241);
+            this.ttL2Terms.Size = new System.Drawing.Size(400, 235);
             this.ttL2Terms.TabIndex = 9;
             // 
             // lvwUrlTerms
@@ -427,8 +439,6 @@
             // chkExcludeProcessed
             // 
             this.chkExcludeProcessed.AutoSize = true;
-            this.chkExcludeProcessed.Checked = true;
-            this.chkExcludeProcessed.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkExcludeProcessed.Location = new System.Drawing.Point(321, 5);
             this.chkExcludeProcessed.Name = "chkExcludeProcessed";
             this.chkExcludeProcessed.Size = new System.Drawing.Size(71, 17);
@@ -585,23 +595,11 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
-            // chkSearchWholeWord
-            // 
-            this.chkSearchWholeWord.AutoSize = true;
-            this.chkSearchWholeWord.Checked = true;
-            this.chkSearchWholeWord.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSearchWholeWord.Location = new System.Drawing.Point(211, 10);
-            this.chkSearchWholeWord.Name = "chkSearchWholeWord";
-            this.chkSearchWholeWord.Size = new System.Drawing.Size(81, 17);
-            this.chkSearchWholeWord.TabIndex = 6;
-            this.chkSearchWholeWord.Text = "whole word";
-            this.chkSearchWholeWord.UseVisualStyleBackColor = true;
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1428, 752);
+            this.ClientSize = new System.Drawing.Size(1428, 746);
             this.Controls.Add(this.pnlTestMode);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.pnlLeft);

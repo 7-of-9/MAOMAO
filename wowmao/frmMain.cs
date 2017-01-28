@@ -93,7 +93,7 @@ namespace wowmao
                     .Include("url_golden_term")
                     .AsQueryable();
 
-                if (search_term != null) {
+                if (!string.IsNullOrEmpty(search_term)) {
                     qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
                     if (chkExcludeProcessed.Checked)
                         qry = qry.Where(p => p.processed_at_utc == null);
@@ -105,7 +105,7 @@ namespace wowmao
 
                 var count_urls = qry.Count();
                 var take = Convert.ToInt32(this.cboTop.Text);
-                if (chkRndOrder.Checked)
+                if (chkRndOrder.Checked && count_urls > 0)
                     qry = qry.Skip(rnd.Next(0, count_urls - take));
 
                 qry = qry.Take(take);
@@ -189,7 +189,8 @@ namespace wowmao
                            "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n";
 
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                // get url_terms 
+                
+                // (1) get url_terms (L1 terms)
                 List<url_term> l1_url_terms;
                 if (this.url_term_cache.ContainsKey(url.id))
                     l1_url_terms = url_term_cache[url.id];
@@ -199,16 +200,15 @@ namespace wowmao
                     SetCaption();
                 }
 
-                // meta-heuristics: TSS for L1 terms
+                // (2) *** Calc. TSS for L1 terms ***
                 var cat = new mm_svc.TssProduction();
                 cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
                 txtInfo.AppendText(cat.log);
 
-                // for each L1 URL-term
+                // L1 terms -> for each L1 term: add to TermTree
                 if (chkUpdateUi.Checked) { 
                     ttUrlTerms.Nodes.Clear();
                     l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
-
                     lvwUrlTerms.Items.Clear();
                     lvwUrlTerms.BeginUpdate();
                 }
@@ -216,7 +216,6 @@ namespace wowmao
                 var direct_goldens = new List<url_term>();
                 var all_l2_term_ids_by_count = new Dictionary<long, int>();
                 var all_l2_terms = new List<term>();
-
                 foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.tss)) {
 
                     List<term> l2_terms = null;
@@ -248,6 +247,7 @@ namespace wowmao
                         }
                     }
 
+                    // add L1 term to TermList
                     if (chkUpdateUi.Checked)
                         ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, l2_terms));
                 }

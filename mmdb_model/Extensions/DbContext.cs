@@ -1,4 +1,5 @@
 ﻿using mm_global;
+using mm_global.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -27,9 +28,15 @@ namespace mmdb_model
                 db.SaveChanges();
                 return true;
             }
+            catch (AggregateException agex)
+            {
+                Trace.WriteLine(agex.ToDetailedString());
+                throw;
+            }
             catch (SqlException sqlex)
             {
-                if (sqlex.Message.Contains("Cannot insert duplicate key")) {
+                if (sqlex.Message.Contains("Cannot insert duplicate key"))
+                {
                     Trace.WriteLine($"ignoring dupe key insert");
                     return false;
                 }
@@ -40,7 +47,8 @@ namespace mmdb_model
             {
                 if (dbex.InnerException != null && dbex.InnerException.InnerException != null &&
                     dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key") ||
-                    dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")) {
+                    dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted"))
+                {
                     Trace.WriteLine($"ignoring dupe key insert");
                     return false;
                 }
