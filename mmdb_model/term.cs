@@ -19,9 +19,9 @@ namespace mmdb_model
         {
             this.term_matrix = new HashSet<term_matrix>();
             this.term_matrix1 = new HashSet<term_matrix>();
-            this.url_term = new HashSet<url_term>();
             this.golden_term = new HashSet<golden_term>();
             this.golden_term1 = new HashSet<golden_term>();
+            this.url_term = new HashSet<url_term>();
         }
     
         public long id { get; set; }
@@ -37,10 +37,10 @@ namespace mmdb_model
         public virtual ICollection<term_matrix> term_matrix1 { get; set; }
         public virtual term_type term_type { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<url_term> url_term { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<golden_term> golden_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<golden_term> golden_term1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<url_term> url_term { get; set; }
     }
 }

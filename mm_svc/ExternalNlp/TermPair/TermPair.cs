@@ -35,42 +35,45 @@ namespace mm_svc
         }
 
         /// <summary>
-        /// Updated term-pair appearance matrix for the supplied pair of terms.
+        /// Updated term-pair appearance matrix for the supplied list of term pairs.
         /// </summary>
         /// <param name="nlp_info"></param>
-        /// <returns>Whether or not a new pair was inserted.</returns>
-        public static bool MaintainAppearanceMatrix(TermPair pair)
+        /// <returns>count of new term pairs inserted.</returns>
+        public static int MaintainAppearanceMatrix(List<TermPair> pairs)
         {
-            if (pair == null || pair.id_a == 0 || pair.id_b == 0) throw new ApplicationException("bad paid");
-            var new_pair = false;
+            var new_pairs = 0;
             using (var db = mm02Entities.Create())
             {
-                // lookup term pair
-                var db_pair = db.term_matrix.Where(p => p.term_a_id == pair.id_a
-                                                     && p.term_b_id == pair.id_b).FirstOrDefaultNoLock();
+                foreach (var pair in pairs)
+                {
+                    if (pair == null || pair.id_a == 0 || pair.id_b == 0) throw new ApplicationException("bad pair");
 
-                if (db_pair == null) // if not found, look for inverse (equivalent) pair
-                    db_pair = db.term_matrix.Where(p => p.term_a_id == pair.id_b
-                                                     && p.term_b_id == pair.id_a).FirstOrDefaultNoLock();
+                    // lookup term pair
+                    var db_pair = db.term_matrix.Where(p => p.term_a_id == pair.id_a && p.term_b_id == pair.id_b).FirstOrDefaultNoLock();
 
-                // update term-pair appearance count in term matrix table
-                if (db_pair == null) {
-                    var db_term_pair = new term_matrix();
-                    db_term_pair.term_a_id = pair.id_a;
-                    db_term_pair.term_b_id = pair.id_b;
-                    db_term_pair.occurs_together_count = 1;
-                    db.term_matrix.Add(db_term_pair);
-                    db.SaveChangesTraceValidationErrors();
-                    new_pair = true;
-                    g.LogLine($"wrote new term_pair a.id={pair.id_a}, b.id={pair.id_b}");
+                    if (db_pair == null) // if not found, look for inverse (equivalent) pair
+                        db_pair = db.term_matrix.Where(p => p.term_a_id == pair.id_b && p.term_b_id == pair.id_a).FirstOrDefaultNoLock();
+
+                    // update term-pair appearance count in term matrix table
+                    if (db_pair == null)
+                    {
+                        var db_term_pair = new term_matrix();
+                        db_term_pair.term_a_id = pair.id_a;
+                        db_term_pair.term_b_id = pair.id_b;
+                        db_term_pair.occurs_together_count = 1;
+                        db.term_matrix.Add(db_term_pair);
+                        new_pairs++;
+                        g.LogLine($"writing new term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
+                    }
+                    else
+                    {
+                        g.LogLine($"++occurs_count for known term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
+                        db_pair.occurs_together_count++;
+                    }
                 }
-                else { 
-                    g.LogLine($"++occurs_count for known term_pair a.id={pair.id_a}, b.id={pair.id_b}");
-                    db_pair.occurs_together_count++;
-                    db.SaveChangesTraceValidationErrors();
-                }
+                db.SaveChangesTraceValidationErrors();
             }
-            return new_pair;
+            return new_pairs;
         }
     }
 }

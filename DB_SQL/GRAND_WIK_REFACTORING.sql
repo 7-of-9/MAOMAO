@@ -20,12 +20,10 @@
   (c) clean down all term_matrix rows
   (d) batch import (crawl) a bunch of sources to populate term_matrix evenly (e.g. planned random walk of wikipedia article texts and/or YT mm02ce)
 
+*/
 
+select top 1 * from url where url='https://www.youtube.com/watch?v=MYUJkP7Bb7A'-- 55
+select * from url_term where url_id = 55 -- 35 rows
 
-
-
-select * from url where meta_all like '%arnold%'
-
-select * from term where term_type_id=10 and name = 'donald trump'
-select * from golden_term where parent_term_id=1326860
-select * from golden_term where child_term_id=1326860
+select * from term_matrix where term_a_id in (select id from term where term_type_id=10 and occurs_count > -1)
+select * from term_matrix where term_b_id in (select id from term where term_type_id=10 and occurs_count > -1)

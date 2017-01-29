@@ -20,7 +20,7 @@ namespace mmdb_model
         public int rank { get; set; }
         public System.DateTime datetime_utc { get; set; }
     
-        public virtual url url { get; set; }
         public virtual golden_term golden_term { get; set; }
+        public virtual url url { get; set; }
     }
 }

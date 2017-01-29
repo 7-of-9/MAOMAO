@@ -52,7 +52,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="128" />
           <Property Name="term_type_id" Type="int" Nullable="false" />
           <Property Name="cal_entity_type_id" Type="int" />
           <Property Name="occurs_count" Type="bigint" Nullable="false" />
@@ -86,6 +86,8 @@
           <Property Name="meta_all" Type="nvarchar(max)" />
           <Property Name="processed_at_utc" Type="datetime" />
           <Property Name="processed_golden_count" Type="int" Nullable="false" />
+          <Property Name="unmapped_wiki_terms" Type="int" Nullable="false" />
+          <Property Name="mapped_wiki_terms" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="url_golden_term">
           <Key>
@@ -107,6 +109,7 @@
           <Property Name="cal_topic_score" Type="float" />
           <Property Name="cal_socialtag_importance" Type="int" />
           <Property Name="cal_entity_relevance" Type="float" />
+          <Property Name="wiki_S" Type="float" />
         </EntityType>
         <EntityType Name="user_url">
           <Key>
@@ -425,7 +428,6 @@
           </AssociationSet>
           <EntitySet Name="term_type" EntityType="mm02Model.term_type" />
           <EntitySet Name="cal_entity_type" EntityType="mm02Model.cal_entity_type" />
-          <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
           <EntitySet Name="term_matrix" EntityType="mm02Model.term_matrix" />
           <EntitySet Name="users" EntityType="mm02Model.user" />
           <EntitySet Name="user_url" EntityType="mm02Model.user_url" />
@@ -434,23 +436,6 @@
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
           <EntitySet Name="url_golden_term" EntityType="mm02Model.url_golden_term" />
-          <EntitySet Name="urls" EntityType="mm02Model.url" />
-          <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
-            <End Role="awis_site" EntitySet="awis_site" />
-            <End Role="url" EntitySet="urls" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_golden_term_url" Association="mm02Model.FK_url_golden_term_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_golden_term" EntitySet="url_golden_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_term" EntitySet="url_term" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
           <EntitySet Name="terms" EntityType="mm02Model.term" />
           <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
@@ -468,10 +453,6 @@
             <End Role="term_type" EntitySet="term_type" />
             <End Role="term" EntitySet="terms" />
           </AssociationSet>
-          <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
-            <End Role="term" EntitySet="terms" />
-            <End Role="url_term" EntitySet="url_term" />
-          </AssociationSet>
           <EntitySet Name="golden_term" EntityType="mm02Model.golden_term" />
           <AssociationSet Name="FK_golden_term_child" Association="mm02Model.FK_golden_term_child">
             <End Role="term" EntitySet="terms" />
@@ -481,16 +462,38 @@
             <End Role="term" EntitySet="terms" />
             <End Role="golden_term" EntitySet="golden_term" />
           </AssociationSet>
-          <AssociationSet Name="fk_golden_term_url" Association="mm02Model.fk_golden_term_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="golden_term" EntitySet="golden_term" />
-          </AssociationSet>
           <AssociationSet Name="FK_url_golden_term_golden_term" Association="mm02Model.FK_url_golden_term_golden_term">
             <End Role="golden_term" EntitySet="golden_term" />
             <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
           <EntitySet Name="wiki_catlink" EntityType="mm02Model.wiki_catlink" />
           <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
+          <EntitySet Name="urls" EntityType="mm02Model.url" />
+          <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
+          <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
+            <End Role="awis_site" EntitySet="awis_site" />
+            <End Role="url" EntitySet="urls" />
+          </AssociationSet>
+          <AssociationSet Name="fk_golden_term_url" Association="mm02Model.fk_golden_term_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="golden_term" EntitySet="golden_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_golden_term_url" Association="mm02Model.FK_url_golden_term_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_golden_term" EntitySet="url_golden_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
           <Key>
@@ -545,19 +548,6 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="terms" Relationship="mm02Model.FK_term_cal_entity_type" FromRole="cal_entity_type" ToRole="term" />
-        </EntityType>
-        <EntityType Name="url_term">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url_id" Type="Int64" Nullable="false" />
-          <Property Name="term_id" Type="Int64" Nullable="false" />
-          <Property Name="cal_topic_score" Type="Double" />
-          <Property Name="cal_socialtag_importance" Type="Int32" />
-          <Property Name="cal_entity_relevance" Type="Double" />
-          <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
-          <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
         </EntityType>
         <EntityType Name="term_matrix">
           <Key>
@@ -623,82 +613,15 @@
           <Property Name="golden_term_id" Type="Int64" Nullable="false" />
           <Property Name="rank" Type="Int32" Nullable="false" />
           <Property Name="datetime_utc" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url_golden_term" ToRole="url" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_url_golden_term_golden_term" FromRole="url_golden_term" ToRole="golden_term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url_golden_term" ToRole="url" />
         </EntityType>
-        <EntityType Name="url">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url1" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
-          <Property Name="calais_as_of_utc" Type="DateTime" Precision="3" />
-          <Property Name="awis_site_id" Type="Int64" Nullable="false" />
-          <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="processed_at_utc" Type="DateTime" Precision="3" />
-          <Property Name="processed_golden_count" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
-          <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url" ToRole="url_golden_term" />
-          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
-          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
-          <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
-        </EntityType>
-        <Association Name="FK_url_awis_site">
-          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
-          <End Type="mm02Model.url" Role="url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="awis_site">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url">
-              <PropertyRef Name="awis_site_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_url_golden_term_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_golden_term" Role="url_golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_golden_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_urlTerms_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user_url_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="urlId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="term">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="term_type_id" Type="Int32" Nullable="false" />
           <Property Name="cal_entity_type_id" Type="Int32" />
           <Property Name="occurs_count" Type="Int64" Nullable="false" />
@@ -706,9 +629,9 @@
           <NavigationProperty Name="term_matrix" Relationship="mm02Model.FK_term_matrix_term" FromRole="term" ToRole="term_matrix" />
           <NavigationProperty Name="term_matrix1" Relationship="mm02Model.FK_term_matrix_term1" FromRole="term" ToRole="term_matrix" />
           <NavigationProperty Name="term_type" Relationship="mm02Model.FK_term_term_type" FromRole="term" ToRole="term_type" />
-          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_golden_term_child" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="golden_term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="term" ToRole="golden_term" />
+          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
           </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -758,18 +681,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_urlTerm_term">
-          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
-          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="term">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_term">
-              <PropertyRef Name="term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="golden_term">
           <Key>
             <PropertyRef Name="id" />
@@ -783,8 +694,8 @@
           <Property Name="from_wiki" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_golden_term_child" FromRole="golden_term" ToRole="term" />
           <NavigationProperty Name="term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="golden_term" ToRole="term" />
-          <NavigationProperty Name="url" Relationship="mm02Model.fk_golden_term_url" FromRole="golden_term" ToRole="url" />
           <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_golden_term" FromRole="golden_term" ToRole="url_golden_term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.fk_golden_term_url" FromRole="golden_term" ToRole="url" />
         </EntityType>
         <Association Name="FK_golden_term_child">
           <End Type="mm02Model.term" Role="term" Multiplicity="1" />
@@ -807,18 +718,6 @@
             </Principal>
             <Dependent Role="golden_term">
               <PropertyRef Name="parent_term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_golden_term_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="0..1" />
-          <End Type="mm02Model.golden_term" Role="golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="golden_term">
-              <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -853,6 +752,113 @@
           <Property Name="page_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="processed" Type="Boolean" />
         </EntityType>
+        <EntityType Name="url">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url1" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="calais_as_of_utc" Type="DateTime" Precision="3" />
+          <Property Name="awis_site_id" Type="Int64" Nullable="false" />
+          <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="processed_at_utc" Type="DateTime" Precision="3" />
+          <Property Name="processed_golden_count" Type="Int32" Nullable="false" />
+          <Property Name="unmapped_wiki_terms" Type="Int32" Nullable="false" />
+          <Property Name="mapped_wiki_terms" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
+          <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
+          <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url" ToRole="url_golden_term" />
+          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
+          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
+        </EntityType>
+        <EntityType Name="url_term">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url_id" Type="Int64" Nullable="false" />
+          <Property Name="term_id" Type="Int64" Nullable="false" />
+          <Property Name="cal_topic_score" Type="Double" />
+          <Property Name="cal_socialtag_importance" Type="Int32" />
+          <Property Name="cal_entity_relevance" Type="Double" />
+          <Property Name="wiki_S" Type="Double" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_url_awis_site">
+          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
+          <End Type="mm02Model.url" Role="url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="awis_site">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url">
+              <PropertyRef Name="awis_site_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_golden_term_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="0..1" />
+          <End Type="mm02Model.golden_term" Role="golden_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="golden_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_urlTerm_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_term">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_url_golden_term_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_golden_term" Role="url_golden_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_golden_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_urlTerms_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_user_url_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
+              <PropertyRef Name="urlId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -896,18 +902,6 @@
             <EntityTypeMapping TypeName="mm02Model.cal_entity_type">
               <MappingFragment StoreEntitySet="cal_entity_type">
                 <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="url_term">
-            <EntityTypeMapping TypeName="mm02Model.url_term">
-              <MappingFragment StoreEntitySet="url_term">
-                <ScalarProperty Name="cal_entity_relevance" ColumnName="cal_entity_relevance" />
-                <ScalarProperty Name="cal_socialtag_importance" ColumnName="cal_socialtag_importance" />
-                <ScalarProperty Name="cal_topic_score" ColumnName="cal_topic_score" />
-                <ScalarProperty Name="term_id" ColumnName="term_id" />
-                <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -964,21 +958,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="urls">
-            <EntityTypeMapping TypeName="mm02Model.url">
-              <MappingFragment StoreEntitySet="url">
-                <ScalarProperty Name="processed_golden_count" ColumnName="processed_golden_count" />
-                <ScalarProperty Name="processed_at_utc" ColumnName="processed_at_utc" />
-                <ScalarProperty Name="meta_all" ColumnName="meta_all" />
-                <ScalarProperty Name="meta_title" ColumnName="meta_title" />
-                <ScalarProperty Name="cal_lang" ColumnName="cal_lang" />
-                <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
-                <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
-                <ScalarProperty Name="url1" ColumnName="url" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="terms">
             <EntityTypeMapping TypeName="mm02Model.term">
               <MappingFragment StoreEntitySet="term">
@@ -1021,6 +1000,36 @@
                 <ScalarProperty Name="page_title" ColumnName="page_title" />
                 <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
                 <ScalarProperty Name="page_id" ColumnName="page_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="urls">
+            <EntityTypeMapping TypeName="mm02Model.url">
+              <MappingFragment StoreEntitySet="url">
+                <ScalarProperty Name="mapped_wiki_terms" ColumnName="mapped_wiki_terms" />
+                <ScalarProperty Name="unmapped_wiki_terms" ColumnName="unmapped_wiki_terms" />
+                <ScalarProperty Name="processed_golden_count" ColumnName="processed_golden_count" />
+                <ScalarProperty Name="processed_at_utc" ColumnName="processed_at_utc" />
+                <ScalarProperty Name="meta_all" ColumnName="meta_all" />
+                <ScalarProperty Name="meta_title" ColumnName="meta_title" />
+                <ScalarProperty Name="cal_lang" ColumnName="cal_lang" />
+                <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
+                <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
+                <ScalarProperty Name="url1" ColumnName="url" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="url_term">
+            <EntityTypeMapping TypeName="mm02Model.url_term">
+              <MappingFragment StoreEntitySet="url_term">
+                <ScalarProperty Name="wiki_S" ColumnName="wiki_S" />
+                <ScalarProperty Name="cal_entity_relevance" ColumnName="cal_entity_relevance" />
+                <ScalarProperty Name="cal_socialtag_importance" ColumnName="cal_socialtag_importance" />
+                <ScalarProperty Name="cal_topic_score" ColumnName="cal_topic_score" />
+                <ScalarProperty Name="term_id" ColumnName="term_id" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

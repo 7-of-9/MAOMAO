@@ -17,7 +17,6 @@ using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
 using System.Data.SqlClient;
 using System.Threading;
-using System.Collections.Concurrent;
 
 namespace wiki_walker
 {

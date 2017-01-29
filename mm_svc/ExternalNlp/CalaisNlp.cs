@@ -5,18 +5,20 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace mm_svc
 {
     public static class CalaisNlp
     {
-        public static void ProcessResult(dynamic nlp_info,
-            out int new_calais_terms, out int new_calais_pairs,
-            out int new_wiki_terms, out int new_wiki_pairs
-            )
+        public class ProcessResult {
+            public int new_calais_terms = 0, new_calais_pairs = -1,
+                       mapped_wiki_terms = 0, unmapped_wiki_terms = 0, new_wiki_pairs = -1;
+        }
+
+        public static ProcessResult ProcessNlpPacket(dynamic nlp_info, bool allow_reprocess_of_known_url = false)
         {
-            new_calais_pairs = new_calais_terms = -1;
-            new_wiki_pairs = new_wiki_terms = -1;
+            var ret = new ProcessResult();
             if (nlp_info.url == null) throw new ArgumentException("missing url");
             if (nlp_info.meta == null) throw new ArgumentException("missing meta");
             if (nlp_info.items == null) throw new ArgumentException("missing items");
@@ -29,8 +31,8 @@ namespace mm_svc
             if (!mm_svc.SiteInfo.IsSiteAllowable(awis_site)) throw new ApplicationException("bad site");
 
             // get URL, should not be known
-            var db_url = mm_svc.UrlInfo.GetNlpInfo(url);
-            if (db_url != null) throw new ApplicationException("url already known");
+            var db_url = (url)mm_svc.UrlInfo.GetNlpInfo(url);
+            if (db_url != null && !allow_reprocess_of_known_url) throw new ApplicationException("url already known");
 
             // create new URL record 
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
@@ -40,56 +42,80 @@ namespace mm_svc
                 if (cal_langs.Count > 0)
                     cal_lang = cal_langs.First().language.ToString();
 
-                // create new url row
-                db_url = new url();
+                // create new url row as necessary
+                if (db_url == null)
+                {
+                    db_url = new url();
+                    db.urls.Add(db_url);
+                    g.LogLine($"writing new url row url1={db_url.url1}");
+                }
+                else
+                {
+                    db_url = db.urls.Find(db_url.id); // set to tracking reference
+                    g.LogLine($"updating existing url row url1={db_url.url1}");
+                    foreach (var db_url_term in db.url_term.Where(p => p.url_id == db_url.id))
+                        db.ObjectContext().DeleteObject(db_url_term);
+                    db.SaveChangesTraceValidationErrors();
+                }
+
                 db_url.url1 = url;
                 db_url.awis_site_id = awis_site.id;
                 db_url.cal_lang = cal_lang;
                 db_url.calais_as_of_utc = DateTime.UtcNow;
                 db_url.meta_title = nlp_info.meta.html_title.ToString();
                 db_url.meta_all = Newtonsoft.Json.JsonConvert.SerializeObject(nlp_info.meta);
-                db.urls.Add(db_url);
                 db.SaveChangesTraceValidationErrors();
-                g.LogLine($"wrote new url url1={db_url.url1}");
+
+                g.LogLine($"wrote/updated url url1={db_url.url1}");
             }
 
             //
-            // Wiki Terms - "corresponding" to raw underlying Calais terms (mapped by exact name match)
+            // Wiki Terms - "corresponding" to raw underlying Calais terms (mapped by exact name match - case insensitive, accent insensitive)
             //
-            var wiki_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out new_wiki_terms);
+            var mapped_wiki_term_ids = mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, db_url.id, out ret.unmapped_wiki_terms);
+            ret.mapped_wiki_terms = mapped_wiki_term_ids.Count;
+            var wiki_pairs = mm_svc.TermPair.GetUniqueTermPairs(mapped_wiki_term_ids); // compute unqiue term pairs
+            //foreach (var pair in wiki_pairs) {                                       // update term-pair appearance matrix
+            //    var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
+            //    if (new_pair)
+            //        ret.new_wiki_pairs++;
+            //}
+            //ret.new_wiki_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs);
+            Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs)); // slow: run async
 
             //
-            // "Underlying" Calais Terms
+            // "Underlying" Calais Terms -- TODO: later, these probably don't need to be written at all!
             //
-            var calais_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out new_calais_terms); // record calais NLP terms
-            calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                // add the master "root node" term
-            var pairs = mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);                                           // compute unqiue combinations of term pairs
-            foreach (var pair in pairs) {                                                                              // update term-pair appearance matrix
-                var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
-                if (new_pair)
-                    new_calais_pairs++;
-            }
+            var calais_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out ret.new_calais_terms); // record calais NLP terms
+            calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                     // add a master "root node" term
+            var calais_pairs = (List<TermPair>)mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);                         // compute unqiue combinations of term pairs
+            //foreach (var pair in calais_pairs) {                                                                          // update term-pair appearance matrix
+            //    var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
+            //    if (new_pair)
+            //        ret.new_calais_pairs++;
+            //}
+            //ret.new_calais_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs);
+            Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs)); // slow: run async
 
-            //
-            // TODO: ...  getNlpInfo should then return KNOWN so counts don't get inc'd on subsequent views
-            // make F5 refresh work for easier debugging !!!
-            //
+            return ret;
         }
 
-        public static List<long> MaintainWikiTypeTerms(dynamic nlp_info, long url_id, out int new_terms)
+        public static List<long> MaintainWikiTypeTerms(dynamic nlp_info, long url_id, out int unmapped_terms)
         {
-            new_terms = -1;
-            var term_ids = new List<long>();
+            unmapped_terms = 0;
+            var mapped_term_ids = new List<long>();
             var calais_objects = new List<object>();
             using (var db = mm02Entities.Create())
             {
+                var db_url = db.urls.Where(p => p.id == url_id).FirstOrDefaultNoLock();
+
                 var objects = ((IEnumerable<dynamic>)nlp_info.items)
                                 .Where(p => p.type == "ENTITY" || p.type == "SOCIAL_TAG" || p.type == "TOPIC")
                                 .Select(p => new { name = p.name.ToString(),
                                                    type = p.type.ToString(),
                                            ent_typename = p.type.ToString() == "ENTITY" ? p.entity_type.ToString() : null,
                                                       S = p.type == "ENTITY" ? Convert.ToDouble(p.relevance.ToString()) * 10 // 0-10
-                                                        : p.type == "SOCIAL_TAG" ? ((4 - Convert.ToInt32(p.importance.ToString())) * 3) // 0-10
+                                                        : p.type == "SOCIAL_TAG" ? ((4 - Convert.ToDouble(p.importance.ToString())) * 3) // 0-10
                                                         : p.type == "TOPIC" ? Convert.ToDouble(p.score.ToString()) * 10 // 0-10
                                                         : -1
                                 })
@@ -100,21 +126,61 @@ namespace mm_svc
                 foreach (var obj in objects)
                     Debug.WriteLine($"{obj.name} ({StringEx.RemoveAccents(obj.name)} {obj.type} {obj.ent_typename} {obj.S}");
 
+                // flatten by name (ignore diacritics) -- take highest rated object's S value
                 var distinctNames = objects.Select(p => StringEx.RemoveAccents(p.name)).Distinct();
                 var distinctObjects = new Dictionary<string, double>();
-                foreach (var name in distinctNames) // take highest rated entity
+                foreach (var name in distinctNames) 
                     distinctObjects.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.S).Max());
 
-                foreach(var distinct in distinctObjects.Keys)
-                    Debug.WriteLine($"{distinct} ({distinctObjects[distinct]}");
+                foreach (var distinct in distinctObjects.Keys)
+                {
+                    var term_name = distinct;
+                    var term_url_S = distinctObjects[distinct];
+                    Debug.WriteLine($"{term_name} ({term_url_S})");
 
+                    // look for wiki-type term match
+                    var db_term = db.terms.Where(p => p.name == term_name
+                                                   && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefaultNoLock();
+                    if (db_term == null)
+                    {
+                        // ... NO manual adding of wiki cats! these terms are all golden, and if they're not in the wiki tree we should just alert
+                        g.LogLine($"!! term NOT mapped to a known WIKI term (name={term_name})");
+                        unmapped_terms++;
+                    }
+                    else
+                    {
+                        g.LogLine($"++occurs_count for known WIKI term (name={term_name})...");
+                        if (db_term.occurs_count == -1) db_term.occurs_count = 1; else db_term.occurs_count++;
+                        db.SaveChangesTraceValidationErrors();
+                        mapped_term_ids.Add(db_term.id);
+                    }
+
+                    // record term-url link
+                    if (db_url != null && db_term != null)
+                    {
+                        var db_url_term = new url_term();
+                        db_url_term.term_id = db_term.id;
+                        db_url_term.url_id = url_id;
+                        db_url_term.wiki_S = term_url_S;
+                        db.url_term.Add(db_url_term);
+                        db.SaveChangesTraceValidationErrors();
+                        g.LogLine($"wrote new WIKI url_term url_id={url_id}, WIKI term_id={db_term.id}");
+                    }
+                }
+
+                if (db_url != null)
+                {
+                    db_url.unmapped_wiki_terms = unmapped_terms;
+                    db_url.mapped_wiki_terms = mapped_term_ids.Count;
+                    db.SaveChangesTraceValidationErrors();
+                }
             }
-            return null;
+            return mapped_term_ids;
         }
 
         public static List<long> MaintainCalaisTypeTerms(dynamic nlp_info, long url_id, out int new_terms)
         {
-            new_terms = -1;
+            new_terms = 0;
             var term_ids = new List<long>();
 
             using (var db = mm02Entities.Create())

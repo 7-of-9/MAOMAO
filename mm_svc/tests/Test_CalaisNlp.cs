@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.IO;
 using Newtonsoft.Json;
+using mmdb_model;
 
 namespace tests
 {
@@ -12,18 +13,18 @@ namespace tests
         public void ProcessNlpInfo_Calais()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp1.json"))
+            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp2.json"))
             using (StreamReader reader = new StreamReader(stream))
             {
                 string json = reader.ReadToEnd();
                 dynamic nlp_info = JsonConvert.DeserializeObject<dynamic>(json);
+                //var db = mm02Entities.Create();
+                //var test_url_id = db.urls.FirstOrDefaultNoLock().id;
 
-                int new_wiki_terms;
-                mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, -1, out new_wiki_terms);
+                //int mapped_wiki_terms, unmapped_wiki_terms;
+                //mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, -1, out mapped_terms, out unmapped_terms);
 
-                //int new_calais_pairs, new_calais_terms, new_wiki_pairs, new_wiki_terms;
-                //mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_calais_terms, out new_calais_pairs, out new_wiki_terms, out new_wiki_pairs);
-                //mm_svc.CalaisNlp.MaintainTerms(nlp_info);
+                var ret = mm_svc.CalaisNlp.ProcessNlpPacket(nlp_info, allow_reprocess_of_known_url: true);
             }
         }
 

@@ -83,30 +83,21 @@ namespace mmapi00.Controllers
             Stopwatch sw = new Stopwatch(); sw.Start();
             if (nlp_info == null) return BadRequest("bad nlp_info");
 
-            int new_calais_terms = -1, new_calais_pairs = -1;
-            int new_wiki_terms = -1, new_wiki_pairs = -1;
-            Task.Factory.StartNew(() => {
-                // process terms & pairs
-                mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_calais_terms, out new_calais_pairs, out new_wiki_terms, out new_wiki_pairs);
+            // process terms & pairs
+            var ret = mm_svc.CalaisNlp.ProcessNlpPacket(nlp_info);
 
-                // decache GetNlpInfo() for this url 
-                // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-                string url = nlp_info.url.href.ToString();
-                var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
-                this.RemoveCacheVariants(cacheKey + "-url=" + url);
-            });
-
-
-            // TODO: link URL to NLP terms so we don't keep hitting it!
-
-            // NOW CAN? -- use occurs_count on terms to infer term adjacency hiearchy ?
-            // TODO?: post-process NLP wrt/ metadata etc, to match .js ?
+            // decache GetNlpInfo() for this url 
+            // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
+            string url = nlp_info.url.href.ToString();
+            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
+            this.RemoveCacheVariants(cacheKey + "-url=" + url);
 
             return Ok(new { url = nlp_info.url.href,
-               new_calais_terms = new_calais_terms,
-               new_calais_pairs = new_calais_pairs,
-                 new_wiki_terms = new_wiki_terms,
-                 new_wiki_pairs = new_wiki_pairs,
+               new_calais_terms = ret.new_calais_terms,
+               new_calais_pairs = ret.new_calais_pairs,
+              mapped_wiki_terms = ret.mapped_wiki_terms,
+            unmapped_wiki_terms = ret.unmapped_wiki_terms,
+                 new_wiki_pairs = ret.new_wiki_pairs,
                              ms = sw.ElapsedMilliseconds });
         }
 
