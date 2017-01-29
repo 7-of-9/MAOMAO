@@ -14,6 +14,7 @@ using System.Data.Entity.Infrastructure;
 using System.Threading;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using mm_global.Extensions;
 
 namespace mm_global
 {

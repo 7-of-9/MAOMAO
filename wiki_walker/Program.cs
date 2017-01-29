@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using mm_global;
+using mm_global.Extensions;
 using mm_svc.Terms;
 using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
@@ -31,7 +32,7 @@ namespace wiki_walker
             Trace.Listeners.Add(listener);
             sw.Start();
 
-            var parent_page_ids = new List<long>();
+            var parent_page_ids = new ConcurrentDictionary<long, bool>();
             WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
             //WalkDownTree(parent_page_ids, "Art_genres", -9);
 
@@ -41,9 +42,9 @@ namespace wiki_walker
             //WalkUpTreeRandom(); // run first to find/populate root
         }
 
-        private static void WalkDownTree(List<long> parent_page_ids, string page_name, int level)
+        private static void WalkDownTree(ConcurrentDictionary<long, bool> parent_page_ids, string page_name, int level)
         {
-            int par_max = Debugger.IsAttached ? 1 : 5;
+            int par_max = Debugger.IsAttached ? 1 : 20;
             using (var db = mm02Entities.Create())
             {
                 // ... *if* the dataset can be managed (searched in reasonable time) then maybe go the whole hog and import
@@ -68,8 +69,8 @@ namespace wiki_walker
                                           .OrderBy(p => p.cl_to)
                                           .ToListNoLock();
 
-                        var child_pages_to_walk = new List<wiki_page>();
-                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (child_page_cl) =>
+                        var child_pages_to_walk = new ConcurrentBag<wiki_page>();
+                        Parallel.ForEach(children, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
                         {
                             using (var db3 = mm02Entities.Create())
                             {
@@ -91,9 +92,9 @@ namespace wiki_walker
                         // recurse
                         Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_to_walk) =>
                         {
-                            if (!parent_page_ids.Contains(child_page_to_walk.page_id))
+                            if (!parent_page_ids.ContainsKey(child_page_to_walk.page_id))
                             {
-                                parent_page_ids.Add(child_page_to_walk.page_id);
+                                parent_page_ids.TryAdd(child_page_to_walk.page_id, true);
                                 WalkDownTree(parent_page_ids, child_page_to_walk.page_title, level + 1);
                             }
                         });

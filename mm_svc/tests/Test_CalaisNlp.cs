@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.IO;
+using Newtonsoft.Json;
+
 namespace tests
 {
     [TestClass]
@@ -10,15 +12,17 @@ namespace tests
         public void ProcessNlpInfo_Calais()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp2.json"))
+            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp1.json"))
             using (StreamReader reader = new StreamReader(stream))
             {
-                string result = reader.ReadToEnd();
-                // TODO: JSON parse
-                //dynamic nlp_info = Json.Decode(result);
+                string json = reader.ReadToEnd();
+                dynamic nlp_info = JsonConvert.DeserializeObject<dynamic>(json);
 
-                int new_pairs, new_terms;
-                mm_svc.CalaisNlp.ProcessResult(null, out new_pairs, out new_terms);
+                int new_wiki_terms;
+                mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, -1, out new_wiki_terms);
+
+                //int new_calais_pairs, new_calais_terms, new_wiki_pairs, new_wiki_terms;
+                //mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_calais_terms, out new_calais_pairs, out new_wiki_terms, out new_wiki_pairs);
                 //mm_svc.CalaisNlp.MaintainTerms(nlp_info);
             }
         }

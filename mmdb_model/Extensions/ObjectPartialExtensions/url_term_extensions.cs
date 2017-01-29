@@ -42,7 +42,7 @@ namespace mmdb_model
                 }
 
                 else if (this.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) {
-                    return ((3 - (int)this.cal_socialtag_importance) * 3) + 1; // 0-10
+                    return ((4 - (int)this.cal_socialtag_importance) * 3); // 0-10
                 }
 
                 else if (this.term.term_type_id == (int)g.TT.CALAIS_TOPIC) {

@@ -31,7 +31,7 @@ namespace mmdb_model
             catch (AggregateException agex)
             {
                 Trace.WriteLine(agex.ToDetailedString());
-                throw;
+                return g.HandleOptimisticConcurrencyExceptions(db, agex) > 0;
             }
             catch (SqlException sqlex)
             {

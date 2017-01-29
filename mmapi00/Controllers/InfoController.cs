@@ -83,10 +83,11 @@ namespace mmapi00.Controllers
             Stopwatch sw = new Stopwatch(); sw.Start();
             if (nlp_info == null) return BadRequest("bad nlp_info");
 
-            int new_terms = -1, new_pairs = -1;
+            int new_calais_terms = -1, new_calais_pairs = -1;
+            int new_wiki_terms = -1, new_wiki_pairs = -1;
             Task.Factory.StartNew(() => {
                 // process terms & pairs
-                mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_terms, out new_pairs);
+                mm_svc.CalaisNlp.ProcessResult(nlp_info, out new_calais_terms, out new_calais_pairs, out new_wiki_terms, out new_wiki_pairs);
 
                 // decache GetNlpInfo() for this url 
                 // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
@@ -102,8 +103,10 @@ namespace mmapi00.Controllers
             // TODO?: post-process NLP wrt/ metadata etc, to match .js ?
 
             return Ok(new { url = nlp_info.url.href,
-                      new_terms = new_terms,
-                      new_pairs = new_pairs,
+               new_calais_terms = new_calais_terms,
+               new_calais_pairs = new_calais_pairs,
+                 new_wiki_terms = new_wiki_terms,
+                 new_wiki_pairs = new_wiki_pairs,
                              ms = sw.ElapsedMilliseconds });
         }
 

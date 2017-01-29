@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using mm_global;
+using mm_global.Extensions;
 using mm_svc.Terms;
 using System.Diagnostics;
 using static mm_svc.Terms.Correlations;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace mm_global.Extensions
 {
-    public static class ExceptionExtensions
+    public static class ExceptionEx
     {
         public static string ToDetailedString(this Exception exception)
         {

@@ -1,18 +1,22 @@
 ﻿using mm_global;
+using mm_global.Extensions;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mm_svc
 {
     public static class CalaisNlp
     {
-        public static void ProcessResult(dynamic nlp_info, out int new_terms, out int new_pairs)
+        public static void ProcessResult(dynamic nlp_info,
+            out int new_calais_terms, out int new_calais_pairs,
+            out int new_wiki_terms, out int new_wiki_pairs
+            )
         {
-            new_pairs = new_terms = -1;
+            new_calais_pairs = new_calais_terms = -1;
+            new_wiki_pairs = new_wiki_terms = -1;
             if (nlp_info.url == null) throw new ArgumentException("missing url");
             if (nlp_info.meta == null) throw new ArgumentException("missing meta");
             if (nlp_info.items == null) throw new ArgumentException("missing items");
@@ -49,20 +53,21 @@ namespace mm_svc
                 g.LogLine($"wrote new url url1={db_url.url1}");
             }
 
-            // record calais NLP terms
-            var term_ids = mm_svc.CalaisNlp.MaintainTerms(nlp_info, db_url.id, out new_terms);
+            //
+            // Wiki Terms - "corresponding" to raw underlying Calais terms (mapped by exact name match)
+            //
+            var wiki_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out new_wiki_terms);
 
-            // add the master "root node" term - acts as the most common "anchor" for hierarchy inference
-            term_ids.Add(g.MAOMAO_ROOT_TERM_ID);
-
-            // compute unqiue combinations of term pairs
-            var pairs = mm_svc.TermPair.GetUniqueTermPairs(term_ids);
-
-            // update term-pair appearance matrix
-            foreach (var pair in pairs) {
+            //
+            // "Underlying" Calais Terms
+            //
+            var calais_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out new_calais_terms); // record calais NLP terms
+            calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                // add the master "root node" term
+            var pairs = mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);                                           // compute unqiue combinations of term pairs
+            foreach (var pair in pairs) {                                                                              // update term-pair appearance matrix
                 var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
                 if (new_pair)
-                    new_pairs++;
+                    new_calais_pairs++;
             }
 
             //
@@ -71,7 +76,43 @@ namespace mm_svc
             //
         }
 
-        public static List<long> MaintainTerms(dynamic nlp_info, long url_id, out int new_terms)
+        public static List<long> MaintainWikiTypeTerms(dynamic nlp_info, long url_id, out int new_terms)
+        {
+            new_terms = -1;
+            var term_ids = new List<long>();
+            var calais_objects = new List<object>();
+            using (var db = mm02Entities.Create())
+            {
+                var objects = ((IEnumerable<dynamic>)nlp_info.items)
+                                .Where(p => p.type == "ENTITY" || p.type == "SOCIAL_TAG" || p.type == "TOPIC")
+                                .Select(p => new { name = p.name.ToString(),
+                                                   type = p.type.ToString(),
+                                           ent_typename = p.type.ToString() == "ENTITY" ? p.entity_type.ToString() : null,
+                                                      S = p.type == "ENTITY" ? Convert.ToDouble(p.relevance.ToString()) * 10 // 0-10
+                                                        : p.type == "SOCIAL_TAG" ? ((4 - Convert.ToInt32(p.importance.ToString())) * 3) // 0-10
+                                                        : p.type == "TOPIC" ? Convert.ToDouble(p.score.ToString()) * 10 // 0-10
+                                                        : -1
+                                })
+                                .Where(p => p.name.ToString().Length <= 128 
+                                         && p.ent_typename != "EmailAddress" 
+                                         && p.ent_typename != "PhoneNumber");
+
+                foreach (var obj in objects)
+                    Debug.WriteLine($"{obj.name} ({StringEx.RemoveAccents(obj.name)} {obj.type} {obj.ent_typename} {obj.S}");
+
+                var distinctNames = objects.Select(p => StringEx.RemoveAccents(p.name)).Distinct();
+                var distinctObjects = new Dictionary<string, double>();
+                foreach (var name in distinctNames) // take highest rated entity
+                    distinctObjects.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.S).Max());
+
+                foreach(var distinct in distinctObjects.Keys)
+                    Debug.WriteLine($"{distinct} ({distinctObjects[distinct]}");
+
+            }
+            return null;
+        }
+
+        public static List<long> MaintainCalaisTypeTerms(dynamic nlp_info, long url_id, out int new_terms)
         {
             new_terms = -1;
             var term_ids = new List<long>();
@@ -79,8 +120,7 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 // process calais entities
-                foreach (var item in ((IEnumerable<dynamic>)nlp_info.items).Where(
-                    p => p.type == "ENTITY" || p.type == "SOCIAL_TAG" || p.type == "TOPIC"))
+                foreach (var item in ((IEnumerable<dynamic>)nlp_info.items).Where(p => p.type == "ENTITY" || p.type == "SOCIAL_TAG" || p.type == "TOPIC"))
                 {
                     string item_name = item.name.ToString();
                     if (string.IsNullOrEmpty(item_name) || item_name.Length > 128)
