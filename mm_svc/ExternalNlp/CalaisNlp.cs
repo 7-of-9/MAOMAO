@@ -139,9 +139,10 @@ namespace mm_svc
                     Debug.WriteLine($"{term_name} ({term_url_S})");
 
                     // look for wiki-type term match
-                    var db_term = db.terms.Where(p => p.name == term_name
-                                                   && p.term_type_id == (int)g.TT.WIKI_CAT).FirstOrDefaultNoLock();
-                    if (db_term == null)
+                    var db_terms = db.terms.Where(p => p.name == term_name
+                                                    && (p.term_type_id == (int)g.TT.WIKI_NS_0
+                                                     || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
+                    if (db_terms.Count == 0)
                     {
                         // ... NO manual adding of wiki cats! these terms are all golden, and if they're not in the wiki tree we should just alert
                         g.LogLine($"!! term NOT mapped to a known WIKI term (name={term_name})");
@@ -149,22 +150,28 @@ namespace mm_svc
                     }
                     else
                     {
-                        g.LogLine($"++occurs_count for known WIKI term (name={term_name})...");
-                        if (db_term.occurs_count == -1) db_term.occurs_count = 1; else db_term.occurs_count++;
-                        db.SaveChangesTraceValidationErrors();
-                        mapped_term_ids.Add(db_term.id);
+                        foreach (var db_term in db_terms)
+                        {
+                            g.LogLine($"++occurs_count for known WIKI term: name={db_term.name} term_type_id={db_term.term_type_id}...");
+                            if (db_term.occurs_count == -1) db_term.occurs_count = 1; else db_term.occurs_count++;
+                            db.SaveChangesTraceValidationErrors();
+                            mapped_term_ids.Add(db_term.id);
+                        }
                     }
 
                     // record term-url link
-                    if (db_url != null && db_term != null)
+                    if (db_url != null && db_terms.Count > 0)
                     {
-                        var db_url_term = new url_term();
-                        db_url_term.term_id = db_term.id;
-                        db_url_term.url_id = url_id;
-                        db_url_term.wiki_S = term_url_S;
-                        db.url_term.Add(db_url_term);
-                        db.SaveChangesTraceValidationErrors();
-                        g.LogLine($"wrote new WIKI url_term url_id={url_id}, WIKI term_id={db_term.id}");
+                        foreach (var db_term in db_terms)
+                        {
+                            var db_url_term = new url_term();
+                            db_url_term.term_id = db_term.id;
+                            db_url_term.url_id = url_id;
+                            db_url_term.wiki_S = term_url_S;
+                            db.url_term.Add(db_url_term);
+                            db.SaveChangesTraceValidationErrors();
+                            g.LogLine($"wrote new WIKI url_term url_id={url_id}, WIKI term_id={db_term.id} term_name={db_term.name} term_type_id={db_term.term_type_id}");
+                        }
                     }
                 }
 

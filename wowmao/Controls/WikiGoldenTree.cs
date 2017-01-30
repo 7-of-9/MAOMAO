@@ -61,12 +61,12 @@ namespace wowmao.Controls
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 List<term> wiki_terms;
                 if (string.IsNullOrEmpty(search))
-                    wiki_terms = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                    wiki_terms = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
                 else
                     if (whole_word)
-                        wiki_terms = db.terms.Where(p => (p.name == search || p.name.Contains(" " + search + " ")) && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                        wiki_terms = db.terms.Where(p => (p.name == search || p.name.Contains(" " + search + " ")) && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
                     else
-                        wiki_terms = db.terms.Where(p => p.name.Contains(search) && p.term_type_id == (int)g.TT.WIKI_CAT).ToListNoLock();
+                        wiki_terms = db.terms.Where(p => p.name.Contains(search) && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
 
                 foreach (var wiki_term in wiki_terms) {
                     var gts = GoldenTermsFromParentTermId(wiki_term.id);
