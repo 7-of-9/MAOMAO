@@ -66,6 +66,7 @@
             this.mnuSearchGoogle.Name = "mnuSearchGoogle";
             this.mnuSearchGoogle.Size = new System.Drawing.Size(189, 22);
             this.mnuSearchGoogle.Text = "Search Google...";
+            this.mnuSearchGoogle.Click += new System.EventHandler(this.mnuSearchGoogle_Click);
             // 
             // mnuMatchingUrls
             // 

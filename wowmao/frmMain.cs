@@ -45,7 +45,13 @@ namespace wowmao
             this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
 
             this.wikiGoldTree.OnGtsLoaded += WikiGoldTree_OnGtsLoaded;
+            this.wikiGoldTree.OnSearchGoogle += WikiGoldTree_OnSearchGoogle;
             this.wikiGoldTree.BuildTree();
+        }
+
+        private void WikiGoldTree_OnSearchGoogle(object sender, Controls.WikiGoldenTree.OnSearchGoogleEventArgs e)
+        {
+            Process.Start($"chrome.exe", $"https://en.wikipedia.org/wiki/{e.search_term}");
         }
 
         private void GtGoldTree_OnSearchGoogle(object sender, MmGoldenTree.OnSearchGoogleEventArgs e)

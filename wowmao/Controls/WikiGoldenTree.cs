@@ -248,6 +248,15 @@ namespace wowmao.Controls
             }
         }
 
+        private void mnuSearchGoogle_Click(object sender, EventArgs e)
+        {
+            if (this.SelectedNode == null) return;
+            var gt = this.SelectedNode.Tag as golden_term;
+            Debug.WriteLine(gt.ToString());
+            OnSearchGoogle?.Invoke(this.GetType(), new OnSearchGoogleEventArgs() { search_term = 
+                (gt.child_term.term_type_id == (int)g.TT.WIKI_NS_14 ? "Category:" : "") + gt.child_term.name.Replace("_", " ") });
+        }
+
         private void GetParentNodes(TreeNode node, List<TreeNode> parents) {
             parents.Add(node);
             if (node.Parent != null)

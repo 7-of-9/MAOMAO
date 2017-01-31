@@ -25,9 +25,17 @@ namespace wiki_walker
         private static Stopwatch sw = new Stopwatch();
         private static int gt_added_count = 0;
         private static int term_added_count = 0;
+        private static int term_pairs_checked = 0;
         private static int child_pages_fetched = 0;
+        private static int child_page_counter = 0;
 
-        private const int max_depth = 3;
+        private const int max_depth = 7;
+
+        /* depth: 6
+            child pages searched (ns=14): 1,612,200 in 464 sec(s) = 3471.3 per/sec...
+            DONE!! Press any key...
+            select count(*) from term where term_type_id in (0,14) = 319,309
+        */
 
         public static void Main()
         {
@@ -75,6 +83,7 @@ namespace wiki_walker
                         // get child cat links for parent page
                         var children_qry = db2.wiki_catlink//.AsNoTracking()
                                           .Where(p => p.cl_to == parent_page_search
+                                                  && p.cl_type == "subcat" // cl_inks to subcats only
                                                   && (p.processed_to_depth == null || p.processed_to_depth < max_depth)
                                                   ); //**
                         //if (page_name.GetHashCode() % 2 == 0)
@@ -93,10 +102,15 @@ namespace wiki_walker
                                 // get child pages
                                 var child_pages = g.RetryMaxOrThrow(() => 
                                     db3.wiki_page.Where(p => p.page_id == child_page_cl.cl_from
-                                                         && (p.page_namespace == 14 // subcats
+                                                         && (p.page_namespace == 14 // subcats only
                                                          //|| p.page_namespace == 0)
                                                          )) // pages
                                                  .ToListNoLock());
+
+                                if (++child_page_counter % 1000 == 0) {
+                                    var child_pages_per_sec = child_page_counter / sw.Elapsed.TotalSeconds;
+                                    Trace.WriteLine($"child pages searched (ns=14): {child_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_per_sec.ToString("0.0")} per/sec...");
+                                }
 
                                 if (child_pages.Count() == 0) return;
                                 child_pages_fetched += child_pages.Count();
@@ -139,8 +153,8 @@ namespace wiki_walker
                                 }
                             });
                         }
-                        else
-                            Trace.WriteLine($">> max_depth reached: skipping recurssion <<");
+                        //else
+                        //    Trace.WriteLine($">> max_depth reached: skipping recurssion <<");
 
                         // mark catlinks as processed -- update: marked as processed (above) only if saw_concurrency_exception didn't early out (above)
                         //foreach (var child_page_cl in child_cls)
@@ -273,6 +287,8 @@ namespace wiki_walker
                 //    term_cache?.TryAdd(cleaned_cat_name, parent_term);//.Add(parent_term);
                 //}
 
+                term_pairs_checked++;
+
                 // record relation
                 if (parent_term != null && child_term != null)
                 {
@@ -285,13 +301,15 @@ namespace wiki_walker
                     }
                 }
 
-                if (term_added_count % 100 == 0) { 
-                    var terms_per_sec = (term_added_count) / sw.Elapsed.TotalSeconds;
-                    Trace.WriteLine($"TERMS ADDED: ({term_added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {terms_per_sec.ToString("0.0")} TERMS per/sec)");
+                //if (term_added_count % 100 == 0) { 
+                //    var terms_per_sec = (term_added_count) / sw.Elapsed.TotalSeconds;
+                //    Trace.WriteLine($"TERMS ADDED: ({term_added_count} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {terms_per_sec.ToString("0.0")} TERMS per/sec)");
+                //}
 
-                    var child_pages_fetched_per_sec = child_pages_fetched / sw.Elapsed.TotalSeconds;
-                    Trace.WriteLine($"cHILD PAGES (0||14) FETCHED: ({child_pages_fetched} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_fetched_per_sec.ToString("0.0")} CHILD PAGES per/sec)");
-                }
+                //if (term_pairs_checked % 100 == 0) {
+                //    var term_pairs_checked_per_sec = term_pairs_checked / sw.Elapsed.TotalSeconds;
+                //    Trace.WriteLine($"term_pairs_checked: {term_pairs_checked} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {term_pairs_checked_per_sec.ToString("0.0")} per/sec)");
+                //}
             }
         }
 
