@@ -12,9 +12,9 @@
  select processed from wiki_page where page_title = 'Main_topic_classifications'
 //* restart-
  delete from golden_term where from_wiki=1
- delete from term_matrix where term_a_id in (select id from term where term_type_id=10)
- delete from term_matrix where term_b_id in (select id from term where term_type_id=10)
- delete from term where term_type_id=10
+ delete from term_matrix where term_a_id in (select id from term where term_type_id in (0,14))
+ delete from term_matrix where term_b_id in (select id from term where term_type_id in (0,14))
+ delete from term where term_type_id in (0,14)
  --update wiki_page set processed=0 where processed=1
 	DROP INDEX [IX_wiki_page_processed] ON [dbo].[wiki_page]
 		alter table wiki_page drop column processed

@@ -148,7 +148,7 @@
           <Property Name="cl_to" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="cl_type" Type="nvarchar" MaxLength="6" />
           <Property Name="id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="processed" Type="bit" />
+          <Property Name="processed_to_depth" Type="int" />
         </EntityType>
         <EntityType Name="wiki_page">
           <Key>
@@ -157,7 +157,7 @@
           <Property Name="page_id" Type="bigint" Nullable="false" />
           <Property Name="page_namespace" Type="int" Nullable="false" />
           <Property Name="page_title" Type="nvarchar" MaxLength="255" />
-          <Property Name="processed" Type="bit" />
+          <Property Name="processed_to_depth" Type="int" />
         </EntityType>
         <Association Name="FK_awis_site_awis_cat">
           <End Role="awis_cat" Type="Self.awis_cat" Multiplicity="0..1" />
@@ -466,8 +466,6 @@
             <End Role="golden_term" EntitySet="golden_term" />
             <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
-          <EntitySet Name="wiki_catlink" EntityType="mm02Model.wiki_catlink" />
-          <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
           <EntitySet Name="urls" EntityType="mm02Model.url" />
           <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
           <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
@@ -494,6 +492,8 @@
             <End Role="url" EntitySet="urls" />
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
+          <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
+          <EntitySet Name="wiki_catlink" EntityType="mm02Model.wiki_catlink" />
           </EntityContainer>
         <EntityType Name="awis_site">
           <Key>
@@ -733,25 +733,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="wiki_catlink">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="cl_from" Type="Int64" Nullable="false" />
-          <Property Name="cl_to" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="cl_type" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
-          <Property Name="id" Type="Guid" Nullable="false" />
-          <Property Name="processed" Type="Boolean" />
-        </EntityType>
-        <EntityType Name="wiki_page">
-          <Key>
-            <PropertyRef Name="page_id" />
-          </Key>
-          <Property Name="page_id" Type="Int64" Nullable="false" />
-          <Property Name="page_namespace" Type="Int32" Nullable="false" />
-          <Property Name="page_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="processed" Type="Boolean" />
-        </EntityType>
         <EntityType Name="url">
           <Key>
             <PropertyRef Name="id" />
@@ -859,6 +840,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="wiki_page">
+          <Key>
+            <PropertyRef Name="page_id" />
+          </Key>
+          <Property Name="page_id" Type="Int64" Nullable="false" />
+          <Property Name="page_namespace" Type="Int32" Nullable="false" />
+          <Property Name="page_title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="processed_to_depth" Type="Int32" />
+        </EntityType>
+        <EntityType Name="wiki_catlink">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="cl_from" Type="Int64" Nullable="false" />
+          <Property Name="cl_to" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="cl_type" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
+          <Property Name="id" Type="Guid" Nullable="false" />
+          <Property Name="processed_to_depth" Type="Int32" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -982,27 +982,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="wiki_catlink">
-            <EntityTypeMapping TypeName="mm02Model.wiki_catlink">
-              <MappingFragment StoreEntitySet="wiki_catlink">
-                <ScalarProperty Name="processed" ColumnName="processed" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="cl_type" ColumnName="cl_type" />
-                <ScalarProperty Name="cl_to" ColumnName="cl_to" />
-                <ScalarProperty Name="cl_from" ColumnName="cl_from" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="wiki_page">
-            <EntityTypeMapping TypeName="mm02Model.wiki_page">
-              <MappingFragment StoreEntitySet="wiki_page">
-                <ScalarProperty Name="processed" ColumnName="processed" />
-                <ScalarProperty Name="page_title" ColumnName="page_title" />
-                <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
-                <ScalarProperty Name="page_id" ColumnName="page_id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="urls">
             <EntityTypeMapping TypeName="mm02Model.url">
               <MappingFragment StoreEntitySet="url">
@@ -1030,6 +1009,27 @@
                 <ScalarProperty Name="term_id" ColumnName="term_id" />
                 <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="wiki_page">
+            <EntityTypeMapping TypeName="mm02Model.wiki_page">
+              <MappingFragment StoreEntitySet="wiki_page">
+                <ScalarProperty Name="processed_to_depth" ColumnName="processed_to_depth" />
+                <ScalarProperty Name="page_title" ColumnName="page_title" />
+                <ScalarProperty Name="page_namespace" ColumnName="page_namespace" />
+                <ScalarProperty Name="page_id" ColumnName="page_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="wiki_catlink">
+            <EntityTypeMapping TypeName="mm02Model.wiki_catlink">
+              <MappingFragment StoreEntitySet="wiki_catlink">
+                <ScalarProperty Name="processed_to_depth" ColumnName="processed_to_depth" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cl_type" ColumnName="cl_type" />
+                <ScalarProperty Name="cl_to" ColumnName="cl_to" />
+                <ScalarProperty Name="cl_from" ColumnName="cl_from" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

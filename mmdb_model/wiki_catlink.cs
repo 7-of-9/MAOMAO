@@ -18,6 +18,6 @@ namespace mmdb_model
         public string cl_to { get; set; }
         public string cl_type { get; set; }
         public System.Guid id { get; set; }
-        public Nullable<bool> processed { get; set; }
+        public Nullable<int> processed_to_depth { get; set; }
     }
 }

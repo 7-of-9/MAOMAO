@@ -21,23 +21,23 @@ namespace mmdb_model
             return (db as IObjectContextAdapter).ObjectContext;
         }
 
-        public static bool SaveChanges_IgnoreDupeKeyEx(this DbContext db)
+        public static bool SaveChanges_IgnoreDupeKeyEx(this DbContext db, string info = null)
         {
             try
             {
                 db.SaveChanges();
                 return true;
             }
-            catch (AggregateException agex)
+            catch (DbEntityValidationException avex)
             {
-                Trace.WriteLine(agex.ToDetailedString());
-                return g.HandleOptimisticConcurrencyExceptions(db, agex) > 0;
+                Trace.WriteLine(avex.ToDetailedString());
+                return g.HandleOptimisticConcurrencyExceptions(db, avex) > 0;
             }
             catch (SqlException sqlex)
             {
                 if (sqlex.Message.Contains("Cannot insert duplicate key"))
                 {
-                    Trace.WriteLine($"ignoring dupe key insert");
+                    Trace.WriteLine($"ignoring dupe key insert 1 ({info})");
                     return false;
                 }
                 else
@@ -49,7 +49,7 @@ namespace mmdb_model
                     dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key") ||
                     dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted"))
                 {
-                    Trace.WriteLine($"ignoring dupe key insert");
+                    Trace.WriteLine($"ignoring dupe key insert 2 ({info})");
                     return false;
                 }
                 else
