@@ -13,6 +13,7 @@ namespace wowmao
 {
     public partial class TermList : ListView
     {
+        ColumnHeader columnHeader30 = new System.Windows.Forms.ColumnHeader() { Text = "wiki-S" };
         ColumnHeader columnHeader9 = new System.Windows.Forms.ColumnHeader() { Text = "dir-gold" }; 
         ColumnHeader columnHeader8 =new System.Windows.Forms.ColumnHeader() { Text = "corr-L2" };
         ColumnHeader columnHeader12 =new System.Windows.Forms.ColumnHeader() { Text = "*TSS" };
@@ -37,6 +38,7 @@ namespace wowmao
             InitializeComponent();
 
             this.Columns.AddRange(new ColumnHeader[] {
+                  columnHeader30,
                   columnHeader9,
                   columnHeader8,
                   columnHeader12,
@@ -69,10 +71,11 @@ namespace wowmao
         internal ListViewItem NewLvi(url_term ut, List<term> l2_terms)
         {
             var lvi = new ListViewItem(new string[] {
+                ut.wiki_S?.ToString(),
                 ut.term.is_gold ? ($"{ut.term.gold_desc}") : "",
                 l2_terms == null ? "-" : l2_terms.Count.ToString(),
-                ut.tss.ToString("0"),
-                ut.tss_norm.ToString("0.00"),
+                ut.tss?.ToString("0"),
+                ut.tss_norm?.ToString("0.00"),
                 ut.term.name + " [" + ut.term.id + "] #" + ut.term.occurs_count,
                 ut.term.term_type.type,
                 ut.term.cal_entity_type != null ? ut.term.cal_entity_type.name : "-",

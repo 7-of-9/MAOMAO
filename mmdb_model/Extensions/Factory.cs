@@ -16,16 +16,10 @@ namespace mmdb_model
 
         public static mm02Entities static_instance = null;
 
-        //public void Dispose()
-        //{
-        //    if (this != static_instance)
-        //        base.Dispose();
-        //}
-
         public static mm02Entities Create(bool log = false)
         {
             string connectionString = GetDbConnectionString("mm02Entities");
-            if (static_instance == null) {
+            //if (static_instance == null) {
                 var db = new mm02Entities(connectionString);
 
                 //db.ObjectContext().ContextOptions.ProxyCreationEnabled = false;
@@ -41,9 +35,9 @@ namespace mmdb_model
                     g.LogLine("created object-context for main DB [" + db.Database.Connection.Database + "]");
 
                 return db;
-            }
+            //}
 
-            return static_instance;
+            //return static_instance;
         }
 
         public static string GetDbConnectionString(string configConStrKey)

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static mm_svc.Terms.Correlations;
 using mm_global.Extensions;
+using Newtonsoft.Json;
 
 namespace mm_svc
 {
@@ -18,8 +19,6 @@ namespace mm_svc
     /// </summary>
     public class TssProduction
     {
-        public string log = "";
-
         private IEnumerable<url_term> tags;
         private IEnumerable<url_term> entities;
         private IEnumerable<url_term> topics;
@@ -50,23 +49,43 @@ namespace mm_svc
         public const double TITLE_EXACT_START_BOOST = BASE_BOOST * 2;
         public const double TITLE_DESC_BOOST = 4;
 
+        //
+        // TODO: call from ProcessNlp -- outputs to table are: TSS, TSS_norm, reasons, word_x_title, word_x_desc
+        // URL-processed flag then indicates when CalcTSS was been done for it 
+        //
+        public List<url_term> ProcessUrlTSS(long url_id)
+        {
+            using (var db = mm02Entities.Create())
+            {
+                var url = db.urls.Find(url_id);
 
-        public void CalcTSS(dynamic meta_all, List<url_term> url_terms, bool run_l2_boost)
+                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                var l1_url_terms = db.url_term
+                                     .Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                                     .Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
+
+                CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
+
+                l1_url_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
+                url.processed_at_utc = DateTime.UtcNow;
+
+                db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason + url processed
+                return l1_url_terms;
+            }
+        }
+
+        private void CalcTSS(dynamic meta_all, List<url_term> url_terms, bool run_l2_boost)
         {
             url_terms.ForEach(p => p.InitExtensionFields());
             this.tags = url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG);
             this.entities = url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_ENTITY);
             this.topics = url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_TOPIC);
             this.all = url_terms;
-            const int MIN_STEMMING_LEN = 5;
+            //const int MIN_STEMMING_LEN = 5;
 
             var title_ltrim = meta_all.html_title.ToString().ToLower().Trim();
             var desc_ltrim = (meta_all.ip_description ?? "").ToString().ToLower().Trim();
             Porter2_English stemmer = new Porter2_English();
-
-            // remove tags that are entities
-            //int tags_removed = RemoveSocialTagsThatAreEntities(url_terms);
-            //log += $"removed {tags_removed} social tags\r\n";
 
             // S2 -- baseline S relevance boosted and scaled
             foreach (var x in all) {
@@ -98,30 +117,6 @@ namespace mm_svc
                 t.tss += boost;
             }
 
-            //
-            // TODO: stemming not working; this is just duplicating title_exact dynamics -- also POS not working: ditch this NLP lib. ***
-            //
-            // all fully contained in title - w/ stemming 
-            //var title_stemmed = stemmer.stem(title_ltrim);
-            //var title_stemmed_words = Words.SplitWords(title_stemmed);
-
-            //foreach (var t in all) {
-            //    var term_name_stemmed = stemmer.stem(t.term.name.ltrim());
-            //    var term_name_stemmed_words = Words.SplitWords(term_name_stemmed);
-
-            //    //if (title_stemmed.IndexOf(term_name_stemmed) != -1)
-            //    //{
-            //    //    if (t.term.name.Length >= MIN_STEMMING_LEN)
-            //    //    {
-            //    //        var boost = BASE_BOOST
-            //    //                    * t.term.name.LengthNorm(MAX_BOOST_LEN)
-            //    //                    * t.S2;
-            //    //        t.candidate_reason += $" TITLE_STEMMED({(int)boost}) ";
-            //    //        t.tss += boost;
-            //    //    }
-            //    //}
-            //}
-
             if (!string.IsNullOrEmpty(desc_ltrim)) {
                 // ** all fully contained in description - no stemming
                 foreach (var t in all.Where(p => desc_ltrim.IndexOf(p.term.name.ltrim()) != -1)) {
@@ -147,14 +142,11 @@ namespace mm_svc
             var title_ex_stopwords = InternalNlp.Utils.Words.TokenizeExStopwords(title_ltrim).ToString();
             var description_ex_stopwords = InternalNlp.Utils.Words.TokenizeExStopwords(desc_ltrim).ToString();
             
-            // TODO: porter2 stemming
+            // porter2 stemming
             var title_ex_stopwords_stemmed = stemmer.stem(title_ex_stopwords);
             var description_ex_stopwords_stemmed = stemmer.stem(description_ex_stopwords);
 
             foreach (var t in all) {
-                //t.words_common_to_title = InternalNlp.Utils.Words.WordsInCommon(t.term.name, title_ex_stopwords);
-                //t.words_common_to_desc = InternalNlp.Utils.Words.WordsInCommon(t.term.name, description_ex_stopwords);
-
                 //***
                 //if (t.term.name.Length >= MIN_STEMMING_LEN) {
                 t.words_X_title_stemmed = InternalNlp.Utils.Words.WordsInCommon(stemmer.stem(t.term.name), title_ex_stopwords_stemmed);
@@ -243,28 +235,7 @@ namespace mm_svc
                 }
             }*/
 
-            //
-            // DONE: (1) consider: taking top 3-4 terms, by score.
-            //              > then: lookup the top 4-5 correlated terms of the top 3-4 terms by score.
-            //              >       if any of these correlated terms appear in the remaining url_terms, then boost them heavily!
-            // 
-            //  >> automate now ... will improve, but won't yield desired cateogry (e.g. chess) unless it was in original url_terms list
-            //
-            // TODO: (2) ADD TOP x/y correlated terms to the url_terms (2nd level terms) and then re-run the entire thing
-            //          > target: yield "chess" for URLs that don't directly return it ...
-            //
-            //**************
-            //  JUST NOT POSSIBLE TO DO WITHOUT SOME KIND OF HUMAN INTERVENTION! SO DON'T EVEN TRY!!!!
-            // the logic here (unassisted) can work as a "stop gap" or immediate cateogrization, but there should be facility to "recateogrize"
-            // or add human-input to the system.
-            //
-            // UPDATED PLAN: need to be able to MARK terms as desired categories
-            //      >> these then get super-max ratings on direct or indirect (2nd level correlated) terms
-            // 
-            // over time, should only need to mark a few hundred terms as top-level cats;
-            // a simple admin view that exposes URLs that don't have first or second level MARKED terms means it will be easy to administer.
-            //**************
-
+            // TODO -- finalize/tweak/turn this down...
             // l2 boosting -- for top few terms, get correlated terms: boost non-top root terms matching correlated l2 terms exactly by name
             if (run_l2_boost) { 
                 var top_terms = url_terms.Except(topics).DistinctBy(p => p.term.name.ltrim()).OrderByDescending(p => p.tss).Take(3);  // take more??
@@ -305,24 +276,11 @@ namespace mm_svc
                 }
             }
 
-
-            //       (2) want to arrive at BROADLY bucketed "approved" MM CATS, e.g. for sample set: 
-            //              * chess, astronomy, atheism, US politics, comedy, maths,  > and not much more than that ...
-            //                > the granularity has to be "just right"
-            //
-            //       (3) acutally, it's more like 2 or 3 MM CATS (hierarchical) for each URL ...
-            //
-
-            // final 3 cats
-            //var final = new List<string>();
-            //foreach (var term in url_terms.OrderByDescending(p => p.TSS).Take(3))
-            //    final.Add(term.term.name);
-
-            //return final;
-
             // normalize TSS
             var max_tss = url_terms.Count > 0 ? url_terms.Max(p => p.tss) : 0;
             url_terms.ForEach(p => p.tss_norm = max_tss == 0 ? 0 : p.tss / max_tss);
+
+            // TSS, TSS_norm, reasons, word_x_title, word_x_desc
         }
 
         private void SetTagsRepeatedCount(IEnumerable<url_term> uts)

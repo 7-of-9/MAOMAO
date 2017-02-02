@@ -49,6 +49,10 @@ namespace mmdb_model
                     return this.cal_topic_score ?? 0 * 10; // 0-10
                 }
 
+                else if (this.term.term_type_id == (int)g.TT.WIKI_NS_14 || this.term.term_type_id == (int)g.TT.WIKI_NS_0) {
+                    return this.wiki_S ?? 0; // 0-10
+                }
+
                 return 0;
             }
         }
@@ -64,15 +68,15 @@ namespace mmdb_model
         [NotMapped]
         public int appearance_count { get; set; }
 
-        [NotMapped]
-        public string candidate_reason { get; set; }
+        //[NotMapped]
+        //public string candidate_reason { get; set; } //**
 
-        // topic-score-specific
-        [NotMapped]
-        public double tss { get; set; }
+        //// topic-score-specific
+        //[NotMapped]
+        //public double tss { get; set; } //**
 
-        [NotMapped]
-        public double tss_norm { get; set; }
+        //[NotMapped]
+        //public double tss_norm { get; set; }  //**
 
         //[NotMapped] public List<string> words_common_to_title { get; set; }
 

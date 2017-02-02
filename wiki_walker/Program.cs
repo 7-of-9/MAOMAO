@@ -29,12 +29,16 @@ namespace wiki_walker
         private static int child_pages_fetched = 0;
         private static int child_page_counter = 0;
 
-        private const int max_depth = 7;
+        private const int max_depth = 6;
+        private const bool reprocess_to_max_depth = true;
 
         /* depth: 6
             child pages searched (ns=14): 1,612,200 in 464 sec(s) = 3471.3 per/sec...
             DONE!! Press any key...
             select count(*) from term where term_type_id in (0,14) = 319,309
+
+            max_depth=6 - child pages searched (ns=14): 4,192,000 in 18470 sec(s) = 227.0 per/sec...
+            DONE!! Press any key...
         */
 
         public static void Main()
@@ -62,7 +66,7 @@ namespace wiki_walker
             using (var db = mm02Entities.Create())
             {
                 //
-                // plan: try SUBCATS only to start, try populate whole tree up to name depth
+                // plan: try SUBCATS only to start, try populate whole tree up to named depth
                 // then see how it works with calais NLP matching
                 // taking pages is just gonna be almost impossible, short term -- data sets are just too big
                 //
@@ -72,102 +76,122 @@ namespace wiki_walker
                               .Where(p => p.page_title == parent_page_search 
                                     && (//p.page_namespace == 0 || // target: ~14m (!!) including pages (0)
                                         p.page_namespace == 14)) // target: ~4.3m for just subcats (14)
-                                .Where(p => (p.processed_to_depth == null || p.processed_to_depth < max_depth))
+                                .Where(p => (p.processed_to_depth == null || p.processed_to_depth < max_depth || reprocess_to_max_depth == true))
                                 .ToListNoLock();
 
                 // for each supplied parent page (should be usually one only -- only taking one namespace 14)
-                Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (parent_page) =>
+                var saw_exceptions_on_page_processing = false;
+                try
                 {
-                    using (var db2 = mm02Entities.Create()) {
-
-                        // get child cat links for parent page
-                        var children_qry = db2.wiki_catlink//.AsNoTracking()
-                                          .Where(p => p.cl_to == parent_page_search
-                                                  && p.cl_type == "subcat" // cl_inks to subcats only
-                                                  && (p.processed_to_depth == null || p.processed_to_depth < max_depth)
-                                                  ); //**
-                        //if (page_name.GetHashCode() % 2 == 0)
-                            children_qry = children_qry.OrderBy(p => p.id);
-                        //else
-                        //    children_qry = children_qry.OrderBy(p => p.cl_to);
-                        var child_cls = children_qry.ToListNoLock();
-
-                        var child_pages_to_walk = new ConcurrentBag<wiki_page>();
-                        bool saw_concurrency_exception_on_GTs_any = false;
-                        Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
+                    Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (parent_page) =>
+                    {
+                        using (var db2 = mm02Entities.Create())
                         {
-                            if (saw_concurrency_exception_on_GTs_any) return;
-                            using (var db3 = mm02Entities.Create())
+                            // get child cat links for parent page
+                            var children_qry = db2.wiki_catlink//.AsNoTracking()
+                                              .Where(p => p.cl_to == parent_page_search
+                                                      && p.cl_type == "subcat" // cl_inks to subcats only
+                                                      && (p.processed_to_depth == null || p.processed_to_depth < max_depth || reprocess_to_max_depth == true)
+                                                      ); //**
+                                                         //if (page_name.GetHashCode() % 2 == 0)
+                            children_qry = children_qry.OrderBy(p => p.id);
+                            //else
+                            //    children_qry = children_qry.OrderBy(p => p.cl_to);
+                            var child_cls = children_qry.ToListNoLock();
+
+                            var child_pages_to_walk = new ConcurrentBag<wiki_page>();
+                            bool saw_concurrency_exception_on_GTs_any = false;
+                            bool saw_exceptions_on_cl_term_processing = false;
+                            try
                             {
-                                // get child pages
-                                var child_pages = g.RetryMaxOrThrow(() => 
-                                    db3.wiki_page.Where(p => p.page_id == child_page_cl.cl_from
-                                                         && (p.page_namespace == 14 // subcats only
-                                                         //|| p.page_namespace == 0)
-                                                         )) // pages
-                                                 .ToListNoLock());
-
-                                if (++child_page_counter % 1000 == 0) {
-                                    var child_pages_per_sec = child_page_counter / sw.Elapsed.TotalSeconds;
-                                    Trace.WriteLine($"child pages searched (ns=14): {child_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_per_sec.ToString("0.0")} per/sec...");
-                                }
-
-                                if (child_pages.Count() == 0) return;
-                                child_pages_fetched += child_pages.Count();
-
-                                foreach (var child_page in child_pages)
+                                Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_cl) =>
                                 {
-                                    if (exclude_page(child_page.page_title.ltrim())) continue;
-
-                                    // new: terms now distinct by page_namespace (2x term types - one for each wiki namespace...)
-                                    bool saw_concurrency_exception_on_GTs;
-                                    RecordTerms(out saw_concurrency_exception_on_GTs, parent_page, child_page, level, parent_page_search);
-                                    if (saw_concurrency_exception_on_GTs)
+                                    if (saw_concurrency_exception_on_GTs_any) return;
+                                    using (var db3 = mm02Entities.Create())
                                     {
-                                        Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                                        saw_concurrency_exception_on_GTs_any = true;
-                                        return; // assume another task has this chain; abort!
-                                    }
+                                        // get child pages
+                                        var child_pages = g.RetryMaxOrThrow(() =>
+                                            db3.wiki_page.Where(p => p.page_id == child_page_cl.cl_from
+                                                                 && (p.page_namespace == 14 // subcats only
+                                                                                            //|| p.page_namespace == 0)
+                                                                 )) // pages
+                                                         .ToListNoLock());
 
-                                    child_pages_to_walk.Add(child_page);
-                                    child_page_cl.processed_to_depth = max_depth; // save later - only after all recurssions
+                                        if (++child_page_counter % 1000 == 0)
+                                        {
+                                            var child_pages_per_sec = child_page_counter / sw.Elapsed.TotalSeconds;
+                                            Trace.WriteLine($"max_depth={max_depth} reprocessing={reprocess_to_max_depth} - child pages searched (ns=14): {child_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_per_sec.ToString("0.0")} per/sec...");
+                                        }
+
+                                        if (child_pages.Count() == 0) return;
+                                        child_pages_fetched += child_pages.Count();
+
+                                        foreach (var child_page in child_pages)
+                                        {
+                                            if (exclude_page(child_page.page_title.ltrim())) continue;
+
+                                            // new: terms now distinct by page_namespace (2x term types - one for each wiki namespace...)
+                                            bool saw_concurrency_exception_on_GTs;
+                                            RecordTerms(out saw_concurrency_exception_on_GTs, parent_page, child_page, level, parent_page_search);
+                                            if (saw_concurrency_exception_on_GTs)
+                                            {
+                                                Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
+                                                saw_concurrency_exception_on_GTs_any = true;
+                                                return; // assume another task has this chain; abort!
+                                            }
+
+                                            child_pages_to_walk.Add(child_page);
+                                            child_page_cl.processed_to_depth = max_depth; // *** save later - only after all recursions
+                                        }
+                                    }
+                                });
+                            }
+                            catch (AggregateException agex) {
+                                Trace.WriteLine(agex.ToDetailedString());
+                                saw_exceptions_on_cl_term_processing = true;
+                            }
+
+                            // ???? not sure this is correct - seems maybe not, if full "complete" e2e runs when restarted, result in still more terms being found
+                            //if (saw_concurrency_exception_on_GTs_any) 
+                            //{
+                            //    Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS PARENT CHAIN! parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] page_search={parent_page_search}* *");
+                            //    return;
+                            //}
+
+                            var saw_exceptions_on_cl_recursion = false;
+                            if (level < max_depth)
+                            {
+                                // recurse
+                                try {
+                                    Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_to_walk) =>
+                                    {
+                                        if (!new_parent_page_ids.ContainsKey(child_page_to_walk.page_id))
+                                        {
+                                            new_parent_page_ids.TryAdd(child_page_to_walk.page_id, true);
+                                            WalkDownTree(new_parent_page_ids, child_page_to_walk.page_title, level + 1);
+                                        }
+                                    });
+                                }
+                                catch (AggregateException agex) {
+                                    Trace.WriteLine(agex.ToDetailedString());
+                                    saw_exceptions_on_cl_recursion = true;
                                 }
                             }
-                        });
 
-                        if (saw_concurrency_exception_on_GTs_any) // ???? not sure this is correct
-                        {
-                            Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS PARENT CHAIN! parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] page_search={parent_page_search}* *");
-                            return;
+                            if (saw_exceptions_on_cl_term_processing == false && saw_exceptions_on_cl_recursion == false)
+                                db2.SaveChangesTraceValidationErrors(); //*** wiki_calink - processed_to_depth
                         }
 
-                        if (level < max_depth)
-                        {
-                            // recurse
-                            Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = par_max }, (child_page_to_walk) =>
-                            {
-                                if (!new_parent_page_ids.ContainsKey(child_page_to_walk.page_id))
-                                {
-                                    new_parent_page_ids.TryAdd(child_page_to_walk.page_id, true);
-                                    WalkDownTree(new_parent_page_ids, child_page_to_walk.page_title, level + 1);
-                                }
-                            });
-                        }
-                        //else
-                        //    Trace.WriteLine($">> max_depth reached: skipping recurssion <<");
+                        parent_page.processed_to_depth = max_depth; //**
+                    });
+                }
+                catch (AggregateException agex) {
+                    Trace.WriteLine(agex.ToDetailedString());
+                    saw_exceptions_on_page_processing = true;
+                }
 
-                        // mark catlinks as processed -- update: marked as processed (above) only if saw_concurrency_exception didn't early out (above)
-                        //foreach (var child_page_cl in child_cls)
-                        //{
-                        //    child_page_cl.processed = true;  //**
-                        //}
-
-                        db2.SaveChangesTraceValidationErrors(); //** wiki_calink - processed_to_depth
-                    }
-
-                    parent_page.processed_to_depth = max_depth; // true; //**
-                });
-                db.SaveChangesTraceValidationErrors(); //** page
+                if (saw_exceptions_on_page_processing == false)
+                    db.SaveChangesTraceValidationErrors(); //** page - processed_to_depth
             }
         }
 

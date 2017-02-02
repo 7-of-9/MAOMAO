@@ -59,31 +59,50 @@ namespace wowmao.Controls
             this.Nodes.Clear();
             this.Cursor = Cursors.WaitCursor;
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                List<term> wiki_terms;
-                if (string.IsNullOrEmpty(search))
-                    wiki_terms = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
+                if (string.IsNullOrEmpty(search)) // 
+                {
+                    // root
+                    var root_term = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).Single();
+                    var gts = GoldenTermsFromParentTermId(root_term.id); // term is parent - guaranteed (it's the root term)
+                    var nodes = NodesFromGoldenTerms(gts);
+                    this.Nodes.AddRange(nodes.ToArray());
+                }
                 else
-                    if (whole_word)
-                        wiki_terms = db.terms.Where(p => (p.name == search || p.name.Contains(" " + search + " ")) && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
-                    else
-                        wiki_terms = db.terms.Where(p => p.name.Contains(search) && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
-
-                foreach (var wiki_term in wiki_terms) {
-                    var gts = GoldenTermsFromParentTermId(wiki_term.id);
-                    if (gts.Count > 0) {
+                {
+                    // search 
+                    if (whole_word) search = $" {search} ";
+                    var terms = db.terms.Where(p => (p.name.Contains(search) && p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
+                    foreach (var term in terms)
+                    {
+                        var gts = GoldenTermsFromChildTermId(term.id); // term is a child - guaranteed: all apart from root are children of something
                         var nodes = NodesFromGoldenTerms(gts);
+                        this.Nodes.AddRange(nodes.ToArray());
+                    }
 
+                    //??
+                    //GetParentTreeForParentTermId(wiki_term.id, nodes); // search terms -- build parent tree for each search result
+                }
+
+                /*
+                //Parallel.ForEach(wiki_terms.Take(1), new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (wiki_term) =>
+                {
+                    var gts = GoldenTermsFromParentTermId(wiki_term.id); // WRONG! search term is not necessarily a parent of anything, but it must be a child
+                    if (gts.Count > 0)
+                    {
+                        var nodes = NodesFromGoldenTerms(gts);
                         if (wiki_term.name == g.WIKI_ROOT_TERM_NAME_CLEANED)
-                            this.Nodes.AddRange(nodes.ToArray()); // add single root term
-                        else { 
+                            this.Invoke((MethodInvoker)delegate { this.Nodes.AddRange(nodes.ToArray()); });
+                        else
+                        {
                             GetParentTreeForParentTermId(wiki_term.id, nodes); // search terms -- build parent tree for each search result
                             var root_parent = GetRootParentNode(nodes[0]);
                             nodes[0].Parent.ForeColor = Color.Red;
-                            this.Nodes.Add(root_parent);
+                            this.Invoke((MethodInvoker)delegate { this.Nodes.Add(root_parent); });
                         }
                     }
-                    Application.DoEvents();
-                }
+                    //Application.DoEvents();
+                }*/
+                //);
             }
             this.EndUpdate();
             this.Cursor = Cursors.Default;
@@ -117,6 +136,8 @@ namespace wowmao.Controls
                             .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
             //Debug.WriteLine(qry.ToString());
             var gts = qry.ToListNoLock();
+            gts.ForEach(p => Debug.WriteLine($"child_term_id={child_term_id} -> got GTs: {p.ToString()}"));
+
             this.total_gts_loaded += gts.Count;
             OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
             return gts;
@@ -254,7 +275,7 @@ namespace wowmao.Controls
             var gt = this.SelectedNode.Tag as golden_term;
             Debug.WriteLine(gt.ToString());
             OnSearchGoogle?.Invoke(this.GetType(), new OnSearchGoogleEventArgs() { search_term = 
-                (gt.child_term.term_type_id == (int)g.TT.WIKI_NS_14 ? "Category:" : "") + gt.child_term.name.Replace("_", " ") });
+                (gt.child_term.term_type_id == (int)g.TT.WIKI_NS_14 ? "Category:" : "") + gt.child_term.name.Replace(" ", "_") });
         }
 
         private void GetParentNodes(TreeNode node, List<TreeNode> parents) {

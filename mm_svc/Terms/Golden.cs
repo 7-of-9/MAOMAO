@@ -14,6 +14,50 @@ namespace mm_svc.Terms
     {
         private static int MAX_GOLD_LEVEL = 4;
 
+        public static List<List<term>> GetPathsToRoot(long child_term_id)
+        {
+            var root_paths = new List<List<term>>();
+            using (var db = mm02Entities.Create())
+            {
+                var child_term = db.terms.Find(child_term_id);
+                RecurseParents(root_paths, new List<term>() {  }, child_term_id, child_term_id);
+                root_paths.ForEach(p => Debug.WriteLine(child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name))));
+            }
+            return root_paths;
+        }
+
+        private static void RecurseParents(List<List<term>> root_paths, List<term> path, long term_id, long orig_term_id)
+        {
+            //Debug.WriteLine($"path: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
+            var links = GetParents(term_id);
+            if (links.Count == 0)
+                root_paths.Add(path);
+
+            foreach (var link in links.OrderBy(p => p.mmcat_level)) // orderby - important! we want fastest paths first
+            {
+                if (path.Select(p => p.id).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
+                    continue;
+
+                // skip if this path is already known to terminate in the root
+                var root_path_names = root_paths.Select(p => string.Join(" / ", p.Take(path.Count - 1).Select(p2 => p2.name))).ToList();
+                var this_path_name = string.Join(" / ", path.Select(p => p.name));
+                if (!string.IsNullOrEmpty(this_path_name) && root_path_names.Any(p => !string.IsNullOrEmpty(p) && this_path_name.StartsWith(p)))
+                    continue;
+
+                // recurse: add to path
+                var new_path = new List<term>(path);
+                new_path.Add(link.parent_term);
+                RecurseParents(root_paths, new_path, link.parent_term_id, orig_term_id);
+            }
+        }
+
+        private static List<golden_term> GetParents(long child_term_id) {
+            using (var db = mm02Entities.Create()) {
+                return db.golden_term.Include("term").Include("term1")
+                         .Where(p => p.child_term_id == child_term_id).ToListNoLock();
+            }
+        }
+
         public static int ProcessSuggested(List<term> suggested_gold, long originating_url_id) {
             var new_gold_count = 0;
             foreach (var suggested in suggested_gold) {

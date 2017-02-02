@@ -5,7 +5,7 @@
  select count(*) from term where term_type_id in (0,14) -- target: all subcats & pages, i.e. 14m!!!
  select count(*) from wiki_page where processed=1 -- 347
  select count(*) from wiki_catlink where processed=1 -- 4055
-  select count(*) from wiki_page where page_namespace in (0,14) -- TARGET: 14m !!!
+  select count(*) from wiki_page where page_namespace in (14) -- -- 1,489,640
   select distinct count(cl_to) from wiki_catlink where cl_type = 'subcat' -- 4.4m
   select distinct count(cl_to) from wiki_catlink where cl_type = 'page' -- (99m)
 
@@ -15,21 +15,27 @@
  delete from term_matrix where term_a_id in (select id from term where term_type_id in (0,14))
  delete from term_matrix where term_b_id in (select id from term where term_type_id in (0,14))
  delete from term where term_type_id in (0,14)
- --update wiki_page set processed=0 where processed=1
+ --update wiki_page set processed_to_depth=null where processed_to_depth is not null
 	DROP INDEX [IX_wiki_page_processed] ON [dbo].[wiki_page]
 		alter table wiki_page drop column processed
-		alter table wiki_page add processed bit null
-	CREATE NONCLUSTERED INDEX [IX_wiki_page_processed] ON [dbo].[wiki_page] ( [processed] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+		alter table wiki_page add processed_to_depth int null
+	CREATE NONCLUSTERED INDEX [IX_wiki_page_processed] ON [dbo].[wiki_page] ( [processed_to_depth] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 
---update wiki_catlink set processed=0 where processed=1
+--update wiki_catlink set processed_to_depth=null where processed_to_depth is not null
 	DROP INDEX [IX_wiki_catlink_processed] ON [dbo].[wiki_catlink]
 		alter table wiki_catlink drop column processed
-		alter table wiki_catlink add processed bit null
-	CREATE NONCLUSTERED INDEX [IX_wiki_catlink_processed] ON [dbo].[wiki_catlink] ( [processed] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+		alter table wiki_catlink add processed_to_depth int null
+	CREATE NONCLUSTERED INDEX [IX_wiki_catlink_processed] ON [dbo].[wiki_catlink] ( [processed_to_depth] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
  */
 
  -- test
+ select * from term where id = 4994232
+ select * from golden_term where child_term_id=4994232
+ select * from golden_term where child_term_id=4990983
+ select * from term where id = 4990979
 
+ select max(processed_to_depth) from wiki_page
+ update wiki_page set processed_to_depth = 2 where page_title = 'Main_topic_classifications' 
 select * from wiki_page where page_title = 'Main_topic_classifications' and page_namespace in (14,0) -- pageid = 7345184
 select *,
  (select page_title from wiki_page where page_id=cl_from) 'cn',

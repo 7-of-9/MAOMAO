@@ -46,6 +46,11 @@ namespace wowmao
 
             this.wikiGoldTree.OnGtsLoaded += WikiGoldTree_OnGtsLoaded;
             this.wikiGoldTree.OnSearchGoogle += WikiGoldTree_OnSearchGoogle;
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
             this.wikiGoldTree.BuildTree();
         }
 
@@ -112,7 +117,7 @@ namespace wowmao
 
                 var count_urls = qry.Count();
                 var take = Convert.ToInt32(this.cboTop.Text);
-                if (chkRndOrder.Checked && count_urls > 0)
+                if (chkRndOrder.Checked && count_urls > take)
                     qry = qry.Skip(rnd.Next(0, count_urls - take));
 
                 qry = qry.Take(take);
@@ -197,25 +202,49 @@ namespace wowmao
 
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 
+                //
+                // ** ProcessTss **
+                //
+                var tss = new mm_svc.TssProduction();
+                var l1_url_terms = tss.ProcessUrlTSS(url.id);
+
                 // (1) get url_terms (L1 terms)
-                List<url_term> l1_url_terms;
-                if (this.url_term_cache.ContainsKey(url.id))
+                /*if (this.url_term_cache.ContainsKey(url.id))
                     l1_url_terms = url_term_cache[url.id];
                 else {
                     l1_url_terms = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type").Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
                     url_term_cache.Add(url.id, l1_url_terms);
                     SetCaption();
-                }
+
+                    // TMP -- (while waiting for bulk/batch crawl to populate organically) -- add matching wiki terms
+                    //var add_wiki_url_terms = new List<url_term>();
+                    //var distinct_l1_names = l1_url_terms.Select(p => p.term.name).Distinct();
+                    //foreach (var l1_term_name in distinct_l1_names)
+                    //{
+                    //    var url_term = l1_url_terms.Where(p => p.term.name == l1_term_name).OrderByDescending(p => p.S).First();
+                    //    var wiki_term = db.terms.Where(p => p.name == url_term.term.name && (p.term_type_id == (int)g.TT.WIKI_NS_14)).FirstOrDefaultNoLock();
+                    //    if (wiki_term != null) {
+                    //        add_wiki_url_terms.Add(new url_term {
+                    //            term = wiki_term,
+                    //            term_id = wiki_term.id,
+                    //            url_id = url_term.url_id,
+                    //            wiki_S = url_term.term.term_type_id == (int)g.TT.CALAIS_ENTITY ? Convert.ToDouble(url_term.cal_entity_relevance.ToString()) * 10 // 0-10
+                    //                    : url_term.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG ? ((4 - Convert.ToDouble(url_term.cal_socialtag_importance.ToString())) * 3) // 0-10
+                    //                    : url_term.term.term_type_id == (int)g.TT.CALAIS_TOPIC ? Convert.ToDouble(url_term.cal_topic_score.ToString()) * 10 : -1 // 0-10
+                    //        });
+                    //    }
+                    //}
+                    //l1_url_terms.AddRange(add_wiki_url_terms);
+                }*/
 
                 // (2) *** Calc. TSS for L1 terms ***
-                var cat = new mm_svc.TssProduction();
-                cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true);
-                txtInfo.AppendText(cat.log);
+                //var cat = new mm_svc.TssProduction();
+                //cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true); // TODO: have this pick the top n calais terms, return mapped wiki terms for top n
 
                 // L1 terms -> for each L1 term: add to TermTree
                 if (chkUpdateUi.Checked) { 
-                    ttUrlTerms.Nodes.Clear();
-                    l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
+                    //ttUrlTerms.Nodes.Clear();
+                    //l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
                     lvwUrlTerms.Items.Clear();
                     lvwUrlTerms.BeginUpdate();
                 }
@@ -223,10 +252,11 @@ namespace wowmao
                 var direct_goldens = new List<url_term>();
                 var all_l2_term_ids_by_count = new Dictionary<long, int>();
                 var all_l2_terms = new List<term>();
-                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.tss)) {
+                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.term.term_type_id).ThenByDescending(p => p.tss)) {
 
+                    // --- L2 terms -- (disable for now while testing tmp wiki terms...)
                     List<term> l2_terms = null;
-                    if (l1_url_term.tss > 0) {
+                    /*if (l1_url_term.tss > 0) {
                         // is term directly golden?
                         if (l1_url_term.term.is_gold)
                             direct_goldens.Add(l1_url_term);
@@ -252,7 +282,7 @@ namespace wowmao
                             if (!all_l2_terms.Any(p => p.id == l2_term.id))
                                 all_l2_terms.Add(l2_term);
                         }
-                    }
+                    }*/
 
                     // add L1 term to TermList
                     if (chkUpdateUi.Checked)
@@ -266,7 +296,7 @@ namespace wowmao
 
                 //
                 // L2 TSS
-                if (chkUpdateUi.Checked)
+                /*if (chkUpdateUi.Checked)
                     lvwUrlTerms2.Items.Clear();
                 var l2_url_terms = new List<url_term>();
                 if (all_l2_terms.Count > 0) {
@@ -295,7 +325,7 @@ namespace wowmao
                         lvwUrlTerms2.EndUpdate();
                         SetCols(lvwUrlTerms2);
                     }
-                }
+                }*/
 
                 //
                 // (NOTE/TODO:
@@ -318,7 +348,7 @@ namespace wowmao
                 //
                 // process new gold suggestions
                 //
-                var out_suggest_l1_gold = new List<term>(); // gold suggest L1 -- top L1 terms by TSS norm threshold
+                /*var out_suggest_l1_gold = new List<term>(); // gold suggest L1 -- top L1 terms by TSS norm threshold
                 out_suggest_l1_gold = l1_url_terms.OrderByDescending(p => p.tss_norm)
                                                   .Where(p => p.tss_norm > 0.7 // *** min_tss_norm for L1 suggest gold (was: 0.5)
                                                            && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
@@ -346,7 +376,7 @@ namespace wowmao
                     //    list.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
                     //    item.SubItems[7].Text = all_l2_terms.Single(p => p.id == list[0].Key).name;
                     //}
-                }
+                }*/
 
                 //
                 // final outputs -- existing gold @ L1 & L2 - over TSS norm threshold (varies by gold level)
@@ -362,7 +392,7 @@ namespace wowmao
                         direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > p.term.existing_gold_min_tss_norm)
 
                        // existing L2 
-                       .Union(l2_url_terms.OrderByDescending(p => p.tss_norm).Where(p => p.term.is_gold && p.tss_norm > p.term.existing_gold_min_tss_norm))
+                       //.Union(l2_url_terms.OrderByDescending(p => p.tss_norm).Where(p => p.term.is_gold && p.tss_norm > p.term.existing_gold_min_tss_norm))
 
                        // rank
                        .Select(p => p.term)
@@ -378,10 +408,6 @@ namespace wowmao
 
                     item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
                 }
-
-                // done
-                db.urls.Find(url.id).processed_at_utc = DateTime.UtcNow;
-                db.SaveChangesTraceValidationErrors();
 
                 //
                 // TODO -- move this into the service layer
@@ -417,15 +443,16 @@ namespace wowmao
    
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lvwUrlTerms.SelectedItems.Count == 0) return;
-            var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
-            var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
-                                       .SelectMany(p => p.corr_terms)
-                                       .OrderByDescending(p => p.corr_for_main).ToList();
-            ttL2Terms.Nodes.Clear();
-            foreach(var golden_term in l2_terms) {
-                ttL2Terms.AddRootTerm(golden_term);
-            }
+            // l2 terms - obsolete?
+            //if (lvwUrlTerms.SelectedItems.Count == 0) return;
+            //var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
+            //var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
+            //                           .SelectMany(p => p.corr_terms)
+            //                           .OrderByDescending(p => p.corr_for_main).ToList();
+            //ttL2Terms.Nodes.Clear();
+            //foreach(var golden_term in l2_terms) {
+            //    ttL2Terms.AddRootTerm(golden_term);
+            //}
         }
 
         // walk & process...
@@ -481,7 +508,21 @@ namespace wowmao
 
         private void WikiGoldTree_OnGtsLoaded(object sender, Controls.WikiGoldenTree.OnGtsLoadedEventArgs e)
         {
-            this.lblTotGtsLoaded.Text = e.count_loaded.ToString() + " GTs loaded.";
+            this.Invoke((MethodInvoker)delegate { this.lblTotGtsLoaded.Text = e.count_loaded.ToString() + " GTs loaded."; });
+        }
+
+        private void wikiGoldTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            // calculate paths to root - important!
+            if (wikiGoldTree.SelectedNode == null) return;
+            var gt = wikiGoldTree.SelectedNode.Tag as golden_term;
+            var root_paths = Golden.GetPathsToRoot(gt.child_term_id);
+            this.txtWikiPathInfo.Text = "";
+            root_paths.ForEach(p => this.txtWikiPathInfo.AppendText(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
+        }
+
+        private void wikiGoldTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
         }
     }
 }

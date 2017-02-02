@@ -110,6 +110,9 @@
           <Property Name="cal_socialtag_importance" Type="int" />
           <Property Name="cal_entity_relevance" Type="float" />
           <Property Name="wiki_S" Type="float" />
+          <Property Name="candidate_reason" Type="nvarchar" MaxLength="256" />
+          <Property Name="tss" Type="float" />
+          <Property Name="tss_norm" Type="float" />
         </EntityType>
         <EntityType Name="user_url">
           <Key>
@@ -467,7 +470,6 @@
             <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
           <EntitySet Name="urls" EntityType="mm02Model.url" />
-          <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
           <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="url" EntitySet="urls" />
@@ -476,17 +478,9 @@
             <End Role="url" EntitySet="urls" />
             <End Role="golden_term" EntitySet="golden_term" />
           </AssociationSet>
-          <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
-            <End Role="term" EntitySet="terms" />
-            <End Role="url_term" EntitySet="url_term" />
-          </AssociationSet>
           <AssociationSet Name="FK_url_golden_term_url" Association="mm02Model.FK_url_golden_term_url">
             <End Role="url" EntitySet="urls" />
             <End Role="url_golden_term" EntitySet="url_golden_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_term" EntitySet="url_term" />
           </AssociationSet>
           <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
             <End Role="url" EntitySet="urls" />
@@ -494,6 +488,15 @@
           </AssociationSet>
           <EntitySet Name="wiki_page" EntityType="mm02Model.wiki_page" />
           <EntitySet Name="wiki_catlink" EntityType="mm02Model.wiki_catlink" />
+          <EntitySet Name="url_term" EntityType="mm02Model.url_term" />
+          <AssociationSet Name="FK_urlTerm_term" Association="mm02Model.FK_urlTerm_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
           <Key>
@@ -751,22 +754,8 @@
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
           <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url" ToRole="url_golden_term" />
-          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
-        </EntityType>
-        <EntityType Name="url_term">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url_id" Type="Int64" Nullable="false" />
-          <Property Name="term_id" Type="Int64" Nullable="false" />
-          <Property Name="cal_topic_score" Type="Double" />
-          <Property Name="cal_socialtag_importance" Type="Int32" />
-          <Property Name="cal_entity_relevance" Type="Double" />
-          <Property Name="wiki_S" Type="Double" />
-          <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
-          <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
+          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -792,18 +781,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_urlTerm_term">
-          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
-          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="term">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_term">
-              <PropertyRef Name="term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_url_golden_term_url">
           <End Type="mm02Model.url" Role="url" Multiplicity="1" />
           <End Type="mm02Model.url_golden_term" Role="url_golden_term" Multiplicity="*" />
@@ -812,18 +789,6 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="url_golden_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_urlTerms_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_term">
               <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -859,6 +824,47 @@
           <Property Name="id" Type="Guid" Nullable="false" />
           <Property Name="processed_to_depth" Type="Int32" />
         </EntityType>
+        <EntityType Name="url_term">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url_id" Type="Int64" Nullable="false" />
+          <Property Name="term_id" Type="Int64" Nullable="false" />
+          <Property Name="cal_topic_score" Type="Double" />
+          <Property Name="cal_socialtag_importance" Type="Int32" />
+          <Property Name="cal_entity_relevance" Type="Double" />
+          <Property Name="wiki_S" Type="Double" />
+          <Property Name="candidate_reason" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="tss" Type="Double" />
+          <Property Name="tss_norm" Type="Double" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_urlTerm_term" FromRole="url_term" ToRole="term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_urlTerms_url" FromRole="url_term" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_urlTerm_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_term">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_urlTerms_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -999,19 +1005,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="url_term">
-            <EntityTypeMapping TypeName="mm02Model.url_term">
-              <MappingFragment StoreEntitySet="url_term">
-                <ScalarProperty Name="wiki_S" ColumnName="wiki_S" />
-                <ScalarProperty Name="cal_entity_relevance" ColumnName="cal_entity_relevance" />
-                <ScalarProperty Name="cal_socialtag_importance" ColumnName="cal_socialtag_importance" />
-                <ScalarProperty Name="cal_topic_score" ColumnName="cal_topic_score" />
-                <ScalarProperty Name="term_id" ColumnName="term_id" />
-                <ScalarProperty Name="url_id" ColumnName="url_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="wiki_page">
             <EntityTypeMapping TypeName="mm02Model.wiki_page">
               <MappingFragment StoreEntitySet="wiki_page">
@@ -1030,6 +1023,22 @@
                 <ScalarProperty Name="cl_type" ColumnName="cl_type" />
                 <ScalarProperty Name="cl_to" ColumnName="cl_to" />
                 <ScalarProperty Name="cl_from" ColumnName="cl_from" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="url_term">
+            <EntityTypeMapping TypeName="mm02Model.url_term">
+              <MappingFragment StoreEntitySet="url_term">
+                <ScalarProperty Name="tss_norm" ColumnName="tss_norm" />
+                <ScalarProperty Name="tss" ColumnName="tss" />
+                <ScalarProperty Name="candidate_reason" ColumnName="candidate_reason" />
+                <ScalarProperty Name="wiki_S" ColumnName="wiki_S" />
+                <ScalarProperty Name="cal_entity_relevance" ColumnName="cal_entity_relevance" />
+                <ScalarProperty Name="cal_socialtag_importance" ColumnName="cal_socialtag_importance" />
+                <ScalarProperty Name="cal_topic_score" ColumnName="cal_topic_score" />
+                <ScalarProperty Name="term_id" ColumnName="term_id" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

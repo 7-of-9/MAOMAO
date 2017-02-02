@@ -43,14 +43,12 @@ namespace mm_svc
                     cal_lang = cal_langs.First().language.ToString();
 
                 // create new url row as necessary
-                if (db_url == null)
-                {
+                if (db_url == null) {
                     db_url = new url();
                     db.urls.Add(db_url);
                     g.LogLine($"writing new url row url1={db_url.url1}");
                 }
-                else
-                {
+                else {
                     db_url = db.urls.Find(db_url.id); // set to tracking reference
                     g.LogLine($"updating existing url row url1={db_url.url1}");
                     foreach (var db_url_term in db.url_term.Where(p => p.url_id == db_url.id))
@@ -70,32 +68,26 @@ namespace mm_svc
             }
 
             //
-            // Wiki Terms - "corresponding" to raw underlying Calais terms (mapped by exact name match - case insensitive, accent insensitive)
+            // Wiki terms - "corresponding" to raw underlying Calais terms (mapped by exact name match - case insensitive, accent insensitive)
             //
-            var mapped_wiki_term_ids = mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, db_url.id, out ret.unmapped_wiki_terms);
-            ret.mapped_wiki_terms = mapped_wiki_term_ids.Count;
-            var wiki_pairs = mm_svc.TermPair.GetUniqueTermPairs(mapped_wiki_term_ids); // compute unqiue term pairs
-            //foreach (var pair in wiki_pairs) {                                       // update term-pair appearance matrix
-            //    var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
-            //    if (new_pair)
-            //        ret.new_wiki_pairs++;
-            //}
-            //ret.new_wiki_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs);
-            Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs)); // slow: run async
+            //var mapped_wiki_term_ids = mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, db_url.id, out ret.unmapped_wiki_terms);
+            //ret.mapped_wiki_terms = mapped_wiki_term_ids.Count;
+            //var wiki_pairs = mm_svc.TermPair.GetUniqueTermPairs(mapped_wiki_term_ids); // compute unique term pairs
+            //Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs)); // update term-pair appearance matrix - slow: run async
 
             //
-            // "Underlying" Calais Terms -- TODO: later, these probably don't need to be written at all!
+            // "Underlying" Calais terms
             //
             var calais_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out ret.new_calais_terms); // record calais NLP terms
-            calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                     // add a master "root node" term
-            var calais_pairs = (List<TermPair>)mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);                         // compute unqiue combinations of term pairs
-            //foreach (var pair in calais_pairs) {                                                                          // update term-pair appearance matrix
-            //    var new_pair = mm_svc.TermPair.MaintainAppearanceMatrix(pair);
-            //    if (new_pair)
-            //        ret.new_calais_pairs++;
-            //}
-            //ret.new_calais_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs);
-            Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs)); // slow: run async
+            calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                    // add a master "root node" term
+            var calais_pairs = (List<TermPair>)mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);   // compute unqiue combinations of term pairs
+            Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs)); // update term-pair appearance matrix - slow: run async
+
+            //
+            // Calculate TSS & TSS_norm for Calais terms
+            //
+            var tss = new mm_svc.TssProduction();
+            var l1_url_terms = tss.ProcessUrlTSS(db_url.id);//
 
             return ret;
         }

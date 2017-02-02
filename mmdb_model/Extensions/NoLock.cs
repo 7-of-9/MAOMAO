@@ -18,7 +18,7 @@ namespace mmdb_model
             using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted })) 
             {
                 var result = query.ToList();
-                scope.Complete();
+                scope.Complete(); 
                 return result;
             }
         }

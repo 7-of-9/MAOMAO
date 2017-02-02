@@ -21,6 +21,9 @@ namespace mmdb_model
         public Nullable<int> cal_socialtag_importance { get; set; }
         public Nullable<double> cal_entity_relevance { get; set; }
         public Nullable<double> wiki_S { get; set; }
+        public string candidate_reason { get; set; }
+        public Nullable<double> tss { get; set; }
+        public Nullable<double> tss_norm { get; set; }
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }
