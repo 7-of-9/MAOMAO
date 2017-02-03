@@ -78,6 +78,9 @@
     <Compile Include="golden_term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="gt_path_to_root.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="mmdb.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -104,9 +107,6 @@
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
     <Compile Include="url.cs">
-      <DependentUpon>mmdb.tt</DependentUpon>
-    </Compile>
-    <Compile Include="url_golden_term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
     <Compile Include="url_term.cs">

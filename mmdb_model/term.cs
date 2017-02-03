@@ -22,6 +22,8 @@ namespace mmdb_model
             this.golden_term = new HashSet<golden_term>();
             this.golden_term1 = new HashSet<golden_term>();
             this.url_term = new HashSet<url_term>();
+            this.gt_path_to_root = new HashSet<gt_path_to_root>();
+            this.gt_path_to_root1 = new HashSet<gt_path_to_root>();
         }
     
         public long id { get; set; }
@@ -42,5 +44,9 @@ namespace mmdb_model
         public virtual ICollection<golden_term> golden_term1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_term> url_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_path_to_root> gt_path_to_root { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_path_to_root> gt_path_to_root1 { get; set; }
     }
 }

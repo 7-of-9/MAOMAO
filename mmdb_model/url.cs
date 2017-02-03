@@ -18,7 +18,6 @@ namespace mmdb_model
         public url()
         {
             this.golden_term = new HashSet<golden_term>();
-            this.url_golden_term = new HashSet<url_golden_term>();
             this.user_url = new HashSet<user_url>();
             this.url_term = new HashSet<url_term>();
         }
@@ -38,8 +37,6 @@ namespace mmdb_model
         public virtual awis_site awis_site { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<golden_term> golden_term { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<url_golden_term> url_golden_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_url> user_url { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

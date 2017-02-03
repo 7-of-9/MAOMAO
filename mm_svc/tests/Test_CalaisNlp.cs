@@ -13,7 +13,7 @@ namespace tests
         public void ProcessNlpInfo_Calais()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp1.json"))
+            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_nlp2.json"))
             using (StreamReader reader = new StreamReader(stream))
             {
                 string json = reader.ReadToEnd();

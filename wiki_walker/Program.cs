@@ -33,7 +33,7 @@ namespace wiki_walker
         private static int child_page_counter_total = 0;
         private static List<double> child_page_counter_batches_persec = new List<double>();
 
-        private const int max_depth = 15;
+        private const int max_depth = 20;
         private const bool reprocess_to_max_depth = true;
 
         /* depth: 6 (NS14 only)
@@ -55,8 +55,8 @@ namespace wiki_walker
             //ThreadPool.SetMaxThreads(512, 512);
 
             var parent_page_ids = new List<long>();
-            WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
-            //WalkDownTree(parent_page_ids, "Art_genres", -9);
+            //WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
+            WalkDownTree(parent_page_ids, "English_women_comedians", 8);
 
             Trace.WriteLine("DONE!! Press any key...");
             Console.ReadKey();
@@ -68,7 +68,9 @@ namespace wiki_walker
 
         private static void WalkDownTree(List<long> parent_page_ids, string parent_page_search, int level)
         {
-            int par_max = Debugger.IsAttached ? 1 : 20000;
+            int par_max_terms = Debugger.IsAttached ? 1 : 20;
+            int par_max_recurse = Debugger.IsAttached ? 1 : 10;
+
             using (var db = mm02Entities.Create())
             {
                 // SUBCATS only -- doesn't work well with calais NLP matching -- need leaf page nodes.
@@ -108,7 +110,9 @@ namespace wiki_walker
                             try
                             {
                                 // GT INSERTS FOR PARENT-CHILDREN LINKS
-                                Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (child_page_cl) =>
+                                //ParallelForce.ForEach(child_cls,
+                                Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = par_max_terms }, 
+                                (child_page_cl) =>
                                 { 
                                     if (saw_concurrency_exception_on_GTs_any) return;
                                     using (var db3 = mm02Entities.Create())
@@ -147,14 +151,14 @@ namespace wiki_walker
                                                         level,
                                                         parent_page_search);
                                             //if (saw_concurrency_exception_on_GTs) {
-                                            //    Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
+                                            //    Trace.WriteLine($"** GOLDEN-TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
                                             //    saw_concurrency_exception_on_GTs_any = true;
-                                            //    return; // assume another task has this chain; abort!
+                                            //    continue; // assume another task has this chain; abort!
                                             //}
-                                            if (saw_concurrency_exception_on_terms) {
-                                                Trace.WriteLine($"** TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                                                continue; // assume another task has this chain; abort!
-                                            }
+                                            //if (saw_concurrency_exception_on_terms) {
+                                            //    Trace.WriteLine($"** TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
+                                            //    continue; // assume another task has this chain; abort!
+                                            //}
 
                                             if (child_page.page_namespace == 14) // only recurse subcats!
                                             {
@@ -187,7 +191,9 @@ namespace wiki_walker
                             {
                                 try
                                 {
-                                    Parallel.ForEach(child_pages_to_walk.OrderBy(p => p.page_id), new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (child_page_to_walk) =>
+                                    //ParallelForce.ForEach(child_pages_to_walk.OrderBy(p => p.page_id),
+                                    Parallel.ForEach(child_pages_to_walk.OrderBy(p => p.page_id), new ParallelOptions() { MaxDegreeOfParallelism = par_max_recurse }, 
+                                    (child_page_to_walk) =>
                                     {
                                         var new_parent_page_ids = new List<long>(parent_page_ids); // each branch in the tree has *its own* unique inheritence chain!
                                         if (!new_parent_page_ids.Contains(child_page_to_walk.page_id))
@@ -331,6 +337,10 @@ namespace wiki_walker
             var cleaned_parent_name = parent_name.Replace("_", " ");
             var cleaned_child_name = child_name.Replace("_", " ");
 
+            //Debug.WriteLine($"{child_name}");
+            //if (child_name == "Jo_Brand")
+            //    Debugger.Break();
+
             var new_child_term = false;
             var new_parent_term = false;
             using (var db = mm02Entities.Create())  // create terms, type=wikicat
@@ -379,7 +389,7 @@ namespace wiki_walker
                 term_pairs_checked++;
 
                 // record relation
-                if (new_child_term || new_parent_term)//parent_term != null && child_term != null)
+                if (new_child_term || new_parent_term || reprocess_to_max_depth)//parent_term != null && child_term != null)
                 {
                     var added = RecordGoldenTerm(out saw_concurrency_exception_on_GTs, parent_term.id, child_term.id, level);
                     if (added)

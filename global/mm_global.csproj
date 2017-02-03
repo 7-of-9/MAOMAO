@@ -84,6 +84,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="global.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\Parallel.cs" />
     <Compile Include="Util\Xml.cs" />
     <Compile Include="Util\Web.cs" />
   </ItemGroup>

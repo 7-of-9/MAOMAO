@@ -2,7 +2,7 @@
 -- yes, can walk DOWN now we know the best root...
 
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 1m... @ d4, ns14||0 [target ~12-14m]
+ select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 2.3m... @ d12, ns14||0 [target ~12-14m]
  select count(*) from wiki_page where processed_to_depth is not null -- 369k: d6 ns14 
  select count(*) from wiki_catlink where processed_to_depth is not null -- 1.6m: d6 ns14
 
@@ -12,6 +12,11 @@
   select distinct count(cl_to) from wiki_catlink where cl_type = 'page' -- (99m)
 
  select processed_to_depth from wiki_page where page_title = 'Main_topic_classifications'
+ select count(*) from wiki_page where processed_to_depth=12
+ 
+ ---update wiki_page set processed_to_depth=3 where  page_title = 'Main_topic_classifications'
+ --select * from term where name = 'software engineering'
+ --select * from golden_term where parent_term_id = 5006393
 
  -- ns=0 (pages, leaf nodes - no dupes by name)
  --delete from term where term_type_id = 0

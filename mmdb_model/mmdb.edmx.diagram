@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="954005b6bff442abbb576d1ee68fb989" Name="Diagram1">
+      <Diagram DiagramId="954005b6bff442abbb576d1ee68fb989" Name="Diagram1" ZoomLevel="75">
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="1" PointY="0.5" />
         <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="0.5" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
@@ -14,7 +14,6 @@
         <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="0.5" />
         <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.375" PointY="0.75" />
         <AssociationConnector Association="mm02Model.fk_tbl_user" />
-        <EntityTypeShape EntityType="mm02Model.url_golden_term" Width="1.5" PointX="11.75" PointY="6" />
         <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="3.375" PointY="7" />
         <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term" />
@@ -23,17 +22,18 @@
         <EntityTypeShape EntityType="mm02Model.golden_term" Width="1.5" PointX="9.375" PointY="8.625" />
         <AssociationConnector Association="mm02Model.FK_golden_term_child" />
         <AssociationConnector Association="mm02Model.FK_golden_term_parent" />
-        <AssociationConnector Association="mm02Model.FK_url_golden_term_golden_term" />
         <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="12" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <AssociationConnector Association="mm02Model.fk_golden_term_url" />
-        <AssociationConnector Association="mm02Model.FK_url_golden_term_url" />
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
         <EntityTypeShape EntityType="mm02Model.wiki_page" Width="1.5" PointX="8.375" PointY="4.75" />
         <EntityTypeShape EntityType="mm02Model.wiki_catlink" Width="1.5" PointX="0.75" PointY="9.75" />
         <EntityTypeShape EntityType="mm02Model.url_term" Width="1.5" PointX="5.625" PointY="11.875" />
         <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
+        <EntityTypeShape EntityType="mm02Model.gt_path_to_root" Width="1.5" PointX="5.625" PointY="16.625" />
+        <AssociationConnector Association="mm02Model.FK_gt_path_seq_term_id" />
+        <AssociationConnector Association="mm02Model.FK_gt_path_term_id" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

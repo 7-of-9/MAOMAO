@@ -72,9 +72,14 @@ namespace mm_svc
 
                 l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
 
-                // record mapped wiki golden_terms (faster lookup later)
-                // TODO: record all paths to root for golden terms -- again for perf later for dynamic categorization
+                // record mapped wiki golden_terms -- perf: faster lookup later
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
+
+                // record all paths to root for mapped golden terms -- again, perf later for dynamic categorization
+                foreach (var wiki_url_term in url.url_term.Where(p => p.wiki_S != null))
+                {
+                    Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
+                }
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms

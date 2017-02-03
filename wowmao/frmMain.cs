@@ -66,7 +66,7 @@ namespace wowmao
 
         private void GtGoldTree_OnSearchGoldenTerm(object sender, MmGoldenTree.SearchGoldenTermEventArgs e)
         {
-            InitUrls(null, e.golden_term_id);
+            //InitUrls(null, e.golden_term_id);
         }
 
         private void SetCaption() {
@@ -83,7 +83,7 @@ namespace wowmao
             this.Cursor = Cursors.Default;
         }
 
-        void InitUrls(string search_term, long? golden_term_id = null) {
+        void InitUrls(string search_term) {//, long? golden_term_id = null) {
             //
             // 8533: la la land -> suggest: golden globes top TSS - suggest TSS boost for SOCIAL_TAG type
             //       entity-type movie: strong suggest candidate
@@ -102,7 +102,7 @@ namespace wowmao
                     .AsNoTracking()
                     .Include("url_term.term.term_type")
                     .Include("url_term.term.cal_entity_type")
-                    .Include("url_golden_term")
+                  //.Include("url_golden_term")
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(search_term)) {
@@ -110,8 +110,8 @@ namespace wowmao
                     if (chkExcludeProcessed.Checked)
                         qry = qry.Where(p => p.processed_at_utc == null);
                 }
-                else if (golden_term_id != null)
-                    qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
+                //else if (golden_term_id != null)
+                //    qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
 
                 qry = qry.OrderByDescending(p => p.id);
 
@@ -401,7 +401,7 @@ namespace wowmao
                     // save result for URL -- NOTE: just taking first child appearance in GT tree; this will *not* work
                     // if the term is a GC of multiple golden parents! i.e. -- should for now maintain logic of term only appears once in the GT tree
                     var final_mmcats = out_existing_l1_l2_gold.Select(p => p.child_in_golden_terms.First()).ToList();
-                    Golden.RecordUrlGoldenTerms(url.id, final_mmcats);
+                    //Golden.RecordUrlGoldenTerms(url.id, final_mmcats);
 
                     item.SubItems[7].Text = DateTime.UtcNow.ToString("dd MMM yyyy");
                     item.SubItems[8].Text = final_mmcats.Count().ToString();
@@ -516,7 +516,7 @@ namespace wowmao
             // calculate paths to root - important!
             if (wikiGoldTree.SelectedNode == null) return;
             var gt = wikiGoldTree.SelectedNode.Tag as golden_term;
-            var root_paths = Golden.GetPathsToRoot(gt.child_term_id);
+            var root_paths = GoldenPaths.CalculatePathsToRoot(gt.child_term_id);
             this.txtWikiPathInfo.Text = "";
             root_paths.ForEach(p => this.txtWikiPathInfo.AppendText(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
         }

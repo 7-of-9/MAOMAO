@@ -47,6 +47,16 @@
           <Property Name="url_id" Type="bigint" />
           <Property Name="from_wiki" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="gt_path_to_root">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="term_id" Type="bigint" Nullable="false" />
+          <Property Name="path_no" Type="int" Nullable="false" />
+          <Property Name="seq" Type="int" Nullable="false" />
+          <Property Name="seq_term_id" Type="bigint" Nullable="false" />
+        </EntityType>
         <EntityType Name="term">
           <Key>
             <PropertyRef Name="id" />
@@ -88,16 +98,6 @@
           <Property Name="processed_golden_count" Type="int" Nullable="false" />
           <Property Name="unmapped_wiki_terms" Type="int" Nullable="false" />
           <Property Name="mapped_wiki_terms" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="url_golden_term">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="url_id" Type="bigint" Nullable="false" />
-          <Property Name="golden_term_id" Type="bigint" Nullable="false" />
-          <Property Name="rank" Type="int" Nullable="false" />
-          <Property Name="datetime_utc" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="url_term">
           <Key>
@@ -210,6 +210,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_gt_path_seq_term_id">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="gt_path_to_root" Type="Self.gt_path_to_root" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="gt_path_to_root">
+              <PropertyRef Name="seq_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_gt_path_term_id">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="gt_path_to_root" Type="Self.gt_path_to_root" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="gt_path_to_root">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_term_cal_entity_type">
           <End Role="cal_entity_type" Type="Self.cal_entity_type" Multiplicity="0..1" />
           <End Role="term" Type="Self.term" Multiplicity="*" />
@@ -270,30 +294,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_url_golden_term_golden_term">
-          <End Role="golden_term" Type="Self.golden_term" Multiplicity="1" />
-          <End Role="url_golden_term" Type="Self.url_golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="golden_term">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_golden_term">
-              <PropertyRef Name="golden_term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_url_golden_term_url">
-          <End Role="url" Type="Self.url" Multiplicity="1" />
-          <End Role="url_golden_term" Type="Self.url_golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_golden_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_urlTerm_term">
           <End Role="term" Type="Self.term" Multiplicity="1" />
           <End Role="url_term" Type="Self.url_term" Multiplicity="*" />
@@ -347,11 +347,11 @@
           <EntitySet Name="awis_site" EntityType="Self.awis_site" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="cal_entity_type" EntityType="Self.cal_entity_type" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="golden_term" EntityType="Self.golden_term" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="gt_path_to_root" EntityType="Self.gt_path_to_root" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term" EntityType="Self.term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_matrix" EntityType="Self.term_matrix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_type" EntityType="Self.term_type" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url" EntityType="Self.url" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="url_golden_term" EntityType="Self.url_golden_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_term" EntityType="Self.url_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url" EntityType="Self.user_url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
@@ -373,6 +373,14 @@
             <End Role="url" EntitySet="url" />
             <End Role="golden_term" EntitySet="golden_term" />
           </AssociationSet>
+          <AssociationSet Name="FK_gt_path_seq_term_id" Association="Self.FK_gt_path_seq_term_id">
+            <End Role="term" EntitySet="term" />
+            <End Role="gt_path_to_root" EntitySet="gt_path_to_root" />
+          </AssociationSet>
+          <AssociationSet Name="FK_gt_path_term_id" Association="Self.FK_gt_path_term_id">
+            <End Role="term" EntitySet="term" />
+            <End Role="gt_path_to_root" EntitySet="gt_path_to_root" />
+          </AssociationSet>
           <AssociationSet Name="FK_term_cal_entity_type" Association="Self.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
             <End Role="term" EntitySet="term" />
@@ -392,14 +400,6 @@
           <AssociationSet Name="FK_url_awis_site" Association="Self.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="url" EntitySet="url" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_golden_term_golden_term" Association="Self.FK_url_golden_term_golden_term">
-            <End Role="golden_term" EntitySet="golden_term" />
-            <End Role="url_golden_term" EntitySet="url_golden_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_golden_term_url" Association="Self.FK_url_golden_term_url">
-            <End Role="url" EntitySet="url" />
-            <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
           <AssociationSet Name="FK_urlTerm_term" Association="Self.FK_urlTerm_term">
             <End Role="term" EntitySet="term" />
@@ -438,7 +438,6 @@
             <End Role="user" EntitySet="users" />
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
-          <EntitySet Name="url_golden_term" EntityType="mm02Model.url_golden_term" />
           <EntitySet Name="terms" EntityType="mm02Model.term" />
           <AssociationSet Name="FK_term_cal_entity_type" Association="mm02Model.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
@@ -465,10 +464,6 @@
             <End Role="term" EntitySet="terms" />
             <End Role="golden_term" EntitySet="golden_term" />
           </AssociationSet>
-          <AssociationSet Name="FK_url_golden_term_golden_term" Association="mm02Model.FK_url_golden_term_golden_term">
-            <End Role="golden_term" EntitySet="golden_term" />
-            <End Role="url_golden_term" EntitySet="url_golden_term" />
-          </AssociationSet>
           <EntitySet Name="urls" EntityType="mm02Model.url" />
           <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
@@ -477,10 +472,6 @@
           <AssociationSet Name="fk_golden_term_url" Association="mm02Model.fk_golden_term_url">
             <End Role="url" EntitySet="urls" />
             <End Role="golden_term" EntitySet="golden_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_golden_term_url" Association="mm02Model.FK_url_golden_term_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_golden_term" EntitySet="url_golden_term" />
           </AssociationSet>
           <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
             <End Role="url" EntitySet="urls" />
@@ -496,6 +487,15 @@
           <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
             <End Role="url" EntitySet="urls" />
             <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <EntitySet Name="gt_path_to_root" EntityType="mm02Model.gt_path_to_root" />
+          <AssociationSet Name="FK_gt_path_seq_term_id" Association="mm02Model.FK_gt_path_seq_term_id">
+            <End Role="term" EntitySet="terms" />
+            <End Role="gt_path_to_root" EntitySet="gt_path_to_root" />
+          </AssociationSet>
+          <AssociationSet Name="FK_gt_path_term_id" Association="mm02Model.FK_gt_path_term_id">
+            <End Role="term" EntitySet="terms" />
+            <End Role="gt_path_to_root" EntitySet="gt_path_to_root" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -607,18 +607,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="url_golden_term">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url_id" Type="Int64" Nullable="false" />
-          <Property Name="golden_term_id" Type="Int64" Nullable="false" />
-          <Property Name="rank" Type="Int32" Nullable="false" />
-          <Property Name="datetime_utc" Type="DateTime" Nullable="false" Precision="3" />
-          <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_url_golden_term_golden_term" FromRole="url_golden_term" ToRole="golden_term" />
-          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url_golden_term" ToRole="url" />
-        </EntityType>
         <EntityType Name="term">
           <Key>
             <PropertyRef Name="id" />
@@ -635,6 +623,8 @@
           <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_golden_term_child" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="golden_term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
+          <NavigationProperty Name="gt_path_to_root" Relationship="mm02Model.FK_gt_path_seq_term_id" FromRole="term" ToRole="gt_path_to_root" />
+          <NavigationProperty Name="gt_path_to_root1" Relationship="mm02Model.FK_gt_path_term_id" FromRole="term" ToRole="gt_path_to_root" />
           </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -697,7 +687,6 @@
           <Property Name="from_wiki" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_golden_term_child" FromRole="golden_term" ToRole="term" />
           <NavigationProperty Name="term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="golden_term" ToRole="term" />
-          <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_golden_term" FromRole="golden_term" ToRole="url_golden_term" />
           <NavigationProperty Name="url" Relationship="mm02Model.fk_golden_term_url" FromRole="golden_term" ToRole="url" />
         </EntityType>
         <Association Name="FK_golden_term_child">
@@ -724,18 +713,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_url_golden_term_golden_term">
-          <End Type="mm02Model.golden_term" Role="golden_term" Multiplicity="1" />
-          <End Type="mm02Model.url_golden_term" Role="url_golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="golden_term">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_golden_term">
-              <PropertyRef Name="golden_term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="url">
           <Key>
             <PropertyRef Name="id" />
@@ -753,7 +730,6 @@
           <Property Name="mapped_wiki_terms" Type="Int32" Nullable="false" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
-          <NavigationProperty Name="url_golden_term" Relationship="mm02Model.FK_url_golden_term_url" FromRole="url" ToRole="url_golden_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
         </EntityType>
@@ -777,18 +753,6 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="golden_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_url_golden_term_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_golden_term" Role="url_golden_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_golden_term">
               <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -862,6 +826,42 @@
             </Principal>
             <Dependent Role="url_term">
               <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="gt_path_to_root">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="term_id" Type="Int64" Nullable="false" />
+          <Property Name="path_no" Type="Int32" Nullable="false" />
+          <Property Name="seq" Type="Int32" Nullable="false" />
+          <Property Name="seq_term_id" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_gt_path_seq_term_id" FromRole="gt_path_to_root" ToRole="term" />
+          <NavigationProperty Name="term1" Relationship="mm02Model.FK_gt_path_term_id" FromRole="gt_path_to_root" ToRole="term" />
+        </EntityType>
+        <Association Name="FK_gt_path_seq_term_id">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.gt_path_to_root" Role="gt_path_to_root" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="gt_path_to_root">
+              <PropertyRef Name="seq_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_gt_path_term_id">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.gt_path_to_root" Role="gt_path_to_root" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="gt_path_to_root">
+              <PropertyRef Name="term_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -953,17 +953,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="url_golden_term">
-            <EntityTypeMapping TypeName="mm02Model.url_golden_term">
-              <MappingFragment StoreEntitySet="url_golden_term">
-                <ScalarProperty Name="datetime_utc" ColumnName="datetime_utc" />
-                <ScalarProperty Name="rank" ColumnName="rank" />
-                <ScalarProperty Name="golden_term_id" ColumnName="golden_term_id" />
-                <ScalarProperty Name="url_id" ColumnName="url_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="terms">
             <EntityTypeMapping TypeName="mm02Model.term">
               <MappingFragment StoreEntitySet="term">
@@ -1038,6 +1027,17 @@
                 <ScalarProperty Name="cal_topic_score" ColumnName="cal_topic_score" />
                 <ScalarProperty Name="term_id" ColumnName="term_id" />
                 <ScalarProperty Name="url_id" ColumnName="url_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="gt_path_to_root">
+            <EntityTypeMapping TypeName="mm02Model.gt_path_to_root">
+              <MappingFragment StoreEntitySet="gt_path_to_root">
+                <ScalarProperty Name="seq_term_id" ColumnName="seq_term_id" />
+                <ScalarProperty Name="seq" ColumnName="seq" />
+                <ScalarProperty Name="path_no" ColumnName="path_no" />
+                <ScalarProperty Name="term_id" ColumnName="term_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

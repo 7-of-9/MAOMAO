@@ -12,15 +12,15 @@ namespace mmdb_model
     using System;
     using System.Collections.Generic;
     
-    public partial class url_golden_term
+    public partial class gt_path_to_root
     {
         public long id { get; set; }
-        public long url_id { get; set; }
-        public long golden_term_id { get; set; }
-        public int rank { get; set; }
-        public System.DateTime datetime_utc { get; set; }
+        public long term_id { get; set; }
+        public int path_no { get; set; }
+        public int seq { get; set; }
+        public long seq_term_id { get; set; }
     
-        public virtual golden_term golden_term { get; set; }
-        public virtual url url { get; set; }
+        public virtual term term { get; set; }
+        public virtual term term1 { get; set; }
     }
 }
