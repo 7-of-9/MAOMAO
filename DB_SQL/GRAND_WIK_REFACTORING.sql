@@ -1,11 +1,12 @@
-
-
 /*
 
--- UPDATED: 
+-- UPDATED: FIRST PROBLEM! no page-level nodes are in GT ... e.g. "have i got news for you" or "Jo Brand" -- simply need them for this to work.
+
+( // TODO: prep for batch crawl run -- (1) record calais NLP packet, (2) record rawText )
  
- * no need to record wiki terms for urls - just go with calais terms
- * CalcTss: turn down L2 matching -- quite suspect
+ * no need to record wiki terms for urls - just go with calais terms (DONE)
+ * CalcTss: turn down L2 matching -- quite suspect -- TODO...
+
  * simply: take top n terms by tss_norm, match them to wiki terms (ns=0 terms, e.g. "republican party" won't match - they're not imported) 
  *
  * look at the paths to root for the matching wiki terms -- are there any path nodes in common across the matching wiki terms' paths to root? 

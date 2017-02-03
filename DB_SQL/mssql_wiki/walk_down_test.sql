@@ -2,14 +2,24 @@
 -- yes, can walk DOWN now we know the best root...
 
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- target: all subcats & pages, i.e. 14m!!!
- select count(*) from wiki_page where processed=1 -- 347
- select count(*) from wiki_catlink where processed=1 -- 4055
+ select count(*) from term where term_type_id in (0,14) -- 800k - depth 6 done
+ select count(*) from wiki_page where processed_to_depth is not null -- 369,930: d6
+ select count(*) from wiki_catlink where processed_to_depth is not null -- 1,661,128: d6
+
   select count(*) from wiki_page where page_namespace in (14) -- -- 1,489,640
   select distinct count(cl_to) from wiki_catlink where cl_type = 'subcat' -- 4.4m
   select distinct count(cl_to) from wiki_catlink where cl_type = 'page' -- (99m)
 
- select processed from wiki_page where page_title = 'Main_topic_classifications'
+ select processed_to_depth from wiki_page where page_title = 'Main_topic_classifications'
+
+ -- ns=0 (pages, leaf nodes - no dupes by name)
+ delete from term where term_type_id = 0
+ delete from golden_term where child_term_id in (select id from term where term_type_id = 0)
+ delete from golden_term where parent_term_id in (select id from term where term_type_id = 0)
+ select count(*) from term where term_type_id = 0 -- how about don't add ns=0 pages where exists same term name ns=14?? surely.
+ select count(*) from term where term_type_id = 14
+
+
 //* restart-
  delete from golden_term where from_wiki=1
  delete from term_matrix where term_a_id in (select id from term where term_type_id in (0,14))
