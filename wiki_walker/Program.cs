@@ -33,7 +33,7 @@ namespace wiki_walker
         private static int child_page_counter_total = 0;
         private static List<double> child_page_counter_batches_persec = new List<double>();
 
-        private const int max_depth = 5;
+        private const int max_depth = 15;
         private const bool reprocess_to_max_depth = true;
 
         /* depth: 6 (NS14 only)
@@ -80,12 +80,14 @@ namespace wiki_walker
                                     && (p.page_namespace == 0 || // target: ~14m (!!) including pages (0)
                                         p.page_namespace == 14)) // target: ~4.3m for just subcats (14)
                               .Where(p => (p.processed_to_depth == null || p.processed_to_depth < max_depth || reprocess_to_max_depth == true))
+                              .OrderBy(p => p.page_id)
                               .ToListNoLock();
 
                 // for each supplied parent page -- pages & subcats
                 var saw_exceptions_on_page_processing = false;
                 try
                 {
+                    // PARENT PAGE WALKING -- no concurrency: avoids dupe key inserts!!
                     Parallel.ForEach(pages, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (parent_page) =>
                     {
                         using (var db2 = mm02Entities.Create())
@@ -95,8 +97,8 @@ namespace wiki_walker
                                               .Where(p => p.cl_to == parent_page_search
                                                       && (p.cl_type == "subcat" || p.cl_type == "page") // cl_links to subcats && pages
                                                       && (p.processed_to_depth == null || p.processed_to_depth < max_depth || reprocess_to_max_depth == true)
-                                                      ); //**
-                            children_qry = children_qry.OrderBy(p => p.id);
+                                                      )
+                                              .OrderBy(p => p.cl_from);
                             var child_cls = children_qry.ToListNoLock();
 
                             var child_pages_to_walk = new ConcurrentBag<wiki_page>();
@@ -105,17 +107,20 @@ namespace wiki_walker
                             var child_page_cl_ids_to_update = new List<Guid>();
                             try
                             {
-                                Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = 3 }, (child_page_cl) =>
+                                // GT INSERTS FOR PARENT-CHILDREN LINKS
+                                Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (child_page_cl) =>
                                 { 
                                     if (saw_concurrency_exception_on_GTs_any) return;
                                     using (var db3 = mm02Entities.Create())
                                     {
-                                    // get child pages
-                                        var child_pages = //g.RetryMaxOrThrow(() =>
+                                        // get child pages
+                                        var child_pages =
                                             db3.wiki_page.AsNoTracking()
                                                .Where(p => p.page_id == child_page_cl.cl_from
                                                    && (p.page_namespace == 14 || p.page_namespace == 0) // pages & subcats
-                                            ).ToListNoLock();//);
+                                            )
+                                            .OrderBy(p => p.page_id)
+                                            .ToListNoLock();
                                         if (child_pages.Count() == 0) return;
 
                                         lock (o_child_pages_fetched) {
@@ -141,14 +146,14 @@ namespace wiki_walker
                                                         child_page,
                                                         level,
                                                         parent_page_search);
-                                            if (saw_concurrency_exception_on_GTs) {
-                                                Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                                                saw_concurrency_exception_on_GTs_any = true;
-                                                return; // assume another task has this chain; abort!
-                                            }
+                                            //if (saw_concurrency_exception_on_GTs) {
+                                            //    Trace.WriteLine($"** GT CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
+                                            //    saw_concurrency_exception_on_GTs_any = true;
+                                            //    return; // assume another task has this chain; abort!
+                                            //}
                                             if (saw_concurrency_exception_on_terms) {
                                                 Trace.WriteLine($"** TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                                                return; // assume another task has this chain; abort!
+                                                continue; // assume another task has this chain; abort!
                                             }
 
                                             if (child_page.page_namespace == 14) // only recurse subcats!
@@ -176,13 +181,13 @@ namespace wiki_walker
                             //    return;
                             //}
 
+                            // RECURSE
                             var saw_exceptions_on_cl_recursion = false;
                             if (level < max_depth)
                             {
-                                // recurse
                                 try
                                 {
-                                    Parallel.ForEach(child_pages_to_walk, new ParallelOptions() { MaxDegreeOfParallelism = 10 }, (child_page_to_walk) =>
+                                    Parallel.ForEach(child_pages_to_walk.OrderBy(p => p.page_id), new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (child_page_to_walk) =>
                                     {
                                         var new_parent_page_ids = new List<long>(parent_page_ids); // each branch in the tree has *its own* unique inheritence chain!
                                         if (!new_parent_page_ids.Contains(child_page_to_walk.page_id))

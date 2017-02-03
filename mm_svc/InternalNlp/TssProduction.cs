@@ -74,7 +74,7 @@ namespace mm_svc
 
                 // record mapped wiki golden_terms (faster lookup later)
                 // TODO: record all paths to root for golden terms -- again for perf later for dynamic categorization
-                MapWikiGoldenTerms(l1_calais_terms, url);
+                MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
@@ -87,7 +87,7 @@ namespace mm_svc
             }
         }
 
-        private static void MapWikiGoldenTerms(List<url_term> calais_terms, url db_url)
+        private static void MapWikiGoldenTerms(IEnumerable<url_term> calais_terms, url db_url)
         {
             var unmapped_terms = 0;
             var mapped_terms = 0;
@@ -97,10 +97,12 @@ namespace mm_svc
                         name = p.term.name,
                 term_type_id = p.term.term_type_id,
         cal_entity_type_name = p.term.term_type_id == (int)g.TT.CALAIS_ENTITY ? p.term.cal_entity_type.name : null,
+                    tss_norm = p.tss_norm,
+                         tss = p.tss,
                            S = p.term.term_type_id == (int)g.TT.CALAIS_ENTITY ? Convert.ToDouble(p.cal_entity_relevance.ToString()) * 10 // 0-10
                              : p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG ? ((4 - Convert.ToDouble(p.cal_socialtag_importance.ToString())) * 3) // 0-10
                              : p.term.term_type_id == (int)g.TT.CALAIS_TOPIC ? Convert.ToDouble(p.cal_topic_score.ToString()) * 10 // 0-10
-                             : -1
+                             : -1,
             }).Where(p => p.name.Length <= 128);
 
             foreach (var obj in objects)
@@ -108,14 +110,21 @@ namespace mm_svc
 
             // flatten by name (ignore diacritics) -- take highest rated object's S value
             var distinctNames = objects.Select(p => StringEx.RemoveAccents(p.name)).Distinct();
-            var distinctObjects = new Dictionary<string, double>();
-            foreach (var name in distinctNames)
-                distinctObjects.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.S).Max());
+            var distinctObjects_S = new Dictionary<string, double>();
+            var distinctObjects_tss_norm = new Dictionary<string, double>();
+            var distinctObjects_tss = new Dictionary<string, double>();
+            foreach (var name in distinctNames) {
+                distinctObjects_S.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.S).Max());
+                distinctObjects_tss_norm.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.tss_norm??0).Max());
+                distinctObjects_tss.Add(name, objects.Where(p => StringEx.RemoveAccents(p.name) == name).Select(p => p.tss??0).Max());
+            }
 
-            foreach (var distinct in distinctObjects.Keys)
+            foreach (var distinct in distinctObjects_S.Keys)
             {
                 var term_name = distinct;
-                var term_url_S = distinctObjects[distinct];
+                var term_url_S = distinctObjects_S[distinct];
+                var term_url_tss = distinctObjects_tss[distinct];
+                var term_url_tss_norm = distinctObjects_tss_norm[distinct];
                 Debug.WriteLine($"{term_name} ({term_url_S})");
 
                 // look for wiki-type term match -- exact match, name
@@ -152,11 +161,10 @@ namespace mm_svc
                                 wiki_mapped_url_term.term_id = wiki_term.id;
                                 wiki_mapped_url_term.url_id = db_url.id;
                                 wiki_mapped_url_term.wiki_S = term_url_S;
+                                wiki_mapped_url_term.tss = term_url_tss;
+                                wiki_mapped_url_term.tss_norm = term_url_tss_norm;
 
                                 db_url.url_term.Add(wiki_mapped_url_term);
-
-                                //db.url_term.Add(db_url_term);
-                                //db.SaveChangesTraceValidationErrors();
                                 g.LogLine($"writing new WIKI url_term url_id={db_url.id}, WIKI term_id={wiki_term.id} term_name={wiki_term.name} term_type_id={wiki_term.term_type_id}...");
                             }
                         }
@@ -348,7 +356,7 @@ namespace mm_svc
                             Debug.WriteLine($"{top_term.term.name}x{non_top_term.term.name} corr={correlation.corr_for_main}");
 
                             var other_term_boost = 1
-                                                   * (int)(Math.Pow((double)top_term.tss * correlation.corr_for_main, 0.5)
+                                                   * (int)(Math.Pow((double)top_term.tss * correlation.corr_for_main, 0.25)
                                                    * non_top_term.S2);
                             non_top_term.candidate_reason += $" L2_BOOST({other_term_boost}:{top_term.term.name})";
 
