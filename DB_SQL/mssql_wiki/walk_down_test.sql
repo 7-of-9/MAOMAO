@@ -2,22 +2,26 @@
 -- yes, can walk DOWN now we know the best root...
 
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- 800k - depth 6 done
- select count(*) from wiki_page where processed_to_depth is not null -- 369,930: d6
- select count(*) from wiki_catlink where processed_to_depth is not null -- 1,661,128: d6
+ select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 1m... @ d4, ns14||0 [target ~12-14m]
+ select count(*) from wiki_page where processed_to_depth is not null -- 369k: d6 ns14 
+ select count(*) from wiki_catlink where processed_to_depth is not null -- 1.6m: d6 ns14
 
   select count(*) from wiki_page where page_namespace in (14) -- -- 1,489,640
+  select count(*) from wiki_page where page_namespace in (0) -- -- 12,832,772: maybe good news...
   select distinct count(cl_to) from wiki_catlink where cl_type = 'subcat' -- 4.4m
   select distinct count(cl_to) from wiki_catlink where cl_type = 'page' -- (99m)
 
  select processed_to_depth from wiki_page where page_title = 'Main_topic_classifications'
 
  -- ns=0 (pages, leaf nodes - no dupes by name)
- delete from term where term_type_id = 0
- delete from golden_term where child_term_id in (select id from term where term_type_id = 0)
- delete from golden_term where parent_term_id in (select id from term where term_type_id = 0)
+ --delete from term where term_type_id = 0
+ --delete from golden_term where child_term_id in (select id from term where term_type_id = 0)
+ --delete from golden_term where parent_term_id in (select id from term where term_type_id = 0)
  select count(*) from term where term_type_id = 0 -- how about don't add ns=0 pages where exists same term name ns=14?? surely.
  select count(*) from term where term_type_id = 14
+
+ select * from term where name = 'Reference work'
+ select * from golden_term where child_term_id = 5817718
 
 
 //* restart-

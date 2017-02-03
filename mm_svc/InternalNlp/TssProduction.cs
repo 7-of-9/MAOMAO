@@ -73,12 +73,15 @@ namespace mm_svc
                 l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
 
                 // record mapped wiki golden_terms (faster lookup later)
+                // TODO: record all paths to root for golden terms -- again for perf later for dynamic categorization
                 MapWikiGoldenTerms(l1_calais_terms, url);
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
 
-                // todo -- then (2) frmMain batch mode run - for all URLs!
+                // todo -- frmMain batch mode run - for all URLs!
+
+                // todo -- record calais_nlp & rawText for dung's node.js wiki crawler
 
                 return l1_calais_terms;
             }
