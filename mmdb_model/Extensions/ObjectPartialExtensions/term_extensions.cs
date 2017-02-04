@@ -39,6 +39,8 @@ namespace mmdb_model
             return -1;
         }}
 
+        [NotMapped] public ICollection<gt_path_to_root> paths_to_root {  get { return this.gt_path_to_root1; } }
+
         [NotMapped] public double existing_gold_min_tss_norm { get {
             if (this.gold_level == 1) return 0.3;
             if (this.gold_level == 2) return 0.6;

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("winmao")]
+[assembly: AssemblyTitle("maomao wiki_walker")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("winmao")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyProduct("maomao wiki_walker")]
+[assembly: AssemblyCopyright("Copyright ©  2016,17")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

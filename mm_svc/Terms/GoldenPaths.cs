@@ -10,6 +10,29 @@ namespace mm_svc.Terms
 {
     public static class GoldenPaths
     {
+        //
+        // Parses stored paths to root to List<List<term>>
+        //
+        public static List<List<term>> ParseStoredPathsToRoot(term term) // expects populated gt_path
+        {
+            var path_data = term.paths_to_root.ToList();
+            var paths = new List<List<term>>();
+            var path_nos = path_data.Select(p => p.path_no).Distinct();
+            foreach(var path_no in path_nos)
+            {
+                var path = new List<term>() { term };
+                foreach (var seq_term in path_data.Where(p => p.path_no == path_no).OrderBy(p => p.seq).Select(p => p.term))
+                {
+                    path.Add(seq_term);
+                }
+                paths.Add(path);
+            }
+            return paths;
+        }
+
+        //
+        // Calculates paths to rootm returns as List<List<term>>
+        //
         public static List<List<term>> CalculatePathsToRoot(long child_term_id)
         {
             var root_paths = new List<List<term>>();
@@ -103,7 +126,6 @@ namespace mm_svc.Terms
                          .Where(p => p.child_term_id == child_term_id).ToListNoLock();
             }
         }
-
 
     }
 }

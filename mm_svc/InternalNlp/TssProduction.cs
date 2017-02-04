@@ -49,16 +49,31 @@ namespace mm_svc
         public const double TITLE_EXACT_START_BOOST = BASE_BOOST * 2;
         public const double TITLE_DESC_BOOST = 4;
 
-      
-        public List<url_term> ProcessUrlTSS(long url_id)
+
+        // todo -- frmMain batch mode run - for all URLs!
+        // todo -- record calais_nlp & rawText for dung's node.js wiki crawler
+
+        //
+        // (1) Processes and stores Url TSS and returns url_terms with TSS scores.
+        // (2) Maps and stores high TSS terms to wiki (golden) terms.
+        // (3) Calculates and stores paths to root for mapped wiki terms.
+        //
+        // returns all from store, if present, unless reprocess_tss == true
+        //
+        public List<url_term> GetUrlTSS(long url_id, bool reprocess_tss = false)
         {
             using (var db = mm02Entities.Create())
             {
+                // get url - tracking ref
                 var url = db.urls.Include("url_term").Where(p => p.id == url_id).SingleOrDefault();
                 if (url == null) return null;
 
-                // get underlying Calais url-terms (todo -- could get from above?)
-                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                // url already processed? return unless reprocessing
+                if (url.processed_at_utc != null && reprocess_tss == false) {
+                    goto ret1; 
+                }
+
+                // get underlying Calais url-terms - tracking references
                 var l1_calais_terms = db.url_term
                                         .Include("term").Include("term.term_type").Include("term.cal_entity_type")
                                         .Where(p => p.url_id == url.id 
@@ -68,27 +83,29 @@ namespace mm_svc
                                               && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
 
                 // write TSS values for Calais terms
+                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
                 CalcTSS(meta_all, l1_calais_terms, run_l2_boost: true);
 
                 l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
 
-                // record mapped wiki golden_terms -- perf: faster lookup later
+                // store mapped wiki golden_terms -- perf: faster lookup later
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
 
-                // record all paths to root for mapped golden terms -- again, perf later for dynamic categorization
+                // calc and store all paths to root for mapped golden terms -- again, perf later for dynamic categorization
                 foreach (var wiki_url_term in url.url_term.Where(p => p.wiki_S != null))
-                {
                     Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
-                }
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
 
-                // todo -- frmMain batch mode run - for all URLs!
-
-                // todo -- record calais_nlp & rawText for dung's node.js wiki crawler
-
-                return l1_calais_terms;
+ret1:
+                var qry = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type")
+                                     .Include("term.golden_term").Include("term.golden_term1")
+                                     .Include("term.gt_path_to_root1").Include("term.gt_path_to_root1.term")
+                                     .AsNoTracking()
+                                     .Where(p => p.url_id == url_id);
+                Debug.WriteLine(qry.ToString());
+                return qry.ToListNoLock();
             }
         }
 

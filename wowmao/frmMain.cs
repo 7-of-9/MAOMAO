@@ -191,7 +191,6 @@ namespace wowmao
             var url = item.Tag as url;
 
             this.Cursor = Cursors.WaitCursor;
-            ttL2Terms.Nodes.Clear();
             var new_gold_count = 0;
 
             // get meta
@@ -206,7 +205,7 @@ namespace wowmao
                 // ** ProcessTss **
                 //
                 var tss = new mm_svc.TssProduction();
-                var l1_url_terms = tss.ProcessUrlTSS(url.id);
+                var l1_url_terms = tss.GetUrlTSS(url.id, reprocess_tss: chkReprocess.Checked);
 
                 // (1) get url_terms (L1 terms)
                 /*if (this.url_term_cache.ContainsKey(url.id))
@@ -252,7 +251,7 @@ namespace wowmao
                 var direct_goldens = new List<url_term>();
                 var all_l2_term_ids_by_count = new Dictionary<long, int>();
                 var all_l2_terms = new List<term>();
-                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.term.term_type_id).ThenByDescending(p => p.tss)) {
+                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.wiki_S != null).ThenByDescending(p => p.tss_norm)) {
 
                     // --- L2 terms -- (disable for now while testing tmp wiki terms...)
                     List<term> l2_terms = null;
@@ -441,20 +440,7 @@ namespace wowmao
             this.Cursor = Cursors.Default;
         }
    
-        private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // l2 terms - obsolete?
-            //if (lvwUrlTerms.SelectedItems.Count == 0) return;
-            //var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
-            //var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
-            //                           .SelectMany(p => p.corr_terms)
-            //                           .OrderByDescending(p => p.corr_for_main).ToList();
-            //ttL2Terms.Nodes.Clear();
-            //foreach(var golden_term in l2_terms) {
-            //    ttL2Terms.AddRootTerm(golden_term);
-            //}
-        }
-
+   
         // walk & process...
         private bool walking = false;
         private void cmdWalk_Click(object sender, EventArgs e)
@@ -520,6 +506,26 @@ namespace wowmao
             this.txtWikiPathInfo.Text = "";
             root_paths.ForEach(p => this.txtWikiPathInfo.AppendText(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
         }
+
+        private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvwUrlTerms.SelectedItems.Count == 0) return;
+            var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
+
+            // l2 terms - obsolete?
+            //var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
+            //                           .SelectMany(p => p.corr_terms)
+            //                           .OrderByDescending(p => p.corr_for_main).ToList();
+            //ttL2Terms.Nodes.Clear();
+            //foreach(var golden_term in l2_terms) {
+            //    ttL2Terms.AddRootTerm(golden_term);
+            //}
+
+            this.txtPathsToRoot2.Text = "";
+            var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
+            root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
+        }
+
 
         private void wikiGoldTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {

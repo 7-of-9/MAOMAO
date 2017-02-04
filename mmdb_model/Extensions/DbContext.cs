@@ -37,7 +37,7 @@ namespace mmdb_model
             {
                 if (sqlex.Message.Contains("Cannot insert duplicate key"))
                 {
-                    Trace.WriteLine($"ignoring dupe key insert 1 ({info})");
+                    //Trace.WriteLine($"ignoring dupe key insert 1 ({info})");
                     return false;
                 }
                 else
@@ -49,7 +49,7 @@ namespace mmdb_model
                     dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key") ||
                     dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted"))
                 {
-                    Trace.WriteLine($"ignoring dupe key insert 2 ({info})");
+                    //Trace.WriteLine($"ignoring dupe key insert 2 ({info})");
                     return false;
                 }
                 else
