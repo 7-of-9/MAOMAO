@@ -39,27 +39,16 @@ namespace wiki_walker
         private const bool reprocess_to_max_depth = false;
         private const bool reprocess_gts = true;
 
-        /* depth: 6 (NS14 only)
-            child pages searched (ns=14): 1,612,200 in 464 sec(s) = 3471.3 per/sec...
-            DONE!! Press any key...
-            select count(*) from term where term_type_id in (0,14) = 319,309
-
-            max_depth=6 (NS14 only) - child pages searched (ns=14): 4,192,000 in 18470 sec(s) = 227.0 per/sec...
-            DONE!! Press any key...
-        */
-
         public static void Main()
         {
             ConsoleTraceListener listener = new ConsoleTraceListener();
             Trace.Listeners.Add(listener);
             sw.Start();
 
-            //ThreadPool.SetMinThreads(128, 128);
-            //ThreadPool.SetMaxThreads(512, 512);
+            Walker_NamespaceCounter.Go();
 
-            var parent_page_ids = new List<long>();
-            WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
-            //WalkDownTree(parent_page_ids, "English_women_comedians", 8);
+            //var parent_page_ids = new List<long>();
+            //WalkDownTree(parent_page_ids, "Main_topic_classifications", 1); //WalkDownTree(parent_page_ids, "English_women_comedians", 8);
 
             Trace.WriteLine("DONE!! Press any key...");
             Console.ReadKey();
@@ -88,7 +77,7 @@ namespace wiki_walker
                               .OrderBy(p => p.page_id)
                               .ToListNoLock();
                 lock (o_parent_pages_fetched) {
-                    if (++parent_page_counter % 10 == 0) {
+                    if (++parent_page_counter % 50 == 0) {
                         var pages_per_sec = parent_page_counter / sw.Elapsed.TotalSeconds;
                         Trace.WriteLine($"max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts} - PARENT-pages-(ns=14||0)-total: {parent_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {pages_per_sec.ToString("0.0")} parents per/sec");
                     }

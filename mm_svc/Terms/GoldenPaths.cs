@@ -18,11 +18,9 @@ namespace mm_svc.Terms
             var path_data = term.paths_to_root.ToList();
             var paths = new List<List<term>>();
             var path_nos = path_data.Select(p => p.path_no).Distinct();
-            foreach(var path_no in path_nos)
-            {
+            foreach(var path_no in path_nos) {
                 var path = new List<term>() { term };
-                foreach (var seq_term in path_data.Where(p => p.path_no == path_no).OrderBy(p => p.seq).Select(p => p.term))
-                {
+                foreach (var seq_term in path_data.Where(p => p.path_no == path_no).OrderBy(p => p.seq).Select(p => p.term)) {
                     path.Add(seq_term);
                 }
                 paths.Add(path);
@@ -31,7 +29,40 @@ namespace mm_svc.Terms
         }
 
         //
-        // Calculates paths to rootm returns as List<List<term>>
+        // Counts distinct occurances of path terms, across multiple paths
+        //
+        public class PathTermCountInfo { public int similar_count; public double score; public List<int> distances_from_leaf = new List<int>(); }
+        public static Dictionary<term, PathTermCountInfo> GetPathTermCounts(List<List<term>> root_paths)
+        {
+            var ret = new Dictionary<term, PathTermCountInfo>();
+            foreach(var path in root_paths.Except(root_paths.Where(p => p.Any(p2 => p2.name == "Living people")))) {
+                int distance_from_leaf = 0;
+                foreach(var term in path.Skip(1).Take(path.Count - 2)) // skip leaf and root terms (both are common to all paths)
+                {
+                    distance_from_leaf++;
+                    var dict_term = ret.Keys.Where(p => p.id == term.id).SingleOrDefault();
+                    if (dict_term == null)
+                    {
+                        ret.Add(term, new PathTermCountInfo() { similar_count = 1, score = 0 });
+                        ret[term].distances_from_leaf.Add(distance_from_leaf);
+                    }
+                    else
+                    {
+                        ret[dict_term].similar_count++;
+                        ret[dict_term].distances_from_leaf.Add(distance_from_leaf);
+
+                        // weight the score mod for this common term: inversely proportional to distance from the leaf,
+                        // i.e. closer the common term is to the root, the less score it gets
+                        double score_mod = 1 / (Math.Pow((double)distance_from_leaf, 4));
+                        ret[dict_term].score += score_mod;
+                    }
+                }
+            }
+            return ret.OrderByDescending(p => p.Value.score).ToDictionary((key) => key.Key, (value) => value.Value);
+        }
+
+        //
+        // Calculates paths to root and returns as List<List<term>>
         //
         public static List<List<term>> CalculatePathsToRoot(long child_term_id)
         {
@@ -45,6 +76,9 @@ namespace mm_svc.Terms
             return root_paths;
         }
 
+        //
+        // Calculates and then stores paths to root for supplied term
+        //
         public static void RecordPathsToRoot(long term_id)
         {
             var paths = Terms.GoldenPaths.CalculatePathsToRoot(term_id);

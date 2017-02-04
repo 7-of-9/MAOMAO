@@ -1,6 +1,28 @@
 /*
 
--- UPDATED: FIRST PROBLEM! no page-level nodes are in GT ... e.g. "have i got news for you" or "Jo Brand" -- simply need them for this to work.
+-- UPDATED: FIRST PROBLEM: no page-level nodes are in GT ... e.g. "have i got news for you" or "Jo Brand" -- simply need them for this to work.
+   >> WIP... @d:20 ~ 2.8m terms imported -- need full set (12m) for accurate Calais -> wiki mapping: this is the "Semi golden tree"
+
+ NEXT: need to set a "degree of supergold" in the (enormous) semi gold tree... so this isn't a binary thing...
+		>> it's "fuzzy" based on the wiki_nscount for a node (aka "degree of supergold") -- the scoring for assigning final MMCATS
+		>> is then a function of the distance to the node, and the node's nscount value.
+
+ TODO: run batch update of wiki_nscount column on term table, e.g.
+ 
+	select top 100000 page_title, count(*)
+	from wiki_page wp where page_namespace != 3 and page_namespace != 6 and page_namespace != 2 and page_title  like 'che%'
+	group by page_title
+	order by 2 desc 
+ >> seems nscount > ~ 4-6 indicates SUPERGOLD nodes?
+
+Then, use paths to roots for wiki-mapped high TSS terms, to find distances to supergold nodes
+orderby closest distances to reveal final MMCATS for URLs
+
+Dynamic grouping concept can still apply, e.g. even though distances to supergolds are static (and should be precomputed)
+there could be multiple supergolds within close distances; strategy here should be to favour matching to small numbers of supergold
+"buckets" for a given SET of URLs. The individual static supergold-distances should still be precomputed as part of URL-ingestion.
+
+---
 
 ( // TODO: prep for batch crawl run -- (1) record calais NLP packet, (2) record rawText )
  

@@ -524,6 +524,11 @@ namespace wowmao
             this.txtPathsToRoot2.Text = "";
             var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
             root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
+
+            var path_term_counts = GoldenPaths.GetPathTermCounts(root_paths);
+            this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
+            foreach (var kvp in path_term_counts.Take(10))
+                this.txtPathsToRoot2.Text += $"\t{kvp.Key.name} / similar_count={kvp.Value.similar_count} / distances_from_leaf=[{string.Join(",", kvp.Value.distances_from_leaf)}] score={kvp.Value.score.ToString("0.0000")}\r\n";
         }
 
 
