@@ -523,7 +523,7 @@ namespace wowmao
 
             this.txtPathsToRoot2.Text = "";
             var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
-            root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name)) + "\r\n"));
+            root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name + " #NS=" + p2.wiki_nscount)) + "\r\n"));
 
             var path_term_counts = GoldenPaths.GetPathTermCounts(root_paths);
             this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";

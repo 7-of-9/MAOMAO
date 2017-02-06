@@ -47,6 +47,7 @@
             this.pnlDirectGoldenCorrelations = new System.Windows.Forms.Panel();
             this.pnlLevel2Terms = new System.Windows.Forms.Panel();
             this.splitter6 = new System.Windows.Forms.Splitter();
+            this.txtPathsToRoot2 = new System.Windows.Forms.TextBox();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.pnlURLs = new System.Windows.Forms.Panel();
             this.pnlUrlTerms = new System.Windows.Forms.Panel();
@@ -56,6 +57,7 @@
             this.txtInfo = new System.Windows.Forms.TextBox();
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.pnlURL_List = new System.Windows.Forms.Panel();
+            this.chkReprocess = new System.Windows.Forms.CheckBox();
             this.chkExcludeProcessed = new System.Windows.Forms.CheckBox();
             this.chkRndOrder = new System.Windows.Forms.CheckBox();
             this.chkUpdateUi = new System.Windows.Forms.CheckBox();
@@ -74,8 +76,6 @@
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.chkReprocess = new System.Windows.Forms.CheckBox();
-            this.txtPathsToRoot2 = new System.Windows.Forms.TextBox();
             this.lvwUrlTerms2 = new wowmao.TermList();
             this.lvwUrlTerms = new wowmao.TermList();
             this.ttUrlTerms = new wowmao.TermTree();
@@ -132,6 +132,7 @@
             this.txtWikiPathInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtWikiPathInfo.Size = new System.Drawing.Size(287, 141);
             this.txtWikiPathInfo.TabIndex = 7;
+            this.txtWikiPathInfo.WordWrap = false;
             // 
             // chkSearchWholeWord
             // 
@@ -274,6 +275,17 @@
             this.splitter6.TabIndex = 10;
             this.splitter6.TabStop = false;
             // 
+            // txtPathsToRoot2
+            // 
+            this.txtPathsToRoot2.Dock = System.Windows.Forms.DockStyle.Left;
+            this.txtPathsToRoot2.Location = new System.Drawing.Point(0, 0);
+            this.txtPathsToRoot2.Multiline = true;
+            this.txtPathsToRoot2.Name = "txtPathsToRoot2";
+            this.txtPathsToRoot2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtPathsToRoot2.Size = new System.Drawing.Size(687, 230);
+            this.txtPathsToRoot2.TabIndex = 12;
+            this.txtPathsToRoot2.WordWrap = false;
+            // 
             // splitter2
             // 
             this.splitter2.BackColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -373,6 +385,16 @@
             this.pnlURL_List.Name = "pnlURL_List";
             this.pnlURL_List.Size = new System.Drawing.Size(1000, 350);
             this.pnlURL_List.TabIndex = 1;
+            // 
+            // chkReprocess
+            // 
+            this.chkReprocess.AutoSize = true;
+            this.chkReprocess.Location = new System.Drawing.Point(400, 5);
+            this.chkReprocess.Name = "chkReprocess";
+            this.chkReprocess.Size = new System.Drawing.Size(76, 17);
+            this.chkReprocess.TabIndex = 13;
+            this.chkReprocess.Text = "re-process";
+            this.chkReprocess.UseVisualStyleBackColor = true;
             // 
             // chkExcludeProcessed
             // 
@@ -532,27 +554,6 @@
             this.cmdSearchURLs.Text = "Search meta:";
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
-            // 
-            // chkReprocess
-            // 
-            this.chkReprocess.AutoSize = true;
-            this.chkReprocess.Location = new System.Drawing.Point(400, 5);
-            this.chkReprocess.Name = "chkReprocess";
-            this.chkReprocess.Size = new System.Drawing.Size(76, 17);
-            this.chkReprocess.TabIndex = 13;
-            this.chkReprocess.Text = "re-process";
-            this.chkReprocess.UseVisualStyleBackColor = true;
-            // 
-            // txtPathsToRoot2
-            // 
-            this.txtPathsToRoot2.Dock = System.Windows.Forms.DockStyle.Left;
-            this.txtPathsToRoot2.Location = new System.Drawing.Point(0, 0);
-            this.txtPathsToRoot2.Multiline = true;
-            this.txtPathsToRoot2.Name = "txtPathsToRoot2";
-            this.txtPathsToRoot2.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtPathsToRoot2.Size = new System.Drawing.Size(687, 230);
-            this.txtPathsToRoot2.TabIndex = 12;
-            this.txtPathsToRoot2.WordWrap = false;
             // 
             // lvwUrlTerms2
             // 

@@ -39,18 +39,47 @@ namespace wiki_walker
         private const bool reprocess_to_max_depth = false;
         private const bool reprocess_gts = true;
 
-        public static void Main()
+        private static string top_term_name;
+
+        public static void Main(string[] args)
         {
             ConsoleTraceListener listener = new ConsoleTraceListener();
             Trace.Listeners.Add(listener);
             sw.Start();
 
-            Walker_NamespaceCounter.Go();
+            if (args[0] == "ns")
+            {
+                Walker_NamespaceCounter.Go();
+            }
+            else if (args[0] == "gt")
+            {
+                var parent_page_ids = new List<long>();
 
-            //var parent_page_ids = new List<long>();
-            //WalkDownTree(parent_page_ids, "Main_topic_classifications", 1); //WalkDownTree(parent_page_ids, "English_women_comedians", 8);
+                using (var db = mm02Entities.Create())
+                {
+                    top_term_name = args[1]; // e.g. Main_topic_classifications for rootcat, or English_women_comedians for a subcat
+                    var term = db.terms.Where(p => p.name == top_term_name.Replace("_", " ") && p.term_type_id == (int)g.TT.WIKI_NS_14).Single();
+                    var mmcat_level = db.golden_term.Where(p => p.parent_term_id == term.id).Max(p => p.mmcat_level);
 
-            Trace.WriteLine("DONE!! Press any key...");
+                    //WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
+                    //WalkDownTree(parent_page_ids, "English_women_comedians", 8);
+                    //WalkDownTree(parent_page_ids, "Comics", 6);
+                    //WalkDownTree(parent_page_ids, "Feminism", 6);
+                    //WalkDownTree(parent_page_ids, "Politics", 3);
+
+                    Trace.WriteLine($"go: {top_term_name} @ mmcatlevel={mmcat_level}...");
+                    WalkDownTree(parent_page_ids, top_term_name, mmcat_level);
+                }
+
+                //WalkDownTree(parent_page_ids, "Main_topic_classifications", 1);
+                //WalkDownTree(parent_page_ids, "English_women_comedians", 8);
+
+                //WalkDownTree(parent_page_ids, "Comics", 6);
+                //WalkDownTree(parent_page_ids, "Feminism", 6);
+                WalkDownTree(parent_page_ids, "Politics", 3);
+            }
+
+            Trace.WriteLine("ALL DONE!! Press any key...");
             Console.ReadKey();
 
             //WalkUpTreeRandom(); // run first to find/populate root
@@ -58,10 +87,10 @@ namespace wiki_walker
 
         //private static ConcurrentDictionary<long, wiki_page> wiki_page_cache; // new ConcurrentDictionary<long, wiki_page>();
 
-        private static void WalkDownTree(List<long> parent_page_ids, string parent_page_search, int level)
+        private static bool WalkDownTree(List<long> parent_page_ids, string parent_page_search, int level)
         {
-            int par_max_terms = Debugger.IsAttached ? 16 : 32;
-            int par_max_recurse = Debugger.IsAttached ? 4 : 32;
+            int par_max_terms = Debugger.IsAttached ? 16 : 128;
+            int par_max_recurse = Debugger.IsAttached ? 4 : 1;
 
             using (var db = mm02Entities.Create())
             {
@@ -79,8 +108,20 @@ namespace wiki_walker
                 lock (o_parent_pages_fetched) {
                     if (++parent_page_counter % 50 == 0) {
                         var pages_per_sec = parent_page_counter / sw.Elapsed.TotalSeconds;
-                        Trace.WriteLine($"max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts} - PARENT-pages-(ns=14||0)-total: {parent_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {pages_per_sec.ToString("0.0")} parents per/sec");
+                        Trace.WriteLine($" >> PARENT-pages-(ns=14||0)-total: {parent_page_counter} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {pages_per_sec.ToString("0.0")} per/sec");
                     }
+                    // the whole thing just slows down over time; no idea why.
+                    //if (parent_page_counter % 5000 == 0) {
+                    //    GC.Collect(2);
+                    //    Trace.WriteLine($" *** GC.COLLECT(2) ***");
+                    //    Trace.WriteLine($" wait 30, reset sw & counter...");
+                    //    Thread.Sleep(1000 * 30);
+                    //    sw.Restart();
+                    //    parent_page_counter = 0;
+                    //}
+
+                    if (parent_page_counter == 1)
+                        Console.Title = $"{top_term_name}: max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts}";
                 }
 
                 // for each supplied parent page -- pages & subcats
@@ -128,7 +169,7 @@ namespace wiki_walker
                                         lock (o_child_pages_fetched) {
                                             if (++child_page_counter_batch % 2000 == 0) {
                                                 var child_pages_per_sec = child_page_counter_batch / sw.Elapsed.TotalSeconds;
-                                                Trace.WriteLine($"max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts} - child-pages-(ns=14||0)-total: {child_page_counter_batch} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_per_sec.ToString("0.0")} per/sec");// ; AVG = {child_page_counter_batches_persec.Average().ToString("0.0")} per/sec.");
+                                                Trace.WriteLine($"         (child-pages-(ns=14||0)-total: {child_page_counter_batch} in {sw.Elapsed.TotalSeconds.ToString("0")} sec(s) = {child_pages_per_sec.ToString("0.0")} per/sec)");
                                             }
                                         }
 
@@ -238,6 +279,8 @@ namespace wiki_walker
 
                 if (saw_exceptions_on_page_processing == false)
                     db.SaveChangesTraceValidationErrors(); //** page - processed_to_depth
+
+                return true;
             }
         }
 

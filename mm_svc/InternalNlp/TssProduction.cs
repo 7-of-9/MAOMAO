@@ -92,8 +92,10 @@ namespace mm_svc
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
 
                 // calc and store all paths to root for mapped golden terms -- again, perf later for dynamic categorization
-                foreach (var wiki_url_term in url.url_term.Where(p => p.wiki_S != null))
+                //foreach (var wiki_url_term in url.url_term.Where(p => p.wiki_S != null))
+                Parallel.ForEach(url.url_term.Where(p => p.wiki_S != null), wiki_url_term =>{
                     Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
+                });
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms

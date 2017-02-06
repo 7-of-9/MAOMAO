@@ -19,7 +19,7 @@ namespace wiki_walker
             {
                 // terms needing update
                 wiki_term_ids = db.terms.Where(p => p.wiki_nscount == null
-                                           && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_0))
+                                           && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
                                         .Select(p => p.id)
                                         //.Take(100)
                                         .ToListNoLock();
