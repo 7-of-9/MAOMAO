@@ -46,8 +46,9 @@ namespace mmdb_model
             catch (DbUpdateException dbex)
             {
                 if (dbex.InnerException != null && dbex.InnerException.InnerException != null &&
-                    dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key") ||
-                    dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted"))
+                    (dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key")
+                    //|| dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")
+                    ))
                 {
                     //Trace.WriteLine($"ignoring dupe key insert 2 ({info})");
                     return false;
