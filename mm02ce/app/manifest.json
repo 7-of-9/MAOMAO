@@ -1,6 +1,6 @@
 {
     "name": "mm02ce",
-    "version": "0.4.8",
+    "version": "0.4.9",
     "description": "Hope++!",
     "background": {
         "page": "bg.html"
@@ -27,17 +27,19 @@
         "http://*/*",
         "https://*/*"
     ],
-    "content_scripts": [{
-        "matches": [
-            "*://*/*"
-        ],
-        "css": [],
-        "js": [
-            "./build/content.js",
-            "./lib/scriptTagContext.js"
-        ],
-        "run_at": "document_end"
-    }],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*/*"
+            ],
+            "css": [],
+            "js": [
+                "./build/content.js",
+                "./lib/scriptTagContext.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
     "browser_action": {
         "default_title": "FS browser action",
         "default_icon": "img/icon.png"

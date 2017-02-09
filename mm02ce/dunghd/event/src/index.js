@@ -71,7 +71,8 @@ function onClickHandler(info) {
             }
             break;
         case 'mm-btn-disable-youtube':
-            window.enableTestYoutube = false; {
+            window.enableTestYoutube = false;
+            {
                 const data = {
                     type: 'YOUTUBE_TEST',
                     payload: {
@@ -82,7 +83,8 @@ function onClickHandler(info) {
             }
             break;
         case 'mm-btn-enable-youtube':
-            window.enableTestYoutube = true; {
+            window.enableTestYoutube = true;
+            {
                 const data = {
                     type: 'YOUTUBE_TEST',
                     payload: {

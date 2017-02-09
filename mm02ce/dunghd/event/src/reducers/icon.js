@@ -31,7 +31,7 @@ export default (state = initialState, action, auth) => {
             return Object.assign({}, state, { isEnable: false });
         case 'MAOMAO_ENABLE': {
             if (auth.isLogin) {
-                ctxMenuLogin(auth.info);
+                ctxMenuLogin(auth.info, window.enableTestYoutube);
                 const url = action.payload.url;
                 const activeTabUrl = window.sessionObservable.icons.get(url);
                 if (activeTabUrl) {
