@@ -28,7 +28,7 @@ $(document).ready(function () {
             // this *masks* the problem of $.ready being called an indeterminate # of times??
             var millisecondsToWait = 1500; // shouldn't be necessary, but is! indeterminate behaviour without this, esp. on YT
             setTimeout(function () {
-                if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeSite()) {
+                if (cslib_isYouTubeSite()) {
                     if (cslib_isYouTubeWatch()) {
                         //
                         // YT handler
@@ -194,7 +194,7 @@ function process_text(page_meta) {
     //
     // Custom site handlers
     //
-    if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeWatch()) {
+    if (cslib_isYouTubeWatch()) {
         console.info(" *** USING YOUTUBE/WATCH HANDLER ***");
 
         // grab video details text (single element)

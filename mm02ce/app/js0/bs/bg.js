@@ -369,6 +369,9 @@ function inject_cs(session, tab_id, skip_text) {
             active: true,
             currentWindow: true
         }, function (tabs) {
+            if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError);
+            }
             if (tabs != null && tabs.length > 0)
                 var current_tab = tabs[0];
 
@@ -420,6 +423,9 @@ function inject_cs(session, tab_id, skip_text) {
         // inject specific tab id
         //
         chrome.tabs.get(tab_id, function (tab) {
+            if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError);
+            }
             if (tab != null) {
                 var process = process_url(tab.url);
                 if (process && !isGuest) {

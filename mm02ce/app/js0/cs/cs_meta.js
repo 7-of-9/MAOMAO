@@ -15,9 +15,8 @@ function get_page_metadata(fast_refresh, callback) {
         ms_wait = 50;
     else {
         var ms_wait = fast_refresh ? 1 : 1000;
-        if (document.getElementById('maomao-extension-youtube-test')) {
-            if (cslib_isYouTubeWatch())
-                ms_wait = 500;
+        if (cslib_isYouTubeWatch()) {
+            ms_wait = 500;
         } else {
             console.info("Disable youtube test");
         }
@@ -31,7 +30,7 @@ function get_page_metadata(fast_refresh, callback) {
             html_title: document.title,
         };
 
-        if (document.getElementById('maomao-extension-youtube-test') && cslib_isYouTubeWatch()) {
+        if (cslib_isYouTubeWatch()) {
 
             //
             // itemprops ("microdata") -- these *alone* (and document.title) are not stale on YT navigations
