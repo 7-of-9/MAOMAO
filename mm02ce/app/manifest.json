@@ -34,8 +34,7 @@
             ],
             "css": [],
             "js": [
-                "./build/content.js",
-                "./lib/scriptTagContext.js"
+                "./build/content.js"
             ],
             "run_at": "document_end"
         }

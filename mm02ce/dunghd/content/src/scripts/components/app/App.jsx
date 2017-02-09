@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import moment from 'moment';
+import html2canvas from 'html2canvas';
+import StackBlur from 'stackblur-canvas';
 import $ from 'jquery';
 import { WelcomeModal, ShareModal } from '../modal';
 import Score from './Score';
@@ -12,6 +14,7 @@ window.jQuery = $;
 
 require('../../stylesheets/animate.min.css');
 require('../../stylesheets/main.scss');
+require('../../vendors/vague');
 require('../../vendors/jquery.fittext');
 require('../../vendors/jquery.lettering');
 require('../../vendors/jquery.textillate');
@@ -19,6 +22,7 @@ require('../../vendors/jquery.textillate');
 const propTypes = {
     auth: PropTypes.object,
     score: PropTypes.object,
+    icon: PropTypes.object,
     isOpen: PropTypes.bool.isRequired,
     siteUrl: PropTypes.string,
     mailgunKey: PropTypes.string,
@@ -58,6 +62,39 @@ class App extends Component {
         this.openInvite = this.openInvite.bind(this);
         this.closeInvite = this.closeInvite.bind(this);
         this.notify = this.notify.bind(this);
+    }
+
+    componentDidMount() {
+        /* Option 1: vague
+        const $window = $(window);
+        const $blurred = $('.blurred');
+        $('body').clone().appendTo($blurred.find('#html2canvas'));
+        const vague = $blurred.find('#html2canvas').Vague({
+            intensity: 5,
+        });
+
+        vague.blur();
+
+        const scrollIframe = () => {
+            $blurred.find('#html2canvas').css({
+                top: -$blurred.offset().top,
+            });
+        };
+        $window.on('scroll', scrollIframe);
+
+        scrollIframe();
+        */
+        const $window = $(window);
+        const $blurred = $('.blurred');
+        html2canvas(document.body).then((canvas) => {
+            $('#html2canvas').append(canvas);
+            $('canvas').attr('id', 'canvas');
+            StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+            const scrollIframe = () => {
+                $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
+            };
+            $window.on('scroll', scrollIframe);
+        });
     }
 
     onLogin() {
@@ -142,7 +179,7 @@ class App extends Component {
 
     render() {
         return (
-            <div className="maomao-ext-component">
+            <div className='maomao-ext-component'>
                 <ReactMaterialUiNotifications
                     rootStyle={{
                         zIndex: 10000,
@@ -152,7 +189,7 @@ class App extends Component {
                     desktop
                     transitionAppear={false}
                     transitionLeave={false}
-                    />
+                />
                 <WelcomeModal
                     auth={this.props.auth}
                     onLogin={this.onLogin}
@@ -161,7 +198,7 @@ class App extends Component {
                     openInvite={this.openInvite}
                     isShareOpen={this.state.openShare}
                     isOpen={this.props.isOpen}
-                    />
+                />
                 <ToggleDisplay if={this.props.auth.isLogin}>
                     <ShareModal
                         auth={this.props.auth}
@@ -170,11 +207,15 @@ class App extends Component {
                         isOpen={this.state.openShare}
                         onCloseModal={this.closeInvite}
                         notify={this.notify}
-                        />
+                    />
                 </ToggleDisplay>
                 <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score > 0}>
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
+                <div className='blurred'>
+                    <div id='html2canvas'></div>
+                    <p>{this.props.icon.text} {this.props.icon.score} XP</p>
+                </div>
             </div>
         );
     }
@@ -183,11 +224,11 @@ class App extends Component {
 App.propTypes = propTypes;
 
 const mapStateToProps = (state) => {
-    console.log('state', state);
     return {
         auth: state.auth,
         isOpen: state.modal,
         score: state.score,
+        icon: state.icon,
     };
 };
 

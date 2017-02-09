@@ -16,7 +16,9 @@
     "bluebird": "^3.4.6",
     "core-decorators": "^0.14.0",
     "dotenv": "^2.0.0",
+    "faker": "^3.1.0",
     "firebase": "^3.6.5",
+    "html2canvas": "^0.5.0-beta4",
     "jquery": "^3.1.1",
     "justext": "jellydn/justext",
     "jwt-decode": "^2.1.0",
@@ -42,6 +44,7 @@
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.1.0",
     "remote-redux-devtools": "^0.5.7",
+    "stackblur-canvas": "^1.4.0",
     "stacktrace-js": "^1.3.1",
     "underscore": "^1.8.3"
   },

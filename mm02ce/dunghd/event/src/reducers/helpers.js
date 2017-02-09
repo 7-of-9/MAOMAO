@@ -1,7 +1,5 @@
 
 export function ctxMenuLogin(userInfo, enableTestYoutube) {
-    console.warn('userInfo', userInfo);
-    console.warn('enableTestYoutube', enableTestYoutube);
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
         title: 'v0.4.8',
@@ -27,6 +25,11 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
         });
     }
     chrome.contextMenus.create({
+        title: 'Test XP Popup!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-popup',
+    });
+    chrome.contextMenus.create({
         title: 'Logout',
         contexts: ['browser_action'],
         id: 'mm-btn-logout',
@@ -44,5 +47,10 @@ export function ctxMenuLogout() {
         title: 'Login',
         contexts: ['browser_action'],
         id: 'mm-btn-login',
+    });
+    chrome.contextMenus.create({
+        title: 'Test XP Popup!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-popup',
     });
 }

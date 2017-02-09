@@ -3,10 +3,16 @@ import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 const initialState = {
     isEnable: false,
     isYoutubeTest: false,
+    xp: {
+        score: 0,
+        text: '',
+    },
 };
 
 export default (state = initialState, action, auth) => {
     switch (action.type) {
+        case 'XP_POPUP':
+            return Object.assign({}, state, { xp: action.payload });
         case 'YOUTUBE_TEST':
             ctxMenuLogin(auth.info, window.enableTestYoutube);
             return Object.assign({}, state, { isYoutubeTest: window.enableTestYoutube });

@@ -7,6 +7,31 @@
   @import 'themes/all';
 }
 
+#canvas{
+    opacity:1;
+    display: block;
+    bottom: 3px;
+}
+
+.blurred {
+    box-shadow: 0 5px 50px rgba(0,0,0,0.4);
+    overflow:hidden;
+    position:fixed;
+    bottom: 10px;
+    left:0;
+    height:100px;
+    width:100%;
+    z-index: 10000;
+}
+.blurred p {
+    position:absolute;
+    top:50px;
+    width:100%;
+    text-align: center;
+    text-shadow:1px 1px 2px gray;
+    font-size:30px;
+}
+
 .tlt.glow {
   text-shadow: 0 0 0 rgba(0, 0, 0, 0);
     -webkit-transition: text-shadow 1s linear;
