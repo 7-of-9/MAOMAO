@@ -216,7 +216,7 @@ class App extends Component {
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
                 <div className='blurred'>
-                    <p>{this.props.icon.xp.text} {this.props.icon.xp.score} XP</p>
+                    <p><span className="nlp_topic">{this.props.icon.xp.text}</span><span className="nlp_score">+{this.props.icon.xp.score} XP</span></p>
                     <div id='html2canvas'></div>
                 </div>
             </div>

@@ -30,7 +30,7 @@ module.exports = {
                 ),
                 // loaders: ['style', 'css', 'sass'],
             },
-            { test: /\.(ttf|eot)$/, loader: 'file' },
+            { test: /\.(ttf|eot|otf)$/, loader: 'file' },
             {
                 test: /\.css$/,
                 loaders: [
