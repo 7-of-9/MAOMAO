@@ -86,14 +86,17 @@ class App extends Component {
         */
         const $window = $(window);
         const $blurred = $('.blurred');
-        html2canvas(document.body).then((canvas) => {
-            $('#html2canvas').append(canvas);
-            $('canvas').attr('id', 'canvas');
-            StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
-            const scrollIframe = () => {
-                $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
-            };
-            $window.on('scroll', scrollIframe);
+        $(() => {
+            html2canvas(document.body).then((canvas) => {
+                $('#html2canvas').append(canvas);
+                $('canvas').attr('id', 'canvas');
+                StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+                const scrollIframe = () => {
+                    $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
+                };
+                scrollIframe();
+                $window.on('scroll', scrollIframe);
+            });
         });
     }
 
@@ -213,8 +216,8 @@ class App extends Component {
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
                 <div className='blurred'>
+                    <p>{this.props.icon.xp.text} {this.props.icon.xp.score} XP</p>
                     <div id='html2canvas'></div>
-                    <p>{this.props.icon.text} {this.props.icon.score} XP</p>
                 </div>
             </div>
         );

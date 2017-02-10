@@ -13,23 +13,33 @@
     bottom: 3px;
 }
 
+#html2canvas {
+    width: 100vw;
+    position: absolute;
+    left: 0;
+    margin-left: calc(-1 * ((100vw - 100%) / 2));
+}
+
 .blurred {
-    box-shadow: 0 5px 50px rgba(0,0,0,0.4);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     overflow:hidden;
     position:fixed;
-    bottom: 10px;
-    left:0;
-    height:100px;
-    width:100%;
+    bottom: 30px;
+    left: 33%;
+    right: 33%;
+    height:40px;
+    width: auto;
     z-index: 10000;
+    border-radius: 8px;
 }
 .blurred p {
     position:absolute;
-    top:50px;
+    top:10px;
     width:100%;
+    z-index: 1;
     text-align: center;
     text-shadow:1px 1px 2px gray;
-    font-size:30px;
+    font-size:15px;
 }
 
 .tlt.glow {
