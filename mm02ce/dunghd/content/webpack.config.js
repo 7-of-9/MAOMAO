@@ -1,46 +1,55 @@
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
 
-  entry: [
-    './dunghd/content/src/scripts/index.jsx',
-  ],
-
-  output: {
-    filename: 'content.js',
-    path: path.join(__dirname, '../../app/', 'build'),
-    publicPath: '/',
-  },
-
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.scss', '.json'],
-    modulesDirectories: ['node_modules'],
-  },
-
-  devtool: 'source-map',
-
-  module: {
-    loaders: [
-      {
-        test: /\.scss$/,
-        loaders: ['style', 'css', 'sass']
-      },
-      {
-        test: /\.css$/,
-        loaders: [
-          'style?sourceMap',
-          'css?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-        ],
-      },
-      {
-        test: /\.(jsx|js)?$/,
-        loader: 'babel',
-        exclude: /(node_modules)/,
-        include: path.join(__dirname, 'src'),
-        query: {
-          presets: ['es2015', 'react'],
-        },
-      },
+    entry: [
+        './dunghd/content/src/scripts/index.jsx',
     ],
-  },
+
+    output: {
+        filename: 'content.js',
+        path: path.join(__dirname, '../../app/', 'build'),
+        publicPath: '/',
+    },
+
+    resolve: {
+        extensions: ['', '.js', '.jsx', '.scss', '.json'],
+        modulesDirectories: ['node_modules'],
+    },
+
+    devtool: 'source-map',
+
+    module: {
+        loaders: [
+            {
+                test: /\.scss$/,
+                loader: ExtractTextPlugin.extract(
+                    'style', // The backup style loader
+                    'css?sourceMap!sass?sourceMap',
+                ),
+                // loaders: ['style', 'css', 'sass'],
+            },
+            { test: /\.(ttf|eot)$/, loader: 'file' },
+            {
+                test: /\.css$/,
+                loaders: [
+                    'style?sourceMap',
+                    'css?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+                ],
+            },
+            {
+                test: /\.(jsx|js)?$/,
+                loader: 'babel',
+                exclude: /(node_modules)/,
+                include: path.join(__dirname, 'src'),
+                query: {
+                    presets: ['es2015', 'react'],
+                },
+            },
+        ],
+    },
+    plugins: [
+        new ExtractTextPlugin('styles.css'),
+    ],
 };

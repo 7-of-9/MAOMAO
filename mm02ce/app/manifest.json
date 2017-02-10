@@ -32,7 +32,9 @@
             "matches": [
                 "*://*/*"
             ],
-            "css": [],
+            "css": [
+                "./build/styles.css"
+            ],
             "js": [
                 "./build/content.js"
             ],
