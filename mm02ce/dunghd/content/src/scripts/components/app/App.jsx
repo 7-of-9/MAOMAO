@@ -90,7 +90,11 @@ class App extends Component {
             html2canvas(document.body).then((canvas) => {
                 $('#html2canvas').append(canvas);
                 $('canvas').attr('id', 'canvas');
-                StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+                try {
+                    StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+                } catch (err) {
+                    console.warn('blur err', err);
+                }
                 const scrollIframe = () => {
                     $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
                 };
@@ -122,7 +126,6 @@ class App extends Component {
                 throw new Error(this.props.auth.message);
             })
             .then((user) => {
-                console.log('user', user);
                 let userId = -1;
                 if (user.data && user.data.id) {
                     userId = user.data.id;
@@ -135,7 +138,6 @@ class App extends Component {
                 });
             })
             .catch((err) => {
-                console.warn(err);
                 this.notify({
                     title: err.message,
                     autoHide: 3000,
@@ -151,7 +153,6 @@ class App extends Component {
     }
 
     onLogout() {
-        console.log('onLogout');
         this.props.dispatch(logout())
             .then((token) => {
                 console.log(token);
@@ -163,7 +164,6 @@ class App extends Component {
     }
 
     notify(msg) {
-        console.log('notify msg', msg);
         ReactMaterialUiNotifications.showNotification(msg);
         this.forceUpdate();
     }
@@ -215,9 +215,10 @@ class App extends Component {
                 <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score > 0}>
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
-                <div className='blurred'>
-                    <p><span className="nlp_topic">{this.props.icon.xp.text}</span><span className="nlp_score">+{this.props.icon.xp.score} XP</span></p>
-                    <div id='html2canvas'></div>
+                <div className="blurred">
+                    <div className="nlp_topic">{this.props.icon.xp.text}</div>
+                    <div className="nlp_score">+{this.props.icon.xp.score} XP</div>
+                    <div id="html2canvas"></div>
                 </div>
             </div>
         );
