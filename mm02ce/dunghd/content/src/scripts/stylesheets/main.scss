@@ -1,6 +1,9 @@
+@import 'fonts/Roboto/font';
+@import 'fonts/Courier New/font';
+@import 'fonts/Orbitron/font';
 .maomao-ext-component {
-  @import 'utils/all';
-  @import 'base/all';
-  @import 'components/all';
-  @import 'themes/all';
+    @import 'utils/all';
+    @import 'base/all';
+    @import 'components/all';
+    @import 'themes/all';
 }
