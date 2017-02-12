@@ -71,8 +71,13 @@ class App extends Component {
             html2canvas(document.body).then((canvas) => {
                 $('#html2canvas').append(canvas);
                 $('canvas').attr('id', 'canvas');
+                const width = $(window).width();
+                const body = document.body;
+                const html = document.documentElement;
+                const height = Math.max(body.scrollHeight, body.offsetHeight,
+                    html.clientHeight, html.scrollHeight, html.offsetHeight);
                 try {
-                    StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+                    StackBlur.canvasRGB(canvas, 0, 0, width, height, 20);
                     const scrollIframe = () => {
                         $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
                     };
@@ -81,7 +86,7 @@ class App extends Component {
                 } catch (err) {
                     console.warn('blur err', err);
                     console.log('fallback to vaguejs');
-                    $('canvas').replaceWith(`<iframe width="100%" height="10000" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
+                    $('canvas').replaceWith(`<iframe width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
                     const vague = $blurred.find('iframe').Vague({ intensity: 5 });
                     vague.blur();
 
@@ -208,7 +213,7 @@ class App extends Component {
                 <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score > 0}>
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
-                <div className="blurred" style={{ display: this.props.icon.xp.score ? 'block' : 'none' }}>
+                <div className="blurred" style={{ display: this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score && this.props.icon.xp.score ? 'block' : 'none' }}>
                     <ToggleDisplay if={this.props.icon.xp.score > 0}>
                         <div className="nlp_topic">{this.props.icon.xp.text}</div>
                         <div className="nlp_score">+{this.props.icon.xp.score} XP</div>
