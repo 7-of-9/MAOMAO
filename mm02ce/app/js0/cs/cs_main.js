@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////
 // CONTEXT SCRIPT -- entry point
 //
@@ -14,21 +13,21 @@ console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs
 //
 // doc.ready
 //
-$(document).ready(function () { // fires more than once! observed; proven. lol.
+$(document).ready(function() { // fires more than once! observed; proven. lol.
 
     // setup up IM events
     listenAndCoalesce(document, "scroll");
 
     // For some reason, "resize" doesn't seem to work with addEventListener.
     if ((window == window.top) && document.body && !document.body.onresize) {
-        document.body.onresize = function (event) {
+        document.body.onresize = function(event) {
             sendEvent("resize", "IM", "started");
         };
     }
 
     listenAndCoalesce(document, "click");
 
-    listenAndCoalesce(document, "keypress", function (event) {
+    listenAndCoalesce(document, "keypress", function(event) {
         if (event.charCode == 13)
             return false;
 
@@ -88,7 +87,7 @@ $(document).ready(function () { // fires more than once! observed; proven. lol.
     //context.stroke();
 });
 
-$(window).on('resize', function (event) {
+$(window).on('resize', function(event) {
     sendEvent("resize", "IM", "started");
 });
 
@@ -101,9 +100,9 @@ $(window).on('resize', function (event) {
 //
 // used by BS for TOT tracking
 //
-window.onbeforeunload = function (e) { sendEvent("onbeforeunload", "WINDOW", document.location); }
-window.onunload = function (e) { sendEvent("onunload", "WINDOW", document.location); }
-window.onload = function (e) { sendEvent("onload", "WINDOW", document.location); }
+window.onbeforeunload = function(e) { sendEvent("onbeforeunload", "WINDOW", document.location); }
+window.onunload = function(e) { sendEvent("onunload", "WINDOW", document.location); }
+window.onload = function(e) { sendEvent("onload", "WINDOW", document.location); }
 
 
 //
@@ -147,7 +146,7 @@ function handleEvent(event, type, validator) {
 }
 
 function listenAndCoalesce(target, type, validator) {
-    target.addEventListener(type, function (event) {
+    target.addEventListener(type, function(event) {
         handleEvent(event, type, validator);
     }, true);
 }

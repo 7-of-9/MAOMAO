@@ -65,25 +65,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        /* Option 1: vague
-        const $window = $(window);
-        const $blurred = $('.blurred');
-        $('body').clone().appendTo($blurred.find('#html2canvas'));
-        const vague = $blurred.find('#html2canvas').Vague({
-            intensity: 5,
-        });
-
-        vague.blur();
-
-        const scrollIframe = () => {
-            $blurred.find('#html2canvas').css({
-                top: -$blurred.offset().top,
-            });
-        };
-        $window.on('scroll', scrollIframe);
-
-        scrollIframe();
-        */
         const $window = $(window);
         const $blurred = $('.blurred');
         $(() => {
@@ -92,14 +73,26 @@ class App extends Component {
                 $('canvas').attr('id', 'canvas');
                 try {
                     StackBlur.canvasRGB(canvas, 0, 0, $('canvas').width(), $('canvas').height(), 20);
+                    const scrollIframe = () => {
+                        $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
+                    };
+                    scrollIframe();
+                    $window.on('scroll', scrollIframe);
                 } catch (err) {
                     console.warn('blur err', err);
+                    console.log('fallback to vaguejs');
+                    $('canvas').replaceWith(`<iframe width="100%" height="10000" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
+                    const vague = $blurred.find('iframe').Vague({ intensity: 5 });
+                    vague.blur();
+
+                    const scrollIframe = () => {
+                        $blurred.find('iframe').css({
+                            top: -$blurred.offset().top,
+                        });
+                    };
+                    $window.on('scroll', scrollIframe);
+                    scrollIframe();
                 }
-                const scrollIframe = () => {
-                    $('canvas').css('-webkit-transform', 'translatey(-' + $blurred.offset().top + 'px)');
-                };
-                scrollIframe();
-                $window.on('scroll', scrollIframe);
             });
         });
     }
@@ -215,9 +208,11 @@ class App extends Component {
                 <ToggleDisplay if={this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score > 0}>
                     <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
                 </ToggleDisplay>
-                <div className="blurred">
-                    <div className="nlp_topic">{this.props.icon.xp.text}</div>
-                    <div className="nlp_score">+{this.props.icon.xp.score} XP</div>
+                <div className="blurred" style={{ display: this.props.icon.xp.score ? 'block' : 'none' }}>
+                    <ToggleDisplay if={this.props.icon.xp.score > 0}>
+                        <div className="nlp_topic">{this.props.icon.xp.text}</div>
+                        <div className="nlp_score">+{this.props.icon.xp.score} XP</div>
+                    </ToggleDisplay>
                     <div id="html2canvas"></div>
                 </div>
             </div>

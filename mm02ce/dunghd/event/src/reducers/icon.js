@@ -19,7 +19,7 @@ export default (state = initialState, action, auth) => {
         case 'MAOMAO_DISABLE':
             chrome.contextMenus.removeAll();
             chrome.contextMenus.create({
-                title: 'v0.4.8',
+                title: 'v0.4.10',
                 contexts: ['browser_action'],
                 id: 'mm-btn-version',
             });
@@ -35,26 +35,27 @@ export default (state = initialState, action, auth) => {
                 window.setIconApp(action.payload.url, 'gray', '', window.BG_SUCCESS_COLOR);
             }
             return Object.assign({}, state, { isEnable: false });
-        case 'MAOMAO_ENABLE': {
-            if (auth.isLogin) {
-                ctxMenuLogin(auth.info, window.enableTestYoutube);
-                const url = action.payload.url;
-                const activeTabUrl = window.sessionObservable.icons.get(url);
-                if (activeTabUrl) {
-                    if (activeTabUrl.image === 'gray') {
-                        window.setIconApp(url, 'black', activeTabUrl.text, activeTabUrl.color);
+        case 'MAOMAO_ENABLE':
+            {
+                if (auth.isLogin) {
+                    ctxMenuLogin(auth.info, window.enableTestYoutube);
+                    const url = action.payload.url;
+                    const activeTabUrl = window.sessionObservable.icons.get(url);
+                    if (activeTabUrl) {
+                        if (activeTabUrl.image === 'gray') {
+                            window.setIconApp(url, 'black', activeTabUrl.text, activeTabUrl.color);
+                        } else {
+                            window.setIconApp(url, activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
+                        }
                     } else {
-                        window.setIconApp(url, activeTabUrl.image, activeTabUrl.text, activeTabUrl.color);
+                        window.setIconApp(url, 'black', '', window.BG_SUCCESS_COLOR);
                     }
                 } else {
-                    window.setIconApp(url, 'black', '', window.BG_SUCCESS_COLOR);
+                    ctxMenuLogout();
+                    window.setIconApp(action.payload.url, 'gray', '', window.BG_SUCCESS_COLOR);
                 }
-            } else {
-                ctxMenuLogout();
-                window.setIconApp(action.payload.url, 'gray', '', window.BG_SUCCESS_COLOR);
+                return Object.assign({}, state, { isEnable: true });
             }
-            return Object.assign({}, state, { isEnable: true });
-        }
         default:
             return state;
     }
