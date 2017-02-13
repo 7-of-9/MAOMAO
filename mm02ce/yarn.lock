@@ -4623,6 +4623,10 @@ react-addons-transition-group@^15.0.0, react-addons-transition-group@^15.2.1:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
+react-animations@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-animations/-/react-animations-0.1.0.tgz#519b6f4fe0f90b49fbfd4fcd73d978c5087130b1"
+
 react-chrome-redux@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-chrome-redux/-/react-chrome-redux-1.1.0.tgz#90a4787a62c29b473767708290973b455cb0c3d8"
