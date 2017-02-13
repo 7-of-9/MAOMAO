@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
+import CountUp from 'react-countup';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import moment from 'moment';
 import html2canvas from 'html2canvas';
@@ -216,7 +217,7 @@ class App extends Component {
                 <div className="blurred" style={{ display: this.props.auth.isLogin && this.props.score.isOpen && this.props.score.im_score && this.props.icon.xp.score ? 'block' : 'none' }}>
                     <ToggleDisplay if={this.props.icon.xp.score > 0}>
                         <div className="nlp_topic">{this.props.icon.xp.text}</div>
-                        <div className="nlp_score">+{this.props.icon.xp.score} XP</div>
+                        <div className="nlp_score">+<CountUp start={0} end={this.props.icon.xp.score} /> XP</div>
                     </ToggleDisplay>
                     <div id="html2canvas"></div>
                 </div>
