@@ -1,6 +1,7 @@
 import axios from 'axios';
 import firebase from 'firebase';
 import mobx from 'mobx';
+import faker from 'faker';
 import {
     wrapStore,
     alias,
@@ -61,6 +62,18 @@ chrome.contextMenus.removeAll();
 // NOTE: Handler all browser action events
 function onClickHandler(info) {
     switch (info.menuItemId) {
+        case 'mm-btn-xp-popup':
+            {
+                const data = {
+                    type: 'XP_POPUP',
+                    payload: {
+                        score: Math.floor(Math.random() * 100) + 1,
+                        text: faker.lorem.words(),
+                    },
+                };
+                store.dispatch(data);
+            }
+            break;
         case 'mm-btn-logout':
             {
                 const data = {
