@@ -256,6 +256,7 @@ namespace mm_svc
                     var db_url_term = new url_term();
                     db_url_term.term_id = db_term.id;
                     db_url_term.url_id = url_id;
+                    db_url_term.S = db_url_term.S_CALC;
                     switch (term_type_id) {
                         case (int)g.TT.CALAIS_ENTITY:
                             db_url_term.cal_entity_relevance = Convert.ToDouble(item.relevance.ToString()); break;

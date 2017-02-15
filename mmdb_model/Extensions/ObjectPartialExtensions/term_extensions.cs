@@ -53,7 +53,7 @@ namespace mmdb_model
             return this.cal_entity_type_id == (int)g.ET.Country || this.cal_entity_type_id == (int)g.ET.Continent || this.cal_entity_type_id == (int)g.ET.ProvinceOrState;
         }}
 
-        [NotMapped] public bool reused_classification;
+        //[NotMapped] public bool reused_classification;
 
         public override string ToString() {
             var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count}";

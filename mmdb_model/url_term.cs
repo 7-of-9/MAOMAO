@@ -24,6 +24,7 @@ namespace mmdb_model
         public string candidate_reason { get; set; }
         public Nullable<double> tss { get; set; }
         public Nullable<double> tss_norm { get; set; }
+        public Nullable<double> S { get; set; }
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }

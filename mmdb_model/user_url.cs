@@ -28,9 +28,9 @@ namespace mmdb_model
         public Nullable<int> audible_pings { get; set; }
         public Nullable<long> time_on_tab { get; set; }
     
-        public virtual user user { get; set; }
         public virtual url url { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_url_classification> user_url_classification { get; set; }
+        public virtual user user { get; set; }
     }
 }

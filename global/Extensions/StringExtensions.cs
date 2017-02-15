@@ -55,5 +55,7 @@ namespace mm_global.Extensions
         }
 
         public static string ltrim(this string s) { return s.ToLower().Trim(); }
+
+        public static string nopunc(this string s) { return new string(s.ltrim().ToArray().Where(c => !char.IsPunctuation(c) && !char.IsWhiteSpace(c)).ToArray()); }
     }
 }

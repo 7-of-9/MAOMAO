@@ -117,6 +117,7 @@
     <Compile Include="Controls\TermTree.Designer.cs">
       <DependentUpon>TermTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="TextBoxTraceListener.cs" />
     <EmbeddedResource Include="Controls\WikiGoldenTree.resx">
       <DependentUpon>WikiGoldenTree.cs</DependentUpon>
     </EmbeddedResource>

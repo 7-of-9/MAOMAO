@@ -46,7 +46,7 @@ namespace mm_svc
         };
         // boosts
         public const double BASE_BOOST = 5;
-        public const double TITLE_EXACT_START_BOOST = BASE_BOOST * 2;
+        public const double TITLE_EXACT_START_BOOST = BASE_BOOST * 3;
         public const double TITLE_DESC_BOOST = 4;
 
 
@@ -101,6 +101,7 @@ namespace mm_svc
                 CalcTSS(meta_all, l1_calais_terms, run_l2_boost);
 
                 l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
+                l1_calais_terms.ForEach(p => p.S = p.S_CALC);
 
                 // store mapped wiki golden_terms -- perf: faster lookup later
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
@@ -230,24 +231,30 @@ ret1:
             //const int MIN_STEMMING_LEN = 5;
 
             var title_ltrim = meta_all.html_title.ToString().ToLower().Trim();
+            var title_ltrim_nopunc = ((string)Convert.ChangeType(title_ltrim, typeof(string))).nopunc();
+
             var desc_ltrim = (meta_all.ip_description ?? "").ToString().ToLower().Trim();
+            var desc_ltrim_nopunc = ((string)Convert.ChangeType(desc_ltrim, typeof(string))).nopunc();
+
             Porter2_English stemmer = new Porter2_English();
 
             // S2 -- baseline S relevance boosted and scaled
             foreach (var x in all) {
-                x.S2 = x.S * x.s;
+                x.S2 = x.S_CALC * x.s;
                 if (x.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) {
-                    x.S2 = x.S * SOCIAL_TAG_BOOST;
+                    x.S2 = x.S_CALC * SOCIAL_TAG_BOOST;
                 }
                 else if (x.term.term_type_id == (int)g.TT.CALAIS_ENTITY) {
                     if (entity_type_boosts.ContainsKey((g.ET)x.term.cal_entity_type_id))
-                        x.S2 = x.S * entity_type_boosts[(g.ET)x.term.cal_entity_type_id];
+                        x.S2 = x.S_CALC * entity_type_boosts[(g.ET)x.term.cal_entity_type_id];
                 }
             }
 
+            const int MAX_BOOST_LEN = 6;
+
             // all fully contained in title - no stemming
-            const int MAX_BOOST_LEN = 4;
-            foreach (var t in all.Where(p => title_ltrim.ToLower().IndexOf(p.term.name.ltrim()) != -1)) {
+            var title_exact_terms = all.Where(p => title_ltrim.ToLower().IndexOf(p.term.name.ltrim()) != -1);
+            foreach (var t in title_exact_terms) {
                 var boost = BASE_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
                             * t.S2;
@@ -255,7 +262,8 @@ ret1:
                 t.tss += boost;
             }
             // fully contained in title -- at start
-            foreach (var t in all.Where(p => title_ltrim.ToLower().StartsWith(p.term.name.ltrim()))) {
+            var title_exact_start_terms = all.Where(p => title_ltrim.ToLower().StartsWith(p.term.name.ltrim()));
+            foreach (var t in title_exact_start_terms) {
                 var boost = TITLE_EXACT_START_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
                             * t.S2;
@@ -263,25 +271,43 @@ ret1:
                 t.tss += boost;
             }
 
+            // all fully contained in title, no punctuation - no stemming
+            foreach (var t in all.Except(title_exact_terms).Where(p => title_ltrim_nopunc.IndexOf(p.term.name.nopunc()) != -1)) {
+                var boost = BASE_BOOST
+                            * t.term.name.LengthNorm(MAX_BOOST_LEN)
+                            * t.S2;
+                t.candidate_reason += $" TITLE_EXACT_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
+                t.tss += boost;
+            }
+            // fully contained in title, no punctuation -- at start
+            foreach (var t in all.Except(title_exact_start_terms).Where(p => title_ltrim_nopunc.StartsWith(p.term.name.nopunc())))
+            {
+                var boost = TITLE_EXACT_START_BOOST
+                            * t.term.name.LengthNorm(MAX_BOOST_LEN)
+                            * t.S2;
+                t.candidate_reason += $" TITLE_EXACT_START_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
+                t.tss += boost;
+            }
+
             if (!string.IsNullOrEmpty(desc_ltrim)) {
-                // ** all fully contained in description - no stemming
-                foreach (var t in all.Where(p => desc_ltrim.IndexOf(p.term.name.ltrim()) != -1)) {
+                // all fully contained in description - no stemming
+                var desc_exact_terms = all.Where(p => desc_ltrim.IndexOf(p.term.name.ltrim()) != -1);
+                foreach (var t in desc_exact_terms) {
                     var boost = BASE_BOOST
                                 * t.term.name.LengthNorm(MAX_BOOST_LEN)
                                 * t.S2;
                     t.candidate_reason += $" DESC_EXACT({(int)boost}) ";
                     t.tss += boost; 
                 }
-                // ** all fully contained in description - w/ stemming
-                //foreach (var t in all.Where(p => stemmer.stem(desc_ltrim.ltrim()).IndexOf(stemmer.stem(p.term.name.ltrim())) != -1)) {
-                //    if (t.term.name.Length >= MIN_STEMMING_LEN) {
-                //        var boost = BASE_BOOST
-                //                    * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                //                    * t.S2;
-                //        t.candidate_reason += $" DESC_STEMMED({(int)boost}) ";
-                //        t.tss += boost;
-                //    }
-                //}
+
+                // all fully contained in description, no punctuation - no stemming
+                foreach (var t in all.Except(desc_exact_terms).Where(p => desc_ltrim_nopunc.IndexOf(p.term.name.nopunc()) != -1)) {
+                    var boost = BASE_BOOST
+                                * t.term.name.LengthNorm(MAX_BOOST_LEN)
+                                * t.S2;
+                    t.candidate_reason += $" DESC_EXACT_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
+                    t.tss += boost;
+                }
             }
 
             // title best partial match 

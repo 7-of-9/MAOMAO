@@ -140,6 +140,7 @@ namespace wowmao
                 //else if (golden_term_id != null)
                 //    qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
 
+                qry = qry.Where(p => p.nlp_suitability_score > 10);
                 qry = qry.OrderByDescending(p => p.id);
 
                 var count_urls = qry.Count();
@@ -583,34 +584,78 @@ namespace wowmao
             var user_id = 5;
             using (var db = mm02Entities.Create())
             {
+                // clear down user history
+                db.user_url_classification.RemoveRange(db.user_url_classification.Where(p => p.user_id == user_id));
+                db.SaveChangesTraceValidationErrors();
+
                 db.user_url.RemoveRange(db.user_url.Where(p => p.userId == user_id));
                 db.SaveChangesTraceValidationErrors();
+
+                // todo -- reordering if previous, based on common-term counts, i.e. most common across
+                //         history set should be reordered to pri1 ...
 
                 var summary = new Dictionary<term, List<url>>();
                 var rnd = new Random();
                 this.txtOut.Text = "";
+                var traceListener = new TextBoxTraceListener(this.txtOut);
+                Trace.Listeners.Add(traceListener);
+                var sample_user_url_ids = new List<long>();
                 for (int i = 0; i < 100; i ++)
                 {
                     var lvi = this.lvwUrls.Items[rnd.Next(lvwUrls.Items.Count)];
                     var url = lvi.Tag as url;
-
+                        
                     int new_classifications, reused_classifications;
-                    var classifications = mm_svc.UrlClassifier.ClassifyUrl(url.id, user_id, out new_classifications, out reused_classifications);
+                    var classifications = mm_svc.UrlClassifier.ClassifyUrl(url.id, user_id, out new_classifications, out reused_classifications, call_level: 1);
+                    sample_user_url_ids.Add(db.user_url.Where(p => p.userId == user_id && p.urlId == url.id).Single().id);
+                    Application.DoEvents();
 
-                    this.txtOut.AppendText($"{url.meta_title} - {url.url1} - new: {new_classifications} / reused: {reused_classifications}\r\n");
-                    foreach (var classification in classifications) {
-                        var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id).Single();
-                        this.txtOut.AppendText($"\t{url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S} reused={classification.reused}\r\n");
-                    }
+                    //this.txtOut.AppendText($"{url.meta_title} - {url.url1} - new: {new_classifications} / reused: {reused_classifications}\r\n");
+                    //foreach (var classification in classifications) {
+                    //    var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id && p.url_id == url.id).Single();
+                    //    this.txtOut.AppendText($"\t{url_term.term.name} pri={classification.pri} tss_norm={url_term.tss_norm} S={url_term.S_CALC} reused={classification.reused}\r\n");
+                    //}
 
-                    var summary_term = classifications.First().term;
-                    if (!summary.ContainsKey(summary_term))
-                        summary.Add(summary_term, new List<url> { url });
-                    else
-                        summary[summary_term].Add(url);
+                    // first only??
+                    //var prior_classifications = classifications.Where(p => p.pri < 0).OrderByDescending(p => p.pri);
+                    //if (prior_classifications.Count() > 0) {
+                    //    var summary_term = db.terms.Find(prior_classifications.First().term_id);
+                    //    if (!summary.ContainsKey(summary_term))
+                    //        summary.Add(summary_term, new List<url> { url });
+                    //    else
+                    //        summary[summary_term].Add(url);
+                    //}
                 }
 
-                this.txtOut.AppendText("\r\n***\r\n");
+                // TODO: this can't work -- must re-read the entire sample set and look at their top negative ordinals (i.e. after reclassification)
+                Trace.WriteLine("***");
+                Trace.WriteLine("***");
+                foreach (var user_url_id in sample_user_url_ids)
+                {
+                    var url_classifications = db.user_url_classification.Include("user_url").Include("user_url.url").AsNoTracking().Where(p => p.user_url_id == user_url_id).ToListNoLock();
+                    if (url_classifications.Count == 0) continue;
+
+                    var url_classifications_common = url_classifications.Where(p => p.pri < 0).OrderByDescending(p => p.pri);
+                    var url_classifications_distinct = url_classifications.Where(p => p.pri > 0).OrderBy(p => p.pri);
+
+                    if (url_classifications_common.Count() > 0)
+                    {
+                        var url = db.urls.Find(url_classifications_common.First().user_url.urlId);
+                        Trace.WriteLine($"{url.meta_title}");
+                        foreach (var classification in url_classifications_common)
+                            Trace.WriteLine($"\tCOMMON TERM: pri={classification.pri} {classification.term}");
+
+                        // todo -- group URLs by first common term for output
+                    }
+                    else
+                    {
+                        var url = db.urls.Find(url_classifications.First().user_url.urlId);
+                        Trace.WriteLine($"{url.meta_title} >>> NO COMMON CLASSIFICATIONS");
+                        foreach (var classification in url_classifications_distinct)
+                            Trace.WriteLine($"\tdistinct term: pri={classification.pri} {classification.term}");
+                    }
+                }
+
                 foreach (var key in summary.Keys)
                 {
                     this.txtOut.AppendText($"** {key} **\r\n");

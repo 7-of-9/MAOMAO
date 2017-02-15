@@ -12,12 +12,9 @@
         <EntityTypeShape EntityType="mm02Model.cal_entity_type" Width="1.5" PointX="5.5" PointY="9" />
         <EntityTypeShape EntityType="mm02Model.term_matrix" Width="1.5" PointX="5.625" PointY="5.625" />
         <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="0.5" />
-        <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.375" PointY="0.75" />
-        <AssociationConnector Association="mm02Model.fk_tbl_user" />
         <EntityTypeShape EntityType="mm02Model.golden_term" Width="1.5" PointX="9.375" PointY="8.625" />
         <EntityTypeShape EntityType="mm02Model.wiki_page" Width="1.5" PointX="8.375" PointY="4.75" />
         <EntityTypeShape EntityType="mm02Model.wiki_catlink" Width="1.5" PointX="0.75" PointY="9.75" />
-        <EntityTypeShape EntityType="mm02Model.url_term" Width="1.5" PointX="5.625" PointY="11.875" />
         <EntityTypeShape EntityType="mm02Model.gt_path_to_root" Width="1.5" PointX="5.625" PointY="16.625" />
         <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="10.75" PointY="3.75" />
         <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
@@ -28,16 +25,19 @@
         <AssociationConnector Association="mm02Model.FK_term_matrix_term" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term1" />
         <AssociationConnector Association="mm02Model.FK_term_term_type" />
-        <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="7.25" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <AssociationConnector Association="mm02Model.fk_golden_term_url" />
-        <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
-        <AssociationConnector Association="mm02Model.fk_user_url_url" />
-        <EntityTypeShape EntityType="mm02Model.user_url_classification" Width="1.5" PointX="13" PointY="2.75" />
+        <EntityTypeShape EntityType="mm02Model.user_url" Width="1.5" PointX="8.375" PointY="0.75" />
+        <EntityTypeShape EntityType="mm02Model.user_url_classification" Width="1.5" PointX="13" PointY="3" />
         <AssociationConnector Association="mm02Model.FK_user_url_classification_term" />
+        <AssociationConnector Association="mm02Model.fk_user_url_url" />
         <AssociationConnector Association="mm02Model.FK_user_url_classification_user_url" />
+        <AssociationConnector Association="mm02Model.fk_user_url_user" />
         <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
+        <EntityTypeShape EntityType="mm02Model.url_term" Width="1.5" PointX="13" PointY="6.875" />
+        <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
+        <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

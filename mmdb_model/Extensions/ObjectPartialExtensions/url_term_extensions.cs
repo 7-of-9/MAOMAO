@@ -11,7 +11,7 @@ namespace mmdb_model
     public partial class url_term
     {
         public override string ToString() {
-            return $"{term.name} S={S} tss={tss}";
+            return $"{term.name} S={S_CALC} tss={tss}";
         }
 
         public void InitExtensionFields()
@@ -27,7 +27,7 @@ namespace mmdb_model
 
         // type-agnostic representation of the relevance/score/importance: base is 0-10 with multipliers for special types
         [NotMapped]
-        public double S 
+        public double S_CALC 
         {
             get {
                 // for L2 url terms, this "fully inherits" the correlated parent term's S value
