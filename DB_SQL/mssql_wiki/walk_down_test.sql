@@ -51,21 +51,18 @@
  */
 
  -- test
- select * from term where id = 4994232
- select * from golden_term where child_term_id=4994232
- select * from golden_term where child_term_id=4990983
- select * from term where id = 4990979
 
  select max(processed_to_depth) from wiki_page
  update wiki_page set processed_to_depth = 2 where page_title = 'Main_topic_classifications' 
 select * from wiki_page where page_title = 'Main_topic_classifications' and page_namespace in (14,0) -- pageid = 7345184
+
 select *,
  (select page_title from wiki_page where page_id=cl_from) 'cn',
- (select page_namespace from wiki_page where page_id=cl_from)
- from wiki_catlink where cl_to = 'Main_topic_classifications'
+ (select page_namespace from wiki_page where page_id=cl_from) 'namespace'
+ from wiki_catlink where cl_to = 'film_genres'
  order by 'cn'
 
- select * from wiki_page where page_id in ((select cl_from from wiki_catlink where cl_to = 'art_genres'))
+ select * from wiki_page where page_id in ((select cl_from from wiki_catlink where cl_to = 'cartoon'))
 
  -- parent node
 select * from term where name = 'arts' -- 456925
@@ -73,3 +70,10 @@ select *, (select name from term where id=child_term_id) from golden_term where 
 
 -- child node
 select * from golden_term where child_term_id = 456925
+
+select * from term where name = 'tom and jerry'
+
+select * from term where name = 'cartoon'
+ select gt.*, t.name from golden_term gt, term t where t.id = gt.parent_term_id and gt.child_term_id = 5833805
+
+ 

@@ -36,7 +36,7 @@ namespace mm_svc
             { g.ET.Country,              SOCIAL_TAG_BOOST * 0.5 },
             { g.ET.NaturalFeature,       SOCIAL_TAG_BOOST },
             { g.ET.OperatingSystem,      SOCIAL_TAG_BOOST },
-            { g.ET.Person,               SOCIAL_TAG_BOOST * 2 },
+            { g.ET.Person,               SOCIAL_TAG_BOOST * 0.5 },
             { g.ET.Organization,         SOCIAL_TAG_BOOST * 2 },
             { g.ET.Product,              SOCIAL_TAG_BOOST },
             { g.ET.ProgrammingLanguage , SOCIAL_TAG_BOOST },
@@ -437,16 +437,16 @@ ret1:
             }
 
             // recurrance boost -- scale sum of all other boosts relative to direct recurrances of the term in other terms
-            SetTagsRepeatedCount(all);
-            foreach (var t in all.Where(p => p.term.name.Length > 3).OrderByDescending(p => p.appearance_count).Take(3)) {
-                if (t.appearance_count > 1) {
-                    var boost = t.tss * 0.5
-                                * Math.Pow((double)t.appearance_count, 0.45)
-                                ;
-                    t.candidate_reason += $" >>> RECURRING({(int)boost}:{t.tss}:{t.appearance_count}) ";
-                    t.tss += boost;
-                }
-            }
+            //SetTagsRepeatedCount(all);
+            //foreach (var t in all.Where(p => p.term.name.Length > 3).OrderByDescending(p => p.appearance_count).Take(3)) {
+            //    if (t.appearance_count > 1) {
+            //        var boost = t.tss * 0.5
+            //                    * Math.Pow((double)t.appearance_count, 0.05)
+            //                    ;
+            //        t.candidate_reason += $" >>> RECURRING({(int)boost}:{t.tss}:{t.appearance_count}) ";
+            //        t.tss += boost;
+            //    }
+            //}
 
             // normalize TSS
             var max_tss = url_terms.Count > 0 ? url_terms.Max(p => p.tss) : 0;

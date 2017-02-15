@@ -159,7 +159,7 @@ namespace wowmao
                         x.meta_title,
                         x.nlp_suitability_score?.ToString(),
                         x.url_term.Count().ToString(),
-                        string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.0")}]")),//"-",
+                        string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.00")}]")),//"-",
                         "-",
                         "-",
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),

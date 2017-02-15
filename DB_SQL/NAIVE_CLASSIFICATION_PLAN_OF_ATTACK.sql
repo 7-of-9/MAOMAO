@@ -8,7 +8,7 @@ from user_url_classification uuc, user_url uu, term t, url_term ut, url u
 where uuc.term_id = t.id and uu.id = uuc.user_url_id and
 ut.url_id = uu.urlId and ut.term_id = t.id and
 u.id = uu.urlId
-order by user_url_id
+order by user_url_id, pri
 
 -- delete from user_url_classification
 
@@ -21,5 +21,7 @@ order by user_url_id
 --	  first: want image extraction -- could be done as part of processing
 --	   also: extract nlp_suitability_score -- trivial exclude URLs in DB
 --
+-- (2) UPDATE: doesn't work -- see CalculatePathsToRoot_Test1() for latest thinking
+--		 wiki tree is solid, just needs more work -- it will be the basis...
 
 alter table url_term add  S float null
