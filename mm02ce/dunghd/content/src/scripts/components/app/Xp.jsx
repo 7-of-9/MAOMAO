@@ -34,9 +34,11 @@ class Xp extends Component {
 
   constructor(props) {
     super(props);
+    this.closePopup = this.closePopup.bind(this);
     this.state = {
-      scoreAnimate: styles.bounceInRight,
-      textAnimate: styles.bounceInUp,
+      show: false,
+      textAnimate: {},
+      scoreAnimate: {},
     };
   }
 
@@ -84,18 +86,30 @@ class Xp extends Component {
   componentWillReceiveProps(nextProps) {
     console.log('componentWillReceiveProps', nextProps);
     if (this.props.xp.score !== nextProps.xp.score || this.props.xp.text !== nextProps.xp.text) {
-      this.setState({
-        textAnimate: styles.bounceOutUp,
-        scoreAnimate: styles.bounceOutUp,
-      }, () => {
-        setTimeout(() => {
-          this.setState({
-            textAnimate: styles.bounceInUp,
-            scoreAnimate: styles.bounceInRight,
-          });
-        }, 1000);
-      });
+      if (this.state.show) {
+        this.setState({
+          textAnimate: styles.bounceOutUp,
+          scoreAnimate: styles.bounceOutUp,
+        }, () => {
+          setTimeout(() => {
+            this.setState({
+              textAnimate: styles.bounceInUp,
+              scoreAnimate: styles.bounceInRight,
+            });
+          }, 1000);
+        });
+      } else {
+        this.state = {
+          scoreAnimate: styles.bounceInRight,
+          textAnimate: styles.bounceInUp,
+          show: true,
+        };
+      }
     }
+  }
+
+  closePopup() {
+    this.setState({ show: false });
   }
 
   render() {
@@ -103,8 +117,9 @@ class Xp extends Component {
       key => <span key={key} style={styles[key]} />,
     );
     return (
-      <div className="blurred" style={{ display: this.props.xp.score > 0 ? 'block' : 'none', transform: `scale(${this.props.scale})` }}>
-        <ToggleDisplay if={this.props.xp.score > 0}>
+      <div className="blurred" style={{ display: this.state.show ? 'block' : 'none', transform: `scale(${this.props.scale}) translate(-50%,-50%)` }}>
+        <div className="inner_bg">
+          <a onClick={this.closePopup} className="close_button" />
           {dummies}
           <div style={this.state.textAnimate} className="nlp_topic">{this.props.xp.text}</div>
           <div
@@ -113,8 +128,8 @@ class Xp extends Component {
           >
             +<CountUp start={0} end={this.props.xp.score} redraw={false} /> XP
         </div>
-        </ToggleDisplay>
-        <div id="html2canvas" />
+          <div id="html2canvas" />
+        </div>
       </div>
     );
   }
