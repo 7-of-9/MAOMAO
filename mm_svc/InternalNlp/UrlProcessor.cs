@@ -17,7 +17,7 @@ namespace mm_svc
     /// <summary>
     /// Calculates topic specific scores (TSS) for url_terms
     /// </summary>
-    public class TssProduction
+    public class UrlProcessor
     {
         private IEnumerable<url_term> tags;
         private IEnumerable<url_term> entities;
@@ -56,11 +56,11 @@ namespace mm_svc
         //
         // (1) Processes and stores Url TSS and returns url_terms with TSS scores.
         // (2) Maps and stores high TSS terms to wiki (golden) terms.
-        // (3) Calculates and stores paths to root for mapped wiki terms.
+        // (3) [Calculates and stores paths to root for mapped wiki terms]
         //
         // returns all from store, if present, unless reprocess_tss == true
         //
-        public List<url_term> GetUrlTSS(long url_id, bool reprocess_tss = false)
+        public List<url_term> ProcessUrl(long url_id, bool reprocess_tss = false, bool run_l2_boost = false)
         {
             using (var db = mm02Entities.Create())
             {
@@ -73,6 +73,21 @@ namespace mm_svc
                     goto ret1; 
                 }
 
+                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+
+                // extract meta
+                if (!string.IsNullOrEmpty(url.meta_all) && meta_all != null) {
+                    var nlp_suitability_score = meta_all.nlp_suitability_score;
+                    var img_url = meta_all.ip_thumbnail_url
+                               ?? meta_all.og_image
+                               ?? meta_all.tw_image_src
+                               ?? meta_all.tw_image;
+                    if (img_url != null && !string.IsNullOrEmpty(img_url.ToString()) && img_url.ToString().Length <= 512)
+                        url.img_url = img_url;
+                    url.nlp_suitability_score = nlp_suitability_score;
+                    db.SaveChangesTraceValidationErrors();
+                }
+
                 // get underlying Calais url-terms - tracking references
                 var l1_calais_terms = db.url_term
                                         .Include("term").Include("term.term_type").Include("term.cal_entity_type")
@@ -83,19 +98,24 @@ namespace mm_svc
                                               && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
 
                 // write TSS values for Calais terms
-                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
-                CalcTSS(meta_all, l1_calais_terms, run_l2_boost: true);
+                CalcTSS(meta_all, l1_calais_terms, run_l2_boost);
 
                 l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
 
                 // store mapped wiki golden_terms -- perf: faster lookup later
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
 
+                //
                 // calc and store all paths to root for mapped golden terms -- again, perf later for dynamic categorization
-                //foreach (var wiki_url_term in url.url_term.Where(p => p.wiki_S != null))
-                Parallel.ForEach(url.url_term.Where(p => p.wiki_S != null), wiki_url_term =>{
-                    Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
-                });
+                // UPDATE: maybe don't need this (it is mega expensive)
+                // INSTEAD: record top 1-2 naive TSS terms per URL - this becomes initial naive classification
+                //          when set of URLs > threshold no.
+                //              calc DISTANCE between top naive classifications, in wiki tree
+                //              if distance < threshold, then can group the naive terms together?
+                //
+                //Parallel.ForEach(url.url_term.Where(p => p.wiki_S != null), wiki_url_term =>{
+                //    Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
+                //});
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms

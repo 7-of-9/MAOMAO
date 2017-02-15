@@ -16,11 +16,13 @@ namespace tests
         public void CalculatePathsToRoot_Test1()
         {
             // todo... rerun/tune these after full import is done...
-            
+
+            GoldenPaths.CalculatePathsToRoot(5131916); // tom and jerry
+
             //GoldenPaths.CalculatePathsToRoot(5078100); // superheroes
             //GoldenPaths.CalculatePathsToRoot(5249821); // batman
             //GoldenPaths.CalculatePathsToRoot(5209410); // american feminists
-            GoldenPaths.CalculatePathsToRoot(5871074); // hypertrophy
+            //GoldenPaths.CalculatePathsToRoot(5871074); // hypertrophy
             //GoldenPaths.CalculatePathsToRoot(8080633); // french defence
         }
 

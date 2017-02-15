@@ -12,20 +12,16 @@ namespace mmdb_model
     using System;
     using System.Collections.Generic;
     
-    public partial class url_term
+    public partial class user_url_classification
     {
         public long id { get; set; }
-        public long url_id { get; set; }
+        public long user_url_id { get; set; }
         public long term_id { get; set; }
-        public Nullable<double> cal_topic_score { get; set; }
-        public Nullable<int> cal_socialtag_importance { get; set; }
-        public Nullable<double> cal_entity_relevance { get; set; }
-        public Nullable<double> wiki_S { get; set; }
-        public string candidate_reason { get; set; }
-        public Nullable<double> tss { get; set; }
-        public Nullable<double> tss_norm { get; set; }
+        public short pri { get; set; }
+        public long user_id { get; set; }
     
         public virtual term term { get; set; }
-        public virtual url url { get; set; }
+        public virtual user_url user_url { get; set; }
+        public virtual user user { get; set; }
     }
 }

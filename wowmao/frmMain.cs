@@ -15,6 +15,7 @@ using mm_svc.Terms;
 using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
 using mm_svc;
+using System.Collections;
 
 namespace wowmao
 {
@@ -34,11 +35,10 @@ namespace wowmao
 
             Correlations.OnCacheAdd += Correlations_cache_add;
             InitializeComponent();
-            this.cboTop.SelectedIndex = 1;
-            this.ttAll.XX_max_L1 = 10;
+            this.cboTop.SelectedIndex = 2;
             InitTvwRootNodes();
 
-            txtUrlSearch.SelectedIndex = 1;
+            //txtUrlSearch.SelectedIndex = 1;
 
             //this.gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
@@ -46,6 +46,33 @@ namespace wowmao
 
             this.wikiGoldTree.OnGtsLoaded += WikiGoldTree_OnGtsLoaded;
             this.wikiGoldTree.OnSearchGoogle += WikiGoldTree_OnSearchGoogle;
+
+            this.lvwUrls.ColumnClick += LvwUrls_ColumnClick;
+        }
+
+        private void LvwUrls_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            this.lvwUrls.ListViewItemSorter = new ListViewItemComparer(e.Column);
+            lvwUrls.Sort();
+        }
+        class ListViewItemComparer : IComparer
+        {
+            private int col;
+            public ListViewItemComparer()
+            {
+                col = 0;
+            }
+            public ListViewItemComparer(int column)
+            {
+                col = column;
+            }
+            public int Compare(object x, object y)
+            {
+                int returnVal = -1;
+                returnVal = String.Compare(((ListViewItem)x).SubItems[col].Text,
+                ((ListViewItem)y).SubItems[col].Text);
+                return returnVal;
+            }
         }
 
         protected override void OnHandleCreated(EventArgs e)
@@ -129,12 +156,14 @@ namespace wowmao
                         x.id.ToString(),
                         x.url1,
                         x.meta_title,
+                        x.nlp_suitability_score?.ToString(),
                         x.url_term.Count().ToString(),
-                        "-",
+                        string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.0")}]")),//"-",
                         "-",
                         "-",
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
                         x.processed_golden_count.ToString(),
+                        x.img_url,
                     });
                     item.Tag = x;
                     items.Add(item);
@@ -160,9 +189,6 @@ namespace wowmao
             this.Cursor = Cursors.WaitCursor;
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 root_term = db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
-                ttAll.Nodes.Clear();
-                //ttAll.AddRootTerm(root_term);
-                //ttAll.SelectedNode = ttAll.Nodes[0];
                 this.db_name = "winmao ~ " + db.Database.Connection.Database;
                 SetCaption();
             }
@@ -195,17 +221,18 @@ namespace wowmao
 
             // get meta
             dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
-            //string pretty_meta_all = JsonConvert.SerializeObject(meta_all, Formatting.Indented);
+            string pretty_meta_all = JsonConvert.SerializeObject(meta_all, Formatting.Indented);
             txtInfo.Text = "html_title: " + meta_all.html_title.ToString() + "\r\n" +
-                           "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n";
+                           "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n" +
+                           "pretty_meta_all: " + (pretty_meta_all ?? "").ToString() + "\r\n";
 
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 
                 //
                 // ** ProcessTss **
                 //
-                var tss = new mm_svc.TssProduction();
-                var l1_url_terms = tss.GetUrlTSS(url.id, reprocess_tss: chkReprocess.Checked);
+                var tss = new mm_svc.UrlProcessor();
+                var l1_url_terms = tss.ProcessUrl(url.id, reprocess_tss: chkReprocess.Checked);
 
                 // (1) get url_terms (L1 terms)
                 /*if (this.url_term_cache.ContainsKey(url.id))
@@ -499,7 +526,7 @@ namespace wowmao
 
         private void wikiGoldTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            // calculate paths to root - important!
+            // calculate paths to root...
             if (wikiGoldTree.SelectedNode == null) return;
             var gt = wikiGoldTree.SelectedNode.Tag as golden_term;
             var root_paths = GoldenPaths.CalculatePathsToRoot(gt.child_term_id);
@@ -510,7 +537,6 @@ namespace wowmao
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
-            var tag = lvwUrlTerms.SelectedItems[0].Tag as TermList.lvwUrlTermTag;
 
             // l2 terms - obsolete?
             //var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
@@ -522,10 +548,22 @@ namespace wowmao
             //}
 
             this.txtPathsToRoot2.Text = "";
-            var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
-            root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name + " #NS=" + p2.wiki_nscount)) + "\r\n"));
+            var all_root_paths = new List<List<term>>();
+            foreach (var lvi in lvwUrlTerms.Items)
+            {
+                var tag = ((ListViewItem)lvi).Tag as TermList.lvwUrlTermTag;
+                if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
+                    tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
+                {
+                    var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
+                    root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name + " #NS=" + p2.wiki_nscount)) + "\r\n"));
 
-            var path_term_counts = GoldenPaths.GetPathTermCounts(root_paths);
+                    foreach (var root_path in root_paths)
+                        all_root_paths.Add(root_path);
+                }
+            }
+
+            var path_term_counts = GoldenPaths.GetPathTermCounts(all_root_paths);
             this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
             foreach (var kvp in path_term_counts.Take(10))
                 this.txtPathsToRoot2.Text += $"\t{kvp.Key.name} / similar_count={kvp.Value.similar_count} / distances_from_leaf=[{string.Join(",", kvp.Value.distances_from_leaf)}] score={kvp.Value.score.ToString("0.0000")}\r\n";
@@ -534,6 +572,36 @@ namespace wowmao
 
         private void wikiGoldTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+        }
+
+        // naive classification -- pick random urls, classify -- simulate full user flow
+        // (1) add to user_url table
+        // (2) classify naive
+        //...
+        private void cmdWalkRndClassify_Click(object sender, EventArgs e)
+        {
+            var user_id = 5;
+            using (var db = mm02Entities.Create())
+            {
+                db.user_url.RemoveRange(db.user_url.Where(p => p.userId == user_id));
+                db.SaveChangesTraceValidationErrors();
+
+                var rnd = new Random();
+                for (int i = 0; i < 100; i ++)
+                {
+                    var lvi = this.lvwUrls.Items[rnd.Next(lvwUrls.Items.Count)];
+                    var url = lvi.Tag as url;
+
+                    int new_classifications, reused_classifications;
+                    var classifications = mm_svc.UrlClassifier.ClassifyUrl(url.id, user_id, out new_classifications, out reused_classifications);
+
+                    this.txtOut.AppendText($"{url.meta_title} - {url.url1} - new: {new_classifications} / reused: {reused_classifications}\r\n");
+                    foreach (var classification in classifications) {
+                        var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id).Single();
+                        this.txtOut.AppendText($"\t{url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S}\r\n");
+                    }
+                }
+            }
         }
     }
 }

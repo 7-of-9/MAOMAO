@@ -114,7 +114,7 @@ namespace mmapi00.Controllers
             if (history.url == null) return BadRequest("missing url");
             if (history.userId == null) return BadRequest("missing user id");
 
-            var history_id = mm_svc.User.UserHistory.TrackingByUrl(
+            var history_id = mm_svc.User.UserHistory.TrackUrl(
                 (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
 
             return Ok( new { id = history_id });

@@ -14,6 +14,12 @@ namespace mmdb_model
     
     public partial class user_url
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public user_url()
+        {
+            this.user_url_classification = new HashSet<user_url_classification>();
+        }
+    
         public long id { get; set; }
         public long userId { get; set; }
         public long urlId { get; set; }
@@ -24,5 +30,7 @@ namespace mmdb_model
     
         public virtual user user { get; set; }
         public virtual url url { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<user_url_classification> user_url_classification { get; set; }
     }
 }

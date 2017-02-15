@@ -102,8 +102,8 @@ namespace mm_svc.Terms
                 parent_mmcat_level = orig_mmcat_level = links.Max(p => p.mmcat_level);
 
             Parallel.ForEach(
-                links.Where(p => p.mmcat_level <= parent_mmcat_level                // link is higher than parent (closer to root)
-                            //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3) // or significant node, within 3 hops from start of path
+                links.Where(p => p.mmcat_level <= parent_mmcat_level + 0              // link is higher than parent (closer to root)
+                            //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
                                )
                 //ordered.Take(this_n)
                 , new ParallelOptions() { MaxDegreeOfParallelism = 1 }, link =>
@@ -125,8 +125,8 @@ namespace mm_svc.Terms
 
                 // recurse
                 RecurseParents(root_paths, new_path, link.parent_term_id, orig_term_id,
-                    //link.mmcat_level <= parent_mmcat_level ?
-                        link.mmcat_level - 1
+                        //link.mmcat_level <= parent_mmcat_level ?
+                        parent_mmcat_level: link.mmcat_level - 1
                     // : orig_mmcat_level
                 );
             });

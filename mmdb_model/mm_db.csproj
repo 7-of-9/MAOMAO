@@ -118,6 +118,9 @@
     <Compile Include="user_url.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="user_url_classification.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="wiki_catlink.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

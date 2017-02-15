@@ -56,9 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classifier\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />
     <Compile Include="Info\SiteInfo.cs" />
-    <Compile Include="InternalNlp\TssProduction.cs" />
+    <Compile Include="InternalNlp\UrlProcessor.cs" />
     <Compile Include="InternalNlp\Porter2_English.cs" />
     <Compile Include="InternalNlp\Utils\Words.cs" />
     <Compile Include="InternalNlp\Utils\Word.cs" />

@@ -22,8 +22,8 @@ namespace mmdb_model
         public Nullable<long> url_id { get; set; }
         public bool from_wiki { get; set; }
     
-        public virtual url url { get; set; }
         public virtual term term { get; set; }
         public virtual term term1 { get; set; }
+        public virtual url url { get; set; }
     }
 }
