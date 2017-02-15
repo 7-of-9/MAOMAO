@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
-import { bounceInUp, bounceInRight } from 'react-animations';
+import { merge, bounceInUp, bounceInRight, zoomOutUp } from 'react-animations';
 import Radium from 'radium';
 import ToggleDisplay from 'react-toggle-display';
 import html2canvas from 'html2canvas';
@@ -10,6 +10,8 @@ import $ from 'jquery';
 window.jQuery = $;
 
 require('../../vendors/vague');
+
+const xpAnimate = merge(zoomOutUp, bounceInUp);
 
 const styles = {
   bounceInUp: {
@@ -22,9 +24,20 @@ const styles = {
     animationName: Radium.keyframes(bounceInRight, 'bounceInRight'),
     animationDuration: '3s',
   },
+  zoomOutUp: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(zoomOutUp, 'zoomOutUp'),
+    animationDuration: '3s',
+  },
+  xpAnimate: {
+    animation: 'x 1s',
+    animationName: Radium.keyframes(xpAnimate, 'xpAnimate'),
+    animationDuration: '3s',
+  },
 };
 
 class Xp extends Component {
+
   componentDidMount() {
     console.log('componentDidMount');
     const $window = $(window);
@@ -50,27 +63,28 @@ class Xp extends Component {
         } catch (err) {
           console.warn('blur err', err);
           console.log('fallback to vaguejs');
-          $('canvas').replaceWith(`<iframe width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
+          $blurred.find('canvas').replaceWith(`<iframe id="blurFrame" style="dipslay:none;" width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
           const vague = $blurred.find('iframe').Vague({ intensity: 5 });
           vague.blur();
 
           const scrollIframe = () => {
-            $blurred.find('iframe').css({
+            $blurred.find('#blurFrame').css({
               top: -$blurred.offset().top,
             });
           };
-          $window.on('scroll', scrollIframe);
           scrollIframe();
+          $window.on('scroll', scrollIframe);
         }
       });
     });
   }
+
   render() {
     const dummies = Object.keys(styles).map(
       key => <span key={key} style={styles[key]} />,
     );
     return (
-      <div className="blurred" style={{ display: this.props.xp.score ? 'block' : 'none' }}>
+      <div className="blurred" style={{ display: this.props.xp.score > 0 ? 'block' : 'none' }}>
         <ToggleDisplay if={this.props.xp.score > 0}>
           {dummies}
           <div style={styles.bounceInUp} className="nlp_topic">{this.props.xp.text}</div>

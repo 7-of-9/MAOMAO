@@ -64,14 +64,13 @@ function onClickHandler(info) {
     switch (info.menuItemId) {
         case 'mm-btn-xp-popup':
             {
-                const data = {
+                store.dispatch({
                     type: 'XP_POPUP',
                     payload: {
                         score: Math.floor(Math.random() * 100) + 1,
                         text: faker.lorem.words(),
                     },
-                };
-                store.dispatch(data);
+                });
             }
             break;
         case 'mm-btn-logout':
