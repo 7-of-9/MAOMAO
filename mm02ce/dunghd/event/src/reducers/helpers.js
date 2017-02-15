@@ -1,7 +1,7 @@
 export function ctxMenuLogin(userInfo, enableTestYoutube) {
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
-        title: 'v0.4.10',
+        title: 'v0.4.11',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
     });
@@ -29,6 +29,16 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
         id: 'mm-btn-xp-popup',
     });
     chrome.contextMenus.create({
+        title: 'Scale XP Popup Up (+0.5)!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-scale-up-popup',
+    });
+    chrome.contextMenus.create({
+        title: 'Scale XP Popup Down (-0.5)!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-scale-down-popup',
+    });
+    chrome.contextMenus.create({
         title: 'Logout',
         contexts: ['browser_action'],
         id: 'mm-btn-logout',
@@ -38,7 +48,7 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
 export function ctxMenuLogout() {
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
-        title: 'v0.4.10',
+        title: 'v0.4.11',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
     });
@@ -51,5 +61,15 @@ export function ctxMenuLogout() {
         title: 'Test XP Popup!',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-popup',
+    });
+    chrome.contextMenus.create({
+        title: 'Scale XP Popup Up (+0.5)!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-scale-up-popup',
+    });
+    chrome.contextMenus.create({
+        title: 'Scale XP Popup Down (-0.5)!',
+        contexts: ['browser_action'],
+        id: 'mm-btn-xp-scale-down-popup',
     });
 }
