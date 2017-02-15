@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
-import { merge, bounceInUp, bounceInRight, zoomOutUp } from 'react-animations';
+import { bounceInUp, bounceInRight, bounceOutUp } from 'react-animations';
 import Radium from 'radium';
 import ToggleDisplay from 'react-toggle-display';
 import html2canvas from 'html2canvas';
@@ -11,7 +11,6 @@ window.jQuery = $;
 
 require('../../vendors/vague');
 
-const xpAnimate = merge(zoomOutUp, bounceInUp);
 
 const styles = {
   bounceInUp: {
@@ -24,19 +23,22 @@ const styles = {
     animationName: Radium.keyframes(bounceInRight, 'bounceInRight'),
     animationDuration: '3s',
   },
-  zoomOutUp: {
-    animation: 'x 1s',
-    animationName: Radium.keyframes(zoomOutUp, 'zoomOutUp'),
-    animationDuration: '3s',
-  },
-  xpAnimate: {
-    animation: 'x 1s',
-    animationName: Radium.keyframes(xpAnimate, 'xpAnimate'),
-    animationDuration: '3s',
+  bounceOutUp: {
+    animation: 'x',
+    animationName: Radium.keyframes(bounceOutUp, 'bounceOutUp'),
+    animationDuration: '4s',
   },
 };
 
 class Xp extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      scoreAnimate: styles.bounceInRight,
+      textAnimate: styles.bounceInUp,
+    };
+  }
 
   componentDidMount() {
     console.log('componentDidMount');
@@ -79,6 +81,23 @@ class Xp extends Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    console.log('componentWillReceiveProps', nextProps);
+    if (this.props.xp.score !== nextProps.xp.score || this.props.xp.text !== nextProps.xp.text) {
+      this.setState({
+        textAnimate: styles.bounceOutUp,
+        scoreAnimate: styles.bounceOutUp,
+      }, () => {
+        setTimeout(() => {
+          this.setState({
+            textAnimate: styles.bounceInUp,
+            scoreAnimate: styles.bounceInRight,
+          });
+        }, 1000);
+      });
+    }
+  }
+
   render() {
     const dummies = Object.keys(styles).map(
       key => <span key={key} style={styles[key]} />,
@@ -87,12 +106,12 @@ class Xp extends Component {
       <div className="blurred" style={{ display: this.props.xp.score > 0 ? 'block' : 'none' }}>
         <ToggleDisplay if={this.props.xp.score > 0}>
           {dummies}
-          <div style={styles.bounceInUp} className="nlp_topic">{this.props.xp.text}</div>
+          <div style={this.state.textAnimate} className="nlp_topic">{this.props.xp.text}</div>
           <div
-            style={styles.bounceInRight}
+            style={this.state.scoreAnimate}
             className="nlp_score"
           >
-            +<CountUp start={0} end={this.props.xp.score} /> XP
+            +<CountUp start={0} end={this.props.xp.score} redraw={false} /> XP
         </div>
         </ToggleDisplay>
         <div id="html2canvas" />
