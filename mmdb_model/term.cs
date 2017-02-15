@@ -14,6 +14,7 @@ namespace mmdb_model
     
     public partial class term
     {
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public term()
         {

@@ -53,6 +53,7 @@ namespace mm_svc
                 {
                     // previous classifications; take top n common terms over threshold
                     var previous_terms_over_threshold = GetOrderedTermsOverThreshold(url_terms_previously_classified).Take(N_MAX).ToList();
+                    previous_terms_over_threshold.ForEach(p => p.reused_classification = true);
 
                     // weight by previous classification count?
                     //...
@@ -77,7 +78,8 @@ namespace mm_svc
                         term_id = term.id,
                         user_id = user_id,
                         user_url_id = user_url_id,
-                        pri = ++pri
+                        pri = ++pri,
+                        reused = term.reused_classification,
                     };
                     user_url_classifications.Add(user_url_classification);
                 }

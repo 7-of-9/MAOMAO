@@ -586,7 +586,9 @@ namespace wowmao
                 db.user_url.RemoveRange(db.user_url.Where(p => p.userId == user_id));
                 db.SaveChangesTraceValidationErrors();
 
+                var summary = new Dictionary<term, List<url>>();
                 var rnd = new Random();
+                this.txtOut.Text = "";
                 for (int i = 0; i < 100; i ++)
                 {
                     var lvi = this.lvwUrls.Items[rnd.Next(lvwUrls.Items.Count)];
@@ -598,7 +600,23 @@ namespace wowmao
                     this.txtOut.AppendText($"{url.meta_title} - {url.url1} - new: {new_classifications} / reused: {reused_classifications}\r\n");
                     foreach (var classification in classifications) {
                         var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id).Single();
-                        this.txtOut.AppendText($"\t{url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S}\r\n");
+                        this.txtOut.AppendText($"\t{url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S} reused={classification.reused}\r\n");
+                    }
+
+                    var summary_term = classifications.First().term;
+                    if (!summary.ContainsKey(summary_term))
+                        summary.Add(summary_term, new List<url> { url });
+                    else
+                        summary[summary_term].Add(url);
+                }
+
+                this.txtOut.AppendText("\r\n***\r\n");
+                foreach (var key in summary.Keys)
+                {
+                    this.txtOut.AppendText($"** {key} **\r\n");
+                    foreach (var url in summary[key])
+                    {
+                        this.txtOut.AppendText($"\t -> {url.meta_title} {url.url1}\r\n");
                     }
                 }
             }
