@@ -62,6 +62,20 @@ chrome.contextMenus.removeAll();
 // NOTE: Handler all browser action events
 function onClickHandler(info) {
     switch (info.menuItemId) {
+        case 'mm-btn-xp-scale-up-popup':
+            {
+                store.dispatch({
+                    type: 'XP_POPUP_SCALE_UP',
+                });
+            }
+            break;
+        case 'mm-btn-xp-scale-down-popup':
+            {
+                store.dispatch({
+                    type: 'XP_POPUP_SCALE_DOWN',
+                });
+            }
+            break;
         case 'mm-btn-xp-popup':
             {
                 store.dispatch({

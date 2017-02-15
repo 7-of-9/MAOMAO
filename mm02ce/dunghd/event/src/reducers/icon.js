@@ -7,10 +7,15 @@ const initialState = {
         score: 0,
         text: '',
     },
+    scale: 1.0,
 };
 
 export default (state = initialState, action, auth) => {
     switch (action.type) {
+        case 'XP_POPUP_SCALE_UP':
+            return Object.assign({}, state, { scale: state.scale + 0.5 });
+        case 'XP_POPUP_SCALE_DOWN':
+            return Object.assign({}, state, { scale: state.scale - 0.5 });
         case 'XP_POPUP':
             return Object.assign({}, state, { xp: action.payload });
         case 'YOUTUBE_TEST':

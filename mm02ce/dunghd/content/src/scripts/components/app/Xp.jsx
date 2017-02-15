@@ -103,7 +103,7 @@ class Xp extends Component {
       key => <span key={key} style={styles[key]} />,
     );
     return (
-      <div className="blurred" style={{ display: this.props.xp.score > 0 ? 'block' : 'none' }}>
+      <div className="blurred" style={{ display: this.props.xp.score > 0 ? 'block' : 'none', transform: `scale(${this.props.scale})` }}>
         <ToggleDisplay if={this.props.xp.score > 0}>
           {dummies}
           <div style={this.state.textAnimate} className="nlp_topic">{this.props.xp.text}</div>
@@ -122,6 +122,7 @@ class Xp extends Component {
 
 Xp.propTypes = {
   xp: PropTypes.object.isRequired,
+  scale: PropTypes.number.isRequired,
 };
 
 export default Radium(Xp);

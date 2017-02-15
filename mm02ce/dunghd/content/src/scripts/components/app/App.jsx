@@ -202,7 +202,7 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp xp={this.props.icon.xp} />
+          <Xp xp={this.props.icon.xp} scale={this.props.icon.scale} />
         </div>
       </StyleRoot>
     );
