@@ -31,6 +31,7 @@ const styles = {
 
 const resetFontSize = () => {
   $('.blurred').find('.nlp_score').css('font-size', '100%');
+  $('body').children().not('#maomao-extension-anchor').css('opacity', '1');
 };
 
 class Xp extends Component {
@@ -107,13 +108,10 @@ class Xp extends Component {
           show: true,
         };
       }
+      $('.blurred').find('.nlp_score').css('font-size', '120%');
+      $('body').children().not('#maomao-extension-anchor').css('opacity', '0.6');
+      $(window).scrollTop($(window).scrollTop() + 1);
     }
-  }
-
-  componentDidUpdate() {
-    // Display overlay on top for blur background
-    $(window).scrollTop($(window).scrollTop());
-    $('.blurred').find('.nlp_score').css('font-size', '120%');
   }
 
   closePopup() {
