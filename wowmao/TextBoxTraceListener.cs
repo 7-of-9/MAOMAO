@@ -22,7 +22,7 @@ namespace wowmao
         {
 
             Action append = delegate () {
-                output.AppendText(string.Format("[{0}] ", DateTime.Now.ToString()));
+                //output.AppendText(string.Format("[{0}] ", DateTime.Now.ToString()));
                 output.AppendText(message);
             };
             if (output.InvokeRequired)

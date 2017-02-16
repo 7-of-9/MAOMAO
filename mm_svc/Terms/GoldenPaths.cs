@@ -14,7 +14,7 @@ namespace mm_svc.Terms
         //
         // Parses stored paths to root to List<List<term>>
         //
-        public static List<List<term>> ParseStoredPathsToRoot(term term) // expects populated gt_path
+        public static List<List<term>> ParseStoredPathsToRoot(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
         {
             var path_data = term.paths_to_root.ToList();
             var paths = new List<List<term>>();
@@ -30,44 +30,128 @@ namespace mm_svc.Terms
         }
 
         //
-        // Counts distinct occurances of path terms, across multiple paths
+        // Process paths to root - finds one or more suggested parent category hierarchies (parent chains) for the supplied leaf term paths to root.
         //
-        public class PathTermCountInfo { public int similar_count; public double score; public List<int> distances_from_leaf = new List<int>(); }
-        public static Dictionary<term, PathTermCountInfo> GetPathTermCounts(List<List<term>> root_paths)
-        {
-            var ret = new Dictionary<term, PathTermCountInfo>();
-            foreach(var path in root_paths.Except(root_paths.Where(p => p.Any(p2 => p2.name == "Living people")))) {
-                int distance_from_leaf = 0;
-                foreach(var term in path.Skip(1).Take(path.Count - 2)) // skip leaf and root terms (both are common to all paths)
-                {
-                    distance_from_leaf++;
-                    var dict_term = ret.Keys.Where(p => p.id == term.id).SingleOrDefault();
-                    if (dict_term == null)
-                    {
-                        ret.Add(term, new PathTermCountInfo() { similar_count = 1, score = 0 });
-                        ret[term].distances_from_leaf.Add(distance_from_leaf);
-                    }
-                    else
-                    {
-                        ret[dict_term].similar_count++;
-                        ret[dict_term].distances_from_leaf.Add(distance_from_leaf);
+        // (1) looking for maximum (n=2) parent cats in a given parent chain.
+        // 
+        // (1.1) using NS_weighted_norm over threshold as trigger for parent category candidate.
+        //
+        // (2) can be multiple parent chains, e.g. (1) Superheroes // ... Science fiction #NS=9 
+        //                                         (2) Superheroes // ... Heroes #NS=9
+        //
+        // (3) exclusions -- hard code for now? e.g. People #NS=11 -- stop looking up root path if we hit an excluded term
+        // 
+        //
 
-                        // weight the score mod for this common term: inversely proportional to distance from the leaf,
-                        // i.e. closer the common term is to the root, the less score it gets
-                        double score_mod = (dict_term.wiki_nscount ?? 0) / (Math.Pow((double)distance_from_leaf, 4));
-                        ret[dict_term].score += score_mod;
-                    }
+        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Exact = new List<string>() { "People", "Years", };
+        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() { "People by", " people", " by ",  };
+        public static void ProcessPathsToRoot(List<List<term>> root_paths)
+        {
+            // expects: all paths to root to be for the same leaf term!
+            var distinct_leaf_terms = root_paths.Select(p => p.First().id);
+            if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
+
+            // remove any paths containing any exclusion terms (different to what ProcessRootPath does - it removes only individual terms from paths)
+            root_paths = root_paths.Where(p => !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Exact.Contains(p2.name))
+                                            && !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Contains.Any(p3 => p2.name.Contains(p3)))
+                                            ).ToList();
+
+            // removes excluded terms & calculate normalized NS# values for each term in each path
+            foreach (var root_path in root_paths)
+                ProcessRootPath(root_path);
+
+            if (root_paths.Count == 0) { return; } 
+
+            // dedupe resulting root paths
+            var a = root_paths.GroupBy(c => String.Join(",", c.Select(p => p.id)));
+            var b = a.Select(c => c.First().ToList()).ToList();
+            root_paths = b;
+
+            // for each distinct level in the multiple paths to root, see which root path has high NS_norms
+            var max_levels = Math.Min(root_paths.Max(p => p.Count), 3); // don't look beyond level n
+            for (var level = 1; level < max_levels; level++) {
+                var high_ns_norm_paths = new List<List<term>>();
+                foreach (var path in root_paths) {
+                    if (path.Count <= level) continue;
+                    if (path[level].NS_norm > 0.3) { high_ns_norm_paths.Add(path); }
                 }
+
+                Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
+                foreach(var high_ns_norm_path in high_ns_norm_paths)
+                    Trace.WriteLine("\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
             }
-            return ret.OrderByDescending(p => p.Value.score).ToDictionary((key) => key.Key, (value) => value.Value);
         }
+
+
+        private static List<string> ProcessRootPath_ExclusionTerms_Exact = new List<string>() { "People", };
+        private static List<string> ProcessRootPath_ExclusionTerms_Contains = new List<string>() { "People by", " people", };
+        public static bool ProcessRootPath(List<term> root_path)
+        {
+            const int MIN_WIKI_NSCOUNT = 3;
+            var leaf_term = root_path[0];
+
+            if (root_path.Any(p => p.wiki_nscount == null)) return false;
+
+            // remove terms under min. NS#
+            root_path.RemoveAll(p => p.wiki_nscount < MIN_WIKI_NSCOUNT && p.id != leaf_term.id);
+
+            // remove excluded terms
+            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Exact.Contains(p.name));
+            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Contains.Any(p2 => p.name.Contains(p2)));
+
+            // for each path (may or may not be the same leaf term in supplied paths)
+            //    for each node: calc NS# normalized relative to other NS# in the path
+            //    for each node: calc NS# x (1/level) ("NS_weighted") (& NS_weighted_norm)
+
+            for (int i = 1; i < root_path.Count; i++) {
+                var term = root_path[i];
+                term.NS_norm = (double)term.wiki_nscount / root_path.Max(p => (double)p.wiki_nscount);
+                term.NSLW = (double)term.wiki_nscount * (1.0 / (i*2));
+            }
+            root_path.ForEach(p => p.NSLW_norm = p.NSLW / root_path.Max(p2 => p2.NSLW));
+
+            var child_term = root_path[0];
+            var sum_NSLW = root_path.Sum(p => p.NSLW);
+            Trace.WriteLine(sum_NSLW.ToString("0.0") + " " + leaf_term.name + " // " +
+                string.Join(" / ", root_path.Skip(1).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")
+                ));
+
+            return true;
+        }
+
+   //... Dictionary<term, PathTermCountInfo> //public class PathTermCountInfo { public int similar_count; public double score; public List<int> distances_from_leaf = new List<int>(); }
+        //var ret = new Dictionary<term, PathTermCountInfo>();
+        //foreach(var path in root_paths.Except(root_paths.Where(p => p.Any(p2 => p2.name == "Living people")))) {
+        //    int distance_from_leaf = 0;
+        //    foreach(var term in path.Skip(1).Take(path.Count - 2)) // skip leaf and root terms (both are common to all paths)
+        //    {
+        //        distance_from_leaf++;
+        //        var dict_term = ret.Keys.Where(p => p.id == term.id).SingleOrDefault();
+        //        if (dict_term == null)
+        //        {
+        //            ret.Add(term, new PathTermCountInfo() { similar_count = 1, score = 0 });
+        //            ret[term].distances_from_leaf.Add(distance_from_leaf);
+        //        }
+        //        else
+        //        {
+        //            ret[dict_term].similar_count++;
+        //            ret[dict_term].distances_from_leaf.Add(distance_from_leaf);
+
+        //            // weight the score mod for this common term: inversely proportional to distance from the leaf,
+        //            // i.e. closer the common term is to the root, the less score it gets
+        //            double score_mod = (dict_term.wiki_nscount ?? 0) / (Math.Pow((double)distance_from_leaf, 4));
+        //            ret[dict_term].score += score_mod;
+        //        }
+        //    }
+        //}
+        //return ret.OrderByDescending(p => p.Value.score).ToDictionary((key) => key.Key, (value) => value.Value);
 
         //
         // Calculates paths to root and returns as List<List<term>>
         //
         public static List<List<term>> CalculatePathsToRoot(long child_term_id)
         {
-            var root_paths = new List<List<term>>();
+            var root_paths = new ConcurrentBag<List<term>>();
             using (var db = mm02Entities.Create())
             {
                 var child_term = db.terms.Find(child_term_id);
@@ -80,17 +164,17 @@ namespace mm_svc.Terms
                 //foreach (var root_path in root_paths)
                 //    root_paths_list.Add(root_path.ToList());
 
-                root_paths.ForEach(p => Debug.WriteLine(child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
-                return root_paths;
+                root_paths.ToList().ForEach(p => Debug.WriteLine(child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
+                return root_paths.ToList();
             }
         }
 
         private static void RecurseParents(
-            List<List<term>> root_paths, List<term> path,
+            ConcurrentBag<List<term>> root_paths, List<term> path,
             long term_id,
             long orig_term_id, int? parent_mmcat_level = null, int? orig_mmcat_level = null)
         {
-            Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+            //Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
             
             var links = GetParents(term_id, null);// orig_mmcat_level);
             if (links.Count == 0)
@@ -106,7 +190,7 @@ namespace mm_svc.Terms
                             //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
                                )
                 //ordered.Take(this_n)
-                , new ParallelOptions() { MaxDegreeOfParallelism = 1 }, link =>
+                , new ParallelOptions() { MaxDegreeOfParallelism = 8 }, link =>
             {
                 if (path.Select(p => p.id).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
                     return;

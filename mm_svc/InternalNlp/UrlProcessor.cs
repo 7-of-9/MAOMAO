@@ -106,17 +106,10 @@ namespace mm_svc
                 // store mapped wiki golden_terms -- perf: faster lookup later
                 MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
 
-                //
                 // calc and store all paths to root for mapped golden terms -- again, perf later for dynamic categorization
-                // UPDATE: maybe don't need this (it is mega expensive)
-                // INSTEAD: record top 1-2 naive TSS terms per URL - this becomes initial naive classification
-                //          when set of URLs > threshold no.
-                //              calc DISTANCE between top naive classifications, in wiki tree
-                //              if distance < threshold, then can group the naive terms together?
-                //
-                //Parallel.ForEach(url.url_term.Where(p => p.wiki_S != null), wiki_url_term =>{
-                //    Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
-                //});
+                Parallel.ForEach(url.url_term.Where(p => p.wiki_S != null), wiki_url_term =>{
+                   Terms.GoldenPaths.RecordPathsToRoot(wiki_url_term.term_id);
+                });
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
@@ -127,7 +120,7 @@ ret1:
                                      .Include("term.gt_path_to_root1").Include("term.gt_path_to_root1.term")
                                      .AsNoTracking()
                                      .Where(p => p.url_id == url_id);
-                Debug.WriteLine(qry.ToString());
+                //Debug.WriteLine(qry.ToString());
                 return qry.ToListNoLock();
             }
         }

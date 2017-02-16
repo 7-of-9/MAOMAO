@@ -550,8 +550,9 @@ namespace wowmao
 
             this.txtPathsToRoot2.Text = "";
             var all_root_paths = new List<List<term>>();
-            foreach (var lvi in lvwUrlTerms.Items)
+            //foreach (var lvi in lvwUrlTerms.Items)
             {
+                var lvi = lvwUrlTerms.SelectedItems[0];
                 var tag = ((ListViewItem)lvi).Tag as TermList.lvwUrlTermTag;
                 if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
@@ -564,10 +565,14 @@ namespace wowmao
                 }
             }
 
-            var path_term_counts = GoldenPaths.GetPathTermCounts(all_root_paths);
-            this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
-            foreach (var kvp in path_term_counts.Take(10))
-                this.txtPathsToRoot2.Text += $"\t{kvp.Key.name} / similar_count={kvp.Value.similar_count} / distances_from_leaf=[{string.Join(",", kvp.Value.distances_from_leaf)}] score={kvp.Value.score.ToString("0.0000")}\r\n";
+            TextBoxTraceListener listener = new TextBoxTraceListener(this.txtPathsToRoot2);
+            Trace.Listeners.Add(listener);
+            txtPathsToRoot2.Text = "";
+            GoldenPaths.ProcessPathsToRoot(all_root_paths);
+
+            //this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
+            //foreach (var kvp in path_term_counts.Take(10))
+            //    this.txtPathsToRoot2.Text += $"\t{kvp.Key.name} / similar_count={kvp.Value.similar_count} / distances_from_leaf=[{string.Join(",", kvp.Value.distances_from_leaf)}] score={kvp.Value.score.ToString("0.0000")}\r\n";
         }
 
 

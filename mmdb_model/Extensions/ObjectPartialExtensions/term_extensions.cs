@@ -55,6 +55,10 @@ namespace mmdb_model
 
         //[NotMapped] public bool reused_classification;
 
+        [NotMapped] public double NS_norm;
+        [NotMapped] public double NSLW;  // wiki_nscount_levelweighted;
+        [NotMapped] public double NSLW_norm; // wiki_nscount_levelweighted_normalized
+
         public override string ToString() {
             var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count}";
             if (corr_for_main != null)

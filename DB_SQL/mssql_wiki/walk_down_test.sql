@@ -1,6 +1,7 @@
 
 -- yes, can walk DOWN now we know the best root...
 					
+
 -- counts done...
  select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 5475878... @ d20, ns14||0 [target ~12-14m]
  select count(*) from golden_term -- 17337831... @ d20 NS14||0					  -- 6124828
@@ -73,7 +74,7 @@ select * from golden_term where child_term_id = 456925
 
 select * from term where name = 'tom and jerry'
 
-select * from term where name = 'cartoon'
+select * from term where name = 'wesley so'
  select gt.*, t.name from golden_term gt, term t where t.id = gt.parent_term_id and gt.child_term_id = 5833805
 
  
