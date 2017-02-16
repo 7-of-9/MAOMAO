@@ -13,20 +13,24 @@ require('../../vendors/vague');
 
 const styles = {
   bounceInUp: {
-    animation: 'x 1s',
+    animation: 'x',
     animationName: Radium.keyframes(bounceInUp, 'bounceInUp'),
-    animationDuration: '3s',
+    animationDuration: '2s',
   },
   zoomInUp: {
-    animation: 'x 1s',
+    animation: 'x',
     animationName: Radium.keyframes(zoomInUp, 'zoomInUp'),
-    animationDuration: '3s',
+    animationDuration: '2s',
   },
   bounceOutUp: {
-    animation: 'x 1s',
+    animation: 'x',
     animationName: Radium.keyframes(bounceOutUp, 'bounceOutUp'),
-    animationDuration: '3s',
+    animationDuration: '2s',
   },
+};
+
+const resetFontSize = () => {
+  $('.blurred').find('.nlp_score').css('font-size', '100%');
 };
 
 class Xp extends Component {
@@ -109,6 +113,7 @@ class Xp extends Component {
   componentDidUpdate() {
     // Display overlay on top for blur background
     $(window).scrollTop($(window).scrollTop());
+    $('.blurred').find('.nlp_score').css('font-size', '120%');
   }
 
   closePopup() {
@@ -129,8 +134,8 @@ class Xp extends Component {
             style={this.state.scoreAnimate}
             className="nlp_score"
           >
-            +<CountUp start={0} end={this.props.xp.score} redraw={false} /> XP
-        </div>
+            <CountUp start={0} end={this.props.xp.score} useEasing prefix="+" suffix=" XP" callback={resetFontSize} />
+          </div>
           <div id="html2canvas" />
         </div>
       </div>
