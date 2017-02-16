@@ -81,7 +81,7 @@ function onClickHandler(info) {
                 store.dispatch({
                     type: 'XP_POPUP',
                     payload: {
-                        score: Math.floor(Math.random() * 100) + 1,
+                        score: faker.random.number(),
                         text: faker.lorem.words(),
                     },
                 });
