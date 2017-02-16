@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
-import { bounceInUp, bounceInRight, bounceOutUp } from 'react-animations';
+import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
 import Radium from 'radium';
-import ToggleDisplay from 'react-toggle-display';
 import html2canvas from 'html2canvas';
 import StackBlur from 'stackblur-canvas';
 import $ from 'jquery';
@@ -18,15 +17,15 @@ const styles = {
     animationName: Radium.keyframes(bounceInUp, 'bounceInUp'),
     animationDuration: '3s',
   },
-  bounceInRight: {
+  zoomInUp: {
     animation: 'x 1s',
-    animationName: Radium.keyframes(bounceInRight, 'bounceInRight'),
+    animationName: Radium.keyframes(zoomInUp, 'zoomInUp'),
     animationDuration: '3s',
   },
   bounceOutUp: {
-    animation: 'x',
+    animation: 'x 1s',
     animationName: Radium.keyframes(bounceOutUp, 'bounceOutUp'),
-    animationDuration: '4s',
+    animationDuration: '3s',
   },
 };
 
@@ -43,7 +42,6 @@ class Xp extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     const $window = $(window);
     const $blurred = $('.blurred');
     $(() => {
@@ -62,21 +60,22 @@ class Xp extends Component {
               top: -$blurred.offset().top,
             });
           };
-          scrollIframe();
           $window.on('scroll', scrollIframe);
+          setTimeout(() => {
+            $window.scrollTop($window.scrollTop() + 1);
+          }, 1000);
         } catch (err) {
           console.warn('blur err', err);
           console.log('fallback to vaguejs');
+
           $blurred.find('canvas').replaceWith(`<iframe id="blurFrame" style="dipslay:none;" width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
           const vague = $blurred.find('iframe').Vague({ intensity: 5 });
           vague.blur();
-
           const scrollIframe = () => {
             $blurred.find('#blurFrame').css({
               top: -$blurred.offset().top,
             });
           };
-          scrollIframe();
           $window.on('scroll', scrollIframe);
         }
       });
@@ -84,7 +83,6 @@ class Xp extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps', nextProps);
     if (this.props.xp.score !== nextProps.xp.score || this.props.xp.text !== nextProps.xp.text) {
       if (this.state.show) {
         this.setState({
@@ -94,18 +92,23 @@ class Xp extends Component {
           setTimeout(() => {
             this.setState({
               textAnimate: styles.bounceInUp,
-              scoreAnimate: styles.bounceInRight,
+              scoreAnimate: styles.zoomInUp,
             });
           }, 1000);
         });
       } else {
         this.state = {
-          scoreAnimate: styles.bounceInRight,
+          scoreAnimate: styles.zoomInUp,
           textAnimate: styles.bounceInUp,
           show: true,
         };
       }
     }
+  }
+
+  componentDidUpdate() {
+    // Display overlay on top for blur background
+    $(window).scrollTop($(window).scrollTop());
   }
 
   closePopup() {
