@@ -44,7 +44,7 @@ namespace mm_svc.Terms
         //
 
         private static List<string> ProcessPathsToRoot_ExcludePathsWith_Exact = new List<string>() { "People", "Years", };
-        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() { "People by", " people", " by ",  };
+        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() { "People by", " people", };// " by ",  };
         public static void ProcessPathsToRoot(List<List<term>> root_paths)
         {
             // expects: all paths to root to be for the same leaf term!
@@ -77,8 +77,8 @@ namespace mm_svc.Terms
                 }
 
                 Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
-                foreach(var high_ns_norm_path in high_ns_norm_paths)
-                    Trace.WriteLine("\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
+                foreach(var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm))
+                    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
             }
         }
 
@@ -174,20 +174,29 @@ namespace mm_svc.Terms
             long term_id,
             long orig_term_id, int? parent_mmcat_level = null, int? orig_mmcat_level = null)
         {
-            //Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+            Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
             
             var links = GetParents(term_id, null);// orig_mmcat_level);
             if (links.Count == 0)
             {
                 root_paths.Add(path);
-                //Debug.WriteLine($">> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
+                Debug.WriteLine($">> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
             }
             if (parent_mmcat_level == null)
                 parent_mmcat_level = orig_mmcat_level = links.Max(p => p.mmcat_level);
 
+            // mmcat_level is a bit fuzzy (depends somewhat on ingestion order of wiki_walker)
+            // so, if there are no links <= parent_mmcat_level, look for links
+
+            var max_mmcat_level = parent_mmcat_level;
+again:
+            if (links.Where(p => p.mmcat_level <= max_mmcat_level).Count() == 0)
+                if (++max_mmcat_level < orig_mmcat_level + 3) // arbitrary, just stop somewhere
+                    goto again;
+
             Parallel.ForEach(
-                links.Where(p => p.mmcat_level <= parent_mmcat_level + 0              // link is higher than parent (closer to root)
-                            //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
+                links.Where(p => p.mmcat_level <= max_mmcat_level                    // link is higher than parent (closer to root)
+                           //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
                                )
                 //ordered.Take(this_n)
                 , new ParallelOptions() { MaxDegreeOfParallelism = 8 }, link =>
@@ -209,9 +218,8 @@ namespace mm_svc.Terms
 
                 // recurse
                 RecurseParents(root_paths, new_path, link.parent_term_id, orig_term_id,
-                        //link.mmcat_level <= parent_mmcat_level ?
                         parent_mmcat_level: link.mmcat_level - 1
-                    // : orig_mmcat_level
+                        , orig_mmcat_level: orig_mmcat_level
                 );
             });
         }

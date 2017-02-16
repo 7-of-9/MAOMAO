@@ -16,9 +16,23 @@ namespace tests
         [TestMethod]
         public void ProcessPathsToRoot_Test2()
         {
+            // ok, try get JUST one suitable parent cat... just ONE!
+
             var test_terms_ids = new List<long>() {
-                5988770, // rosario dawson
-                5997771, // bernie sanders
+
+                5747890,  //  Ballet -- no paths??
+
+                5552478, // NASDAQ
+                5374213, // Formula One
+                5250600, // Gundam
+                5140670, // September 11 attacks
+                5115096, // StarCraft
+
+                11418240, // Calvinism
+                7479589,  // Pixar
+                9790110,  // Dream Theater
+                10413303, // Alternative rock
+
                 5078100, // Superheroes
                 5209410, // American feminists
                 5871074, // Hypertrophy 
@@ -26,6 +40,8 @@ namespace tests
                 5249821, // Batman
                 8080633, // french defence
                 5131916, // Tom and Jerry
+                5988770, // rosario dawson
+                5997771, // bernie sanders
             };
 
             using (var db = mm02Entities.Create()) {
@@ -36,16 +52,13 @@ namespace tests
                     var root_paths = GoldenPaths.ParseStoredPathsToRoot(term);
                     if (root_paths.Count == 0) {
                         GoldenPaths.RecordPathsToRoot(term_id);
+                        term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
+                        root_paths = GoldenPaths.ParseStoredPathsToRoot(term);
                     }
                  
-                    // we end up with multiple parent cat chains (each from one path to root)
-                    // we must decide which to use! e.g.
-                    //French Defence // Chess openings #NS=5 / ... / Chess #NS=12 / ... / Games #NS=8 / Main topic classifications #NS=2
-                    //French Defence // Chess openings #NS=5 / ... / Game theory #NS=9 / ... / Mathematics #NS=13 / Main topic classifications #NS=2
-
-                    /*
-                     * TODO: need more samples -- but something like -- count recurrances of each high ns_norm at each L
-                     * here, "chess" (by virtue of "chess titles") and "games" are predominant - so implied: wesley so / chess / games
+/*
+* TODO: need more samples -- but something like -- count recurrances of each high ns_norm at each L
+* here, "chess" (by virtue of "chess titles") and "games" are predominant - so implied: wesley so / chess / games
 L=1 High NS_norm (>0.3) Paths: 
 	 ... Cavite (NS_norm=0.58 NSLW=3.5 #NS=7) / Geocodes (NS_norm=0.25 NSLW=0.8 #NS=3) / Geography (NS_norm=1.00 NSLW=2.0 #NS=12)
 	 ... Chess titles (NS_norm=0.44 NSLW=2.0 #NS=4) / Sports (NS_norm=1.00 NSLW=2.3 #NS=9) / Games (NS_norm=0.89 NSLW=1.3 #NS=8)
@@ -72,6 +85,13 @@ L=4 High NS_norm (>0.3) Paths:
                 }
             }
         }
+
+        [TestMethod]
+        public void CalculatePathsToRoot_Test0()
+        {
+            GoldenPaths.CalculatePathsToRoot(5747890); // ballet
+        }
+
 
         [TestMethod]
         public void CalculatePathsToRoot_Test1()

@@ -569,6 +569,7 @@ namespace wowmao
             Trace.Listeners.Add(listener);
             txtPathsToRoot2.Text = "";
             GoldenPaths.ProcessPathsToRoot(all_root_paths);
+            Trace.Listeners.Remove(listener);
 
             //this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
             //foreach (var kvp in path_term_counts.Take(10))
