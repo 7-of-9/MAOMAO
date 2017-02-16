@@ -565,6 +565,15 @@ namespace wowmao
                 }
             }
 
+            //
+            // TODO: tune ProcessPathsToRoot just a little more:
+            //     (1) exclusions
+            //     (2) repeated (substr) terms
+            //     (3) 1 or 2 levels?
+            //
+            // remember: ProcessPathsToRoot() itself does NOT have to be perfect; intention is to x-ref all URL wiki terms processed suggesed parents
+            //           to try and find some overlap/commonality; that's our resultant master suggested parent/term for the URL
+            //
             TextBoxTraceListener listener = new TextBoxTraceListener(this.txtPathsToRoot2);
             Trace.Listeners.Add(listener);
             txtPathsToRoot2.Text = "";

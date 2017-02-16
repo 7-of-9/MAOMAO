@@ -76,18 +76,77 @@ namespace mm_svc.Terms
                     if (path[level].NS_norm > 0.3) { high_ns_norm_paths.Add(path); }
                 }
 
-                Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
-                foreach(var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm))
-                    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
+                // dbg
+                //Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
+                //foreach(var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm)) 
+                //    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
+
+                //// try 1 
+                //{
+                //    // take all paths with high NS normalized term at this level;
+                //    // group & count all such high NS norm terms;
+                //    var terms_grouped = new Dictionary<term, double>(); // term, count (and then score)
+                //    foreach (var high_ns_norm_path in high_ns_norm_paths) {
+                //        var term = high_ns_norm_path.Skip(level).First();
+                //        if (terms_grouped.Keys.Any(p => p.id == term.id))
+                //            terms_grouped[terms_grouped.Keys.Single(p => p.id == term.id)]++;
+                //        else
+                //            terms_grouped.Add(term, 1);
+                //    }
+                //    // score each such term by function of count and #NS absolute
+                //    var terms = terms_grouped.Keys.ToList();
+                //    foreach (var key in terms)
+                //        /*score*/
+                //        terms_grouped[key] = Math.Pow((double)terms_grouped[key]/*count*/, (1.0 / 2.5)) * (double)key.wiki_nscount;
+
+                //    var ordered_terms = terms_grouped.ToList();
+                //    ordered_terms.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
+                //    //Debug.Write(ordered_terms.Count());
+                //}
+            }
+
+            // try 2 -- across all levels; take sum of NSLW for each term - rank by
+            // close! for nasdaq anyway -- maybe use this when lots of paths?
+            {
+                //
+                // TODO: decide on 1 or 2; maybe function of root_paths count?
+                //       see if any more exclusion terms would be useful...
+                // move to wowmao for this.
+                //
+                GroupByTerm_Sum_NSLW(root_paths, 1);  
+                GroupByTerm_Sum_NSLW(root_paths, 2);
+                GroupByTerm_Sum_NSLW(root_paths, 4);
             }
         }
 
+        private static List<KeyValuePair<term, double>> GroupByTerm_Sum_NSLW(List<List<term>> root_paths, int levels_to_use)
+        {
+            var terms_grouped = new Dictionary<term, double>(); // term, sum(NSLW)
+            foreach (var path in root_paths) {
+                // for mega-terms (e.g. "sept 11" ~ 100 paths) restricting to 1 level works slightly better than 2...
+                // balley: paths = 17  2 levels works well
+                // gundam: paths = 50 ! -- 2 levels works well - 1 works bit better
+                foreach (var term in path.Skip(1).Take(levels_to_use)) { // cap levels_to_use deep -- increasingly irrelevant as we go deeper
+                    if (terms_grouped.Keys.Any(p => p.id == term.id))
+                        terms_grouped[terms_grouped.Keys.Single(p => p.id == term.id)] += term.NSLW;
+                    else
+                        terms_grouped.Add(term, term.NSLW);
+                }
+            }
+            var ordered_terms = terms_grouped.ToList();
+            ordered_terms.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
+
+            Trace.WriteLine($"{root_paths.First().First().name} root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            ordered_terms.ForEach(p => Trace.WriteLine($"\t{p.Key} S={p.Value}"));
+
+            return ordered_terms;
+        }
 
         private static List<string> ProcessRootPath_ExclusionTerms_Exact = new List<string>() { "People", };
         private static List<string> ProcessRootPath_ExclusionTerms_Contains = new List<string>() { "People by", " people", };
         public static bool ProcessRootPath(List<term> root_path)
         {
-            const int MIN_WIKI_NSCOUNT = 3;
+            const int MIN_WIKI_NSCOUNT = 4;
             var leaf_term = root_path[0];
 
             if (root_path.Any(p => p.wiki_nscount == null)) return false;
@@ -176,7 +235,7 @@ namespace mm_svc.Terms
         {
             Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
             
-            var links = GetParents(term_id, null);// orig_mmcat_level);
+            var links = GetParents(term_id, null);
             if (links.Count == 0)
             {
                 root_paths.Add(path);
@@ -187,7 +246,6 @@ namespace mm_svc.Terms
 
             // mmcat_level is a bit fuzzy (depends somewhat on ingestion order of wiki_walker)
             // so, if there are no links <= parent_mmcat_level, look for links
-
             var max_mmcat_level = parent_mmcat_level;
 again:
             if (links.Where(p => p.mmcat_level <= max_mmcat_level).Count() == 0)
@@ -198,23 +256,23 @@ again:
                 links.Where(p => p.mmcat_level <= max_mmcat_level                    // link is higher than parent (closer to root)
                            //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
                                )
-                //ordered.Take(this_n)
-                , new ParallelOptions() { MaxDegreeOfParallelism = 8 }, link =>
+                , new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 1 : 8 }, link =>
             {
                 if (path.Select(p => p.id).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
                     return;
 
-                // "feminism by country" -- not useful?
-                //if (link.parent_term.name.Contains(" by "))
-                //    return;
-
-                //// "fictional orphans" -- not useful?
-                //if (link.parent_term.name.ToLower().Contains("fictional"))
-                //    return;
-
                 // add to path
                 var new_path = new List<term>(path);
                 new_path.Add(link.parent_term);
+
+                // put some limit on recurrsion depth: if there's an existing path to root that matches this test path up to 
+                // a cut-off depth, then abandon this recursion (test/pathological case: 5140670, // September 11 attacks)
+                const int path_match_abort = 3;
+                var this_path_ids = string.Join(",", new_path.Take(path_match_abort).Select(p2 => p2.id));
+                if (root_paths.Any(p => string.Join(",", p.Take(path_match_abort).Select(p2 => p2.id)) == this_path_ids)) {
+                    Debug.WriteLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+                    return;
+                }
 
                 // recurse
                 RecurseParents(root_paths, new_path, link.parent_term_id, orig_term_id,
@@ -274,7 +332,7 @@ again:
                 }
                 db.gt_path_to_root.AddRange(db_paths);
                 db.SaveChangesTraceValidationErrors();
-            return true;
+                return true;
             }
         }
 

@@ -60,7 +60,7 @@ namespace mmdb_model
         [NotMapped] public double NSLW_norm; // wiki_nscount_levelweighted_normalized
 
         public override string ToString() {
-            var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count}";
+            var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count} #NS={this.wiki_nscount}";
             if (corr_for_main != null)
                 ret += $"corr_for_main={this.corr_for_main?.ToString("0.0000")}";
             if (corr_for_related != null)

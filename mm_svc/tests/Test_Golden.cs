@@ -19,13 +19,19 @@ namespace tests
             // ok, try get JUST one suitable parent cat... just ONE!
 
             var test_terms_ids = new List<long>() {
-
-                5747890,  //  Ballet -- no paths??
-
-                5552478, // NASDAQ
-                5374213, // Formula One
                 5250600, // Gundam
                 5140670, // September 11 attacks
+
+                5078100, // Superheroes
+                5209410, // American feminists
+                5871074, // Hypertrophy 
+                6334777, // Wesley So
+
+                5552478, // NASDAQ -- pathological case
+
+                5747890,  //  Ballet
+                5374213, // Formula One
+
                 5115096, // StarCraft
 
                 11418240, // Calvinism
@@ -33,10 +39,6 @@ namespace tests
                 9790110,  // Dream Theater
                 10413303, // Alternative rock
 
-                5078100, // Superheroes
-                5209410, // American feminists
-                5871074, // Hypertrophy 
-                6334777, // Wesley So
                 5249821, // Batman
                 8080633, // french defence
                 5131916, // Tom and Jerry
@@ -55,30 +57,13 @@ namespace tests
                         term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                         root_paths = GoldenPaths.ParseStoredPathsToRoot(term);
                     }
-                 
-/*
-* TODO: need more samples -- but something like -- count recurrances of each high ns_norm at each L
-* here, "chess" (by virtue of "chess titles") and "games" are predominant - so implied: wesley so / chess / games
-L=1 High NS_norm (>0.3) Paths: 
-	 ... Cavite (NS_norm=0.58 NSLW=3.5 #NS=7) / Geocodes (NS_norm=0.25 NSLW=0.8 #NS=3) / Geography (NS_norm=1.00 NSLW=2.0 #NS=12)
-	 ... Chess titles (NS_norm=0.44 NSLW=2.0 #NS=4) / Sports (NS_norm=1.00 NSLW=2.3 #NS=9) / Games (NS_norm=0.89 NSLW=1.3 #NS=8)
-	 ... Cavite (NS_norm=0.54 NSLW=3.5 #NS=7) / 1610s (NS_norm=0.31 NSLW=1.0 #NS=4) / Decades (NS_norm=0.23 NSLW=0.5 #NS=3) / Chronology (NS_norm=0.62 NSLW=1.0 #NS=8) / History (NS_norm=1.00 NSLW=1.3 #NS=13)
-	 ... Chess titles (NS_norm=0.33 NSLW=2.0 #NS=4) / Chess (NS_norm=1.00 NSLW=3.0 #NS=12) / Games (NS_norm=0.67 NSLW=1.3 #NS=8)
-L=2 High NS_norm (>0.3) Paths: 
-	 ... Sports (NS_norm=1.00 NSLW=2.3 #NS=9) / Games (NS_norm=0.89 NSLW=1.3 #NS=8)
-	 ... 1610s (NS_norm=0.31 NSLW=1.0 #NS=4) / Decades (NS_norm=0.23 NSLW=0.5 #NS=3) / Chronology (NS_norm=0.62 NSLW=1.0 #NS=8) / History (NS_norm=1.00 NSLW=1.3 #NS=13)
-	 ... Chess (NS_norm=1.00 NSLW=3.0 #NS=12) / Games (NS_norm=0.67 NSLW=1.3 #NS=8)
-	 ... Chess (NS_norm=1.00 NSLW=3.0 #NS=12) / Games (NS_norm=0.67 NSLW=1.3 #NS=8)
-L=3 High NS_norm (>0.3) Paths: 
-	 ... Geography (NS_norm=1.00 NSLW=2.0 #NS=12)
-	 ... Games (NS_norm=0.89 NSLW=1.3 #NS=8)
-	 ... Games (NS_norm=0.67 NSLW=1.3 #NS=8)
-	 ... Games (NS_norm=0.67 NSLW=1.3 #NS=8)
-L=4 High NS_norm (>0.3) Paths: 
-	 ... Chronology (NS_norm=0.62 NSLW=1.0 #NS=8) / History (NS_norm=1.00 NSLW=1.3 #NS=13)
-     */
 
-                    // process paths
+                    //
+                    // process paths -- try (2) seems to be close!
+                    //   next: ProcessPathsToRoot() as part of URL processing, record resultant suggested parents.
+                    //         looking then for some degree of correlation between top raw URL wiki terms and suggested parents.
+                    //         if we have any suggested parents in common, we're in good shape. 
+                    //
                     GoldenPaths.ProcessPathsToRoot(root_paths);
 
                     // Wesley So -- reasonable data at level 2 > 0.8 NS_norm
