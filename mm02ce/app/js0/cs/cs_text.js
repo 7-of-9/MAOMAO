@@ -276,26 +276,31 @@ function process_text(page_meta) {
     console.info("ALL_TEXT (len = " + t.length + "): [" + t + "]");
     chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PROCESS_TEXT_RESULT', payload: { status: t.length > 200 ? true : false, url: remove_hash_url(document.location.href), text: t, } } });
     var detectLang = franc(t);
-    if (t.length > 200 && detectLang === 'eng') {
-        ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function(data) {
-            console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
-            if (data.is_known == true) {
-                // no need to text process, no need for calais
-                chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, } } });
-                console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
+    if (t.length > 200) {
+        console.warn('detectLang', detectLang);
+        if (detectLang === 'eng') {
+            ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function(data) {
+                console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
+                if (data.is_known == true) {
+                    // no need to text process, no need for calais
+                    chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, } } });
+                    console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
 
-                if (document.getElementById('maomao-extension-youtube-test')) {
-                    cslib_test_NextYouTubeVid();
+                    if (document.getElementById('maomao-extension-youtube-test')) {
+                        cslib_test_NextYouTubeVid();
+                    } else {
+                        console.info("Disable youtube test");
+                    }
                 } else {
-                    console.info("Disable youtube test");
+                    chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false, } } });
+                    nlp_calais(page_meta, t, document.location);
                 }
-            } else {
-                chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { url: remove_hash_url(document.location.href), status: false, } } });
-                nlp_calais(page_meta, t, document.location);
-            }
-        }, function(error) {
-            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } } });
-        });
+            }, function(error) {
+                chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_ERROR', payload: { lang: detectLang, url: remove_hash_url(document.location.href), error: error, } } });
+            });
+        } else {
+            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'TEXT_NOT_ENGLISH', payload: { lang: detectLang, url: remove_hash_url(document.location.href), } } });
+        }
     } else {
         console.warn("%c ** NOT ENOUGH TEXT FOR CALAIS PROCESSING! **", "background:black; color:red; font-weight:bold;");
         //cslib_test_NextYouTubeVid();
