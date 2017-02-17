@@ -10,6 +10,7 @@ import Config from './config';
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
 require('expose?justext!justext');
+require('expose?franc!franc');
 /* eslint-enable */
 
 const config = new Config();

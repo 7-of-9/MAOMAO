@@ -1,5 +1,4 @@
-﻿
-///////////////////////////////////////////
+﻿///////////////////////////////////////////
 // GET TEXT ON PAGE ...
 //
 
@@ -9,7 +8,7 @@
 // maybe read session.did_text_proc flag? how CS can get data from BG?
 //var have_run_text_proc = false;
 //document.addEventListener("DOMContentLoaded", function (event) {
-$(document).ready(function () {
+$(document).ready(function() {
     console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
     console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady"], cs_log_style_info);
     console.info("%c > document.location=" + document.location, cs_log_style_info);
@@ -27,7 +26,7 @@ $(document).ready(function () {
 
             // this *masks* the problem of $.ready being called an indeterminate # of times??
             var millisecondsToWait = 1500; // shouldn't be necessary, but is! indeterminate behaviour without this, esp. on YT
-            setTimeout(function () {
+            setTimeout(function() {
                 if (cslib_isYouTubeSite()) {
                     if (cslib_isYouTubeWatch()) {
                         //
@@ -40,7 +39,7 @@ $(document).ready(function () {
                             document.documentElement.innerHTML.indexOf("Comments are disabled for this video") != -1) {
                             console.info("YT -- comments disabled");
 
-                            get_page_metadata(true, function (error, page_meta) {
+                            get_page_metadata(true, function(error, page_meta) {
                                 if (error) {
                                     console.warn(error);
                                     chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -49,16 +48,15 @@ $(document).ready(function () {
                                     process_text(page_meta);
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             // if comments are enabled, wait for comments load
                             // TODO: -- FIXME -- can wait forever if they're offscreen!!
                             console.info("YT -- comments enabled; waiting for load (2)...");
 
                             waitForKeyElements(".comment-section-header-renderer",
 
-                                function () { // element found
-                                    get_page_metadata(true, function (error, page_meta) {
+                                function() { // element found
+                                    get_page_metadata(true, function(error, page_meta) {
                                         if (error) {
                                             console.warn(error);
                                             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -68,10 +66,10 @@ $(document).ready(function () {
                                         }
                                     })
                                 },
-                                5000,        // wait max millis
+                                5000, // wait max millis
 
-                                function () { // element not found
-                                    get_page_metadata(true, function (error, page_meta) {
+                                function() { // element not found
+                                    get_page_metadata(true, function(error, page_meta) {
                                         if (error) {
                                             console.warn(error);
                                             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -80,22 +78,19 @@ $(document).ready(function () {
                                             process_text(page_meta);
                                         }
                                     });
-                                }
-                                , true // *** bWaitOnce --  very important, otherwise will not stop waiting!
+                                }, true // *** bWaitOnce --  very important, otherwise will not stop waiting!
                             );
                         }
-                    }
-                    else {
+                    } else {
                         // other YT pages
                         //...
                     }
-                }
-                else {
+                } else {
                     //
                     // generic handler
                     //
 
-                    get_page_metadata(true, function (error, page_meta) { // force-refresh of page_meta
+                    get_page_metadata(true, function(error, page_meta) { // force-refresh of page_meta
                         if (error) {
                             console.warn(error);
                             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -106,8 +101,7 @@ $(document).ready(function () {
                     })
                 }
             }, millisecondsToWait);
-        }
-        else {
+        } else {
             console.log("%c mm_cs_text_haveFiredDocReady // NOP.", cs_log_style_hi);
         }
     }
@@ -204,9 +198,9 @@ function process_text(page_meta) {
             var t2 = "";
             if (x != null && x.length > 0) {
                 var lines = x.split("\n");
-                _.each(lines, function (line) {
+                _.each(lines, function(line) {
                     // remove lines /*that contain URLs, or*/ that are < 4 words
-                    if (/*line.indexOf("www.") == -1 &&*/ count_words(line) >= 4) {
+                    if ( /*line.indexOf("www.") == -1 &&*/ count_words(line) >= 4) {
                         t2 = t2 + line + "\n";
                     }
                 });
@@ -217,11 +211,10 @@ function process_text(page_meta) {
         // grab comment text (multiple elements)
         t += "\n";
         var comments = $(".comment-renderer-text-content"); //$(".comment-text");
-        _.each(comments, function (x) {
+        _.each(comments, function(x) {
             t += x.innerText + "\n";
         });
-    }
-    else {
+    } else {
         //
         // generic all-text handler
         //
@@ -236,9 +229,19 @@ function process_text(page_meta) {
             stopwordsLow: 0.3,
             maxLinkDesity: 0.2,
         };
-        var lang = 'English';
+        var lang = '';
         if (document.documentElement.lang) {
             // TODO: convert lang
+            switch (document.documentElement.lang) {
+                case 'en':
+                    lang = 'English';
+                    break;
+                case 'vi':
+                    lang = 'Vietnamese';
+                    break;
+                default:
+                    lang = '';
+            }
         }
 
         // TODO: remove maomao inject html
@@ -272,8 +275,9 @@ function process_text(page_meta) {
 
     console.info("ALL_TEXT (len = " + t.length + "): [" + t + "]");
     chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PROCESS_TEXT_RESULT', payload: { status: t.length > 200 ? true : false, url: remove_hash_url(document.location.href), text: t, } } });
-    if (t.length > 200) {
-        ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function (data) {
+    var detectLang = franc(t);
+    if (t.length > 200 && detectLang === 'eng') {
+        ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function(data) {
             console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
             if (data.is_known == true) {
                 // no need to text process, no need for calais
@@ -285,12 +289,11 @@ function process_text(page_meta) {
                 } else {
                     console.info("Disable youtube test");
                 }
-            }
-            else {
+            } else {
                 chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { url: remove_hash_url(document.location.href), status: false, } } });
                 nlp_calais(page_meta, t, document.location);
             }
-        }, function (error) {
+        }, function(error) {
             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } } });
         });
     } else {
@@ -323,11 +326,11 @@ function process_text(page_meta) {
 
 function remove_urls(text) {
     var urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(urlRegex, function (url) {
-        return '';
-    })
-    // or alternatively
-    // return text.replace(urlRegex, '<a href="$1">$1</a>')
+    return text.replace(urlRegex, function(url) {
+            return '';
+        })
+        // or alternatively
+        // return text.replace(urlRegex, '<a href="$1">$1</a>')
 }
 
 function count_words(text) {
