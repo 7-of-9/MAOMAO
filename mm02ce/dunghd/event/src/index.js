@@ -96,23 +96,33 @@ function onClickHandler(info) {
                 store.dispatch(data);
             }
             break;
-        case 'mm-btn-disable-youtube':
-            window.enableTestYoutube = false; {
+        case 'mm-btn-switch-imscore':
+            {
+                if (window.enableImscore) {
+                    window.enableImscore = false;
+                } else {
+                    window.enableImscore = true;
+                }
                 const data = {
-                    type: 'YOUTUBE_TEST',
+                    type: 'SWITCH_IM_SCORE',
                     payload: {
-                        enable: window.enableTestYoutube,
+                        isEnableIM: window.enableImscore,
                     },
                 };
                 store.dispatch(data);
             }
             break;
-        case 'mm-btn-enable-youtube':
-            window.enableTestYoutube = true; {
+        case 'mm-btn-switch-youtube':
+            {
+                if (window.enableTestYoutube) {
+                    window.enableTestYoutube = false;
+                } else {
+                    window.enableTestYoutube = true;
+                }
                 const data = {
                     type: 'YOUTUBE_TEST',
                     payload: {
-                        enable: window.enableTestYoutube,
+                        isYoutubeTest: window.enableTestYoutube,
                     },
                 };
                 store.dispatch(data);

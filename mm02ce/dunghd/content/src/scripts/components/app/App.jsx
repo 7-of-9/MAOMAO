@@ -198,6 +198,7 @@ class App extends Component {
               this.props.auth.isLogin
               && this.props.score.isOpen
               && this.props.score.im_score > 0
+              && this.props.icon.isEnableIM
             }
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />

@@ -7,10 +7,11 @@
 // handle authentication
 var isGuest = true;
 var enableTestYoutube = false;
+var enableImscore = true;
 var userId = -1;
 
 
-chrome.extension.onMessage.addListener(function (message, sender, callback) {
+chrome.extension.onMessage.addListener(function(message, sender, callback) {
     console.trace('extension.onMessage');
     console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
     console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
@@ -49,8 +50,11 @@ function set_session_accessors(a) {
     a.est_time_on_tab = fn_est_time_on_tab;
     a.mm_score = fn_mm_score;
 }
+
 function fn_est_audible_time() { return this.audible_pings * ping_interval_secs; }
+
 function fn_est_time_on_tab() { return this.TOT_total_millis / 1000; }
+
 function fn_mm_score() { return 'TODO'; }
 
 // page-meta accessors -- prefer itemprop microdata > og tags > html meta
@@ -62,7 +66,9 @@ function set_meta_accessors(meta) {
         meta.image = fn_page_meta_image; // attach accessor (not visible from CS scope)
     }
 }
+
 function fn_page_meta_title() { return this.ip_name || this.og_title || this.html_title; };
+
 function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 
 //
@@ -82,7 +88,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
     }
     var url_ex_hash = bglib_remove_hash_url(tab.url);
 
-    var existing_session = _.filter(mm.all_sessions, function (a) { return a.url == url_ex_hash });
+    var existing_session = _.filter(mm.all_sessions, function(a) { return a.url == url_ex_hash });
 
     // this does happen! can only assume that it's because this called from multiple threads somehow;
     if (existing_session.length > 1) {
@@ -103,7 +109,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         if (!session_injected_cs) { // never injected
 
             // only inject CS if the TLD is allowable
-            ajax_isTldAllowable(url_ex_hash, function (data) {
+            ajax_isTldAllowable(url_ex_hash, function(data) {
                 console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
                 if (data.allowable) {
@@ -115,7 +121,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
                     setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
-            }, function (error) {
+            }, function(error) {
                 console.warn(error);
                 setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
@@ -141,7 +147,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
             mm_update(session, true);
 
             // inject CS only if TLD is allowable
-            ajax_isTldAllowable(url_ex_hash, function (data) {
+            ajax_isTldAllowable(url_ex_hash, function(data) {
                 console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
                 if (data.allowable) {
@@ -153,7 +159,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
                     console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
                     setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
                 }
-            }, function (error) {
+            }, function(error) {
                 console.warn(error);
                 setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
             });
@@ -169,12 +175,11 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 // gets existing session only -- no CS injection, no new session creation
 function session_get_by_url(url) {
     var url_ex_hash = bglib_remove_hash_url(url);
-    var existing_session = _.filter(mm.all_sessions, function (a) { return a.url == url_ex_hash });
+    var existing_session = _.filter(mm.all_sessions, function(a) { return a.url == url_ex_hash });
     if (existing_session.length == 1) {
         console.info('%c (get_session_by_url - existing: ' + url + ')', session_style);
         return existing_session[0];
-    }
-    else if (existing_session.length == 0)
+    } else if (existing_session.length == 0)
         console.error('%c ### get_session_by_url - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
     else
         console.error('%c ### get_session_by_url - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
@@ -207,10 +212,10 @@ function session_update_NLP(session, nlp, page_meta) {
     // extract flattened tags -- only using most recent NLP result
     session.tags = [];
     session.topic_specific = nlp.topic_specific;
-    _.each(nlp.social_tags, function (a) {
+    _.each(nlp.social_tags, function(a) {
         session.tags.push({ 'tag': a.name, 'score': a.topic_specifc_score });
     });
-    _.each(nlp.entities, function (a) {
+    _.each(nlp.entities, function(a) {
         session.tags.push({ 'tag': a.name, 'score': 0 });
     });
 
@@ -218,7 +223,7 @@ function session_update_NLP(session, nlp, page_meta) {
     console.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
     console.info('%c ..... session.nlps.length = ' + session.nlps.length, session_style);
 
-    _.each(session.tags, function (a) {
+    _.each(session.tags, function(a) {
         console.info('%c ..... tag [' + a.tag + '] / score=' + a.score, session_style);
     });
 
@@ -350,11 +355,9 @@ function session_stop_TOT(session) {
                 session.TOT_cur_start_at = 0;
                 session.TOT_cur_stop_at = 0;
                 console.info('%c > TOT.stop: delta=' + tot_delta_millis + ' (new: ' + session.TOT_total_millis / 1000 + ' s)' + '[' + session.url + '] sid=' + session.sid, session_style);
-            }
-            else
+            } else
                 console.error('%c > TOT.stop: tot_delta_millis NaN' + '[' + session.url + ']', session_style_err);
-        }
-        else
+        } else
             console.log('%c > TOT.stop: nop - not started [' + session.url + '] sid=' + session.sid, session_style);
 
         mm_update(session);
@@ -362,6 +365,7 @@ function session_stop_TOT(session) {
 }
 
 var TOT_previously_started_session_ids = [];
+
 function session_start_TOT(session) {
     if (session != null) {
 
@@ -375,10 +379,10 @@ function session_start_TOT(session) {
         console.info('%c > TOT.start... [' + session.url + '] sid=' + session.sid, session_style);
 
         // stop any previously started sessions
-        var other_previously_started_sessions = _.filter(mm.all_sessions, function (a) {
+        var other_previously_started_sessions = _.filter(mm.all_sessions, function(a) {
             return TOT_previously_started_session_ids.indexOf(a.sid) != -1 && a.sid != session.sid;
         });
-        _.each(other_previously_started_sessions, function (a) {
+        _.each(other_previously_started_sessions, function(a) {
             if (a.TOT_cur_stop_at == 0) // not stopped
                 session_stop_TOT(a);
         });

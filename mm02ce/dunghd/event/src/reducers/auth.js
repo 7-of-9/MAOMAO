@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
         case 'AUTH_PENDING':
             return Object.assign({}, state, { isPending: true });
         case 'AUTH_FULFILLED':
-            ctxMenuLogin(action.payload.info, window.enableTestYoutube);
+            ctxMenuLogin(action.payload.info, window.enableTestYoutube, window.enableImscore);
             window.setIconApp(window.sessionObservable.activeUrl, 'black', '', window.BG_INACTIVE_COLOR);
             return Object.assign({}, state, {
                 message: 'authentication is done',

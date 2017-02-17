@@ -1,7 +1,7 @@
 ﻿//
 // Data: browsing data & history (local storage)
 //
-var MAX_SESSION_ITEMS = 5;
+var MAX_SESSION_ITEMS = 10;
 var mm;
 var mm_logstyle_hi = "background: purple; color: white";
 var mm_logstyle_semi_hi = "background: white; color: purple; font-weight:bold;";
