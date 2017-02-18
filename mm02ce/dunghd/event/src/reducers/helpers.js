@@ -1,4 +1,4 @@
-export function ctxMenuLogin(userInfo, enableTestYoutube) {
+export function ctxMenuLogin(userInfo, enableTestYoutube, enableImscore) {
     chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
         title: 'v0.4.11',
@@ -12,29 +12,43 @@ export function ctxMenuLogin(userInfo, enableTestYoutube) {
     });
     if (!enableTestYoutube) {
         chrome.contextMenus.create({
-            title: 'Enable Test Youtube!',
+            title: '[On] Youtube walker',
             contexts: ['browser_action'],
-            id: 'mm-btn-enable-youtube',
+            id: 'mm-btn-switch-youtube',
         });
     } else {
         chrome.contextMenus.create({
-            title: 'Disable Test Youtube!',
+            title: '[Off] Youtube walker',
             contexts: ['browser_action'],
-            id: 'mm-btn-disable-youtube',
+            id: 'mm-btn-switch-youtube',
+        });
+    }
+
+    if (enableImscore) {
+        chrome.contextMenus.create({
+            title: '[Off] IM_SCORE',
+            contexts: ['browser_action'],
+            id: 'mm-btn-switch-imscore',
+        });
+    } else {
+        chrome.contextMenus.create({
+            title: '[On] IM_SCORE',
+            contexts: ['browser_action'],
+            id: 'mm-btn-switch-imscore',
         });
     }
     chrome.contextMenus.create({
-        title: 'Test XP Popup!',
+        title: 'Test XP Popup',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-popup',
     });
     chrome.contextMenus.create({
-        title: 'Scale XP Popup Up (+0.5)!',
+        title: 'Scale XP Popup Up (+0.5)',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-scale-up-popup',
     });
     chrome.contextMenus.create({
-        title: 'Scale XP Popup Down (-0.5)!',
+        title: 'Scale XP Popup Down (-0.5)',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-scale-down-popup',
     });
@@ -58,17 +72,17 @@ export function ctxMenuLogout() {
         id: 'mm-btn-login',
     });
     chrome.contextMenus.create({
-        title: 'Test XP Popup!',
+        title: 'Test XP Popup',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-popup',
     });
     chrome.contextMenus.create({
-        title: 'Scale XP Popup Up (+0.5)!',
+        title: 'Scale XP Popup Up (+0.5)',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-scale-up-popup',
     });
     chrome.contextMenus.create({
-        title: 'Scale XP Popup Down (-0.5)!',
+        title: 'Scale XP Popup Down (-0.5)',
         contexts: ['browser_action'],
         id: 'mm-btn-xp-scale-down-popup',
     });

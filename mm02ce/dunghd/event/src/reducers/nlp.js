@@ -82,6 +82,17 @@ export default (nlp = initialState, action) => {
                     nlps,
                 });
             }
+        case 'TEXT_NOT_ENGLISH':
+            {
+                const url = action.payload.url;
+                let score = 'N/A';
+                const hasExist = nlp.scores.find(item => item.url === url);
+                if (hasExist) {
+                    score = hasExist.score;
+                }
+                window.setIconApp(url, 'black', `${score} !EN`, window.BG_SUCCESS_COLOR);
+                return nlp;
+            }
         case 'PROCESS_TEXT_RESULT':
             {
                 const url = action.payload.url;

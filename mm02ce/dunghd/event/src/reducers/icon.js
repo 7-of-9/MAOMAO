@@ -3,6 +3,7 @@ import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 const initialState = {
     isEnable: false,
     isYoutubeTest: false,
+    isEnableIM: true,
     xp: {
         score: 0,
         text: '',
@@ -18,9 +19,10 @@ export default (state = initialState, action, auth) => {
             return Object.assign({}, state, { scale: state.scale - 0.5 });
         case 'XP_POPUP':
             return Object.assign({}, state, { xp: action.payload });
+        case 'SWITCH_IM_SCORE':
         case 'YOUTUBE_TEST':
-            ctxMenuLogin(auth.info, window.enableTestYoutube);
-            return Object.assign({}, state, { isYoutubeTest: window.enableTestYoutube });
+            ctxMenuLogin(auth.info, window.enableTestYoutube, window.enableImscore);
+            return Object.assign({}, state, action.payload);
         case 'MAOMAO_DISABLE':
             chrome.contextMenus.removeAll();
             chrome.contextMenus.create({
@@ -43,7 +45,7 @@ export default (state = initialState, action, auth) => {
         case 'MAOMAO_ENABLE':
             {
                 if (auth.isLogin) {
-                    ctxMenuLogin(auth.info, window.enableTestYoutube);
+                    ctxMenuLogin(auth.info, window.enableTestYoutube, window.enableImscore);
                     const url = action.payload.url;
                     const activeTabUrl = window.sessionObservable.icons.get(url);
                     if (activeTabUrl) {

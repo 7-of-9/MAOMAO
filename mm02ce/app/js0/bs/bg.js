@@ -8,7 +8,7 @@ var BG_EXCEPTION_COLOR = '#990000';
 
 // ERROR handler
 
-window.onerror = function (msg, file, line, col, error) {
+window.onerror = function(msg, file, line, col, error) {
     // callback is called with an Array[StackFrame]
     console.trace('onerror');
     StackTrace.fromError(error).then(callback).catch(errback);
@@ -18,9 +18,9 @@ window.onerror = function (msg, file, line, col, error) {
 //////////////////////////////////////////////////////
 // STARTUP !!!
 //
-$(document).ready(function () {
+$(document).ready(function() {
     setIconApp('', 'gray', '', BG_INACTIVE_COLOR);
-    update_tabmap(function () {
+    update_tabmap(function() {
 
         // Listen for messages from content scripts.
         //chrome.extension.onRequest.addListener(contentScriptHandler);
@@ -34,25 +34,6 @@ $(document).ready(function () {
 
         // load master data
         mm_load();
-
-        // DBG: if only extension tab is open -- trigger test library for topics
-        //if (tabmap.length == 1 && tabmap[0].url == 'chrome://extensions/') {
-        //    var i = 0;
-        //    var run_test_delayed = function() {
-        //        var test = nlp_tests[i];
-        //        chrome.tabs.create({ url: test.url, selected: false }, function (tab) {
-        //            mm.all_sessions.push({ url: test.url });
-        //            chrome.tabs.executeScript(tab.id, {
-        //                code: 'var nlp_test_ok1='' + test.ok1 + ''; ' +
-        //                      'var nlp_test_ok2='' + test.ok2 + '';',
-        //               runAt: 'document_start'
-        //            });
-        //        });
-        //        if (++i < nlp_tests.length)
-        //            setTimeout(run_test_delayed, 1000);
-        //    };
-        //    run_test_delayed();
-        //}
     });
 });
 
@@ -113,7 +94,7 @@ function registerExtensionEventListeners(event, name) {
     if (event) {
         var validator = eventValidator[name];
         if (validator) {
-            event.addListener(function () {
+            event.addListener(function() {
                 //console.log('extension event: ' + name);
 
                 // Check this first since the validator may bump the count for future
@@ -129,7 +110,7 @@ function registerExtensionEventListeners(event, name) {
                 }
             });
         } else {
-            event.addListener(function () {
+            event.addListener(function() {
                 //console.log('handling event: ' + name);
                 if (eatEvent(name)) {
                     return;
@@ -165,7 +146,7 @@ function eatEvent(name) {
 // ( related: Twitch -- helper fn. to wait for AJAX elements -- to wait for YT comments loads
 // http://stackoverflow.com/questions/27109344/content-script-isnt-firing-on-twitch )
 //
-chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
 
     var tab = get_tab(details.tabId);
     if (tab != null)
@@ -181,8 +162,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
             TOT_start_current_focused(); // update TOT current tab info; required for YT onHistoryStateUpdated...
 
             update_tabmap();
-        }
-        else
+        } else
             console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
 });
 
@@ -190,7 +170,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 //////////////////////////////////////////////////////
 // MESSAGE HANDLING :: master callback from content script
 //
-chrome.extension.onMessage.addListener(function (message, sender, callback) {
+chrome.extension.onMessage.addListener(function(message, sender, callback) {
     // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
     // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
     var session;
@@ -279,9 +259,9 @@ function handle_cs_doc_event(data, sender) {
         if (data.eventValue == 'started')
             playSound(data.eventName, true);
         else if (data.eventValue == 'stopped')
-            stopSound(data.eventName);
-        else
-            playSound(data.eventName);
+        stopSound(data.eventName);
+    else
+        playSound(data.eventName);
 
     // handle event
     if (sender.tab != null) {
@@ -308,7 +288,7 @@ function handle_cs_doc_event(data, sender) {
                     chrome.tabs.query({
                         active: true,
                         currentWindow: true
-                    }, function (tabs) {
+                    }, function(tabs) {
                         if (tabs != null && tabs.length > 0)
                             TOT_active_tab = tabs[0];
                     });
@@ -368,7 +348,7 @@ function inject_cs(session, tab_id, skip_text) {
         chrome.tabs.query({
             active: true,
             currentWindow: true
-        }, function (tabs) {
+        }, function(tabs) {
             if (chrome.runtime.lastError) {
                 console.warn(chrome.runtime.lastError);
             }
@@ -378,20 +358,20 @@ function inject_cs(session, tab_id, skip_text) {
             var process = process_url(tab.url);
             if (process && !isGuest) {
                 // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
-                ajax_isTldAllowable(tab.url, function (data) {
+                ajax_isTldAllowable(tab.url, function(data) {
                     console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
-                    chrome.tabs.get(tab_id, function (existTab) {
+                    chrome.tabs.get(tab_id, function(existTab) {
                         if (chrome.runtime.lastError) {
                             console.warn(chrome.runtime.lastError);
                         }
                         if (existTab && existTab.url === tab.url) {
                             if (data.allowable) {
-                                $.each(cs_files, function (ndx, cs) {
+                                $.each(cs_files, function(ndx, cs) {
                                     try {
                                         chrome.tabs.executeScript({
                                             file: cs,
                                             runAt: run_at
-                                        }, function (result) {
+                                        }, function(result) {
                                             if (chrome.runtime.lastError) {
                                                 console.warn(chrome.runtime.lastError);
                                             }
@@ -412,7 +392,7 @@ function inject_cs(session, tab_id, skip_text) {
                             }
                         }
                     });
-                }, function (error) {
+                }, function(error) {
                     console.warn(error);
                     setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                 });
@@ -422,7 +402,7 @@ function inject_cs(session, tab_id, skip_text) {
         //
         // inject specific tab id
         //
-        chrome.tabs.get(tab_id, function (tab) {
+        chrome.tabs.get(tab_id, function(tab) {
             if (chrome.runtime.lastError) {
                 console.warn(chrome.runtime.lastError);
             }
@@ -430,20 +410,20 @@ function inject_cs(session, tab_id, skip_text) {
                 var process = process_url(tab.url);
                 if (process && !isGuest) {
                     // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
-                    ajax_isTldAllowable(tab.url, function (data) {
+                    ajax_isTldAllowable(tab.url, function(data) {
                         console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
-                        chrome.tabs.get(tab_id, function (existTab) {
+                        chrome.tabs.get(tab_id, function(existTab) {
                             if (chrome.runtime.lastError) {
                                 console.warn(chrome.runtime.lastError);
                             }
                             if (existTab && existTab.url === tab.url) {
                                 if (data.allowable) {
-                                    $.each(cs_files, function (ndx, cs) {
+                                    $.each(cs_files, function(ndx, cs) {
                                         try {
                                             chrome.tabs.executeScript(tab_id, {
                                                 file: cs,
                                                 runAt: run_at
-                                            }, function (result) {
+                                            }, function(result) {
                                                 if (chrome.runtime.lastError) {
                                                     console.warn(chrome.runtime.lastError);
                                                 }
@@ -463,7 +443,7 @@ function inject_cs(session, tab_id, skip_text) {
                                 }
                             }
                         });
-                    }, function (error) {
+                    }, function(error) {
                         console.warn(error);
                         setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
                     });
@@ -574,15 +554,15 @@ function loadSound(file, id) {
     }
     var audio = new Audio();
     audio.id = id;
-    audio.onerror = function () {
+    audio.onerror = function() {
         soundLoadError(audio, id);
     };
     audio.addEventListener('canplaythrough',
-        function () {
+        function() {
             soundLoaded(audio, id);
         }, false);
     if (id == 'startup') {
-        audio.addEventListener('ended', function () {
+        audio.addEventListener('ended', function() {
             started = true;
         });
     }
@@ -627,8 +607,9 @@ function tabCreated(tab) {
 
 // TABMAP: chrome.tabs.onRemoved
 function tabRemoved(tabId) {
-
-    update_tabmap();
+    update_tabmap(function() {
+        mm_session_clean();
+    });
 
     if (eatEvent('tabRemoved'))
         return false;
@@ -669,7 +650,7 @@ function tabNavigated(tabId, changeInfo, tab) {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function (tabs) {
+    }, function(tabs) {
         var tab = tabs[0];
         if (tab != null) {
             console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
@@ -709,20 +690,19 @@ function tabSelectionChanged(tabId) {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function (tabs) {
+    }, function(tabs) {
         var tab = tabs[0];
         if (tab != null && process_url(tab.url)) {
             console.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
             var session = session_get_by_tab(tab, true);
             session_add_view_instance(session);
         }
-        mm_save(true);
     });
 
     if (eatEvent('tabSelectionChanged'))
         return false;
     var count = 7;
-    chrome.tabs.get(tabId, function (tab) {
+    chrome.tabs.get(tabId, function(tab) {
         if (tab != null) {
             var index = tab.index % count;
             playSound('tab' + index);
@@ -739,7 +719,7 @@ function tabActivated(o) { // why getting object here?!
 
     var tabId = o.tabId;
     console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
-    chrome.tabs.get(tabId, function (new_tab) {
+    chrome.tabs.get(tabId, function(new_tab) {
         if (chrome.runtime.lastError)
             console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
         else if (new_tab != null) {
@@ -762,7 +742,6 @@ function tabActivated(o) { // why getting object here?!
             // update new active tab
             TOT_active_tab = new_tab;
         }
-        mm_save(true);
     });
 }
 
@@ -796,7 +775,7 @@ function TOT_start_current_focused() {
     chrome.tabs.query({
         active: true,
         currentWindow: true
-    }, function (tabs) {
+    }, function(tabs) {
         if (chrome.runtime.lastError)
             console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
         else {
@@ -836,7 +815,7 @@ function bglib_remove_hash_url(url) { // remove trailing page anchor # from tab 
 }
 
 function new_guid() {
-    var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);

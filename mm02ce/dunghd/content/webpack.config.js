@@ -28,6 +28,7 @@ module.exports = {
                     'css?sourceMap!sass?sourceMap',
                 ),
             },
+            { test: /\.json$/, loader: 'json-loader' },
             { test: /\.png$/, loader: 'url?limit=65000&mimetype=image/png&name=[name].[ext]' },
             { test: /\.svg$/, loader: 'url?limit=65000&mimetype=image/svg+xml&name=[name].[ext]' },
             { test: /\.woff$/, loader: 'url?limit=65000&mimetype=application/font-woff&name=[name].[ext]' },
