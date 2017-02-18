@@ -11,20 +11,27 @@ namespace mm_svc.Terms
 {
     public static class GoldenPaths
     {
+        public class TermPath {
+            public term t;
+            public short gl; // golden_level -- (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
+        }
+
         //
         // Parses stored paths to root to List<List<term>>
         //
-        public static List<List<term>> ParseStoredPathsToRoot(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
+        public static List<List<TermPath>> ParseStoredPathsToRoot(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
         {
-            var path_data = term.paths_to_root.ToList();
-            var paths = new List<List<term>>();
-            var path_nos = path_data.Select(p => p.path_no).Distinct();
-            foreach(var path_no in path_nos) {
-                var path = new List<term>() { term };
-                foreach (var seq_term in path_data.Where(p => p.path_no == path_no).OrderBy(p => p.seq).Select(p => p.term)) {
-                    path.Add(seq_term);
+            var all_paths = term.paths_to_root.ToList();
+            var paths = new List<List<TermPath>>();
+            var path_nos = all_paths.Select(p => p.path_no).Distinct();
+            foreach (var path_no in path_nos) {
+                var path = all_paths.Where(p => p.path_no == path_no);
+                var gl = (short)path.Count();
+                var term_paths = new List<TermPath>() { new TermPath() { t = term, gl = gl-- } };
+                foreach (var seq_term in path.OrderBy(p => p.seq).Select(p => p.term)) {
+                    term_paths.Add(new TermPath() { t = seq_term, gl = gl-- });
                 }
-                paths.Add(path);
+                paths.Add(term_paths);
             }
             return paths;
         }
@@ -43,120 +50,145 @@ namespace mm_svc.Terms
         // 
         //
 
-        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Exact = new List<string>() { "People", "Years", };
-        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() { "People by", " people", };// " by ",  };
-        public static void ProcessPathsToRoot(List<List<term>> root_paths)
+        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Exact = new List<string>() {
+            //"People",
+            "Years", };
+        private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() {
+            //"People by", " people"
+        };
+        public static void ProcessPathsToRoot(List<List<TermPath>> root_paths)
         {
             // expects: all paths to root to be for the same leaf term!
-            var distinct_leaf_terms = root_paths.Select(p => p.First().id);
+            var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
+            // dbg: golden levels
+            //foreach (var path in root_paths)
+            //    Trace.WriteLine("(GL=" + path[0].gl + ") " + path[0].t.name + "\t ... " + string.Join(" / ", path.Skip(1).Select(p => "(GL=" + p.gl + ") " + p.t.name + " (NS_norm=" + p.t.NS_norm.ToString("0.00") + " NSLW=" + p.t.NSLW.ToString("0.0") + " #NS=" + p.t.wiki_nscount + ")")));
+
             // remove any paths containing any exclusion terms (different to what ProcessRootPath does - it removes only individual terms from paths)
-            root_paths = root_paths.Where(p => !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Exact.Contains(p2.name))
-                                            && !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Contains.Any(p3 => p2.name.Contains(p3)))
+            root_paths = root_paths.Where(p => !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Exact.Contains(p2.t.name))
+                                            && !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Contains.Any(p3 => p2.t.name.Contains(p3)))
                                             ).ToList();
 
             // removes excluded terms & calculate normalized NS# values for each term in each path
             foreach (var root_path in root_paths)
                 ProcessRootPath(root_path);
 
-            if (root_paths.Count == 0) { return; } 
+            if (root_paths.Count == 0) { return; }
 
             // dedupe resulting root paths
-            var a = root_paths.GroupBy(c => String.Join(",", c.Select(p => p.id)));
+            var a = root_paths.GroupBy(c => String.Join(",", c.Select(p => p.t.id)));
             var b = a.Select(c => c.First().ToList()).ToList();
             root_paths = b;
 
             // for each distinct level in the multiple paths to root, see which root path has high NS_norms
-            var max_levels = Math.Min(root_paths.Max(p => p.Count), 3); // don't look beyond level n
-            for (var level = 1; level < max_levels; level++) {
-                var high_ns_norm_paths = new List<List<term>>();
-                foreach (var path in root_paths) {
-                    if (path.Count <= level) continue;
-                    if (path[level].NS_norm > 0.3) { high_ns_norm_paths.Add(path); }
-                }
+            //var max_levels = Math.Min(root_paths.Max(p => p.Count), 3); // don't look beyond level n
+            //for (var level = 1; level < max_levels; level++) {
+            //    var high_ns_norm_paths = new List<List<term>>();
+            //    foreach (var path in root_paths) {
+            //        if (path.Count <= level) continue;
+            //        if (path[level].t.NS_norm > 0.3) { high_ns_norm_paths.Add(path); }
+            //    }
 
-                // dbg
-                //Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
-                //foreach(var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm)) 
-                //    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
+            //    // dbg
+            //    //Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
+            //    //foreach (var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm))
+            //    //    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.gold_level + ": " + p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
+            //}
 
-                //// try 1 
-                //{
-                //    // take all paths with high NS normalized term at this level;
-                //    // group & count all such high NS norm terms;
-                //    var terms_grouped = new Dictionary<term, double>(); // term, count (and then score)
-                //    foreach (var high_ns_norm_path in high_ns_norm_paths) {
-                //        var term = high_ns_norm_path.Skip(level).First();
-                //        if (terms_grouped.Keys.Any(p => p.id == term.id))
-                //            terms_grouped[terms_grouped.Keys.Single(p => p.id == term.id)]++;
-                //        else
-                //            terms_grouped.Add(term, 1);
-                //    }
-                //    // score each such term by function of count and #NS absolute
-                //    var terms = terms_grouped.Keys.ToList();
-                //    foreach (var key in terms)
-                //        /*score*/
-                //        terms_grouped[key] = Math.Pow((double)terms_grouped[key]/*count*/, (1.0 / 2.5)) * (double)key.wiki_nscount;
-
-                //    var ordered_terms = terms_grouped.ToList();
-                //    ordered_terms.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
-                //    //Debug.Write(ordered_terms.Count());
-                //}
-            }
-
-            // try 2 -- across all levels; take sum of NSLW for each term - rank by
+            // ** try 2 -- across all levels; take sum of NSLW for each term - rank by
             // close! for nasdaq anyway -- maybe use this when lots of paths?
             {
                 //
                 // TODO: decide on 1 or 2; maybe function of root_paths count?
                 //       see if any more exclusion terms would be useful...
-                // move to wowmao for this.
+                //      > running for tough cases; try to get exclusions and ordering stable...
                 //
-                GroupByTerm_Sum_NSLW(root_paths, 1);  
-                GroupByTerm_Sum_NSLW(root_paths, 2);
-                GroupByTerm_Sum_NSLW(root_paths, 4);
+                //          distance (gold level) of suggested terms; closer to leaf term is better, surely?
+                //
+                // move to wowmao for this; then build into full Url processing (new table?)
+                //
+                //GroupByTerm_Sum_NSLW(root_paths, 1);
+                GroupRankByTerm_Sum_NSLW(root_paths, 2);
+                //GroupByTerm_Sum_NSLW(root_paths, 4);
             }
         }
 
-        private static List<KeyValuePair<term, double>> GroupByTerm_Sum_NSLW(List<List<term>> root_paths, int levels_to_use)
+        // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
+        private class TermGroup {
+            public term t;
+            //public double sum_NSLW;
+            public List<int> gl_distances;
+            public List<double> NSLWs;
+            public double avg_gl_distance, avg_NSLW, sum_NSLW;
+            public double S;
+        }
+        private static List<string> GroupRank_ExclusionTerms_Exact = new List<string>() { "People", "History", "Society" };
+        private static List<string> GroupRank_ExclusionTerms_Contains = new List<string>() { " in ", " of ", " (company)", "fictional " };
+        private static List<TermGroup> GroupRankByTerm_Sum_NSLW(List<List<TermPath>> root_paths, int levels_to_use)
         {
-            var terms_grouped = new Dictionary<term, double>(); // term, sum(NSLW)
+            // group
+            var terms_grouped_NSLW_sum = new Dictionary<TermPath, double>(); // term, sum(NSLW) 
+            var grouped_terms = new List<TermGroup>();
             foreach (var path in root_paths) {
-                // for mega-terms (e.g. "sept 11" ~ 100 paths) restricting to 1 level works slightly better than 2...
-                // balley: paths = 17  2 levels works well
-                // gundam: paths = 50 ! -- 2 levels works well - 1 works bit better
                 foreach (var term in path.Skip(1).Take(levels_to_use)) { // cap levels_to_use deep -- increasingly irrelevant as we go deeper
-                    if (terms_grouped.Keys.Any(p => p.id == term.id))
-                        terms_grouped[terms_grouped.Keys.Single(p => p.id == term.id)] += term.NSLW;
-                    else
-                        terms_grouped.Add(term, term.NSLW);
+                    var term_group = grouped_terms.Where(p => p.t.id == term.t.id).SingleOrDefault();
+                    var gl_distance = path[0].gl - term.gl;
+                    if (term_group == null)
+                        grouped_terms.Add(new TermGroup() { t = term.t, NSLWs = new List<double>() { term.t.NSLW }, gl_distances = new List<int>() { gl_distance },
+                        });
+                    else {
+                        term_group.NSLWs.Add(term.t.NSLW);
+                        term_group.gl_distances.Add(gl_distance);
+                    }
                 }
             }
-            var ordered_terms = terms_grouped.ToList();
-            ordered_terms.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
 
-            Trace.WriteLine($"{root_paths.First().First().name} root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
-            ordered_terms.ForEach(p => Trace.WriteLine($"\t{p.Key} S={p.Value}"));
+            // rank
+            grouped_terms.ForEach(p => p.avg_gl_distance = Math.Max(p.gl_distances.Average(), 1.0));
+            grouped_terms.ForEach(p => p.avg_NSLW = Math.Max(p.NSLWs.Average(), 0.0));
+            grouped_terms.ForEach(p => p.sum_NSLW = p.NSLWs.Sum());
+
+            // naive - sum of NSLWs
+            //grouped_terms.ForEach(p => p.S = p.sum_NSLW / Math.Pow(p.avg_gl_distance, 2)); // inversely scale with square of distance
+
+            // better? - ignores repetitions completely
+            //grouped_terms.ForEach(p => p.S = p.avg_NSLW / Math.Pow(p.avg_gl_distance, 2)); // inversely scale with square of distance
+
+            // blend - scale by sqrt repetitions
+            grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Pow(p.avg_gl_distance, 1.5)); // inverse with pow of distance
+
+            // blend - scale by sqrt repetitions
+            //grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Sqrt(p.avg_gl_distance)); // inverse root of distance
+
+            // final exclusions
+            grouped_terms = grouped_terms.Except(grouped_terms.Where(p => GroupRank_ExclusionTerms_Exact.Contains(p.t.name))).ToList();
+            grouped_terms = grouped_terms.Except(grouped_terms.Where(p => GroupRank_ExclusionTerms_Contains.Any(p2 => p.t.name.Contains(p2)))).ToList();
+
+            Trace.WriteLine($"*** (GL={root_paths.First().First().gl}) {root_paths.First().First().t.name} root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            var ordered_terms = grouped_terms.OrderByDescending(p => p.S).ToList();
+            ordered_terms.ForEach(p => Trace.WriteLine($"\t{p.t} S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW} (NSLWs={string.Join(",", p.NSLWs)}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
 
             return ordered_terms;
         }
 
         private static List<string> ProcessRootPath_ExclusionTerms_Exact = new List<string>() { "People", };
         private static List<string> ProcessRootPath_ExclusionTerms_Contains = new List<string>() { "People by", " people", };
-        public static bool ProcessRootPath(List<term> root_path)
+        public static bool ProcessRootPath(List<TermPath> root_path)
         {
-            const int MIN_WIKI_NSCOUNT = 4;
+            const int MIN_WIKI_NSCOUNT_TO_INCLUDE = 3;
+            const int MIN_WIKI_NSCOUNT_TO_SCORE = 4;
             var leaf_term = root_path[0];
 
-            if (root_path.Any(p => p.wiki_nscount == null)) return false;
+            if (root_path.Any(p => p.t.wiki_nscount == null)) return false;
 
             // remove terms under min. NS#
-            root_path.RemoveAll(p => p.wiki_nscount < MIN_WIKI_NSCOUNT && p.id != leaf_term.id);
+            root_path.RemoveAll(p => p.t.wiki_nscount < MIN_WIKI_NSCOUNT_TO_INCLUDE && p.t.id != leaf_term.t.id);
 
             // remove excluded terms
-            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Exact.Contains(p.name));
-            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Contains.Any(p2 => p.name.Contains(p2)));
+            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Exact.Contains(p.t.name));
+            root_path.RemoveAll(p => ProcessRootPath_ExclusionTerms_Contains.Any(p2 => p.t.name.Contains(p2)));
 
             // for each path (may or may not be the same leaf term in supplied paths)
             //    for each node: calc NS# normalized relative to other NS# in the path
@@ -164,16 +196,21 @@ namespace mm_svc.Terms
 
             for (int i = 1; i < root_path.Count; i++) {
                 var term = root_path[i];
-                term.NS_norm = (double)term.wiki_nscount / root_path.Max(p => (double)p.wiki_nscount);
-                term.NSLW = (double)term.wiki_nscount * (1.0 / (i*2));
-            }
-            root_path.ForEach(p => p.NSLW_norm = p.NSLW / root_path.Max(p2 => p2.NSLW));
+                term.t.NS_norm = (double)term.t.wiki_nscount / root_path.Max(p => (double)p.t.wiki_nscount);
 
+                // ignore under threshold
+                if (term.t.wiki_nscount < MIN_WIKI_NSCOUNT_TO_SCORE)
+                    term.t.NSLW = 0;
+                else
+                    term.t.NSLW = (double)(Math.Pow(term.t.wiki_nscount ?? 0, 1.0) * (1.0 / (i * 2))); 
+            }
+            root_path.ForEach(p => p.t.NSLW_norm = p.t.NSLW / root_path.Max(p2 => p2.t.NSLW));
+              
             var child_term = root_path[0];
-            var sum_NSLW = root_path.Sum(p => p.NSLW);
-            Trace.WriteLine(sum_NSLW.ToString("0.0") + " " + leaf_term.name + " // " +
-                string.Join(" / ", root_path.Skip(1).Select(p => p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")
-                ));
+            var sum_NSLW = root_path.Sum(p => p.t.NSLW);
+            //Trace.WriteLine(sum_NSLW.ToString("0.0") + " (GL=" + leaf_term.gl + ") " + leaf_term.t.name + " // " +
+            //    string.Join(" / ", root_path.Skip(1).Select(p => "(GL=" + p.gl + ") " + p.t.name + " (NS_norm=" + p.t.NS_norm.ToString("0.00") + " NSLW=" + p.t.NSLW.ToString("0.0") + " #NS=" + p.t.wiki_nscount + ")")
+            //    ));
 
             return true;
         }

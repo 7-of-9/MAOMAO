@@ -35,9 +35,9 @@ namespace wiki_walker
         private static int child_page_counter_batch = 0;
         private static List<double> child_page_counter_batches_persec = new List<double>();
 
-        private static int max_depth = 23;
+        private static int max_depth = 32; // TODO: more! adding terms quite easily at level 32 w/ long running; suggests we need to go deeper!
         private static bool reprocess_to_max_depth = false;
-        private static bool reprocess_gts = true;
+        private static bool reprocess_gts = true; // tested: much safer to reprocess_gts; long run w/ false vs true shows to be the case
 
         private static bool walk_test_only = false;
 
@@ -68,6 +68,8 @@ namespace wiki_walker
 
                     reprocess_to_max_depth = args.Contains("RMD");
 
+                    reprocess_gts = args.Contains("RGT");
+
                     Trace.WriteLine($"go: {top_term_name} @ mmcatlevel={mmcat_level}...");
                     WalkDownTree(parent_page_ids, parent_page_names, top_term_name, mmcat_level);
                 }
@@ -90,14 +92,14 @@ namespace wiki_walker
 
         private static bool WalkDownTree(List<long> parent_page_ids, List<string> parent_page_names, string parent_page_search, int level)
         {
-            int par_max_terms = Debugger.IsAttached ? 1 : 1;
-            int par_max_recurse = Debugger.IsAttached ? 1 : 16;
-            var parent_path = string.Join("/", parent_page_names);
+            int par_max_terms = Debugger.IsAttached ? 1 : 1;// 1;    // definitely slows down if any >1 parallelism, over both loops!!
+            int par_max_recurse = Debugger.IsAttached ? 1 : 1;// 16; // definitely slows down if any >1 parallelism, over both loops!!
+            var parent_path = "";// string.Join("/", parent_page_names);
 
-            if (parent_page_counter % 5000 == 0) {
-                SqlConnection.ClearAllPools();
-                Trace.WriteLine($"** 5000 CLEAR ALL POOLS **");
-            }
+            //if (parent_page_counter % 5000 == 0) {
+            //    SqlConnection.ClearAllPools();
+            //    Trace.WriteLine($"** 5000 CLEAR ALL POOLS **");
+            //}
 
             List<wiki_page> pages;
             using (var db = mm02Entities.Create()) //***
@@ -118,23 +120,15 @@ namespace wiki_walker
             }
 
             lock (o_parent_pages_fetched) {
-                if (++parent_page_counter % 50 == 0) {
-                    var pages_per_sec = parent_page_counter / sw.Elapsed.TotalSeconds;
-                    Trace.WriteLine($" >> PARENT - pages-(ns=14||0)-total: {parent_page_counter} @ {pages_per_sec.ToString("0.0")} per/sec >>> D={level} > {parent_path}");
-                }
-                // the whole thing just slows down over time; no idea why.
-                //if (parent_page_counter % 5000 == 0) {
-                //    GC.Collect(2);
-                //    Trace.WriteLine($" *** GC.COLLECT(2) ***");
-                //    Trace.WriteLine($" wait 30, reset sw & counter...");
-                //    Thread.Sleep(1000 * 30);
-                //    sw.Restart();
-                //    parent_page_counter = 0;
-                //}
-
-                if (parent_page_counter == 1)
-                    Console.Title = $"{top_term_name}: walk_test_only={walk_test_only} max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts}";
+                ++parent_page_counter;
             }
+            if (parent_page_counter % 100 == 0) {
+                var pages_per_sec = parent_page_counter / sw.Elapsed.TotalSeconds;
+                Trace.WriteLine($" >> PARENT - pages-(ns=14||0)-total: {parent_page_counter} @ {pages_per_sec.ToString("0.0")} per/sec >>> D={level} > {parent_path}");
+            }
+
+            if (parent_page_counter == 1)
+                Console.Title = $"{top_term_name}: walk_test_only={walk_test_only} max_depth={max_depth} reprocess_to_max_depth={reprocess_to_max_depth} reprocess_gts={reprocess_gts}";
 
             // for each supplied parent page -- pages & subcats
             var saw_exceptions_on_page_processing = false;
@@ -156,12 +150,11 @@ namespace wiki_walker
                                             .OrderByDescending(p => p.cl_from).ToListNoLock(), 30, 3);
                     }
 
-                    var child_pages_to_walk = new ConcurrentBag<wiki_page>();
+                    var child_pages_to_walk = new List<wiki_page>(); // new ConcurrentBag<wiki_page>();
                     bool saw_concurrency_exception_on_GTs_any = false;
                     var child_page_cl_ids_to_update = new List<Guid>();
                     try {
                         // GT INSERTS FOR PARENT-CHILDREN LINKS
-                        //ParallelForce.ForEach(child_cls,
                         Parallel.ForEach(child_cls, new ParallelOptions() { MaxDegreeOfParallelism = par_max_terms }, 
                         (child_page_cl) =>
                         { 
@@ -175,21 +168,11 @@ namespace wiki_walker
                             if (child_page == null) return;
                             if (child_page.page_namespace != 0 && child_page.page_namespace != 14) return;
 
-                            //var child_pages =
-                            //    db3.wiki_page.AsNoTracking()
-                            //       .Where(p => p.page_id == child_page_cl.cl_from
-                            //           && (p.page_namespace == 14 || p.page_namespace == 0) // pages & subcats
-                            //    )
-                            //    .OrderBy(p => p.page_id)
-                            //    .ToListNoLock();
-                            //if (child_pages.Count() == 0) return;
-
-                            lock (o_child_pages_fetched) {
-                                if (++child_page_counter_batch % 2000 == 0) {
-                                    var child_pages_per_sec = child_page_counter_batch / sw.Elapsed.TotalSeconds;
-                                    Trace.WriteLine($"\t(child-pages-(ns=14||0)-total: {child_page_counter_batch} @ {child_pages_per_sec.ToString("0.0")} per/sec");//>> {parent_path})");
-                                }
-                            }
+                            //lock (o_child_pages_fetched) { ++child_page_counter_batch; }
+                            //if (++child_page_counter_batch % 2000 == 0) {
+                            //    var child_pages_per_sec = child_page_counter_batch / sw.Elapsed.TotalSeconds;
+                            //    Trace.WriteLine($"\t(child-pages-(ns=14||0)-total ({parent_page_search}): {child_page_counter_batch} @ {child_pages_per_sec.ToString("0.0")} per/sec");//>> {parent_path})");
+                            //}
 
                             if (exclude_page(child_page.page_title.ltrim())) return;
 
@@ -204,16 +187,6 @@ namespace wiki_walker
                                             level,
                                             parent_page_search);
                             }
-
-                            //if (saw_concurrency_exception_on_GTs) {
-                            //    Trace.WriteLine($"** GOLDEN-TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                            //    saw_concurrency_exception_on_GTs_any = true;
-                            //    continue; // assume another task has this chain; abort!
-                            //}
-                            //if (saw_concurrency_exception_on_terms) {
-                            //    Trace.WriteLine($"** TERM CONCURRENCY EXC: ABORTING THIS CHILD! child_page_cl.id={child_page_cl.id} / parent_page.page_id={parent_page.page_id}[{parent_page.page_title}] x child_page.page_id={child_page.page_id}* *");
-                            //    continue; // assume another task has this chain; abort!
-                            //}
 
                             if (child_page.page_namespace == 14) // only recurse subcats!
                             {
@@ -238,19 +211,24 @@ namespace wiki_walker
 
                     // RECURSE
                     try {
-                        Parallel.ForEach(child_pages_to_walk.OrderBy(p => p.page_id), new ParallelOptions() { MaxDegreeOfParallelism = par_max_recurse },
-                        (child_page_to_walk) =>
-                        {
+                        var ordered = child_pages_to_walk;// child_pages_to_walk.OrderBy(p => p.page_id).ToList();
+                        Parallel.ForEach(ordered, new ParallelOptions() { MaxDegreeOfParallelism = par_max_recurse },
+                        //ParallelForce.ForEach(child_pages_to_walk.OrderBy(p => p.page_id),
+                        (child_page_to_walk) => {
                             // limit recursion
                             if (level < max_depth)
                             {
+                                //*****
                                 var new_parent_page_ids = new List<long>(parent_page_ids); // each branch in the tree has *its own* unique inheritence chain!
-                                var new_parent_page_names = new List<string>(parent_page_names);
-                                if (!new_parent_page_ids.Contains(child_page_to_walk.page_id))
-                                {
+                                //var new_parent_page_names = new List<string>(parent_page_names);
+
+                                if (!new_parent_page_ids.Contains(child_page_to_walk.page_id)) {
+
                                     new_parent_page_ids.Add(child_page_to_walk.page_id);
-                                    new_parent_page_names.Add(child_page_to_walk.page_title);
-                                    WalkDownTree(new_parent_page_ids, new_parent_page_names, child_page_to_walk.page_title, level + 1);
+                                    //new_parent_page_names.Add(child_page_to_walk.page_title);
+
+                                    WalkDownTree(new_parent_page_ids, null, //new_parent_page_names, 
+                                                 child_page_to_walk.page_title, level + 1);
                                 }
                             }
 
@@ -266,9 +244,6 @@ namespace wiki_walker
                         Trace.WriteLine(agex.ToDetailedString());
                     }
 
-                    //if (saw_exceptions_on_cl_term_processing == false && saw_exceptions_on_cl_recursion == false)
-                    //    db2.SaveChangesTraceValidationErrors(); //*** wiki_catlink - processed_to_depth
-
                     parent_page.processed_to_depth = max_depth; //** page
                 });
             }
@@ -279,7 +254,6 @@ namespace wiki_walker
 
             if (saw_exceptions_on_page_processing == false) {
                 if (!walk_test_only) {
-                    //db.SaveChangesTraceValidationErrors(); //** page - processed_to_depth
                     foreach (var page in pages)
                         SetPageProcessed(page.page_id);
                 }
@@ -637,10 +611,9 @@ namespace wiki_walker
             else if (page_name_ltrim.StartsWith("counter_categories")) exclude = true;
             else if (page_name_ltrim.EndsWith("_stubs")) exclude = true;
 
+            //else if (page_name_ltrim.EndsWith("_births")) exclude = true; // e.g. "1945_births"
+
             return exclude;
         }
-
-
-       
     }
 }

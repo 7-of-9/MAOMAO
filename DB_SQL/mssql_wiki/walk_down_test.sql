@@ -1,17 +1,16 @@
 
 -- yes, can walk DOWN now we know the best root...
 					
-
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 5475878... @ d20, ns14||0 [target ~12-14m]
- select count(*) from golden_term -- 17337831... @ d20 NS14||0					  -- 6124828
-								  -- 23063090
+ select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 6285392 ***
+ select count(*) from golden_term -- 24994365 ***
 
- select count(*) from wiki_page where processed_to_depth=20 -- 445415...
- select count(*) from wiki_catlink where processed_to_depth=20 -- 4653552...
+-- 25m links processed, 6m pages
+select count(*) from wiki_page where processed_to_depth is not null -- 6.4m
+select count(*) from wiki_catlink where processed_to_depth is not null -- 25m
 
-  select count(*) from wiki_page where page_namespace in (14) -- -- 1,489,640
-  select count(*) from wiki_page where page_namespace in (0) -- -- 12,832,772: maybe good news...
+  select count(*) from wiki_page where page_namespace in (14) -- -- 1.4m
+  select count(*) from wiki_page where page_namespace in (0) -- -- 12.8m
   select distinct count(cl_to) from wiki_catlink where cl_type = 'subcat' -- 4.4m
   select distinct count(cl_to) from wiki_catlink where cl_type = 'page' -- (99m)
 
