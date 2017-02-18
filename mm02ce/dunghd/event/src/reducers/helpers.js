@@ -12,13 +12,13 @@ export function ctxMenuLogin(userInfo, enableTestYoutube, enableImscore) {
     });
     if (!enableTestYoutube) {
         chrome.contextMenus.create({
-            title: 'Enable Test Youtube',
+            title: '[On] Youtube walker',
             contexts: ['browser_action'],
             id: 'mm-btn-switch-youtube',
         });
     } else {
         chrome.contextMenus.create({
-            title: 'Disable Test Youtube',
+            title: '[Off] Youtube walker',
             contexts: ['browser_action'],
             id: 'mm-btn-switch-youtube',
         });
@@ -26,13 +26,13 @@ export function ctxMenuLogin(userInfo, enableTestYoutube, enableImscore) {
 
     if (enableImscore) {
         chrome.contextMenus.create({
-            title: 'Turn off IM_SCORE',
+            title: '[Off] IM_SCORE',
             contexts: ['browser_action'],
             id: 'mm-btn-switch-imscore',
         });
     } else {
         chrome.contextMenus.create({
-            title: 'Turn on IM_SCORE',
+            title: '[On] IM_SCORE',
             contexts: ['browser_action'],
             id: 'mm-btn-switch-imscore',
         });
