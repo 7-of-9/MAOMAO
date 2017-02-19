@@ -19,11 +19,13 @@ namespace tests
             // ok, try get JUST one suitable parent cat... just ONE!
 
             var test_terms_ids = new List<long>() {
-                5011841, // cats
                 5101699, // EDM
+                5140670, // September 11 **
+                8080633, // french defence
+
+                5011841, // cats
 
                 5552478, // NASDAQ **
-                5140670, // September 11 **
                 7479589, // Pixar *
 
                 5250600, // Gundam
@@ -40,7 +42,6 @@ namespace tests
                 5209410, // American feminists
 
                 5249821, // Batman
-                8080633, // french defence
                 5131916, // Tom and Jerry
                 5988770, // rosario dawson
                 5997771, // bernie sanders
@@ -59,9 +60,10 @@ namespace tests
                     }
 
                     //
-                    // process: numerical and algo tweaks are about done.
-                    //          probably final touch is to take dumb "word commonality" across final outputs --
-                    //          e.g. batman -> "superheroes" and "heroes" somehow need to be boosted by virtue of repitition
+                    // NEXT: probably final touch is to take dumb "word commonality" across final outputs --
+                    //       e.g. batman -> "superheroes" and "heroes" somehow need to be boosted by virtue of repitition
+                    //
+                    // then --> run full-auto random ... wire up to UrlProcessing
                     //
                     GoldenPaths.ProcessPathsToRoot(root_paths);
                 }

@@ -1,4 +1,7 @@
-﻿using mmdb_model;
+﻿using mm_global.Extensions;
+using mm_svc.InternalNlp;
+using mm_svc.InternalNlp.Utils;
+using mmdb_model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,6 +24,9 @@ namespace mm_svc.Terms
         //
         public static List<List<TermPath>> ParseStoredPathsToRoot(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
         {
+            var stemmer = new Porter2_English();
+            term.stemmed = stemmer.stem(term.name);
+
             var all_paths = term.paths_to_root.ToList();
             var paths = new List<List<TermPath>>();
             var path_nos = all_paths.Select(p => p.path_no).Distinct();
@@ -29,7 +35,8 @@ namespace mm_svc.Terms
                 var gl = (short)path.Count();
                 var term_paths = new List<TermPath>() { new TermPath() { t = term, gl = gl-- } };
                 foreach (var seq_term in path.OrderBy(p => p.seq).Select(p => p.term)) {
-                    term_paths.Add(new TermPath() { t = seq_term, gl = gl-- });
+                    seq_term.stemmed = stemmer.stem(seq_term.name);
+                    term_paths.Add(new TermPath() { t = seq_term,  gl = gl-- });
                 }
                 paths.Add(term_paths);
             }
@@ -37,19 +44,8 @@ namespace mm_svc.Terms
         }
 
         //
-        // Process paths to root - finds one or more suggested parent category hierarchies (parent chains) for the supplied leaf term paths to root.
+        // Process paths to root - finds one or more suggested parent topics for the supplied leaf term paths to root.
         //
-        // (1) looking for maximum (n=2) parent cats in a given parent chain.
-        // 
-        // (1.1) using NS_weighted_norm over threshold as trigger for parent category candidate.
-        //
-        // (2) can be multiple parent chains, e.g. (1) Superheroes // ... Science fiction #NS=9 
-        //                                         (2) Superheroes // ... Heroes #NS=9
-        //
-        // (3) exclusions -- hard code for now? e.g. People #NS=11 -- stop looking up root path if we hit an excluded term
-        // 
-        //
-
         private static List<string> ProcessPathsToRoot_ExcludePathsWith_Exact = new List<string>() {
             //"People",
             "Years", };
@@ -63,8 +59,7 @@ namespace mm_svc.Terms
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
             // dbg: golden levels
-            //foreach (var path in root_paths)
-            //    Trace.WriteLine("(GL=" + path[0].gl + ") " + path[0].t.name + "\t ... " + string.Join(" / ", path.Skip(1).Select(p => "(GL=" + p.gl + ") " + p.t.name + " (NS_norm=" + p.t.NS_norm.ToString("0.00") + " NSLW=" + p.t.NSLW.ToString("0.0") + " #NS=" + p.t.wiki_nscount + ")")));
+            //root_paths.ForEach(p => Trace.WriteLine("(GL=" + p[0].gl + ") " + p[0].t.name + "\t ... " + string.Join(" / ", p.Skip(1).Select(p2 => "(GL=" + p2.gl + ") " + p2.t.name + " (NS_norm=" + p2.t.NS_norm.ToString("0.00") + " NSLW=" + p2.t.NSLW.ToString("0.0") + " #NS=" + p2.t.wiki_nscount + ")"))));
 
             // remove any paths containing any exclusion terms (different to what ProcessRootPath does - it removes only individual terms from paths)
             root_paths = root_paths.Where(p => !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Exact.Contains(p2.t.name))
@@ -82,50 +77,32 @@ namespace mm_svc.Terms
             var b = a.Select(c => c.First().ToList()).ToList();
             root_paths = b;
 
-            // for each distinct level in the multiple paths to root, see which root path has high NS_norms
-            //var max_levels = Math.Min(root_paths.Max(p => p.Count), 3); // don't look beyond level n
-            //for (var level = 1; level < max_levels; level++) {
-            //    var high_ns_norm_paths = new List<List<term>>();
-            //    foreach (var path in root_paths) {
-            //        if (path.Count <= level) continue;
-            //        if (path[level].t.NS_norm > 0.3) { high_ns_norm_paths.Add(path); }
-            //    }
-
-            //    // dbg
-            //    //Trace.WriteLine($"L={level} High NS_norm (>0.3) Paths: ");
-            //    //foreach (var high_ns_norm_path in high_ns_norm_paths.OrderByDescending(p => p.Skip(level).First().NS_norm))
-            //    //    Trace.WriteLine(high_ns_norm_path[0].name + "\t ... " + string.Join(" / ", high_ns_norm_path.Skip(level).Select(p => p.gold_level + ": " + p.name + " (NS_norm=" + p.NS_norm.ToString("0.00") + " NSLW=" + p.NSLW.ToString("0.0") + " #NS=" + p.wiki_nscount + ")")));
-            //}
-
             // ** try 2 -- across all levels; take sum of NSLW for each term - rank by
-            // close! for nasdaq anyway -- maybe use this when lots of paths?
             {
-                //
-                // TODO: decide on 1 or 2; maybe function of root_paths count?
-                //       see if any more exclusion terms would be useful...
-                //      > running for tough cases; try to get exclusions and ordering stable...
-                //
-                //          distance (gold level) of suggested terms; closer to leaf term is better, surely?
-                //
-                // move to wowmao for this; then build into full Url processing (new table?)
-                //
                 //GroupByTerm_Sum_NSLW(root_paths, 1);
-                GroupRankByTerm_Sum_NSLW(root_paths, 2);
-                //GroupByTerm_Sum_NSLW(root_paths, 4);
+                //GroupRankByTerm_Sum_NSLW(root_paths, 2); -- 2 levels not enough to get "chess" from "french defence"
+                GroupRankByTerm_Sum_NSLW(root_paths, 4);
             }
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
         private class TermGroup {
+            public class StemmedWordInfo {
+                public string stemmed;
+                public int R; // # of repetitions of the stemmed word in all candidate (non-stemmed) term names
+                public double R_norm;
+                public override string ToString() { return $"{stemmed}:R={R}:R_n={R_norm.ToString("0.0")}"; }
+            }
             public term t;
-            //public double sum_NSLW;
+            public List<StemmedWordInfo> word_info;
             public List<int> gl_distances;
             public List<double> NSLWs;
             public double avg_gl_distance, avg_NSLW, sum_NSLW;
-            public double S;
+            public double S, S_norm;
+            public double R_BOOST;
         }
-        private static List<string> GroupRank_ExclusionTerms_Exact = new List<string>() { "People", "History", "Society" };
-        private static List<string> GroupRank_ExclusionTerms_Contains = new List<string>() { " in ", " of ", " (company)", "fictional " };
+        private static List<string> GroupRank_ExclusionTerms_Exact = new List<string>() { "People", "History", "Society", "Fiction", "Life", "Culture", };
+        private static List<string> GroupRank_ExclusionTerms_Contains = new List<string>() { " in ", " of ", " (company)", "fictional ", " by " };
         private static List<TermGroup> GroupRankByTerm_Sum_NSLW(List<List<TermPath>> root_paths, int levels_to_use)
         {
             // group
@@ -136,7 +113,10 @@ namespace mm_svc.Terms
                     var term_group = grouped_terms.Where(p => p.t.id == term.t.id).SingleOrDefault();
                     var gl_distance = path[0].gl - term.gl;
                     if (term_group == null)
-                        grouped_terms.Add(new TermGroup() { t = term.t, NSLWs = new List<double>() { term.t.NSLW }, gl_distances = new List<int>() { gl_distance },
+                        grouped_terms.Add(new TermGroup() {
+                            t = term.t, NSLWs = new List<double>() { term.t.NSLW },
+                            gl_distances = new List<int>() { gl_distance },
+                            word_info = new List<TermGroup.StemmedWordInfo>(Words.TokenizeExStopwords(term.t.stemmed).Split(' ').Where(p => !string.IsNullOrEmpty(p)).Select(p => new TermGroup.StemmedWordInfo() { stemmed = p }))
                         });
                     else {
                         term_group.NSLWs.Add(term.t.NSLW);
@@ -145,30 +125,52 @@ namespace mm_svc.Terms
                 }
             }
 
-            // rank
+            // rank components
             grouped_terms.ForEach(p => p.avg_gl_distance = Math.Max(p.gl_distances.Average(), 1.0));
             grouped_terms.ForEach(p => p.avg_NSLW = Math.Max(p.NSLWs.Average(), 0.0));
             grouped_terms.ForEach(p => p.sum_NSLW = p.NSLWs.Sum());
 
-            // naive - sum of NSLWs
-            //grouped_terms.ForEach(p => p.S = p.sum_NSLW / Math.Pow(p.avg_gl_distance, 2)); // inversely scale with square of distance
-
-            // better? - ignores repetitions completely
-            //grouped_terms.ForEach(p => p.S = p.avg_NSLW / Math.Pow(p.avg_gl_distance, 2)); // inversely scale with square of distance
-
-            // blend - scale by sqrt repetitions
-            grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Pow(p.avg_gl_distance, 1.5)); // inverse with pow of distance
-
-            // blend - scale by sqrt repetitions
-            //grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Sqrt(p.avg_gl_distance)); // inverse root of distance
-
             // final exclusions
             grouped_terms = grouped_terms.Except(grouped_terms.Where(p => GroupRank_ExclusionTerms_Exact.Contains(p.t.name))).ToList();
-            grouped_terms = grouped_terms.Except(grouped_terms.Where(p => GroupRank_ExclusionTerms_Contains.Any(p2 => p.t.name.Contains(p2)))).ToList();
+            grouped_terms = grouped_terms.Except(grouped_terms.Where(p => GroupRank_ExclusionTerms_Contains.Any(p2 => p.t.name.ltrim().Contains(p2.ltrim())))).ToList();
 
-            Trace.WriteLine($"*** (GL={root_paths.First().First().gl}) {root_paths.First().First().t.name} root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
-            var ordered_terms = grouped_terms.OrderByDescending(p => p.S).ToList();
-            ordered_terms.ForEach(p => Trace.WriteLine($"\t{p.t} S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW} (NSLWs={string.Join(",", p.NSLWs)}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
+            // ** RANK **
+            //grouped_terms.ForEach(p => p.S = p.sum_NSLW / Math.Pow(p.avg_gl_distance, 2)); // naive - sum of NSLWs / inverse square distance
+            //grouped_terms.ForEach(p => p.S = p.avg_NSLW / Math.Pow(p.avg_gl_distance, 2)); // avg NSLW (no regard repetitions) / inversely square of distance
+            //grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Sqrt(p.avg_gl_distance)); // blend -avg NSLW * sqrt repetitions / inverse root of distance
+            grouped_terms.ForEach(p => p.S = Math.Pow(p.avg_NSLW, 2) * Math.Pow(p.NSLWs.Count, (1.0/4.0)) / Math.Pow(p.avg_gl_distance, 1.5)); // blend - sq. avg NSLW *  root 4 repetitions / inverse ~sq. of avg sdistance
+            grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
+
+            // discard bottom 10% by S normalized (for better repeat analaysis -- removes long tail)
+            grouped_terms = grouped_terms.Where(p => p.S_norm > 0.05).ToList();
+
+            // BOOST (naive stemmed similarity/repetition boosts) - only if there's variance in the repeat count
+            //   for each repeated stemmed word; take avg. S of terms that we see it in; boost the term by this avg. S of its repeated cousins...
+            grouped_terms.ForEach(p => p.word_info.ForEach(p2 => p2.R = grouped_terms.Count(p3 => p3.t.stemmed.Contains(p2.stemmed))));
+            grouped_terms.ForEach(p => p.word_info.ForEach(p2 => p2.R_norm = (double)p2.R / grouped_terms.SelectMany(p3 => p3.word_info.Select(p4 => p4.R)).Max()));
+            var R_sd = grouped_terms.SelectMany(p => p.word_info.Select(p2 => (double)p2.R)).StdDev();
+            var R_norm_sd = grouped_terms.SelectMany(p => p.word_info.Select(p2 => p2.R_norm)).StdDev();
+            const double MIN_BOOST_R_NORM = 0.8;
+            if (R_norm_sd > 0.1) {
+                grouped_terms.ForEach(p => p.word_info.ForEach(p2 => {
+                    if (p2.R_norm > MIN_BOOST_R_NORM) {
+                        var avg_S_repeat_cousins = grouped_terms.Where(p3 => p3.t.stemmed.Contains(p2.stemmed)).Average(p3 => p3.S);
+                        p.R_BOOST += Math.Sqrt(avg_S_repeat_cousins) * p2.R_norm;
+                        p.S += p.R_BOOST;
+                    }
+                }));
+            }
+
+            // S norm - again
+            grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
+
+            // dbg
+            var leaf = root_paths.First().First();
+            Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            var ordered_terms = grouped_terms.Where(p => p.S != 0).OrderByDescending(p => p.S_norm).ToList();
+            ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
+                (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
+                $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
 
             return ordered_terms;
         }

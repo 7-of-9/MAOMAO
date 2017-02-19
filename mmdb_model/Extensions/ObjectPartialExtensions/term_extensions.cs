@@ -52,6 +52,8 @@ namespace mmdb_model
         [NotMapped] public double NSLW;  // wiki_nscount_levelweighted;
         [NotMapped] public double NSLW_norm; // wiki_nscount_levelweighted_normalized
 
+        [NotMapped] public string stemmed;
+
         public override string ToString() {
             var ret = $"{this.name} ... [{this.id}] #{this.occurs_count} #NS={this.wiki_nscount}";
             if (corr_for_main != null)
