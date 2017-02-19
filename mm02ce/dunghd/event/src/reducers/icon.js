@@ -21,7 +21,7 @@ export default (state = initialState, action, auth) => {
             return Object.assign({}, state, { xp: action.payload });
         case 'SWITCH_IM_SCORE':
         case 'YOUTUBE_TEST':
-            ctxMenuLogin(auth.info, window.enableTestYoutube, window.enableImscore);
+            ctxMenuLogin(auth.info);
             return Object.assign({}, state, action.payload);
         case 'MAOMAO_DISABLE':
             chrome.contextMenus.removeAll();
@@ -45,7 +45,7 @@ export default (state = initialState, action, auth) => {
         case 'MAOMAO_ENABLE':
             {
                 if (auth.isLogin) {
-                    ctxMenuLogin(auth.info, window.enableTestYoutube, window.enableImscore);
+                    ctxMenuLogin(auth.info);
                     const url = action.payload.url;
                     const activeTabUrl = window.sessionObservable.icons.get(url);
                     if (activeTabUrl) {
