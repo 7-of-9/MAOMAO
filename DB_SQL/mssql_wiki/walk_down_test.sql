@@ -2,8 +2,8 @@
 -- yes, can walk DOWN now we know the best root...
 					
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 6285392 ***
- select count(*) from golden_term -- 25243873 ***
+ select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 6295894 ***
+ select count(*) from golden_term -- 25863984 ***
 
 -- 25m links processed, 6m pages
 select count(*) from wiki_page where processed_to_depth is not null -- 6.4m

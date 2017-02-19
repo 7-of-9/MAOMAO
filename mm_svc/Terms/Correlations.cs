@@ -28,7 +28,7 @@ namespace mm_svc.Terms
         public IEnumerable<golden_term> child_in_golden_terms { get { return corr_terms.SelectMany(p => p.child_in_golden_terms); } }//.Select(p => p.parent_term).Distinct(); } }
 
         public bool corr_term_is_gold {  get { return corr_terms.Any(p => p.is_gold); } }
-        public string corr_term_gold_desc { get { return corr_term_is_gold ? $" (*GL={corr_terms.First(p => p.is_gold).gold_level})" : ""; } }
+        public string corr_term_gold_desc { get { return corr_term_is_gold ? $" {corr_terms.First(p => p.is_gold).gold_desc}" : ""; } }
 
         public long sum_XX = -1;
 

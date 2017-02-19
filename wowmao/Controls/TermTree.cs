@@ -123,7 +123,7 @@ namespace wowmao
         TreeNode TreeNodeFromTerm(term t) {
             var tn = new TreeNode(t.ToString());
             if (t.is_gold) {
-                tn.Text += $" / *GL={t.gold_level} GC of [{string.Join(" / ", t.child_in_golden_terms.Select(p => p.parent_desc))}]";
+                tn.Text += $" / {t.gold_desc} GC of [{string.Join(" / ", t.child_in_golden_terms.Select(p => p.parent_desc))}]";
             }
             tn.Tag = t;
             return tn;
@@ -165,7 +165,7 @@ namespace wowmao
             var node = this.SelectedNode;
             if (node != null && node.Tag != null && node.Tag is correlation) {
                 var corr = node.Tag as correlation;
-                AddRemoveGolden(node);
+                //AddRemoveGolden(node);
             }
         }
 
@@ -187,46 +187,45 @@ namespace wowmao
             }
         }
 
-        void AddRemoveGolden(TreeNode tn) {
-            var corr = tn.Tag as correlation;
-            var parent_term = FirstGoldenParent(tn);
-            Debug.WriteLine("node.Level=" + tn.Level);
-            Debug.WriteLine("parent_term=" + parent_term.name);
-            Debug.WriteLine("parent_term.golden_mmcat_level=" + parent_term.gold_level);
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                this.Cursor = Cursors.WaitCursor;
-                foreach (var term in corr.corr_terms) {
-                    var golden_term = db.golden_term.Where(p => p.parent_term_id == parent_term.id && p.child_term_id == term.id).SingleOrDefault();
-                    if (golden_term != null) {
-                        // parent/child golden relation already exists; remove
-                        db.golden_term.Remove(golden_term);
-                        db.SaveChangesTraceValidationErrors();
-                    }
-                    else {
-                        // parent/child golden relation doesn't exist; create
-                        golden_term = new golden_term() {
-                            child_term_id = term.id,
-                            parent_term_id = parent_term.id,
-                            mmcat_level = parent_term.gold_level + 1
-                        };
-                        db.golden_term.Add(golden_term);
-                        db.SaveChangesTraceValidationErrors();
-                    }
-                }
-                this.Cursor = Cursors.Default;
+        //void AddRemoveGolden(TreeNode tn) {
+        //    var corr = tn.Tag as correlation;
+        //    var parent_term = FirstGoldenParent(tn);
+        //    Debug.WriteLine("node.Level=" + tn.Level);
+        //    Debug.WriteLine("parent_term=" + parent_term.name);
+        //    var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
+        //        this.Cursor = Cursors.WaitCursor;
+        //        foreach (var term in corr.corr_terms) {
+        //            var golden_term = db.golden_term.Where(p => p.parent_term_id == parent_term.id && p.child_term_id == term.id).SingleOrDefault();
+        //            if (golden_term != null) {
+        //                // parent/child golden relation already exists; remove
+        //                db.golden_term.Remove(golden_term);
+        //                db.SaveChangesTraceValidationErrors();
+        //            }
+        //            else {
+        //                // parent/child golden relation doesn't exist; create
+        //                golden_term = new golden_term() {
+        //                    child_term_id = term.id,
+        //                    parent_term_id = parent_term.id,
+        //                    mmcat_level = parent_term.gold_level + 1
+        //                };
+        //                db.golden_term.Add(golden_term);
+        //                db.SaveChangesTraceValidationErrors();
+        //            }
+        //        }
+        //        this.Cursor = Cursors.Default;
 
-                // replace node with new correlation (to reflect updated golden status)
-                this.Cursor = Cursors.WaitCursor;
-                this.BeginUpdate();
-                var old_ndx = tn.Index;
-                var old_parent = tn.Parent;
-                var new_corr = Correlations.GetTermCorrelations(new corr_input() { main_term = corr.main_term.name, corr_term_eq = corr.corr_term_name, max_appears_together_count = XX_max_GT_L1 });
-                var tn_new = TreeNodeFromCorrelation(new_corr.First());
-                old_parent.Nodes.Insert(old_ndx, tn_new);
-                old_parent.Nodes.Remove(tn);
-                this.EndUpdate();
-                this.Cursor = Cursors.Default;
-            }
-        }
+        //        // replace node with new correlation (to reflect updated golden status)
+        //        this.Cursor = Cursors.WaitCursor;
+        //        this.BeginUpdate();
+        //        var old_ndx = tn.Index;
+        //        var old_parent = tn.Parent;
+        //        var new_corr = Correlations.GetTermCorrelations(new corr_input() { main_term = corr.main_term.name, corr_term_eq = corr.corr_term_name, max_appears_together_count = XX_max_GT_L1 });
+        //        var tn_new = TreeNodeFromCorrelation(new_corr.First());
+        //        old_parent.Nodes.Insert(old_ndx, tn_new);
+        //        old_parent.Nodes.Remove(tn);
+        //        this.EndUpdate();
+        //        this.Cursor = Cursors.Default;
+        //    }
+        //}
     }
 }

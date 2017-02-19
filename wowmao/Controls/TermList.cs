@@ -72,7 +72,7 @@ namespace wowmao
         {
             var lvi = new ListViewItem(new string[] {
                 ut.wiki_S?.ToString(),
-                ut.term.is_gold ? ($"{ut.term.gold_desc}") : "",
+                ut.term.gold_desc,
                 l2_terms == null ? "-" : l2_terms.Count.ToString(),
                 ut.tss?.ToString("0"),
                 ut.tss_norm?.ToString("0.00"),

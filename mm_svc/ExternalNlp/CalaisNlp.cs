@@ -94,7 +94,7 @@ namespace mm_svc
             // Calculate TSS & TSS_norm for Calais terms -- updates TSS values on Calais url_terms & writes mapped wiki (golden) url_terms
             // 
             var tss = new mm_svc.UrlProcessor();
-            tss.ProcessUrl(db_url.id, reprocess_tss: reprocessing_known_url);
+            tss.ProcessUrl(db_url.id, reprocess: reprocessing_known_url);
 
             return ret;
         }

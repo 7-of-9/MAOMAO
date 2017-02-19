@@ -19,6 +19,8 @@ namespace tests
             // ok, try get JUST one suitable parent cat... just ONE!
 
             var test_terms_ids = new List<long>() {
+                7514235, // Reactive programming
+
                 5101699, // EDM
                 5140670, // September 11 **
                 8080633, // french defence
@@ -52,20 +54,18 @@ namespace tests
 
                     // fetch stored paths to root (raw)
                     var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                    var root_paths = GoldenPaths.ParseStoredPathsToRoot(term);
+                    var root_paths = GoldenPaths.GetStoredPathsToRoot(term);
                     if (root_paths.Count == 0) {
                         GoldenPaths.RecordPathsToRoot(term_id);
                         term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                        root_paths = GoldenPaths.ParseStoredPathsToRoot(term);
+                        root_paths = GoldenPaths.GetStoredPathsToRoot(term);
                     }
 
                     //
-                    // NEXT: probably final touch is to take dumb "word commonality" across final outputs --
-                    //       e.g. batman -> "superheroes" and "heroes" somehow need to be boosted by virtue of repitition
+                    // NEXT: wire up to frmMain processing loop (i.e. persist result, in gt_paths_to_root?); run for all
+                    //       looking for commonality of suggested parent/related across URL wiki terms; review dynamic categorizor...
                     //
-                    // then --> run full-auto random ... wire up to UrlProcessing
-                    //
-                    GoldenPaths.ProcessPathsToRoot(root_paths);
+                    GoldenParents.ProcessPathsToRoot(root_paths);
                 }
             }
         }

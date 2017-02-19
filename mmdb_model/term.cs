@@ -25,6 +25,8 @@ namespace mmdb_model
             this.term_matrix1 = new HashSet<term_matrix>();
             this.user_url_classification = new HashSet<user_url_classification>();
             this.url_term = new HashSet<url_term>();
+            this.gt_parent = new HashSet<gt_parent>();
+            this.gt_parent1 = new HashSet<gt_parent>();
         }
     
         public long id { get; set; }
@@ -52,5 +54,9 @@ namespace mmdb_model
         public virtual ICollection<user_url_classification> user_url_classification { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_term> url_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_parent> gt_parent { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_parent> gt_parent1 { get; set; }
     }
 }

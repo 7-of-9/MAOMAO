@@ -233,7 +233,7 @@ namespace wowmao
                 // ** ProcessTss **
                 //
                 var tss = new mm_svc.UrlProcessor();
-                var l1_url_terms = tss.ProcessUrl(url.id, reprocess_tss: chkReprocess.Checked);
+                var l1_url_terms = tss.ProcessUrl(url.id, reprocess: chkReprocess.Checked);
 
                 // (1) get url_terms (L1 terms)
                 /*if (this.url_term_cache.ContainsKey(url.id))
@@ -355,20 +355,6 @@ namespace wowmao
                 }*/
 
                 //
-                // (NOTE/TODO:
-                //
-                //   "analogs" -- "Chess" being same as "chess" is functionally identical to "World Trade Center" being same as "WTC"
-                //    treat them identically, i.e. an admin-mapping of analogs is needed; programmatic case-handling will only cover half of it.
-                //
-                //   "exclusions" -- kind of similar - need admin fn. to mark terms as excluded from presentation, e.g. "outline of chess" will appear v.
-                //       frequently as gold suggestion (compare: "computer chess", which is actually good - very hard to programatically dismabiguate them)
-                //     so, must want admin fn. to mark a gold-term as "excluded" -- it lives as normal, the only difference being that its excluded flag
-                //     will remove it from presentation.
-                //
-                // both of these are presentation-level issues: marking gold terms as analogs, and marking gold terms as excluded from presentation)
-                //
-
-                //
                 // output/suggest phase
                 //
 
@@ -416,7 +402,7 @@ namespace wowmao
                     out_existing_l1_l2_gold =
                     
                         // existing L1 
-                        direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > p.term.existing_gold_min_tss_norm)
+                        direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > 0.2)//p.term.existing_gold_min_tss_norm)
 
                        // existing L2 
                        //.Union(l2_url_terms.OrderByDescending(p => p.tss_norm).Where(p => p.term.is_gold && p.tss_norm > p.term.existing_gold_min_tss_norm))
@@ -433,31 +419,8 @@ namespace wowmao
                     item.SubItems[7].Text = DateTime.UtcNow.ToString("dd MMM yyyy");
                     item.SubItems[8].Text = final_mmcats.Count().ToString();
 
-                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] *GL={p.gold_level}"));
+                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] {p.gold_desc}"));
                 }
-
-                //
-                // TODO -- move this into the service layer
-                //         winform can now either just query urls for processed state (read from url-golden-term) or it can
-                //          walk ([re]process) each url, as above, i.e. find new gold and record output
-                //      
-
-                //SetCols(lvwUrls);
-
-
-                // ***
-                // plan -- should auto-golden high TSS terms to the closest (deepest)
-                //         golden term (either correlated or direct)
-                //
-                // intent -- 2-level hierarchy on all URLs
-                //
-                // first: simple extraction of best-golden
-                //      * prefer any direct golden terms
-                //      * if no golden terms, need heuristic for picking a single best corrleated golden term
-                //          > most frequently occuring correlated golden across top TSS terms
-                //
-                // only after this: can think about auto-suggesting L2 golden terms for high TSS scores
-                //  (would be children of best-golden above).
             }
 
             if (new_gold_count > 0) {
@@ -557,28 +520,20 @@ namespace wowmao
                 if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
                 {
-                    var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
-                    root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.t.name + " #NS=" + p2.t.wiki_nscount)) + "\r\n"));
-
-                    foreach (var root_path in root_paths)
-                        all_root_paths.Add(root_path);
+                    var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+                    parents.ForEach(p => txtPathsToRoot2.AppendText($"S_norm={p.S_norm.ToString("0.00")} {p.parent_term} S={p.S.ToString("0.00")}\r\n"));
                 }
             }
 
-            //
-            // TODO: tune ProcessPathsToRoot just a little more:
-            //     (1) exclusions
-            //     (2) repeated (substr) terms
-            //     (3) 1 or 2 levels?
-            //
+          
             // remember: ProcessPathsToRoot() itself does NOT have to be perfect; intention is to x-ref all URL wiki terms processed suggesed parents
             //           to try and find some overlap/commonality; that's our resultant master suggested parent/term for the URL
             //
-            TextBoxTraceListener listener = new TextBoxTraceListener(this.txtPathsToRoot2);
-            Trace.Listeners.Add(listener);
-            txtPathsToRoot2.Text = "";
-            GoldenPaths.ProcessPathsToRoot(all_root_paths);
-            Trace.Listeners.Remove(listener);
+            //TextBoxTraceListener listener = new TextBoxTraceListener(this.txtPathsToRoot2);
+            //Trace.Listeners.Add(listener);
+            //txtPathsToRoot2.Text = "";
+            //GoldenPaths.ProcessPathsToRoot(all_root_paths);
+            //Trace.Listeners.Remove(listener);
 
             //this.txtPathsToRoot2.Text += "\r\nTerm Top Counts across Paths:\r\n";
             //foreach (var kvp in path_term_counts.Take(10))

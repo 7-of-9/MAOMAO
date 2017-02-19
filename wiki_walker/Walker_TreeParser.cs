@@ -150,7 +150,7 @@ namespace wiki_walker
                                             .OrderByDescending(p => p.cl_from).ToListNoLock(), 30, 3);
                     }
 
-                    var child_pages_to_walk = new List<wiki_page>(); // new ConcurrentBag<wiki_page>();
+                    var child_pages_to_walk = new ConcurrentBag<wiki_page>(); //new List<wiki_page>(); // 
                     bool saw_concurrency_exception_on_GTs_any = false;
                     var child_page_cl_ids_to_update = new List<Guid>();
                     try {
@@ -521,15 +521,14 @@ namespace wiki_walker
             else if (page_name_ltrim.StartsWith("commons_category_with")) exclude = true;
             else if (page_name_ltrim.StartsWith("creative_commons")) exclude = true;
 
-            else if (page_name_ltrim.Contains("categories_")) exclude = true;
             //else if (page_name_ltrim.Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
             else if (page_name_ltrim.Contains("underpopulated_")
                   && page_name_ltrim.Contains("_categories")) exclude = true;
-            else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
             else if (page_name_ltrim.StartsWith("hidden_categories")) exclude = true;
-            else if (page_name_ltrim.StartsWith("all_redirect_categories")) exclude = true;
             else if (page_name_ltrim.StartsWith("tracking_categories")) exclude = true;
 
+            else if (page_name_ltrim.Contains("categories_")) exclude = true;
+            else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
             else if (page_name_ltrim.Contains("pages_")) exclude = true;
 
             else if (page_name_ltrim.StartsWith("wikipedia_")) exclude = true;
@@ -561,10 +560,6 @@ namespace wiki_walker
 
             else if (page_name_ltrim.Contains("biography_with_signature")) exclude = true;
             else if (page_name_ltrim.Contains("image_galleries")) exclude = true;
-
-            else if (page_name_ltrim.Contains("incomplete_lists")) exclude = true;
-            else if (page_name_ltrim.Contains("related_lists")) exclude = true;
-            else if (page_name_ltrim.Contains("lists_")) exclude = true;
 
             else if (page_name_ltrim.Contains("infobox")) exclude = true;
             else if (page_name_ltrim.Contains("chembox")) exclude = true;
@@ -599,10 +594,22 @@ namespace wiki_walker
             else if (page_name_ltrim.Contains("languages_with")) exclude = true;
             else if (page_name_ltrim.Contains("languages_which")) exclude = true;
 
-            else if (page_name_ltrim.StartsWith("redirect_tracking")) exclude = true;
-            else if (page_name_ltrim.Contains("redirects")) exclude = true;
 
-            else if (page_name_ltrim.StartsWith("main_namespace")) exclude = true;
+
+            //else if (page_name_ltrim.StartsWith("redirect_tracking")) exclude = true;
+            //else if (page_name_ltrim.Contains("redirects")) exclude = true;
+            //else if (page_name_ltrim.StartsWith("main_namespace")) exclude = true;
+            //else if (page_name_ltrim.StartsWith("all_redirect_categories")) exclude = true;
+            //else if (page_name_ltrim.Contains("categories_")) exclude = true;
+            //else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
+
+            //else if (page_name_ltrim.Contains("incomplete_lists")) exclude = true;
+            //else if (page_name_ltrim.Contains("related_lists")) exclude = true;
+            //else if (page_name_ltrim.Contains("lists_")) exclude = true;
+
+            //else if (page_name_ltrim.Contains("pages_")) exclude = true;
+
+
             else if (page_name_ltrim.StartsWith("webarchive_")) exclude = true;
 
             else if (page_name_ltrim.StartsWith("all_stub_articles")) exclude = true;

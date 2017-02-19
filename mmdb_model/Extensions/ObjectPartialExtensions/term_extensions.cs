@@ -19,7 +19,7 @@ namespace mmdb_model
         [NotMapped]
         public url_term parent_url_term { get; set; }
 
-        //public string gold_desc { get { return this.is_gold ? $" (*GL={this.gold_level})" : ""; } }
+        public string gold_desc { get { return this.is_gold ? "(*GT)" : ""; } }
 
         [NotMapped] public ICollection<golden_term> parent_in_golden_terms { get { return this.golden_term1; } } //was: golden_children
 
@@ -30,15 +30,15 @@ namespace mmdb_model
         } }
 
         // REPLACED: w/ TermPath class -- remove (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
-        [NotMapped] public int gold_level { get; set; }
+        //[NotMapped] public int gold_level { get; set; }
 
         [NotMapped] public ICollection<gt_path_to_root> paths_to_root {  get { return this.gt_path_to_root1; } }
 
-        [NotMapped] public double existing_gold_min_tss_norm { get {
-            if (this.gold_level == 1) return 0.3;
-            if (this.gold_level == 2) return 0.6;
-            return 0.9;
-        }}
+        //[NotMapped] public double existing_gold_min_tss_norm { get {
+        //    if (this.gold_level == 1) return 0.3;
+        //    if (this.gold_level == 2) return 0.6;
+        //    return 0.9;
+        //}}
 
         [NotMapped] public term suggested_gold_parent { get; set; }
 
