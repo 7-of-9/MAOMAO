@@ -521,21 +521,12 @@ namespace wiki_walker
             else if (page_name_ltrim.StartsWith("commons_category_with")) exclude = true;
             else if (page_name_ltrim.StartsWith("creative_commons")) exclude = true;
 
-            //else if (page_name_ltrim.Contains("_categories")) not_a_topic = true; // too broad: "Taxonomic_categories"
-            else if (page_name_ltrim.Contains("underpopulated_")
-                  && page_name_ltrim.Contains("_categories")) exclude = true;
-            else if (page_name_ltrim.StartsWith("hidden_categories")) exclude = true;
-            else if (page_name_ltrim.StartsWith("tracking_categories")) exclude = true;
-
-            else if (page_name_ltrim.Contains("categories_")) exclude = true;
-            else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
-            else if (page_name_ltrim.Contains("pages_")) exclude = true;
+            //else if (page_name_ltrim.Contains("underpopulated_") && page_name_ltrim.Contains("_categories")) exclude = true;
 
             else if (page_name_ltrim.StartsWith("wikipedia_")) exclude = true;
             else if (page_name_ltrim.Contains("wikipedia_administration")) exclude = true;
 
-            else if (page_name_ltrim.Contains("use_")
-                 && page_name_ltrim.Contains("_english")) exclude = true;
+            else if (page_name_ltrim.Contains("use_") && page_name_ltrim.Contains("_english")) exclude = true;
             else if (page_name_ltrim.StartsWith("use_dmy")) exclude = true;
             else if (page_name_ltrim.StartsWith("use_mdy")) exclude = true;
             else if (page_name_ltrim.StartsWith("use_harvard")) exclude = true;
@@ -603,6 +594,10 @@ namespace wiki_walker
             //else if (page_name_ltrim.Contains("categories_")) exclude = true;
             //else if (page_name_ltrim.Contains("very_large_categories")) exclude = true;
 
+            //else if (page_name_ltrim.StartsWith("container_categories")) exclude = true;
+            //else if (page_name_ltrim.StartsWith("fundamental_categories")) exclude = true;
+            //else if (page_name_ltrim.StartsWith("counter_categories")) exclude = true;
+
             //else if (page_name_ltrim.Contains("incomplete_lists")) exclude = true;
             //else if (page_name_ltrim.Contains("related_lists")) exclude = true;
             //else if (page_name_ltrim.Contains("lists_")) exclude = true;
@@ -610,12 +605,10 @@ namespace wiki_walker
             //else if (page_name_ltrim.Contains("pages_")) exclude = true;
 
 
+
             else if (page_name_ltrim.StartsWith("webarchive_")) exclude = true;
 
             else if (page_name_ltrim.StartsWith("all_stub_articles")) exclude = true;
-            else if (page_name_ltrim.StartsWith("container_categories")) exclude = true;
-            else if (page_name_ltrim.StartsWith("fundamental_categories")) exclude = true;
-            else if (page_name_ltrim.StartsWith("counter_categories")) exclude = true;
             else if (page_name_ltrim.EndsWith("_stubs")) exclude = true;
 
             //else if (page_name_ltrim.EndsWith("_births")) exclude = true; // e.g. "1945_births"

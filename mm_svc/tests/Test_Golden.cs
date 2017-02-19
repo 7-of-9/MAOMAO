@@ -62,8 +62,8 @@ namespace tests
                     }
 
                     //
-                    // NEXT: wire up to frmMain processing loop (i.e. persist result, in gt_paths_to_root?); run for all
-                    //       looking for commonality of suggested parent/related across URL wiki terms; review dynamic categorizor...
+                    // NEXT: (1) todo -- retest ProcessPathsToRoot() now that walker has fewer exclusions (ProcessPathsToRoot might need the exclusions)
+                    //       (2) frmMain -- UrlCategorizer: looking for commonality of suggested parent/related across URL wiki terms (use stemming?)
                     //
                     GoldenParents.ProcessPathsToRoot(root_paths);
                 }
