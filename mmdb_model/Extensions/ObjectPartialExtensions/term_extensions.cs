@@ -19,7 +19,7 @@ namespace mmdb_model
         [NotMapped]
         public url_term parent_url_term { get; set; }
 
-        public string gold_desc { get { return this.is_gold ? $" (*GL={this.gold_level})" : ""; } }
+        //public string gold_desc { get { return this.is_gold ? $" (*GL={this.gold_level})" : ""; } }
 
         [NotMapped] public ICollection<golden_term> parent_in_golden_terms { get { return this.golden_term1; } } //was: golden_children
 
@@ -29,15 +29,8 @@ namespace mmdb_model
             return child_in_golden_terms.Count > 0 || this.parent_in_golden_terms.Count > 0;
         } }
 
-        [NotMapped] public int gold_level { get {
-            // NOTE -- this can't work now that term can have >1 golden parent! (wiki)
-            //if (child_in_golden_terms.Count > 0)
-            //    return child_in_golden_terms.Single(p => p.child_term_id == this.id).mmcat_level; 
-            //else
-            //    return 0;
-            // FIXME ...
-            return -1;
-        }}
+        // REPLACED: w/ TermPath class -- remove (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
+        [NotMapped] public int gold_level { get; set; }
 
         [NotMapped] public ICollection<gt_path_to_root> paths_to_root {  get { return this.gt_path_to_root1; } }
 
@@ -60,7 +53,7 @@ namespace mmdb_model
         [NotMapped] public double NSLW_norm; // wiki_nscount_levelweighted_normalized
 
         public override string ToString() {
-            var ret = $"{this.name} {gold_desc} ... [{this.id}] #{this.occurs_count} #NS={this.wiki_nscount}";
+            var ret = $"{this.name} ... [{this.id}] #{this.occurs_count} #NS={this.wiki_nscount}";
             if (corr_for_main != null)
                 ret += $"corr_for_main={this.corr_for_main?.ToString("0.0000")}";
             if (corr_for_related != null)

@@ -549,7 +549,7 @@ namespace wowmao
             //}
 
             this.txtPathsToRoot2.Text = "";
-            var all_root_paths = new List<List<term>>();
+            var all_root_paths = new List<List<GoldenPaths.TermPath>>();
             //foreach (var lvi in lvwUrlTerms.Items)
             {
                 var lvi = lvwUrlTerms.SelectedItems[0];
@@ -558,7 +558,7 @@ namespace wowmao
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
                 {
                     var root_paths = GoldenPaths.ParseStoredPathsToRoot(tag.ut.term);
-                    root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.name + " #NS=" + p2.wiki_nscount)) + "\r\n"));
+                    root_paths.ForEach(p => this.txtPathsToRoot2.AppendText(tag.ut.term.name + " // " + string.Join(" / ", p.Take(p.Count - 1).Select(p2 => p2.t.name + " #NS=" + p2.t.wiki_nscount)) + "\r\n"));
 
                     foreach (var root_path in root_paths)
                         all_root_paths.Add(root_path);

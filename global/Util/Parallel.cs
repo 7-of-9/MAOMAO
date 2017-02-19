@@ -11,13 +11,11 @@ namespace mm_global
     {
         public static void ForEach<T>(IEnumerable<T> source, Action<T> action)
         {
-            Parallel.ForEach(source, action);
-            //var tasks = new List<Task>();
-            //foreach (T item in source)
-            //{
-            //    tasks.Add(Task.Factory.StartNew(() => action(item)));
-            //}
-            //Task.WaitAll(tasks.ToArray());
+            var tasks = new List<Task>();
+            foreach (T item in source) {
+                tasks.Add(Task.Factory.StartNew(() => action(item)));
+            }
+            Task.WaitAll(tasks.ToArray());
         }
     }
 }
