@@ -27,4 +27,38 @@ injectGlobal`
     font-family: Georgia, Times, 'Times New Roman', serif;
     line-height: 1.5em;
   }
+
+  @media screen and (min-width: 300px) {
+    .bricklayer-column-sizer {
+      width: 50%;
+    }
+  }
+
+  @media screen and (min-width: 400px) {
+    .bricklayer-column-sizer {
+      width: 33%;
+    }
+  }
+
+  @media screen and (min-width: 700px) {
+    .bricklayer-column-sizer {
+      width: 25%;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    .bricklayer-column-sizer {
+      width: 20%;
+    }
+  }
+
+  @media screen and (min-width: 1200px) {
+    .bricklayer-column-sizer {
+      width: 16%;
+    }
+  }
+
+  .box {
+    margin-bottom: 10px;
+  }
 `;
