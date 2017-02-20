@@ -21,3 +21,4 @@ order by user_url_id, pri
 
 select gtp.*, t.* from gt_path_to_root gtp, term t where t.id = gtp.seq_term_id order by term_id, path_no, seq
 -- delete from gt_path_to_root
+-- delete from gt_parent

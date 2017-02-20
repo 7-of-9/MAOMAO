@@ -24,17 +24,17 @@ namespace mm_svc.Terms
         //
         // If not already done, records results of ProcessPathsToRoot() in gt_parent table
         //
-        public static bool RecordSuggestedParents(long term_id, bool reprocess)
+        public static List<gt_parent> GetOrProcessSuggestedParents(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
                 if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
-                    return false;
+                    return GetStoredParents(term_id);
 
                 // get term
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                var paths = GetStoredPathsToRoot(term);
-                var suggested = ProcessPathsToRoot(paths);
+                var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
+                var suggested = GetSuggestedParents(paths);
 
                 // remove
                 db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
@@ -46,7 +46,7 @@ namespace mm_svc.Terms
                 db.gt_parent.AddRange(gt_parents);
                 db.SaveChangesTraceValidationErrors();
 
-                return true;
+                return GetStoredParents(term_id);
             }
         }
 
@@ -59,7 +59,7 @@ namespace mm_svc.Terms
         private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() {
             //"People by", " people"
         };
-        public static List<TermGroup> ProcessPathsToRoot(List<List<TermPath>> root_paths)
+        public static List<TermGroup> GetSuggestedParents(List<List<TermPath>> root_paths)
         {
             // expects: all paths to root to be for the same leaf term!
             var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);

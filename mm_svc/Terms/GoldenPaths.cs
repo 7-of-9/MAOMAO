@@ -14,6 +14,20 @@ namespace mm_svc.Terms
 {
     public static class GoldenPaths
     {
+        public static List<List<TermPath>> GetOrProcessPathsToRoot(long term_id)
+        {
+            using (var db = mm02Entities.Create()) {
+                var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
+                var root_paths = GoldenPaths.GetStoredPathsToRoot(term);
+                if (root_paths.Count == 0) {
+                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id);
+                    term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
+                    root_paths = GoldenPaths.GetStoredPathsToRoot(term);
+                }
+                return root_paths;
+            }
+        }
+
         public class TermPath {
             public term t;
             public short gl; // golden_level -- (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
@@ -137,7 +151,7 @@ again:
         //
         // If not already done, calculates and stores paths to root for supplied term
         //
-        public static bool RecordPathsToRoot(long term_id)
+        public static bool ProcessAndRecordPathsToRoot(long term_id)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop

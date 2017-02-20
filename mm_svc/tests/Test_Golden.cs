@@ -19,6 +19,10 @@ namespace tests
             // ok, try get JUST one suitable parent cat... just ONE!
 
             var test_terms_ids = new List<long>() {
+
+                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
+                12332349, // Ajax -- disambiguation term
+
                 7514235, // Reactive programming
 
                 5101699, // EDM
@@ -51,24 +55,29 @@ namespace tests
 
             using (var db = mm02Entities.Create()) {
                 foreach (var term_id in test_terms_ids) {
-
                     // fetch stored paths to root (raw)
-                    var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                    var root_paths = GoldenPaths.GetStoredPathsToRoot(term);
-                    if (root_paths.Count == 0) {
-                        GoldenPaths.RecordPathsToRoot(term_id);
-                        term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                        root_paths = GoldenPaths.GetStoredPathsToRoot(term);
-                    }
+                    var root_paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
 
                     //
-                    // NEXT: (1) todo -- retest ProcessPathsToRoot() now that walker has fewer exclusions (ProcessPathsToRoot might need the exclusions)
+                    // NEXT: (1) TODO -- retest ProcessPathsToRoot() now that walker has fewer exclusions;
+                    //            (a) ProcessPathsToRoot will need exclusions, e.g. "Redirects_to_disambiguation_pages" ***
+                    //
+                    //              > actually, not necesssary if calais->wiki matcher actively *excludes* any disambiguation terms?
+                    //                i.e. if any term.name like '{calais_name} (%' > then use one or all disambiguation wiki terms
+                    //                     else, use exact matching wiki term.name = '{calais_name}'
+                    //
+                    //              >>> (1.1) frmMain -- UrlProcessor -- should match disambiguation wiki terms, e.g. Calais "Ajax" -> Wiki "Ajax (Programming)"
+                    //
+                    //            (b) pages now linking to (e.g.) "nanotechnology_portal", need special handling, i.e. strip " portal" from parents
+                    //              DISREGARD for now -- can't see it in first test case for whatever reason; revisit if it interferes with higher level processing
+                    //
                     //       (2) frmMain -- UrlCategorizer: looking for commonality of suggested parent/related across URL wiki terms (use stemming?)
                     //
-                    GoldenParents.ProcessPathsToRoot(root_paths);
+                    GoldenParents.GetSuggestedParents(root_paths);
                 }
             }
         }
+
 
         [TestMethod]
         public void CalculatePathsToRoot_Test0()

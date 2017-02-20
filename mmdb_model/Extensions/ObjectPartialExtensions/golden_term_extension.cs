@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace mmdb_model
 {
-    [DebuggerDisplay("{parent_term.name} --> {child_term.name}")]
+    [DebuggerDisplay("{parent_term.name} ==> {child_term.name}")]
     public partial class golden_term
     {
         [NotMapped] public term child_term { get { return this.term; } }

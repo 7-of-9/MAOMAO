@@ -61,8 +61,12 @@ namespace wiki_walker
                 using (var db = mm02Entities.Create())
                 {
                     top_term_name = args[1]; // e.g. Main_topic_classifications for rootcat, or English_women_comedians for a subcat
-                    var term = db.terms.Where(p => p.name == top_term_name.Replace("_", " ") && p.term_type_id == (int)g.TT.WIKI_NS_14).Single();
-                    var mmcat_level = db.golden_term.Where(p => p.parent_term_id == term.id).Max(p => p.mmcat_level);
+                    var term = db.terms.Where(p => p.name == top_term_name.Replace("_", " ") && p.term_type_id == (int)g.TT.WIKI_NS_14).SingleOrDefault();
+                    var mmcat_level = 0;
+                    if (term != null) // trying to add support for redirect hierarchy, needed for capitalization dismabiguation terms (?) e.g. "AJAX"
+                        mmcat_level = db.golden_term.Where(p => p.parent_term_id == term.id).Max(p => p.mmcat_level);
+                    else
+                        mmcat_level = 1; // what else to do??
 
                     try { max_depth = Convert.ToInt32(args[2]); } catch { }
 
@@ -92,8 +96,8 @@ namespace wiki_walker
 
         private static bool WalkDownTree(List<long> parent_page_ids, List<string> parent_page_names, string parent_page_search, int level)
         {
-            int par_max_terms = Debugger.IsAttached ? 1 : 1;// 1;    // definitely slows down if any >1 parallelism, over both loops!!
-            int par_max_recurse = Debugger.IsAttached ? 1 : 1;// 16; // definitely slows down if any >1 parallelism, over both loops!!
+            int par_max_terms = Debugger.IsAttached ? 1 : 8;// 1;    // definitely slows down if any >1 parallelism, over both loops!!
+            int par_max_recurse = Debugger.IsAttached ? 1 : 2;// 16; // definitely slows down if any >1 parallelism, over both loops!!
             var parent_path = "";// string.Join("/", parent_page_names);
 
             //if (parent_page_counter % 5000 == 0) {
@@ -502,12 +506,9 @@ namespace wiki_walker
         {
             var exclude = false;
 
-            if (page_name_ltrim.Contains("articles_")) exclude = true;
-            else if (page_name_ltrim.Contains("_articles")) exclude = true;
+            //if (page_name_ltrim == ("contents")) exclude = true;
 
-            else if (page_name_ltrim == ("articles")) exclude = true;
-            else if (page_name_ltrim == ("contents")) exclude = true;
-            else if (page_name_ltrim == ("wikiboxes")) exclude = true;
+            if (page_name_ltrim == ("wikiboxes")) exclude = true;
 
             // include: could be interesting
             //else if (page_name_ltrim == ("good_articles")) not_a_topic = true; //***
@@ -523,7 +524,6 @@ namespace wiki_walker
 
             //else if (page_name_ltrim.Contains("underpopulated_") && page_name_ltrim.Contains("_categories")) exclude = true;
 
-            else if (page_name_ltrim.StartsWith("wikipedia_")) exclude = true;
             else if (page_name_ltrim.Contains("wikipedia_administration")) exclude = true;
 
             else if (page_name_ltrim.Contains("use_") && page_name_ltrim.Contains("_english")) exclude = true;
@@ -558,7 +558,6 @@ namespace wiki_walker
             else if (page_name_ltrim.Contains("_needing_confirmation")) exclude = true;
             else if (page_name_ltrim.Contains("requests_for")) exclude = true;
 
-            else if (page_name_ltrim.StartsWith("wikiproject_")) exclude = true;
             else if (page_name_ltrim.Contains("wikidata_")) exclude = true;
             else if (page_name_ltrim.Contains("_wikidata")) exclude = true;
             else if (page_name_ltrim.Contains("Wikiquote")) exclude = true;
@@ -585,6 +584,14 @@ namespace wiki_walker
             else if (page_name_ltrim.Contains("languages_with")) exclude = true;
             else if (page_name_ltrim.Contains("languages_which")) exclude = true;
 
+
+            //else if (page_name_ltrim.StartsWith("wikiproject_")) exclude = true;
+
+            //if (page_name_ltrim.Contains("articles_")) exclude = true;
+            //else if (page_name_ltrim.Contains("_articles")) exclude = true;
+            //else if (page_name_ltrim == ("articles")) exclude = true;
+
+            //else if (page_name_ltrim.StartsWith("wikipedia_")) exclude = true;
 
 
             //else if (page_name_ltrim.StartsWith("redirect_tracking")) exclude = true;

@@ -2,12 +2,68 @@
 -- yes, can walk DOWN now we know the best root...
 					
 -- counts done...
- select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 6295894 ***
- select count(*) from golden_term -- 25863984 ***
+ select count(*) from term where term_type_id in (0,14) -- (800k @ d6, ns14 only) -- 7414238 ***
+ select count(*) from golden_term -- 27866222 ***
 
 -- 25m links processed, 6m pages
 select count(*) from wiki_page where processed_to_depth is not null -- 6.4m
 select count(*) from wiki_catlink where processed_to_depth is not null -- 25m
+
+-- TODO: after all special pages have run; then run all top-level terms again RMD to pick up links again (might update mmcat more accurately, too)
+
+-- TODO: 
+-- missing term analysis > case sensitivity < -- need to set column sensitivities, then rerun small test parent node for Ajax (disambiguation page?)
+-- have not get any valid info for "ajax"
+-- surely, first need to remove all terms that are ambiguous by case (from term and golden_term)??
+
+--
+-- UPDATE: seems NOT ... maybe good: https://en.wikipedia.org/wiki/Ajax
+--			disambiguation is done by BRACKETS, e.g. 
+select * from term where name = 'ajax (programming)' -- i.e. we should match Calais term "ajax" to all wiki terms **sans brackets**
+
+select * from term where name = 'ajax'	--12332349
+ -- 1569 (Ajax 0 wiki_catlink:Disambiguation_pages) **
+ -- 12595654 (AjaX 0 wiki_catlink:Redirects_from_members)
+ -- 2447624 (AJAX 0 wiki_catlink:NONE!)
+ -- 24138217 (Ajax 14 wiki_catlink:Disambiguation_categories) **
+select * from wiki_page where page_title = 'ajax'
+select * from wiki_catlink where cl_from = 24138217
+
+	select * from wiki_page where page_title = 'Redirects_from_other_capitalisations' -- 4411633
+	select * from wiki_catlink where cl_from = 4411633
+
+		select * from wiki_page where page_title = 'Main_namespace_redirects' -- All_redirect_categories Redirect_tracking_categories
+		select * from wiki_catlink where cl_from = 30017226
+
+			select * from wiki_page where page_title = 'Wikipedia_redirects' -- Container_categories
+			select * from wiki_catlink where cl_from = 16635674
+
+				select * from wiki_page where page_title = 'Category-Class_redirect_pages' 
+				select * from wiki_catlink where cl_from = 47250883
+
+					select * from wiki_page where page_title = 'Category-Class_articles' --  WikiProject_Redirect_pages
+					select * from wiki_catlink where cl_from = 9432874
+
+						select * from wiki_page where page_title = 'Container_categories' --  Container_categories
+						select * from wiki_catlink where cl_from = 30176254
+
+							select * from wiki_page where page_title = 'Wikipedia_categories' --  Tracking_categories Wikipedia_categorization
+							select * from wiki_catlink where cl_from = 35505592
+
+								select * from wiki_page where page_title = 'Wikipedia_navigation'
+								select * from wiki_catlink where cl_from = 52091499
+
+									select * from wiki_page where page_title = 'Contents'
+									select * from wiki_catlink where cl_from = 14105005
+							
+select top 100 * from term order by id desc		
+				
+							
+
+select count(*) from wiki_page where processed_to_depth is null --34,172,917
+select count(*) from wiki_page where processed_to_depth is not null --6,476,279
+
+---
 
   select count(*) from wiki_page where page_namespace in (14) -- -- 1.4m
   select count(*) from wiki_page where page_namespace in (0) -- -- 12.8m
