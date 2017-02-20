@@ -25,10 +25,11 @@ describe('<SearchBar />', () => {
 
   it('handles clicks', () => {
     const onClickSpy = jest.fn();
+    const onChangeSpy = jest.fn();
     const renderedComponent = mount(
       <Provider store={store}>
         <LanguageProvider messages={translationMessages}>
-          <SearchBar onClick={onClickSpy} />
+          <SearchBar onSearch={onClickSpy} onChange={onChangeSpy} />
         </LanguageProvider>
       </Provider>
     );

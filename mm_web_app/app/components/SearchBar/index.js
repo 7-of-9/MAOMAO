@@ -40,15 +40,16 @@ function SearchBar(props) {
   return (
     <div>
       <FormattedMessage {...messages.header} />
-      <Input placeholder={formatMessage(messages.placeholder)} type="text" />
-      <Button primary onClick={props.onClick}><FormattedMessage {...messages.button} /></Button>
+      <Input onChange={props.onChange} placeholder={formatMessage(messages.placeholder)} type="text" />
+      <Button primary onClick={props.onSearch}><FormattedMessage {...messages.button} /></Button>
     </div>
   );
 }
 
 SearchBar.propTypes = {
   intl: intlShape.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSearch: PropTypes.func.isRequired,
 };
 
 export default injectIntl(SearchBar);

@@ -1,0 +1,45 @@
+exports[`getGoogleKnowledge Saga should call the googleLoadingError action if the response errors 1`] = `
+Object {
+  "@@redux-saga/IO": true,
+  "SELECT": Object {
+    "args": Array [],
+    "selector": [Function],
+  },
+}
+`;
+
+exports[`getGoogleKnowledge Saga should call the googleLoadingError action if the response errors 2`] = `
+Object {
+  "@@redux-saga/IO": true,
+  "CALL": Object {
+    "args": Array [
+      "https://kgsearch.googleapis.com/v1/entities:search?query=taylor swift&key=AIzaSyDa9LV6fTUGRvFYki0GLSS2NzNP-CylMEI&limit=10&indent=True",
+    ],
+    "context": null,
+    "fn": [Function],
+  },
+}
+`;
+
+exports[`getGoogleKnowledge Saga should dispatch the googleLoaded action if it requests the data successfully 1`] = `
+Object {
+  "@@redux-saga/IO": true,
+  "SELECT": Object {
+    "args": Array [],
+    "selector": [Function],
+  },
+}
+`;
+
+exports[`getGoogleKnowledge Saga should dispatch the googleLoaded action if it requests the data successfully 2`] = `
+Object {
+  "@@redux-saga/IO": true,
+  "CALL": Object {
+    "args": Array [
+      "https://kgsearch.googleapis.com/v1/entities:search?query=taylor swift&key=AIzaSyDa9LV6fTUGRvFYki0GLSS2NzNP-CylMEI&limit=10&indent=True",
+    ],
+    "context": null,
+    "fn": [Function],
+  },
+}
+`;

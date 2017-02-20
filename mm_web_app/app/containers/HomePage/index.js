@@ -9,8 +9,11 @@
  * the linting exception.
  */
 
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
+import Helmet from 'react-helmet';
 import { FormattedMessage } from 'react-intl';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 
 import Block from 'components/Block';
 import SearchBar from 'components/SearchBar';
@@ -18,38 +21,60 @@ import FacebookGraph from 'components/FacebookGraph';
 import GraphKnowledge from 'components/GraphKnowledge';
 import Imgur from 'components/Imgur';
 import Instagram from 'components/Instagram';
+import Reddit from 'components/Reddit';
 import YoutubeVideo from 'components/YoutubeVideo';
 
 import messages from './messages';
+import { makeSelectKeyword } from './selectors';
+import { googleSearch } from '../App/actions';
+import { changeKeyword } from './actions';
 
-class HomePage extends Component {
-
-  constructor(props) {
-    super(props);
-    this.doSearch = this.doSearch.bind(this);
-  }
-
-  doSearch() {
-    console.warn('doSearch');
-  }
-
+export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
       <div>
+        <Helmet
+          title="Home Page"
+          meta={[
+            { name: 'description', content: 'MaoMao homepage' },
+          ]}
+        />
         <h1>
           <FormattedMessage {...messages.header} />
         </h1>
-        <SearchBar onClick={this.doSearch} />
+        <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
         <Block>
           <FacebookGraph />
           <GraphKnowledge />
           <Imgur />
           <Instagram />
           <YoutubeVideo />
+          <Reddit />
         </Block>
       </div>
     );
   }
 }
 
-export default HomePage;
+HomePage.propTypes = {
+  doSearch: PropTypes.func,
+  onChange: PropTypes.func,
+};
+
+export function mapDispatchToProps(dispatch) {
+  return {
+    onChange: (e) => {
+      dispatch(changeKeyword(e.target.value));
+    },
+    doSearch: () => {
+      dispatch(googleSearch());
+    },
+  };
+}
+
+const mapStateToProps = createStructuredSelector({
+  keyword: makeSelectKeyword(),
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

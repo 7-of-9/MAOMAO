@@ -16,3 +16,13 @@ export const FACEBOOK_APP_SECRET = 'cdb6d9303e1aa575a70857861d663fe1';
 export const INSTAGRAM_CLIENT_ID = '77c4c8922e774b58bf101dc9f5c665e2';
 export const IMGUR_CLIENT_ID = '9d21f2c0aab0ca7';
 export const IMGUR_CLIENT_SECRET = '31b69276f1041518d2dd3e9488b9ce2b618efba8';
+export const REDDIT_APP_ID = 'CuFq5x8GtBDLuA';
+export const REDDIT_APP_CLIENT = '0KaZNPLLIzlGt3qckbgL77YZ-44';
+
+export const GOOGLE_SEARCH = 'app/App/GOOGLE_SEARCH';
+export const GOOGLE_SEARCH_SUCCESS = 'app/App/GOOGLE_SEARCH_SUCCESS';
+export const GOOGLE_SEARCH_ERROR = 'app/App/GOOGLE_SEARCH_ERROR';
+export const YOUTUBE_SEARCH = 'app/App/YOUTUBE_SEARCH';
+export const IMGUR_SEARCH = 'app/App/IMGUR_SEARCH';
+export const FACEBOOK_SEARCH = 'app/App/FACEBOOK_SEARCH';
+export const INSTAGRAM_SEARCH = 'app/App/INSTAGRAM_SEARCH';
