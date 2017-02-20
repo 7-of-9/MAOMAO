@@ -9,10 +9,11 @@
  * the linting exception.
  */
 
-import React from 'react';
+import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Block from 'components/Block';
+import SearchBar from 'components/SearchBar';
 import FacebookGraph from 'components/FacebookGraph';
 import GraphKnowledge from 'components/GraphKnowledge';
 import Imgur from 'components/Imgur';
@@ -21,13 +22,24 @@ import YoutubeVideo from 'components/YoutubeVideo';
 
 import messages from './messages';
 
-export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+class HomePage extends Component {
+
+  constructor(props) {
+    super(props);
+    this.doSearch = this.doSearch.bind(this);
+  }
+
+  doSearch() {
+    console.warn('doSearch');
+  }
+
   render() {
     return (
       <div>
         <h1>
           <FormattedMessage {...messages.header} />
         </h1>
+        <SearchBar onClick={this.doSearch} />
         <Block>
           <FacebookGraph />
           <GraphKnowledge />
@@ -39,3 +51,5 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
     );
   }
 }
+
+export default HomePage;
