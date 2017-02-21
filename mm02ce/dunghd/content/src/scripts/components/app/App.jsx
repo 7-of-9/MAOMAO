@@ -92,7 +92,6 @@ class App extends Component {
     });
     this.props.dispatch(checkAuth())
       .then((token) => {
-        console.log('token', token);
         if (token) {
           return createUser(`${this.props.apiUrl}/users/google`, {
             email: token.info.email,
@@ -213,13 +212,11 @@ class App extends Component {
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
 
-const mapStateToProps = (state) => {
-  return {
+const mapStateToProps = state => ({
     auth: state.auth,
     isOpen: state.modal,
     score: state.score,
     icon: state.icon,
-  };
-};
+  });
 
 export default connect(mapStateToProps)(App);

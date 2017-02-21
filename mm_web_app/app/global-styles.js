@@ -28,37 +28,24 @@ injectGlobal`
     line-height: 1.5em;
   }
 
-  @media screen and (min-width: 300px) {
-    .bricklayer-column-sizer {
-      width: 50%;
-    }
+  /* center container with CSS */
+  .grid {
+    margin: 0 auto;
   }
 
-  @media screen and (min-width: 400px) {
-    .bricklayer-column-sizer {
-      width: 33%;
-    }
+  /* clearfix */
+  .grid:after {
+    content: '';
+    display: block;
+    clear: both;
   }
 
-  @media screen and (min-width: 700px) {
-    .bricklayer-column-sizer {
-      width: 25%;
-    }
-  }
+  /* ---- grid-item ---- */
 
-  @media screen and (min-width: 900px) {
-    .bricklayer-column-sizer {
-      width: 20%;
-    }
-  }
-
-  @media screen and (min-width: 1200px) {
-    .bricklayer-column-sizer {
-      width: 16%;
-    }
-  }
-
-  .box {
+  .grid-item {
+    width: 300px;
+    float: left;
     margin-bottom: 10px;
   }
+
 `;

@@ -5,16 +5,20 @@
 */
 
 import React from 'react';
-// import styled from 'styled-components';
-
+import styled from 'styled-components';
 import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 
+const Wrapper = styled.section`
+  padding: 4em;
+  background: #4d4d4d;
+`;
+
 function Imgur() {
   return (
-    <div>
+    <Wrapper>
       <FormattedMessage {...messages.header} />
-    </div>
+    </Wrapper>
   );
 }
 

@@ -70,9 +70,6 @@ class Xp extends Component {
             $window.scrollTop($window.scrollTop() + 1);
           }, 1000);
         } catch (err) {
-          console.warn('blur err', err);
-          console.log('fallback to vaguejs');
-
           $blurred.find('canvas').replaceWith(`<iframe id="blurFrame" style="dipslay:none;" width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
           const vague = $blurred.find('iframe').Vague({ intensity: 5 });
           vague.blur();
@@ -132,7 +129,14 @@ class Xp extends Component {
             style={this.state.scoreAnimate}
             className="nlp_score"
           >
-            <CountUp start={0} end={this.props.xp.score} useEasing prefix="+" suffix=" XP" callback={resetFontSize} />
+            <CountUp
+              start={0}
+              end={this.props.xp.score}
+              useEasing
+              prefix="+"
+              suffix=" XP"
+              callback={resetFontSize}
+            />
           </div>
           <div id="html2canvas" />
         </div>

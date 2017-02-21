@@ -42,12 +42,14 @@ function SearchBar(props) {
       <FormattedMessage {...messages.header} />
       <Input onChange={props.onChange} placeholder={formatMessage(messages.placeholder)} type="text" />
       <Button primary onClick={props.onSearch}><FormattedMessage {...messages.button} /></Button>
+      <span style={{ display: props.loading ? '' : 'none' }}>Loading data...</span>
     </div>
   );
 }
 
 SearchBar.propTypes = {
   intl: intlShape.isRequired,
+  loading: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   onSearch: PropTypes.func.isRequired,
 };

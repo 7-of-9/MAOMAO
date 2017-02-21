@@ -30,9 +30,6 @@ export function* getGoogleKnowledge() {
  * Root saga manages watcher lifecycle
  */
 export function* googleData() {
-  // Watches for LOAD_REPOS actions and calls getRepos when one comes in.
-  // By using `takeLatest` only the result of the latest API call is applied.
-  // It returns task descriptor (just like fork) so we can continue execution
   const watcher = yield takeLatest(GOOGLE_SEARCH, getGoogleKnowledge);
 
   // Suspend execution until location changes

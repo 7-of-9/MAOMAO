@@ -5,18 +5,22 @@
 */
 
 import React, { PropTypes } from 'react';
-import Bricklayer from 'bricklayer';
-// import styled from 'styled-components';
+import Masonry from 'masonry-layout';
 
 
 class Block extends React.Component { // eslint-disable-line react/prefer-stateless-function
   componentDidMount() {
-    this.bricklayer = new Bricklayer(this.container);
+    this.layer = new Masonry(this.container, {
+      fitWidth: true,
+      columnWidth: 300,
+      gutter: 10,
+    });
   }
 
   render() {
-    return (<div className="bricklayer" ref={(element) => { this.container = element; }}>
-      {this.props.children}
+    const children = this.props.children;
+    return (<div className="grid" ref={(element) => { this.container = element; }}>
+      {React.Children.map(children, (child) => <div className="grid-item">{child}</div>)}
     </div>);
   }
 }

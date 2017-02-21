@@ -18,7 +18,6 @@ const proxyStore = new Store({ portName: 'maomao-extension' });
 const anchor = document.createElement('div');
 anchor.id = 'maomao-extension-anchor';
 
-console.info('config', config);
 document.body.insertBefore(anchor, document.body.childNodes[0]);
 
 injectTapEventPlugin();

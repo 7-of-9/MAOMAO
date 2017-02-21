@@ -26,6 +26,7 @@ import YoutubeVideo from 'components/YoutubeVideo';
 
 import messages from './messages';
 import { makeSelectKeyword } from './selectors';
+import { makeSelectLoading } from '../App/selectors';
 import { googleSearch } from '../App/actions';
 import { changeKeyword } from './actions';
 
@@ -42,10 +43,10 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
         <h1>
           <FormattedMessage {...messages.header} />
         </h1>
-        <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
+        <SearchBar loading={this.props.loading} onChange={this.props.onChange} onSearch={this.props.doSearch} />
         <Block>
           <FacebookGraph />
-          <GraphKnowledge />
+          <GraphKnowledge name="Test" description="Hello" />
           <Imgur />
           <Instagram />
           <YoutubeVideo />
@@ -59,6 +60,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 HomePage.propTypes = {
   doSearch: PropTypes.func,
   onChange: PropTypes.func,
+  loading: PropTypes.bool.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
@@ -74,6 +76,7 @@ export function mapDispatchToProps(dispatch) {
 
 const mapStateToProps = createStructuredSelector({
   keyword: makeSelectKeyword(),
+  loading: makeSelectLoading(),
 });
 
 
