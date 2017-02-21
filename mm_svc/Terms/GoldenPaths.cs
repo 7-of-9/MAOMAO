@@ -1,4 +1,5 @@
-﻿using mm_global.Extensions;
+﻿using mm_global;
+using mm_global.Extensions;
 using mm_svc.InternalNlp;
 using mm_svc.InternalNlp.Utils;
 using mmdb_model;
@@ -21,7 +22,7 @@ namespace mm_svc.Terms
                 var root_paths = GoldenPaths.GetStoredPathsToRoot(term);
                 if (root_paths.Count == 0) {
                     GoldenPaths.ProcessAndRecordPathsToRoot(term_id);
-                    term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
+                    term = g.RetryMaxOrThrow(() => db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p2 => p2.id == term_id));
                     root_paths = GoldenPaths.GetStoredPathsToRoot(term);
                 }
                 return root_paths;
@@ -69,13 +70,13 @@ namespace mm_svc.Terms
 
                 var sw = new Stopwatch(); sw.Start();
                 RecurseParents(root_paths, new List<term>() { }, child_term_id, child_term_id);
-                Debug.WriteLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s).");
+                Debug.WriteLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - root_paths.Count={root_paths.Count}");
 
                 //var root_paths_list = new List<List<term>>();
                 //foreach (var root_path in root_paths)
                 //    root_paths_list.Add(root_path.ToList());
 
-                root_paths.ToList().ForEach(p => Debug.WriteLine(child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
+                root_paths.ToList().ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
                 return root_paths.ToList();
             }
         }
@@ -85,13 +86,12 @@ namespace mm_svc.Terms
             long term_id,
             long orig_term_id, int? parent_mmcat_level = null, int? orig_mmcat_level = null)
         {
-            Debug.WriteLine($"path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+            //Debug.WriteLine($"calc'ing path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}...");
             
             var links = GetParents(term_id, null);
-            if (links.Count == 0)
-            {
+            if (links.Count == 0) {
                 root_paths.Add(path);
-                Debug.WriteLine($">> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
+                Debug.WriteLine($">>> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
             }
             if (parent_mmcat_level == null)
                 parent_mmcat_level = orig_mmcat_level = links.Max(p => p.mmcat_level);
@@ -99,16 +99,18 @@ namespace mm_svc.Terms
             // mmcat_level is a bit fuzzy (depends somewhat on ingestion order of wiki_walker)
             // so, if there are no links <= parent_mmcat_level, look for links
             var max_mmcat_level = parent_mmcat_level;
-again:
-            if (links.Where(p => p.mmcat_level <= max_mmcat_level).Count() == 0)
-                if (++max_mmcat_level < orig_mmcat_level + 3) // arbitrary, just stop somewhere
-                    goto again;
+            if (links.Count > 0 && links.Max(p => p.mmcat_level) > max_mmcat_level)
+                max_mmcat_level = links.Max(p => p.mmcat_level);
+//again:
+//            if (links.Where(p => p.mmcat_level <= max_mmcat_level).Count() == 0)
+//                if (++max_mmcat_level < orig_mmcat_level + 10) // arbitrary, just stop somewhere
+//                    goto again;
 
             Parallel.ForEach(
                 links.Where(p => p.mmcat_level <= max_mmcat_level                    // link is higher than parent (closer to root)
                            //|| (p.parent_term.wiki_nscount > 5 && path.Count < 3)   // and significant node
                                )
-                , new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 1 : 8 }, link =>
+                , new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 8 : 8 }, link =>
             {
                 if (path.Select(p => p.id).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
                     return;
@@ -119,10 +121,11 @@ again:
 
                 // put some limit on recurrsion depth: if there's an existing path to root that matches this test path up to 
                 // a cut-off depth, then abandon this recursion (test/pathological case: 5140670, // September 11 attacks)
-                const int path_match_abort = 3;
-                var this_path_ids = string.Join(",", new_path.Take(path_match_abort).Select(p2 => p2.id));
-                if (root_paths.Any(p => string.Join(",", p.Take(path_match_abort).Select(p2 => p2.id)) == this_path_ids)) {
-                    Debug.WriteLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+                const int PATH_MATCH_ABORT = 3; //***
+
+                var this_path_ids = string.Join(",", new_path.Take(PATH_MATCH_ABORT).Select(p2 => p2.id));
+                if (root_paths.Any(p => string.Join(",", p.Take(PATH_MATCH_ABORT).Select(p2 => p2.id)) == this_path_ids)) {
+                    //Debug.WriteLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
                     return;
                 }
 
@@ -140,11 +143,11 @@ again:
             {
                 //Debug.WriteLine($"getting gt parents for {child_term_id}...");
 
-                return db.golden_term.AsNoTracking()
+                return g.RetryMaxOrThrow(() => db.golden_term.AsNoTracking()
                          .Include("term")
                          .Include("term1")
                          .Where(p => p.child_term_id == child_term_id)//&& p.mmcat_level <= (max_mmcat_level ?? 99))
-                         .ToListNoLock();
+                         .ToListNoLock(), 1, 3);
             }
         }
 
@@ -160,9 +163,11 @@ again:
 
                 // calculate (expensive)
                 var paths = Terms.GoldenPaths.CalculatePathsToRoot(term_id);
-                
+                if (paths.Count == 0)
+                    return false;
+
                 // remove
-                db.gt_path_to_root.RemoveRange(db.gt_path_to_root.Where(p => p.term_id == term_id));
+                g.RetryMaxOrThrow(() => db.gt_path_to_root.RemoveRange(db.gt_path_to_root.Where(p => p.term_id == term_id)), 1, 3);
 
                 // add
                 int path_no = 1;

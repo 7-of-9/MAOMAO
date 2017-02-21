@@ -35,6 +35,8 @@ namespace mm_svc.Terms
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
                 var suggested = GetSuggestedParents(paths);
+                if (suggested == null)
+                    return null;
 
                 // remove
                 db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));

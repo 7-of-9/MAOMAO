@@ -130,6 +130,7 @@ namespace mm_svc
             // get calais terms stemmed
             var calais_terms_stemmed = calais_terms.Select(p => new {
                 t = p.term,
+                S = p.S,
      term_stemmed = stemmer.stem(p.term.name), 
     stemmed_words = stemmer.stem(p.term.name).Split(' ').ToList() });
 
@@ -142,98 +143,114 @@ namespace mm_svc
                 var term_url_tss_norm = distinctObjects_tss_norm[distinct];
 
                 using (var db = mm02Entities.Create()) {
+                    // TODO: lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
+                    var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
+                    bool skip_disambig = false;
+                    if (wiki_terms_direct_matching.Any(p => p.wiki_nscount > 7)) {
+                        Debug.WriteLine($">>> {term_name}: got direct matching high NS# (={wiki_terms_direct_matching.Max(p => p.wiki_nscount)}) terms; will not bother with disambiguation.");
+                        skip_disambig = true;
+                    }
 
                     // are there any matching wiki terms that originate from disambiguation terms, e.g. "Ajax_(programming)" vs. "Ajax_(mythology)"
                     // if so, we want to match the most relevent disambiguated wiki term
-                    var ambiguous_term_name_start = term_name + " (";
-                    var qry = db.terms.Where(p => p.name.StartsWith(ambiguous_term_name_start) && p.name.EndsWith(")") && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14));
-                    //Debug.WriteLine(qry.ToString());
-                    var wiki_ambig_terms = qry.ToListNoLock();
                     var wiki_disambiguated_terms_to_add = new List<term>();
-                    if (wiki_ambig_terms.Count > 0) {
+                    if (!skip_disambig) {
+                        var ambiguous_term_name_start = term_name + " (";
+                        var qry = db.terms.Where(p => p.name.StartsWith(ambiguous_term_name_start) && p.name.EndsWith(")") && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14));
+                        //Debug.WriteLine(qry.ToString());
+                        var wiki_ambig_terms = qry.ToListNoLock();
+                        if (wiki_ambig_terms.Count > 0) {
 
-                        wiki_ambig_terms = wiki_ambig_terms.Where(p => p.name.Count(p2 => p2 == '(') == 1).ToList();  // skip edge cases with more than one set of paren's, e.g. "European Union (Referendum) Act 2016 (Gibraltar)"
-                        var disambiguations = wiki_ambig_terms.Select(p => new { t = p, stemmed_words = stemmer.stem(p.name.Substring(p.name.IndexOf("(") + 1, p.name.IndexOf(")") - p.name.IndexOf("(") - 1)).Split(' ').ToList(), }).ToList();
+                            wiki_ambig_terms = wiki_ambig_terms.Where(p => p.name.Count(p2 => p2 == '(') == 1).ToList();  // skip edge cases with more than one set of paren's, e.g. "European Union (Referendum) Act 2016 (Gibraltar)"
+                            var disambiguations = wiki_ambig_terms.Select(p => new { t = p, stemmed_words = stemmer.stem(p.name.Substring(p.name.IndexOf("(") + 1, p.name.IndexOf(")") - p.name.IndexOf("(") - 1)).Split(' ').ToList(), }).ToList();
 
-                        // any stemmed calais terms that directly match the stemmed wiki disambiguation description (the part in brackets)? if so, use these
-                        foreach (var disambig in disambiguations) {
-                            var matching_calais = calais_terms_stemmed.Where(p => p.t.name != term_name && disambig.stemmed_words.All(p2 => p.stemmed_words.Contains(p2))).ToList();
-                            if (matching_calais.Count > 0) {
-                                matching_calais.ForEach(p => Debug.WriteLine($"DISAMBIG - DIRECT MATCH: calais_term={term_name} ==> wiki_disambiguation_term={disambig.t.name}[{disambig.t.id}] > (matches related calais term {p.t})"));
-                                wiki_disambiguated_terms_to_add.Add(disambig.t);
-                            }
-                        }
-
-                        if (wiki_disambiguated_terms_to_add.Count == 0) {
-                            // no direct matches on wiki disambiguation description; need to use suggested parents of the wiki disambiguation terms to find the most appropriate one to use
-
-                            // get suggested parent for all wiki ambig terms
-                            var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(8)
-                                    .Select(p => new { t = p,
-                                                 parents = GoldenParents.GetOrProcessSuggestedParents(p.id).Select(p2 => new {
-                                                  S_norm = p2.S_norm,
-                                                       t = p2.parent_term,
-                                            term_stemmed = stemmer.stem(p2.parent_term.name),
-                                           stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList() }) }).ToList();
-
-                            // for each ambig, get count of # of ambig's parent's stemmed words that are common with the URLs stemmed calais words
-                          //var calais_stemmed_terms = calais_terms_stemmed.Select(p2 => p2.term_stemmed).Distinct().ToList();
-                            var calais_stemmed_words = calais_terms_stemmed.SelectMany(p2 => p2.stemmed_words).Distinct().Except(term_stemmed_words).ToList();
-                            var counts = ambig_parents.Select(p => new { ambig = p,
-                                                                //terms_common = p.parents.Select(p2 => p2.term_stemmed).Distinct().Where(p2 => calais_stemmed_terms.Contains(p2)),
-                                                                  words_common = p.parents.SelectMany(p2 => p2.stemmed_words).Where(p2 => calais_stemmed_words.Contains(p2)) });
-                          //var terms_common = counts.Where(p => p.terms_common.Count() > 0).OrderByDescending(p => p.terms_common.Count());
-                            var words_common = counts.Where(p => p.words_common.Count() > 0).OrderByDescending(p => p.words_common.Count());
-
-                            // use exact full stemmed term match in preference; fallback to splitting stemmed terms by word
-                            //if (terms_common.Count() > 0) {
-                            //    // take term(s) with top count of parent term name stemmed common to calais term name stemmed
-                            //    var top_count_matches = terms_common.Where(p => p.terms_common.Count() == terms_common.Max(p2 => p2.terms_common.Count()));
-                            //    if (top_count_matches != null) {
-                            //        foreach (var best_match in top_count_matches) {
-                            //            Debug.WriteLine($"DISAMBIG - FULL TERM MATCH: calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}] > (best stemmed term name match across all ambig parent & calais terms)");
-                            //            wiki_disambiguated_terms_to_add.Add(best_match.ambig.t);
-                            //        }
-                            //    }
-                            //}
-                            //else
-                            if (words_common.Count() > 0) {
-                                // take term(s) with top count of parent stemmed words common to calais stemmed words
-                                var top_count_matches = words_common.Where(p => p.words_common.Count() == words_common.Max(p2 => p2.words_common.Count()));
-                                foreach (var best_match in top_count_matches) {
-                                    if (best_match.words_common.Count() > 3) {
-                                        Debug.WriteLine($"DISAMBIG - PARTIAL WORD MATCH (#{best_match.words_common.Count()}): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}] > (best stemmed term word match across all ambig parent & calais terms)");
-                                        wiki_disambiguated_terms_to_add.Add(best_match.ambig.t);
-                                    }
-                                    else {
-                                        Debug.WriteLine($"## LOW SIGNAL (partial word match - ignoring): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}]\r\n\t{string.Join("\r\n\t", best_match.words_common)}");
-                                        ;
-                                    }
+                            // any stemmed calais terms that directly match the stemmed wiki disambiguation description (the part in brackets)? if so, use these
+                            foreach (var disambig in disambiguations) {
+                                var matching_calais = calais_terms_stemmed.Where(p => p.t.name != term_name && disambig.stemmed_words.All(p2 => p.stemmed_words.Contains(p2))).ToList();
+                                if (matching_calais.Count > 0) {
+                                    matching_calais.ForEach(p => Debug.WriteLine($"DISAMBIG - DIRECT MATCH: calais_term={term_name} ==> wiki_disambiguation_term={disambig.t.name}[{disambig.t.id}] > (matches related calais term {p.t})"));
+                                    wiki_disambiguated_terms_to_add.Add(disambig.t);
                                 }
                             }
 
-                            if (wiki_disambiguated_terms_to_add.Count == 0)
-                                Debug.WriteLine($"!! could not disambiguate {term_name} from:\r\n\t{string.Join("\r\n\t", wiki_ambig_terms.Select(p => p))}");
-                        }
+                            if (wiki_disambiguated_terms_to_add.Count == 0) {
+                                // no direct matches on wiki disambiguation description; need to use suggested parents of the wiki disambiguation terms to find the most appropriate one to use
 
-                        // record term-url link - if not already present
-                        if (wiki_disambiguated_terms_to_add.Count > 0) {
-                            terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG");
-                            mapped_terms++;
+                                // get suggested parent for all wiki ambig terms
+                                var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(128)
+                                        .Select(p => new {
+                                            t = p,
+                                            parents = GoldenParents.GetOrProcessSuggestedParents(p.id).Select(p2 => new {
+                                                S_norm = p2.S_norm,
+                                                t = p2.parent_term,
+                                                term_stemmed = stemmer.stem(p2.parent_term.name),
+                                                stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList()
+                                            })
+                                        }).ToList();
+
+                                // for each ambig, get count of # of ambig's parent's stemmed words that are common with the URLs stemmed calais words
+                                //var calais_stemmed_terms = calais_terms_stemmed.Select(p2 => p2.term_stemmed).Distinct().ToList();
+                                var calais_stemmed_words = calais_terms_stemmed.Where(p => p.S >= 2).SelectMany(p2 => p2.stemmed_words).Distinct().Except(term_stemmed_words).ToList();
+                                var counts = ambig_parents.Select(p => new {
+                                    ambig = p,
+                                    //terms_common = p.parents.Select(p2 => p2.term_stemmed).Distinct().Where(p2 => calais_stemmed_terms.Contains(p2)),
+                                    words_common = p.parents.SelectMany(p2 => p2.stemmed_words).Where(p2 => calais_stemmed_words.Contains(p2))
+                                });
+                                //var terms_common = counts.Where(p => p.terms_common.Count() > 0).OrderByDescending(p => p.terms_common.Count());
+                                var words_common = counts.Where(p => p.words_common.Count() > 0).OrderByDescending(p => p.words_common.Count());
+
+                                // use exact full stemmed term match in preference; fallback to splitting stemmed terms by word
+                                //if (terms_common.Count() > 0) {
+                                //    // take term(s) with top count of parent term name stemmed common to calais term name stemmed
+                                //    var top_count_matches = terms_common.Where(p => p.terms_common.Count() == terms_common.Max(p2 => p2.terms_common.Count()));
+                                //    if (top_count_matches != null) {
+                                //        foreach (var best_match in top_count_matches) {
+                                //            Debug.WriteLine($"DISAMBIG - FULL TERM MATCH: calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}] > (best stemmed term name match across all ambig parent & calais terms)");
+                                //            wiki_disambiguated_terms_to_add.Add(best_match.ambig.t);
+                                //        }
+                                //    }
+                                //}
+                                //else
+                                if (words_common.Count() > 0) {
+                                    // take term(s) with top count of parent stemmed words common to calais stemmed words
+                                    var top_count_matches = words_common.Where(p => p.words_common.Count() == words_common.Max(p2 => p2.words_common.Count()));
+                                    foreach (var best_match in top_count_matches) {
+                                        //if (best_match.words_common.Count() > 3) {
+                                        var perc = (double)best_match.words_common.Count() / calais_stemmed_words.Count;
+                                        if (perc > 0.15) {
+                                            Debug.WriteLine($"DISAMBIG - PARTIAL WORD MATCH (#{best_match.words_common.Count()} = {(perc * 100).ToString("0.0")}%): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}] > (best stemmed term word match across all ambig parent & calais terms)\r\n\t{string.Join(",", best_match.words_common)}");
+                                            wiki_disambiguated_terms_to_add.Add(best_match.ambig.t);
+                                        }
+                                        //}
+                                        //else {
+                                        //    Debug.WriteLine($"## LOW SIGNAL (partial word match - ignoring): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}]\r\n\t{string.Join("\r\n\t", best_match.words_common)}");
+                                        //    ;
+                                        // }
+                                    }
+                                }
+
+                                if (wiki_disambiguated_terms_to_add.Count == 0)
+                                    Debug.WriteLine($"!! could not disambiguate {term_name} from:\r\n\t{string.Join("\r\n\t", wiki_ambig_terms.Select(p => p))}");
+                            }
+
+                            // record term-url link - if not already present
+                            if (wiki_disambiguated_terms_to_add.Count > 0) {
+                                terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG");
+                                mapped_terms++;
+                            }
                         }
                     }
 
                     // standard case - no disambiguations to be resolved; look for wiki-type term match -- exact match on name
                     if (wiki_disambiguated_terms_to_add.Count == 0) {
-                        var wiki_terms = db.terms.Where(p => p.name == term_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
-                        if (wiki_terms.Count == 0) {
+                        if (wiki_terms_direct_matching.Count == 0) {
                             g.LogLine($"!! term NOT mapped to a known WIKI term (name={term_name})");
                             unmapped_terms++;
                         }
                         else mapped_terms++;
 
                         // record term-url link - if not already present
-                        terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_terms, "WIKI_EXACT");
+                        terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_terms_direct_matching, "WIKI_EXACT");
                     }
                 }
             }
