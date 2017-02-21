@@ -305,7 +305,7 @@ namespace mm_global
             }
         }
 
-        public static T RetryMaxOrThrow<T>(Func<T> p, int sleepSeconds = 10, int retryMax = 3, bool verboseErrorLog = true)
+        public static T RetryMaxOrThrow<T>(Func<T> p, int sleepSeconds = 1, int retryMax = 3, bool verboseErrorLog = true)
         {
             int retryCount = 0;
             int currentSleepSeconds = sleepSeconds;

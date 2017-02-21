@@ -20,12 +20,12 @@ namespace tests
             using (var db = mm02Entities.Create()) {
                 // testing "ajax" -- dismabiguation term logic
 
-                //foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 90).OrderByDescending(p => p.id).Take(10).ToListNoLock())
+                foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
                 {
                     //
                     // TODO -- more on this; picking wrong React disambig --
                     // DISAMBIG - PARTIAL WORD MATCH (#8): calais_term=React ==> wiki_disambiguation_term=React (media franchise) ... [6016816] #-1 #NS=2 (WIKI_NS_0)[6016816] > (best stemmed term word match across all ambig parent & calais terms)
-                    var url = db.urls.Find(8427);
+                    //var url = db.urls.Find(8427);
 
                     // remove wiki terms first
                     db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url.id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
