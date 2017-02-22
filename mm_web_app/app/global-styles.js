@@ -43,7 +43,7 @@ injectGlobal`
   /* ---- grid-item ---- */
 
   .grid-item {
-    width: 300px;
+    width: 240px;
     float: left;
     margin-bottom: 10px;
   }

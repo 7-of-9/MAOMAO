@@ -12,7 +12,7 @@ class Block extends React.Component { // eslint-disable-line react/prefer-statel
   componentDidMount() {
     this.layer = new Masonry(this.container, {
       fitWidth: true,
-      columnWidth: 300,
+      columnWidth: 240,
       gutter: 10,
     });
   }

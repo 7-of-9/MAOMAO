@@ -11,20 +11,20 @@
 
 import React, { PropTypes } from 'react';
 import Helmet from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import Block from 'components/Block';
+import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
 import FacebookGraph from 'components/FacebookGraph';
 import GraphKnowledge from 'components/GraphKnowledge';
 import Imgur from 'components/Imgur';
+import LogoIcon from 'components/LogoIcon';
 import Instagram from 'components/Instagram';
 import Reddit from 'components/Reddit';
 import YoutubeVideo from 'components/YoutubeVideo';
 
-import messages from './messages';
 import { makeSelectKeyword } from './selectors';
 import { makeSelectLoading } from '../App/selectors';
 import { googleSearch } from '../App/actions';
@@ -40,10 +40,10 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             { name: 'description', content: 'MaoMao homepage' },
           ]}
         />
-        <h1>
-          <FormattedMessage {...messages.header} />
-        </h1>
-        <SearchBar loading={this.props.loading} onChange={this.props.onChange} onSearch={this.props.doSearch} />
+        <Header>
+          <LogoIcon />
+          <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
+        </Header>
         <Block>
           <FacebookGraph />
           <GraphKnowledge name="Test" description="Hello" />
@@ -60,7 +60,6 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 HomePage.propTypes = {
   doSearch: PropTypes.func,
   onChange: PropTypes.func,
-  loading: PropTypes.bool.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
