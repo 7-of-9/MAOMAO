@@ -5,9 +5,9 @@ import { GOOGLE_API_KEY, GOOGLE_SEARCH } from 'containers/App/constants';
 import { googleLoaded, googleLoadingError } from 'containers/App/actions';
 
 import request from 'utils/request';
-import { makeSelectKeyword } from 'containers/HomePage/selectors';
+import { makeSelectKeyword, makeSelectPageNumber } from 'containers/HomePage/selectors';
 
-const LIMIT = 10;
+const LIMIT = 4;
 
 /**
  * Google Knowledge request/response handler
@@ -15,7 +15,8 @@ const LIMIT = 10;
 export function* getGoogleKnowledge() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
-  const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?query=${keyword}&key=${GOOGLE_API_KEY}&limit=${LIMIT}&indent=True`;
+  const page = yield select(makeSelectPageNumber());
+  const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?query=${keyword}&key=${GOOGLE_API_KEY}&limit=${LIMIT * page}&indent=True`;
 
   try {
     const result = yield call(request, requestURL);

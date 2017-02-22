@@ -16,6 +16,7 @@ import {
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
+  GOOGLE_SEARCH_CLEAN,
 } from './constants';
 
 // The initial state of the App
@@ -42,6 +43,9 @@ function appReducer(state = initialState, action) {
       return state
         .set('error', action.error)
         .set('loading', false);
+    case GOOGLE_SEARCH_CLEAN:
+      return state
+        .set('google', {});
     default:
       return state;
   }

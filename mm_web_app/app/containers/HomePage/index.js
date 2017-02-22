@@ -30,13 +30,34 @@ import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
 import { makeSelectLoading, makeSelectGoogle } from '../App/selectors';
-import { googleSearch } from '../App/actions';
-import { changeKeyword } from './actions';
+import { googleSearch, googleCleanResult } from '../App/actions';
+import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
+    const { itemListElement } = this.props.google;
+    const items = [];
+    let counter = 0;
+    if (itemListElement) {
+      _.forEach(itemListElement, (item) => {
+        items.push(
+          <div className="grid-item" key={counter += 1}>
+            <GraphKnowledge
+              name={item.result.name}
+              description={item.result.detailedDescription && item.result.detailedDescription.articleBody}
+              image={item.result.image && item.result.image.contentUrl}
+              url={item.result.detailedDescription && item.result.detailedDescription.url}
+            />
+          </div>);
+        items.push(<div className="grid-item" key={counter += 1}><FacebookGraph /></div>);
+        items.push(<div className="grid-item" key={counter += 1}><Imgur /></div>);
+        items.push(<div className="grid-item" key={counter += 1}><Instagram /></div>);
+        items.push(<div className="grid-item" key={counter += 1}><Reddit /></div>);
+        items.push(<div className="grid-item" key={counter += 1}><YoutubeVideo /></div>);
+      });
+    }
     return (
       <div>
         <Helmet
@@ -49,11 +70,17 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
           <LogoIcon />
           <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
         </Header>
-        <DataContainer
-          items={this.props.renderItems(this.props.google)}
-          loadMore={this.props.loadMore}
-          showLoader={false}
-        />
+        {
+        items.length > 0 &&
+          <DataContainer
+            items={items}
+            loadMore={this.props.loadMore}
+            loadingMore={this.props.loading}
+            showLoader={false}
+            elementIsScrollable={false}
+            threshold={150}
+          />
+        }
         <Loading isLoading={this.props.loading} />
       </div>
     );
@@ -61,7 +88,6 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 }
 
 HomePage.propTypes = {
-  renderItems: PropTypes.func,
   loadMore: PropTypes.func,
   doSearch: PropTypes.func,
   onChange: PropTypes.func,
@@ -72,31 +98,8 @@ HomePage.propTypes = {
 export function mapDispatchToProps(dispatch) {
   return {
     loadMore: () => {
-      // dispatch(googleSearch());
-    },
-    renderItems: (google) => {
-      const { itemListElement } = google;
-      const items = [];
-      if (itemListElement) {
-        let counter = 0;
-        _.forEach(itemListElement, (item) => {
-          items.push(
-            <div className="grid-item" key={counter += 1}>
-              <GraphKnowledge
-                name={item.result.name}
-                description={item.result.detailedDescription && item.result.detailedDescription.articleBody}
-                image={item.result.image && item.result.image.contentUrl}
-                url={item.result.detailedDescription && item.result.detailedDescription.url}
-              />
-            </div>);
-          items.push(<div className="grid-item" key={counter += 1}><FacebookGraph /></div>);
-          items.push(<div className="grid-item" key={counter += 1}><Imgur /></div>);
-          items.push(<div className="grid-item" key={counter += 1}><Instagram /></div>);
-          items.push(<div className="grid-item" key={counter += 1}><Reddit /></div>);
-          items.push(<div className="grid-item" key={counter += 1}><YoutubeVideo /></div>);
-        });
-      }
-      return items;
+      dispatch(nextPage());
+      dispatch(googleSearch());
     },
     onChange: (e) => {
       dispatch(changeKeyword(e.target.value));
@@ -105,7 +108,9 @@ export function mapDispatchToProps(dispatch) {
       if (e !== undefined && e.preventDefault) {
         e.preventDefault();
       }
+      dispatch(resetPage());
       dispatch(googleSearch());
+      dispatch(googleCleanResult());
     },
   };
 }

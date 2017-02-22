@@ -20,6 +20,7 @@ export const REDDIT_APP_ID = 'CuFq5x8GtBDLuA';
 export const REDDIT_APP_CLIENT = '0KaZNPLLIzlGt3qckbgL77YZ-44';
 
 export const GOOGLE_SEARCH = 'app/App/GOOGLE_SEARCH';
+export const GOOGLE_SEARCH_CLEAN = 'app/App/GOOGLE_SEARCH_CLEAN';
 export const GOOGLE_SEARCH_SUCCESS = 'app/App/GOOGLE_SEARCH_SUCCESS';
 export const GOOGLE_SEARCH_ERROR = 'app/App/GOOGLE_SEARCH_ERROR';
 export const YOUTUBE_SEARCH = 'app/App/YOUTUBE_SEARCH';

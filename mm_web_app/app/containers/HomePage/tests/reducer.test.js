@@ -10,6 +10,7 @@ describe('homeReducer', () => {
   beforeEach(() => {
     state = fromJS({
       keyword: '',
+      page: 1,
     });
   });
 
