@@ -11,7 +11,13 @@ const makeSelectKeyword = () => createSelector(
   (homeState) => homeState.get('keyword')
 );
 
+const makeSelectPageNumber = () => createSelector(
+  selectHome,
+  (homeState) => homeState.get('page')
+);
+
 export {
   selectHome,
   makeSelectKeyword,
+  makeSelectPageNumber,
 };

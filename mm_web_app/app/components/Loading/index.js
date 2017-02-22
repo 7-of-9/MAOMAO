@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 import loadingSVG from './images/loading.svg';
 const Wrapper = styled.div`
-  text-algin: center;
+  text-align: center;
   margin: 0 auto;
 `;
 function Loading(props) {

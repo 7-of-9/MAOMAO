@@ -4,29 +4,38 @@
 *
 */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import Masonry from 'masonry-layout';
 
+function Block(WrappedComponent) {
+  return class extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
-class Block extends React.Component { // eslint-disable-line react/prefer-stateless-function
-  componentDidMount() {
-    this.layer = new Masonry(this.container, {
-      fitWidth: true,
-      columnWidth: 240,
-      gutter: 10,
-    });
-  }
+    componentDidMount() {
+      this.layer = new Masonry(this.container, {
+        fitWidth: true,
+        columnWidth: 240,
+        gutter: 10,
+        itemSelector: '.grid-item',
+      });
+    }
 
-  render() {
-    const children = this.props.children;
-    return (<div className="grid" ref={(element) => { this.container = element; }}>
-      {React.Children.map(children, (child) => <div className="grid-item">{child}</div>)}
-    </div>);
-  }
+    componentDidUpdate() {
+      this.layer = new Masonry(this.container, {
+        fitWidth: true,
+        columnWidth: 240,
+        gutter: 10,
+        itemSelector: '.grid-item',
+      });
+    }
+
+    render() {
+      return (
+        <div className="grid" ref={(element) => { this.container = element; }} >
+          <WrappedComponent {...this.props} />
+        </div>
+      );
+    }
+  };
 }
-
-Block.propTypes = {
-  children: PropTypes.node,
-};
 
 export default Block;
