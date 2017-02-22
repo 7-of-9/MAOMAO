@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import Block from 'components/Block';
+import Loading from 'components/Loading';
 import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
 import FacebookGraph from 'components/FacebookGraph';
@@ -52,6 +53,9 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
           <YoutubeVideo />
           <Reddit />
         </Block>
+        <div style={{ textAlign: 'center', margin: '0 auto', display: this.props.loading ? '' : 'none' }}>
+          <Loading isLoading={this.props.loading} />
+        </div>
       </div>
     );
   }
@@ -60,6 +64,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 HomePage.propTypes = {
   doSearch: PropTypes.func,
   onChange: PropTypes.func,
+  loading: PropTypes.bool.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
@@ -67,7 +72,11 @@ export function mapDispatchToProps(dispatch) {
     onChange: (e) => {
       dispatch(changeKeyword(e.target.value));
     },
-    doSearch: () => {
+    doSearch: (e) => {
+      if (e !== undefined && e.preventDefault) {
+        e.preventDefault();
+      }
+
       dispatch(googleSearch());
     },
   };
