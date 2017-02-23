@@ -12,6 +12,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { useBasename } from 'history';
 import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { useScroll } from 'react-router-scroll';
@@ -54,7 +55,8 @@ const store = configureStore(initialState, browserHistory);
 // Sync history and store, as the react-router-redux reducer
 // is under the non-default key ("routing"), selectLocationState
 // must be provided for resolving how to retrieve the "route" in the state
-const history = syncHistoryWithStore(browserHistory, store, {
+const subDirectory = '/';
+const history = syncHistoryWithStore(useBasename(() => browserHistory)({ basename: subDirectory }), store, {
   selectLocationState: makeSelectLocationState(),
 });
 

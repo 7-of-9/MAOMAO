@@ -236,6 +236,9 @@ function process_text(page_meta) {
                 case 'en':
                     lang = 'English';
                     break;
+                case 'fr':
+                    lang = 'French';
+                    break;
                 case 'vi':
                     lang = 'Vietnamese';
                     break;
