@@ -428,6 +428,9 @@ namespace wowmao
                 //
                 var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
                 txtInfo.AppendText("\r\n\r\n >>> url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
+
+                txtInfo.AppendText("\r\n\r\n *** " + url.url1);
+
             }
 
             if (new_gold_count > 0) {
@@ -517,7 +520,7 @@ namespace wowmao
                 if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
                 {
-                    var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+                    var parents = GoldenParents.GetStoredSuggestedParents(tag.ut.term_id);
                     parents.ForEach(p => txtPathsToRoot2.AppendText($"S_norm={p.S_norm.ToString("0.00")} {p.parent_term} S={p.S.ToString("0.00")}\r\n"));
                 }
             }

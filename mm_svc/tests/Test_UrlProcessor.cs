@@ -26,14 +26,14 @@ namespace tests
         public void MapWikiGoldenTerms_Test1()
         {
             using (var db = mm02Entities.Create()) {
-                // testing "ajax" -- dismabiguation term logic
 
                 //foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
                 {
                     //
-                    // TODO -- more on this; picking wrong React disambig --
-                    // DISAMBIG - PARTIAL WORD MATCH (#8): calais_term=React ==> wiki_disambiguation_term=React (media franchise) ... [6016816] #-1 #NS=2 (WIKI_NS_0)[6016816] > (best stemmed term word match across all ambig parent & calais terms)
-                    var url = db.urls.Find(6135);
+                    // DISAMBIGS...
+                    // (*) url_id=8195 dolls (calais) ==> maps to *multiple* wiki dolls tags (2 bad disambigs) --> raised threshold to 30%
+                    //
+                    var url = db.urls.Find(8195);
 
                     // remove wiki terms first
                     db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url.id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));

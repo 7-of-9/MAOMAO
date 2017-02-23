@@ -13,11 +13,13 @@ namespace mm_svc.Terms
 {
     public static class GoldenParents
     {
-        public static List<gt_parent> GetStoredParents(long term_id)
+        public static List<gt_parent> GetStoredSuggestedParents(long term_id)
         {
             using (var db = mm02Entities.Create()) {
                 return db.gt_parent.AsNoTracking().Include("term").Include("term1")
-                         .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock();
+                         .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
+                         .DistinctBy(p => p.parent_term_id) // could have concurrent writes to gt_parent table
+                         .ToList(); 
             }
         }
 
@@ -29,12 +31,12 @@ namespace mm_svc.Terms
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
                 if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
-                    return GetStoredParents(term_id);
+                    return GetStoredSuggestedParents(term_id);
 
                 // get term
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
-                var suggested = GetSuggestedParents(paths);
+                var suggested = CalcSuggestedParents(paths);
                 if (suggested == null)
                     return null;
 
@@ -48,7 +50,7 @@ namespace mm_svc.Terms
                 db.gt_parent.AddRange(gt_parents);
                 db.SaveChangesTraceValidationErrors();
 
-                return GetStoredParents(term_id);
+                return GetStoredSuggestedParents(term_id);
             }
         }
 
@@ -61,7 +63,7 @@ namespace mm_svc.Terms
         private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() {
             //"People by", " people"
         };
-        public static List<TermGroup> GetSuggestedParents(List<List<TermPath>> root_paths)
+        public static List<TermGroup> CalcSuggestedParents(List<List<TermPath>> root_paths)
         {
             // expects: all paths to root to be for the same leaf term!
             var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);
@@ -95,7 +97,10 @@ namespace mm_svc.Terms
             {
                 //GroupByTerm_Sum_NSLW(root_paths, 1);
                 //GroupRankByTerm_Sum_NSLW(root_paths, 2); -- 2 levels not enough to get "chess" from "french defence"
-                return GroupRankByTerm_Sum_NSLW(root_paths, 4);
+                return GroupRankByTerm_Sum_NSLW(root_paths, 4)
+                       .DistinctBy(p => p.t.name)          // dedupe ns14/0 
+                       .Where(p => p.t.name != "Contents") // noise
+                       .ToList();
             }
         }
 

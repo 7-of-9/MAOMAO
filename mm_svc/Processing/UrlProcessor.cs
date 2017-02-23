@@ -76,35 +76,45 @@ namespace mm_svc
                 calais_terms.ForEach(p => p.S = p.S_CALC);
 
                 // map & store wiki golden_terms
-                if (wiki_terms.Count == 0 || reprocess == true)
+                if (wiki_terms.Count == 0 || reprocess == true) {
+                    if (reprocess) {
+                        db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
+                        db.SaveChangesTraceValidationErrors();
+                    }
                     MapWikiGoldenTerms(calais_terms, url, reprocess);
+                }
 
                 // calc & store all paths to root for mapped golden terms
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null);
                 Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));
 
                 // calc & store suggested parents
-                var parents = new ConcurrentDictionary<long, List<gt_parent>>();
+                var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess);
-                    parents.AddOrUpdate(p.term_id, term_parents, (k, v) => term_parents);
+                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess)
+                                                    .OrderByDescending(p2 => p2.S_norm)
+                                                    .Take(10) // *** remove long tail - for better common parent
+                                                    .ToList();
+                    top_parents.AddOrUpdate(p.term_id, term_parents, (k, v) => term_parents);
                 });
-                var all_parents = parents.Values.SelectMany(p => p).ToList();
+                var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
 
                 //
                 // find most common suggested parent
-                // TODO: > fix bad disambiguations, e.g. url's 
-                //       > tss weightings: (e.g. url=6131) -- don't apply equal weighting to all terms...
-                //       > common parent: (e.g. url id=55) -- use stemming and partial contains for counts (not exact matches) e.g. "comedy"...
+                // TODO: > common parent: (e.g. url id=55)
+                // -- ** use stemming and partial contains **
+                //   for counts (not exact matches) e.g. "comedy"...
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
-                    var counts = all_parents.GroupBy(p => p.parent_term_id)
-                                            .Select(p => new { parent_term_id = p.Key, count = p.Count() })
-                                            .OrderByDescending(p => p.count);
+                    var counts = all_top_parents
+                                        .GroupBy(p => p.parent_term_id)
+                                        .Select(p => new { parent_term_id = p.Key, count = p.Count() })
+                                        .OrderByDescending(p => p.count);
                     db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id));
                     db.SaveChangesTraceValidationErrors();
                     var pri = 0;
-                    db.url_parent_term.AddRange(counts.Where(p => p.count > 2).Select(p => new url_parent_term() { term_id = p.parent_term_id, url_id = url_id, pri = ++pri, }));
+                    db.url_parent_term.AddRange(counts.Where(p => p.count > 2) // *** want real commonality
+                                                      .Select(p => new url_parent_term() { term_id = p.parent_term_id, url_id = url_id, pri = ++pri, }));
                     db.SaveChangesTraceValidationErrors();
                 }
 
@@ -139,7 +149,9 @@ namespace mm_svc
                              : p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG ? ((4 - Convert.ToDouble(p.cal_socialtag_importance.ToString())) * 3) // 0-10
                              : p.term.term_type_id == (int)g.TT.CALAIS_TOPIC ? Convert.ToDouble(p.cal_topic_score.ToString()) * 10 // 0-10
                              : -1,
-            }).Where(p => p.name.Length <= 128);
+            }).Where(p => p.name.Length <= 128)
+            .DistinctBy(p => p.name.ltrim()); // dedupe socialtag and entity w/ same name; should really take highest S
+
             //foreach (var obj in objects)
             //    Debug.WriteLine($"{obj.name} ({StringEx.RemoveAccents(obj.name)} {obj.term_type_id} {obj.cal_entity_type_name} {obj.S}");
 
@@ -168,6 +180,9 @@ namespace mm_svc
                 var term_url_S = distinctObjects_S[distinct];
                 var term_url_tss = distinctObjects_tss[distinct];
                 var term_url_tss_norm = distinctObjects_tss_norm[distinct];
+
+                if (term_url_tss == 0)
+                    continue;
 
                 using (var db = mm02Entities.Create()) {
                     // TODO: lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
@@ -217,7 +232,11 @@ namespace mm_svc
 
                                 // for each ambig, get count of # of ambig's parent's stemmed words that are common with the URLs stemmed calais words
                                 //var calais_stemmed_terms = calais_terms_stemmed.Select(p2 => p2.term_stemmed).Distinct().ToList();
-                                var calais_stemmed_words = calais_terms_stemmed.Where(p => p.S >= 2).SelectMany(p2 => p2.stemmed_words).Distinct().Except(term_stemmed_words).ToList();
+
+                                var calais_stemmed_words = calais_terms_stemmed
+                                    .Where(p => p.S == 9) // *** ONLY USE HIGHEST POSSIBLE CALAIS INPUTS FOR DISAMBIGUATION!! ***
+                                    .SelectMany(p2 => p2.stemmed_words).Distinct().Except(term_stemmed_words).ToList();
+
                                 var counts = ambig_parents.Select(p => new {
                                     ambig = p,
                                     //terms_common = p.parents.Select(p2 => p2.term_stemmed).Distinct().Where(p2 => calais_stemmed_terms.Contains(p2)),
@@ -242,17 +261,11 @@ namespace mm_svc
                                     // take term(s) with top count of parent stemmed words common to calais stemmed words
                                     var top_count_matches = words_common.Where(p => p.words_common.Count() == words_common.Max(p2 => p2.words_common.Count()));
                                     foreach (var best_match in top_count_matches) {
-                                        //if (best_match.words_common.Count() > 3) {
                                         var perc = (double)best_match.words_common.Count() / calais_stemmed_words.Count;
-                                        if (perc > 0.15) {
+                                        if (perc > 0.15 && best_match.words_common.Count() > 3) {
                                             Debug.WriteLine($"DISAMBIG - PARTIAL WORD MATCH (#{best_match.words_common.Count()} = {(perc * 100).ToString("0.0")}%): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}] > (best stemmed term word match across all ambig parent & calais terms)\r\n\t{string.Join(",", best_match.words_common)}");
                                             wiki_disambiguated_terms_to_add.Add(best_match.ambig.t);
                                         }
-                                        //}
-                                        //else {
-                                        //    Debug.WriteLine($"## LOW SIGNAL (partial word match - ignoring): calais_term={term_name} ==> wiki_disambiguation_term={best_match.ambig.t}[{best_match.ambig.t.id}]\r\n\t{string.Join("\r\n\t", best_match.words_common)}");
-                                        //    ;
-                                        // }
                                     }
                                 }
                                 if (wiki_disambiguated_terms_to_add.Count == 0)

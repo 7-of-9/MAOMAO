@@ -16,9 +16,13 @@ namespace tests
         [TestMethod]
         public void GetSuggestedParents_Test1()
         {
-            // ok, try get JUST one suitable parent cat... just ONE!
+            // observations: (1) parents seem to be a bit BETTER for NS14 types: maybe should exclude NS0 from SuggestedParent for URL?
+            //
 
             var test_terms_ids = new List<long>() {
+                7088192, // "boris (band)" -- duplicates by name, ns14/0
+
+                5667534, // "cross platform software"
 
                 6016816, // React (media franchise)
                 7151070, // React (JavaScript library)
@@ -76,7 +80,7 @@ namespace tests
                     //
                     //       (2) frmMain -- UrlCategorizer: looking for commonality of suggested parent/related across URL wiki terms (use stemming?)
                     //
-                    GoldenParents.GetSuggestedParents(root_paths);
+                    var r = GoldenParents.CalcSuggestedParents(root_paths);
                 }
             }
         }
