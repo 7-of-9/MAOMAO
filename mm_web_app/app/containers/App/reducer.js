@@ -17,7 +17,16 @@ import {
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
   GOOGLE_SEARCH_CLEAN,
+  YOUTUBE_SEARCH,
+  YOUTUBE_SEARCH_ERROR,
+  YOUTUBE_SEARCH_SUCCESS,
+  YOUTUBE_SEARCH_CLEAN,
 } from './constants';
+
+const initialGoogleState = {};
+const initialYoutubeState = {
+  nextPageToken: '',
+};
 
 // The initial state of the App
 const initialState = fromJS({
@@ -26,11 +35,13 @@ const initialState = fromJS({
   home: {
     keyword: '',
   },
-  google: {},
+  google: initialGoogleState,
+  youtube: initialYoutubeState,
 });
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
+    case YOUTUBE_SEARCH:
     case GOOGLE_SEARCH:
       return state
         .set('loading', true)
@@ -39,13 +50,19 @@ function appReducer(state = initialState, action) {
       return state
         .set('loading', false)
         .set('google', action.data);
+    case YOUTUBE_SEARCH_SUCCESS:
+      return state
+        .set('loading', false)
+        .set('youtube', action.data);
     case GOOGLE_SEARCH_ERROR:
+    case YOUTUBE_SEARCH_ERROR:
       return state
         .set('error', action.error)
         .set('loading', false);
     case GOOGLE_SEARCH_CLEAN:
-      return state
-        .set('google', {});
+      return state.set('google', initialGoogleState);
+    case YOUTUBE_SEARCH_CLEAN:
+      return state.set('youtube', initialYoutubeState);
     default:
       return state;
   }

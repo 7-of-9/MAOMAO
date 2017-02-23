@@ -29,8 +29,8 @@ import Reddit from 'components/Reddit';
 import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
-import { makeSelectLoading, makeSelectGoogle } from '../App/selectors';
-import { googleSearch, googleCleanResult } from '../App/actions';
+import { makeSelectLoading, makeSelectGoogle, makeSelectYoutube } from '../App/selectors';
+import { googleSearch, youtubeSearch, googleCleanResult, youtubeCleanResult } from '../App/actions';
 import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
@@ -100,6 +100,7 @@ export function mapDispatchToProps(dispatch) {
     loadMore: () => {
       dispatch(nextPage());
       dispatch(googleSearch());
+      dispatch(youtubeSearch());
     },
     onChange: (e) => {
       dispatch(changeKeyword(e.target.value));
@@ -110,7 +111,9 @@ export function mapDispatchToProps(dispatch) {
       }
       dispatch(resetPage());
       dispatch(googleSearch());
+      dispatch(youtubeSearch());
       dispatch(googleCleanResult());
+      dispatch(youtubeCleanResult());
     },
   };
 }
@@ -119,6 +122,7 @@ const mapStateToProps = createStructuredSelector({
   keyword: makeSelectKeyword(),
   loading: makeSelectLoading(),
   google: makeSelectGoogle(),
+  youtube: makeSelectYoutube(),
 });
 
 

@@ -17,6 +17,11 @@ const makeSelectGoogle = () => createSelector(
   (globalState) => globalState.get('google')
 );
 
+const makeSelectYoutube = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.get('youtube')
+);
+
 const makeSelectLocationState = () => {
   let prevRoutingState;
   let prevRoutingStateJS;
@@ -36,6 +41,7 @@ const makeSelectLocationState = () => {
 export {
   selectGlobal,
   makeSelectGoogle,
+  makeSelectYoutube,
   makeSelectLoading,
   makeSelectError,
   makeSelectLocationState,
