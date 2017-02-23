@@ -12,6 +12,7 @@ namespace tests
     [TestClass]
     public class Test_Golden
     {
+
         [TestMethod]
         public void CalculatePathsToRoot_Test0()
         {

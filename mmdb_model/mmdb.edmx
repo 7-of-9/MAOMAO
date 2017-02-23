@@ -112,6 +112,15 @@
           <Property Name="img_url" Type="nvarchar" MaxLength="512" />
           <Property Name="nlp_suitability_score" Type="int" />
         </EntityType>
+        <EntityType Name="url_parent_term">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="url_id" Type="bigint" Nullable="false" />
+          <Property Name="term_id" Type="bigint" Nullable="false" />
+          <Property Name="pri" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="url_term">
           <Key>
             <PropertyRef Name="id" />
@@ -343,6 +352,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_url_parent_term_term">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="url_parent_term" Type="Self.url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_url_parent_term_url">
+          <End Role="url" Type="Self.url" Multiplicity="1" />
+          <End Role="url_parent_term" Type="Self.url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_urlTerm_term">
           <End Role="term" Type="Self.term" Multiplicity="1" />
           <End Role="url_term" Type="Self.url_term" Multiplicity="*" />
@@ -438,6 +471,7 @@
           <EntitySet Name="term_matrix" EntityType="Self.term_matrix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_type" EntityType="Self.term_type" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url" EntityType="Self.url" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="url_parent_term" EntityType="Self.url_parent_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_term" EntityType="Self.url_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url" EntityType="Self.user_url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url_classification" EntityType="Self.user_url_classification" Schema="dbo" store:Type="Tables" />
@@ -495,6 +529,14 @@
           <AssociationSet Name="FK_url_awis_site" Association="Self.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="url" EntitySet="url" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_parent_term_term" Association="Self.FK_url_parent_term_term">
+            <End Role="term" EntitySet="term" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_parent_term_url" Association="Self.FK_url_parent_term_url">
+            <End Role="url" EntitySet="url" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
           </AssociationSet>
           <AssociationSet Name="FK_urlTerm_term" Association="Self.FK_urlTerm_term">
             <End Role="term" EntitySet="term" />
@@ -625,6 +667,15 @@
           <AssociationSet Name="FK_gt_parent_term1" Association="mm02Model.FK_gt_parent_term1">
             <End Role="term" EntitySet="terms" />
             <End Role="gt_parent" EntitySet="gt_parent" />
+          </AssociationSet>
+          <EntitySet Name="url_parent_term" EntityType="mm02Model.url_parent_term" />
+          <AssociationSet Name="FK_url_parent_term_term" Association="mm02Model.FK_url_parent_term_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_parent_term_url" Association="mm02Model.FK_url_parent_term_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -779,6 +830,7 @@
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerm_term" FromRole="term" ToRole="url_term" />
           <NavigationProperty Name="gt_parent" Relationship="mm02Model.FK_gt_parent_term" FromRole="term" ToRole="gt_parent" />
           <NavigationProperty Name="gt_parent1" Relationship="mm02Model.FK_gt_parent_term1" FromRole="term" ToRole="gt_parent" />
+          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="term" ToRole="url_parent_term" />
           </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -897,6 +949,7 @@
           <NavigationProperty Name="golden_term" Relationship="mm02Model.fk_golden_term_url" FromRole="url" ToRole="golden_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
+          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -1086,6 +1139,41 @@
             </Principal>
             <Dependent Role="gt_parent">
               <PropertyRef Name="parent_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="url_parent_term">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url_id" Type="Int64" Nullable="false" />
+          <Property Name="term_id" Type="Int64" Nullable="false" />
+          <Property Name="pri" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="url_parent_term" ToRole="term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url_parent_term" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_url_parent_term_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_url_parent_term_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1289,6 +1377,16 @@
                 <ScalarProperty Name="S_norm" ColumnName="S_norm" />
                 <ScalarProperty Name="parent_term_id" ColumnName="parent_term_id" />
                 <ScalarProperty Name="child_term_id" ColumnName="child_term_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="url_parent_term">
+            <EntityTypeMapping TypeName="mm02Model.url_parent_term">
+              <MappingFragment StoreEntitySet="url_parent_term">
+                <ScalarProperty Name="pri" ColumnName="pri" />
+                <ScalarProperty Name="term_id" ColumnName="term_id" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -12,6 +12,7 @@ using static mm_svc.Terms.Correlations;
 using mm_global.Extensions;
 using Newtonsoft.Json;
 using mm_svc.Terms;
+using System.Collections.Concurrent;
 
 namespace mm_svc
 {
@@ -30,7 +31,7 @@ namespace mm_svc
         //
         // returns all from store (if present) unless reprocess_tss == true
         //
-        public List<url_term> ProcessUrl(long url_id, bool reprocess = false, bool run_l2_boost = false)
+        public static List<url_term> ProcessUrl(long url_id, bool reprocess = false, bool run_l2_boost = false)
         {
             using (var db = mm02Entities.Create()) {
                 // get url - tracking ref
@@ -38,8 +39,8 @@ namespace mm_svc
                 if (url == null) return null;
 
                 // url already processed? return unless reprocessing
-                if (url.processed_at_utc != null && reprocess == false)
-                    goto ret1;
+                //if (url.processed_at_utc != null && reprocess == false)
+                //    goto ret1;
 
                 dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
 
@@ -57,29 +58,55 @@ namespace mm_svc
                 }
 
                 // get underlying Calais url-terms - tracking references
-                var l1_calais_terms = db.url_term
+                var all_url_terms = db.url_term
                                         .Include("term").Include("term.term_type").Include("term.cal_entity_type")
-                                        .Where(p => p.url_id == url.id
-                                              && (p.term.term_type_id == (int)g.TT.CALAIS_ENTITY
-                                               || p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG
-                                               || p.term.term_type_id == (int)g.TT.CALAIS_TOPIC)
-                                              && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
+                                        .Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
+
+                var wiki_terms = all_url_terms.Where(p => p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14).ToList();
+
+                var calais_terms = all_url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_ENTITY
+                                                         || p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG
+                                                         || p.term.term_type_id == (int)g.TT.CALAIS_TOPIC).ToList();
+
 
                 // calc TSS values for Calais terms
-                new TssProducer().CalcTSS(meta_all, l1_calais_terms, run_l2_boost);
+                new TssProducer().CalcTSS(meta_all, calais_terms, run_l2_boost);
 
-                l1_calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
-                l1_calais_terms.ForEach(p => p.S = p.S_CALC);
+                calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
+                calais_terms.ForEach(p => p.S = p.S_CALC);
 
                 // map & store wiki golden_terms
-                MapWikiGoldenTerms(l1_calais_terms.Where(p => p.tss_norm > 0.1), url);
+                if (wiki_terms.Count == 0 || reprocess == true)
+                    MapWikiGoldenTerms(calais_terms, url, reprocess);
 
                 // calc & store all paths to root for mapped golden terms
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null);
                 Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));
 
                 // calc & store suggested parents
-                Parallel.ForEach(wiki_url_terms, p => GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess));
+                var parents = new ConcurrentDictionary<long, List<gt_parent>>();
+                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
+                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess);
+                    parents.AddOrUpdate(p.term_id, term_parents, (k, v) => term_parents);
+                });
+                var all_parents = parents.Values.SelectMany(p => p).ToList();
+
+                //
+                // find most common suggested parent
+                // TODO: > fix bad disambiguations, e.g. url's 
+                //       > tss weightings: (e.g. url=6131) -- don't apply equal weighting to all terms...
+                //       > common parent: (e.g. url id=55) -- use stemming and partial contains for counts (not exact matches) e.g. "comedy"...
+                //
+                if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
+                    var counts = all_parents.GroupBy(p => p.parent_term_id)
+                                            .Select(p => new { parent_term_id = p.Key, count = p.Count() })
+                                            .OrderByDescending(p => p.count);
+                    db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id));
+                    db.SaveChangesTraceValidationErrors();
+                    var pri = 0;
+                    db.url_parent_term.AddRange(counts.Where(p => p.count > 2).Select(p => new url_parent_term() { term_id = p.parent_term_id, url_id = url_id, pri = ++pri, }));
+                    db.SaveChangesTraceValidationErrors();
+                }
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
@@ -95,7 +122,7 @@ namespace mm_svc
             }
         }
 
-        public static int MapWikiGoldenTerms(IEnumerable<url_term> calais_terms, url db_url)
+        public static int MapWikiGoldenTerms(IEnumerable<url_term> calais_terms, url db_url, bool reprocess)
         {
             var unmapped_terms = 0;
             var mapped_terms = 0;
@@ -228,14 +255,13 @@ namespace mm_svc
                                         // }
                                     }
                                 }
-
                                 if (wiki_disambiguated_terms_to_add.Count == 0)
                                     Debug.WriteLine($"!! could not disambiguate {term_name} from:\r\n\t{string.Join("\r\n\t", wiki_ambig_terms.Select(p => p))}");
                             }
 
                             // record term-url link - if not already present
                             if (wiki_disambiguated_terms_to_add.Count > 0) {
-                                terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG");
+                                terms_added += AddMappedWikiUrlTerms(db, db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG", reprocess);
                                 mapped_terms++;
                             }
                         }
@@ -250,7 +276,7 @@ namespace mm_svc
                         else mapped_terms++;
 
                         // record term-url link - if not already present
-                        terms_added += AddMappedWikiUrlTerms(db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_terms_direct_matching, "WIKI_EXACT");
+                        terms_added += AddMappedWikiUrlTerms(db, db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_terms_direct_matching, "WIKI_EXACT", reprocess);
                     }
                 }
             }
@@ -260,11 +286,18 @@ namespace mm_svc
             return terms_added;
         }
 
-        private static int AddMappedWikiUrlTerms(url db_url, double term_url_S, double term_url_tss, double term_url_tss_norm, List<term> wiki_terms, string reason)
+        private static int AddMappedWikiUrlTerms(mm02Entities db,
+            url db_url, double term_url_S, double term_url_tss, double term_url_tss_norm, List<term> wiki_terms, string reason, bool reprocess)
         {
             var terms_added = 0;
             foreach (var wiki_term in wiki_terms) {
-                if (!db_url.url_term.Any(p => p.term_id == wiki_term.id)) {
+                if (reprocess && db_url.url_term.Any(p => p.term_id == wiki_term.id)) {
+                    var term_ids = wiki_terms.Select(p2 => p2.id).ToList();
+                    db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == db_url.id && term_ids.Contains(p.term_id)));
+                    db.SaveChangesTraceValidationErrors();
+                }
+
+                if (reprocess || !db_url.url_term.Any(p => p.term_id == wiki_term.id)) {
                     var wiki_mapped_url_term = new url_term() {
                         term_id = wiki_term.id,
                          url_id = db_url.id,

@@ -20,6 +20,7 @@ namespace mmdb_model
             this.golden_term = new HashSet<golden_term>();
             this.user_url = new HashSet<user_url>();
             this.url_term = new HashSet<url_term>();
+            this.url_parent_term = new HashSet<url_parent_term>();
         }
     
         public long id { get; set; }
@@ -43,5 +44,7 @@ namespace mmdb_model
         public virtual ICollection<user_url> user_url { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_term> url_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<url_parent_term> url_parent_term { get; set; }
     }
 }

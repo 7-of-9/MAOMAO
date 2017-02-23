@@ -273,8 +273,14 @@ namespace mm_svc
 
             // last chance saloon -- assign maximum Calais-scored terms that are up to now not scored, with TSS of exactly 1/2 of max. assigned TSS
             url_terms.Where(p => p.tss == 0 && p.S == 9).ToList().ForEach(p => {
-                p.candidate_reason += $" CAL_MAX_LAST_CHANCE";
+                p.candidate_reason += $" CAL_MAX_LAST_CHANCE(1)";
                 p.tss = url_terms.Max(p2 => p2.tss) / 2;
+            });
+
+            // last chance saloon -- assign maximum Calais-scored terms that are up to now not scored, with TSS of exactly 1/2 of max. assigned TSS
+            url_terms.Where(p => p.tss == 0 && p.S == 6).ToList().ForEach(p => {
+                p.candidate_reason += $" CAL_MAX_LAST_CHANCE(2)";
+                p.tss = url_terms.Max(p2 => p2.tss) / 4;
             });
 
             // normalize TSS

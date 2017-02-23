@@ -158,7 +158,7 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
-                if (db.gt_path_to_root.Any(p => p.term_id == term_id))
+                if (g.RetryMaxOrThrow(() => db.gt_path_to_root.Any(p => p.term_id == term_id)))
                     return false;
 
                 // calculate (expensive)

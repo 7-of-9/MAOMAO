@@ -15,17 +15,25 @@ namespace tests
     public class Test_UrlProcessor
     {
         [TestMethod]
+        public void ProcessUrl_Test1()
+        {
+            // testing most common parent -- set reprocess to only reprocess gt_parents; (waiting full run)
+            //  tune this so we get something sensible; looking for video games - NEXT: see notes in  ProcessUrl
+            UrlProcessor.ProcessUrl(6131, reprocess: true);
+        }
+
+        [TestMethod]
         public void MapWikiGoldenTerms_Test1()
         {
             using (var db = mm02Entities.Create()) {
                 // testing "ajax" -- dismabiguation term logic
 
-                foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
+                //foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
                 {
                     //
                     // TODO -- more on this; picking wrong React disambig --
                     // DISAMBIG - PARTIAL WORD MATCH (#8): calais_term=React ==> wiki_disambiguation_term=React (media franchise) ... [6016816] #-1 #NS=2 (WIKI_NS_0)[6016816] > (best stemmed term word match across all ambig parent & calais terms)
-                    //var url = db.urls.Find(8427);
+                    var url = db.urls.Find(6135);
 
                     // remove wiki terms first
                     db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url.id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
@@ -33,7 +41,7 @@ namespace tests
 
                     // map wiki terms
                     var url_terms = db.url_term.Include("term").Where(p => p.url_id == url.id).ToListNoLock();
-                    var terms_added = UrlProcessor.MapWikiGoldenTerms(url_terms.Where(p => p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).ToList(), url);
+                    var terms_added = UrlProcessor.MapWikiGoldenTerms(url_terms.Where(p => p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).ToList(), url, reprocess: true);
                     db.SaveChangesTraceValidationErrors();
 
                     if (terms_added > 0) {

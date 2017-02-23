@@ -41,6 +41,9 @@
         <EntityTypeShape EntityType="mm02Model.gt_parent" Width="1.5" PointX="13" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_gt_parent_term" />
         <AssociationConnector Association="mm02Model.FK_gt_parent_term1" />
+        <EntityTypeShape EntityType="mm02Model.url_parent_term" Width="1.5" PointX="16" PointY="7.625" />
+        <AssociationConnector Association="mm02Model.FK_url_parent_term_term" />
+        <AssociationConnector Association="mm02Model.FK_url_parent_term_url" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

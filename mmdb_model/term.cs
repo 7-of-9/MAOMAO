@@ -27,6 +27,7 @@ namespace mmdb_model
             this.url_term = new HashSet<url_term>();
             this.gt_parent = new HashSet<gt_parent>();
             this.gt_parent1 = new HashSet<gt_parent>();
+            this.url_parent_term = new HashSet<url_parent_term>();
         }
     
         public long id { get; set; }
@@ -58,5 +59,7 @@ namespace mmdb_model
         public virtual ICollection<gt_parent> gt_parent { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<gt_parent> gt_parent1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<url_parent_term> url_parent_term { get; set; }
     }
 }

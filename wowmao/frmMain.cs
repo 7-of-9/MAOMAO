@@ -227,13 +227,14 @@ namespace wowmao
                            "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n" +
                            "pretty_meta_all: " + (pretty_meta_all ?? "").ToString() + "\r\n";
 
+
+
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                
+
                 //
                 // ** ProcessTss **
                 //
-                var tss = new mm_svc.UrlProcessor();
-                var l1_url_terms = tss.ProcessUrl(url.id, reprocess: chkReprocess.Checked);
+                var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess: chkReprocess.Checked);
 
                 // (1) get url_terms (L1 terms)
                 /*if (this.url_term_cache.ContainsKey(url.id))
@@ -421,6 +422,12 @@ namespace wowmao
 
                     item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] {p.gold_desc}"));
                 }
+
+                //
+                // url suggested parent terms (from UrlProcessing)
+                //
+                var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
+                txtInfo.AppendText("\r\n\r\n >>> url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
             }
 
             if (new_gold_count > 0) {
@@ -501,16 +508,6 @@ namespace wowmao
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
-
-            // l2 terms - obsolete?
-            //var l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = tag.ut.term.name, min_corr = 0.01 })
-            //                           .SelectMany(p => p.corr_terms)
-            //                           .OrderByDescending(p => p.corr_for_main).ToList();
-            //ttL2Terms.Nodes.Clear();
-            //foreach(var golden_term in l2_terms) {
-            //    ttL2Terms.AddRootTerm(golden_term);
-            //}
-
             this.txtPathsToRoot2.Text = "";
             var all_root_paths = new List<List<GoldenPaths.TermPath>>();
             //foreach (var lvi in lvwUrlTerms.Items)
@@ -545,95 +542,99 @@ namespace wowmao
         {
         }
 
+        // 
         // naive classification -- pick random urls, classify -- simulate full user flow
-        // (1) add to user_url table
-        // (2) classify naive
+        // TODO FIRST -- need to record top n parent terms for url; 
+        // then --
+        // (1) add to user_url table -- simulate user history
+        // (2) classify naive -- based on mashup of top url terms and their gt_parents
         //...
         private void cmdWalkRndClassify_Click(object sender, EventArgs e)
         {
             var user_id = 5;
+            var rnd = new Random();
             using (var db = mm02Entities.Create())
             {
-                // clear down user history
-                db.user_url_classification.RemoveRange(db.user_url_classification.Where(p => p.user_id == user_id));
-                db.SaveChangesTraceValidationErrors();
+                //
+                // two distinct approaches; classifying ONE by ONE (ClassifySingleUrl) 
+                //                      or; classifying a SET of URLs in one hit 
+                // preferring option (2) here for now!
+                //
 
-                db.user_url.RemoveRange(db.user_url.Where(p => p.userId == user_id));
-                db.SaveChangesTraceValidationErrors();
-
-                // todo -- reordering if previous, based on common-term counts, i.e. most common across
-                //         history set should be reordered to pri1 ...
-
-                var summary = new Dictionary<term, List<url>>();
-                var rnd = new Random();
-                this.txtOut.Text = "";
-                var traceListener = new TextBoxTraceListener(this.txtOut);
-                Trace.Listeners.Add(traceListener);
-                var sample_user_url_ids = new List<long>();
-                for (int i = 0; i < 100; i ++)
+                //
+                // mm_svc.UrlClassifier.ClassifyUrlSet
+                //
                 {
-                    var lvi = this.lvwUrls.Items[rnd.Next(lvwUrls.Items.Count)];
-                    var url = lvi.Tag as url;
-                        
-                    int new_classifications, reused_classifications;
-                    var classifications = mm_svc.UrlClassifier.ClassifyUrl(url.id, user_id, out new_classifications, out reused_classifications, call_level: 1);
-                    sample_user_url_ids.Add(db.user_url.Where(p => p.userId == user_id && p.urlId == url.id).Single().id);
-                    Application.DoEvents();
+                    var url_ids = new List<long>();
+                    for (int i = 0; i < 20; i++) url_ids.Add((this.lvwUrls.Items[/*rnd.Next(lvwUrls.Items.Count)*/i].Tag as url).id);
+                    var classifications = mm_svc.UrlClassifier.ClassifyUrlSet(url_ids, user_id);
+                }
 
-                    //this.txtOut.AppendText($"{url.meta_title} - {url.url1} - new: {new_classifications} / reused: {reused_classifications}\r\n");
-                    //foreach (var classification in classifications) {
-                    //    var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id && p.url_id == url.id).Single();
-                    //    this.txtOut.AppendText($"\t{url_term.term.name} pri={classification.pri} tss_norm={url_term.tss_norm} S={url_term.S_CALC} reused={classification.reused}\r\n");
-                    //}
+                //
+                // mm_svc.UrlClassifier.ClassifySingleUrl --> // flow -- simulates user navigating random urls one by one
+                //
+                /*{
+                    // clear down user history
+                    db.user_url_classification.RemoveRange(db.user_url_classification.Where(p => p.user_id == user_id));
+                    db.SaveChangesTraceValidationErrors();
 
-                    // first only??
-                    //var prior_classifications = classifications.Where(p => p.pri < 0).OrderByDescending(p => p.pri);
-                    //if (prior_classifications.Count() > 0) {
-                    //    var summary_term = db.terms.Find(prior_classifications.First().term_id);
-                    //    if (!summary.ContainsKey(summary_term))
-                    //        summary.Add(summary_term, new List<url> { url });
+                    db.user_url.RemoveRange(db.user_url.Where(p => p.userId == user_id));
+                    db.SaveChangesTraceValidationErrors();
+
+                    // ClassifySingleUrl 
+                    var summary = new Dictionary<term, List<url>>();
+                    this.txtOut.Text = "";
+                    var traceListener = new TextBoxTraceListener(this.txtOut);
+                    Trace.Listeners.Add(traceListener);
+                    var sample_user_url_ids = new List<long>();
+                    for (int i = 0; i < 100; i++) {
+                        var lvi = this.lvwUrls.Items[rnd.Next(lvwUrls.Items.Count)];
+                        var url = lvi.Tag as url;
+
+                        int new_classifications, reused_classifications;
+                        var classifications = mm_svc.UrlClassifier.ClassifySingleUrl(url.id, user_id, out new_classifications, out reused_classifications, call_level: 1);
+                        sample_user_url_ids.Add(db.user_url.Where(p => p.userId == user_id && p.urlId == url.id).Single().id);
+                        Application.DoEvents();
+                    }
+
+                    // TODO: this can't work -- must re-read the entire sample set and look at their top negative ordinals (i.e. after reclassification)
+                    //Trace.WriteLine("***");
+                    //Trace.WriteLine("***");
+                    //foreach (var user_url_id in sample_user_url_ids)
+                    //{
+                    //    var url_classifications = db.user_url_classification.Include("user_url").Include("user_url.url").AsNoTracking().Where(p => p.user_url_id == user_url_id).ToListNoLock();
+                    //    if (url_classifications.Count == 0) continue;
+
+                    //    var url_classifications_common = url_classifications.Where(p => p.pri < 0).OrderByDescending(p => p.pri);
+                    //    var url_classifications_distinct = url_classifications.Where(p => p.pri > 0).OrderBy(p => p.pri);
+
+                    //    if (url_classifications_common.Count() > 0)
+                    //    {
+                    //        var url = db.urls.Find(url_classifications_common.First().user_url.urlId);
+                    //        Trace.WriteLine($"{url.meta_title}");
+                    //        foreach (var classification in url_classifications_common)
+                    //            Trace.WriteLine($"\tCOMMON TERM: pri={classification.pri} {classification.term}");
+
+                    //        // todo -- group URLs by first common term for output
+                    //    }
                     //    else
-                    //        summary[summary_term].Add(url);
+                    //    {
+                    //        var url = db.urls.Find(url_classifications.First().user_url.urlId);
+                    //        Trace.WriteLine($"{url.meta_title} >>> NO COMMON CLASSIFICATIONS");
+                    //        foreach (var classification in url_classifications_distinct)
+                    //            Trace.WriteLine($"\tdistinct term: pri={classification.pri} {classification.term}");
+                    //    }
                     //}
-                }
 
-                // TODO: this can't work -- must re-read the entire sample set and look at their top negative ordinals (i.e. after reclassification)
-                Trace.WriteLine("***");
-                Trace.WriteLine("***");
-                foreach (var user_url_id in sample_user_url_ids)
-                {
-                    var url_classifications = db.user_url_classification.Include("user_url").Include("user_url.url").AsNoTracking().Where(p => p.user_url_id == user_url_id).ToListNoLock();
-                    if (url_classifications.Count == 0) continue;
-
-                    var url_classifications_common = url_classifications.Where(p => p.pri < 0).OrderByDescending(p => p.pri);
-                    var url_classifications_distinct = url_classifications.Where(p => p.pri > 0).OrderBy(p => p.pri);
-
-                    if (url_classifications_common.Count() > 0)
-                    {
-                        var url = db.urls.Find(url_classifications_common.First().user_url.urlId);
-                        Trace.WriteLine($"{url.meta_title}");
-                        foreach (var classification in url_classifications_common)
-                            Trace.WriteLine($"\tCOMMON TERM: pri={classification.pri} {classification.term}");
-
-                        // todo -- group URLs by first common term for output
-                    }
-                    else
-                    {
-                        var url = db.urls.Find(url_classifications.First().user_url.urlId);
-                        Trace.WriteLine($"{url.meta_title} >>> NO COMMON CLASSIFICATIONS");
-                        foreach (var classification in url_classifications_distinct)
-                            Trace.WriteLine($"\tdistinct term: pri={classification.pri} {classification.term}");
-                    }
-                }
-
-                foreach (var key in summary.Keys)
-                {
-                    this.txtOut.AppendText($"** {key} **\r\n");
-                    foreach (var url in summary[key])
-                    {
-                        this.txtOut.AppendText($"\t -> {url.meta_title} {url.url1}\r\n");
-                    }
-                }
+                    //foreach (var key in summary.Keys)
+                    //{
+                    //    this.txtOut.AppendText($"** {key} **\r\n");
+                    //    foreach (var url in summary[key])
+                    //    {
+                    //        this.txtOut.AppendText($"\t -> {url.meta_title} {url.url1}\r\n");
+                    //    }
+                    //}
+                }*/
             }
         }
     }
