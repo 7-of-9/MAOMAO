@@ -5,19 +5,42 @@
  */
 
 import {
+  CLEAN_SEARCH_RESULT,
+  GOOGLE_CRAWLER,
+  GOOGLE_CRAWLER_SUCCESS,
+  GOOGLE_CRAWLER_ERROR,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_SUCCESS,
   GOOGLE_SEARCH_ERROR,
-  GOOGLE_SEARCH_CLEAN,
   YOUTUBE_SEARCH,
   YOUTUBE_SEARCH_SUCCESS,
   YOUTUBE_SEARCH_ERROR,
-  YOUTUBE_SEARCH_CLEAN,
 } from './constants';
 
-export function googleCleanResult() {
+export function cleanSearchResult() {
   return {
-    type: GOOGLE_SEARCH_CLEAN,
+    type: CLEAN_SEARCH_RESULT,
+  };
+}
+
+export function crawlerGoogleSearch() {
+  return {
+    type: GOOGLE_CRAWLER,
+  };
+}
+
+export function crawlerGoogleLoaded(data, keyword) {
+  return {
+    type: GOOGLE_CRAWLER_SUCCESS,
+    data,
+    keyword,
+  };
+}
+
+export function crawlerGoogleLoadingError(error) {
+  return {
+    type: GOOGLE_CRAWLER_ERROR,
+    error,
   };
 }
 
@@ -39,12 +62,6 @@ export function googleLoadingError(error) {
   return {
     type: GOOGLE_SEARCH_ERROR,
     error,
-  };
-}
-
-export function youtubeCleanResult() {
-  return {
-    type: YOUTUBE_SEARCH_CLEAN,
   };
 }
 

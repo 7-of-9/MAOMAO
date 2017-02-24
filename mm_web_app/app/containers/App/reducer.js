@@ -13,14 +13,13 @@
 import { fromJS } from 'immutable';
 
 import {
+  CLEAN_SEARCH_RESULT,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
-  GOOGLE_SEARCH_CLEAN,
   YOUTUBE_SEARCH,
   YOUTUBE_SEARCH_ERROR,
   YOUTUBE_SEARCH_SUCCESS,
-  YOUTUBE_SEARCH_CLEAN,
 } from './constants';
 
 const initialGoogleState = {};
@@ -59,10 +58,9 @@ function appReducer(state = initialState, action) {
       return state
         .set('error', action.error)
         .set('loading', false);
-    case GOOGLE_SEARCH_CLEAN:
-      return state.set('google', initialGoogleState);
-    case YOUTUBE_SEARCH_CLEAN:
-      return state.set('youtube', initialYoutubeState);
+    case CLEAN_SEARCH_RESULT:
+      return state.set('google', initialGoogleState)
+        .set('youtube', initialYoutubeState);
     default:
       return state;
   }
