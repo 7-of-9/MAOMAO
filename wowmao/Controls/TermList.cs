@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using mmdb_model;
+using System.Diagnostics;
 
 namespace wowmao
 {
@@ -61,6 +62,28 @@ namespace wowmao
             this.FullRowSelect = true;
             this.HideSelection = false;
             this.View = View.Details;
+            this.ContextMenuStrip = this.contextMenuStrip1;
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
+            if (this.SelectedItems.Count == 0) return;
+            var terms = new List<term>();
+            this.contextMenuStrip1.Tag = terms;
+            for (int i=0; i < this.SelectedItems.Count; i++) {
+                var tag = this.SelectedItems[i].Tag as lvwUrlTermTag;
+                terms.Add(tag.ut.term);
+            }
+            mnuInfo.Text = string.Join(",", terms.Select(p => p.name));
+        }
+
+        private void mnuSearchGoogle_Click(object sender, EventArgs e) {
+            if (this.SelectedItems.Count == 0) return;
+            var terms = this.contextMenuStrip1.Tag as List<term>;
+            var search = string.Join(" ", terms.Select(p => p.name));
+            Process.Start($"https://www.google.com/#q={search}");
+
+            //var term = (this.SelectedNode.Tag as NodeTag).term;
+            //OnSearchGoogle?.Invoke(typeof(Correlations), new OnSearchGoogleEventArgs() { search_term = term.name });
         }
 
         internal class lvwUrlTermTag {

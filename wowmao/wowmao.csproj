@@ -91,6 +91,9 @@
     <Compile Include="Controls\WikiGoldenTree.Designer.cs">
       <DependentUpon>WikiGoldenTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ZoomBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +121,9 @@
       <DependentUpon>TermTree.cs</DependentUpon>
     </Compile>
     <Compile Include="TextBoxTraceListener.cs" />
+    <EmbeddedResource Include="Controls\TermList.resx">
+      <DependentUpon>TermList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\WikiGoldenTree.resx">
       <DependentUpon>WikiGoldenTree.cs</DependentUpon>
     </EmbeddedResource>

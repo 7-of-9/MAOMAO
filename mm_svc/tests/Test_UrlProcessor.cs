@@ -19,7 +19,13 @@ namespace tests
         {
             // testing most common parent -- set reprocess to only reprocess gt_parents; (waiting full run)
             //  tune this so we get something sensible; looking for video games - NEXT: see notes in  ProcessUrl
-            UrlProcessor.ProcessUrl(6131, reprocess: true);
+
+            // DUPE WIKI TERS: url_id=8425 (calais) ==> maps to *multiple* "functional programming"
+            //  (done) --> pick best wiki matching term (ns0 or 14) -- best = one with most parents...
+            //
+
+            // stemming common parent
+            UrlProcessor.ProcessUrl(55, reprocess: true);
         }
 
         [TestMethod]
@@ -30,10 +36,10 @@ namespace tests
                 //foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
                 {
                     //
-                    // DISAMBIGS...
-                    // (*) url_id=8195 dolls (calais) ==> maps to *multiple* wiki dolls tags (2 bad disambigs) --> raised threshold to 30%
+                    // DISAMBIGS: url_id=8195 dolls (calais) ==> maps to *multiple* wiki dolls tags (2 bad disambigs)
+                    //    (done)  --> raised threshold to 30%
                     //
-                    var url = db.urls.Find(8195);
+                    var url = db.urls.Find(8425);
 
                     // remove wiki terms first
                     db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url.id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));

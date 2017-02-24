@@ -211,6 +211,15 @@ namespace wowmao
             wikiGoldTree.BuildTree();
         }
 
+        private void ZoomBrowser(int zoom)
+        {
+            if (zoom > 0)
+                for (int i = 0; i < zoom; i++) { zoomBrowser1.Focus(); SendKeys.Send("^{+}"); } // [CTRL]+[+]
+            else if (zoom < 0)
+                for (int i = 0; i < zoom*-1; i++) { zoomBrowser1.Focus(); SendKeys.Send("^-"); } // [CTRL]+[-]
+            else { zoomBrowser1.Focus(); SendKeys.Send("^0"); } // [CTRL]+[0]
+        }
+
         private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwUrls.SelectedItems.Count == 0) return;
@@ -227,7 +236,12 @@ namespace wowmao
                            "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n" +
                            "pretty_meta_all: " + (pretty_meta_all ?? "").ToString() + "\r\n";
 
-
+            zoomBrowser1.Navigate(url.url1);
+            zoomBrowser1.ScriptErrorsSuppressed = true;
+            //int zoomFactor = 300;
+            //((SHDocVw.WebBrowser)zoomBrowser1.ActiveXInstance).ExecWB(SHDocVw.OLECMDID.OLECMDID_OPTICAL_ZOOM,
+            //    SHDocVw.OLECMDEXECOPT.OLECMDEXECOPT_DONTPROMPTUSER, zoomFactor, IntPtr.Zero);
+            //ZoomBrowser(-2);
 
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
 
@@ -424,13 +438,14 @@ namespace wowmao
                 }
 
                 //
-                // url suggested parent terms (from UrlProcessing)
+                // url suggested parent terms (from UrlProcessing) -- WIP
                 //
-                var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
-                txtInfo.AppendText("\r\n\r\n >>> url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
+                var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id)
+                                     .OrderBy(p => p.pri).ToListNoLock();
+                txtInfo.AppendText("\r\n\r\n>>> url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 
-                txtInfo.AppendText("\r\n\r\n *** " + url.url1);
-
+                txtInfo.AppendText("\r\n\r\n>>> HTTP: " + url.url1 + "\r\n");
+                txtInfo.ScrollToCaret();
             }
 
             if (new_gold_count > 0) {
@@ -522,6 +537,8 @@ namespace wowmao
                 {
                     var parents = GoldenParents.GetStoredSuggestedParents(tag.ut.term_id);
                     parents.ForEach(p => txtPathsToRoot2.AppendText($"S_norm={p.S_norm.ToString("0.00")} {p.parent_term} S={p.S.ToString("0.00")}\r\n"));
+                    txtPathsToRoot2.Select(0, 1);
+                    txtPathsToRoot2.ScrollToCaret();
                 }
             }
 
@@ -639,6 +656,16 @@ namespace wowmao
                     //}
                 }*/
             }
+        }
+
+        private void zoomBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            zoomBrowser1.Zoom(70);
+        }
+
+        private void txtInfo_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
         }
     }
 }

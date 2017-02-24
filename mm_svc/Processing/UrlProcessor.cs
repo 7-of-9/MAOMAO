@@ -62,7 +62,7 @@ namespace mm_svc
                                         .Include("term").Include("term.term_type").Include("term.cal_entity_type")
                                         .Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
 
-                var wiki_terms = all_url_terms.Where(p => p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14).ToList();
+                var existing_wiki_terms = all_url_terms.Where(p => p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14).ToList();
 
                 var calais_terms = all_url_terms.Where(p => p.term.term_type_id == (int)g.TT.CALAIS_ENTITY
                                                          || p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG
@@ -76,12 +76,13 @@ namespace mm_svc
                 calais_terms.ForEach(p => p.S = p.S_CALC);
 
                 // map & store wiki golden_terms
-                if (wiki_terms.Count == 0 || reprocess == true) {
+                if (existing_wiki_terms.Count == 0 || reprocess == true) {
                     if (reprocess) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
                         db.SaveChangesTraceValidationErrors();
                     }
                     MapWikiGoldenTerms(calais_terms, url, reprocess);
+                    db.SaveChangesTraceValidationErrors();
                 }
 
                 // calc & store all paths to root for mapped golden terms
@@ -91,30 +92,63 @@ namespace mm_svc
                 // calc & store suggested parents
                 var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess)
-                                                    .OrderByDescending(p2 => p2.S_norm)
-                                                    .Take(10) // *** remove long tail - for better common parent
-                                                    .ToList();
-                    top_parents.AddOrUpdate(p.term_id, term_parents, (k, v) => term_parents);
+                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess);
+                    if (term_parents != null) {
+                        var filtered_term_parents = term_parents
+                                                        .OrderByDescending(p2 => p2.S_norm)
+                                                        .Take(10) // *** remove long tail - for better common parent
+                                                        .ToList();
+                        top_parents.AddOrUpdate(p.term_id, filtered_term_parents, (k, v) => filtered_term_parents);
+                    }
                 });
                 var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
 
+                // dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
+                if (wiki_url_terms != null) {
+                    var wiki_dupes = wiki_url_terms.Where(p => p.term != null)
+                                           .GroupBy(p => p.term.name)
+                                           .Select(p => new { term_name = p.Key, count = p.Count() })
+                                           .Where(p => p.count > 1)
+                                           .Select(p => p.term_name);
+                    if (wiki_dupes.Count() > 0) {
+                        foreach (var dupe_wiki_name in wiki_dupes) {
+                            var wiki_dupe_terms = db.terms.Include("gt_parent").AsNoTracking()
+                                                    .Where(p => p.name == dupe_wiki_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
+                                                    .ToListNoLock();
+                            var max_parent_count = wiki_dupe_terms.Max(p => p.gt_parent.Count());
+                            var non_max_parent_term_ids = wiki_dupe_terms.Where(p => p.gt_parent.Count() != max_parent_count).Select(p => p.id).ToList();
+                            db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && non_max_parent_term_ids.Contains(p.term_id)));
+                            db.SaveChangesTraceValidationErrors();
+                        }
+                    }
+                }
+
                 //
                 // find most common suggested parent
-                // TODO: > common parent: (e.g. url id=55)
-                // -- ** use stemming and partial contains **
-                //   for counts (not exact matches) e.g. "comedy"...
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
-                    var counts = all_top_parents
-                                        .GroupBy(p => p.parent_term_id)
-                                        .Select(p => new { parent_term_id = p.Key, count = p.Count() })
-                                        .OrderByDescending(p => p.count);
+                    //var counts_not_stemmed = all_top_parents
+                    //                    .GroupBy(p => p.parent_term_id)
+                    //                    .Select(p => new { parent_term_id = p.Key, count = p.Count() })
+                    //                    .OrderByDescending(p => p.count);
+
+                    // stemming, w/ contains
+                    var stemmer = new Porter2_English();
+                    var top_parents_stemmed = all_top_parents.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1, c = 0 });
+                    var top_parents_stemmed_counted_contains = top_parents_stemmed.Select(p => new {
+                        stemmed = p.stemmed,
+                        t = p.t,
+                        count = top_parents_stemmed.Count(p2 => p2.stemmed.Contains(p.stemmed))
+                    }).OrderByDescending(p => p.count).DistinctBy(p => p.t.id);
+
+                    // remove
                     db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id));
                     db.SaveChangesTraceValidationErrors();
+
+                    // add
                     var pri = 0;
-                    db.url_parent_term.AddRange(counts.Where(p => p.count > 2) // *** want real commonality
-                                                      .Select(p => new url_parent_term() { term_id = p.parent_term_id, url_id = url_id, pri = ++pri, }));
+                    db.url_parent_term.AddRange(top_parents_stemmed_counted_contains.Where(p => p.count > 1) // *** want real commonality
+                                                      .Select(p => new url_parent_term() { term_id = p.t.id, url_id = url_id, pri = ++pri, }));
                     db.SaveChangesTraceValidationErrors();
                 }
 
@@ -185,8 +219,10 @@ namespace mm_svc
                     continue;
 
                 using (var db = mm02Entities.Create()) {
-                    // TODO: lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
-                    var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
+                    // lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
+                    var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name
+                                                                     && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
+                                                       .ToListNoLock();
                     bool skip_disambig = false;
                     if (wiki_terms_direct_matching.Any(p => p.wiki_nscount > 7)) {
                         Debug.WriteLine($">>> {term_name}: got direct matching high NS# (={wiki_terms_direct_matching.Max(p => p.wiki_nscount)}) terms; will not bother with disambiguation.");
