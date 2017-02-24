@@ -1,14 +1,41 @@
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import queryString from 'query-string';
+import {
+  GOOGLE_API_KEY, GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_CRAWLER,
+ } from 'containers/App/constants';
+import {
+  googleLoaded, googleLoadingError, youtubeLoaded, youtubeLoadingError,
+  crawlerGoogleLoaded, crawlerGoogleLoadingError,
+ } from 'containers/App/actions';
 
-import { GOOGLE_API_KEY, GOOGLE_SEARCH, YOUTUBE_SEARCH } from 'containers/App/constants';
-import { googleLoaded, googleLoadingError, youtubeLoaded, youtubeLoadingError } from 'containers/App/actions';
-
-import request from 'utils/request';
+import request, { rawRequest } from 'utils/request';
 import { makeSelectKeyword, makeSelectPageNumber } from 'containers/HomePage/selectors';
 import { makeSelectYoutube } from 'containers/App/selectors';
 
-const LIMIT = 5;
+const LIMIT = 10;
+
+/**
+ * Google Knowledge request/response handler
+ */
+export function* getGoogleSearchResult() {
+  // Select keyword from store
+  const keyword = yield select(makeSelectKeyword());
+  const page = yield select(makeSelectPageNumber());
+  const query = queryString.stringify({
+    q: keyword,
+    start: LIMIT * (page - 1),
+  });
+  // FIXME: pagination for google search
+  const requestURL = `https://www.google.com/search?${query}`;
+  const crawlerUrl = `https://dunghd.stdlib.com/crawler@dev/?url=${requestURL}`;
+  try {
+    const result = yield call(rawRequest, crawlerUrl);
+    yield put(crawlerGoogleLoaded(result, keyword));
+  } catch (err) {
+    yield put(crawlerGoogleLoadingError(err));
+  }
+}
 
 /**
  * Google Knowledge request/response handler
@@ -50,6 +77,17 @@ export function* getYoutubeVideo() {
 /**
  * Root saga manages watcher lifecycle
  */
+export function* googleSearchData() {
+  const watcher = yield takeLatest(GOOGLE_CRAWLER, getGoogleSearchResult);
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watcher);
+}
+
+/**
+ * Root saga manages watcher lifecycle
+ */
 export function* googleData() {
   const watcher = yield takeLatest(GOOGLE_SEARCH, getGoogleKnowledge);
 
@@ -72,4 +110,5 @@ export function* youtubeData() {
 export default [
   googleData,
   youtubeData,
+  googleSearchData,
 ];

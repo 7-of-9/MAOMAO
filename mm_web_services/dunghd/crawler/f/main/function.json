@@ -1,0 +1,13 @@
+{
+  "name": "main",
+  "description": "Google Search crawler base on keyword",
+  "args": [
+    "url"
+  ],
+  "kwargs": {
+    "url": "url"
+  },
+  "http": {
+    "headers": {}
+  }
+}

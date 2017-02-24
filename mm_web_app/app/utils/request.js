@@ -41,3 +41,15 @@ export default function request(url, options) {
     .then(checkStatus)
     .then(parseJSON);
 }
+
+/**
+ * Requests a URL, returning a promise
+ *
+ * @param  {string} url       The URL we want to request
+ * @param  {object} [options] The options we want to pass to "fetch"
+ *
+ * @return {object}           The response data
+ */
+export function rawRequest(url, options) {
+  return fetch(url, options);
+}

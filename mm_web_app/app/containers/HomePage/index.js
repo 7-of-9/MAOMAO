@@ -30,7 +30,7 @@ import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
 import { makeSelectLoading, makeSelectGoogle, makeSelectYoutube } from '../App/selectors';
-import { googleSearch, youtubeSearch, cleanSearchResult } from '../App/actions';
+import { googleSearch, crawlerGoogleSearch, youtubeSearch, cleanSearchResult } from '../App/actions';
 import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
@@ -100,6 +100,7 @@ export function mapDispatchToProps(dispatch) {
     loadMore: () => {
       dispatch(nextPage());
       dispatch(googleSearch());
+      dispatch(crawlerGoogleSearch());
       dispatch(youtubeSearch());
     },
     onChange: (e) => {
@@ -111,6 +112,7 @@ export function mapDispatchToProps(dispatch) {
       }
       dispatch(resetPage());
       dispatch(googleSearch());
+      dispatch(crawlerGoogleSearch());
       dispatch(youtubeSearch());
       dispatch(cleanSearchResult());
     },

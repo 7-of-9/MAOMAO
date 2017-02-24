@@ -1,0 +1,23 @@
+{
+  "name": "crawler",
+  "version": "0.0.0",
+  "description": "Google search service",
+  "author": "dunghd <dunghd.it@gmail.com>",
+  "main": "f/main/index.js",
+  "dependencies": {
+    "crawler": "^1.0.3",
+    "lib": "^2.1.1",
+    "url": "^0.11.0"
+  },
+  "private": true,
+  "stdlib": {
+    "name": "dunghd/crawler",
+    "defaultFunction": "main",
+    "timeout": 10000,
+    "publish": true,
+    "personalize": {
+      "keys": [],
+      "user": []
+    }
+  }
+}

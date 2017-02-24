@@ -14,6 +14,9 @@ import { fromJS } from 'immutable';
 
 import {
   CLEAN_SEARCH_RESULT,
+  GOOGLE_CRAWLER,
+  GOOGLE_CRAWLER_SUCCESS,
+  GOOGLE_CRAWLER_ERROR,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
@@ -23,6 +26,7 @@ import {
 } from './constants';
 
 const initialGoogleState = {};
+const initialGoogleSearchState = {};
 const initialYoutubeState = {
   nextPageToken: '',
 };
@@ -35,16 +39,22 @@ const initialState = fromJS({
     keyword: '',
   },
   google: initialGoogleState,
+  search: initialGoogleSearchState,
   youtube: initialYoutubeState,
 });
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
+    case GOOGLE_CRAWLER:
     case YOUTUBE_SEARCH:
     case GOOGLE_SEARCH:
       return state
         .set('loading', true)
         .set('error', false);
+    case GOOGLE_CRAWLER_SUCCESS:
+      return state
+        .set('loading', false)
+        .set('search', action.data);
     case GOOGLE_SEARCH_SUCCESS:
       return state
         .set('loading', false)
@@ -53,6 +63,7 @@ function appReducer(state = initialState, action) {
       return state
         .set('loading', false)
         .set('youtube', action.data);
+    case GOOGLE_CRAWLER_ERROR:
     case GOOGLE_SEARCH_ERROR:
     case YOUTUBE_SEARCH_ERROR:
       return state
@@ -60,6 +71,7 @@ function appReducer(state = initialState, action) {
         .set('loading', false);
     case CLEAN_SEARCH_RESULT:
       return state.set('google', initialGoogleState)
+        .set('search', initialGoogleSearchState)
         .set('youtube', initialYoutubeState);
     default:
       return state;
