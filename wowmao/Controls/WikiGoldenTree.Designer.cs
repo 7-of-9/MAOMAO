@@ -35,6 +35,7 @@
             this.mnuSearchGoogle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMatchingUrls = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.mnuToggleTopic = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,9 +45,10 @@
             this.mnuInfo,
             this.mnuSep1,
             this.mnuSearchGoogle,
-            this.mnuMatchingUrls});
+            this.mnuMatchingUrls,
+            this.mnuToggleTopic});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 98);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -74,6 +76,13 @@
             this.mnuMatchingUrls.Size = new System.Drawing.Size(189, 22);
             this.mnuMatchingUrls.Text = "Find matching URLs...";
             // 
+            // mnuToggleTopic
+            // 
+            this.mnuToggleTopic.Name = "mnuToggleTopic";
+            this.mnuToggleTopic.Size = new System.Drawing.Size(189, 22);
+            this.mnuToggleTopic.Text = "Topic!";
+            this.mnuToggleTopic.Click += new System.EventHandler(this.mnuToggleTopic_Click);
+            // 
             // WikiGoldenTree
             // 
             this.LineColor = System.Drawing.Color.Black;
@@ -90,5 +99,6 @@
         private System.Windows.Forms.ToolStripMenuItem mnuInfo;
         private System.Windows.Forms.ToolStripSeparator mnuSep1;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.ToolStripMenuItem mnuToggleTopic;
     }
 }

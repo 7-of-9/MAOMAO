@@ -26,7 +26,7 @@ namespace mmdb_model
         public Nullable<double> tss_norm { get; set; }
         public Nullable<double> S { get; set; }
     
-        public virtual term term { get; set; }
         public virtual url url { get; set; }
+        public virtual term term { get; set; }
     }
 }

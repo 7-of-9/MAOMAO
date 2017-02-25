@@ -21,8 +21,8 @@ namespace mmdb_model
         public long user_id { get; set; }
         public bool reused { get; set; }
     
-        public virtual term term { get; set; }
         public virtual user_url user_url { get; set; }
         public virtual user user { get; set; }
+        public virtual term term { get; set; }
     }
 }

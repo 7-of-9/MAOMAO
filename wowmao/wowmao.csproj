@@ -85,6 +85,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\RootPathViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RootPathViewer.Designer.cs">
+      <DependentUpon>RootPathViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\WikiGoldenTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -121,6 +127,9 @@
       <DependentUpon>TermTree.cs</DependentUpon>
     </Compile>
     <Compile Include="TextBoxTraceListener.cs" />
+    <EmbeddedResource Include="Controls\RootPathViewer.resx">
+      <DependentUpon>RootPathViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TermList.resx">
       <DependentUpon>TermList.cs</DependentUpon>
     </EmbeddedResource>

@@ -87,12 +87,12 @@ namespace mm_svc
 
                 // calc & store all paths to root for mapped golden terms
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null);
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess));
 
                 // calc & store suggested parents
                 var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-                    var term_parents = GoldenParents.GetOrProcessSuggestedParents(p.term_id, reprocess);
+                    var term_parents = GoldenParents.GetOrProcessRelatedParents(p.term_id, reprocess);
                     if (term_parents != null) {
                         var filtered_term_parents = term_parents
                                                         .OrderByDescending(p2 => p2.S_norm)
@@ -258,7 +258,7 @@ namespace mm_svc
                                 var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(128)
                                         .Select(p => new {
                                             t = p,
-                                            parents = GoldenParents.GetOrProcessSuggestedParents(p.id).Select(p2 => new {
+                                            parents = GoldenParents.GetOrProcessRelatedParents(p.id).Select(p2 => new {
                                                 S_norm = p2.S_norm,
                                                 t = p2.parent_term,
                                                 term_stemmed = stemmer.stem(p2.parent_term.name),

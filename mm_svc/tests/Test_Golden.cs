@@ -12,7 +12,6 @@ namespace tests
     [TestClass]
     public class Test_Golden
     {
-
         [TestMethod]
         public void CalculatePathsToRoot_Test0()
         {
@@ -23,7 +22,6 @@ namespace tests
         [TestMethod]
         public void CalculatePathsToRoot_Test1()
         {
-
             //
             // -- precalc tree: for each calais term raw, used pre-calc'd tree to record "likely parent cat" -- maybe sometimes NO likely parent cat. keep in mind.
             // this might not work all the time; but it might work most of the time.

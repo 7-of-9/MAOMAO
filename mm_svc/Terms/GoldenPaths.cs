@@ -29,9 +29,12 @@ namespace mm_svc.Terms
             }
         }
 
+        [DebuggerDisplay("{t.name} GL={gl}")]
         public class TermPath {
             public term t;
-            public short gl; // golden_level -- (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
+            public int gl; // golden_level -- (explicitly set during ProcessPathsToRoot, i.e. term can be at multiple/different levels; depends on which path it features in)
+            public int gl_inv; // inverse golden_level
+            public double gl_norm; // golden_level: normalized value wrt. one specific path to root
         }
 
         //
@@ -46,16 +49,23 @@ namespace mm_svc.Terms
             var paths = new List<List<TermPath>>();
             var path_nos = all_paths.Select(p => p.path_no).Distinct();
             foreach (var path_no in path_nos) {
+
+                // gt_path_to_root -> List<TermPath>
                 var path = all_paths.Where(p => p.path_no == path_no);
-                var gl = (short)path.Count();
+                var gl = path.Count();
                 var term_paths = new List<TermPath>() { new TermPath() { t = term, gl = gl-- } };
                 foreach (var seq_term in path.OrderBy(p => p.seq).Select(p => p.term)) {
                     seq_term.stemmed = stemmer.stem(seq_term.name);
                     term_paths.Add(new TermPath() { t = seq_term,  gl = gl-- });
                 }
+
+                // golden_level normalized wrt. path to root
+                term_paths.ForEach(p => p.gl_norm = (double)p.gl / term_paths.Count);
+                term_paths.ForEach(p => p.gl_inv = term_paths.Count - p.gl);
+
                 paths.Add(term_paths);
             }
-            return paths;
+            return paths.OrderByDescending(p => string.Join(",", p.Select(p2 => p2.t.id))).ToList();
         }
 
         //
@@ -154,11 +164,11 @@ namespace mm_svc.Terms
         //
         // If not already done, calculates and stores paths to root for supplied term
         //
-        public static bool ProcessAndRecordPathsToRoot(long term_id)
+        public static bool ProcessAndRecordPathsToRoot(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
-                if (g.RetryMaxOrThrow(() => db.gt_path_to_root.Any(p => p.term_id == term_id)))
+                if (!reprocess && g.RetryMaxOrThrow(() => db.gt_path_to_root.Any(p => p.term_id == term_id)))
                     return false;
 
                 // calculate (expensive)

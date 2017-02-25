@@ -72,6 +72,7 @@
     <Compile Include="Terms\GoldenParents.cs" />
     <Compile Include="Terms\GoldenSuggestions.cs" />
     <Compile Include="Terms\GoldenPaths.cs" />
+    <Compile Include="Terms\GoldenTopics.cs" />
     <Compile Include="User\History.cs" />
     <Compile Include="User\Register.cs" />
   </ItemGroup>

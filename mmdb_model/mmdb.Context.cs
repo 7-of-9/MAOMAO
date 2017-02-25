@@ -35,12 +35,12 @@ namespace mmdb_model
         public virtual DbSet<wiki_page> wiki_page { get; set; }
         public virtual DbSet<wiki_catlink> wiki_catlink { get; set; }
         public virtual DbSet<gt_path_to_root> gt_path_to_root { get; set; }
-        public virtual DbSet<term> terms { get; set; }
         public virtual DbSet<url> urls { get; set; }
         public virtual DbSet<user_url> user_url { get; set; }
         public virtual DbSet<user_url_classification> user_url_classification { get; set; }
         public virtual DbSet<url_term> url_term { get; set; }
         public virtual DbSet<gt_parent> gt_parent { get; set; }
         public virtual DbSet<url_parent_term> url_parent_term { get; set; }
+        public virtual DbSet<term> terms { get; set; }
     }
 }

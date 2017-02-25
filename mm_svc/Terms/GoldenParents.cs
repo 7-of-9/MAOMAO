@@ -13,7 +13,7 @@ namespace mm_svc.Terms
 {
     public static class GoldenParents
     {
-        public static List<gt_parent> GetStoredSuggestedParents(long term_id)
+        public static List<gt_parent> GetStoredRelatedParents(long term_id)
         {
             using (var db = mm02Entities.Create()) {
                 return db.gt_parent.AsNoTracking().Include("term").Include("term1")
@@ -26,18 +26,23 @@ namespace mm_svc.Terms
         //
         // If not already done, records results of ProcessPathsToRoot() in gt_parent table
         //
-        public static List<gt_parent> GetOrProcessSuggestedParents(long term_id, bool reprocess = false)
+        public static List<gt_parent> GetOrProcessRelatedParents(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
                 if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
-                    return GetStoredSuggestedParents(term_id);
+                    return GetStoredRelatedParents(term_id);
 
-                // get term
+                // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
-                var suggested = CalcSuggestedParents(paths);
-                if (suggested == null)
+
+                // static - pick out editorially defined topics from paths to root
+                var suggested_topics = GoldenTopics.GetTopics(paths);
+
+                // dynamic - parent suggestion (namespace, level weighted, group/count ranking)
+                var suggested_dynamic = CalcDynamicSuggestedParents(paths);
+                if (suggested_dynamic == null)
                     return null;
 
                 // remove
@@ -46,11 +51,12 @@ namespace mm_svc.Terms
 
                 // add
                 var gt_parents = new List<gt_parent>();
-                suggested.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S }));
+                suggested_dynamic.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S }));
+                suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm * -1, S = p.S * -1 }));
                 db.gt_parent.AddRange(gt_parents);
                 db.SaveChangesTraceValidationErrors();
 
-                return GetStoredSuggestedParents(term_id);
+                return GetStoredRelatedParents(term_id);
             }
         }
 
@@ -63,13 +69,13 @@ namespace mm_svc.Terms
         private static List<string> ProcessPathsToRoot_ExcludePathsWith_Contains = new List<string>() {
             //"People by", " people"
         };
-        public static List<TermGroup> CalcSuggestedParents(List<List<TermPath>> root_paths)
+        public static List<TermGroup> CalcDynamicSuggestedParents(List<List<TermPath>> root_paths)
         {
             // expects: all paths to root to be for the same leaf term!
             var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
-            // dbg: golden levels
+            // dbg
             root_paths.ForEach(p => Debug.WriteLine("(GL=" + p[0].gl + ") " + p[0].t.name + "\t ... " + string.Join(" / ", p.Skip(1).Select(p2 => "(GL=" + p2.gl + ") " + p2.t.name + " (NS_norm=" + p2.t.NS_norm.ToString("0.00") + " NSLW=" + p2.t.NSLW.ToString("0.0") + " #NS=" + p2.t.wiki_nscount + ")"))));
 
             // remove any paths containing any exclusion terms (different to what ProcessRootPath does - it removes only individual terms from paths)
@@ -93,7 +99,7 @@ namespace mm_svc.Terms
             if (root_paths.Count == 0)
                 return null;
 
-            // ** try 2 -- across all levels; take sum of NSLW for each term - rank by
+            // ** try 2 (dynamic) -- across all levels; take sum of NSLW for each term - rank by NS level weighted count
             {
                 //GroupByTerm_Sum_NSLW(root_paths, 1);
                 //GroupRankByTerm_Sum_NSLW(root_paths, 2); -- 2 levels not enough to get "chess" from "french defence"

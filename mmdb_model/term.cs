@@ -19,15 +19,15 @@ namespace mmdb_model
         {
             this.golden_term = new HashSet<golden_term>();
             this.golden_term1 = new HashSet<golden_term>();
+            this.gt_parent = new HashSet<gt_parent>();
+            this.gt_parent1 = new HashSet<gt_parent>();
             this.gt_path_to_root = new HashSet<gt_path_to_root>();
             this.gt_path_to_root1 = new HashSet<gt_path_to_root>();
             this.term_matrix = new HashSet<term_matrix>();
             this.term_matrix1 = new HashSet<term_matrix>();
-            this.user_url_classification = new HashSet<user_url_classification>();
-            this.url_term = new HashSet<url_term>();
-            this.gt_parent = new HashSet<gt_parent>();
-            this.gt_parent1 = new HashSet<gt_parent>();
             this.url_parent_term = new HashSet<url_parent_term>();
+            this.url_term = new HashSet<url_term>();
+            this.user_url_classification = new HashSet<user_url_classification>();
         }
     
         public long id { get; set; }
@@ -36,12 +36,17 @@ namespace mmdb_model
         public Nullable<int> cal_entity_type_id { get; set; }
         public long occurs_count { get; set; }
         public Nullable<short> wiki_nscount { get; set; }
+        public Nullable<bool> is_topic { get; set; }
     
         public virtual cal_entity_type cal_entity_type { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<golden_term> golden_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<golden_term> golden_term1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_parent> gt_parent { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<gt_parent> gt_parent1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<gt_path_to_root> gt_path_to_root { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -52,14 +57,10 @@ namespace mmdb_model
         public virtual ICollection<term_matrix> term_matrix1 { get; set; }
         public virtual term_type term_type { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<user_url_classification> user_url_classification { get; set; }
+        public virtual ICollection<url_parent_term> url_parent_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_term> url_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<gt_parent> gt_parent { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<gt_parent> gt_parent1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<url_parent_term> url_parent_term { get; set; }
+        public virtual ICollection<user_url_classification> user_url_classification { get; set; }
     }
 }

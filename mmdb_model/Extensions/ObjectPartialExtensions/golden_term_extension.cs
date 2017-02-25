@@ -30,7 +30,7 @@ namespace mmdb_model
 
         public override string ToString()
         {
-            return $"(GT[{this.id}]) --> {child_term?.name}[{child_term_id}](tt={child_term?.term_type_id} #NS={child_term?.wiki_nscount}) GL={mmcat_level} ({parent_golden_terms?.Count}/{child_golden_terms?.Count})";
+            return $"(GT[{this.id}]) {parent_term?.name}[{parent_term_id} ==> {child_term?.topic_desc} {child_term?.name}[{child_term_id}](tt={child_term?.term_type_id} #NS={child_term?.wiki_nscount}) GL={mmcat_level} ({parent_golden_terms?.Count}/{child_golden_terms?.Count})";
         }
     }
 }

@@ -3,6 +3,7 @@ using mm_svc.Terms;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,31 +13,21 @@ namespace tests
     [TestClass]
     public class Test_SuggestedParents
     {
-        // tests processing algo, per notes in CalculatePathsToRoot_Test1
-        [TestMethod]
-        public void GetSuggestedParents_Test1()
-        {
-            // observations: (1) parents seem to be a bit BETTER for NS14 types: maybe should exclude NS0 from SuggestedParent for URL?
-            //
+        List<long> test_terms_ids = new List<long>() {
 
-            var test_terms_ids = new List<long>() {
-                7088192, // "boris (band)" -- duplicates by name, ns14/0
-
-                5667534, // "cross platform software"
-
-                6016816, // React (media franchise)
-                7151070, // React (JavaScript library)
-
-                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
-                12332349, // Ajax -- disambiguation term
-
-                7514235, // Reactive programming
+                7355885, // node.js
+                5140670, // September 11 **
 
                 5101699, // EDM
-                5140670, // September 11 **
                 8080633, // french defence
-
                 5011841, // cats
+
+                6016816, // React (media franchise)
+                5667534, // cross platform software
+                7151070, // React (JavaScript library)
+                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
+                12332349, // Ajax -- disambiguation term
+                7514235, // Reactive programming
 
                 5552478, // NASDAQ **
                 7479589, // Pixar *
@@ -58,29 +49,38 @@ namespace tests
                 5131916, // Tom and Jerry
                 5988770, // rosario dawson
                 5997771, // bernie sanders
+
+                7088192, // "boris (band)" -- duplicates by name, ns14/0
             };
 
+        [TestMethod]
+        public void GetTopics_Test0()
+        {
             using (var db = mm02Entities.Create()) {
                 foreach (var term_id in test_terms_ids) {
-                    // fetch stored paths to root (raw)
+
+                    var term = db.terms.Find(term_id);
+
+                    var paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
+
+                    var topics = GoldenTopics.GetTopics(paths);
+                    topics.ForEach(p => Debug.WriteLine($"{term} -> ({p.t.name} S={p.S} S_norm={p.S_norm})"));
+                }
+            }
+        }
+
+        // tests processing algo, per notes in CalculatePathsToRoot_Test1
+        [TestMethod]
+        public void GetSuggestedParents_Test1()
+        {
+            // observations: (1) parents seem to be a bit BETTER for NS14 types: maybe should exclude NS0 from SuggestedParent for URL?
+           
+            using (var db = mm02Entities.Create()) {
+                foreach (var term_id in test_terms_ids) {
+
                     var root_paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
 
-                    //
-                    // NEXT: (1) TODO -- retest ProcessPathsToRoot() now that walker has fewer exclusions;
-                    //            (a) ProcessPathsToRoot will need exclusions, e.g. "Redirects_to_disambiguation_pages" ***
-                    //
-                    //              > actually, not necesssary if calais->wiki matcher actively *excludes* any disambiguation terms?
-                    //                i.e. if any term.name like '{calais_name} (%' > then use one or all disambiguation wiki terms
-                    //                     else, use exact matching wiki term.name = '{calais_name}'
-                    //
-                    //              >>> (1.1) frmMain -- UrlProcessor -- should match disambiguation wiki terms, e.g. Calais "Ajax" -> Wiki "Ajax (Programming)"
-                    //
-                    //            (b) pages now linking to (e.g.) "nanotechnology_portal", need special handling, i.e. strip " portal" from parents
-                    //              DISREGARD for now -- can't see it in first test case for whatever reason; revisit if it interferes with higher level processing
-                    //
-                    //       (2) frmMain -- UrlCategorizer: looking for commonality of suggested parent/related across URL wiki terms (use stemming?)
-                    //
-                    var r = GoldenParents.CalcSuggestedParents(root_paths);
+                    var r = GoldenParents.CalcDynamicSuggestedParents(root_paths);
                 }
             }
         }

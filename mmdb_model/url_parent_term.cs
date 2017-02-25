@@ -19,7 +19,7 @@ namespace mmdb_model
         public long term_id { get; set; }
         public int pri { get; set; }
     
-        public virtual term term { get; set; }
         public virtual url url { get; set; }
+        public virtual term term { get; set; }
     }
 }

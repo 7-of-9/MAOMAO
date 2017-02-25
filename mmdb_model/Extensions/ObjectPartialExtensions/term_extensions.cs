@@ -19,6 +19,12 @@ namespace mmdb_model
         [NotMapped]
         public url_term parent_url_term { get; set; }
 
+        [NotMapped]
+        public string topic_desc { get { return (this.is_topic ?? false) ? "*T*" : ""; } }
+
+        [NotMapped]
+        public bool IS_TOPIC { get { return this.is_topic ?? false; } set { this.is_topic = value; } }
+
         public string gold_desc { get { return this.is_gold ? "(*GT)" : ""; } }
 
         [NotMapped] public ICollection<golden_term> parent_in_golden_terms { get { return this.golden_term1; } } //was: golden_children

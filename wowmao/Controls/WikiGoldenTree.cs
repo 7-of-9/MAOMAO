@@ -52,16 +52,18 @@ namespace wowmao.Controls
 
         private void WikiGoldenTree_MouseMove(object sender, MouseEventArgs e) {}
 
-        public void BuildTree(string search = null, bool whole_word = false)
+        public void BuildTree(string search = null, bool exact = false, bool topics_only = false)
         {
             total_gts_loaded = 0;
             this.BeginUpdate();
             this.Nodes.Clear();
             this.Cursor = Cursors.WaitCursor;
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                if (string.IsNullOrEmpty(search)) // 
-                {
-                    // root
+            long term_id = 0;
+            long.TryParse(search, out term_id);
+
+            using (var db = mm02Entities.Create()) {
+                if (string.IsNullOrEmpty(search) && !topics_only) {
+                    // root terms in wiki golden tree
                     var root_term = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).Single();
                     var gts = GoldenTermsFromParentTermId(root_term.id); // term is parent - guaranteed (it's the root term)
                     var nodes = NodesFromGoldenTerms(gts);
@@ -70,10 +72,23 @@ namespace wowmao.Controls
                 else
                 {
                     // search 
-                    if (whole_word) search = $" {search} ";
-                    var terms = db.terms.Where(p => (p.name.Contains(search) && p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
-                    foreach (var term in terms)
-                    {
+                    List<term> terms;
+                    IQueryable<term> qry = db.terms.AsNoTracking();
+                    if (!string.IsNullOrEmpty(search)) {
+                        if (term_id != 0)
+                            qry = qry.Where(p => p.id == term_id);
+                        else
+                            if (!exact)
+                                qry = qry.Where(p => (p.name.Contains($" {search} ") && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)));
+                            else
+                                qry = qry.Where(p => (p.name == search) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0));
+                    }
+                    if (topics_only)
+                        qry = qry.Where(p => p.is_topic == true);
+                    Debug.WriteLine(qry.ToString());
+                    terms = qry.ToListNoLock();
+
+                    foreach (var term in terms) {
                         var gts = GoldenTermsFromChildTermId(term.id); // term is a child - guaranteed: all apart from root are children of something
                         var nodes = NodesFromGoldenTerms(gts);
                         this.Nodes.AddRange(nodes.ToArray());
@@ -161,16 +176,30 @@ namespace wowmao.Controls
         private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts)
         {
             var nodes = new List<TreeNode>();
-            foreach(var gt in gts)
-            {
+            foreach(var gt in gts) {
                 var node = new TreeNode(gt.ToString());
                 node.Tag = gt;
                 node.ToolTipText = $"{gt.parent_term.name}[{gt.parent_term.id}] --> {gt.child_term.name}[{gt.child_term.id}]";
+                SetNodeFont(node);
                 nodes.Add(node);
             }
             return nodes;
         }
 
+        private void SetNodeFont(TreeNode tn) {
+            var gt = tn.Tag as golden_term;
+            if (gt.child_term.IS_TOPIC) {
+                tn.Text = gt.ToString();
+                tn.NodeFont = new Font(this.Font, FontStyle.Bold);
+                tn.BackColor = RootPathViewer.ColorFromString(gt.child_term.name);
+                tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
+            }
+            else {
+                tn.Text = gt.ToString();
+                tn.NodeFont = new Font(this.Font, FontStyle.Regular);
+                tn.BackColor = Color.Transparent;
+            }
+        }
 
         private void WikiGoldenTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -214,7 +243,7 @@ namespace wowmao.Controls
         #endregion
 
         #region Search
-        internal void Search(string searchText, bool whole_word) { BuildTree(searchText, whole_word); }
+        internal void Search(string searchText, bool exact, bool topics) { BuildTree(searchText, exact, topics); }
 
         //private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
         //private int LastNodeIndex = 0;
@@ -276,6 +305,22 @@ namespace wowmao.Controls
             Debug.WriteLine(gt.ToString());
             OnSearchGoogle?.Invoke(this.GetType(), new OnSearchGoogleEventArgs() { search_term = 
                 (gt.child_term.term_type_id == (int)g.TT.WIKI_NS_14 ? "Category:" : "") + gt.child_term.name.Replace(" ", "_") });
+        }
+
+        private void mnuToggleTopic_Click(object sender, EventArgs e)
+        {
+            if (this.SelectedNode == null) return;
+            var gt = this.SelectedNode.Tag as golden_term;
+            using (var db = mm02Entities.Create()) {
+                var set_to = !(gt.child_term.is_topic ?? false);
+                var terms = db.terms.Where(p => p.name == gt.child_term.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
+                foreach (var term in terms.ToListNoLock()) {
+                    term.is_topic = set_to;
+                    db.SaveChangesTraceValidationErrors();
+                }
+                gt.child_term.is_topic = set_to;
+                SetNodeFont(this.SelectedNode);
+            }
         }
 
         private void GetParentNodes(TreeNode node, List<TreeNode> parents) {
