@@ -38,28 +38,36 @@ namespace mm_svc.Terms
                                           .Select(p => new { term_name = p.Key, count = p.Count() })
                                           .OrderByDescending(p => p.count).ToList();
 
+            // exclude outlier terms - need min. # of repetitions in paths
+            const int MIN_REPS = 2;
+            topics.RemoveAll(p => topic_name_counts.Where(p2 => p2.count < MIN_REPS).Select(p2 => p2.term_name).Contains(p.t.name));
+            topic_name_counts.RemoveAll(p => p.count < MIN_REPS); 
+
             // topics scored by count and golden level
             var topics_scored = topics.Select(p => new {
                 tp = p.tp,
                 t = p.t,
-              //ns = p.t.wiki_nscount,
+                //ns = p.t.wiki_nscount,
                 gl = p.gl,
                 gl_norm = p.gl_norm,
                 gl_inv = p.gl_inv,
                 count = topic_name_counts.Single(p2 => p2.term_name == p.t.name).count,
+                count_perc = (double)topic_name_counts.Single(p2 => p2.term_name == p.t.name).count / topics.Count,
 
-                S = (1 / (Math.Pow(p.gl_inv, 2))
-                    * Math.Pow(p.t.wiki_nscount ?? 0, (1/3))
-                    * Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1)),
-
-            }).OrderByDescending(p => p.S).ToList();
+                S = (1 / (Math.Pow(p.gl_inv, 3.0)))
+                    * Math.Pow(p.t.wiki_nscount ?? 0, (1/3.0))
+                    //* Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1/2.0))
+            })
+            .OrderByDescending(p => p.S).ToList();
 
             // flatten 
-            var ret = topic_name_counts.Select(p => p.term_name).Select(p => new TopicWeighted() {
-                t = topics_scored.First(p2 => p2.t.name == p).t,
-                S = topics_scored.Where(p2 => p2.t.name == p).Average(p2 => p2.S)
-            }).OrderByDescending(p => p.S).ToList();
-
+            var ret = topic_name_counts.Select(p => new TopicWeighted() {
+                t = topics_scored.First(p2 => p2.t.name == p.term_name).t,
+                S = topics_scored.Where(p2 => p2.t.name == p.term_name).Max(p2 => p2.S) 
+                                    //* Math.Pow(topics_scored.Where(p2 => p2.t.name == p.term_name).Max(p2 => p2.count_perc) //(double)p.count
+                                    //, (1.0 / 2))
+            }).ToList().OrderByDescending(p => p.S).ToList();
+            
             ret.ForEach(p => p.S_norm = p.S / ret.Max(p2 => p2.S));
             return ret;
         }

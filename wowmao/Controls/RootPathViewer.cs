@@ -47,18 +47,59 @@ namespace wowmao.Controls
             var s = txtSearch.Text.ltrim();
             this.SuspendLayout();
             SuspendDrawing(this);
+            this.Cursor = Cursors.WaitCursor;
+            int x = 0;
             foreach (var path_panel in this.panel1.Controls) {
-                foreach (var term_label in (path_panel as Panel).Controls) {
-                    var label = term_label as Label;
-                    var tp = label.Tag as TermPath;
-                    if (!string.IsNullOrEmpty(s) && s.Length > 3)
-                        FormatLabel(label, tp.t, highlight: tp.t.name.ltrim().Contains(s));
-                    else
-                        FormatLabel(label, tp.t);
+                var panel = (path_panel as Panel);
+                panel.SuspendLayout();
+
+                var show = false;
+                foreach (var obj in panel.Controls)
+                    if ((obj as Label).Text.ltrim().Contains(s) || string.IsNullOrEmpty(s)) { show = true; break; }
+                if (show) {
+                    panel.Visible = true;
+                    panel.Height = 20;
+                    panel.Location = new Point(0, (++x) * panel.Height);
+                    foreach (var term_label in (path_panel as Panel).Controls) {
+                        var label = term_label as Label;
+                        var tp = label.Tag as TermPath;
+
+                        bool highlight = tp.t.name.ltrim().Contains(s);
+                        if (!string.IsNullOrEmpty(s) )
+                            FormatLabel(label, tp.t, highlight);
+                        else
+                            FormatLabel(label, tp.t);
+                    }
                 }
+                else {
+                    panel.Visible = false;
+                    panel.Height = 0;
+                }
+
+                //foreach (var term_label in (path_panel as Panel).Controls) {
+                //    var label = term_label as Label;
+                //    var tp = label.Tag as TermPath;
+
+                //    bool highlight = s.Length > 3 && tp.t.name.ltrim().Contains(s);
+                //    //if (highlight)
+                //    //    any_highlighed = true;
+
+                //    if (!string.IsNullOrEmpty(s) && s.Length > 3)
+                //        FormatLabel(label, tp.t, highlight);
+                //    else
+                //        FormatLabel(label, tp.t);
+                //}
+                //(path_panel as Panel).ResumeLayout();
+
+                //(path_panel as Panel).Visible = string.IsNullOrEmpty(s) || any_highlighed;
+                //if ((path_panel as Panel).Visible)
+                //    (path_panel as Panel).Height = 20;
+                //else
+                //    (path_panel as Panel).Height = 0;
             }
             ResumeDrawing(this);
             this.ResumeLayout();
+            this.Cursor = Cursors.Default;
         }
 
         public void AddTermPaths(List<List<TermPath>> paths)
@@ -108,18 +149,23 @@ namespace wowmao.Controls
 
         private void FormatLabel(Label l, term t, bool? highlight = null)
         {
+            l.SuspendLayout();
             if (highlight != null) {
                 if (highlight == true) {
                     l.BorderStyle = BorderStyle.Fixed3D;
                     l.BackColor = Color.Blue;
                     l.ForeColor = Color.White;
-                } else {
+                    l.Visible = true;
+                }
+                else {
                     l.BorderStyle = BorderStyle.FixedSingle;
                     l.BackColor = Color.Gray;
                     l.ForeColor = Color.White;
+                    l.Visible = false;
                 }
             }
             else {
+                l.Visible = true;
                 if (t.IS_TOPIC == true) {
                     l.Font = new Font("Courier", 10, FontStyle.Bold);
                     l.BorderStyle = BorderStyle.FixedSingle;
@@ -133,6 +179,7 @@ namespace wowmao.Controls
                     l.BackColor = Color.White;
                 }
             }
+            l.ResumeLayout();
         }
 
         private void Term_label_Click(object sender, EventArgs e)

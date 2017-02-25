@@ -77,11 +77,14 @@ namespace wowmao.Controls
                     if (!string.IsNullOrEmpty(search)) {
                         if (term_id != 0)
                             qry = qry.Where(p => p.id == term_id);
-                        else
-                            if (!exact)
-                                qry = qry.Where(p => (p.name.Contains($" {search} ") && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)));
+                        else {
+                            if (!exact) {
+                                var linq_search = $"{search}";
+                                qry = qry.Where(p => (p.name.Contains(linq_search) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)));
+                            }
                             else
                                 qry = qry.Where(p => (p.name == search) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0));
+                        }
                     }
                     if (topics_only)
                         qry = qry.Where(p => p.is_topic == true);

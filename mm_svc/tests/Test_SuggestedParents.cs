@@ -15,28 +15,27 @@ namespace tests
     {
         List<long> test_terms_ids = new List<long>() {
 
-                7355885, // node.js
-                5140670, // September 11 **
+            //
+            // next: GetTopics is working well (when saving, should have [is_topic] on url_term_parent table.
+            //
+            // however, some terms don't have enough (or expected) root paths
+            // e.g.
+                5747890, //  Ballet -- LOW NO. OF ROOT PATHS ... use GUI to tune CalcPathsToRoot
+            //
+            // use GUI to tune params to CalcRootPaths fn.; maybe (e.g. ballet) it runs with certain params first
+            // and then only reruns with others (more expansive) if resultant set is v. small?
+            //
+            // not sure that would work for Pixar though; that has large no. of root paths, just none containing anything 
+            //
 
-                5101699, // EDM
-                8080633, // french defence
-                5011841, // cats
-
-                6016816, // React (media franchise)
-                5667534, // cross platform software
-                7151070, // React (JavaScript library)
-                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
-                12332349, // Ajax -- disambiguation term
-                7514235, // Reactive programming
-
-                5552478, // NASDAQ **
-                7479589, // Pixar *
+                7479589, // Pixar -- NO ROOT PATHS CONTAINING EXPECTED "animation" ... similar root paths issue as Ballet? or maybe not;
+                         // its paths are quite extensive, just not including "animation" in the abstract; that may be reasonable/correct
+                         // simply following the data itself: it does have lots of results for "animation company" after all
 
                 5250600, // Gundam
                 5078100, // Superheroes
                 5871074, // Hypertrophy 
                 6334777, // Wesley So
-                5747890,  //  Ballet
                 5374213, // Formula One
                 5115096, // StarCraft
                 11418240, // Calvinism
@@ -51,6 +50,23 @@ namespace tests
                 5997771, // bernie sanders
 
                 7088192, // "boris (band)" -- duplicates by name, ns14/0
+
+                   5140670, // September 11 **
+                5101699, // EDM
+
+                7355885, // node.js
+
+                8080633, // french defence
+                5011841, // cats
+
+                6016816, // React (media franchise)
+                5667534, // cross platform software
+                7151070, // React (JavaScript library)
+                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
+                12332349, // Ajax -- disambiguation term
+                7514235, // Reactive programming
+
+                5552478, // NASDAQ **
             };
 
         [TestMethod]
