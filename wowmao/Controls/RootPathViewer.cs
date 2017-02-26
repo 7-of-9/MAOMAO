@@ -17,7 +17,7 @@ namespace wowmao.Controls
 {
     public partial class RootPathViewer : UserControl
     {
-        private List<Label> all_labels;
+        private List<Label> page_labels;
 
         //
         // next -- need to systematically get to to 100-200 evenly spread topics
@@ -111,20 +111,32 @@ namespace wowmao.Controls
             this.Cursor = Cursors.Default;
         }
 
-        public void AddTermPaths(List<List<TermPath>> paths)
+        private List<List<TermPath>> all_paths;
+        private const int per_page = 100;
+        private int no_pages;
+        private int cur_page;
+        private void RenderPage()
         {
-            var colors = Enum.GetNames(typeof(KnownColor));
-            term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
-            lblTermInfo.Text = $"term_ids=[{string.Join(", ", term_ids)}] paths={paths.Count}";
+            this.lblPageInfo.Text = $"page {cur_page+1} of {no_pages}";
+            for (int i = 0; i < this.panel1.Controls.Count; i++)
+                this.panel1.Controls[i].Dispose();
             this.panel1.Controls.Clear();
+
+            cmdPrevPage.Enabled = cmdNextPage.Enabled = true;
+            if (cur_page == 0)
+                cmdPrevPage.Enabled = false;
+            if (cur_page == no_pages - 1)
+                cmdNextPage.Enabled = false;
+
             this.SuspendLayout();
             SuspendDrawing(this);
             this.panel1.SuspendLayout();
-            all_labels = new List<Label>();
+
+            page_labels = new List<Label>();
             var x = 0;
             var panels = new List<Panel>();
-            if (paths != null) {
-                foreach (var path in paths) {
+            if (all_paths != null) {
+                foreach (var path in all_paths.Skip(cur_page * per_page).Take(per_page)) {
                     var path_panel = new Panel() { BackColor = Color.Transparent, BorderStyle = BorderStyle.None, Height = 20 };
                     path_panel.Location = new Point(0, (x++) * path_panel.Height);
                     path_panel.AutoSize = true;
@@ -135,7 +147,7 @@ namespace wowmao.Controls
                     foreach (var tp in path) {
                         double perc = Math.Max((double)i++ / path.Count, 0.1);
                         var term_label = new Label() {
-                            Text = $" {tp.t.name} tt={tp.t.term_type_id} #NS={tp.t.wiki_nscount}",
+                            Text = $" {tp.t.name} ", // tt={tp.t.term_type_id} #NS={tp.t.wiki_nscount}",
                             BackColor = ColorFromString(tp.t.name),
                             Tag = tp,
                             Dock = DockStyle.Right,
@@ -146,7 +158,7 @@ namespace wowmao.Controls
                         FormatLabel(term_label, tp.t);
                         term_label.Click += Term_label_Click;
                         term_labels.Add(term_label);
-                        all_labels.Add(term_label);
+                        page_labels.Add(term_label);
                     }
                     path_panel.Controls.AddRange(term_labels.ToArray());
                 }
@@ -155,6 +167,20 @@ namespace wowmao.Controls
             this.panel1.ResumeLayout();
             ResumeDrawing(this);
             this.ResumeLayout();
+        }
+
+        public void AddTermPaths(List<List<TermPath>> paths)
+        {
+            if (paths == null) return;
+
+            this.all_paths = paths;
+            this.cur_page = 0;
+            this.no_pages = (int)Math.Ceiling((double)paths.Count / per_page);
+
+            term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
+            lblTermInfo.Text = $"term_ids=[{string.Join(", ", term_ids)}] paths={paths.Count}";
+
+            RenderPage();
         }
 
         private void FormatLabel(Label l, term t, bool? highlight = null)
@@ -201,7 +227,7 @@ namespace wowmao.Controls
             else
                 new_topic_flag = false;
 
-            var a = all_labels.Where(p => (p.Tag as TermPath).t.name == tp.t.name).ToList();
+            var a = page_labels.Where(p => (p.Tag as TermPath).t.name == tp.t.name).ToList();
             a.ForEach(p => {
                 var tp2 = p.Tag as TermPath;
                 tp2.t.is_topic = new_topic_flag;
@@ -253,6 +279,18 @@ namespace wowmao.Controls
         {
             txtSIG_NODE_MIN_NSCOUNT.Enabled = chkPtR_IncludeSigNodes.Checked;
             txtSIG_NODE_MAX_PATH_COUNT.Enabled = chkPtR_IncludeSigNodes.Checked;
+        }
+
+        private void cmdPrevPage_Click(object sender, EventArgs e)
+        {
+            cur_page--;
+            RenderPage();
+        }
+
+        private void cmdNextPage_Click(object sender, EventArgs e)
+        {
+            cur_page++;
+            RenderPage();
         }
     }
 }

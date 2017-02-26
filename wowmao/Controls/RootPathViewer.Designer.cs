@@ -33,14 +33,17 @@
             this.lblTermInfo = new System.Windows.Forms.Label();
             this.cmdRecalcPathsToRoot = new System.Windows.Forms.Button();
             this.pnkRecalcPtR = new System.Windows.Forms.Panel();
-            this.chkPtR_IncludeSigNodes = new System.Windows.Forms.CheckBox();
-            this.txtSIG_NODE_MIN_NSCOUNT = new System.Windows.Forms.TextBox();
-            this.lblSIG_NODE_MIN_NSCOUNT = new System.Windows.Forms.Label();
-            this.lblSIG_NODE_MAX_PATH_COUNT = new System.Windows.Forms.Label();
-            this.txtSIG_NODE_MAX_PATH_COUNT = new System.Windows.Forms.TextBox();
-            this.lblPATH_MATCH_ABORT = new System.Windows.Forms.Label();
-            this.txtPATH_MATCH_ABORT = new System.Windows.Forms.TextBox();
             this.chkPtR_Parallel = new System.Windows.Forms.CheckBox();
+            this.txtPATH_MATCH_ABORT = new System.Windows.Forms.TextBox();
+            this.lblPATH_MATCH_ABORT = new System.Windows.Forms.Label();
+            this.txtSIG_NODE_MAX_PATH_COUNT = new System.Windows.Forms.TextBox();
+            this.lblSIG_NODE_MAX_PATH_COUNT = new System.Windows.Forms.Label();
+            this.lblSIG_NODE_MIN_NSCOUNT = new System.Windows.Forms.Label();
+            this.txtSIG_NODE_MIN_NSCOUNT = new System.Windows.Forms.TextBox();
+            this.chkPtR_IncludeSigNodes = new System.Windows.Forms.CheckBox();
+            this.cmdPrevPage = new System.Windows.Forms.Button();
+            this.cmdNextPage = new System.Windows.Forms.Button();
+            this.lblPageInfo = new System.Windows.Forms.Label();
             this.pnkRecalcPtR.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,6 +115,69 @@
             this.pnkRecalcPtR.Size = new System.Drawing.Size(302, 69);
             this.pnkRecalcPtR.TabIndex = 6;
             // 
+            // chkPtR_Parallel
+            // 
+            this.chkPtR_Parallel.AutoSize = true;
+            this.chkPtR_Parallel.Location = new System.Drawing.Point(114, 3);
+            this.chkPtR_Parallel.Name = "chkPtR_Parallel";
+            this.chkPtR_Parallel.Size = new System.Drawing.Size(83, 17);
+            this.chkPtR_Parallel.TabIndex = 13;
+            this.chkPtR_Parallel.Text = "Run Parallel";
+            this.chkPtR_Parallel.UseVisualStyleBackColor = true;
+            // 
+            // txtPATH_MATCH_ABORT
+            // 
+            this.txtPATH_MATCH_ABORT.Location = new System.Drawing.Point(272, 37);
+            this.txtPATH_MATCH_ABORT.Name = "txtPATH_MATCH_ABORT";
+            this.txtPATH_MATCH_ABORT.Size = new System.Drawing.Size(27, 21);
+            this.txtPATH_MATCH_ABORT.TabIndex = 12;
+            this.txtPATH_MATCH_ABORT.Text = "3";
+            // 
+            // lblPATH_MATCH_ABORT
+            // 
+            this.lblPATH_MATCH_ABORT.AutoSize = true;
+            this.lblPATH_MATCH_ABORT.Location = new System.Drawing.Point(198, 22);
+            this.lblPATH_MATCH_ABORT.Name = "lblPATH_MATCH_ABORT";
+            this.lblPATH_MATCH_ABORT.Size = new System.Drawing.Size(101, 13);
+            this.lblPATH_MATCH_ABORT.TabIndex = 11;
+            this.lblPATH_MATCH_ABORT.Text = "PATH_MATCH_ABORT";
+            // 
+            // txtSIG_NODE_MAX_PATH_COUNT
+            // 
+            this.txtSIG_NODE_MAX_PATH_COUNT.Enabled = false;
+            this.txtSIG_NODE_MAX_PATH_COUNT.Location = new System.Drawing.Point(151, 40);
+            this.txtSIG_NODE_MAX_PATH_COUNT.Name = "txtSIG_NODE_MAX_PATH_COUNT";
+            this.txtSIG_NODE_MAX_PATH_COUNT.Size = new System.Drawing.Size(27, 21);
+            this.txtSIG_NODE_MAX_PATH_COUNT.TabIndex = 10;
+            this.txtSIG_NODE_MAX_PATH_COUNT.Text = "3";
+            // 
+            // lblSIG_NODE_MAX_PATH_COUNT
+            // 
+            this.lblSIG_NODE_MAX_PATH_COUNT.AutoSize = true;
+            this.lblSIG_NODE_MAX_PATH_COUNT.Location = new System.Drawing.Point(3, 45);
+            this.lblSIG_NODE_MAX_PATH_COUNT.Name = "lblSIG_NODE_MAX_PATH_COUNT";
+            this.lblSIG_NODE_MAX_PATH_COUNT.Size = new System.Drawing.Size(143, 13);
+            this.lblSIG_NODE_MAX_PATH_COUNT.TabIndex = 9;
+            this.lblSIG_NODE_MAX_PATH_COUNT.Text = "SIG_NODE_MAX_PATH_COUNT";
+            // 
+            // lblSIG_NODE_MIN_NSCOUNT
+            // 
+            this.lblSIG_NODE_MIN_NSCOUNT.AutoSize = true;
+            this.lblSIG_NODE_MIN_NSCOUNT.Location = new System.Drawing.Point(3, 22);
+            this.lblSIG_NODE_MIN_NSCOUNT.Name = "lblSIG_NODE_MIN_NSCOUNT";
+            this.lblSIG_NODE_MIN_NSCOUNT.Size = new System.Drawing.Size(126, 13);
+            this.lblSIG_NODE_MIN_NSCOUNT.TabIndex = 8;
+            this.lblSIG_NODE_MIN_NSCOUNT.Text = "SIG_NODE_MIN_NSCOUNT";
+            // 
+            // txtSIG_NODE_MIN_NSCOUNT
+            // 
+            this.txtSIG_NODE_MIN_NSCOUNT.Enabled = false;
+            this.txtSIG_NODE_MIN_NSCOUNT.Location = new System.Drawing.Point(134, 18);
+            this.txtSIG_NODE_MIN_NSCOUNT.Name = "txtSIG_NODE_MIN_NSCOUNT";
+            this.txtSIG_NODE_MIN_NSCOUNT.Size = new System.Drawing.Size(27, 21);
+            this.txtSIG_NODE_MIN_NSCOUNT.TabIndex = 7;
+            this.txtSIG_NODE_MIN_NSCOUNT.Text = "5";
+            // 
             // chkPtR_IncludeSigNodes
             // 
             this.chkPtR_IncludeSigNodes.AutoSize = true;
@@ -123,68 +189,35 @@
             this.chkPtR_IncludeSigNodes.UseVisualStyleBackColor = true;
             this.chkPtR_IncludeSigNodes.CheckedChanged += new System.EventHandler(this.chkPtR_IncludeSigNodes_CheckedChanged);
             // 
-            // txtSIG_NODE_MIN_NSCOUNT
+            // cmdPrevPage
             // 
-            this.txtSIG_NODE_MIN_NSCOUNT.Enabled = false;
-            this.txtSIG_NODE_MIN_NSCOUNT.Location = new System.Drawing.Point(134, 18);
-            this.txtSIG_NODE_MIN_NSCOUNT.Name = "txtSIG_NODE_MIN_NSCOUNT";
-            this.txtSIG_NODE_MIN_NSCOUNT.Size = new System.Drawing.Size(27, 21);
-            this.txtSIG_NODE_MIN_NSCOUNT.TabIndex = 7;
-            this.txtSIG_NODE_MIN_NSCOUNT.Text = "5";
+            this.cmdPrevPage.Location = new System.Drawing.Point(4, 52);
+            this.cmdPrevPage.Name = "cmdPrevPage";
+            this.cmdPrevPage.Size = new System.Drawing.Size(29, 19);
+            this.cmdPrevPage.TabIndex = 7;
+            this.cmdPrevPage.Text = "<<";
+            this.cmdPrevPage.UseVisualStyleBackColor = true;
+            this.cmdPrevPage.Click += new System.EventHandler(this.cmdPrevPage_Click);
             // 
-            // lblSIG_NODE_MIN_NSCOUNT
+            // cmdNextPage
             // 
-            this.lblSIG_NODE_MIN_NSCOUNT.AutoSize = true;
-            this.lblSIG_NODE_MIN_NSCOUNT.Location = new System.Drawing.Point(3, 22);
-            this.lblSIG_NODE_MIN_NSCOUNT.Name = "lblSIG_NODE_MIN_NSCOUNT";
-            this.lblSIG_NODE_MIN_NSCOUNT.Size = new System.Drawing.Size(126, 13);
-            this.lblSIG_NODE_MIN_NSCOUNT.TabIndex = 8;
-            this.lblSIG_NODE_MIN_NSCOUNT.Text = "SIG_NODE_MIN_NSCOUNT";
+            this.cmdNextPage.Location = new System.Drawing.Point(152, 52);
+            this.cmdNextPage.Name = "cmdNextPage";
+            this.cmdNextPage.Size = new System.Drawing.Size(29, 19);
+            this.cmdNextPage.TabIndex = 8;
+            this.cmdNextPage.Text = ">>";
+            this.cmdNextPage.UseVisualStyleBackColor = true;
+            this.cmdNextPage.Click += new System.EventHandler(this.cmdNextPage_Click);
             // 
-            // lblSIG_NODE_MAX_PATH_COUNT
+            // lblPageInfo
             // 
-            this.lblSIG_NODE_MAX_PATH_COUNT.AutoSize = true;
-            this.lblSIG_NODE_MAX_PATH_COUNT.Location = new System.Drawing.Point(3, 45);
-            this.lblSIG_NODE_MAX_PATH_COUNT.Name = "lblSIG_NODE_MAX_PATH_COUNT";
-            this.lblSIG_NODE_MAX_PATH_COUNT.Size = new System.Drawing.Size(143, 13);
-            this.lblSIG_NODE_MAX_PATH_COUNT.TabIndex = 9;
-            this.lblSIG_NODE_MAX_PATH_COUNT.Text = "SIG_NODE_MAX_PATH_COUNT";
-            // 
-            // txtSIG_NODE_MAX_PATH_COUNT
-            // 
-            this.txtSIG_NODE_MAX_PATH_COUNT.Enabled = false;
-            this.txtSIG_NODE_MAX_PATH_COUNT.Location = new System.Drawing.Point(151, 40);
-            this.txtSIG_NODE_MAX_PATH_COUNT.Name = "txtSIG_NODE_MAX_PATH_COUNT";
-            this.txtSIG_NODE_MAX_PATH_COUNT.Size = new System.Drawing.Size(27, 21);
-            this.txtSIG_NODE_MAX_PATH_COUNT.TabIndex = 10;
-            this.txtSIG_NODE_MAX_PATH_COUNT.Text = "3";
-            // 
-            // lblPATH_MATCH_ABORT
-            // 
-            this.lblPATH_MATCH_ABORT.AutoSize = true;
-            this.lblPATH_MATCH_ABORT.Location = new System.Drawing.Point(198, 22);
-            this.lblPATH_MATCH_ABORT.Name = "lblPATH_MATCH_ABORT";
-            this.lblPATH_MATCH_ABORT.Size = new System.Drawing.Size(101, 13);
-            this.lblPATH_MATCH_ABORT.TabIndex = 11;
-            this.lblPATH_MATCH_ABORT.Text = "PATH_MATCH_ABORT";
-            // 
-            // txtPATH_MATCH_ABORT
-            // 
-            this.txtPATH_MATCH_ABORT.Location = new System.Drawing.Point(272, 37);
-            this.txtPATH_MATCH_ABORT.Name = "txtPATH_MATCH_ABORT";
-            this.txtPATH_MATCH_ABORT.Size = new System.Drawing.Size(27, 21);
-            this.txtPATH_MATCH_ABORT.TabIndex = 12;
-            this.txtPATH_MATCH_ABORT.Text = "3";
-            // 
-            // chkPtR_Parallel
-            // 
-            this.chkPtR_Parallel.AutoSize = true;
-            this.chkPtR_Parallel.Location = new System.Drawing.Point(114, 3);
-            this.chkPtR_Parallel.Name = "chkPtR_Parallel";
-            this.chkPtR_Parallel.Size = new System.Drawing.Size(83, 17);
-            this.chkPtR_Parallel.TabIndex = 13;
-            this.chkPtR_Parallel.Text = "Run Parallel";
-            this.chkPtR_Parallel.UseVisualStyleBackColor = true;
+            this.lblPageInfo.AutoSize = true;
+            this.lblPageInfo.Location = new System.Drawing.Point(77, 55);
+            this.lblPageInfo.Name = "lblPageInfo";
+            this.lblPageInfo.Size = new System.Drawing.Size(37, 13);
+            this.lblPageInfo.TabIndex = 9;
+            this.lblPageInfo.Text = "label1";
+            this.lblPageInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // RootPathViewer
             // 
@@ -192,6 +225,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Pink;
+            this.Controls.Add(this.lblPageInfo);
+            this.Controls.Add(this.cmdNextPage);
+            this.Controls.Add(this.cmdPrevPage);
             this.Controls.Add(this.pnkRecalcPtR);
             this.Controls.Add(this.lblTermInfo);
             this.Controls.Add(this.cmdClear);
@@ -224,5 +260,8 @@
         private System.Windows.Forms.Label lblPATH_MATCH_ABORT;
         private System.Windows.Forms.TextBox txtPATH_MATCH_ABORT;
         private System.Windows.Forms.CheckBox chkPtR_Parallel;
+        private System.Windows.Forms.Button cmdPrevPage;
+        private System.Windows.Forms.Button cmdNextPage;
+        private System.Windows.Forms.Label lblPageInfo;
     }
 }

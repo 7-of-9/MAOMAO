@@ -15,6 +15,8 @@ namespace tests
     {
 
         List<long> test_terms_ids = new List<long>() {
+                5067658, // netflix
+                5747890, //  Ballet 
 
                 7479589, // Pixar -- NO ROOT PATHS CONTAINING EXPECTED "animation" ... similar root paths issue as Ballet? or maybe not;
                          // its paths are quite extensive, just not including "animation" in the abstract; that may be reasonable/correct
@@ -24,7 +26,6 @@ namespace tests
                 // pixar get PtR perf - terms: 57secs for 295 paths
                 // pixar - terms, w/ cache -- DONE: 13.7929475 sec(s) - root_paths.Count=289
 
-                5747890, //  Ballet 
                 5250600, // Gundam
                 5078100, // Superheroes
                 5871074, // Hypertrophy 

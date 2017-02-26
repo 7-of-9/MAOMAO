@@ -75,6 +75,14 @@ namespace mm_svc.Terms
         //
         // Calculates paths to root and returns as List<List<term>>
         //
+        public class RecurseParentOptions {
+            public int PATH_MATCH_ABORT = 3;
+            public bool RUN_PARALLEL = true;
+            public bool INCLUDE_SIGNIFICANT_NODES = false;
+            public int SIG_NODE_MIN_NSCOUNT = 5;
+            public int SIG_NODE_MAX_PATH_COUNT = 3;
+        }
+        public static RecurseParentOptions opts = new RecurseParentOptions();
         public static List<List<term>> CalculatePathsToRoot(long child_term_id)
         {
             var root_paths = new ConcurrentBag<List<term>>();
@@ -91,6 +99,8 @@ namespace mm_svc.Terms
 
                 var sw = new Stopwatch(); sw.Start();
                 RecurseParents(root_paths, new List<term>() { }, child_term_id, child_term_id);
+                //if (child_term_id == 5067658)
+                //    Debugger.Break();
 
                 var list = root_paths.ToList();
                 list.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
@@ -105,18 +115,6 @@ namespace mm_svc.Terms
                 return root_paths.ToList();
             }
         }
-
-        public class RecurseParentOptions
-        {
-            public int PATH_MATCH_ABORT = 4;
-            public bool RUN_PARALLEL = true;
-
-            public bool INCLUDE_SIGNIFICANT_NODES = false;
-            public int SIG_NODE_MIN_NSCOUNT = 5;
-            public int SIG_NODE_MAX_PATH_COUNT = 3;
-        }
-
-        public static RecurseParentOptions opts = new RecurseParentOptions();
 
         private static void RecurseParents(
             ConcurrentBag<List<term>> root_paths, List<term> path,

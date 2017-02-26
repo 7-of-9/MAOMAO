@@ -34,7 +34,6 @@
             this.pnlGoldenTree = new System.Windows.Forms.Panel();
             this.cmdSearchClear = new System.Windows.Forms.Button();
             this.chkTopicsOnly = new System.Windows.Forms.CheckBox();
-            this.txtTermParents = new System.Windows.Forms.TextBox();
             this.chkExactMatch = new System.Windows.Forms.CheckBox();
             this.lblTotGtsLoaded = new System.Windows.Forms.Label();
             this.cmdExpandAll = new System.Windows.Forms.Button();
@@ -83,6 +82,7 @@
             this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
+            this.txtTermParents = new System.Windows.Forms.TextBox();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
@@ -142,19 +142,6 @@
             this.chkTopicsOnly.TabIndex = 8;
             this.chkTopicsOnly.Text = "only topics";
             this.chkTopicsOnly.UseVisualStyleBackColor = true;
-            // 
-            // txtTermParents
-            // 
-            this.txtTermParents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTermParents.Location = new System.Drawing.Point(812, 12);
-            this.txtTermParents.Multiline = true;
-            this.txtTermParents.Name = "txtTermParents";
-            this.txtTermParents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtTermParents.Size = new System.Drawing.Size(237, 212);
-            this.txtTermParents.TabIndex = 7;
-            this.txtTermParents.WordWrap = false;
             // 
             // chkExactMatch
             // 
@@ -293,9 +280,9 @@
             // 
             // pnlLevel2Terms
             // 
+            this.pnlLevel2Terms.Controls.Add(this.txtTermParents);
             this.pnlLevel2Terms.Controls.Add(this.splitter6);
             this.pnlLevel2Terms.Controls.Add(this.rootPathViewer1);
-            this.pnlLevel2Terms.Controls.Add(this.txtTermParents);
             this.pnlLevel2Terms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLevel2Terms.Location = new System.Drawing.Point(0, 0);
             this.pnlLevel2Terms.Name = "pnlLevel2Terms";
@@ -398,6 +385,8 @@
             // chkReprocess
             // 
             this.chkReprocess.AutoSize = true;
+            this.chkReprocess.Checked = true;
+            this.chkReprocess.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkReprocess.Location = new System.Drawing.Point(400, 5);
             this.chkReprocess.Name = "chkReprocess";
             this.chkReprocess.Size = new System.Drawing.Size(76, 17);
@@ -631,6 +620,17 @@
             this.zoomBrowser1.TabIndex = 9;
             this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
             // 
+            // txtTermParents
+            // 
+            this.txtTermParents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtTermParents.Location = new System.Drawing.Point(806, 0);
+            this.txtTermParents.Multiline = true;
+            this.txtTermParents.Name = "txtTermParents";
+            this.txtTermParents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtTermParents.Size = new System.Drawing.Size(249, 230);
+            this.txtTermParents.TabIndex = 14;
+            this.txtTermParents.WordWrap = false;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -721,7 +721,6 @@
         private System.Windows.Forms.Button cmdExpandAll;
         private System.Windows.Forms.Label lblTotGtsLoaded;
         private System.Windows.Forms.CheckBox chkExactMatch;
-        private System.Windows.Forms.TextBox txtTermParents;
         private System.Windows.Forms.CheckBox chkReprocess;
         private System.Windows.Forms.ColumnHeader columnHeader23;
         private System.Windows.Forms.ColumnHeader columnHeader24;
@@ -731,6 +730,7 @@
         private System.Windows.Forms.CheckBox chkTopicsOnly;
         private Controls.RootPathViewer rootPathViewer1;
         private System.Windows.Forms.Button cmdSearchClear;
+        private System.Windows.Forms.TextBox txtTermParents;
     }
 }
 

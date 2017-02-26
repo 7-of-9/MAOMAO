@@ -546,6 +546,7 @@ namespace wowmao
         {
             if (lvwUrlTerms.SelectedItems.Count == 0) return;
             var all_root_paths = new List<List<GoldenPaths.TermPath>>();
+            this.Cursor = Cursors.WaitCursor;
             //foreach (var lvi in lvwUrlTerms.Items)
             {
                 var lvi = lvwUrlTerms.SelectedItems[0];
@@ -563,10 +564,12 @@ namespace wowmao
                     parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
                     txtTermParents.AppendText("\r\nSUGGESTED:\r\n");
                     parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                    txtTermParents.Select(0, 0);
+                    txtTermParents.ScrollToCaret();
                 }
             }
+            this.Cursor = Cursors.Default;
 
-          
             // remember: ProcessPathsToRoot() itself does NOT have to be perfect; intention is to x-ref all URL wiki terms processed suggesed parents
             //           to try and find some overlap/commonality; that's our resultant master suggested parent/term for the URL
             //

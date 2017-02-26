@@ -18,7 +18,7 @@ namespace mm_svc.Terms
             using (var db = mm02Entities.Create()) {
                 return db.gt_parent.AsNoTracking().Include("term").Include("term1")
                          .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
-                         .DistinctBy(p => p.parent_term_id) // could have concurrent writes to gt_parent table
+                         .DistinctBy(p => p.parent_term_id.ToString() + p.is_topic) // could have concurrent writes to gt_parent table
                          .ToList(); 
             }
         }
@@ -36,6 +36,8 @@ namespace mm_svc.Terms
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
+                if (term_id == 5067658)
+                    Debugger.Break();
 
                 // static - pick out editorially defined topics from paths to root
                 var suggested_topics = GoldenTopics.GetTopics(paths);
@@ -54,7 +56,7 @@ namespace mm_svc.Terms
                     suggested_dynamic.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S }));
 
                 if (suggested_topics != null)
-                    suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm * -1, S = p.S * -1, is_topic = true }));
+                    suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S, is_topic = true }));
 
                 db.gt_parent.AddRange(gt_parents);
                 Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");

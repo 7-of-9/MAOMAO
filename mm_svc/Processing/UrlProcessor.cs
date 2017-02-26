@@ -75,7 +75,7 @@ namespace mm_svc
                 calais_terms.ForEach(p => p.S = p.S_CALC);
 
                 // map & store wiki golden_terms
-                if (existing_wiki_terms.Count == 0 || reprocess == true) {
+                if (existing_wiki_terms.Count == 0) {// || reprocess == true) {
                     if (reprocess) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
                         db.SaveChangesTraceValidationErrors();
@@ -109,9 +109,11 @@ namespace mm_svc
                 }
 
                 // calc & store all paths to root for mapped & deduped golden terms
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id)); //, reprocess));
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess));
 
+                //
                 // calc & store suggested parents, for each wiki term - dynamic suggested parents, as well as editorially defined parent topic terms
+                //
                 var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
                     var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess);
@@ -125,7 +127,21 @@ namespace mm_svc
                 var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
 
                 //
-                // find most common suggested parent, across all wiki terms
+                // find most common suggested parent, across all wiki terms -- i.e. map from multiple suggested parents down to ranked list
+                // of suggested parent/topic for the url.
+                //
+                //  TODO: topic hiearchies - how to maintain these:
+                //      > a separate link table [topic_term_link]: GetOrProcessParents -> GetTopics should write into it 
+                //        any newly discovered links for topics; the parent-child linkage is inferred solely from relative positions in PtR.
+                //
+                //  TODO: apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
+                //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
+                //        for dynamics and topics -- for topics, we probably want to honour the scoring of topics produced by GetTopics, i.e. use closest to leaf)
+                //  
+                // then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
+                //
+                // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
+                //        the paths to root CAN BE DELETED; or at least it's not critically required. Surely good news.
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
                     // stemming, w/ contains
