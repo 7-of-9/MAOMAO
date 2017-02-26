@@ -11,6 +11,7 @@ using static mm_svc.Terms.GoldenPaths;
 using mmdb_model;
 using mm_global.Extensions;
 using System.Runtime.InteropServices;
+using mm_svc.Terms;
 
 namespace wowmao.Controls
 {
@@ -37,11 +38,14 @@ namespace wowmao.Controls
         public event EventHandler<OnTopicToggledEventArgs> OnTopicToggled = delegate { };
         public class OnTopicToggledEventArgs : EventArgs { public string term_name { get; set; } }
 
+        private List<long> term_ids;
+
         public RootPathViewer()
         {
             InitializeComponent();
         }
 
+  
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             var s = txtSearch.Text.ltrim();
@@ -59,7 +63,7 @@ namespace wowmao.Controls
                 if (show) {
                     panel.Visible = true;
                     panel.Height = 20;
-                    panel.Location = new Point(0, (++x) * panel.Height);
+                    panel.Location = new Point(0, (x++) * panel.Height);
                     foreach (var term_label in (path_panel as Panel).Controls) {
                         var label = term_label as Label;
                         var tp = label.Tag as TermPath;
@@ -75,37 +79,43 @@ namespace wowmao.Controls
                     panel.Visible = false;
                     panel.Height = 0;
                 }
-
-                //foreach (var term_label in (path_panel as Panel).Controls) {
-                //    var label = term_label as Label;
-                //    var tp = label.Tag as TermPath;
-
-                //    bool highlight = s.Length > 3 && tp.t.name.ltrim().Contains(s);
-                //    //if (highlight)
-                //    //    any_highlighed = true;
-
-                //    if (!string.IsNullOrEmpty(s) && s.Length > 3)
-                //        FormatLabel(label, tp.t, highlight);
-                //    else
-                //        FormatLabel(label, tp.t);
-                //}
-                //(path_panel as Panel).ResumeLayout();
-
-                //(path_panel as Panel).Visible = string.IsNullOrEmpty(s) || any_highlighed;
-                //if ((path_panel as Panel).Visible)
-                //    (path_panel as Panel).Height = 20;
-                //else
-                //    (path_panel as Panel).Height = 0;
             }
             ResumeDrawing(this);
             this.ResumeLayout();
+            this.Cursor = Cursors.Default;
+        }
+        private void cmdRecalcPathsToRoot_Click(object sender, EventArgs e)
+        {
+            if (this.term_ids == null) return;
+            this.Cursor = Cursors.WaitCursor;
+            var all_paths = new List<List<TermPath>>();
+            foreach (var term_id in this.term_ids) {
+                // recalc PtR
+                GoldenPaths.opts = new RecurseParentOptions() {
+                    RUN_PARALLEL = chkPtR_Parallel.Checked,
+                    PATH_MATCH_ABORT = Convert.ToInt32(this.txtPATH_MATCH_ABORT.Text),
+                    INCLUDE_SIGNIFICANT_NODES = chkPtR_IncludeSigNodes.Checked,
+                    SIG_NODE_MAX_PATH_COUNT = Convert.ToInt32(this.txtSIG_NODE_MAX_PATH_COUNT.Text),
+                    SIG_NODE_MIN_NSCOUNT = Convert.ToInt32(this.txtSIG_NODE_MIN_NSCOUNT.Text)
+                };
+                GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: true);
+                GoldenPaths.opts = new RecurseParentOptions(); // restore defaults
+
+                // fetch
+                using (var db = mm02Entities.Create()) {
+                    var root_paths = GoldenPaths.GetStoredPathsToRoot(db.terms.Find(term_id));
+                    all_paths.AddRange(root_paths);
+                }
+            }
+            this.AddTermPaths(all_paths);
             this.Cursor = Cursors.Default;
         }
 
         public void AddTermPaths(List<List<TermPath>> paths)
         {
             var colors = Enum.GetNames(typeof(KnownColor));
-
+            term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
+            lblTermInfo.Text = $"term_ids=[{string.Join(", ", term_ids)}] paths={paths.Count}";
             this.panel1.Controls.Clear();
             this.SuspendLayout();
             SuspendDrawing(this);
@@ -116,7 +126,7 @@ namespace wowmao.Controls
             if (paths != null) {
                 foreach (var path in paths) {
                     var path_panel = new Panel() { BackColor = Color.Transparent, BorderStyle = BorderStyle.None, Height = 20 };
-                    path_panel.Location = new Point(0, (++x) * path_panel.Height);
+                    path_panel.Location = new Point(0, (x++) * path_panel.Height);
                     path_panel.AutoSize = true;
                     panels.Add(path_panel);
 
@@ -237,6 +247,12 @@ namespace wowmao.Controls
         private void cmdClear_Click(object sender, EventArgs e)
         {
             this.txtSearch.Text = "";
+        }
+
+        private void chkPtR_IncludeSigNodes_CheckedChanged(object sender, EventArgs e)
+        {
+            txtSIG_NODE_MIN_NSCOUNT.Enabled = chkPtR_IncludeSigNodes.Checked;
+            txtSIG_NODE_MAX_PATH_COUNT.Enabled = chkPtR_IncludeSigNodes.Checked;
         }
     }
 }

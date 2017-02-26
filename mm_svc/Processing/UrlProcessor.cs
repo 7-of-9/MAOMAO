@@ -71,7 +71,6 @@ namespace mm_svc
 
                 // calc TSS values for Calais terms
                 new TssProducer().CalcTSS(meta_all, calais_terms, run_l2_boost);
-
                 calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
                 calais_terms.ForEach(p => p.S = p.S_CALC);
 
@@ -85,25 +84,8 @@ namespace mm_svc
                     db.SaveChangesTraceValidationErrors();
                 }
 
-                // calc & store all paths to root for mapped golden terms
-                var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null);
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess));
-
-                // calc & store suggested parents
-                var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
-                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-                    var term_parents = GoldenParents.GetOrProcessRelatedParents(p.term_id, reprocess);
-                    if (term_parents != null) {
-                        var filtered_term_parents = term_parents
-                                                        .OrderByDescending(p2 => p2.S_norm)
-                                                        .Take(10) // *** remove long tail - for better common parent
-                                                        .ToList();
-                        top_parents.AddOrUpdate(p.term_id, filtered_term_parents, (k, v) => filtered_term_parents);
-                    }
-                });
-                var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
-
                 // dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
+                var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null).ToList();
                 if (wiki_url_terms != null) {
                     var wiki_dupes = wiki_url_terms.Where(p => p.term != null)
                                            .GroupBy(p => p.term.name)
@@ -120,18 +102,32 @@ namespace mm_svc
                             db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && non_max_parent_term_ids.Contains(p.term_id)));
                             db.SaveChangesTraceValidationErrors();
                         }
+
+                        // reload wiki terms after de-dupe
+                        wiki_url_terms = db.url_term.Where(p => p.url_id == url_id && p.wiki_S != null).ToListNoLock();
                     }
                 }
 
+                // calc & store all paths to root for mapped & deduped golden terms
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id)); //, reprocess));
+
+                // calc & store suggested parents, for each wiki term - dynamic suggested parents, as well as editorially defined parent topic terms
+                var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
+                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess);
+                    if (term_parents != null) {
+                        var filtered_term_parents = term_parents.OrderByDescending(p2 => p2.S_norm)
+                                                                .Take(10) // *** remove long tail - for better common parent
+                                                                .ToList();
+                        top_parents.AddOrUpdate(p.term_id, filtered_term_parents, (k, v) => filtered_term_parents);
+                    }
+                });
+                var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
+
                 //
-                // find most common suggested parent
+                // find most common suggested parent, across all wiki terms
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
-                    //var counts_not_stemmed = all_top_parents
-                    //                    .GroupBy(p => p.parent_term_id)
-                    //                    .Select(p => new { parent_term_id = p.Key, count = p.Count() })
-                    //                    .OrderByDescending(p => p.count);
-
                     // stemming, w/ contains
                     var stemmer = new Porter2_English();
                     var top_parents_stemmed = all_top_parents.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1, c = 0 });
@@ -147,8 +143,9 @@ namespace mm_svc
 
                     // add
                     var pri = 0;
-                    db.url_parent_term.AddRange(top_parents_stemmed_counted_contains.Where(p => p.count > 1) // *** want real commonality
-                                                      .Select(p => new url_parent_term() { term_id = p.t.id, url_id = url_id, pri = ++pri, }));
+                    db.url_parent_term.AddRange(top_parents_stemmed_counted_contains
+                                                .Where(p => p.count > 1) // *** want real commonality
+                                                .Select(p => new url_parent_term() { term_id = p.t.id, url_id = url_id, pri = ++pri, }));
                     db.SaveChangesTraceValidationErrors();
                 }
 
@@ -258,7 +255,7 @@ namespace mm_svc
                                 var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(128)
                                         .Select(p => new {
                                             t = p,
-                                            parents = GoldenParents.GetOrProcessRelatedParents(p.id).Select(p2 => new {
+                                            parents = GoldenParents.GetOrProcessParents(p.id).Select(p2 => new {
                                                 S_norm = p2.S_norm,
                                                 t = p2.parent_term,
                                                 term_stemmed = stemmer.stem(p2.parent_term.name),

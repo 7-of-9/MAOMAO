@@ -529,6 +529,7 @@ namespace wowmao
             var gt = wikiGoldTree.SelectedNode.Tag as golden_term;
             this.Cursor = Cursors.WaitCursor;
             var root_paths = GoldenPaths.GetOrProcessPathsToRoot(gt.child_term.id); //GoldenPaths.CalculatePathsToRoot(gt.child_term_id);
+            root_paths.ForEach(p => Trace.WriteLine(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 0).Select(p2 => p2.t.name)) + "\r\n"));
 
             if (gt.child_term.IS_TOPIC) {
                 // todo -- don't load the topic's rooth paths; instead load the various root paths (multiple terms) that the topic appears in
@@ -539,8 +540,6 @@ namespace wowmao
             }
             this.Cursor = Cursors.Default;
 
-            //this.txtWikiPathInfo.Text = "";
-            //root_paths.ForEach(p => this.txtWikiPathInfo.AppendText(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 0).Select(p2 => p2.t.name)) + "\r\n"));
         }
 
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
@@ -559,7 +558,11 @@ namespace wowmao
                     var root_paths = GoldenPaths.GetStoredPathsToRoot(tag.ut.term);
                     this.rootPathViewer1.AddTermPaths(root_paths);
 
-                    var parents = GoldenParents.GetStoredRelatedParents(tag.ut.term_id);
+                    var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+                    txtTermParents.Text = "TOPICS:\r\n";
+                    parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                    txtTermParents.AppendText("\r\nSUGGESTED:\r\n");
+                    parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
                 }
             }
 

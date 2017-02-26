@@ -13,25 +13,18 @@ namespace tests
     [TestClass]
     public class Test_SuggestedParents
     {
-        List<long> test_terms_ids = new List<long>() {
 
-            //
-            // next: GetTopics is working well (when saving, should have [is_topic] on url_term_parent table.
-            //
-            // however, some terms don't have enough (or expected) root paths
-            // e.g.
-                5747890, //  Ballet -- LOW NO. OF ROOT PATHS ... use GUI to tune CalcPathsToRoot
-            //
-            // use GUI to tune params to CalcRootPaths fn.; maybe (e.g. ballet) it runs with certain params first
-            // and then only reruns with others (more expansive) if resultant set is v. small?
-            //
-            // not sure that would work for Pixar though; that has large no. of root paths, just none containing anything 
-            //
+        List<long> test_terms_ids = new List<long>() {
 
                 7479589, // Pixar -- NO ROOT PATHS CONTAINING EXPECTED "animation" ... similar root paths issue as Ballet? or maybe not;
                          // its paths are quite extensive, just not including "animation" in the abstract; that may be reasonable/correct
                          // simply following the data itself: it does have lots of results for "animation company" after all
 
+                // pixar get PtR perf - longs, no terms: 51secs for 295 paths
+                // pixar get PtR perf - terms: 57secs for 295 paths
+                // pixar - terms, w/ cache -- DONE: 13.7929475 sec(s) - root_paths.Count=289
+
+                5747890, //  Ballet 
                 5250600, // Gundam
                 5078100, // Superheroes
                 5871074, // Hypertrophy 
@@ -51,7 +44,7 @@ namespace tests
 
                 7088192, // "boris (band)" -- duplicates by name, ns14/0
 
-                   5140670, // September 11 **
+                5140670, // September 11 **
                 5101699, // EDM
 
                 7355885, // node.js
@@ -76,6 +69,8 @@ namespace tests
                 foreach (var term_id in test_terms_ids) {
 
                     var term = db.terms.Find(term_id);
+
+                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: true);
 
                     var paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
 

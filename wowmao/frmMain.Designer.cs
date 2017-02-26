@@ -32,7 +32,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlGoldenTree = new System.Windows.Forms.Panel();
-            this.txtWikiPathInfo = new System.Windows.Forms.TextBox();
+            this.cmdSearchClear = new System.Windows.Forms.Button();
+            this.chkTopicsOnly = new System.Windows.Forms.CheckBox();
+            this.txtTermParents = new System.Windows.Forms.TextBox();
             this.chkExactMatch = new System.Windows.Forms.CheckBox();
             this.lblTotGtsLoaded = new System.Windows.Forms.Label();
             this.cmdExpandAll = new System.Windows.Forms.Button();
@@ -76,14 +78,11 @@
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.chkTopicsOnly = new System.Windows.Forms.CheckBox();
-            this.lvwUrlTerms2 = new wowmao.TermList();
             this.rootPathViewer1 = new wowmao.Controls.RootPathViewer();
             this.lvwUrlTerms = new wowmao.TermList();
             this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
-            this.cmdSearchClear = new System.Windows.Forms.Button();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
@@ -111,7 +110,6 @@
             this.pnlGoldenTree.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.pnlGoldenTree.Controls.Add(this.cmdSearchClear);
             this.pnlGoldenTree.Controls.Add(this.chkTopicsOnly);
-            this.pnlGoldenTree.Controls.Add(this.txtWikiPathInfo);
             this.pnlGoldenTree.Controls.Add(this.chkExactMatch);
             this.pnlGoldenTree.Controls.Add(this.lblTotGtsLoaded);
             this.pnlGoldenTree.Controls.Add(this.cmdExpandAll);
@@ -125,16 +123,38 @@
             this.pnlGoldenTree.Size = new System.Drawing.Size(500, 335);
             this.pnlGoldenTree.TabIndex = 6;
             // 
-            // txtWikiPathInfo
+            // cmdSearchClear
             // 
-            this.txtWikiPathInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtWikiPathInfo.Location = new System.Drawing.Point(466, 6);
-            this.txtWikiPathInfo.Multiline = true;
-            this.txtWikiPathInfo.Name = "txtWikiPathInfo";
-            this.txtWikiPathInfo.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtWikiPathInfo.Size = new System.Drawing.Size(28, 25);
-            this.txtWikiPathInfo.TabIndex = 7;
-            this.txtWikiPathInfo.WordWrap = false;
+            this.cmdSearchClear.Location = new System.Drawing.Point(87, 8);
+            this.cmdSearchClear.Name = "cmdSearchClear";
+            this.cmdSearchClear.Size = new System.Drawing.Size(33, 21);
+            this.cmdSearchClear.TabIndex = 9;
+            this.cmdSearchClear.Text = "x";
+            this.cmdSearchClear.UseVisualStyleBackColor = true;
+            this.cmdSearchClear.Click += new System.EventHandler(this.cmdSearchClear_Click);
+            // 
+            // chkTopicsOnly
+            // 
+            this.chkTopicsOnly.AutoSize = true;
+            this.chkTopicsOnly.Location = new System.Drawing.Point(249, 17);
+            this.chkTopicsOnly.Name = "chkTopicsOnly";
+            this.chkTopicsOnly.Size = new System.Drawing.Size(77, 17);
+            this.chkTopicsOnly.TabIndex = 8;
+            this.chkTopicsOnly.Text = "only topics";
+            this.chkTopicsOnly.UseVisualStyleBackColor = true;
+            // 
+            // txtTermParents
+            // 
+            this.txtTermParents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTermParents.Location = new System.Drawing.Point(812, 12);
+            this.txtTermParents.Multiline = true;
+            this.txtTermParents.Name = "txtTermParents";
+            this.txtTermParents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtTermParents.Size = new System.Drawing.Size(237, 212);
+            this.txtTermParents.TabIndex = 7;
+            this.txtTermParents.WordWrap = false;
             // 
             // chkExactMatch
             // 
@@ -274,8 +294,8 @@
             // pnlLevel2Terms
             // 
             this.pnlLevel2Terms.Controls.Add(this.splitter6);
-            this.pnlLevel2Terms.Controls.Add(this.lvwUrlTerms2);
             this.pnlLevel2Terms.Controls.Add(this.rootPathViewer1);
+            this.pnlLevel2Terms.Controls.Add(this.txtTermParents);
             this.pnlLevel2Terms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlLevel2Terms.Location = new System.Drawing.Point(0, 0);
             this.pnlLevel2Terms.Name = "pnlLevel2Terms";
@@ -285,7 +305,7 @@
             // splitter6
             // 
             this.splitter6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.splitter6.Location = new System.Drawing.Point(368, 0);
+            this.splitter6.Location = new System.Drawing.Point(800, 0);
             this.splitter6.Name = "splitter6";
             this.splitter6.Size = new System.Drawing.Size(6, 230);
             this.splitter6.TabIndex = 10;
@@ -552,36 +572,15 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
-            // chkTopicsOnly
-            // 
-            this.chkTopicsOnly.AutoSize = true;
-            this.chkTopicsOnly.Location = new System.Drawing.Point(249, 17);
-            this.chkTopicsOnly.Name = "chkTopicsOnly";
-            this.chkTopicsOnly.Size = new System.Drawing.Size(77, 17);
-            this.chkTopicsOnly.TabIndex = 8;
-            this.chkTopicsOnly.Text = "only topics";
-            this.chkTopicsOnly.UseVisualStyleBackColor = true;
-            // 
-            // lvwUrlTerms2
-            // 
-            this.lvwUrlTerms2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvwUrlTerms2.FullRowSelect = true;
-            this.lvwUrlTerms2.HideSelection = false;
-            this.lvwUrlTerms2.Location = new System.Drawing.Point(368, 0);
-            this.lvwUrlTerms2.Name = "lvwUrlTerms2";
-            this.lvwUrlTerms2.Size = new System.Drawing.Size(687, 230);
-            this.lvwUrlTerms2.TabIndex = 11;
-            this.lvwUrlTerms2.UseCompatibleStateImageBehavior = false;
-            this.lvwUrlTerms2.View = System.Windows.Forms.View.Details;
-            // 
             // rootPathViewer1
             // 
             this.rootPathViewer1.AutoScroll = true;
             this.rootPathViewer1.BackColor = System.Drawing.SystemColors.Control;
             this.rootPathViewer1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rootPathViewer1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rootPathViewer1.Location = new System.Drawing.Point(0, 0);
             this.rootPathViewer1.Name = "rootPathViewer1";
-            this.rootPathViewer1.Size = new System.Drawing.Size(368, 230);
+            this.rootPathViewer1.Size = new System.Drawing.Size(800, 230);
             this.rootPathViewer1.TabIndex = 13;
             // 
             // lvwUrlTerms
@@ -632,16 +631,6 @@
             this.zoomBrowser1.TabIndex = 9;
             this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
             // 
-            // cmdSearchClear
-            // 
-            this.cmdSearchClear.Location = new System.Drawing.Point(87, 8);
-            this.cmdSearchClear.Name = "cmdSearchClear";
-            this.cmdSearchClear.Size = new System.Drawing.Size(33, 21);
-            this.cmdSearchClear.TabIndex = 9;
-            this.cmdSearchClear.Text = "x";
-            this.cmdSearchClear.UseVisualStyleBackColor = true;
-            this.cmdSearchClear.Click += new System.EventHandler(this.cmdSearchClear_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -665,6 +654,7 @@
             this.pnlTestMode.ResumeLayout(false);
             this.pnlDirectGoldenCorrelations.ResumeLayout(false);
             this.pnlLevel2Terms.ResumeLayout(false);
+            this.pnlLevel2Terms.PerformLayout();
             this.pnlURLs.ResumeLayout(false);
             this.pnlUrlTerms.ResumeLayout(false);
             this.pnlURL_List.ResumeLayout(false);
@@ -712,7 +702,6 @@
         private System.Windows.Forms.ComboBox cboTop;
         private System.Windows.Forms.Panel pnlLevel2Terms;
         private System.Windows.Forms.Splitter splitter6;
-        private TermList lvwUrlTerms2;
         private System.Windows.Forms.ColumnHeader columnHeader16;
         private System.Windows.Forms.ColumnHeader columnHeader17;
         private System.Windows.Forms.Panel pnlTermTreeAll;
@@ -732,7 +721,7 @@
         private System.Windows.Forms.Button cmdExpandAll;
         private System.Windows.Forms.Label lblTotGtsLoaded;
         private System.Windows.Forms.CheckBox chkExactMatch;
-        private System.Windows.Forms.TextBox txtWikiPathInfo;
+        private System.Windows.Forms.TextBox txtTermParents;
         private System.Windows.Forms.CheckBox chkReprocess;
         private System.Windows.Forms.ColumnHeader columnHeader23;
         private System.Windows.Forms.ColumnHeader columnHeader24;

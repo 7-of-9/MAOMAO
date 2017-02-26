@@ -13,7 +13,7 @@ namespace mm_svc.Terms
 {
     public static class GoldenParents
     {
-        public static List<gt_parent> GetStoredRelatedParents(long term_id)
+        public static List<gt_parent> GetStoredParents(long term_id)
         {
             using (var db = mm02Entities.Create()) {
                 return db.gt_parent.AsNoTracking().Include("term").Include("term1")
@@ -26,12 +26,12 @@ namespace mm_svc.Terms
         //
         // If not already done, records results of ProcessPathsToRoot() in gt_parent table
         //
-        public static List<gt_parent> GetOrProcessRelatedParents(long term_id, bool reprocess = false)
+        public static List<gt_parent> GetOrProcessParents(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
                 if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
-                    return GetStoredRelatedParents(term_id);
+                    return GetStoredParents(term_id);
 
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
@@ -42,8 +42,6 @@ namespace mm_svc.Terms
 
                 // dynamic - parent suggestion (namespace, level weighted, group/count ranking)
                 var suggested_dynamic = CalcDynamicSuggestedParents(paths);
-                if (suggested_dynamic == null)
-                    return null;
 
                 // remove
                 db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
@@ -51,12 +49,19 @@ namespace mm_svc.Terms
 
                 // add
                 var gt_parents = new List<gt_parent>();
-                suggested_dynamic.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S }));
-                suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm * -1, S = p.S * -1 }));
+
+                if (suggested_dynamic != null)
+                    suggested_dynamic.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S }));
+
+                if (suggested_topics != null)
+                    suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm * -1, S = p.S * -1, is_topic = true }));
+
                 db.gt_parent.AddRange(gt_parents);
+                Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
+                Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
                 db.SaveChangesTraceValidationErrors();
 
-                return GetStoredRelatedParents(term_id);
+                return GetStoredParents(term_id);
             }
         }
 

@@ -39,8 +39,8 @@ namespace mmdb_model
         public virtual DbSet<user_url> user_url { get; set; }
         public virtual DbSet<user_url_classification> user_url_classification { get; set; }
         public virtual DbSet<url_term> url_term { get; set; }
-        public virtual DbSet<gt_parent> gt_parent { get; set; }
         public virtual DbSet<url_parent_term> url_parent_term { get; set; }
         public virtual DbSet<term> terms { get; set; }
+        public virtual DbSet<gt_parent> gt_parent { get; set; }
     }
 }

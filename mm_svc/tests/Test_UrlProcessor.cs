@@ -17,12 +17,7 @@ namespace tests
         [TestMethod]
         public void ProcessUrl_Test1()
         {
-            // testing most common parent -- set reprocess to only reprocess gt_parents; (waiting full run)
-            //  tune this so we get something sensible; looking for video games - NEXT: see notes in  ProcessUrl
-
-            // DUPE WIKI TERS: url_id=8425 (calais) ==> maps to *multiple* "functional programming"
-            //  (done) --> pick best wiki matching term (ns0 or 14) -- best = one with most parents...
-            //
+            // testing most common parent
 
             // stemming common parent
             UrlProcessor.ProcessUrl(55, reprocess: true);

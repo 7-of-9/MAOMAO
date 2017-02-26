@@ -68,6 +68,7 @@
     <Compile Include="cal_entity_type.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\BulkCopy.cs" />
     <Compile Include="Extensions\DbContext.cs" />
     <Compile Include="Extensions\Factory.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\gt_parent_extension.cs" />

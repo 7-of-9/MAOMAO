@@ -18,6 +18,12 @@ namespace mm_svc.Terms
             public double S_norm;
         }
 
+        //
+        // Picks out editorially defined topics from paths to root; weights them by distance from leaf term, NS# and repetitions
+        //
+        // todo -- losing *topic hierarchy* info in the data returned; hierarchy is really only kept in the specific paths to root, 
+        //          i.e. a topic could have different parents depending on what root path it's in (seems to be a rare condition, but possible nonetheles)
+        //
         public static List<TopicWeighted> GetTopics(List<List<TermPath>> root_paths)    
         {
             // expects: all paths to root to be for the same leaf term!
