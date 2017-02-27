@@ -43,6 +43,7 @@
             this.chkExactMatch = new System.Windows.Forms.CheckBox();
             this.lblTotGtsLoaded = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.topicTree1 = new wowmao.Controls.TopicTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.splitter7 = new System.Windows.Forms.Splitter();
             this.pnlTermTreeAll = new System.Windows.Forms.Panel();
@@ -86,7 +87,6 @@
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.topicTree1 = new wowmao.Controls.TopicTree();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.tabTrees.SuspendLayout();
@@ -246,6 +246,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "TopicTree";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // topicTree1
+            // 
+            this.topicTree1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.topicTree1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topicTree1.Location = new System.Drawing.Point(3, 3);
+            this.topicTree1.Name = "topicTree1";
+            this.topicTree1.Size = new System.Drawing.Size(480, 295);
+            this.topicTree1.TabIndex = 0;
             // 
             // gtGoldTree
             // 
@@ -487,9 +496,9 @@
             // cmdWalkRndClassify
             // 
             this.cmdWalkRndClassify.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdWalkRndClassify.Location = new System.Drawing.Point(623, 3);
+            this.cmdWalkRndClassify.Location = new System.Drawing.Point(723, 3);
             this.cmdWalkRndClassify.Name = "cmdWalkRndClassify";
-            this.cmdWalkRndClassify.Size = new System.Drawing.Size(174, 19);
+            this.cmdWalkRndClassify.Size = new System.Drawing.Size(74, 19);
             this.cmdWalkRndClassify.TabIndex = 14;
             this.cmdWalkRndClassify.Text = "walk rnd & classify (uid=5)...";
             this.cmdWalkRndClassify.UseVisualStyleBackColor = true;
@@ -542,6 +551,7 @@
             // lblWalkInfo
             // 
             this.lblWalkInfo.AutoSize = true;
+            this.lblWalkInfo.BackColor = System.Drawing.Color.Cyan;
             this.lblWalkInfo.Location = new System.Drawing.Point(701, 7);
             this.lblWalkInfo.Name = "lblWalkInfo";
             this.lblWalkInfo.Size = new System.Drawing.Size(16, 13);
@@ -673,15 +683,6 @@
             this.cmdSearchURLs.Text = "Search meta:";
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
-            // 
-            // topicTree1
-            // 
-            this.topicTree1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.topicTree1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.topicTree1.Location = new System.Drawing.Point(3, 3);
-            this.topicTree1.Name = "topicTree1";
-            this.topicTree1.Size = new System.Drawing.Size(480, 295);
-            this.topicTree1.TabIndex = 0;
             // 
             // frmMain
             // 

@@ -139,15 +139,7 @@ namespace wowmao
         }
 
         void InitUrls(string search_term) {//, long? golden_term_id = null) {
-            //
-            // 8533: la la land -> suggest: golden globes top TSS - suggest TSS boost for SOCIAL_TAG type
-            //       entity-type movie: strong suggest candidate
-            // problem: picking correlated-golden "trump" -- surely it's not highly correlated enough?
-            //         need to see corr. coeffic. to some min. value?
-            //
-            // 7567: peter thiel &kasparaov (suggest: type=person - strong candidate golden children)
-            //
-
+          
             lvwUrls.Items.Clear();
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 lvwUrls.BeginUpdate();
@@ -316,33 +308,50 @@ namespace wowmao
         private bool walking = false;
         private void cmdWalk_Click(object sender, EventArgs e)
         {
-            var sw = new Stopwatch(); sw.Start();
-            if (!walking) {
-                walking = true;
-                cmdWalk.Text = "STOP";
-                this.Cursor = Cursors.WaitCursor;
-                int n = 0;
-                for (int i = lvwUrls.SelectedIndices.Count > 0 ? lvwUrls.SelectedIndices[0] : 0; i < lvwUrls.Items.Count; i++) {
-                    if (!walking) break;
+            // parallel mode
+            var urls_to_process = new List<url>();
+            for(int i=0; i < lvwUrls.Items.Count; i++)
+                urls_to_process.Add(lvwUrls.Items[i].Tag as url);
+            var remaining = urls_to_process.Count;
+            var reprocess = chkReprocess.Checked;
 
-                    lvwUrls.Items[i].Selected = true; // process
-                    lvwUrls.Items[i].EnsureVisible();
-                    Application.DoEvents();
-                    n++;
+            this.Cursor = Cursors.WaitCursor;
 
-                    var url_per_sec = n / sw.Elapsed.TotalSeconds;
-                    lblWalkInfo.Text = $"Walking... url_per_sec={url_per_sec.ToString("0.00")}";
-                }
-                this.Cursor = Cursors.Default;
-                cmdWalk.Text = "Walk...";
-                walking = false;
-                GC.Collect(2);
-            }
-            else {
-                cmdWalk.Text = "Walk...";
-                walking = false;
-                GC.Collect(2);
-            }
+            Parallel.ForEach(urls_to_process, new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
+                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess);
+                this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));
+                Application.DoEvents();
+            });
+
+            this.Cursor = Cursors.Default;
+
+            //var sw = new Stopwatch(); sw.Start();
+            //if (!walking) {
+            //    walking = true;
+            //    cmdWalk.Text = "STOP";
+            //    this.Cursor = Cursors.WaitCursor;
+            //    int n = 0;
+            //    for (int i = lvwUrls.SelectedIndices.Count > 0 ? lvwUrls.SelectedIndices[0] : 0; i < lvwUrls.Items.Count; i++) {
+            //        if (!walking) break;
+
+            //        lvwUrls.Items[i].Selected = true; // process
+            //        lvwUrls.Items[i].EnsureVisible();
+            //        Application.DoEvents();
+            //        n++;
+
+            //        var url_per_sec = n / sw.Elapsed.TotalSeconds;
+            //        lblWalkInfo.Text = $"Walking... url_per_sec={url_per_sec.ToString("0.00")}";
+            //    }
+            //    this.Cursor = Cursors.Default;
+            //    cmdWalk.Text = "Walk...";
+            //    walking = false;
+            //    GC.Collect(2);
+            //}
+            //else {
+            //    cmdWalk.Text = "Walk...";
+            //    walking = false;
+            //    GC.Collect(2);
+            //}
         }
 
         private void cmdGtSearch_Click(object sender, EventArgs e)
@@ -548,13 +557,15 @@ namespace wowmao
             this.txtGtSearch.Text = "";
         }
 
+        bool loaded_topic_tree = false;
         private void tabTrees_SelectedIndexChanged(object sender, EventArgs e)
         {
             // populate TopicTree
-            if (tabTrees.SelectedIndex == 1) {
+            if (tabTrees.SelectedIndex == 1 && !loaded_topic_tree) {
                 this.Cursor = Cursors.WaitCursor;
                 this.topicTree1.BuildTree();
                 this.Cursor = Cursors.Default;
+                loaded_topic_tree = true;
             }
         }
     }

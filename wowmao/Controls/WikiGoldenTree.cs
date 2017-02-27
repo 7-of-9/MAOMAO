@@ -39,7 +39,7 @@ namespace wowmao.Controls
 
         private void WikiGoldenTree_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
         {
-            var theNode = e.Node; //this.GetNodeAt(e.X, e.Y);
+            var theNode = e.Node;
             if ((theNode != null)) {
                 if (theNode.ToolTipText != null) {
                     if (theNode.ToolTipText != this.toolTip1.GetToolTip(this)) {

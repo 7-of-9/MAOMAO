@@ -112,7 +112,7 @@ namespace mm_svc
                 Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));//, reprocess));
 
                 //
-                // calc & store suggested parents, for each wiki term - dynamic suggested parents, as well as editorially defined parent topic terms
+                // calc & store suggested parents, for each wiki term - dynamic suggested parents, and editorially defined parent topics
                 //
                 var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
@@ -130,11 +130,19 @@ namespace mm_svc
                 // find most common suggested parent, across all wiki terms -- i.e. map from multiple suggested parents down to ranked list
                 // of suggested parent/topic for the url.
                 //
-                //  DONE (1): topic hiearchies - how to maintain these:
+                //  (done): topic hiearchies - how to maintain these:
                 //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
                 //        any newly discovered links for topics; the parent-child linkage is inferred solely from relative positions in PtR.
+                //  (done): topic_link visualizer for frmMain.
                 //
-                // WIP: topic_link visualizer for frmMain...
+                //  note: need a "full walk" of all paths to populate topic_link -- i.e. walk all known paths to root!!
+                //          (for now, this is kind of the same as full walk of all URLs -- done: parallel mode)
+                //        this full walk needs really to run *after each editorial update*
+                //        it should also be preceded by a full delete of the topic tree! (if removing topics during editorializaiton)
+                //
+                //  TODO: want TopicTree refresh, want context menu to remove Topic flag from term -- should also delete the link from topic_link table
+                //        want also to be able to mark a topic_link as "exclude" (not delete; different from removing Topic flag) - to mark
+                //        a specific link as not appropriate, etc.
                 //
                 //  TODO (2): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
@@ -145,7 +153,6 @@ namespace mm_svc
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
                 //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
                 //
-                // (also: run frmMain walk all in concurrent mode - flush out race conditions and stuff - simulate multi user load)
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
                     // stemming, w/ contains

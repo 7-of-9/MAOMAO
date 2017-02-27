@@ -19,6 +19,8 @@ namespace mmdb_model
         public long parent_term_id { get; set; }
         public int min_distance { get; set; }
         public int max_distance { get; set; }
+        public int seen_count { get; set; }
+        public bool disabled { get; set; }
     
         public virtual term term { get; set; }
         public virtual term term1 { get; set; }

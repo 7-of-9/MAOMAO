@@ -105,6 +105,8 @@
           <Property Name="parent_term_id" Type="bigint" Nullable="false" />
           <Property Name="min_distance" Type="int" Nullable="false" />
           <Property Name="max_distance" Type="int" Nullable="false" />
+          <Property Name="seen_count" Type="int" Nullable="false" />
+          <Property Name="disabled" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="url">
           <Key>
@@ -1244,6 +1246,8 @@
           <Property Name="parent_term_id" Type="Int64" Nullable="false" />
           <Property Name="min_distance" Type="Int32" Nullable="false" />
           <Property Name="max_distance" Type="Int32" Nullable="false" />
+          <Property Name="seen_count" Type="Int32" Nullable="false" />
+          <Property Name="disabled" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_topic_link_term" FromRole="topic_link" ToRole="term" />
           <NavigationProperty Name="term1" Relationship="mm02Model.FK_topic_link_term1" FromRole="topic_link" ToRole="term" />
         </EntityType>
@@ -1490,6 +1494,8 @@
           <EntitySetMapping Name="topic_link">
             <EntityTypeMapping TypeName="mm02Model.topic_link">
               <MappingFragment StoreEntitySet="topic_link">
+                <ScalarProperty Name="disabled" ColumnName="disabled" />
+                <ScalarProperty Name="seen_count" ColumnName="seen_count" />
                 <ScalarProperty Name="max_distance" ColumnName="max_distance" />
                 <ScalarProperty Name="min_distance" ColumnName="min_distance" />
                 <ScalarProperty Name="parent_term_id" ColumnName="parent_term_id" />

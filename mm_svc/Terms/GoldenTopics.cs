@@ -108,9 +108,9 @@ namespace mm_svc.Terms
                     using (var db = mm02Entities.Create()) {
                         foreach (var parent_topic in parent_topics.Keys) {
 
-                            // strange: art is a child of computer programming?!
-                            if (parent_topic.id == 5204705 && child_topic.id == 4990963)
-                                Debugger.Break();
+                            //// strange: art is a child of computer programming?!
+                            //if (parent_topic.id == 5204705 && child_topic.id == 4990963)
+                            //    Debugger.Break();
 
                             var distances = parent_topics[parent_topic];
                             var topic_link = db.topic_link.FirstOrDefault(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id);
@@ -121,6 +121,7 @@ namespace mm_svc.Terms
                                     parent_term_id = parent_topic.id,
                                     max_distance = distances.Max(),
                                     min_distance = distances.Min(),
+                                    seen_count = 1,
                                 };
                                 db.topic_link.Add(new_link);
                                 db.SaveChanges_IgnoreDupeKeyEx();
@@ -128,6 +129,12 @@ namespace mm_svc.Terms
                                 Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
+                                //
+                                // inc seen count - heuristic for how important this link is
+                                //
+                                topic_link.seen_count++;
+                                db.SaveChanges_IgnoreDupeKeyEx();
+
                                 // update existing topic link - min/max distances
                                 topic_link.max_distance = Math.Max(topic_link.max_distance, distances.Max());
                                 topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
