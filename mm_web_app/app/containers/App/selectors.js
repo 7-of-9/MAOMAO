@@ -4,7 +4,10 @@ const selectGlobal = (state) => state.get('global');
 
 const makeSelectLoading = () => createSelector(
   selectGlobal,
-  (globalState) => globalState.get('loading')
+  (globalState) => globalState.getIn(['loading', 'isGoogleLoading']) ||
+    globalState.getIn(['loading', 'isGoogleNewsLoading']) ||
+    globalState.getIn(['loading', 'isGoogleKnowledgeLoading']) ||
+    globalState.getIn(['loading', 'isYoutubeLoading'])
 );
 
 const makeSelectError = () => createSelector(
@@ -12,14 +15,14 @@ const makeSelectError = () => createSelector(
   (globalState) => globalState.get('error')
 );
 
-const makeSelectGoogle = () => createSelector(
+const makeSelectGoogleKnowledge = () => createSelector(
   selectGlobal,
-  (globalState) => globalState.get('google')
+  (globalState) => globalState.getIn(['data', 'knowledge'])
 );
 
 const makeSelectYoutube = () => createSelector(
   selectGlobal,
-  (globalState) => globalState.get('youtube')
+  (globalState) => globalState.getIn(['data', 'youtube'])
 );
 
 const makeSelectLocationState = () => {
@@ -40,7 +43,7 @@ const makeSelectLocationState = () => {
 
 export {
   selectGlobal,
-  makeSelectGoogle,
+  makeSelectGoogleKnowledge,
   makeSelectYoutube,
   makeSelectLoading,
   makeSelectError,

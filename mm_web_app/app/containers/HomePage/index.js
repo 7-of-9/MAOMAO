@@ -23,6 +23,7 @@ import SearchBar from 'components/SearchBar';
 import GraphKnowledge from 'components/GraphKnowledge';
 import LogoIcon from 'components/LogoIcon';
 // import GoogleResult from 'components/GoogleResult';
+// import GoogleNews from 'components/GoogleNews';
 // import FacebookGraph from 'components/FacebookGraph';
 // import Imgur from 'components/Imgur';
 // import Instagram from 'components/Instagram';
@@ -30,8 +31,8 @@ import LogoIcon from 'components/LogoIcon';
 import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
-import { makeSelectLoading, makeSelectGoogle, makeSelectYoutube } from '../App/selectors';
-import { googleSearch, crawlerGoogleSearch, youtubeSearch, cleanSearchResult } from '../App/actions';
+import { makeSelectLoading, makeSelectGoogleKnowledge, makeSelectYoutube } from '../App/selectors';
+import { googleKnowledgeSearch, youtubeSearch, cleanSearchResult } from '../App/actions';
 import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
@@ -61,7 +62,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     let elements = [];
     const graphKnowledges = [];
     const videos = [];
-    const { itemListElement } = this.props.google;
+    const { itemListElement } = this.props.googleKnowledge;
     const { items } = this.props.youtube;
     let counter = Date.now();
     if (itemListElement || items) {
@@ -121,9 +122,9 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 
 HomePage.propTypes = {
   loadMore: PropTypes.func,
-  doSearch: PropTypes.func,
   onChange: PropTypes.func,
-  google: PropTypes.object.isRequired,
+  doSearch: PropTypes.func,
+  googleKnowledge: PropTypes.object.isRequired,
   youtube: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
 };
@@ -132,8 +133,7 @@ export function mapDispatchToProps(dispatch) {
   return {
     loadMore: () => {
       dispatch(nextPage());
-      dispatch(googleSearch());
-      dispatch(crawlerGoogleSearch());
+      dispatch(googleKnowledgeSearch());
       dispatch(youtubeSearch());
     },
     onChange: (e) => {
@@ -144,8 +144,7 @@ export function mapDispatchToProps(dispatch) {
         e.preventDefault();
       }
       dispatch(resetPage());
-      dispatch(googleSearch());
-      dispatch(crawlerGoogleSearch());
+      dispatch(googleKnowledgeSearch());
       dispatch(youtubeSearch());
       dispatch(cleanSearchResult());
     },
@@ -155,7 +154,7 @@ export function mapDispatchToProps(dispatch) {
 const mapStateToProps = createStructuredSelector({
   keyword: makeSelectKeyword(),
   loading: makeSelectLoading(),
-  google: makeSelectGoogle(),
+  googleKnowledge: makeSelectGoogleKnowledge(),
   youtube: makeSelectYoutube(),
 });
 

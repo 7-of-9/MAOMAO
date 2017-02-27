@@ -4,7 +4,7 @@ import {
   selectGlobal,
   makeSelectLoading,
   makeSelectError,
-  makeSelectGoogle,
+  makeSelectGoogleKnowledge,
   makeSelectLocationState,
 } from 'containers/App/selectors';
 
@@ -18,8 +18,8 @@ describe('selectGlobal', () => {
   });
 });
 
-describe('makeSelectGoogle', () => {
-  const currentUserSelector = makeSelectGoogle();
+describe('makeSelectGoogleKnowledge', () => {
+  const currentUserSelector = makeSelectGoogleKnowledge();
   it('should select the google data', () => {
     const google = fromJS({});
     const mockedState = fromJS({

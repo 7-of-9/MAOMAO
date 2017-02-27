@@ -2,11 +2,11 @@ import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects'
 import { LOCATION_CHANGE } from 'react-router-redux';
 import queryString from 'query-string';
 import {
-  GOOGLE_API_KEY, GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_CRAWLER,
+  GOOGLE_API_KEY, GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_KNOWLEDGE_SEARCH, GOOGLE_NEWS_SEARCH,
  } from 'containers/App/constants';
 import {
-  googleLoaded, googleLoadingError, youtubeLoaded, youtubeLoadingError,
-  crawlerGoogleLoaded, crawlerGoogleLoadingError,
+  googleKnowledgeLoaded, googleKnowledgeLoadingError, youtubeLoaded, youtubeLoadingError,
+  googleLoaded, googleLoadingError,
  } from 'containers/App/actions';
 
 import request, { rawRequest } from 'utils/request';
@@ -14,9 +14,9 @@ import { makeSelectKeyword, makeSelectPageNumber } from 'containers/HomePage/sel
 import { makeSelectYoutube } from 'containers/App/selectors';
 
 const LIMIT = 10;
-
+const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
 /**
- * Google Knowledge request/response handler
+ * Google search request/response handler
  */
 export function* getGoogleSearchResult() {
   // Select keyword from store
@@ -26,12 +26,32 @@ export function* getGoogleSearchResult() {
     type: 'google',
     url: `https://www.google.com/search?q=${encodeURI(keyword)}&start=${LIMIT * (page - 1)}`,
   });
-  const crawlerUrl = `https://dunghd.stdlib.com/crawler@dev/?${query}`;
+  const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
     const response = yield call(rawRequest, crawlerUrl);
-    yield put(crawlerGoogleLoaded(response.result || {}, keyword));
+    yield put(googleLoaded(response.result || {}, keyword));
   } catch (err) {
-    yield put(crawlerGoogleLoadingError(err));
+    yield put(googleLoadingError(err));
+  }
+}
+
+/**
+ * Google news request/response handler
+ */
+export function* getGoogleNewsResult() {
+  // Select keyword from store
+  const keyword = yield select(makeSelectKeyword());
+  const page = yield select(makeSelectPageNumber());
+  const query = queryString.stringify({
+    type: 'google',
+    url: `https://www.google.com/search?q=${encodeURI(keyword)}&tbm=nws&start=${LIMIT * (page - 1)}`,
+  });
+  const crawlerUrl = `${CRALWER_API_URL}?${query}`;
+  try {
+    const response = yield call(rawRequest, crawlerUrl);
+    yield put(googleLoaded(response.result || {}, keyword));
+  } catch (err) {
+    yield put(googleLoadingError(err));
   }
 }
 
@@ -46,9 +66,9 @@ export function* getGoogleKnowledge() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(googleLoaded(result, keyword));
+    yield put(googleKnowledgeLoaded(result, keyword));
   } catch (err) {
-    yield put(googleLoadingError(err));
+    yield put(googleKnowledgeLoadingError(err));
   }
 }
 
@@ -76,7 +96,7 @@ export function* getYoutubeVideo() {
  * Root saga manages watcher lifecycle
  */
 export function* googleSearchData() {
-  const watcher = yield takeLatest(GOOGLE_CRAWLER, getGoogleSearchResult);
+  const watcher = yield takeLatest(GOOGLE_SEARCH, getGoogleSearchResult);
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
@@ -86,8 +106,19 @@ export function* googleSearchData() {
 /**
  * Root saga manages watcher lifecycle
  */
-export function* googleData() {
-  const watcher = yield takeLatest(GOOGLE_SEARCH, getGoogleKnowledge);
+export function* googleNewsData() {
+  const watcher = yield takeLatest(GOOGLE_NEWS_SEARCH, getGoogleNewsResult);
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watcher);
+}
+
+/**
+ * Root saga manages watcher lifecycle
+ */
+export function* googleKnowledgeData() {
+  const watcher = yield takeLatest(GOOGLE_KNOWLEDGE_SEARCH, getGoogleKnowledge);
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
@@ -106,7 +137,8 @@ export function* youtubeData() {
 }
 // All sagas to be loaded
 export default [
-  googleData,
+  googleKnowledgeData,
+  googleNewsData,
   youtubeData,
   googleSearchData,
 ];
