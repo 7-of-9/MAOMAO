@@ -1,11 +1,13 @@
 {
   "name": "main",
-  "description": "Google Search crawler base on keyword",
+  "description": "Crawler services",
   "args": [
-    "url"
+    "url",
+    "type"
   ],
   "kwargs": {
-    "url": "url"
+    "url": "Request URL",
+    "type": "Google or Google News, Video, etc"
   },
   "http": {
     "headers": {}

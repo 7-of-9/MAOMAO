@@ -1,0 +1,13 @@
+{
+  "name": "googleSearch",
+  "description": "Google Search crawler base on keyword",
+  "args": [
+    "bodyHtml"
+  ],
+  "kwargs": {
+    "bodyHtml": "Body HTML response from cralwer"
+  },
+  "http": {
+    "headers": {}
+  }
+}

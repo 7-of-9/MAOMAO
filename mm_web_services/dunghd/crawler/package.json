@@ -5,8 +5,10 @@
   "author": "dunghd <dunghd.it@gmail.com>",
   "main": "f/main/index.js",
   "dependencies": {
+    "cheerio": "^0.22.0",
     "crawler": "^1.0.3",
     "lib": "^2.1.1",
+    "query-string": "^4.3.2",
     "url": "^0.11.0"
   },
   "private": true,
