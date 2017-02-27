@@ -75,6 +75,68 @@ namespace mm_svc.Terms
             }).ToList().OrderByDescending(p => p.S).ToList();
             
             ret.ForEach(p => p.S_norm = p.S / ret.Max(p2 => p2.S));
+
+            // maintain topic hierarchy; for each topic, pick out its appearances in root paths - find any topis that are deeper in the root path
+            // and make sure that the parent-child relationship is recorded in [topic_link] table
+            foreach (var child_topic in ret.Select(p => p.t)) {
+                var appears_in_paths = root_paths.Where(p => p.Any(p2 => p2.t.id == child_topic.id)).ToList();
+
+                var parent_topics = new Dictionary<term, List<int>>(); // parent_term, distances
+                foreach (var path in appears_in_paths) {
+                    // find topic
+                    var topic_in_path = path.First(p => p.t.id == child_topic.id);
+                    var child_ndx = path.IndexOf(topic_in_path);
+
+                    // find next topic in path, if any
+                    if (child_ndx < path.Count - 1) {
+                        var parent_topic_in_path = path.Skip(child_ndx + 1).FirstOrDefault(p => p.t.IS_TOPIC);
+                        if (parent_topic_in_path != null) {
+                            var parent_ndx = path.IndexOf(parent_topic_in_path);
+                            var distance = parent_ndx - child_ndx;
+
+                            var existing_key = parent_topics.Keys.FirstOrDefault(p => p.id == parent_topic_in_path.t.id);
+                            if (existing_key == null)
+                                parent_topics.Add(parent_topic_in_path.t, new List<int>() { distance });
+                            else
+                                parent_topics[existing_key].Add(distance);
+                        }
+                    }
+                }
+                //foreach (var parent_topic in parent_topics.Keys)
+                //    Trace.WriteLine($"(child: >{child_topic.name}<[{child_topic.id}] ==> parent: >{parent_topic.name}<[{parent_topic.id}] distances=[{string.Join(",", parent_topics[parent_topic])}])");
+
+                if (parent_topics.Count > 0) {
+                    using (var db = mm02Entities.Create()) {
+                        foreach (var parent_topic in parent_topics.Keys) {
+                            var distances = parent_topics[parent_topic];
+                            var topic_link = db.topic_link.FirstOrDefault(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id);
+                            if (topic_link == null) {
+                                // new topic link
+                                var new_link = new topic_link {
+                                    child_term_id = child_topic.id,
+                                    parent_term_id = parent_topic.id,
+                                    max_distance = distances.Max(),
+                                    min_distance = distances.Min(),
+                                };
+                                db.topic_link.Add(new_link);
+                                db.SaveChangesTraceValidationErrors();
+                                Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
+                            }
+                            else {
+                                // update existing topic link - min/max distances
+                                topic_link.max_distance = Math.Max(topic_link.max_distance, distances.Max());
+                                topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
+                                if (db.SaveChangesTraceValidationErrors() != 0)
+                                    Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
+                                else
+                                    Trace.WriteLine($"\t(nop: topic_link unchanged for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance})");
+                            }
+                        }
+                    }
+                }
+                else
+                    Trace.WriteLine($"(child: >{child_topic.name}<[{child_topic.id}] ==> (no parent topics found))");
+            }
             return ret;
         }
     }

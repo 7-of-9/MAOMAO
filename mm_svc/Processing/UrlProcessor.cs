@@ -130,18 +130,20 @@ namespace mm_svc
                 // find most common suggested parent, across all wiki terms -- i.e. map from multiple suggested parents down to ranked list
                 // of suggested parent/topic for the url.
                 //
-                //  TODO: topic hiearchies - how to maintain these:
-                //      > a separate link table [topic_term_link]: GetOrProcessParents -> GetTopics should write into it 
+                //  WIP (1): topic hiearchies - how to maintain these:
+                //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
                 //        any newly discovered links for topics; the parent-child linkage is inferred solely from relative positions in PtR.
                 //
-                //  TODO: apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
+                //  TODO (2): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
                 //        for dynamics and topics -- for topics, we probably want to honour the scoring of topics produced by GetTopics, i.e. use closest to leaf)
                 //  
                 // then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
                 //
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
-                //        the paths to root CAN BE DELETED; or at least it's not critically required. Surely good news.
+                //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
+                //
+                // (also: run frmMain walk all in concurrent mode - flush out race conditions and stuff - simulate multi user load)
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
                     // stemming, w/ contains

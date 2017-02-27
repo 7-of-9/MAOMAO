@@ -107,14 +107,11 @@ namespace mm_svc.Terms
                 return null;
 
             // ** try 2 (dynamic) -- across all levels; take sum of NSLW for each term - rank by NS level weighted count
-            {
-                //GroupByTerm_Sum_NSLW(root_paths, 1);
-                //GroupRankByTerm_Sum_NSLW(root_paths, 2); -- 2 levels not enough to get "chess" from "french defence"
-                return GroupRankByTerm_Sum_NSLW(root_paths, 4)
-                       .DistinctBy(p => p.t.name)          // dedupe ns14/0 
-                       .Where(p => p.t.name != "Contents") // noise
-                       .ToList();
-            }
+            var ret = GroupRankByTerm_Sum_NSLW(root_paths, 4)
+                    .DistinctBy(p => p.t.name)          // dedupe ns14/0 
+                    .Where(p => p.t.name != "Contents") // noise
+                    .ToList();
+            return ret.Where(p => p != null).ToList();
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)

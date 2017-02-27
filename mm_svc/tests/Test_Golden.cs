@@ -15,7 +15,7 @@ namespace tests
         [TestMethod]
         public void CalculatePathsToRoot_Test0()
         {
-            GoldenPaths.CalculatePathsToRoot(11464782); // Reporter (typeface)
+            GoldenPaths.CalculatePathsToRoot(5067658); // netflix (big)
         }
 
 

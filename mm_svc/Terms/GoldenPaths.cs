@@ -85,7 +85,7 @@ namespace mm_svc.Terms
         public static RecurseParentOptions opts = new RecurseParentOptions();
         public static List<List<term>> CalculatePathsToRoot(long child_term_id)
         {
-            var root_paths = new ConcurrentBag<List<term>>();
+            var root_paths = new ConcurrentBag<List<long>>();
             using (var db = mm02Entities.Create())
             {
                 var child_term = db.terms.Find(child_term_id);
@@ -98,12 +98,12 @@ namespace mm_svc.Terms
                 //
 
                 var sw = new Stopwatch(); sw.Start();
-                RecurseParents(root_paths, new List<term>() { }, child_term_id, child_term_id);
+                RecurseParents(root_paths, new List<long>() { }, child_term_id, child_term_id);
                 //if (child_term_id == 5067658)
                 //    Debugger.Break();
 
                 var list = root_paths.ToList();
-                list.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2.name + " #NS=" + p2.wiki_nscount))));
+                list.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
 
                 Trace.WriteLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - root_paths.Count={root_paths.Count}");
                 Trace.WriteLine($"golden_term_cache.Count = {golden_term_cache.Count}");
@@ -112,12 +112,16 @@ namespace mm_svc.Terms
                 Trace.WriteLine($"opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT}");
                 Trace.WriteLine($"opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
 
-                return root_paths.ToList();
+                // TODO: need to return terms, not longs
+                //...
+                // then walk all again, monitor memory consumption
+
+                return null;// root_paths.ToList();
             }
         }
 
         private static void RecurseParents(
-            ConcurrentBag<List<term>> root_paths, List<term> path,
+            ConcurrentBag<List<long>> root_paths, List<long> path,
             long term_id,
             long orig_term_id, int? parent_mmcat_level = null, int? orig_mmcat_level = null)
         {
@@ -157,17 +161,17 @@ namespace mm_svc.Terms
             }, link =>
             {
 
-                if (path.Select(p => p.id).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
+                if (path.Select(p => p).Contains(link.parent_term_id) || link.parent_term_id == orig_term_id)
                     return;
 
                 // add to path
-                var new_path = new List<term>(path);
-                new_path.Add(link.parent_term);
+                var new_path = new List<long>(path);
+                new_path.Add(link.parent_term_id);
 
                 // put some limit on recurrsion depth: if there's an existing path to root that matches this test path up to 
                 // a cut-off depth, then abandon this recursion (test/pathological case: 5140670, // September 11 attacks)
-                var this_path_ids = string.Join(",", new_path.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2.id));
-                if (root_paths.Any(p => string.Join(",", p.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2.id)) == this_path_ids)) {
+                var this_path_ids = string.Join(",", new_path.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2));
+                if (root_paths.Any(p => string.Join(",", p.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2)) == this_path_ids)) {
                     //Trace.WriteLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
                     return;
                 }
@@ -189,8 +193,8 @@ namespace mm_svc.Terms
 
                 var ret = //g.RetryMaxOrThrow(() =>
                               db.golden_term.AsNoTracking()
-                             .Include("term")
-                             .Include("term1")
+                             //.Include("term")
+                             //.Include("term1")
                              .Where(p => p.child_term_id == child_term_id)//&& p.mmcat_level <= (max_mmcat_level ?? 99))
                              .OrderBy(p => p.id)
                              .ToListNoLock()

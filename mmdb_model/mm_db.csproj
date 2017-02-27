@@ -111,6 +111,9 @@
     <Compile Include="term_type.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="topic_link.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="url.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

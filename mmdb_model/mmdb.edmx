@@ -96,6 +96,16 @@
           <Property Name="id" Type="int" Nullable="false" />
           <Property Name="type" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="topic_link">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="child_term_id" Type="bigint" Nullable="false" />
+          <Property Name="parent_term_id" Type="bigint" Nullable="false" />
+          <Property Name="min_distance" Type="int" Nullable="false" />
+          <Property Name="max_distance" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="url">
           <Key>
             <PropertyRef Name="id" />
@@ -342,6 +352,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_topic_link_term">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="topic_link" Type="Self.topic_link" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="topic_link">
+              <PropertyRef Name="child_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_topic_link_term1">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="topic_link" Type="Self.topic_link" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="topic_link">
+              <PropertyRef Name="parent_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_url_awis_site">
           <End Role="awis_site" Type="Self.awis_site" Multiplicity="1" />
           <End Role="url" Type="Self.url" Multiplicity="*" />
@@ -472,6 +506,7 @@
           <EntitySet Name="term" EntityType="Self.term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_matrix" EntityType="Self.term_matrix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_type" EntityType="Self.term_type" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="topic_link" EntityType="Self.topic_link" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url" EntityType="Self.url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_parent_term" EntityType="Self.url_parent_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_term" EntityType="Self.url_term" Schema="dbo" store:Type="Tables" />
@@ -527,6 +562,14 @@
           <AssociationSet Name="FK_term_term_type" Association="Self.FK_term_term_type">
             <End Role="term_type" EntitySet="term_type" />
             <End Role="term" EntitySet="term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_topic_link_term" Association="Self.FK_topic_link_term">
+            <End Role="term" EntitySet="term" />
+            <End Role="topic_link" EntitySet="topic_link" />
+          </AssociationSet>
+          <AssociationSet Name="FK_topic_link_term1" Association="Self.FK_topic_link_term1">
+            <End Role="term" EntitySet="term" />
+            <End Role="topic_link" EntitySet="topic_link" />
           </AssociationSet>
           <AssociationSet Name="FK_url_awis_site" Association="Self.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
@@ -678,6 +721,15 @@
           <AssociationSet Name="FK_gt_parent_term1" Association="mm02Model.FK_gt_parent_term1">
             <End Role="term" EntitySet="terms" />
             <End Role="gt_parent" EntitySet="gt_parent" />
+          </AssociationSet>
+          <EntitySet Name="topic_link" EntityType="mm02Model.topic_link" />
+          <AssociationSet Name="FK_topic_link_term" Association="mm02Model.FK_topic_link_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="topic_link" EntitySet="topic_link" />
+          </AssociationSet>
+          <AssociationSet Name="FK_topic_link_term1" Association="mm02Model.FK_topic_link_term1">
+            <End Role="term" EntitySet="terms" />
+            <End Role="topic_link" EntitySet="topic_link" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -1011,7 +1063,9 @@
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.FK_user_url_classification_term" FromRole="term" ToRole="user_url_classification" />
           <NavigationProperty Name="gt_parent" Relationship="mm02Model.FK_gt_parent_term" FromRole="term" ToRole="gt_parent" />
           <NavigationProperty Name="gt_parent1" Relationship="mm02Model.FK_gt_parent_term1" FromRole="term" ToRole="gt_parent" />
-        </EntityType>
+          <NavigationProperty Name="topic_link" Relationship="mm02Model.FK_topic_link_term" FromRole="term" ToRole="topic_link" />
+          <NavigationProperty Name="topic_link1" Relationship="mm02Model.FK_topic_link_term1" FromRole="term" ToRole="topic_link" />
+          </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
           <End Type="mm02Model.term" Role="term" Multiplicity="*" />
@@ -1177,6 +1231,42 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="gt_parent">
+              <PropertyRef Name="parent_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="topic_link">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="child_term_id" Type="Int64" Nullable="false" />
+          <Property Name="parent_term_id" Type="Int64" Nullable="false" />
+          <Property Name="min_distance" Type="Int32" Nullable="false" />
+          <Property Name="max_distance" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_topic_link_term" FromRole="topic_link" ToRole="term" />
+          <NavigationProperty Name="term1" Relationship="mm02Model.FK_topic_link_term1" FromRole="topic_link" ToRole="term" />
+        </EntityType>
+        <Association Name="FK_topic_link_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.topic_link" Role="topic_link" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="topic_link">
+              <PropertyRef Name="child_term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_topic_link_term1">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.topic_link" Role="topic_link" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="topic_link">
               <PropertyRef Name="parent_term_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -1391,6 +1481,17 @@
                 <ScalarProperty Name="is_topic" ColumnName="is_topic" />
                 <ScalarProperty Name="S" ColumnName="S" />
                 <ScalarProperty Name="S_norm" ColumnName="S_norm" />
+                <ScalarProperty Name="parent_term_id" ColumnName="parent_term_id" />
+                <ScalarProperty Name="child_term_id" ColumnName="child_term_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="topic_link">
+            <EntityTypeMapping TypeName="mm02Model.topic_link">
+              <MappingFragment StoreEntitySet="topic_link">
+                <ScalarProperty Name="max_distance" ColumnName="max_distance" />
+                <ScalarProperty Name="min_distance" ColumnName="min_distance" />
                 <ScalarProperty Name="parent_term_id" ColumnName="parent_term_id" />
                 <ScalarProperty Name="child_term_id" ColumnName="child_term_id" />
                 <ScalarProperty Name="id" ColumnName="id" />

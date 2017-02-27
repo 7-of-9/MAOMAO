@@ -42,5 +42,6 @@ namespace mmdb_model
         public virtual DbSet<url_parent_term> url_parent_term { get; set; }
         public virtual DbSet<term> terms { get; set; }
         public virtual DbSet<gt_parent> gt_parent { get; set; }
+        public virtual DbSet<topic_link> topic_link { get; set; }
     }
 }
