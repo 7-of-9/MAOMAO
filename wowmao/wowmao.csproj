@@ -91,6 +91,9 @@
     <Compile Include="Controls\RootPathViewer.Designer.cs">
       <DependentUpon>RootPathViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TopicTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\WikiGoldenTree.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -138,6 +141,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TermList.resx">
       <DependentUpon>TermList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TopicTree.resx">
+      <DependentUpon>TopicTree.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\WikiGoldenTree.resx">
       <DependentUpon>WikiGoldenTree.cs</DependentUpon>

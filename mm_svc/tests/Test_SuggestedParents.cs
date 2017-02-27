@@ -71,7 +71,7 @@ namespace tests
 
                     var term = db.terms.Find(term_id);
 
-                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: true);
+                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: false);
 
                     var paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
 

@@ -146,34 +146,36 @@ namespace wowmao.Controls
 
         private List<golden_term> GoldenTermsFromChildTermId(long child_term_id)
         {
-            var db = mm02Entities.Create();
-            var qry = db.golden_term
-                            .Include("term.golden_term").Include("term.golden_term1")
-                            .Include("term1.golden_term").Include("term1.golden_term1")
-                            .Where(p => p.child_term_id == child_term_id)
-                            .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
-            //Debug.WriteLine(qry.ToString());
-            var gts = qry.ToListNoLock();
-            gts.ForEach(p => Debug.WriteLine($"child_term_id={child_term_id} -> got GTs: {p.ToString()}"));
+            using (var db = mm02Entities.Create()) {
+                var qry = db.golden_term
+                                .Include("term.golden_term").Include("term.golden_term1")
+                                .Include("term1.golden_term").Include("term1.golden_term1")
+                                .Where(p => p.child_term_id == child_term_id)
+                                .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
+                //Debug.WriteLine(qry.ToString());
+                var gts = qry.ToListNoLock();
+                gts.ForEach(p => Debug.WriteLine($"child_term_id={child_term_id} -> got GTs: {p.ToString()}"));
 
-            this.total_gts_loaded += gts.Count;
-            OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
+                this.total_gts_loaded += gts.Count;
+                OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
             return gts;
+            }
         }
 
         private List<golden_term> GoldenTermsFromParentTermId(long parent_term_id)
         {
-            var db = mm02Entities.Create();
-            var qry = db.golden_term
-                            .Include("term.golden_term").Include("term.golden_term1")
-                            .Include("term1.golden_term").Include("term1.golden_term1")
-                            .Where(p => p.parent_term_id == parent_term_id)
-                            .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
-            //Debug.WriteLine(qry.ToString());
-            var gts = qry.ToListNoLock();
-            this.total_gts_loaded += gts.Count;
-            OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
-            return gts;
+            using (var db = mm02Entities.Create()) {
+                var qry = db.golden_term
+                                .Include("term.golden_term").Include("term.golden_term1")
+                                .Include("term1.golden_term").Include("term1.golden_term1")
+                                .Where(p => p.parent_term_id == parent_term_id)
+                                .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
+                //Debug.WriteLine(qry.ToString());
+                var gts = qry.ToListNoLock();
+                this.total_gts_loaded += gts.Count;
+                OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
+                return gts;
+            }
         }
 
         private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts)

@@ -21,9 +21,6 @@ namespace mm_svc.Terms
         //
         // Picks out editorially defined topics from paths to root; weights them by distance from leaf term, NS# and repetitions
         //
-        // todo -- losing *topic hierarchy* info in the data returned; hierarchy is really only kept in the specific paths to root, 
-        //          i.e. a topic could have different parents depending on what root path it's in (seems to be a rare condition, but possible nonetheles)
-        //
         public static List<TopicWeighted> GetTopics(List<List<TermPath>> root_paths)    
         {
             // expects: all paths to root to be for the same leaf term!
@@ -76,8 +73,10 @@ namespace mm_svc.Terms
             
             ret.ForEach(p => p.S_norm = p.S / ret.Max(p2 => p2.S));
 
+            //
             // maintain topic hierarchy; for each topic, pick out its appearances in root paths - find any topis that are deeper in the root path
             // and make sure that the parent-child relationship is recorded in [topic_link] table
+            //
             foreach (var child_topic in ret.Select(p => p.t)) {
                 var appears_in_paths = root_paths.Where(p => p.Any(p2 => p2.t.id == child_topic.id)).ToList();
 
@@ -108,6 +107,11 @@ namespace mm_svc.Terms
                 if (parent_topics.Count > 0) {
                     using (var db = mm02Entities.Create()) {
                         foreach (var parent_topic in parent_topics.Keys) {
+
+                            // strange: art is a child of computer programming?!
+                            if (parent_topic.id == 5204705 && child_topic.id == 4990963)
+                                Debugger.Break();
+
                             var distances = parent_topics[parent_topic];
                             var topic_link = db.topic_link.FirstOrDefault(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id);
                             if (topic_link == null) {

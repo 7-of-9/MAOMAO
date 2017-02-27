@@ -33,12 +33,12 @@
             // txtTrace
             // 
             this.txtTrace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTrace.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTrace.Font = new System.Drawing.Font("Courier New", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTrace.Location = new System.Drawing.Point(0, 0);
             this.txtTrace.Multiline = true;
             this.txtTrace.Name = "txtTrace";
             this.txtTrace.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtTrace.Size = new System.Drawing.Size(617, 397);
+            this.txtTrace.Size = new System.Drawing.Size(617, 90);
             this.txtTrace.TabIndex = 15;
             this.txtTrace.WordWrap = false;
             // 
@@ -46,7 +46,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(617, 397);
+            this.ClientSize = new System.Drawing.Size(617, 90);
             this.Controls.Add(this.txtTrace);
             this.Name = "frmTrace";
             this.Text = "wowmao:  Trace";
