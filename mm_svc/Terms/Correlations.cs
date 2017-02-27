@@ -42,11 +42,12 @@ namespace mm_svc.Terms
 
     public static class Correlations
     {
-        public static Dictionary<string, List<correlation>> cache = new Dictionary<string, List<correlation>>();
-        public static event EventHandler OnCacheAdd = delegate { };
-        public static bool cache_disable = false;
-        public static int cache_tot_correlations { get { return cache.Values.Select(p => p.Count).Sum(); } }
-        public static int cache_tot_terms { get { return cache.Values.Select(p => p.Select(p2 => p2.corr_terms.Count).Sum()).Sum(); } }
+        //public static Dictionary<string, List<correlation>> cache = new Dictionary<string, List<correlation>>();
+        //public static event EventHandler OnCacheAdd = delegate { };
+        //public static bool cache_disable = true;
+
+        //public static int cache_tot_correlations { get { return cache.Values.Select(p => p.Count).Sum(); } }
+        //public static int cache_tot_terms { get { return cache.Values.Select(p => p.Select(p2 => p2.corr_terms.Count).Sum()).Sum(); } }
 
         private const int MIN_CORR_TERM_OCCURS_COUNT = 3; //10;
         private const int MIN_CORR_OCCURS_TOGETHER_COUNT = 2; //5;
@@ -66,8 +67,8 @@ namespace mm_svc.Terms
 
         public static List<correlation> GetTermCorrelations(corr_input inp)
         {
-            if (!cache_disable && cache.Keys.Contains(inp.cache_key))
-                return cache[inp.cache_key];
+            //if (!cache_disable && cache.Keys.Contains(inp.cache_key))
+            //    return cache[inp.cache_key];
 
             var sw = new Stopwatch(); sw.Start();
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
@@ -188,10 +189,10 @@ namespace mm_svc.Terms
                 ret = ret.OrderByDescending(p => p.corr_for_main).ToList(); //*
 
                 Debug.WriteLine($">>> Get2('{inp.main_term}'): {sw.ElapsedMilliseconds} ms");
-                if (!cache_disable) {
-                    cache.Add(inp.cache_key, ret);
-                    OnCacheAdd?.Invoke(typeof(Correlations), EventArgs.Empty);
-                }
+                //if (!cache_disable) {
+                //    cache.Add(inp.cache_key, ret);
+                //    OnCacheAdd?.Invoke(typeof(Correlations), EventArgs.Empty);
+                //}
                 return ret;
             }
         }

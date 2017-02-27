@@ -17,7 +17,10 @@ namespace mm_svc.Terms
     public static class GoldenPaths
     {
         // pretty important for reasonable performance on calc'ing paths to root!
-        private static ConcurrentDictionary<long, List<golden_term>> golden_term_cache = new ConcurrentDictionary<long, List<golden_term>>();
+        public static ConcurrentDictionary<long, List<GtLight>> golden_term_cache = new ConcurrentDictionary<long, List<GtLight>>();
+        public static event EventHandler OnCacheAdd = delegate { };
+
+        public class GtLight { public short mmcat_level; public long parent_term_id; }
 
         public static List<List<TermPath>> GetOrProcessPathsToRoot(long term_id)
         {
@@ -157,10 +160,10 @@ namespace mm_svc.Terms
             Parallel.ForEach(
                 links.Where(p => p.mmcat_level <= max_mmcat_level                    // link is higher than parent (closer to root)
                            
-                            || (opts.INCLUDE_SIGNIFICANT_NODES &&                    // or link is "significant node"
-                                                                                     // update: simple wowmao shows this doesn't seem to be working or making much difference
-                                p.parent_term.wiki_nscount > opts.SIG_NODE_MIN_NSCOUNT &&
-                                path.Count < opts.SIG_NODE_MAX_PATH_COUNT)   
+                            //|| (opts.INCLUDE_SIGNIFICANT_NODES &&                  // or link is "significant node"
+                            //                                                       // update: simple wowmao shows this doesn't seem to be working or making much difference
+                            //    p.parent_term.wiki_nscount > opts.SIG_NODE_MIN_NSCOUNT &&
+                            //    path.Count < opts.SIG_NODE_MAX_PATH_COUNT)
                 ), 
 
             // running parallel results in non-deterministic output! i guess because of sensitivity on previously processed paths...
@@ -193,14 +196,14 @@ namespace mm_svc.Terms
             });
         }
 
-        private static List<golden_term> GetParents(long child_term_id, int? max_mmcat_level = null)
+        private static List<GtLight> GetParents(long child_term_id, int? max_mmcat_level = null)
         {
             if (golden_term_cache != null && golden_term_cache.ContainsKey(child_term_id))
                 return golden_term_cache[child_term_id];
 
             using (var db = mm02Entities.Create()) {
 
-                var ret = //g.RetryMaxOrThrow(() =>
+                var gts = //g.RetryMaxOrThrow(() =>
                               db.golden_term.AsNoTracking()
                              //.Include("term")
                              //.Include("term1")
@@ -209,8 +212,13 @@ namespace mm_svc.Terms
                              .ToListNoLock()
                            //, 1, 3)
                              ;
-                if (golden_term_cache != null)
+
+                var ret = gts.Select(p => new GtLight { mmcat_level = (short)p.mmcat_level, parent_term_id = p.parent_term_id }).ToList();
+
+                if (golden_term_cache != null) {
                     golden_term_cache.TryAdd(child_term_id, ret);
+                    OnCacheAdd?.Invoke(typeof(GoldenPaths), EventArgs.Empty);
+                }
 
                 return ret;
             }

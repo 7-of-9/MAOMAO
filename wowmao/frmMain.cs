@@ -28,19 +28,21 @@ namespace wowmao
         private string db_name;
         private term root_term;
 
-        private Dictionary<long, List<url_term>> url_term_cache = new Dictionary<long, List<url_term>>();
+        //private Dictionary<long, List<url_term>> url_term_cache = new Dictionary<long, List<url_term>>();
 
         private frmTrace trace_form;
 
         public frmMain() {
             //mm02Entities.static_instance = mm02Entities.Create();
 
-            trace_form = new frmTrace();
+            /*trace_form = new frmTrace();
             trace_form.Show();
             Trace.Listeners.Add(new TextBoxTraceListener(trace_form.txtTrace));
-            trace_form.WindowState = FormWindowState.Minimized;
+            trace_form.WindowState = FormWindowState.Minimized;*/
 
-            Correlations.OnCacheAdd += Correlations_cache_add;
+            //Correlations.OnCacheAdd += Correlations_cache_add;
+            GoldenPaths.OnCacheAdd += GoldenPaths_OnCacheAdd;
+
             InitializeComponent();
             this.cboTop.SelectedIndex = 2;
             InitTvwRootNodes();
@@ -61,6 +63,7 @@ namespace wowmao
             cmdSearchURLs_Click(null, null);
         }
 
+       
         private void RootPathViewer1_OnTopicToggled(object sender, Controls.RootPathViewer.OnTopicToggledEventArgs e)
         {
             this.txtGtSearch.Text = e.term_name;
@@ -114,12 +117,20 @@ namespace wowmao
         }
 
         private void SetCaption() {
-            this.Text = $"wowmao ~ corr.cache={Correlations.cache.Count} (cache_tot_terms={Correlations.cache_tot_terms} // url_term_cache.cache={url_term_cache.Count}";
+
+            Action set_title = () => this.Text = $"wowmao ~ gt_cache#={GoldenPaths.golden_term_cache.Count}";
+            if (this.InvokeRequired)
+                this.BeginInvoke(set_title);
+            else 
+                set_title();
+            
+            //corr.cache={Correlations.cache.Count} (cache_tot_terms={Correlations.cache_tot_terms}";
+            // url_term_cache.cache={url_term_cache.Count}";
         }
 
-        private void CorrelatedGoldens_cache_add(object sender, EventArgs e) { SetCaption(); }
-
-        private void Correlations_cache_add(object sender, EventArgs e) { SetCaption(); }
+        //private void CorrelatedGoldens_cache_add(object sender, EventArgs e) { SetCaption(); }
+        //private void Correlations_cache_add(object sender, EventArgs e) { SetCaption(); }
+        private void GoldenPaths_OnCacheAdd(object sender, EventArgs e) { SetCaption(); }
 
         private void cmdSearchURLs_Click(object sender, EventArgs e) {
             this.Cursor = Cursors.WaitCursor;
@@ -216,8 +227,9 @@ namespace wowmao
         private void cmdRefresh_Click_1(object sender, EventArgs e) {
 
             // clear cache & recycle object context
-            Correlations.cache = new Dictionary<string, List<correlation>>();
-            this.url_term_cache = new Dictionary<long, List<url_term>>();
+            //Correlations.cache = new Dictionary<string, List<correlation>>();
+            //this.url_term_cache = new Dictionary<long, List<url_term>>();
+
             mm02Entities.static_instance.Dispose();
             mm02Entities.static_instance = null;
             mm02Entities.static_instance = mm02Entities.Create();
@@ -244,232 +256,59 @@ namespace wowmao
             var url = item.Tag as url;
 
             this.Cursor = Cursors.WaitCursor;
-            var new_gold_count = 0;
 
             // get meta
-            dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
-            string pretty_meta_all = JsonConvert.SerializeObject(meta_all, Formatting.Indented);
-            txtInfo.Text = "html_title: " + meta_all.html_title.ToString() + "\r\n" +
-                           "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n" +
-                           "pretty_meta_all: " + (pretty_meta_all ?? "").ToString() + "\r\n";
+            if (chkUpdateUi.Checked) {
+                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                string pretty_meta_all = JsonConvert.SerializeObject(meta_all, Formatting.Indented);
+                txtInfo.Text = "html_title: " + meta_all.html_title.ToString() + "\r\n" +
+                               "ip_description: " + (meta_all.ip_description ?? "").ToString() + "\r\n" +
+                               "pretty_meta_all: " + (pretty_meta_all ?? "").ToString() + "\r\n";
 
-            zoomBrowser1.Navigate(url.url1);
-            zoomBrowser1.ScriptErrorsSuppressed = true;
-            //int zoomFactor = 300;
-            //((SHDocVw.WebBrowser)zoomBrowser1.ActiveXInstance).ExecWB(SHDocVw.OLECMDID.OLECMDID_OPTICAL_ZOOM,
-            //    SHDocVw.OLECMDEXECOPT.OLECMDEXECOPT_DONTPROMPTUSER, zoomFactor, IntPtr.Zero);
-            //ZoomBrowser(-2);
+                zoomBrowser1.Navigate(url.url1);
+                zoomBrowser1.ScriptErrorsSuppressed = true;
+                //int zoomFactor = 300;
+                //((SHDocVw.WebBrowser)zoomBrowser1.ActiveXInstance).ExecWB(SHDocVw.OLECMDID.OLECMDID_OPTICAL_ZOOM,
+                //    SHDocVw.OLECMDEXECOPT.OLECMDEXECOPT_DONTPROMPTUSER, zoomFactor, IntPtr.Zero);
+                //ZoomBrowser(-2);
+            }
 
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
+            using (var db = mm02Entities.Create()) {
 
                 //
                 // ** ProcessTss **
                 //
                 var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess: chkReprocess.Checked);
 
-                // (1) get url_terms (L1 terms)
-                /*if (this.url_term_cache.ContainsKey(url.id))
-                    l1_url_terms = url_term_cache[url.id];
-                else {
-                    l1_url_terms = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type").Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
-                    url_term_cache.Add(url.id, l1_url_terms);
-                    SetCaption();
-
-                    // TMP -- (while waiting for bulk/batch crawl to populate organically) -- add matching wiki terms
-                    //var add_wiki_url_terms = new List<url_term>();
-                    //var distinct_l1_names = l1_url_terms.Select(p => p.term.name).Distinct();
-                    //foreach (var l1_term_name in distinct_l1_names)
-                    //{
-                    //    var url_term = l1_url_terms.Where(p => p.term.name == l1_term_name).OrderByDescending(p => p.S).First();
-                    //    var wiki_term = db.terms.Where(p => p.name == url_term.term.name && (p.term_type_id == (int)g.TT.WIKI_NS_14)).FirstOrDefaultNoLock();
-                    //    if (wiki_term != null) {
-                    //        add_wiki_url_terms.Add(new url_term {
-                    //            term = wiki_term,
-                    //            term_id = wiki_term.id,
-                    //            url_id = url_term.url_id,
-                    //            wiki_S = url_term.term.term_type_id == (int)g.TT.CALAIS_ENTITY ? Convert.ToDouble(url_term.cal_entity_relevance.ToString()) * 10 // 0-10
-                    //                    : url_term.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG ? ((4 - Convert.ToDouble(url_term.cal_socialtag_importance.ToString())) * 3) // 0-10
-                    //                    : url_term.term.term_type_id == (int)g.TT.CALAIS_TOPIC ? Convert.ToDouble(url_term.cal_topic_score.ToString()) * 10 : -1 // 0-10
-                    //        });
-                    //    }
-                    //}
-                    //l1_url_terms.AddRange(add_wiki_url_terms);
-                }*/
-
-                // (2) *** Calc. TSS for L1 terms ***
-                //var cat = new mm_svc.TssProduction();
-                //cat.CalcTSS(meta_all, l1_url_terms, run_l2_boost: true); // TODO: have this pick the top n calais terms, return mapped wiki terms for top n
-
-                // L1 terms -> for each L1 term: add to TermTree
+                // L1 terms -> for each L1 term: add to TermList
                 if (chkUpdateUi.Checked) { 
-                    //ttUrlTerms.Nodes.Clear();
-                    //l1_url_terms.OrderByDescending(p => p.S).ToList().ForEach(p => ttUrlTerms.AddRootTerm(p.term, extra: $" (S={p.S})"));
                     lvwUrlTerms.Items.Clear();
                     lvwUrlTerms.BeginUpdate();
-                }
-                var ut_items = new List<ListViewItem>();
-                var direct_goldens = new List<url_term>();
-                var all_l2_term_ids_by_count = new Dictionary<long, int>();
-                var all_l2_terms = new List<term>();
-                foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.wiki_S != null).ThenByDescending(p => p.tss_norm)) {
 
-                    // --- L2 terms -- (disable for now while testing tmp wiki terms...)
-                    List<term> l2_terms = null;
-                    /*if (l1_url_term.tss > 0) {
-                        // is term directly golden?
-                        if (l1_url_term.term.is_gold)
-                            direct_goldens.Add(l1_url_term);
+                    var ut_items = new List<ListViewItem>();
+                    foreach (var l1_url_term in l1_url_terms.OrderByDescending(p => p.wiki_S != null).ThenByDescending(p => p.tss_norm))
+                        if (chkUpdateUi.Checked)
+                            ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, null));
 
-                        // L2 terms: all -- rank by correlation
-                        l2_terms = Correlations.GetTermCorrelations(new corr_input() { main_term = l1_url_term.term.name, min_corr = 0.1 })
-                                                .SelectMany(p => p.corr_terms)
-                                                .OrderByDescending(p => p.corr_for_main)
-                                                .ToList();
-
-                        // map S value underlyers from parent url-term, to the l2 url-term
-                        l2_terms.ForEach(p => {
-                            p.parent_url_term = l1_url_term;
-                        });
-
-                        // keep counts
-                        foreach (var l2_term in l2_terms) { 
-                            if (all_l2_term_ids_by_count.ContainsKey(l2_term.id))
-                                all_l2_term_ids_by_count[l2_term.id]++;
-                            else
-                                all_l2_term_ids_by_count.Add(l2_term.id, 1);
-
-                            if (!all_l2_terms.Any(p => p.id == l2_term.id))
-                                all_l2_terms.Add(l2_term);
-                        }
-                    }*/
-
-                    // add L1 term to TermList
-                    if (chkUpdateUi.Checked)
-                        ut_items.Add(lvwUrlTerms.NewLvi(l1_url_term, l2_terms));
-                }
-                if (chkUpdateUi.Checked) {
                     lvwUrlTerms.Items.AddRange(ut_items.ToArray());
                     lvwUrlTerms.EndUpdate();
                     SetCols(lvwUrlTerms);
                 }
 
                 //
-                // L2 TSS
-                /*if (chkUpdateUi.Checked)
-                    lvwUrlTerms2.Items.Clear();
-                var l2_url_terms = new List<url_term>();
-                if (all_l2_terms.Count > 0) {
-                    var l1_term_ids = l1_url_terms.Select(p => p.term.id).Distinct();
-                    l2_url_terms = all_l2_terms.Where(p => !l1_term_ids.Contains(p.id)).Select(p => new url_term() { term = p }).ToList();
-
-                    // L2.S = L1.S
-                    l2_url_terms.ForEach(p => {
-                        if (p.term.term_type_id == (int)g.TT.CALAIS_ENTITY) p.cal_entity_relevance = p.term.parent_url_term.S / 10;
-                        if (p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG) p.cal_socialtag_importance = (int)(p.term.parent_url_term.S / 3.0);
-                        if (p.term.term_type_id == (int)g.TT.CALAIS_TOPIC) p.cal_topic_score = (int)(p.term.parent_url_term.S / 10);
-                    });
-
-                    // scale L2.S by corr/L2.Max(corr)
-                    var l2_max_corr = l2_url_terms.Max(p => p.term.corr_for_main);
-                    l2_url_terms.ForEach(p => p.s = (p.term.corr_for_main ?? 0) / (l2_max_corr??1));
-
-                    // DeriveMmCat (produce TSS) for L2 terms
-                    cat.CalcTSS(meta_all, l2_url_terms, run_l2_boost: false);
-
-                    if (chkUpdateUi.Checked) { 
-                        lvwUrlTerms2.BeginUpdate();
-                        foreach (var l2_url_term in l2_url_terms.OrderByDescending(p => p.tss)) {
-                            lvwUrlTerms2.Items.Add(lvwUrlTerms2.NewLvi(l2_url_term, null));
-                        }
-                        lvwUrlTerms2.EndUpdate();
-                        SetCols(lvwUrlTerms2);
-                    }
-                }*/
-
-                //
-                // output/suggest phase
-                //
-
-                //
-                // process new gold suggestions
-                //
-                /*var out_suggest_l1_gold = new List<term>(); // gold suggest L1 -- top L1 terms by TSS norm threshold
-                out_suggest_l1_gold = l1_url_terms.OrderByDescending(p => p.tss_norm)
-                                                  .Where(p => p.tss_norm > 0.7 // *** min_tss_norm for L1 suggest gold (was: 0.5)
-                                                           && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
-                                                  .Where(p => !p.is_gold)
-                                                  .ToList();
-                new_gold_count += Golden.ProcessSuggested(out_suggest_l1_gold, url.id);
-                item.SubItems[5].Text = string.Join(" / ", out_suggest_l1_gold.Where(p => p.suggested_gold_parent != null).Select(p => $"{p.name} [{p.id}] {p.gold_desc} -> {p.suggested_gold_parent?.name}"));
-
-                var out_suggest_l2_gold = new List<term>();
-                if (l2_url_terms.Count > 0) {              // gold suggest L2 -- highest TSS ranked L2 all terms 
-                    
-                    out_suggest_l2_gold = l2_url_terms.OrderByDescending(p => p.tss_norm)
-                                                       .Where(p => p.tss_norm > 0.9 // *** min_tss_norm for L2 suggest gold (was: 0.7)
-                                                                && p.tss > TssProduction.MIN_GOLD_TSS).Select(p => p.term)
-                                                       .Where(p => !p.is_gold)
-                                                       .Where(p => !out_suggest_l1_gold.Select(p2 => p2.name.ltrim()).Contains(p.name.ltrim()))
-                                                       .ToList();
-                    new_gold_count += Golden.ProcessSuggested(out_suggest_l2_gold, url.id);
-                    item.SubItems[6].Text = string.Join(" / ", out_suggest_l2_gold.Where(p => p.suggested_gold_parent != null).Select(p => $"{p.name} [{p.id}] {p.gold_desc} -> {p.suggested_gold_parent?.name}"));
-
-                    // suggestion 3 -- highest L2 golden by count (very restrictive dataset?)
-                    //var mm_cats = new List<term>();
-                    //if (all_l2_terms.Count > 0) {
-                    //    var list = all_l2_term_ids_by_count.ToList();
-                    //    list.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
-                    //    item.SubItems[7].Text = all_l2_terms.Single(p => p.id == list[0].Key).name;
-                    //}
-                }*/
-
-                //
-                // final outputs -- existing gold @ L1 & L2 - over TSS norm threshold (varies by gold level)
-                // note: this will *not* include auggested gold that was processed immediately above (caching issues) - probably doesn't matter a great deal, only affects first time
-                // gold is suggested and processed.
-                //
-                var out_existing_l1_l2_gold = new List<term>();
-                if (direct_goldens.Count > 0)
-                {
-                    out_existing_l1_l2_gold =
-                    
-                        // existing L1 
-                        direct_goldens.OrderByDescending(p => p.tss_norm).Where(p => p.tss_norm > 0.2)//p.term.existing_gold_min_tss_norm)
-
-                       // existing L2 
-                       //.Union(l2_url_terms.OrderByDescending(p => p.tss_norm).Where(p => p.term.is_gold && p.tss_norm > p.term.existing_gold_min_tss_norm))
-
-                       // rank
-                       .Select(p => p.term)
-                       .ToList();
-
-                    // save result for URL -- NOTE: just taking first child appearance in GT tree; this will *not* work
-                    // if the term is a GC of multiple golden parents! i.e. -- should for now maintain logic of term only appears once in the GT tree
-                    var final_mmcats = out_existing_l1_l2_gold.Select(p => p.child_in_golden_terms.First()).ToList();
-                    //Golden.RecordUrlGoldenTerms(url.id, final_mmcats);
-
-                    item.SubItems[7].Text = DateTime.UtcNow.ToString("dd MMM yyyy");
-                    item.SubItems[8].Text = final_mmcats.Count().ToString();
-
-                    item.SubItems[4].Text = string.Join(" / ", out_existing_l1_l2_gold.Select(p => $"{p.name} [{p.id}] {p.gold_desc}"));
-                }
-
-                //
                 // url suggested/related parent terms (from UrlProcessing)
                 //
-                var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
-                txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
+                if (chkUpdateUi.Checked) {
+                    var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
+                    txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 
-                txtInfo.AppendText("\r\n\r\n>>> HTTP: " + url.url1 + "\r\n");
-                txtInfo.ScrollToCaret();
-            }
-
-            if (new_gold_count > 0) {
-                //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
-                wikiGoldTree.BuildTree();
+                    txtInfo.AppendText("\r\n\r\n>>> HTTP: " + url.url1 + "\r\n");
+                    txtInfo.ScrollToCaret();
+                }
             }
 
             this.Cursor = Cursors.Default;
+            GC.Collect(2);
         }
    
    
@@ -497,10 +336,12 @@ namespace wowmao
                 this.Cursor = Cursors.Default;
                 cmdWalk.Text = "Walk...";
                 walking = false;
+                GC.Collect(2);
             }
             else {
                 cmdWalk.Text = "Walk...";
                 walking = false;
+                GC.Collect(2);
             }
         }
 
@@ -705,6 +546,16 @@ namespace wowmao
         private void cmdSearchClear_Click(object sender, EventArgs e)
         {
             this.txtGtSearch.Text = "";
+        }
+
+        private void tabTrees_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // populate TopicTree
+            if (tabTrees.SelectedIndex == 1) {
+                this.Cursor = Cursors.WaitCursor;
+                this.topicTree1.BuildTree();
+                this.Cursor = Cursors.Default;
+            }
         }
     }
 }

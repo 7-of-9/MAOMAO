@@ -32,15 +32,21 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.pnlGoldenTree = new System.Windows.Forms.Panel();
+            this.tabTrees = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.txtGtSearch = new System.Windows.Forms.TextBox();
+            this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.cmdSearchClear = new System.Windows.Forms.Button();
+            this.cmdGtSearch = new System.Windows.Forms.Button();
             this.chkTopicsOnly = new System.Windows.Forms.CheckBox();
+            this.cmdExpandAll = new System.Windows.Forms.Button();
             this.chkExactMatch = new System.Windows.Forms.CheckBox();
             this.lblTotGtsLoaded = new System.Windows.Forms.Label();
-            this.cmdExpandAll = new System.Windows.Forms.Button();
-            this.cmdGtSearch = new System.Windows.Forms.Button();
-            this.txtGtSearch = new System.Windows.Forms.TextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.gtGoldTree = new wowmao.MmGoldenTree();
             this.splitter7 = new System.Windows.Forms.Splitter();
             this.pnlTermTreeAll = new System.Windows.Forms.Panel();
+            this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
             this.txtOut = new System.Windows.Forms.TextBox();
             this.cmdRefresh = new System.Windows.Forms.Button();
             this.splitter1 = new System.Windows.Forms.Splitter();
@@ -48,7 +54,10 @@
             this.splitter5 = new System.Windows.Forms.Splitter();
             this.pnlDirectGoldenCorrelations = new System.Windows.Forms.Panel();
             this.pnlLevel2Terms = new System.Windows.Forms.Panel();
+            this.txtTermParents = new System.Windows.Forms.TextBox();
             this.splitter6 = new System.Windows.Forms.Splitter();
+            this.rootPathViewer1 = new wowmao.Controls.RootPathViewer();
+            this.lvwUrlTerms = new wowmao.TermList();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.pnlURLs = new System.Windows.Forms.Panel();
             this.pnlUrlTerms = new System.Windows.Forms.Panel();
@@ -77,14 +86,12 @@
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.rootPathViewer1 = new wowmao.Controls.RootPathViewer();
-            this.lvwUrlTerms = new wowmao.TermList();
-            this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
-            this.gtGoldTree = new wowmao.MmGoldenTree();
-            this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
-            this.txtTermParents = new System.Windows.Forms.TextBox();
+            this.topicTree1 = new wowmao.Controls.TopicTree();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
+            this.tabTrees.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.pnlTermTreeAll.SuspendLayout();
             this.pnlTestMode.SuspendLayout();
             this.pnlDirectGoldenCorrelations.SuspendLayout();
@@ -108,14 +115,7 @@
             // pnlGoldenTree
             // 
             this.pnlGoldenTree.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.pnlGoldenTree.Controls.Add(this.cmdSearchClear);
-            this.pnlGoldenTree.Controls.Add(this.chkTopicsOnly);
-            this.pnlGoldenTree.Controls.Add(this.chkExactMatch);
-            this.pnlGoldenTree.Controls.Add(this.lblTotGtsLoaded);
-            this.pnlGoldenTree.Controls.Add(this.cmdExpandAll);
-            this.pnlGoldenTree.Controls.Add(this.cmdGtSearch);
-            this.pnlGoldenTree.Controls.Add(this.txtGtSearch);
-            this.pnlGoldenTree.Controls.Add(this.wikiGoldTree);
+            this.pnlGoldenTree.Controls.Add(this.tabTrees);
             this.pnlGoldenTree.Controls.Add(this.gtGoldTree);
             this.pnlGoldenTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGoldenTree.Location = new System.Drawing.Point(0, 406);
@@ -123,9 +123,61 @@
             this.pnlGoldenTree.Size = new System.Drawing.Size(500, 335);
             this.pnlGoldenTree.TabIndex = 6;
             // 
+            // tabTrees
+            // 
+            this.tabTrees.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabTrees.Controls.Add(this.tabPage1);
+            this.tabTrees.Controls.Add(this.tabPage2);
+            this.tabTrees.Location = new System.Drawing.Point(3, 4);
+            this.tabTrees.Name = "tabTrees";
+            this.tabTrees.SelectedIndex = 0;
+            this.tabTrees.Size = new System.Drawing.Size(494, 327);
+            this.tabTrees.TabIndex = 10;
+            this.tabTrees.SelectedIndexChanged += new System.EventHandler(this.tabTrees_SelectedIndexChanged);
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.txtGtSearch);
+            this.tabPage1.Controls.Add(this.wikiGoldTree);
+            this.tabPage1.Controls.Add(this.cmdSearchClear);
+            this.tabPage1.Controls.Add(this.cmdGtSearch);
+            this.tabPage1.Controls.Add(this.chkTopicsOnly);
+            this.tabPage1.Controls.Add(this.cmdExpandAll);
+            this.tabPage1.Controls.Add(this.chkExactMatch);
+            this.tabPage1.Controls.Add(this.lblTotGtsLoaded);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(486, 301);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "WikiTree";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // txtGtSearch
+            // 
+            this.txtGtSearch.Location = new System.Drawing.Point(125, 6);
+            this.txtGtSearch.Name = "txtGtSearch";
+            this.txtGtSearch.Size = new System.Drawing.Size(118, 21);
+            this.txtGtSearch.TabIndex = 2;
+            this.txtGtSearch.Text = "chess";
+            // 
+            // wikiGoldTree
+            // 
+            this.wikiGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.wikiGoldTree.Location = new System.Drawing.Point(5, 33);
+            this.wikiGoldTree.Name = "wikiGoldTree";
+            this.wikiGoldTree.Size = new System.Drawing.Size(477, 265);
+            this.wikiGoldTree.TabIndex = 1;
+            this.wikiGoldTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.wikiGoldTree_AfterSelect);
+            this.wikiGoldTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.wikiGoldTree_NodeMouseClick);
+            // 
             // cmdSearchClear
             // 
-            this.cmdSearchClear.Location = new System.Drawing.Point(87, 8);
+            this.cmdSearchClear.Location = new System.Drawing.Point(86, 6);
             this.cmdSearchClear.Name = "cmdSearchClear";
             this.cmdSearchClear.Size = new System.Drawing.Size(33, 21);
             this.cmdSearchClear.TabIndex = 9;
@@ -133,22 +185,42 @@
             this.cmdSearchClear.UseVisualStyleBackColor = true;
             this.cmdSearchClear.Click += new System.EventHandler(this.cmdSearchClear_Click);
             // 
+            // cmdGtSearch
+            // 
+            this.cmdGtSearch.Location = new System.Drawing.Point(6, 6);
+            this.cmdGtSearch.Name = "cmdGtSearch";
+            this.cmdGtSearch.Size = new System.Drawing.Size(74, 21);
+            this.cmdGtSearch.TabIndex = 3;
+            this.cmdGtSearch.Text = "Search GTs:";
+            this.cmdGtSearch.UseVisualStyleBackColor = true;
+            this.cmdGtSearch.Click += new System.EventHandler(this.cmdGtSearch_Click);
+            // 
             // chkTopicsOnly
             // 
             this.chkTopicsOnly.AutoSize = true;
-            this.chkTopicsOnly.Location = new System.Drawing.Point(249, 17);
+            this.chkTopicsOnly.Location = new System.Drawing.Point(248, 15);
             this.chkTopicsOnly.Name = "chkTopicsOnly";
             this.chkTopicsOnly.Size = new System.Drawing.Size(77, 17);
             this.chkTopicsOnly.TabIndex = 8;
             this.chkTopicsOnly.Text = "only topics";
             this.chkTopicsOnly.UseVisualStyleBackColor = true;
             // 
+            // cmdExpandAll
+            // 
+            this.cmdExpandAll.Location = new System.Drawing.Point(338, 5);
+            this.cmdExpandAll.Name = "cmdExpandAll";
+            this.cmdExpandAll.Size = new System.Drawing.Size(74, 21);
+            this.cmdExpandAll.TabIndex = 4;
+            this.cmdExpandAll.Text = "(expand all)";
+            this.cmdExpandAll.UseVisualStyleBackColor = true;
+            this.cmdExpandAll.Click += new System.EventHandler(this.cmdExpandAll_Click);
+            // 
             // chkExactMatch
             // 
             this.chkExactMatch.AutoSize = true;
             this.chkExactMatch.Checked = true;
             this.chkExactMatch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkExactMatch.Location = new System.Drawing.Point(249, 1);
+            this.chkExactMatch.Location = new System.Drawing.Point(248, -1);
             this.chkExactMatch.Name = "chkExactMatch";
             this.chkExactMatch.Size = new System.Drawing.Size(84, 17);
             this.chkExactMatch.TabIndex = 6;
@@ -158,39 +230,33 @@
             // lblTotGtsLoaded
             // 
             this.lblTotGtsLoaded.AutoSize = true;
-            this.lblTotGtsLoaded.Location = new System.Drawing.Point(419, 11);
+            this.lblTotGtsLoaded.Location = new System.Drawing.Point(418, 9);
             this.lblTotGtsLoaded.Name = "lblTotGtsLoaded";
             this.lblTotGtsLoaded.Size = new System.Drawing.Size(45, 13);
             this.lblTotGtsLoaded.TabIndex = 5;
             this.lblTotGtsLoaded.Text = "count ...";
             // 
-            // cmdExpandAll
+            // tabPage2
             // 
-            this.cmdExpandAll.Location = new System.Drawing.Point(339, 7);
-            this.cmdExpandAll.Name = "cmdExpandAll";
-            this.cmdExpandAll.Size = new System.Drawing.Size(74, 21);
-            this.cmdExpandAll.TabIndex = 4;
-            this.cmdExpandAll.Text = "(expand all)";
-            this.cmdExpandAll.UseVisualStyleBackColor = true;
-            this.cmdExpandAll.Click += new System.EventHandler(this.cmdExpandAll_Click);
+            this.tabPage2.Controls.Add(this.topicTree1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(486, 301);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "TopicTree";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // cmdGtSearch
+            // gtGoldTree
             // 
-            this.cmdGtSearch.Location = new System.Drawing.Point(7, 8);
-            this.cmdGtSearch.Name = "cmdGtSearch";
-            this.cmdGtSearch.Size = new System.Drawing.Size(74, 21);
-            this.cmdGtSearch.TabIndex = 3;
-            this.cmdGtSearch.Text = "Search GTs:";
-            this.cmdGtSearch.UseVisualStyleBackColor = true;
-            this.cmdGtSearch.Click += new System.EventHandler(this.cmdGtSearch_Click);
-            // 
-            // txtGtSearch
-            // 
-            this.txtGtSearch.Location = new System.Drawing.Point(126, 8);
-            this.txtGtSearch.Name = "txtGtSearch";
-            this.txtGtSearch.Size = new System.Drawing.Size(118, 21);
-            this.txtGtSearch.TabIndex = 2;
-            this.txtGtSearch.Text = "chess";
+            this.gtGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gtGoldTree.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.gtGoldTree.Location = new System.Drawing.Point(287, 6);
+            this.gtGoldTree.Name = "gtGoldTree";
+            this.gtGoldTree.Size = new System.Drawing.Size(210, 0);
+            this.gtGoldTree.TabIndex = 0;
             // 
             // splitter7
             // 
@@ -212,6 +278,18 @@
             this.pnlTermTreeAll.Name = "pnlTermTreeAll";
             this.pnlTermTreeAll.Size = new System.Drawing.Size(500, 400);
             this.pnlTermTreeAll.TabIndex = 4;
+            // 
+            // zoomBrowser1
+            // 
+            this.zoomBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.zoomBrowser1.Location = new System.Drawing.Point(5, 28);
+            this.zoomBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
+            this.zoomBrowser1.Name = "zoomBrowser1";
+            this.zoomBrowser1.Size = new System.Drawing.Size(490, 371);
+            this.zoomBrowser1.TabIndex = 9;
+            this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
             // 
             // txtOut
             // 
@@ -289,6 +367,17 @@
             this.pnlLevel2Terms.Size = new System.Drawing.Size(1055, 230);
             this.pnlLevel2Terms.TabIndex = 10;
             // 
+            // txtTermParents
+            // 
+            this.txtTermParents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtTermParents.Location = new System.Drawing.Point(806, 0);
+            this.txtTermParents.Multiline = true;
+            this.txtTermParents.Name = "txtTermParents";
+            this.txtTermParents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtTermParents.Size = new System.Drawing.Size(249, 230);
+            this.txtTermParents.TabIndex = 14;
+            this.txtTermParents.WordWrap = false;
+            // 
             // splitter6
             // 
             this.splitter6.BackColor = System.Drawing.SystemColors.ButtonHighlight;
@@ -297,6 +386,30 @@
             this.splitter6.Size = new System.Drawing.Size(6, 230);
             this.splitter6.TabIndex = 10;
             this.splitter6.TabStop = false;
+            // 
+            // rootPathViewer1
+            // 
+            this.rootPathViewer1.AutoScroll = true;
+            this.rootPathViewer1.BackColor = System.Drawing.SystemColors.Control;
+            this.rootPathViewer1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.rootPathViewer1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rootPathViewer1.Location = new System.Drawing.Point(0, 0);
+            this.rootPathViewer1.Name = "rootPathViewer1";
+            this.rootPathViewer1.Size = new System.Drawing.Size(800, 230);
+            this.rootPathViewer1.TabIndex = 13;
+            // 
+            // lvwUrlTerms
+            // 
+            this.lvwUrlTerms.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lvwUrlTerms.FullRowSelect = true;
+            this.lvwUrlTerms.HideSelection = false;
+            this.lvwUrlTerms.Location = new System.Drawing.Point(0, 356);
+            this.lvwUrlTerms.Name = "lvwUrlTerms";
+            this.lvwUrlTerms.Size = new System.Drawing.Size(1055, 155);
+            this.lvwUrlTerms.TabIndex = 8;
+            this.lvwUrlTerms.UseCompatibleStateImageBehavior = false;
+            this.lvwUrlTerms.View = System.Windows.Forms.View.Details;
+            this.lvwUrlTerms.SelectedIndexChanged += new System.EventHandler(this.lvwUrlTerms_SelectedIndexChanged);
             // 
             // splitter2
             // 
@@ -561,75 +674,14 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
-            // rootPathViewer1
+            // topicTree1
             // 
-            this.rootPathViewer1.AutoScroll = true;
-            this.rootPathViewer1.BackColor = System.Drawing.SystemColors.Control;
-            this.rootPathViewer1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.rootPathViewer1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rootPathViewer1.Location = new System.Drawing.Point(0, 0);
-            this.rootPathViewer1.Name = "rootPathViewer1";
-            this.rootPathViewer1.Size = new System.Drawing.Size(800, 230);
-            this.rootPathViewer1.TabIndex = 13;
-            // 
-            // lvwUrlTerms
-            // 
-            this.lvwUrlTerms.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lvwUrlTerms.FullRowSelect = true;
-            this.lvwUrlTerms.HideSelection = false;
-            this.lvwUrlTerms.Location = new System.Drawing.Point(0, 356);
-            this.lvwUrlTerms.Name = "lvwUrlTerms";
-            this.lvwUrlTerms.Size = new System.Drawing.Size(1055, 155);
-            this.lvwUrlTerms.TabIndex = 8;
-            this.lvwUrlTerms.UseCompatibleStateImageBehavior = false;
-            this.lvwUrlTerms.View = System.Windows.Forms.View.Details;
-            this.lvwUrlTerms.SelectedIndexChanged += new System.EventHandler(this.lvwUrlTerms_SelectedIndexChanged);
-            // 
-            // wikiGoldTree
-            // 
-            this.wikiGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.wikiGoldTree.Location = new System.Drawing.Point(7, 35);
-            this.wikiGoldTree.Name = "wikiGoldTree";
-            this.wikiGoldTree.Size = new System.Drawing.Size(487, 294);
-            this.wikiGoldTree.TabIndex = 1;
-            this.wikiGoldTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.wikiGoldTree_AfterSelect);
-            this.wikiGoldTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.wikiGoldTree_NodeMouseClick);
-            // 
-            // gtGoldTree
-            // 
-            this.gtGoldTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gtGoldTree.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.gtGoldTree.Location = new System.Drawing.Point(287, 6);
-            this.gtGoldTree.Name = "gtGoldTree";
-            this.gtGoldTree.Size = new System.Drawing.Size(210, 0);
-            this.gtGoldTree.TabIndex = 0;
-            // 
-            // zoomBrowser1
-            // 
-            this.zoomBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.zoomBrowser1.Location = new System.Drawing.Point(5, 28);
-            this.zoomBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.zoomBrowser1.Name = "zoomBrowser1";
-            this.zoomBrowser1.Size = new System.Drawing.Size(490, 371);
-            this.zoomBrowser1.TabIndex = 9;
-            this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
-            // 
-            // txtTermParents
-            // 
-            this.txtTermParents.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTermParents.Location = new System.Drawing.Point(806, 0);
-            this.txtTermParents.Multiline = true;
-            this.txtTermParents.Name = "txtTermParents";
-            this.txtTermParents.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtTermParents.Size = new System.Drawing.Size(249, 230);
-            this.txtTermParents.TabIndex = 14;
-            this.txtTermParents.WordWrap = false;
+            this.topicTree1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.topicTree1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topicTree1.Location = new System.Drawing.Point(3, 3);
+            this.topicTree1.Name = "topicTree1";
+            this.topicTree1.Size = new System.Drawing.Size(480, 295);
+            this.topicTree1.TabIndex = 0;
             // 
             // frmMain
             // 
@@ -648,7 +700,10 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlLeft.ResumeLayout(false);
             this.pnlGoldenTree.ResumeLayout(false);
-            this.pnlGoldenTree.PerformLayout();
+            this.tabTrees.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
             this.pnlTermTreeAll.ResumeLayout(false);
             this.pnlTermTreeAll.PerformLayout();
             this.pnlTestMode.ResumeLayout(false);
@@ -731,6 +786,10 @@
         private Controls.RootPathViewer rootPathViewer1;
         private System.Windows.Forms.Button cmdSearchClear;
         private System.Windows.Forms.TextBox txtTermParents;
+        private System.Windows.Forms.TabControl tabTrees;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private Controls.TopicTree topicTree1;
     }
 }
 

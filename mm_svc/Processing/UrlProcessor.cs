@@ -109,7 +109,7 @@ namespace mm_svc
                 }
 
                 // calc & store all paths to root for mapped & deduped golden terms
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess));
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));//, reprocess));
 
                 //
                 // calc & store suggested parents, for each wiki term - dynamic suggested parents, as well as editorially defined parent topic terms
@@ -130,9 +130,11 @@ namespace mm_svc
                 // find most common suggested parent, across all wiki terms -- i.e. map from multiple suggested parents down to ranked list
                 // of suggested parent/topic for the url.
                 //
-                //  WIP (1): topic hiearchies - how to maintain these:
+                //  DONE (1): topic hiearchies - how to maintain these:
                 //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
                 //        any newly discovered links for topics; the parent-child linkage is inferred solely from relative positions in PtR.
+                //
+                // WIP: topic_link visualizer for frmMain...
                 //
                 //  TODO (2): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
