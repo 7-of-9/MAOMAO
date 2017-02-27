@@ -23,15 +23,13 @@ export function* getGoogleSearchResult() {
   const keyword = yield select(makeSelectKeyword());
   const page = yield select(makeSelectPageNumber());
   const query = queryString.stringify({
-    q: keyword,
-    start: LIMIT * (page - 1),
+    type: 'google',
+    url: `https://www.google.com/search?q=${encodeURI(keyword)}&start=${LIMIT * (page - 1)}`,
   });
-  // FIXME: pagination for google search
-  const requestURL = `https://www.google.com/search?${query}`;
-  const crawlerUrl = `https://dunghd.stdlib.com/crawler@dev/?url=${requestURL}`;
+  const crawlerUrl = `https://dunghd.stdlib.com/crawler@dev/?${query}`;
   try {
-    const result = yield call(rawRequest, crawlerUrl);
-    yield put(crawlerGoogleLoaded(result, keyword));
+    const response = yield call(rawRequest, crawlerUrl);
+    yield put(crawlerGoogleLoaded(response.result || {}, keyword));
   } catch (err) {
     yield put(crawlerGoogleLoadingError(err));
   }

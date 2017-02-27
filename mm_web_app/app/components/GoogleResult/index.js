@@ -1,19 +1,15 @@
 /**
 *
-* YoutubeVideo
+* GoogleResult
 *
 */
 
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
-import youtubeIcon from './images/youtube.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #837664;
-  background-image: url(${youtubeIcon});
-  background-repeat: no-repeat;
-  background-size: 32px;
+  background: #222;
 `;
 
 const Anchor = styled.a`
@@ -22,11 +18,6 @@ const Anchor = styled.a`
    &:hover {
      color: #6cc0e5;
    }
-`;
-
-const Image = styled.img`
-  object-fit contain;
-  max-width: 230px;
 `;
 
 const Title = styled.h1`
@@ -39,24 +30,22 @@ const Description = styled.p`
   text-align: center;
 `;
 
-function YoutubeVideo(props) {
+
+function GoogleResult(props) {
   return (
     <Wrapper>
       <Anchor href={props.url} target="_blank">
-        {props.name && <Title>{props.name}</Title>}
+        {props.title && <Title>{props.title}</Title>}
       </Anchor>
       {props.description && <Description>{props.description}</Description>}
-      {props.image && <Image src={props.image} alt={props.name} />}
     </Wrapper>
   );
 }
 
-YoutubeVideo.propTypes = {
-  name: PropTypes.string,
+GoogleResult.propTypes = {
+  title: PropTypes.string,
   description: PropTypes.string,
-  image: PropTypes.string,
   url: PropTypes.string,
 };
 
-
-export default YoutubeVideo;
+export default GoogleResult;

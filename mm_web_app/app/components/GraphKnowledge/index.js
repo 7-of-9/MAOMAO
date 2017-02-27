@@ -6,10 +6,14 @@
 
 import React, { PropTypes } from 'react';
 import styled from 'styled-components';
+import googleKnownledgeIcon from './images/google-knowledge-graph.png';
 
 const Wrapper = styled.section`
   padding: 10px;
   background: #969494;
+  background-image: url(${googleKnownledgeIcon});
+  background-repeat: no-repeat;
+  background-size: 32px;
 `;
 
 const Anchor = styled.a`
