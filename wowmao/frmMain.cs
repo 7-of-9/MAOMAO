@@ -30,8 +30,15 @@ namespace wowmao
 
         private Dictionary<long, List<url_term>> url_term_cache = new Dictionary<long, List<url_term>>();
 
+        private frmTrace trace_form;
+
         public frmMain() {
-            mm02Entities.static_instance = mm02Entities.Create();
+            //mm02Entities.static_instance = mm02Entities.Create();
+
+            trace_form = new frmTrace();
+            trace_form.Show();
+            Trace.Listeners.Add(new TextBoxTraceListener(trace_form.txtTrace));
+            trace_form.WindowState = FormWindowState.Minimized;
 
             Correlations.OnCacheAdd += Correlations_cache_add;
             InitializeComponent();

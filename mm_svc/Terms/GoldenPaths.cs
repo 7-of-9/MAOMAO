@@ -102,8 +102,8 @@ namespace mm_svc.Terms
                 //if (child_term_id == 5067658)
                 //    Debugger.Break();
 
-                var list = root_paths.ToList();
-                list.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
+                var paths = root_paths.ToList();
+                paths.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
 
                 Trace.WriteLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - root_paths.Count={root_paths.Count}");
                 Trace.WriteLine($"golden_term_cache.Count = {golden_term_cache.Count}");
@@ -112,11 +112,20 @@ namespace mm_svc.Terms
                 Trace.WriteLine($"opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT}");
                 Trace.WriteLine($"opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
 
-                // TODO: need to return terms, not longs
-                //...
-                // then walk all again, monitor memory consumption
+                // need to return terms, not longs
+                var distinct_term_ids = paths.SelectMany(p => p.Select(p2 => p2).Distinct()).Distinct().ToList().OrderBy(p => p).ToList();
+                var terms = db.terms.AsNoTracking().Where(p => distinct_term_ids.Contains(p.id)).ToListNoLock();
+                var ret = new List<List<term>>();
+                foreach (var path in paths) {
+                    var path_list = new List<term>();
+                    path.ForEach(p => path_list.Add(terms.First(p2 => p2.id == p)));
+                    ret.Add(path_list);
+                }
 
-                return null;// root_paths.ToList();
+                // also -- consider custom lightweight struct for golden_term cache
+
+                return ret;
+                // then walk all again, monitor memory consumption
             }
         }
 
@@ -130,7 +139,7 @@ namespace mm_svc.Terms
             var links = GetParents(term_id, null);
             if (links.Count == 0) {
                 root_paths.Add(path);
-                Trace.WriteLine($">>> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p.name))}  -  child_term_id={ term_id}");
+                Trace.WriteLine($">>> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p))}  -  child_term_id={term_id}");
             }
             if (parent_mmcat_level == null)
                 parent_mmcat_level = orig_mmcat_level = links.Max(p => p.mmcat_level);

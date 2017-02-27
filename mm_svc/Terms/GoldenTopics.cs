@@ -119,7 +119,8 @@ namespace mm_svc.Terms
                                     min_distance = distances.Min(),
                                 };
                                 db.topic_link.Add(new_link);
-                                db.SaveChangesTraceValidationErrors();
+                                db.SaveChanges_IgnoreDupeKeyEx();
+                                //db.SaveChangesTraceValidationErrors();
                                 Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
@@ -134,8 +135,8 @@ namespace mm_svc.Terms
                         }
                     }
                 }
-                else
-                    Trace.WriteLine($"(child: >{child_topic.name}<[{child_topic.id}] ==> (no parent topics found))");
+                //else
+                //    Trace.WriteLine($"(child: >{child_topic.name}<[{child_topic.id}] ==> (no parent topics found))");
             }
             return ret;
         }

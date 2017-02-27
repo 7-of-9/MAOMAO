@@ -45,12 +45,14 @@ namespace mmdb_model
             }
             catch (DbUpdateException dbex)
             {
+                Trace.WriteLine(g.LogAllExceptionsAndStack(dbex));
+                Trace.Flush();
+
                 if (dbex.InnerException != null && dbex.InnerException.InnerException != null &&
                     (dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key")
-                    //|| dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")
-                    ))
-                {
-                    //Trace.WriteLine($"ignoring dupe key insert 2 ({info})");
+                    || dbex.InnerException.InnerException.Message.StartsWith("Violation of UNIQUE KEY")
+                  //|| dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")
+                    )) {
                     return false;
                 }
                 else

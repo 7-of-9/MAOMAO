@@ -36,8 +36,8 @@ namespace mm_svc.Terms
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
-                if (term_id == 5067658)
-                    Debugger.Break();
+                //if (term_id == 5067658)
+                //    Debugger.Break();
 
                 // static - pick out editorially defined topics from paths to root
                 var suggested_topics = GoldenTopics.GetTopics(paths);
@@ -111,7 +111,8 @@ namespace mm_svc.Terms
                     .DistinctBy(p => p.t.name)          // dedupe ns14/0 
                     .Where(p => p.t.name != "Contents") // noise
                     .ToList();
-            return ret.Where(p => p != null).ToList();
+
+            return ret.Where(p => p != null && p.t != null).ToList();
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
