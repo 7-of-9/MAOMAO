@@ -29,7 +29,7 @@ export function* getGoogleSearchResult() {
   const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
     const response = yield call(request, crawlerUrl);
-    yield put(googleLoaded({ google: response.result }, keyword));
+    yield put(googleLoaded({ googleSearchResult: response.result }, keyword));
   } catch (err) {
     yield put(googleLoadingError(err));
   }
@@ -81,11 +81,13 @@ export function* getYoutubeVideo() {
   const keyword = yield select(makeSelectKeyword());
   const youtubeState = yield select(makeSelectYoutube());
   const pageToken = youtubeState.nextPageToken || '';
-  const requestURL = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${keyword}&key=${GOOGLE_API_KEY}&maxResults=${LIMIT}&pageToken=${pageToken}`;
+  // Youtube API support those types: video, channel and playlist
+  // For testing purpose, we will get only video
+  const requestURL = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${keyword}&key=${GOOGLE_API_KEY}&maxResults=${LIMIT}&pageToken=${pageToken}`;
 
   try {
     const result = yield call(request, requestURL);
-    yield put(youtubeLoaded({ youtubeVideos: result.items }, keyword));
+    yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items }, keyword));
   } catch (err) {
     yield put(youtubeLoadingError(err));
   }

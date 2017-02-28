@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import _ from 'lodash';
 import InfiniteScroll from 'redux-infinite-scroll';
+import { pure, onlyUpdateForKeys } from 'recompose';
 
 import Block from 'components/Block';
 import Loading from 'components/Loading';
@@ -47,7 +48,6 @@ const DataContainer = Block(InfiniteScroll);
  * @return {[type]}      [description]
  */
 function mashUp(...args) {
-  // console.log('mashUp', args);
   const result = [];
   const numberItems = _.map(args, (item) => item.length);
   const maxItems = _.max(numberItems);
@@ -64,6 +64,7 @@ function mashUp(...args) {
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
+    console.log('render');
     let elements = [];
     const graphKnowledges = [];
     const search = [];
@@ -72,19 +73,22 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     const { googleKnowledges } = this.props.googleKnowledge;
     const { youtubeVideos } = this.props.youtube;
     const { googleNews } = this.props.googleNews;
-    const { google } = this.props.google;
-    let counter = 0;
-    if (googleKnowledges || youtubeVideos || googleNews || google) {
+    const { googleSearchResult } = this.props.google;
+    let counter = Date.now();
+    if (googleKnowledges || youtubeVideos || googleNews || googleSearchResult) {
       _.forEach(googleKnowledges, (item) => {
-        graphKnowledges.push(
-          <div className="grid-item" key={counter += 1}>
-            <GraphKnowledge
-              name={item.result.name}
-              description={item.result.detailedDescription && item.result.detailedDescription.articleBody}
-              image={item.result.image && item.result.image.contentUrl}
-              url={item.result.detailedDescription && item.result.detailedDescription.url}
-            />
-          </div>);
+        const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url;
+        if (moreDetailUrl) {
+          graphKnowledges.push(
+            <div className="grid-item" key={counter += 1}>
+              <GraphKnowledge
+                name={item.result.name}
+                description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
+                image={item.result.image && item.result.image.contentUrl}
+                url={moreDetailUrl}
+              />
+            </div>);
+        }
       });
       _.forEach(googleNews, (item) => {
         news.push(
@@ -97,13 +101,14 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             />
           </div>);
       });
-      _.forEach(google, (item) => {
+      _.forEach(googleSearchResult, (item) => {
         search.push(
           <div className="grid-item" key={counter += 1}>
             <GoogleResult
               title={item.title}
               description={item.description}
               url={item.url}
+              image={item.img}
             />
           </div>);
       });
@@ -114,7 +119,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
               name={item.snippet.title}
               description={item.snippet.description}
               image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-              url={`http://www.youtube.video/wathch?v=${item.id.videoId}`}
+              url={`https://www.youtube.com/watch?v=${item.id.videoId}`}
             />
           </div>);
       });
@@ -141,7 +146,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             loadingMore={this.props.loading}
             showLoader={false}
             elementIsScrollable={false}
-            threshold={150}
+            threshold={200}
           />
         }
         <Loading isLoading={this.props.loading} />
@@ -196,5 +201,9 @@ const mapStateToProps = createStructuredSelector({
   youtube: makeSelectYoutube(),
 });
 
+const OptimizedComponent = pure(HomePage);
+const HyperOptimizedComponent = onlyUpdateForKeys([
+  'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube',
+])(OptimizedComponent);
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
+export default connect(mapStateToProps, mapDispatchToProps)(HyperOptimizedComponent);

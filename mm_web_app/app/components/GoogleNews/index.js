@@ -14,6 +14,11 @@ const Wrapper = styled.section`
   background-image: url(${googleNewsIcon});
   background-repeat: no-repeat;
   background-size: 32px;
+    &:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
 `;
 
 const Anchor = styled.a`
@@ -37,6 +42,8 @@ const Description = styled.p`
 const Image = styled.img`
   object-fit contain;
   max-width: 230px;
+  float: left;
+  margin: 15px 10px 15px 0px;
 `;
 
 function GoogleNews(props) {
@@ -45,8 +52,8 @@ function GoogleNews(props) {
       <Anchor href={props.url} target="_blank">
         {props.title && <Title>{props.title}</Title>}
       </Anchor>
-      {props.description && <Description>{props.description}</Description>}
       {props.image && <Image src={props.image} alt={props.title} />}
+      {props.description && <Description>{props.description}</Description>}
     </Wrapper>
   );
 }

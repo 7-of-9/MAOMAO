@@ -14,6 +14,11 @@ const Wrapper = styled.section`
   background-image: url(${youtubeIcon});
   background-repeat: no-repeat;
   background-size: 32px;
+  &:after {
+      content: '';
+      display: block;
+      clear: both;
+  }
 `;
 
 const Anchor = styled.a`
@@ -37,6 +42,7 @@ const Title = styled.h1`
 const Description = styled.p`
   font-size: 1.2em;
   text-align: center;
+  word-break: break-all;
 `;
 
 function YoutubeVideo(props) {
