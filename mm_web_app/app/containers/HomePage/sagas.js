@@ -66,7 +66,7 @@ export function* getGoogleKnowledge() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(googleKnowledgeLoaded({ googleKnowledges: result.itemListElement }, keyword));
+    yield put(googleKnowledgeLoaded({ googleKnowledges: result.itemListElement || [] }, keyword));
   } catch (err) {
     yield put(googleKnowledgeLoadingError(err));
   }
@@ -87,7 +87,7 @@ export function* getYoutubeVideo() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items }, keyword));
+    yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, keyword));
   } catch (err) {
     yield put(youtubeLoadingError(err));
   }

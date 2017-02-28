@@ -64,7 +64,6 @@ function mashUp(...args) {
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
-    console.log('render');
     let elements = [];
     const graphKnowledges = [];
     const search = [];

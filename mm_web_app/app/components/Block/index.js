@@ -17,15 +17,33 @@ function Block(WrappedComponent) {
         gutter: 10,
         itemSelector: '.grid-item',
       });
+      // Fix position when loading image
+      setTimeout(() => {
+        this.layer = new Masonry(this.container, {
+          fitWidth: true,
+          columnWidth: 240,
+          gutter: 10,
+          itemSelector: '.grid-item',
+        });
+      }, 1000);
     }
 
     componentDidUpdate() {
+      // Fix position when loading image
       this.layer = new Masonry(this.container, {
         fitWidth: true,
         columnWidth: 240,
         gutter: 10,
         itemSelector: '.grid-item',
       });
+      setTimeout(() => {
+        this.layer = new Masonry(this.container, {
+          fitWidth: true,
+          columnWidth: 240,
+          gutter: 10,
+          itemSelector: '.grid-item',
+        });
+      }, 1000);
     }
 
     render() {
