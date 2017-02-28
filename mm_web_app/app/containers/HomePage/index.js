@@ -69,12 +69,12 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     const search = [];
     const news = [];
     const videos = [];
-    const { googleKnowledges } = this.props.googleKnowledge;
-    const { youtubeVideos } = this.props.youtube;
-    const { googleNews } = this.props.googleNews;
-    const { googleSearchResult } = this.props.google;
-    let counter = Date.now();
-    if (googleKnowledges || youtubeVideos || googleNews || googleSearchResult) {
+    const { googleKnowledges } = this.props.googleKnowledge.toJS();
+    const { youtubeVideos } = this.props.youtube.toJS();
+    const { googleNews } = this.props.googleNews.toJS();
+    const { googleSearchResult } = this.props.google.toJS();
+    let counter = 0;
+    if (googleKnowledges.length || youtubeVideos.length || googleNews.length || googleSearchResult.length) {
       _.forEach(googleKnowledges, (item) => {
         const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url;
         if (moreDetailUrl) {

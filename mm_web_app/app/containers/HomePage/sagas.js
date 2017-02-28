@@ -29,7 +29,7 @@ export function* getGoogleSearchResult() {
   const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
     const response = yield call(request, crawlerUrl);
-    yield put(googleLoaded({ googleSearchResult: response.result }, keyword));
+    yield put(googleLoaded(response.result, keyword));
   } catch (err) {
     yield put(googleLoadingError(err));
   }
@@ -49,7 +49,7 @@ export function* getGoogleNewsResult() {
   const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
     const response = yield call(request, crawlerUrl);
-    yield put(googleNewsLoaded({ googleNews: response.result }, keyword));
+    yield put(googleNewsLoaded(response.result, keyword));
   } catch (err) {
     yield put(googleNewsLoadingError(err));
   }
@@ -66,7 +66,7 @@ export function* getGoogleKnowledge() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(googleKnowledgeLoaded({ googleKnowledges: result.itemListElement || [] }, keyword));
+    yield put(googleKnowledgeLoaded(result.itemListElement || [], keyword));
   } catch (err) {
     yield put(googleKnowledgeLoadingError(err));
   }
@@ -80,7 +80,7 @@ export function* getYoutubeVideo() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
   const youtubeState = yield select(makeSelectYoutube());
-  const pageToken = youtubeState.nextPageToken || '';
+  const pageToken = youtubeState.get('nextPageToken') || '';
   // Youtube API support those types: video, channel and playlist
   // For testing purpose, we will get only video
   const requestURL = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${keyword}&key=${GOOGLE_API_KEY}&maxResults=${LIMIT}&pageToken=${pageToken}`;

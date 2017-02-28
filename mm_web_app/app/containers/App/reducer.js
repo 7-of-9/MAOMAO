@@ -28,12 +28,19 @@ import {
   YOUTUBE_SEARCH_SUCCESS,
 } from './constants';
 
-const initialGoogleState = {};
-const initialGoogleNewsState = {};
-const initialGoogleKnowledgeState = {};
-const initialYoutubeState = {
+const initialGoogleState = fromJS({
+  googleSearchResult: [],
+});
+const initialGoogleNewsState = fromJS({
+  googleNews: [],
+});
+const initialGoogleKnowledgeState = fromJS({
+  googleKnowledges: [],
+});
+const initialYoutubeState = fromJS({
   nextPageToken: '',
-};
+  youtubeVideos: [],
+});
 
 // The initial state of the App
 const initialState = fromJS({
@@ -61,7 +68,7 @@ function appReducer(state = initialState, action) {
     case GOOGLE_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
-        .updateIn(['data', 'google'], () => action.data);
+        .updateIn(['data', 'google', 'googleSearchResult'], (items) => items.push(...action.data));
     case GOOGLE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
@@ -72,7 +79,7 @@ function appReducer(state = initialState, action) {
     case GOOGLE_KNOWLEDGE_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
-        .updateIn(['data', 'knowledge'], () => action.data);
+        .updateIn(['data', 'knowledge', 'googleKnowledges'], (items) => items.push(...action.data));
     case GOOGLE_KNOWLEDGE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
@@ -83,7 +90,7 @@ function appReducer(state = initialState, action) {
     case GOOGLE_NEWS_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleNewsLoading'], () => false)
-        .updateIn(['data', 'news'], () => action.data);
+        .updateIn(['data', 'news', 'googleNews'], (items) => items.push(...action.data));
     case GOOGLE_NEWS_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleNewsLoading'], () => false)
@@ -93,7 +100,8 @@ function appReducer(state = initialState, action) {
     case YOUTUBE_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isYoutubeLoading'], () => false)
-        .updateIn(['data', 'youtube'], () => action.data);
+        .updateIn(['data', 'youtube', 'nextPageToken'], () => action.data.nextPageToken)
+        .updateIn(['data', 'youtube', 'youtubeVideos'], (items) => items.push(...action.data.youtubeVideos));
     case YOUTUBE_SEARCH_ERROR:
       return state
       .updateIn(['loading', 'isYoutubeLoading'], () => false)
