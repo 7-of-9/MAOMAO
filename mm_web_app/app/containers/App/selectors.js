@@ -25,6 +25,16 @@ const makeSelectYoutube = () => createSelector(
   (globalState) => globalState.getIn(['data', 'youtube'])
 );
 
+const makeSelectGoogle = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['data', 'google'])
+);
+
+const makeSelectGoogleNews = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['data', 'news'])
+);
+
 const makeSelectLocationState = () => {
   let prevRoutingState;
   let prevRoutingStateJS;
@@ -44,6 +54,8 @@ const makeSelectLocationState = () => {
 export {
   selectGlobal,
   makeSelectGoogleKnowledge,
+  makeSelectGoogle,
+  makeSelectGoogleNews,
   makeSelectYoutube,
   makeSelectLoading,
   makeSelectError,

@@ -10,7 +10,7 @@ import googleIcon from './images/google.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #222;
+  background: #795548;
   background-image: url(${googleIcon});
   background-repeat: no-repeat;
   background-size: 32px;

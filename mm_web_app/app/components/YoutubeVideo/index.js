@@ -10,7 +10,7 @@ import youtubeIcon from './images/youtube.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #837664;
+  background: #4caf50;
   background-image: url(${youtubeIcon});
   background-repeat: no-repeat;
   background-size: 32px;

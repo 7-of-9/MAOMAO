@@ -22,8 +22,8 @@ import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
 import GraphKnowledge from 'components/GraphKnowledge';
 import LogoIcon from 'components/LogoIcon';
-// import GoogleResult from 'components/GoogleResult';
-// import GoogleNews from 'components/GoogleNews';
+import GoogleResult from 'components/GoogleResult';
+import GoogleNews from 'components/GoogleNews';
 // import FacebookGraph from 'components/FacebookGraph';
 // import Imgur from 'components/Imgur';
 // import Instagram from 'components/Instagram';
@@ -31,8 +31,12 @@ import LogoIcon from 'components/LogoIcon';
 import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
-import { makeSelectLoading, makeSelectGoogleKnowledge, makeSelectYoutube } from '../App/selectors';
-import { googleKnowledgeSearch, youtubeSearch, cleanSearchResult } from '../App/actions';
+import {
+  makeSelectLoading, makeSelectGoogle, makeSelectGoogleNews, makeSelectGoogleKnowledge, makeSelectYoutube,
+} from '../App/selectors';
+import {
+   googleKnowledgeSearch, googleSearch, googleNewsSearch, youtubeSearch, cleanSearchResult,
+} from '../App/actions';
 import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
@@ -43,6 +47,7 @@ const DataContainer = Block(InfiniteScroll);
  * @return {[type]}      [description]
  */
 function mashUp(...args) {
+  // console.log('mashUp', args);
   const result = [];
   const numberItems = _.map(args, (item) => item.length);
   const maxItems = _.max(numberItems);
@@ -61,12 +66,16 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
   render() {
     let elements = [];
     const graphKnowledges = [];
+    const search = [];
+    const news = [];
     const videos = [];
-    const { itemListElement } = this.props.googleKnowledge;
-    const { items } = this.props.youtube;
-    let counter = Date.now();
-    if (itemListElement || items) {
-      _.forEach(itemListElement, (item) => {
+    const { googleKnowledges } = this.props.googleKnowledge;
+    const { youtubeVideos } = this.props.youtube;
+    const { googleNews } = this.props.googleNews;
+    const { google } = this.props.google;
+    let counter = 0;
+    if (googleKnowledges || youtubeVideos || googleNews || google) {
+      _.forEach(googleKnowledges, (item) => {
         graphKnowledges.push(
           <div className="grid-item" key={counter += 1}>
             <GraphKnowledge
@@ -77,7 +86,28 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             />
           </div>);
       });
-      _.forEach(items, (item) => {
+      _.forEach(googleNews, (item) => {
+        news.push(
+          <div className="grid-item" key={counter += 1}>
+            <GoogleNews
+              title={item.title}
+              description={item.description}
+              url={item.url}
+              image={item.img}
+            />
+          </div>);
+      });
+      _.forEach(google, (item) => {
+        search.push(
+          <div className="grid-item" key={counter += 1}>
+            <GoogleResult
+              title={item.title}
+              description={item.description}
+              url={item.url}
+            />
+          </div>);
+      });
+      _.forEach(youtubeVideos, (item) => {
         videos.push(
           <div className="grid-item" key={counter += 1}>
             <YoutubeVideo
@@ -90,7 +120,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       });
     }
     // Mash up the result
-    elements = mashUp(graphKnowledges, videos);
+    elements = mashUp(graphKnowledges, news, search, videos);
     return (
       <div>
         <Helmet
@@ -124,6 +154,8 @@ HomePage.propTypes = {
   loadMore: PropTypes.func,
   onChange: PropTypes.func,
   doSearch: PropTypes.func,
+  google: PropTypes.object.isRequired,
+  googleNews: PropTypes.object.isRequired,
   googleKnowledge: PropTypes.object.isRequired,
   youtube: PropTypes.object.isRequired,
   loading: PropTypes.bool.isRequired,
@@ -134,6 +166,8 @@ export function mapDispatchToProps(dispatch) {
     loadMore: () => {
       dispatch(nextPage());
       dispatch(googleKnowledgeSearch());
+      dispatch(googleSearch());
+      dispatch(googleNewsSearch());
       dispatch(youtubeSearch());
     },
     onChange: (e) => {
@@ -145,6 +179,8 @@ export function mapDispatchToProps(dispatch) {
       }
       dispatch(resetPage());
       dispatch(googleKnowledgeSearch());
+      dispatch(googleSearch());
+      dispatch(googleNewsSearch());
       dispatch(youtubeSearch());
       dispatch(cleanSearchResult());
     },
@@ -154,6 +190,8 @@ export function mapDispatchToProps(dispatch) {
 const mapStateToProps = createStructuredSelector({
   keyword: makeSelectKeyword(),
   loading: makeSelectLoading(),
+  google: makeSelectGoogle(),
+  googleNews: makeSelectGoogleNews(),
   googleKnowledge: makeSelectGoogleKnowledge(),
   youtube: makeSelectYoutube(),
 });

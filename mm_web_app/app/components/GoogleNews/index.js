@@ -10,7 +10,7 @@ import googleNewsIcon from './images/google-news.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #222;
+  background: #009688;
   background-image: url(${googleNewsIcon});
   background-repeat: no-repeat;
   background-size: 32px;

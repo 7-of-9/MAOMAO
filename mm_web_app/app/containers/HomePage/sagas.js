@@ -6,10 +6,10 @@ import {
  } from 'containers/App/constants';
 import {
   googleKnowledgeLoaded, googleKnowledgeLoadingError, youtubeLoaded, youtubeLoadingError,
-  googleLoaded, googleLoadingError,
+  googleLoaded, googleLoadingError, googleNewsLoaded, googleNewsLoadingError,
  } from 'containers/App/actions';
 
-import request, { rawRequest } from 'utils/request';
+import request from 'utils/request';
 import { makeSelectKeyword, makeSelectPageNumber } from 'containers/HomePage/selectors';
 import { makeSelectYoutube } from 'containers/App/selectors';
 
@@ -28,8 +28,8 @@ export function* getGoogleSearchResult() {
   });
   const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
-    const response = yield call(rawRequest, crawlerUrl);
-    yield put(googleLoaded(response.result || {}, keyword));
+    const response = yield call(request, crawlerUrl);
+    yield put(googleLoaded({ google: response.result }, keyword));
   } catch (err) {
     yield put(googleLoadingError(err));
   }
@@ -48,10 +48,10 @@ export function* getGoogleNewsResult() {
   });
   const crawlerUrl = `${CRALWER_API_URL}?${query}`;
   try {
-    const response = yield call(rawRequest, crawlerUrl);
-    yield put(googleLoaded(response.result || {}, keyword));
+    const response = yield call(request, crawlerUrl);
+    yield put(googleNewsLoaded({ googleNews: response.result }, keyword));
   } catch (err) {
-    yield put(googleLoadingError(err));
+    yield put(googleNewsLoadingError(err));
   }
 }
 
@@ -66,7 +66,7 @@ export function* getGoogleKnowledge() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(googleKnowledgeLoaded(result, keyword));
+    yield put(googleKnowledgeLoaded({ googleKnowledges: result.itemListElement }, keyword));
   } catch (err) {
     yield put(googleKnowledgeLoadingError(err));
   }
@@ -85,7 +85,7 @@ export function* getYoutubeVideo() {
 
   try {
     const result = yield call(request, requestURL);
-    yield put(youtubeLoaded(result, keyword));
+    yield put(youtubeLoaded({ youtubeVideos: result.items }, keyword));
   } catch (err) {
     yield put(youtubeLoadingError(err));
   }
