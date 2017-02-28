@@ -16,6 +16,7 @@ using System.Diagnostics;
 using static mm_svc.Terms.Correlations;
 using mm_svc;
 using System.Collections;
+using System.Data.Entity;
 
 namespace wowmao
 {
@@ -403,7 +404,7 @@ namespace wowmao
         {
             // load the various paths to root (multiple leaf terms) that the topic appears in
             this.Cursor = Cursors.WaitCursor;
-            var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(e.term_id, sample_size: 50);
+            var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(e.term_id, e.sample_size);
             this.rootPathViewer1.AddTermPaths(paths_with_topic);
             this.Cursor = Cursors.Default;
         }
@@ -422,16 +423,21 @@ namespace wowmao
                 if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
                 {
-                    var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(tag.ut.term);
-                    this.rootPathViewer1.AddTermPaths(root_paths);
+                    using (var db = mm02Entities.Create()) {
+                        // refresh term paths to root data (including PtR term topic info)
+                        var term = db.terms.AsNoTracking().Include(x => x.gt_path_to_root1.Select(y => y.term))
+                                     .Where(p => p.id == tag.ut.term.id).FirstOrDefaultNoLock();
+                        var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);// tag.ut.term);
+                        this.rootPathViewer1.AddTermPaths(root_paths);
 
-                    var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
-                    txtTermParents.Text = "TOPICS:\r\n";
-                    parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
-                    txtTermParents.AppendText("\r\nSUGGESTED:\r\n");
-                    parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
-                    txtTermParents.Select(0, 0);
-                    txtTermParents.ScrollToCaret();
+                        var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+                        txtTermParents.Text = "TOPICS:\r\n";
+                        parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                        txtTermParents.AppendText("\r\nSUGGESTED:\r\n");
+                        parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                        txtTermParents.Select(0, 0);
+                        txtTermParents.ScrollToCaret();
+                    }
                 }
             }
             this.Cursor = Cursors.Default;

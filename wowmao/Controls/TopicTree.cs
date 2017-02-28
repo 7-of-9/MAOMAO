@@ -24,10 +24,14 @@ namespace wowmao.Controls
         private ToolTip toolTip1;
         private ToolStripMenuItem mnuExcludeLink;
         private ToolStripMenuItem mnuRootTopic;
+        private ToolStripMenuItem mnViewPathsContaining;
+        private ToolStripMenuItem mnuViewPaths10;
+        private ToolStripMenuItem mnuViewPaths50;
+        private ToolStripMenuItem menuViewPaths100;
         private int count;
 
         public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
-        public class OnNodeSelectEventArgs : EventArgs { public long term_id { get; set; } }
+        public class OnNodeSelectEventArgs : EventArgs { public long term_id { get; set; } public int sample_size { get; set; } }
 
         public TopicTree() {
             InitializeComponent();
@@ -129,12 +133,11 @@ namespace wowmao.Controls
         }
 
         // populate sample paths to root in root path viewer
-        private void tvw_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            if (tvw.SelectedNode == null) return;
-            var tag = tvw.SelectedNode.Tag as NodeTag;
-            OnNodeSelect?.Invoke(this.GetType(), new OnNodeSelectEventArgs() { term_id = tag.t.id });
-        }
+        private void mnViewPathsContaining_Click(object sender, EventArgs e) { }
+        private void tvw_AfterSelect(object sender, TreeViewEventArgs e) { }
+        private void mnuViewPaths10_Click(object sender, EventArgs e) { if (tvw.SelectedNode == null) return; OnNodeSelect?.Invoke(this.GetType(), new OnNodeSelectEventArgs() { term_id = (tvw.SelectedNode.Tag as NodeTag).t.id, sample_size = 10 }); }
+        private void mnuViewPaths50_Click(object sender, EventArgs e) { if (tvw.SelectedNode == null) return; OnNodeSelect?.Invoke(this.GetType(), new OnNodeSelectEventArgs() { term_id = (tvw.SelectedNode.Tag as NodeTag).t.id, sample_size = 50 }); }
+        private void menuViewPaths100_Click(object sender, EventArgs e) { if (tvw.SelectedNode == null) return; OnNodeSelect?.Invoke(this.GetType(), new OnNodeSelectEventArgs() { term_id = (tvw.SelectedNode.Tag as NodeTag).t.id, sample_size=100 }); }
 
         // marks the link as disabled -- retains terms as topics, just prevents the link being valid
         private void mnuExcludeLink_Click(object sender, EventArgs e) {
@@ -210,10 +213,14 @@ namespace wowmao.Controls
             this.mnuSep1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuToggleTopic = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuExcludeLink = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuRootTopic = new System.Windows.Forms.ToolStripMenuItem();
             this.cmdRefresh = new System.Windows.Forms.Button();
             this.lblInfo = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.mnuRootTopic = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnViewPathsContaining = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuViewPaths10 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuViewPaths50 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuViewPaths100 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -236,36 +243,44 @@ namespace wowmao.Controls
             this.mnuSep1,
             this.mnuToggleTopic,
             this.mnuExcludeLink,
-            this.mnuRootTopic});
+            this.mnuRootTopic,
+            this.mnViewPathsContaining});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(207, 98);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(203, 142);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
             // 
             this.mnuInfo.Enabled = false;
             this.mnuInfo.Name = "mnuInfo";
-            this.mnuInfo.Size = new System.Drawing.Size(152, 22);
+            this.mnuInfo.Size = new System.Drawing.Size(202, 22);
             this.mnuInfo.Text = "(info)";
             // 
             // mnuSep1
             // 
             this.mnuSep1.Name = "mnuSep1";
-            this.mnuSep1.Size = new System.Drawing.Size(149, 6);
+            this.mnuSep1.Size = new System.Drawing.Size(199, 6);
             // 
             // mnuToggleTopic
             // 
             this.mnuToggleTopic.Name = "mnuToggleTopic";
-            this.mnuToggleTopic.Size = new System.Drawing.Size(206, 22);
+            this.mnuToggleTopic.Size = new System.Drawing.Size(202, 22);
             this.mnuToggleTopic.Text = "Not a Topic!";
             this.mnuToggleTopic.Click += new System.EventHandler(this.mnuToggleTopic_Click);
             // 
             // mnuExcludeLink
             // 
             this.mnuExcludeLink.Name = "mnuExcludeLink";
-            this.mnuExcludeLink.Size = new System.Drawing.Size(206, 22);
-            this.mnuExcludeLink.Text = "Enable/Disable topic_link";
+            this.mnuExcludeLink.Size = new System.Drawing.Size(202, 22);
+            this.mnuExcludeLink.Text = "Toggle disable_link";
             this.mnuExcludeLink.Click += new System.EventHandler(this.mnuExcludeLink_Click);
+            // 
+            // mnuRootTopic
+            // 
+            this.mnuRootTopic.Name = "mnuRootTopic";
+            this.mnuRootTopic.Size = new System.Drawing.Size(202, 22);
+            this.mnuRootTopic.Text = "Toggle ROOT";
+            this.mnuRootTopic.Click += new System.EventHandler(this.mnuRootTopic_Click);
             // 
             // cmdRefresh
             // 
@@ -287,12 +302,37 @@ namespace wowmao.Controls
             this.lblInfo.TabIndex = 2;
             this.lblInfo.Text = "......";
             // 
-            // mnuRootTopic
+            // mnViewPathsContaining
             // 
-            this.mnuRootTopic.Name = "mnuRootTopic";
-            this.mnuRootTopic.Size = new System.Drawing.Size(206, 22);
-            this.mnuRootTopic.Text = "Set as ROOT Topic";
-            this.mnuRootTopic.Click += new System.EventHandler(this.mnuRootTopic_Click);
+            this.mnViewPathsContaining.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuViewPaths10,
+            this.mnuViewPaths50,
+            this.menuViewPaths100});
+            this.mnViewPathsContaining.Name = "mnViewPathsContaining";
+            this.mnViewPathsContaining.Size = new System.Drawing.Size(202, 22);
+            this.mnViewPathsContaining.Text = "View Paths Containing...";
+            this.mnViewPathsContaining.Click += new System.EventHandler(this.mnViewPathsContaining_Click);
+            // 
+            // mnuViewPaths10
+            // 
+            this.mnuViewPaths10.Name = "mnuViewPaths10";
+            this.mnuViewPaths10.Size = new System.Drawing.Size(152, 22);
+            this.mnuViewPaths10.Text = "10";
+            this.mnuViewPaths10.Click += new System.EventHandler(this.mnuViewPaths10_Click);
+            // 
+            // mnuViewPaths50
+            // 
+            this.mnuViewPaths50.Name = "mnuViewPaths50";
+            this.mnuViewPaths50.Size = new System.Drawing.Size(152, 22);
+            this.mnuViewPaths50.Text = "50";
+            this.mnuViewPaths50.Click += new System.EventHandler(this.mnuViewPaths50_Click);
+            // 
+            // menuViewPaths100
+            // 
+            this.menuViewPaths100.Name = "menuViewPaths100";
+            this.menuViewPaths100.Size = new System.Drawing.Size(152, 22);
+            this.menuViewPaths100.Text = "100";
+            this.menuViewPaths100.Click += new System.EventHandler(this.menuViewPaths100_Click);
             // 
             // TopicTree
             // 
@@ -309,5 +349,6 @@ namespace wowmao.Controls
 
         }
 
+    
     }
 }
