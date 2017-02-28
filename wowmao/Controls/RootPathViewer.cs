@@ -103,7 +103,7 @@ namespace wowmao.Controls
 
                 // fetch
                 using (var db = mm02Entities.Create()) {
-                    var root_paths = GoldenPaths.GetStoredPathsToRoot(db.terms.Find(term_id));
+                    var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(db.terms.Find(term_id));
                     all_paths.AddRange(root_paths);
                 }
             }
@@ -254,6 +254,7 @@ namespace wowmao.Controls
             //255 - c.B);
             //return invertedColor;
 
+            if (c.R > 190 && c.G > 190) return Color.Black;
             var avg = (c.R + c.G + c.G) / 255.0;
             if (avg > 100) return Color.Black;
             else return Color.White;

@@ -59,11 +59,11 @@ namespace wowmao
             this.lvwUrls.ColumnClick += LvwUrls_ColumnClick;
 
             this.rootPathViewer1.OnTopicToggled += RootPathViewer1_OnTopicToggled;
+            this.topicTree1.OnNodeSelect += TopicTree1_OnNodeSelect;
 
             cmdSearchURLs_Click(null, null);
         }
 
-       
         private void RootPathViewer1_OnTopicToggled(object sender, Controls.RootPathViewer.OnTopicToggledEventArgs e)
         {
             this.txtGtSearch.Text = e.term_name;
@@ -302,56 +302,55 @@ namespace wowmao
             this.Cursor = Cursors.Default;
             GC.Collect(2);
         }
-   
-   
-        // walk & process...
-        private bool walking = false;
-        private void cmdWalk_Click(object sender, EventArgs e)
+
+        // walk parallel
+        private void cmdWalkParallel_Click(object sender, EventArgs e)
         {
-            // parallel mode
             var urls_to_process = new List<url>();
-            for(int i=0; i < lvwUrls.Items.Count; i++)
+            for (int i = 0; i < lvwUrls.Items.Count; i++)
                 urls_to_process.Add(lvwUrls.Items[i].Tag as url);
             var remaining = urls_to_process.Count;
             var reprocess = chkReprocess.Checked;
-
             this.Cursor = Cursors.WaitCursor;
-
             Parallel.ForEach(urls_to_process, new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
                 var a = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess);
                 this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));
                 Application.DoEvents();
             });
-
             this.Cursor = Cursors.Default;
+        }
 
-            //var sw = new Stopwatch(); sw.Start();
-            //if (!walking) {
-            //    walking = true;
-            //    cmdWalk.Text = "STOP";
-            //    this.Cursor = Cursors.WaitCursor;
-            //    int n = 0;
-            //    for (int i = lvwUrls.SelectedIndices.Count > 0 ? lvwUrls.SelectedIndices[0] : 0; i < lvwUrls.Items.Count; i++) {
-            //        if (!walking) break;
+        // walk sequential
+        private bool walking = false;
+        private void cmdWalk_Click(object sender, EventArgs e)
+        {
+            var sw = new Stopwatch(); sw.Start();
+            if (!walking) {
+                walking = true;
+                cmdWalk.Text = "STOP";
+                this.Cursor = Cursors.WaitCursor;
+                int n = 0;
+                for (int i = lvwUrls.SelectedIndices.Count > 0 ? lvwUrls.SelectedIndices[0] : 0; i < lvwUrls.Items.Count; i++) {
+                    if (!walking) break;
 
-            //        lvwUrls.Items[i].Selected = true; // process
-            //        lvwUrls.Items[i].EnsureVisible();
-            //        Application.DoEvents();
-            //        n++;
+                    lvwUrls.Items[i].Selected = true; // process
+                    lvwUrls.Items[i].EnsureVisible();
+                    Application.DoEvents();
+                    n++;
 
-            //        var url_per_sec = n / sw.Elapsed.TotalSeconds;
-            //        lblWalkInfo.Text = $"Walking... url_per_sec={url_per_sec.ToString("0.00")}";
-            //    }
-            //    this.Cursor = Cursors.Default;
-            //    cmdWalk.Text = "Walk...";
-            //    walking = false;
-            //    GC.Collect(2);
-            //}
-            //else {
-            //    cmdWalk.Text = "Walk...";
-            //    walking = false;
-            //    GC.Collect(2);
-            //}
+                    var url_per_sec = n / sw.Elapsed.TotalSeconds;
+                    lblWalkInfo.Text = $"Walking... url_per_sec={url_per_sec.ToString("0.00")}";
+                }
+                this.Cursor = Cursors.Default;
+                cmdWalk.Text = "Walk...";
+                walking = false;
+                GC.Collect(2);
+            }
+            else {
+                cmdWalk.Text = "Walk...";
+                walking = false;
+                GC.Collect(2);
+            }
         }
 
         private void cmdGtSearch_Click(object sender, EventArgs e)
@@ -389,14 +388,24 @@ namespace wowmao
             root_paths.ForEach(p => Trace.WriteLine(gt.child_term.name + " // " + string.Join(" / ", p.Take(p.Count - 0).Select(p2 => p2.t.name)) + "\r\n"));
 
             if (gt.child_term.IS_TOPIC) {
-                // todo -- don't load the topic's rooth paths; instead load the various root paths (multiple terms) that the topic appears in
-                this.rootPathViewer1.AddTermPaths(null);
+                // load the various paths to root (multiple leaf terms) that the topic appears in
+                var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(gt.child_term_id, sample_size: 50);
+                this.rootPathViewer1.AddTermPaths(paths_with_topic);
             }
             else {
+                // load the non-topic term's paths to root
                 this.rootPathViewer1.AddTermPaths(root_paths);
             }
             this.Cursor = Cursors.Default;
+        }
 
+        private void TopicTree1_OnNodeSelect(object sender, Controls.TopicTree.OnNodeSelectEventArgs e)
+        {
+            // load the various paths to root (multiple leaf terms) that the topic appears in
+            this.Cursor = Cursors.WaitCursor;
+            var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(e.term_id, sample_size: 50);
+            this.rootPathViewer1.AddTermPaths(paths_with_topic);
+            this.Cursor = Cursors.Default;
         }
 
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
@@ -413,7 +422,7 @@ namespace wowmao
                 if (tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_0 ||
                     tag.ut.term.term_type_id == (int)g.TT.WIKI_NS_14)
                 {
-                    var root_paths = GoldenPaths.GetStoredPathsToRoot(tag.ut.term);
+                    var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(tag.ut.term);
                     this.rootPathViewer1.AddTermPaths(root_paths);
 
                     var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
@@ -568,5 +577,6 @@ namespace wowmao
                 loaded_topic_tree = true;
             }
         }
+
     }
 }

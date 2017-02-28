@@ -26,11 +26,11 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
-                var root_paths = GoldenPaths.GetStoredPathsToRoot(term);
+                var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);
                 if (root_paths.Count == 0) {
                     GoldenPaths.ProcessAndRecordPathsToRoot(term_id);
                     term = g.RetryMaxOrThrow(() => db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p2 => p2.id == term_id));
-                    root_paths = GoldenPaths.GetStoredPathsToRoot(term);
+                    root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);
                 }
                 return root_paths;
             }
@@ -45,9 +45,40 @@ namespace mm_svc.Terms
         }
 
         //
-        // Parses stored paths to root
+        // Parses stored paths to root that contain the supplied term anywhere in the path (apart from leaf term)
         //
-        public static List<List<TermPath>> GetStoredPathsToRoot(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
+        public static List<List<TermPath>> GetStoredPathsToRoot_ContainingTerm(long term_id, int sample_size = 100)
+        {
+            var stemmer = new Porter2_English();
+            var paths = new ConcurrentBag<List<TermPath>>();
+            using (var db = mm02Entities.Create()) {
+                var term_ids_and_paths_qry = db.gt_path_to_root.AsNoTracking()
+                                               .Where(p => p.seq_term_id == term_id)
+                                               .Select(p => new { leaf_term_id = p.term_id, path_no = p.path_no })
+                                               .Distinct()
+                                               .OrderBy(p => Guid.NewGuid())
+                                               .Take(sample_size);
+                Debug.WriteLine(term_ids_and_paths_qry.ToString());
+                var sample_paths = term_ids_and_paths_qry.ToListNoLock();
+
+                Parallel.ForEach(sample_paths, new ParallelOptions() { MaxDegreeOfParallelism = 16 }, path_info => {
+                    using (var db2 = mm02Entities.Create()) {
+                        var leaf_term = db2.terms.Find(path_info.leaf_term_id);
+                        var path_qry = db2.gt_path_to_root.Where(p => p.term_id == path_info.leaf_term_id && p.path_no == path_info.path_no).OrderBy(p => p.seq);
+                        //Debug.WriteLine(path_qry.ToString());
+                        var path = path_qry.ToListNoLock();
+                        var term_paths = GetTermPathList(leaf_term, stemmer, path);
+                        paths.Add(term_paths);
+                    }
+                });
+            }
+            return paths.ToList();
+        }
+
+        //
+        // Parses stored paths to root for supplied term - i.e. paths to root for the supplied leaf term
+        //
+        public static List<List<TermPath>> GetStoredPathsToRoot_ForTerm(term term) // expects populated gt_path (paths_to_root == gt_path_to_root1)
         {
             var stemmer = new Porter2_English();
             term.stemmed = stemmer.stem(term.name);
@@ -59,20 +90,25 @@ namespace mm_svc.Terms
 
                 // gt_path_to_root -> List<TermPath>
                 var path = all_paths.Where(p => p.path_no == path_no);
-                var gl = path.Count();
-                var term_paths = new List<TermPath>() { new TermPath() { t = term, gl = gl-- } };
-                foreach (var seq_term in path.OrderBy(p => p.seq).Select(p => p.term)) {
-                    seq_term.stemmed = stemmer.stem(seq_term.name);
-                    term_paths.Add(new TermPath() { t = seq_term,  gl = gl-- });
-                }
-
-                // golden_level normalized wrt. path to root
-                term_paths.ForEach(p => p.gl_norm = (double)p.gl / term_paths.Count);
-                term_paths.ForEach(p => p.gl_inv = term_paths.Count - p.gl);
-
+                var term_paths = GetTermPathList(term, stemmer, path);
                 paths.Add(term_paths);
             }
             return paths.OrderByDescending(p => string.Join(",", p.Select(p2 => p2.t.name))).ToList();
+        }
+
+        private static List<TermPath> GetTermPathList(term term, Porter2_English stemmer, IEnumerable<gt_path_to_root> path)
+        {
+            var gl = path.Count();
+            var term_paths = new List<TermPath>() { new TermPath() { t = term, gl = gl-- } };
+            foreach (var seq_term in path.OrderBy(p => p.seq).Select(p => p.term)) {
+                seq_term.stemmed = stemmer.stem(seq_term.name);
+                term_paths.Add(new TermPath() { t = seq_term, gl = gl-- });
+            }
+
+            // golden_level normalized wrt. path to root
+            term_paths.ForEach(p => p.gl_norm = (double)p.gl / term_paths.Count);
+            term_paths.ForEach(p => p.gl_inv = term_paths.Count - p.gl);
+            return term_paths;
         }
 
         //

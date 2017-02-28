@@ -87,6 +87,7 @@
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cmdSearchURLs = new System.Windows.Forms.Button();
+            this.cmdWalkParallel = new System.Windows.Forms.Button();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.tabTrees.SuspendLayout();
@@ -251,6 +252,7 @@
             // 
             this.topicTree1.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.topicTree1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topicTree1.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.topicTree1.Location = new System.Drawing.Point(3, 3);
             this.topicTree1.Name = "topicTree1";
             this.topicTree1.Size = new System.Drawing.Size(480, 295);
@@ -476,6 +478,7 @@
             // 
             // pnlURL_List
             // 
+            this.pnlURL_List.Controls.Add(this.cmdWalkParallel);
             this.pnlURL_List.Controls.Add(this.cmdWalkRndClassify);
             this.pnlURL_List.Controls.Add(this.chkReprocess);
             this.pnlURL_List.Controls.Add(this.chkExcludeProcessed);
@@ -582,18 +585,18 @@
             "100",
             "1000",
             "100000"});
-            this.cboTop.Location = new System.Drawing.Point(142, 1);
+            this.cboTop.Location = new System.Drawing.Point(149, 1);
             this.cboTop.Name = "cboTop";
-            this.cboTop.Size = new System.Drawing.Size(79, 21);
+            this.cboTop.Size = new System.Drawing.Size(72, 21);
             this.cboTop.TabIndex = 7;
             // 
             // cmdWalk
             // 
-            this.cmdWalk.Location = new System.Drawing.Point(89, 3);
+            this.cmdWalk.Location = new System.Drawing.Point(57, 2);
             this.cmdWalk.Name = "cmdWalk";
-            this.cmdWalk.Size = new System.Drawing.Size(52, 19);
+            this.cmdWalk.Size = new System.Drawing.Size(38, 19);
             this.cmdWalk.TabIndex = 6;
-            this.cmdWalk.Text = "walk...";
+            this.cmdWalk.Text = "walk";
             this.cmdWalk.UseVisualStyleBackColor = true;
             this.cmdWalk.Click += new System.EventHandler(this.cmdWalk_Click);
             // 
@@ -676,13 +679,23 @@
             // 
             // cmdSearchURLs
             // 
-            this.cmdSearchURLs.Location = new System.Drawing.Point(3, 3);
+            this.cmdSearchURLs.Location = new System.Drawing.Point(3, 2);
             this.cmdSearchURLs.Name = "cmdSearchURLs";
-            this.cmdSearchURLs.Size = new System.Drawing.Size(84, 19);
+            this.cmdSearchURLs.Size = new System.Drawing.Size(52, 19);
             this.cmdSearchURLs.TabIndex = 3;
-            this.cmdSearchURLs.Text = "Search meta:";
+            this.cmdSearchURLs.Text = "Search:";
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
+            // 
+            // cmdWalkParallel
+            // 
+            this.cmdWalkParallel.Location = new System.Drawing.Point(96, 2);
+            this.cmdWalkParallel.Name = "cmdWalkParallel";
+            this.cmdWalkParallel.Size = new System.Drawing.Size(51, 19);
+            this.cmdWalkParallel.TabIndex = 15;
+            this.cmdWalkParallel.Text = "walk(P)";
+            this.cmdWalkParallel.UseVisualStyleBackColor = true;
+            this.cmdWalkParallel.Click += new System.EventHandler(this.cmdWalkParallel_Click);
             // 
             // frmMain
             // 
@@ -791,6 +804,7 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private Controls.TopicTree topicTree1;
+        private System.Windows.Forms.Button cmdWalkParallel;
     }
 }
 

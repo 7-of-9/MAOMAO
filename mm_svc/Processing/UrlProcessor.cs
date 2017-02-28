@@ -140,9 +140,10 @@ namespace mm_svc
                 //        this full walk needs really to run *after each editorial update*
                 //        it should also be preceded by a full delete of the topic tree! (if removing topics during editorializaiton)
                 //
-                //  TODO: want TopicTree refresh, want context menu to remove Topic flag from term -- should also delete the link from topic_link table
-                //        want also to be able to mark a topic_link as "exclude" (not delete; different from removing Topic flag) - to mark
+                //  (done) TopicTree refresh, w/ context menu to remove Topic flag from term -- should also delete the link from topic_link table
+                //        also to be able to mark a topic_link as "disabled" (not delete; different from removing Topic flag) - to mark
                 //        a specific link as not appropriate, etc.
+                // ****
                 //
                 //  TODO (2): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
@@ -153,6 +154,9 @@ namespace mm_svc
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
                 //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
                 //
+                // >>
+                // .... MIGRATION OF EDITORIAL TERMS TO PROD? soon time to try running wowmao against prod...? 
+                // >>
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
                     // stemming, w/ contains

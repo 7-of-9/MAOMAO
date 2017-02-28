@@ -121,27 +121,33 @@ namespace mm_svc.Terms
                                     parent_term_id = parent_topic.id,
                                     max_distance = distances.Max(),
                                     min_distance = distances.Min(),
+                                    disabled = distances.Min() > 3,
                                     seen_count = 1,
                                 };
                                 db.topic_link.Add(new_link);
-                                db.SaveChanges_IgnoreDupeKeyEx();
+                                db.SaveChanges_IgnoreDupeKeyEx(); 
                                 //db.SaveChangesTraceValidationErrors();
                                 Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
-                                //
-                                // inc seen count - heuristic for how important this link is
-                                //
-                                topic_link.seen_count++;
-                                db.SaveChanges_IgnoreDupeKeyEx();
+                                //try {
+                                    // increase seen count - heuristic for how important this link is
+                                    topic_link.seen_count++;
+                                    db.SaveChangesTraceValidationErrors(); //** ???
 
-                                // update existing topic link - min/max distances
-                                topic_link.max_distance = Math.Max(topic_link.max_distance, distances.Max());
-                                topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
-                                if (db.SaveChangesTraceValidationErrors() != 0)
-                                    Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
-                                else
-                                    Trace.WriteLine($"\t(nop: topic_link unchanged for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance})");
+                                    // update existing topic link - min/max distances
+                                    topic_link.max_distance = Math.Max(topic_link.max_distance, distances.Max());
+                                    topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
+
+                                    if (db.SaveChangesTraceValidationErrors() != 0) //** ???
+                                        Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
+                                    else
+                                        Trace.WriteLine($"\t(nop: topic_link unchanged for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance})");
+
+                                //} catch( Exception ex) {
+                                //    //Debugger.Break();
+                                //    throw ex;
+                                //}
                             }
                         }
                     }

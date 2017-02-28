@@ -13,6 +13,12 @@ namespace tests
     public class Test_Golden
     {
         [TestMethod]
+        public void GetStoredPathsToRoot_ContainingTerm_Test0()
+        {
+            var data = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(4990959);
+        }
+
+        [TestMethod]
         public void CalculatePathsToRoot_Test0()
         {
             GoldenPaths.CalculatePathsToRoot(5067658); // netflix (big)

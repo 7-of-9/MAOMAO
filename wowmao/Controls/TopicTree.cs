@@ -1,6 +1,8 @@
-﻿using mmdb_model;
+﻿using mm_svc.Terms;
+using mmdb_model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -21,7 +23,11 @@ namespace wowmao.Controls
         private ToolStripMenuItem mnuToggleTopic;
         private ToolTip toolTip1;
         private ToolStripMenuItem mnuExcludeLink;
+        private ToolStripMenuItem mnuRootTopic;
         private int count;
+
+        public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
+        public class OnNodeSelectEventArgs : EventArgs { public long term_id { get; set; } }
 
         public TopicTree() {
             InitializeComponent();
@@ -49,36 +55,46 @@ namespace wowmao.Controls
         public void BuildTree()
         {
             count = 0;
+            this.Cursor = Cursors.WaitCursor;
             using (var db = mm02Entities.Create()) {
                 // get root topics
-                var root_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(
-                "SELECT DISTINCT [parent_term_id] FROM [topic_link] WHERE [parent_term_id] NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link])").ToList();
+                var explicit_root_topic_ids = db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock();
+
+                var computed_root_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(
+                    "SELECT DISTINCT [parent_term_id] FROM [topic_link] WHERE [parent_term_id] NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link])").ToList();
+
+                var all_root_topic_ids = explicit_root_topic_ids.Union(computed_root_topic_ids);//.Distinct();
 
                 tvw.Nodes.Clear();
-                tvw.BeginUpdate();
-                foreach (var root_topic_id in root_topic_ids) {
+                //tvw.BeginUpdate();
+                foreach (var root_topic_id in all_root_topic_ids) {
                     var term = db.terms.Find(root_topic_id);
                     var tn_root = NodeFromTerm(term);
                     tvw.Nodes.Add(tn_root);
                     AddChildren(tn_root, root_topic_id, new List<long>());
                 }
-                tvw.EndUpdate();
+                //tvw.EndUpdate();
             }
-            this.lblInfo.Text = $"total links: {count}";
+            this.Cursor = Cursors.Default;
+            this.lblInfo.Text = $">> total links: {count}";
         }
 
         private void AddChildren(TreeNode parent_node, long parent_topic_id, List<long> term_ids)
         {
             using (var db = mm02Entities.Create()) {
                 var topic_links = db.topic_link.Include("term").Include("term1").AsNoTracking().Where(p => p.parent_term_id == parent_topic_id).OrderBy(p => p.max_distance).ToListNoLock();
-                foreach(var link in topic_links) {
-                    //if (TermInParentsChain(tn_parent, link.child_term_id) == false) {
-                    if (!term_ids.Contains(link.child_term_id)) { 
+                foreach (var link in topic_links) {
+                    //if (!term_ids.Contains(link.child_term_id)) { 
+                    if (!TermInParentsChain(parent_node, link.child_term_id)) {
                         var child_node = NodeFromTerm(link.child_term, link);
                         parent_node.Nodes.Add(child_node);
                         term_ids.Add(link.child_term_id);
-                        AddChildren(child_node, link.child_term_id, term_ids);
+
+                        if (!link.disabled)
+                            AddChildren(child_node, link.child_term_id, term_ids);
                     }
+                    else
+                        ;// Debugger.Break();
                 }
             }
         }
@@ -105,15 +121,23 @@ namespace wowmao.Controls
             else {
                 tn.BackColor = RootPathViewer.ColorFromString(t.name);
                 tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
+                tn.Text += $" (R={tn.BackColor.R} G={tn.BackColor.G} B={tn.BackColor.B})";
             }
             tn.ToolTipText = link == null ? node_desc : $"{link.parent_term} ==> {link.child_term}";
             count++;
             return tn;
         }
 
-        // marks the link as disabled -- retains terms as topics, just prevents the link being valid
-        private void mnuExcludeLink_Click(object sender, EventArgs e)
+        // populate sample paths to root in root path viewer
+        private void tvw_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (tvw.SelectedNode == null) return;
+            var tag = tvw.SelectedNode.Tag as NodeTag;
+            OnNodeSelect?.Invoke(this.GetType(), new OnNodeSelectEventArgs() { term_id = tag.t.id });
+        }
+
+        // marks the link as disabled -- retains terms as topics, just prevents the link being valid
+        private void mnuExcludeLink_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return;
             var node = tvw.SelectedNode;
             var tag = node.Tag as NodeTag;
@@ -122,9 +146,11 @@ namespace wowmao.Controls
                 link.disabled = !link.disabled;
                 db.SaveChangesTraceValidationErrors();
 
+                tag.link = link;
                 var new_node = NodeFromTerm(tag.t, tag.link);
-                node.Parent.Nodes.Remove(node);
-                node.Parent.Nodes.Add(new_node);
+                var parent = node.Parent;
+                parent.Nodes.Remove(node);
+                parent.Nodes.Add(new_node);
             }
         }
 
@@ -134,13 +160,33 @@ namespace wowmao.Controls
             var node = tvw.SelectedNode;
             var tag = node.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
-                var terms = db.terms.Where(p => p.name == tag.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
-                foreach (var term in terms.ToListNoLock()) {
-                    term.is_topic = false;
+                var terms = db.terms.Where(p => p.name == tag.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14)).ToListNoLock();
+                if (MessageBox.Show($"Set following term(s) as NOT topics?\r\n{string.Join("\r\n", terms.Select(p => p))}", "wowmao", MessageBoxButtons.YesNo) == DialogResult.Yes) { 
+                    foreach (var term in terms)
+                        term.is_topic = false;
                     db.SaveChangesTraceValidationErrors();
+                    if (node.Parent != null)
+                        node.Parent.Nodes.Remove(node);
+                    else
+                        tvw.Nodes.Remove(node);
                 }
-                node.Parent.Nodes.Remove(node);
             }
+        }
+
+        // toggles root-topic flag on term
+        private void mnuRootTopic_Click(object sender, EventArgs e) {
+            if (tvw.SelectedNode == null) return;
+            var node = tvw.SelectedNode;
+            var tag = node.Tag as NodeTag;
+            using (var db = mm02Entities.Create()) {
+                //var terms = db.terms.Where(p => p.name == tag.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
+                var terms = db.terms.Where(p => p.id == tag.t.id).ToListNoLock();
+                bool current_is_topic_root = terms.First().is_topic_root;
+                foreach (var term in terms)
+                    term.is_topic_root = !current_is_topic_root;
+                db.SaveChangesTraceValidationErrors();
+            }
+            this.BuildTree();
         }
 
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -150,7 +196,7 @@ namespace wowmao.Controls
             if (node != null && node.Tag != null) {
                 tvw.SelectedNode = node;
                 var tag = tvw.SelectedNode.Tag as NodeTag;
-                this.mnuInfo.Text = tag.link.ToString();
+                this.mnuInfo.Text = tag.link != null ? tag.link.ToString() : tag.t.ToString();
             }
         }
 
@@ -159,14 +205,15 @@ namespace wowmao.Controls
         {
             this.components = new System.ComponentModel.Container();
             this.tvw = new System.Windows.Forms.TreeView();
-            this.cmdRefresh = new System.Windows.Forms.Button();
-            this.lblInfo = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSep1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuToggleTopic = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.mnuExcludeLink = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmdRefresh = new System.Windows.Forms.Button();
+            this.lblInfo = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.mnuRootTopic = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -180,27 +227,7 @@ namespace wowmao.Controls
             this.tvw.Name = "tvw";
             this.tvw.Size = new System.Drawing.Size(333, 295);
             this.tvw.TabIndex = 0;
-            // 
-            // cmdRefresh
-            // 
-            this.cmdRefresh.Location = new System.Drawing.Point(3, 3);
-            this.cmdRefresh.Name = "cmdRefresh";
-            this.cmdRefresh.Size = new System.Drawing.Size(70, 20);
-            this.cmdRefresh.TabIndex = 1;
-            this.cmdRefresh.Text = "refresh";
-            this.cmdRefresh.UseVisualStyleBackColor = true;
-            this.cmdRefresh.Click += new System.EventHandler(this.cmdRefresh_Click);
-            // 
-            // lblInfo
-            // 
-            this.lblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblInfo.AutoSize = true;
-            this.lblInfo.BackColor = System.Drawing.Color.LightSalmon;
-            this.lblInfo.Location = new System.Drawing.Point(320, 7);
-            this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(16, 13);
-            this.lblInfo.TabIndex = 2;
-            this.lblInfo.Text = "...";
+            this.tvw.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvw_AfterSelect);
             // 
             // contextMenuStrip1
             // 
@@ -208,9 +235,10 @@ namespace wowmao.Controls
             this.mnuInfo,
             this.mnuSep1,
             this.mnuToggleTopic,
-            this.mnuExcludeLink});
+            this.mnuExcludeLink,
+            this.mnuRootTopic});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(207, 98);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -228,16 +256,43 @@ namespace wowmao.Controls
             // mnuToggleTopic
             // 
             this.mnuToggleTopic.Name = "mnuToggleTopic";
-            this.mnuToggleTopic.Size = new System.Drawing.Size(152, 22);
-            this.mnuToggleTopic.Text = "Not Topic";
+            this.mnuToggleTopic.Size = new System.Drawing.Size(206, 22);
+            this.mnuToggleTopic.Text = "Not a Topic!";
             this.mnuToggleTopic.Click += new System.EventHandler(this.mnuToggleTopic_Click);
             // 
             // mnuExcludeLink
             // 
             this.mnuExcludeLink.Name = "mnuExcludeLink";
-            this.mnuExcludeLink.Size = new System.Drawing.Size(152, 22);
-            this.mnuExcludeLink.Text = "Enable/Disable";
+            this.mnuExcludeLink.Size = new System.Drawing.Size(206, 22);
+            this.mnuExcludeLink.Text = "Enable/Disable topic_link";
             this.mnuExcludeLink.Click += new System.EventHandler(this.mnuExcludeLink_Click);
+            // 
+            // cmdRefresh
+            // 
+            this.cmdRefresh.Location = new System.Drawing.Point(3, 3);
+            this.cmdRefresh.Name = "cmdRefresh";
+            this.cmdRefresh.Size = new System.Drawing.Size(70, 20);
+            this.cmdRefresh.TabIndex = 1;
+            this.cmdRefresh.Text = "refresh";
+            this.cmdRefresh.UseVisualStyleBackColor = true;
+            this.cmdRefresh.Click += new System.EventHandler(this.cmdRefresh_Click);
+            // 
+            // lblInfo
+            // 
+            this.lblInfo.AutoSize = true;
+            this.lblInfo.BackColor = System.Drawing.Color.LightSalmon;
+            this.lblInfo.Location = new System.Drawing.Point(79, 7);
+            this.lblInfo.Name = "lblInfo";
+            this.lblInfo.Size = new System.Drawing.Size(25, 13);
+            this.lblInfo.TabIndex = 2;
+            this.lblInfo.Text = "......";
+            // 
+            // mnuRootTopic
+            // 
+            this.mnuRootTopic.Name = "mnuRootTopic";
+            this.mnuRootTopic.Size = new System.Drawing.Size(206, 22);
+            this.mnuRootTopic.Text = "Set as ROOT Topic";
+            this.mnuRootTopic.Click += new System.EventHandler(this.mnuRootTopic_Click);
             // 
             // TopicTree
             // 

@@ -1,4 +1,5 @@
-﻿using mm_global.Extensions;
+﻿using mm_global;
+using mm_global.Extensions;
 using mm_svc.InternalNlp.Utils;
 using mmdb_model;
 using System;
@@ -45,9 +46,11 @@ namespace mm_svc.Terms
                 // dynamic - parent suggestion (namespace, level weighted, group/count ranking)
                 var suggested_dynamic = CalcDynamicSuggestedParents(paths);
 
-                // remove
-                db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
-                db.SaveChangesTraceValidationErrors();
+                // remove -- have seen deadlocks here when running parallel
+                g.RetryMaxOrThrow(() => {
+                    db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
+                    return db.SaveChangesTraceValidationErrors();
+                }, 1, 3);
 
                 // add
                 var gt_parents = new List<gt_parent>();
@@ -59,8 +62,8 @@ namespace mm_svc.Terms
                     suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S, is_topic = true }));
 
                 db.gt_parent.AddRange(gt_parents);
-                Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
-                Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
+                //Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
+                //Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
                 db.SaveChangesTraceValidationErrors();
 
                 return GetStoredParents(term_id);

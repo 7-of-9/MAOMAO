@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace mmdb_model
 {
-    [DebuggerDisplay("{parent_term.name} ==> {child_term.name} MIN_D={min_distance} MAX_D={max_distance}")]
+    [DebuggerDisplay("{parent_term.name} ==> {child_term.name} (MIN_D={min_distance} MAX_D={max_distance} enabled={!disabled})")]
     public partial class topic_link
     {
         [NotMapped]
@@ -16,5 +16,9 @@ namespace mmdb_model
 
         [NotMapped]
         public term parent_term { get { return this.term1; } }
+
+        public override string ToString() {
+            return $"{parent_term.name} ==> {child_term.name} (MIN_D={min_distance} MAX_D={max_distance} enabled={!disabled})";
+        }
     }
 }
