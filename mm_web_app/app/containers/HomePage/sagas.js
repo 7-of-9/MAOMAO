@@ -62,8 +62,13 @@ export function* getGoogleKnowledge() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
   const page = yield select(makeSelectPageNumber());
-  const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?query=${keyword}&key=${GOOGLE_API_KEY}&limit=${LIMIT * page}&indent=True`;
-
+  const query = queryString.stringify({
+    query: encodeURI(keyword),
+    key: GOOGLE_API_KEY,
+    limit: LIMIT * page,
+    indent: 'True',
+  });
+  const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?${query}`;
   try {
     const result = yield call(request, requestURL);
     yield put(googleKnowledgeLoaded(result.itemListElement || [], keyword));
@@ -83,7 +88,15 @@ export function* getYoutubeVideo() {
   const pageToken = youtubeState.get('nextPageToken') || '';
   // Youtube API support those types: video, channel and playlist
   // For testing purpose, we will get only video
-  const requestURL = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${keyword}&key=${GOOGLE_API_KEY}&maxResults=${LIMIT}&pageToken=${pageToken}`;
+  const query = queryString.stringify({
+    query: encodeURI(keyword),
+    key: GOOGLE_API_KEY,
+    maxResults: LIMIT,
+    part: 'snippet',
+    type: 'video',
+    pageToken,
+  });
+  const requestURL = `https://www.googleapis.com/youtube/v3/search?${query}`;
 
   try {
     const result = yield call(request, requestURL);
