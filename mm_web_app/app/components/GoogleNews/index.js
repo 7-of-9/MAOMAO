@@ -10,15 +10,20 @@ import googleNewsIcon from './images/google-news.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #009688;
+  background-color: #eaeaeb;
   background-image: url(${googleNewsIcon});
   background-repeat: no-repeat;
   background-size: 32px;
-    &:after {
-        content: '';
-        display: block;
-        clear: both;
-    }
+  border-radius: 6px;
+  &:after {
+      content: '';
+      display: block;
+      clear: both;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+  }
 `;
 
 const Anchor = styled.a`
@@ -41,7 +46,7 @@ const Description = styled.p`
 
 const Image = styled.img`
   object-fit contain;
-  max-width: 230px;
+  max-width: 210px;
   float: left;
   margin: 15px 10px 15px 0px;
 `;

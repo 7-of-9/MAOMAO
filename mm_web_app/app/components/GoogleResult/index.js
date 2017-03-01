@@ -10,14 +10,19 @@ import googleIcon from './images/google.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #795548;
+  background-color: #eaeaeb;
   background-image: url(${googleIcon});
   background-repeat: no-repeat;
   background-size: 32px;
+  border-radius: 6px;
   &:after {
       content: '';
       display: block;
       clear: both;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
   }
 `;
 
@@ -41,7 +46,7 @@ const Description = styled.p`
 
 const Image = styled.img`
   object-fit contain;
-  max-width: 230px;
+  max-width: 210px;
   float: left;
   margin: 15px 10px 15px 0px;
 `;

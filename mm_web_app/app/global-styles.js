@@ -17,7 +17,7 @@ injectGlobal`
   }
 
   #app {
-    background-color: #fafafa;
+    background-color: #fff;
     min-height: 100%;
     min-width: 100%;
   }
@@ -31,21 +31,24 @@ injectGlobal`
   /* center container with CSS */
   .grid {
     margin: 0 auto;
-  }
-
-  /* clearfix */
-  .grid:after {
-    content: '';
-    display: block;
-    clear: both;
+    &:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
   }
 
   /* ---- grid-item ---- */
-
   .grid-item {
     width: 240px;
     float: left;
     margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.08);
+    &:hover {
+      background-color: #eaeaeb;
+    }
   }
 
 `;

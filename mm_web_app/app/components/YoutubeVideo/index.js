@@ -10,14 +10,19 @@ import youtubeIcon from './images/youtube.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #4caf50;
+  background-color: #eaeaeb;
   background-image: url(${youtubeIcon});
   background-repeat: no-repeat;
   background-size: 32px;
+  border-radius: 6px;
   &:after {
       content: '';
       display: block;
       clear: both;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
   }
 `;
 
@@ -31,7 +36,7 @@ const Anchor = styled.a`
 
 const Image = styled.img`
   object-fit contain;
-  max-width: 230px;
+  max-width: 210px;
 `;
 
 const Title = styled.h1`
