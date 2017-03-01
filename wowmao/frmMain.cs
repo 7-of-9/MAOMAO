@@ -71,6 +71,7 @@ namespace wowmao
         private void RootPathViewer1_OnTopicToggled(object sender, Controls.RootPathViewer.OnTopicToggledEventArgs e)
         {
             this.txtGtSearch.Text = e.term_name;
+            this.chkExactMatch.Checked = true;
             cmdGtSearch_Click(null, null);
         }
 
@@ -420,9 +421,7 @@ namespace wowmao
         }
 
         private void TopicTree1_OnFindInWikiTree(object sender, Controls.TopicTree.OnFindInWikiTreeEventArgs e) {
-            this.txtGtSearch.Text = e.term_id.ToString();
-            this.cmdGtSearch_Click(null, null);
-            this.tabTrees.SelectedIndex = 0;
+            wikiGoldTree.Search(e.term_id.ToString(), exact: true, topics_only: false);
         }
 
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)

@@ -624,6 +624,16 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="mm02Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        
+        <!-- MY LIKE -->
+        <Function Name="MyLike" ReturnType="Edm.Boolean">
+          <Parameter Name="searchingIn" Type="Edm.String"></Parameter>
+          <Parameter Name="lookingFor" Type="Edm.String"></Parameter>
+          <DefiningExpression>
+            searchingIn LIKE lookingFor
+          </DefiningExpression>
+        </Function>
+                  
         <EntityContainer Name="mm02Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="awis_site" EntityType="mm02Model.awis_site" />
           <EntitySet Name="awis_cat" EntityType="mm02Model.awis_cat" />

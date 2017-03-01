@@ -44,6 +44,7 @@
             this.cmdPrevPage = new System.Windows.Forms.Button();
             this.cmdNextPage = new System.Windows.Forms.Button();
             this.lblPageInfo = new System.Windows.Forms.Label();
+            this.lblPercTopics = new System.Windows.Forms.Label();
             this.pnkRecalcPtR.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +57,7 @@
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel1.Location = new System.Drawing.Point(3, 77);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(486, 238);
+            this.panel1.Size = new System.Drawing.Size(780, 238);
             this.panel1.TabIndex = 0;
             // 
             // txtSearch
@@ -82,9 +83,9 @@
             this.lblTermInfo.AutoSize = true;
             this.lblTermInfo.Location = new System.Drawing.Point(7, 4);
             this.lblTermInfo.Name = "lblTermInfo";
-            this.lblTermInfo.Size = new System.Drawing.Size(37, 13);
+            this.lblTermInfo.Size = new System.Drawing.Size(16, 13);
             this.lblTermInfo.TabIndex = 3;
-            this.lblTermInfo.Text = "label1";
+            this.lblTermInfo.Text = "...";
             // 
             // cmdRecalcPathsToRoot
             // 
@@ -110,7 +111,7 @@
             this.pnkRecalcPtR.Controls.Add(this.txtSIG_NODE_MIN_NSCOUNT);
             this.pnkRecalcPtR.Controls.Add(this.chkPtR_IncludeSigNodes);
             this.pnkRecalcPtR.Controls.Add(this.cmdRecalcPathsToRoot);
-            this.pnkRecalcPtR.Location = new System.Drawing.Point(187, 2);
+            this.pnkRecalcPtR.Location = new System.Drawing.Point(481, 2);
             this.pnkRecalcPtR.Name = "pnkRecalcPtR";
             this.pnkRecalcPtR.Size = new System.Drawing.Size(302, 69);
             this.pnkRecalcPtR.TabIndex = 6;
@@ -219,12 +220,22 @@
             this.lblPageInfo.Text = "label1";
             this.lblPageInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // lblPercTopics
+            // 
+            this.lblPercTopics.AutoSize = true;
+            this.lblPercTopics.Location = new System.Drawing.Point(187, 24);
+            this.lblPercTopics.Name = "lblPercTopics";
+            this.lblPercTopics.Size = new System.Drawing.Size(16, 13);
+            this.lblPercTopics.TabIndex = 10;
+            this.lblPercTopics.Text = "...";
+            // 
             // RootPathViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.Pink;
+            this.Controls.Add(this.lblPercTopics);
             this.Controls.Add(this.lblPageInfo);
             this.Controls.Add(this.cmdNextPage);
             this.Controls.Add(this.cmdPrevPage);
@@ -236,7 +247,7 @@
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "RootPathViewer";
-            this.Size = new System.Drawing.Size(492, 318);
+            this.Size = new System.Drawing.Size(786, 318);
             this.pnkRecalcPtR.ResumeLayout(false);
             this.pnkRecalcPtR.PerformLayout();
             this.ResumeLayout(false);
@@ -263,5 +274,6 @@
         private System.Windows.Forms.Button cmdPrevPage;
         private System.Windows.Forms.Button cmdNextPage;
         private System.Windows.Forms.Label lblPageInfo;
+        private System.Windows.Forms.Label lblPercTopics;
     }
 }

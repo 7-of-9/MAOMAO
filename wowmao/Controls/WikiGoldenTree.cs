@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using mmdb_model;
 using mm_global;
 using System.Diagnostics;
+using System.Data.Entity.SqlServer;
 
 namespace wowmao.Controls
 {
@@ -81,8 +82,10 @@ namespace wowmao.Controls
                             qry = qry.Where(p => p.id == term_id);
                         else {
                             if (!exact) {
-                                var linq_search = $"{search}";
-                                qry = qry.Where(p => (p.name.Contains(linq_search) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)));
+                                var search_like = $"%{search}%";
+                                qry = qry.Where(p => p.name.My_Like(search_like))
+                                         .Where(p => (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0))
+                                         .Take(10);
                             }
                             else
                                 qry = qry.Where(p => (p.name == search) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0));
@@ -150,8 +153,8 @@ namespace wowmao.Controls
         {
             using (var db = mm02Entities.Create()) {
                 var qry = db.golden_term
-                                .Include("term.golden_term").Include("term.golden_term1")
-                                .Include("term1.golden_term").Include("term1.golden_term1")
+                                .Include("term")//.Include("term.golden_term").Include("term.golden_term1")
+                                .Include("term1")//.Include("term1.golden_term").Include("term1.golden_term1")
                                 .Where(p => p.child_term_id == child_term_id)
                                 .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
                 //Debug.WriteLine(qry.ToString());
@@ -250,7 +253,7 @@ namespace wowmao.Controls
         #endregion
 
         #region Search
-        internal void Search(string searchText, bool exact, bool topics) { BuildTree(searchText, exact, topics); }
+        internal void Search(string searchText, bool exact, bool topics_only) { BuildTree(searchText, exact, topics_only); }
 
         //private List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
         //private int LastNodeIndex = 0;

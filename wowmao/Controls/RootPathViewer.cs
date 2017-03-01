@@ -112,7 +112,7 @@ namespace wowmao.Controls
         }
 
         private List<List<TermPath>> all_paths;
-        private const int per_page = 100;
+        private const int per_page = 200;
         private int no_pages;
         private int cur_page;
         private void RenderPage()
@@ -169,6 +169,13 @@ namespace wowmao.Controls
             this.ResumeLayout();
         }
 
+        //
+        // auto-flag -- underpopulated PtR's
+        //
+        private int no_topics_in_paths;
+        private int no_terms_in_paths;
+        private double perc_topics_in_paths;
+
         public void AddTermPaths(List<List<TermPath>> paths)
         {
             if (paths == null) return;
@@ -176,9 +183,14 @@ namespace wowmao.Controls
             this.all_paths = paths;
             this.cur_page = 0;
             this.no_pages = (int)Math.Ceiling((double)paths.Count / per_page);
+            this.term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
 
-            term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
+            this.no_terms_in_paths = paths.Sum(p => p.Count);
+            this.no_topics_in_paths = paths.Sum(p => p.Count(p2 => p2.t.IS_TOPIC));
+            this.perc_topics_in_paths = (double)no_topics_in_paths / no_terms_in_paths;
+
             lblTermInfo.Text = $"term_ids=[{string.Join(", ", term_ids)}] paths={paths.Count}";
+            lblPercTopics.Text = $"Percentage Topics (all pages): {(perc_topics_in_paths*100).ToString("0.0")}%";
 
             RenderPage();
         }
