@@ -13,7 +13,7 @@ const Wrapper = styled.section`
   background-color: #eaeaeb;
   background-image: url(${youtubeIcon});
   background-repeat: no-repeat;
-  background-size: 32px;
+  background-size: 24px;
   border-radius: 6px;
   &:after {
       content: '';
@@ -37,17 +37,20 @@ const Anchor = styled.a`
 const Image = styled.img`
   object-fit contain;
   max-width: 210px;
+  border-radius: 8px;
 `;
 
 const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
+  font-size: 24px;
+  line-height: 24px;
+  text-align: left;
 `;
 
 const Description = styled.p`
-  font-size: 1.2em;
-  text-align: center;
-  word-break: break-all;
+  font-size: 16px;
+  margin: 0;
+  padding: 0 8px 16px;
+  text-align: left;
 `;
 
 function YoutubeVideo(props) {
