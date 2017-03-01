@@ -59,7 +59,7 @@ namespace mm_svc.Terms
 
                 S = (1 / (Math.Pow(p.gl_inv, 3.0)))
                     * Math.Pow(p.t.wiki_nscount ?? 0, (1/3.0))
-                    //* Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1/2.0))
+                    * Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1 / 2.0))
             })
             .OrderByDescending(p => p.S).ToList();
 

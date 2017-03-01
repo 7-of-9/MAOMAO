@@ -146,12 +146,16 @@ namespace mm_svc
                 //  (done - partially) *** Need to do a first cut of editorial topics -- 50-100 or so; + promotion to prod (term.is_topic|is_root_topic + [topic_link])
                 //      (did some reasonable roots, and started 2nd level)
                 //
-                //  WIP: apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
+                //  (done): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
                 //        for dynamics and topics -- for topics, we probably want to honour the scoring of topics produced by GetTopics, i.e. use closest to leaf)
-                //  ***
                 //
-                // then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
+                // (done) then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
+                //
+                // WIP -- now, can get url_parent_terms (found_topic=true) for all URLs
+                //        >> looking for a way of picking out end results that REQUIRE MAINTENANCE, e.g. low S scores, or some other metric
+                //           to pick out these categories that need attention, automatically
+                //  *******
                 //
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
                 //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
@@ -303,6 +307,7 @@ namespace mm_svc
                                             term_id = p.t.id,
                                             url_id = url_id,
                                             pri = ++pri,
+                                            S = p.count,
                                             suggested_dynamic = true }));
             db.SaveChangesTraceValidationErrors();
         }
