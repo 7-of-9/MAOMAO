@@ -10,19 +10,24 @@ import googleNewsIcon from './images/google-news.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #009688;
+  background-color: #eaeaeb;
   background-image: url(${googleNewsIcon});
   background-repeat: no-repeat;
-  background-size: 32px;
-    &:after {
-        content: '';
-        display: block;
-        clear: both;
-    }
+  background-size: 24px;
+  border-radius: 6px;
+  &:after {
+      content: '';
+      display: block;
+      clear: both;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+  }
 `;
 
 const Anchor = styled.a`
-  color: #ccc;
+  color: #41addd;
   text-decoration: none;
    &:hover {
      color: #6cc0e5;
@@ -30,20 +35,24 @@ const Anchor = styled.a`
 `;
 
 const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
+  font-size: 24px;
+  line-height: 24px;
+  text-align: left;
 `;
 
 const Description = styled.p`
-  font-size: 1.2em;
-  text-align: center;
+  font-size: 16px;
+  margin: 0;
+  padding: 0 8px 16px;
+  text-align: left;
 `;
 
 const Image = styled.img`
   object-fit contain;
-  max-width: 230px;
+  max-width: 210px;
   float: left;
   margin: 15px 10px 15px 0px;
+  border-radius: 8px;
 `;
 
 function GoogleNews(props) {

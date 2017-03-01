@@ -10,14 +10,19 @@ import googleKnownledgeIcon from './images/google-knowledge-graph.png';
 
 const Wrapper = styled.section`
   padding: 10px;
-  background: #607d8b;
+  background-color: #eaeaeb;
   background-image: url(${googleKnownledgeIcon});
   background-repeat: no-repeat;
-  background-size: 32px;
+  background-size: 24px;
+  border-radius: 6px;
   &:after {
       content: '';
       display: block;
       clear: both;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
   }
 `;
 
@@ -31,18 +36,25 @@ const Anchor = styled.a`
 
 const Image = styled.img`
   object-fit contain;
-  max-width: 230px;
+  max-width: 210px;
   margin-bottom: 10px;
+  border-radius: 8px;
+  vertical-align: middle;
+  margin: 0 auto;
+  display: block;
 `;
 
 const Title = styled.h1`
-  font-size: 1.5em;
-  text-align: center;
+  font-size: 24px;
+  line-height: 24px;
+  text-align: left;
 `;
 
 const Description = styled.p`
-  font-size: 1.2em;
-  text-align: center;
+  font-size: 16px;
+  margin: 0;
+  padding: 0 8px 16px;
+  text-align: left;
 `;
 
 
