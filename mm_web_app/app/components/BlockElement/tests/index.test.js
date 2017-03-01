@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import YoutubeVideo from '../index';
+import BlockElement from '../index';
 
-describe('<YoutubeVideo />', () => {
-  it('renders <YoutubeVideo>', () => {
+describe('<BlockElement />', () => {
+  it('renders <BlockElement>', () => {
     const renderedComponent = shallow(
-      <YoutubeVideo />
+      <BlockElement />
     );
     expect(renderedComponent).toBeDefined();
   });

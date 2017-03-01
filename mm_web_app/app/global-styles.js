@@ -38,7 +38,6 @@ injectGlobal`
     margin-bottom: 10px;
     border-radius: 10px;
     padding: 5px;
-    background-color: rgba(255, 255, 255, 0.08);
     &:hover {
       background-color: #eaeaeb;
     }

@@ -22,15 +22,12 @@ import Block from 'components/Block';
 import Loading from 'components/Loading';
 import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
-import GraphKnowledge from 'components/GraphKnowledge';
 import LogoIcon from 'components/LogoIcon';
-import GoogleResult from 'components/GoogleResult';
-import GoogleNews from 'components/GoogleNews';
+import BlockElement from 'components/BlockElement';
 // import FacebookGraph from 'components/FacebookGraph';
 // import Imgur from 'components/Imgur';
 // import Instagram from 'components/Instagram';
 // import Reddit from 'components/Reddit';
-import YoutubeVideo from 'components/YoutubeVideo';
 
 import { makeSelectKeyword } from './selectors';
 import {
@@ -62,50 +59,60 @@ function mashUp(props) {
   if (googleKnowledges.length || youtubeVideos.length || googleNews.length || googleSearchResult.length) {
     _.forEach(googleKnowledges, (item) => {
       const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url;
-      if (moreDetailUrl) {
+      if (moreDetailUrl && item.result.image && item.result.image.contentUrl) {
         graphKnowledges.push(
           <div className="grid-item" key={counter += 1}>
-            <GraphKnowledge
+            <BlockElement
               name={item.result.name}
               description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
               image={item.result.image && item.result.image.contentUrl}
               url={moreDetailUrl}
+              type={'Google Knowledge'}
             />
           </div>);
       }
     });
     _.forEach(googleNews, (item) => {
-      news.push(
-        <div className="grid-item" key={counter += 1}>
-          <GoogleNews
-            title={item.title}
-            description={item.description}
-            url={item.url}
-            image={item.img}
-          />
-        </div>);
+      if (item.img) {
+        news.push(
+          <div className="grid-item" key={counter += 1}>
+            <BlockElement
+              title={item.title}
+              description={item.description}
+              url={item.url}
+              image={item.img}
+              type={'Google News'}
+            />
+          </div>);
+      }
     });
     _.forEach(googleSearchResult, (item) => {
-      search.push(
-        <div className="grid-item" key={counter += 1}>
-          <GoogleResult
-            title={item.title}
-            description={item.description}
-            url={item.url}
-            image={item.img}
-          />
-        </div>);
+      if (item.img) {
+        search.push(
+          <div className="grid-item" key={counter += 1}>
+            <BlockElement
+              title={item.title}
+              description={item.description}
+              url={item.url}
+              image={item.img}
+              type={'Google Search'}
+            />
+          </div>);
+      }
     });
     _.forEach(youtubeVideos, (item) => {
-      videos.push(
-        <div className="grid-item" key={counter += 1}>
-          <YoutubeVideo
-            name={item.snippet.title}
-            description={item.snippet.description}
-            image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-            url={`https://www.youtube.com/watch?v=${item.id.videoId}`}
-          />
-        </div>);
+      if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url) {
+        videos.push(
+          <div className="grid-item" key={counter += 1}>
+            <BlockElement
+              name={item.snippet.title}
+              description={item.snippet.description}
+              image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
+              url={`https://www.youtube.com/watch?v=${item.id.videoId}`}
+              type={'Youtube'}
+            />
+          </div>);
+      }
     });
   }
 
