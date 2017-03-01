@@ -221,8 +221,8 @@ namespace mm_svc
             }).OrderByDescending(p => p.S).ToList();
             counted_and_ranked.ForEach(p => p.S_norm = p.S / counted_and_ranked.Max(p2 => p2.S));
 
-            // remove long tail
-            counted_and_ranked = counted_and_ranked.Where(p => p.S_norm > 0.1).ToList();
+            // select top ranked
+            counted_and_ranked = counted_and_ranked.Where(p => p.S_norm > 0.2).ToList();
 
             // remove
             db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
@@ -237,6 +237,9 @@ namespace mm_svc
                                             url_id = url_id,
                                             pri = ++pri,
                                             found_topic = true,
+                                            avg_S = p.avg_S, 
+                                            S_norm = p.S_norm,
+                                            S = p.S,
                                         }));
             db.SaveChangesTraceValidationErrors();
 

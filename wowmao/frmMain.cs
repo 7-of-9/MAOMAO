@@ -296,9 +296,9 @@ namespace wowmao
                     var suggested = parents.Where(p => p.suggested_dynamic);
 
                     txtInfo.Text += "\r\n\r\nTOPICS:\r\n";
-                    topics.OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} S={p.pri}\r\n"));
+                    topics.OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} > S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n"));
                     txtInfo.AppendText("\r\nSUGGESTED (not in topics):\r\n");
-                    suggested.Where(p => !topics.Select(p2 => p2.id).Contains(p.id)).OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} S={p.pri}\r\n"));
+                    suggested.Where(p => !topics.Select(p2 => p2.id).Contains(p.id)).OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} \r\n"));
 
                     //txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 

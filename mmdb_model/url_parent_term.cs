@@ -20,6 +20,9 @@ namespace mmdb_model
         public int pri { get; set; }
         public bool suggested_dynamic { get; set; }
         public bool found_topic { get; set; }
+        public Nullable<double> S { get; set; }
+        public Nullable<double> avg_S { get; set; }
+        public Nullable<double> S_norm { get; set; }
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }

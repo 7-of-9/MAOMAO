@@ -324,16 +324,13 @@ namespace wowmao.Controls
         {
             if (this.SelectedNode == null) return;
             var gt = this.SelectedNode.Tag as golden_term;
-            using (var db = mm02Entities.Create()) {
-                var set_to = !(gt.child_term.is_topic ?? false);
-                var terms = db.terms.Where(p => p.name == gt.child_term.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
-                foreach (var term in terms.ToListNoLock()) {
-                    term.is_topic = set_to;
-                    db.SaveChangesTraceValidationErrors();
-                }
-                gt.child_term.is_topic = set_to;
-                SetNodeFont(this.SelectedNode);
-            }
+            var new_is_topic_flag = !(gt.child_term.is_topic ?? false);
+            var topic_name = gt.child_term.name;
+
+            Maintenance.SetTopicFlag(new_is_topic_flag, topic_name);
+
+            gt.child_term.is_topic = new_is_topic_flag;
+            SetNodeFont(this.SelectedNode);
         }
 
         private void GetParentNodes(TreeNode node, List<TreeNode> parents) {

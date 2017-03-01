@@ -234,13 +234,15 @@ namespace wowmao.Controls
                 FormatLabel((p), tp2.t);
             });
 
-            using (var db = mm02Entities.Create()) {
-                var terms = db.terms.Where(p => p.name == tp.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
-                foreach (var term in terms.ToListNoLock()) {
-                    term.is_topic = tp.t.is_topic;
-                    db.SaveChangesTraceValidationErrors();
-                }
-            }
+            Maintenance.SetTopicFlag(new_topic_flag, tp.t.name);
+
+            //using (var db = mm02Entities.Create()) {
+            //    var terms = db.terms.Where(p => p.name == tp.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
+            //    foreach (var term in terms.ToListNoLock()) {
+            //        term.is_topic = tp.t.is_topic;
+            //        db.SaveChangesTraceValidationErrors();
+            //    }
+            //}
 
             OnTopicToggled?.Invoke(this.GetType(), new OnTopicToggledEventArgs() { term_name = tp.t.name });
         }

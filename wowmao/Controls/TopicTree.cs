@@ -227,14 +227,16 @@ namespace wowmao.Controls
             using (var db = mm02Entities.Create()) {
                 var terms = db.terms.Where(p => p.name == tag.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14)).ToListNoLock();
                 if (MessageBox.Show($"Set following term(s) as NOT topics?\r\n{string.Join("\r\n", terms.Select(p => p))}", "wowmao", MessageBoxButtons.YesNo) == DialogResult.Yes) {
-                    // remove topic flag from term(s)
-                    terms.ForEach(p => p.is_topic = false);
-                    db.SaveChangesTraceValidationErrors();
 
-                    // delete term() from topic_link
-                    db.ObjectContext().ExecuteStoreCommand(
-                        "DELETE FROM [topic_link] WHERE [parent_term_id] IN ({0}) OR [child_term_id] IN ({0})",
-                        string.Join(",", terms.Select(p => p.id)));
+                    Maintenance.SetTopicFlag(false, tag.t.name);
+
+                    // remove topic flag from term(s)
+                    //terms.ForEach(p => p.is_topic = false);
+                    //db.SaveChangesTraceValidationErrors();
+                    //// delete term() from topic_link
+                    //db.ObjectContext().ExecuteStoreCommand(
+                    //    "DELETE FROM [topic_link] WHERE [parent_term_id] IN ({0}) OR [child_term_id] IN ({0})",
+                    //    string.Join(",", terms.Select(p => p.id)));
 
                     if (node.Parent != null)
                         node.Parent.Nodes.Remove(node);

@@ -1,0 +1,34 @@
+﻿using mmdb_model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace wowmao
+{
+    public static class Maintenance
+    {
+        public static void SetTopicFlag(bool new_is_topic_flag, string topic_name)
+        {
+            using (var db = mm02Entities.Create()) {
+                var terms = db.terms.Where(p => p.name == topic_name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));
+                foreach (var term in terms.ToListNoLock()) {
+                    // toggle topic flag from term
+                    term.is_topic = new_is_topic_flag;
+                    db.SaveChangesTraceValidationErrors();
+
+                    // delete from topic_link, if topic flag is being removed
+                    if (term.is_topic == false)
+                        db.ObjectContext().ExecuteStoreCommand("DELETE FROM [topic_link] WHERE [parent_term_id] IN ({0}) OR [child_term_id] IN ({0})",
+                            string.Join(",", terms.Select(p => p.id)));
+
+                    // update suggested parents tree topic flag
+                    db.ObjectContext().ExecuteStoreCommand("UPDATE [gt_parent] SET is_topic={0} WHERE [parent_term_id] IN ({1}) OR [child_term_id] IN ({1})",
+                        new_is_topic_flag ? 1 : 0,
+                        string.Join(",", terms.Select(p => p.id)));
+                }
+            }
+        }
+    }
+}

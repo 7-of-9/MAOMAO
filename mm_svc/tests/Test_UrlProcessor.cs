@@ -18,7 +18,7 @@ namespace tests
         public void ProcessUrl_Test1()
         {
             // testing most common parent
-            UrlProcessor.ProcessUrl(1989, reprocess: true);   // hignfy
+            UrlProcessor.ProcessUrl(1973, reprocess: true);   // hignfy
         }
 
         [TestMethod]

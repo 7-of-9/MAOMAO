@@ -137,6 +137,9 @@
           <Property Name="pri" Type="int" Nullable="false" />
           <Property Name="suggested_dynamic" Type="bit" Nullable="false" />
           <Property Name="found_topic" Type="bit" Nullable="false" />
+          <Property Name="S" Type="float" />
+          <Property Name="avg_S" Type="float" />
+          <Property Name="S_norm" Type="float" />
         </EntityType>
         <EntityType Name="url_term">
           <Key>
@@ -1254,6 +1257,9 @@
           <Property Name="pri" Type="Int32" Nullable="false" />
           <Property Name="suggested_dynamic" Type="Boolean" Nullable="false" />
           <Property Name="found_topic" Type="Boolean" Nullable="false" />
+          <Property Name="S" Type="Double" />
+          <Property Name="avg_S" Type="Double" />
+          <Property Name="S_norm" Type="Double" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="url_parent_term" ToRole="term" />
           <NavigationProperty Name="url" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url_parent_term" ToRole="url" />
         </EntityType>
@@ -1504,6 +1510,9 @@
           <EntitySetMapping Name="url_parent_term">
             <EntityTypeMapping TypeName="mm02Model.url_parent_term">
               <MappingFragment StoreEntitySet="url_parent_term">
+                <ScalarProperty Name="S_norm" ColumnName="S_norm" />
+                <ScalarProperty Name="avg_S" ColumnName="avg_S" />
+                <ScalarProperty Name="S" ColumnName="S" />
                 <ScalarProperty Name="found_topic" ColumnName="found_topic" />
                 <ScalarProperty Name="suggested_dynamic" ColumnName="suggested_dynamic" />
                 <ScalarProperty Name="pri" ColumnName="pri" />
