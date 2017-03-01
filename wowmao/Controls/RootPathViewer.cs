@@ -255,6 +255,8 @@ namespace wowmao.Controls
             //return invertedColor;
 
             if (c.R > 190 && c.G > 190) return Color.Black;
+            if (c.G > 160 && c.B > 200) return Color.Black;
+            if (c.R < 200 && c.B < 200 && c.G > 200) return Color.Black;
             var avg = (c.R + c.G + c.G) / 255.0;
             if (avg > 100) return Color.Black;
             else return Color.White;

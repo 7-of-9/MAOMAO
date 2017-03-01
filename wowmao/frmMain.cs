@@ -56,11 +56,14 @@ namespace wowmao
 
             this.wikiGoldTree.OnGtsLoaded += WikiGoldTree_OnGtsLoaded;
             this.wikiGoldTree.OnSearchGoogle += WikiGoldTree_OnSearchGoogle;
+            this.wikiGoldTree.OnFindPathsContaining += WikiGoldTree_OnFindPathsContaining;
 
             this.lvwUrls.ColumnClick += LvwUrls_ColumnClick;
 
             this.rootPathViewer1.OnTopicToggled += RootPathViewer1_OnTopicToggled;
+
             this.topicTree1.OnNodeSelect += TopicTree1_OnNodeSelect;
+            this.topicTree1.OnFindInWikiTree += TopicTree1_OnFindInWikiTree;
 
             cmdSearchURLs_Click(null, null);
         }
@@ -148,9 +151,8 @@ namespace wowmao
                 var rnd = new Random();
                 var qry = db.urls
                     .AsNoTracking()
-                    .Include("url_term.term.term_type")
-                    .Include("url_term.term.cal_entity_type")
-                  //.Include("url_golden_term")
+                  //.Include("url_term.term.term_type")
+                  //.Include("url_term.term.cal_entity_type")
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(search_term)) {
@@ -158,8 +160,6 @@ namespace wowmao
                     if (chkExcludeProcessed.Checked)
                         qry = qry.Where(p => p.processed_at_utc == null);
                 }
-                //else if (golden_term_id != null)
-                //    qry = qry.Where(p => p.url_golden_term.Any(p2 => p2.golden_term_id == golden_term_id)); // search by processed golden term id
 
                 qry = qry.Where(p => p.nlp_suitability_score > 10);
                 qry = qry.OrderByDescending(p => p.id);
@@ -233,8 +233,7 @@ namespace wowmao
             wikiGoldTree.BuildTree();
         }
 
-        private void ZoomBrowser(int zoom)
-        {
+        private void ZoomBrowser(int zoom) {
             if (zoom > 0)
                 for (int i = 0; i < zoom; i++) { zoomBrowser1.Focus(); SendKeys.Send("^{+}"); } // [CTRL]+[+]
             else if (zoom < 0)
@@ -292,8 +291,16 @@ namespace wowmao
                 // url suggested/related parent terms (from UrlProcessing)
                 //
                 if (chkUpdateUi.Checked) {
-                    var parent_terms = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).OrderBy(p => p.pri).ToListNoLock();
-                    txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
+                    var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).ToListNoLock();
+                    var topics = parents.Where(p => p.found_topic);
+                    var suggested = parents.Where(p => p.suggested_dynamic);
+
+                    txtInfo.Text += "\r\n\r\nTOPICS:\r\n";
+                    topics.OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} S={p.pri}\r\n"));
+                    txtInfo.AppendText("\r\nSUGGESTED (not in topics):\r\n");
+                    suggested.Where(p => !topics.Select(p2 => p2.id).Contains(p.id)).OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} S={p.pri}\r\n"));
+
+                    //txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 
                     txtInfo.AppendText("\r\n\r\n>>> HTTP: " + url.url1 + "\r\n");
                     txtInfo.ScrollToCaret();
@@ -305,8 +312,7 @@ namespace wowmao
         }
 
         // walk parallel
-        private void cmdWalkParallel_Click(object sender, EventArgs e)
-        {
+        private void cmdWalkParallel_Click(object sender, EventArgs e) {
             var urls_to_process = new List<url>();
             for (int i = 0; i < lvwUrls.Items.Count; i++)
                 urls_to_process.Add(lvwUrls.Items[i].Tag as url);
@@ -323,8 +329,7 @@ namespace wowmao
 
         // walk sequential
         private bool walking = false;
-        private void cmdWalk_Click(object sender, EventArgs e)
-        {
+        private void cmdWalk_Click(object sender, EventArgs e) {
             var sw = new Stopwatch(); sw.Start();
             if (!walking) {
                 walking = true;
@@ -354,14 +359,12 @@ namespace wowmao
             }
         }
 
-        private void cmdGtSearch_Click(object sender, EventArgs e)
-        {
+        private void cmdGtSearch_Click(object sender, EventArgs e) {
             wikiGoldTree.Search(this.txtGtSearch.Text, chkExactMatch.Checked, chkTopicsOnly.Checked);
         }
 
         bool getting_all_gts = false;
-        private void cmdExpandAll_Click(object sender, EventArgs e)
-        {
+        private void cmdExpandAll_Click(object sender, EventArgs e) {
             if (!getting_all_gts) {
                 getting_all_gts = true;
                 cmdExpandAll.Text = "STOP";
@@ -374,13 +377,17 @@ namespace wowmao
             }
         }
 
-        private void WikiGoldTree_OnGtsLoaded(object sender, Controls.WikiGoldenTree.OnGtsLoadedEventArgs e)
-        {
+        private void WikiGoldTree_OnGtsLoaded(object sender, Controls.WikiGoldenTree.OnGtsLoadedEventArgs e) {
             this.Invoke((MethodInvoker)delegate { this.lblTotGtsLoaded.Text = e.count_loaded.ToString() + " GTs loaded."; });
         }
 
-        private void wikiGoldTree_AfterSelect(object sender, TreeViewEventArgs e)
-        {
+        private void WikiGoldTree_OnFindPathsContaining(object sender, Controls.WikiGoldenTree.OnFindPathsContainingEventArgs e) {
+            // load the various paths to root (multiple leaf terms) that the topic appears in
+            var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(e.term_id, e.sample_size);
+            this.rootPathViewer1.AddTermPaths(paths_with_topic);
+        }
+
+        private void wikiGoldTree_AfterSelect(object sender, TreeViewEventArgs e) {
             // paths to root
             if (wikiGoldTree.SelectedNode == null) return;
             var gt = wikiGoldTree.SelectedNode.Tag as golden_term;
@@ -390,8 +397,9 @@ namespace wowmao
 
             if (gt.child_term.IS_TOPIC) {
                 // load the various paths to root (multiple leaf terms) that the topic appears in
-                var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(gt.child_term_id, sample_size: 50);
-                this.rootPathViewer1.AddTermPaths(paths_with_topic);
+                //var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(gt.child_term_id, sample_size: 50);
+                //this.rootPathViewer1.AddTermPaths(paths_with_topic);
+                ;
             }
             else {
                 // load the non-topic term's paths to root
@@ -400,13 +408,18 @@ namespace wowmao
             this.Cursor = Cursors.Default;
         }
 
-        private void TopicTree1_OnNodeSelect(object sender, Controls.TopicTree.OnNodeSelectEventArgs e)
-        {
-            // load the various paths to root (multiple leaf terms) that the topic appears in
+        // load the various paths to root (multiple leaf terms) that the topic appears in
+        private void TopicTree1_OnNodeSelect(object sender, Controls.TopicTree.OnNodeSelectEventArgs e) {
             this.Cursor = Cursors.WaitCursor;
             var paths_with_topic = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(e.term_id, e.sample_size);
             this.rootPathViewer1.AddTermPaths(paths_with_topic);
             this.Cursor = Cursors.Default;
+        }
+
+        private void TopicTree1_OnFindInWikiTree(object sender, Controls.TopicTree.OnFindInWikiTreeEventArgs e) {
+            this.txtGtSearch.Text = e.term_id.ToString();
+            this.cmdGtSearch_Click(null, null);
+            this.tabTrees.SelectedIndex = 0;
         }
 
         private void lvwUrlTerms_SelectedIndexChanged(object sender, EventArgs e)
@@ -430,7 +443,10 @@ namespace wowmao
                         var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);// tag.ut.term);
                         this.rootPathViewer1.AddTermPaths(root_paths);
 
+                        // recalc parents
+                        GoldenParents.GetOrProcessParents(tag.ut.term_id, reprocess: true);
                         var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+
                         txtTermParents.Text = "TOPICS:\r\n";
                         parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
                         txtTermParents.AppendText("\r\nSUGGESTED:\r\n");

@@ -93,7 +93,22 @@ namespace mm_svc.Terms
                 var term_paths = GetTermPathList(term, stemmer, path);
                 paths.Add(term_paths);
             }
-            return paths.OrderByDescending(p => string.Join(",", p.Select(p2 => p2.t.name))).ToList();
+            var root_paths = paths.OrderByDescending(p => string.Join(",", p.Select(p2 => p2.t.name))).ToList();
+
+            // trim paths to root - remove paths after any "noise terms"
+            var noise_terms = new List<string>() { "people by ", "people of ", " births", " deaths" };
+            root_paths.ForEach(p => {
+                foreach (var noise_term in noise_terms) {
+                    var term_names = p.Select(p2 => p2.t.name.ltrim()).ToList();
+                    var first_by_term = term_names.FirstOrDefault(p2 => p2.Contains(noise_term));
+                    if (first_by_term != null) {
+                        var by_ndx = term_names.IndexOf(first_by_term);
+                        p.RemoveRange(by_ndx, p.Count - by_ndx);
+                    }
+                }
+            });
+
+            return root_paths;
         }
 
         private static List<TermPath> GetTermPathList(term term, Porter2_English stemmer, IEnumerable<gt_path_to_root> path)

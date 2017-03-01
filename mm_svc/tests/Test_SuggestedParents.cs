@@ -15,6 +15,8 @@ namespace tests
     {
 
         List<long> test_terms_ids = new List<long>() {
+
+
                 5067658, // netflix
                 5747890, //  Ballet 
 
@@ -71,8 +73,7 @@ namespace tests
 
                     var term = db.terms.Find(term_id);
 
-                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: false);
-
+                    //GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess: false);
                     var paths = GoldenPaths.GetOrProcessPathsToRoot(term_id);
 
                     var topics = GoldenTopics.GetTopics(paths);

@@ -34,6 +34,8 @@ namespace mm_svc
         public static List<url_term> ProcessUrl(long url_id, bool reprocess = false, bool run_l2_boost = false)
         {
             using (var db = mm02Entities.Create()) {
+                var sw = new Stopwatch(); sw.Start();
+
                 // get url - tracking ref
                 var url = db.urls.Include("url_term").Where(p => p.id == url_id).SingleOrDefault();
                 if (url == null) return null;
@@ -44,7 +46,7 @@ namespace mm_svc
 
                 dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
 
-                // extract meta
+                // load - extract meta
                 if (!string.IsNullOrEmpty(url.meta_all) && meta_all != null) {
                     var nlp_suitability_score = meta_all.nlp_suitability_score;
                     var img_url = meta_all.ip_thumbnail_url
@@ -57,7 +59,7 @@ namespace mm_svc
                     db.SaveChangesTraceValidationErrors();
                 }
 
-                // get underlying Calais url-terms - tracking references
+                // load - get underlying Calais url-terms - tracking references
                 var all_url_terms = db.url_term
                                         .Include("term").Include("term.term_type").Include("term.cal_entity_type")
                                         .Where(p => p.url_id == url.id && !g.EXCLUDE_TERM_IDs.Contains(p.term_id)).ToListNoLock();
@@ -68,13 +70,17 @@ namespace mm_svc
                                                          || p.term.term_type_id == (int)g.TT.CALAIS_SOCIALTAG
                                                          || p.term.term_type_id == (int)g.TT.CALAIS_TOPIC).ToList();
 
-
-                // calc TSS values for Calais terms
+                //
+                // TSS: calc topic score specific values for Calais terms
+                //
                 new TssProducer().CalcTSS(meta_all, calais_terms, run_l2_boost);
                 calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
                 calais_terms.ForEach(p => p.S = p.S_CALC);
+                g.LogInfo($"url_id={url_id} CalcTSS done: ms={sw.ElapsedMilliseconds} ");
 
-                // map & store wiki golden_terms
+                //
+                // MAP WIKI : map & store wiki golden_terms
+                //
                 if (existing_wiki_terms.Count == 0) {// || reprocess == true) {
                     if (reprocess) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
@@ -83,53 +89,46 @@ namespace mm_svc
                     MapWikiGoldenTerms(calais_terms, url, reprocess);
                     db.SaveChangesTraceValidationErrors();
                 }
+                g.LogInfo($"url_id={url_id} MapWikiGoldenTerms done: ms={sw.ElapsedMilliseconds} ");
 
-                // dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
+                //
+                // DEDUPE WIKI: dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
+                //
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null).ToList();
                 if (wiki_url_terms != null) {
-                    var wiki_dupes = wiki_url_terms.Where(p => p.term != null)
-                                           .GroupBy(p => p.term.name)
-                                           .Select(p => new { term_name = p.Key, count = p.Count() })
-                                           .Where(p => p.count > 1)
-                                           .Select(p => p.term_name);
-                    if (wiki_dupes.Count() > 0) {
-                        foreach (var dupe_wiki_name in wiki_dupes) {
-                            var wiki_dupe_terms = db.terms.Include("gt_parent").AsNoTracking()
-                                                    .Where(p => p.name == dupe_wiki_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
-                                                    .ToListNoLock();
-                            var max_parent_count = wiki_dupe_terms.Max(p => p.gt_parent.Count());
-                            var non_max_parent_term_ids = wiki_dupe_terms.Where(p => p.gt_parent.Count() != max_parent_count).Select(p => p.id).ToList();
-                            db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && non_max_parent_term_ids.Contains(p.term_id)));
-                            db.SaveChangesTraceValidationErrors();
-                        }
-
-                        // reload wiki terms after de-dupe
-                        wiki_url_terms = db.url_term.Where(p => p.url_id == url_id && p.wiki_S != null).ToListNoLock();
-                    }
+                    wiki_url_terms = DedupeWikiMappedTerms(url_id, db, wiki_url_terms);
                 }
+                g.LogInfo($"url_id={url_id} DedupeWikiMappedTerms done: ms={sw.ElapsedMilliseconds} ");
 
-                // calc & store all paths to root for mapped & deduped golden terms
+                //
+                // PATHS TO ROOT: calc & store all paths to root for mapped & deduped golden terms
+                //
                 Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));//, reprocess));
 
                 //
-                // calc & store suggested parents, for each wiki term - dynamic suggested parents, and editorially defined parent topics
+                // SUGGESTED PARENTS: calc & store parents for each wiki term - dynamic suggested parents and editorially defined parent topics
                 //
-                var top_parents = new ConcurrentDictionary<long, List<gt_parent>>();
+                var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
+                var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess);
+
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false); // reprocess);
+
                     if (term_parents != null) {
-                        var filtered_term_parents = term_parents.OrderByDescending(p2 => p2.S_norm)
-                                                                .Take(10) // *** remove long tail - for better common parent
-                                                                .ToList();
-                        top_parents.AddOrUpdate(p.term_id, filtered_term_parents, (k, v) => filtered_term_parents);
+                        var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
+                        var parents_topics = term_parents.Where(p2 => p2.is_topic == true).ToList();
+
+                        // dynamic parents: remove long tail - for better common parent finding
+                        var filtered_dynamic = parents_dynamic.OrderByDescending(p2 => p2.S_norm).Take(10).ToList();
+                        top_parents_dynamic.AddOrUpdate(p.term_id, filtered_dynamic, (k, v) => filtered_dynamic);
+
+                        // topic parents: add all sorted by rank
+                        top_parents_topics.AddOrUpdate(p.term_id, parents_topics, (k, v) => parents_topics);
                     }
                 });
-                var all_top_parents = top_parents.Values.SelectMany(p => p).ToList();
+                var all_parents_dynamic = top_parents_dynamic.Values.SelectMany(p => p).ToList();
+                var all_parents_topics = top_parents_topics.Values.SelectMany(p => p).ToList();
 
-                //
-                // find most common suggested parent, across all wiki terms -- i.e. map from multiple suggested parents down to ranked list
-                // of suggested parent/topic for the url.
-                //
                 //  (done): topic hiearchies - how to maintain these:
                 //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
                 //        any newly discovered links for topics; the parent-child linkage is inferred solely from relative positions in PtR.
@@ -143,12 +142,15 @@ namespace mm_svc
                 //  (done) TopicTree refresh, w/ context menu to remove Topic flag from term -- should also delete the link from topic_link table
                 //        also to be able to mark a topic_link as "disabled" (not delete; different from removing Topic flag) - to mark
                 //        a specific link as not appropriate, etc.
-                // ****
                 //
-                //  TODO (2): apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
+                //  (done - partially) *** Need to do a first cut of editorial topics -- 50-100 or so; + promotion to prod (term.is_topic|is_root_topic + [topic_link])
+                //      (did some reasonable roots, and started 2nd level)
+                //
+                //  WIP: apply separately the most common logic below to topic parents and dynamic parents, i.e. we have most common scored topics
                 //        and most common scored dynamic suggestions; so another column on [url_parent_term] neeed: [is_topic] (or maybe scoring logic is different
                 //        for dynamics and topics -- for topics, we probably want to honour the scoring of topics produced by GetTopics, i.e. use closest to leaf)
-                //  
+                //  ***
+                //
                 // then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
                 //
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
@@ -158,26 +160,18 @@ namespace mm_svc
                 // .... MIGRATION OF EDITORIAL TERMS TO PROD? soon time to try running wowmao against prod...? 
                 // >>
                 //
+
+                //
+                // [url_parent_term]
+                //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
-                    // stemming, w/ contains
-                    var stemmer = new Porter2_English();
-                    var top_parents_stemmed = all_top_parents.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1, c = 0 });
-                    var top_parents_stemmed_counted_contains = top_parents_stemmed.Select(p => new {
-                        stemmed = p.stemmed,
-                        t = p.t,
-                        count = top_parents_stemmed.Count(p2 => p2.stemmed.Contains(p.stemmed))
-                    }).OrderByDescending(p => p.count).DistinctBy(p => p.t.id);
+                    // editorial topic parents
+                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics);
 
-                    // remove
-                    db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id));
-                    db.SaveChangesTraceValidationErrors();
-
-                    // add
-                    var pri = 0;
-                    db.url_parent_term.AddRange(top_parents_stemmed_counted_contains
-                                                .Where(p => p.count > 1) // *** want real commonality
-                                                .Select(p => new url_parent_term() { term_id = p.t.id, url_id = url_id, pri = ++pri, }));
-                    db.SaveChangesTraceValidationErrors();
+                    // dynamic sugggest parents
+                    // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
+                    // of suggested related parent terms and topic terms, for the url.
+                    CalcAndStoreUrlParentTerms_Dynamic(url_id, db, all_parents_dynamic);
                 }
 
                 url.processed_at_utc = DateTime.UtcNow;
@@ -192,6 +186,147 @@ namespace mm_svc
                 //Debug.WriteLine(qry.ToString());
                 return qry.ToListNoLock();
             }
+        }
+
+        [DebuggerDisplay(@"{t} count = {count} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")})")]
+        private class TopicInfo {
+            public term t;
+            public double avg_S, avg_S_norm;
+            public double S, S_norm;
+            public int count;
+            //public List<term> chain;
+            //public double other_chains_boost;
+            //public List<int> appears_in_chains_depths = new List<int>();
+        }
+        private static void CalcAndStoreUrlParentTerms_Topics(long url_id, mm02Entities db, List<gt_parent> all_parents_topics)
+        {
+            // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
+            all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
+            var sorted_new_s_norm = all_parents_topics.OrderByDescending(p => p.S_norm).ToList();
+
+            // group/count topics -- weight by input topic S
+            var counted_terms = all_parents_topics.Select(p => p.parent_term)
+                                                .GroupBy(p => p.id)
+                                                .Select(p => new { term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
+                                                                  avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
+                                                             avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
+                                                                  count = p.Count() })
+                                                .OrderByDescending(p => p.avg_S)
+                                                .ToList();
+
+            // get topic chains to root (or to repetition, for unrootied topics) -- weight by input S, by sqrt repetition count
+            var counted_and_ranked = counted_terms.Select(p => new TopicInfo { t = p.term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count,
+                                                          S = Math.Pow(p.count, (1.0 / 2)) * p.avg_S,
+                                                    //chain = GetTopicChain(p.term, new List<term>() { p.term })
+            }).OrderByDescending(p => p.S).ToList();
+            counted_and_ranked.ForEach(p => p.S_norm = p.S / counted_and_ranked.Max(p2 => p2.S));
+
+            // remove long tail
+            counted_and_ranked = counted_and_ranked.Where(p => p.S_norm > 0.1).ToList();
+
+            // remove
+            db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
+            db.SaveChangesTraceValidationErrors();
+
+            // add
+            var pri = 0;
+            db.url_parent_term.AddRange(counted_and_ranked
+                                        //.Where(p => p.count > 1) // *** want real commonality
+                                        .Select(p => new url_parent_term() {
+                                            term_id = p.t.id,
+                                            url_id = url_id,
+                                            pri = ++pri,
+                                            found_topic = true,
+                                        }));
+            db.SaveChangesTraceValidationErrors();
+
+            // walk each topic chain -- boost any top level matching topics by topic chain root S, scaled to 1/square of match depth
+            // (wip...)
+            /*terms_and_chains.ForEach(p => {
+                for (int d = 1; d < p.chain.Count; d++) { // first item is leaf of topic chain (== p)
+                    var chain_term = p.chain[d];
+                    terms_and_chains.Where(p2 => p2.term.id == chain_term.id).ToList().ForEach(p2 => {
+                        p2.appears_in_chains_depths.Add(d);
+                    });
+                }
+            });
+            terms_and_chains.ForEach(p => {
+                if (p.appears_in_chains_depths.Count > 0)
+                    p.other_chains_boost = p.S * Math.Sqrt(p.appears_in_chains_depths.Count) * (1.0 / p.appears_in_chains_depths.Max());
+            });
+            var order_by_chain_boost = terms_and_chains.OrderByDescending(p => p.other_chains_boost).ToList();*/
+
+        }
+
+        /*private static List<term> GetTopicChain(term child_topic, List<term> topic_chain) {
+            if (child_topic.is_topic_root)
+                return topic_chain;
+
+            topic_link first_parent_link;
+            using (var db = mm02Entities.Create()) {
+
+                // *** assumes -- topic appears only once in topic_link hierarchy! just picks first parent
+                first_parent_link = db.topic_link.AsNoTracking().Include("term").AsNoTracking().FirstOrDefault(p => p.child_term_id == child_topic.id);
+
+                // stop recursion if arrived at true defined root topic, or if unrooted topic we go full circle
+                if (first_parent_link == null || topic_chain.Select(p => p.id).Contains(first_parent_link.parent_term_id))
+                    return topic_chain;
+
+                topic_chain.Add(first_parent_link.parent_term);
+            }
+            return GetTopicChain(first_parent_link.parent_term, topic_chain);
+        }*/
+
+        private static void CalcAndStoreUrlParentTerms_Dynamic(long url_id, mm02Entities db, List<gt_parent> all_parents_dynamic)
+        {
+            // stemming, w/ contains -- count occurances of each dynamic parent stemmed name across all dynamic parents
+            var stemmer = new Porter2_English();
+            var stemmed = all_parents_dynamic.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1 });
+            var stemmed_count_contains = stemmed.Select(p => new {
+                stemmed = p.stemmed,
+                t = p.t,
+                count = stemmed.Count(p2 => p2.stemmed.Contains(p.stemmed))
+            }).OrderByDescending(p => p.count).DistinctBy(p => p.t.id);
+
+            // remove
+            db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.suggested_dynamic == true));
+            db.SaveChangesTraceValidationErrors();
+
+            // add
+            var pri = 0;
+            db.url_parent_term.AddRange(stemmed_count_contains
+                                        .Where(p => p.count > 1) // *** want real commonality
+                                        .Select(p => new url_parent_term() {
+                                            term_id = p.t.id,
+                                            url_id = url_id,
+                                            pri = ++pri,
+                                            suggested_dynamic = true }));
+            db.SaveChangesTraceValidationErrors();
+        }
+
+        private static List<url_term> DedupeWikiMappedTerms(long url_id, mm02Entities db, List<url_term> wiki_url_terms)
+        {
+            var wiki_dupes = wiki_url_terms.Where(p => p.term != null)
+                                            .GroupBy(p => p.term.name)
+                                            .Select(p => new { term_name = p.Key, count = p.Count() })
+                                            .Where(p => p.count > 1)
+                                            .Select(p => p.term_name);
+            if (wiki_dupes.Count() > 0) {
+                foreach (var dupe_wiki_name in wiki_dupes) {
+                    var wiki_dupe_terms = db.terms.Include("gt_parent").AsNoTracking()
+                                            .Where(p => p.name == dupe_wiki_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
+                                            .ToListNoLock();
+                    var max_parent_count = wiki_dupe_terms.Max(p => p.gt_parent.Count());
+                    var non_max_parent_term_ids = wiki_dupe_terms.Where(p => p.gt_parent.Count() != max_parent_count).Select(p => p.id).ToList();
+                    db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && non_max_parent_term_ids.Contains(p.term_id)));
+                    db.SaveChangesTraceValidationErrors();
+                }
+
+                // reload wiki terms after de-dupe
+                wiki_url_terms = db.url_term.Where(p => p.url_id == url_id && p.wiki_S != null).ToListNoLock();
+            }
+
+            return wiki_url_terms;
         }
 
         public static int MapWikiGoldenTerms(IEnumerable<url_term> calais_terms, url db_url, bool reprocess)

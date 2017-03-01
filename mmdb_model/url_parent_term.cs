@@ -18,8 +18,10 @@ namespace mmdb_model
         public long url_id { get; set; }
         public long term_id { get; set; }
         public int pri { get; set; }
+        public bool suggested_dynamic { get; set; }
+        public bool found_topic { get; set; }
     
-        public virtual url url { get; set; }
         public virtual term term { get; set; }
+        public virtual url url { get; set; }
     }
 }

@@ -2,7 +2,15 @@
 -- roots
 
 -- truncate table topic_link
-select distinct parent_term_id from topic_link where parent_term_id not in (select distinct child_term_id from topic_link)
+-- select distinct parent_term_id from topic_link where parent_term_id not in (select distinct child_term_id from topic_link)
+select * from term where is_topic_root = 1
+
+select top 100 * from gt_path_to_root
+select distinct top 100 term_id, path_no from gt_path_to_root where seq_term_id = 4990959
+select * from gt_path_to_root where term_id = 8576879 and path_no = 2
+
+
+
 
 --
 -- todo: need to manually mark 5-10 topics as ROOTs -- start w/ walk 100 set -- the field [is_topic_root] needs to be on the term table...

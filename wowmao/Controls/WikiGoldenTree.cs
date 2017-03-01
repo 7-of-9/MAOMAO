@@ -21,9 +21,11 @@ namespace wowmao.Controls
         public event EventHandler<OnSearchGoogleEventArgs> OnSearchGoogle = delegate { };
         public class OnSearchGoogleEventArgs : EventArgs { public string search_term { get; set; } }
 
-
         public event EventHandler<OnGtsLoadedEventArgs> OnGtsLoaded = delegate { };
         public class OnGtsLoadedEventArgs : EventArgs { public int count_loaded { get; set; } }
+
+        public event EventHandler<OnFindPathsContainingEventArgs> OnFindPathsContaining = delegate { };
+        public class OnFindPathsContainingEventArgs : EventArgs { public int sample_size { get; set; } public long term_id { get; set; } }
 
         public int total_gts_loaded = 0;
 
@@ -287,8 +289,7 @@ namespace wowmao.Controls
         {
         }
 
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
             var pt = this.PointToClient(Cursor.Position);
             var ht = this.HitTest(pt);
             var node = ht.Node;
@@ -300,11 +301,18 @@ namespace wowmao.Controls
                 var gts_path = nodes_path.Select(p => p.Tag).Cast<golden_term>();
                 var terms_path = gts_path.Select(p => p.child_term);
                 this.mnuInfo.Text = string.Join(" / ", terms_path.Select(p => p.name).ToArray());
+
+                mnuToggleTopic.Text = gt.child_term.IS_TOPIC ? "REMOVE TOPIC" : "SET TOPIC";
             }
         }
 
-        private void mnuSearchGoogle_Click(object sender, EventArgs e)
-        {
+        private void mnuFindPathsContaining_Click(object sender, System.EventArgs e) {
+            if (this.SelectedNode == null) return;
+            var gt = this.SelectedNode.Tag as golden_term;
+            OnFindPathsContaining?.Invoke(this.GetType(), new OnFindPathsContainingEventArgs() { term_id = gt.child_term_id, sample_size = 50 });
+        }
+
+        private void mnuSearchGoogle_Click(object sender, EventArgs e) {
             if (this.SelectedNode == null) return;
             var gt = this.SelectedNode.Tag as golden_term;
             Debug.WriteLine(gt.ToString());

@@ -34,8 +34,11 @@
             this.mnuSep1 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuSearchGoogle = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMatchingUrls = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.mnuToggleTopic = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuFindPathsContaining = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,42 +49,61 @@
             this.mnuSep1,
             this.mnuSearchGoogle,
             this.mnuMatchingUrls,
-            this.mnuToggleTopic});
+            this.toolStripSeparator1,
+            this.mnuToggleTopic,
+            this.toolStripSeparator2,
+            this.mnuFindPathsContaining});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(190, 98);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(217, 132);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
             // 
             this.mnuInfo.Enabled = false;
             this.mnuInfo.Name = "mnuInfo";
-            this.mnuInfo.Size = new System.Drawing.Size(189, 22);
+            this.mnuInfo.Size = new System.Drawing.Size(216, 22);
             this.mnuInfo.Text = "(info)";
             // 
             // mnuSep1
             // 
             this.mnuSep1.Name = "mnuSep1";
-            this.mnuSep1.Size = new System.Drawing.Size(186, 6);
+            this.mnuSep1.Size = new System.Drawing.Size(213, 6);
             // 
             // mnuSearchGoogle
             // 
             this.mnuSearchGoogle.Name = "mnuSearchGoogle";
-            this.mnuSearchGoogle.Size = new System.Drawing.Size(189, 22);
+            this.mnuSearchGoogle.Size = new System.Drawing.Size(216, 22);
             this.mnuSearchGoogle.Text = "Search Google...";
             this.mnuSearchGoogle.Click += new System.EventHandler(this.mnuSearchGoogle_Click);
             // 
             // mnuMatchingUrls
             // 
             this.mnuMatchingUrls.Name = "mnuMatchingUrls";
-            this.mnuMatchingUrls.Size = new System.Drawing.Size(189, 22);
+            this.mnuMatchingUrls.Size = new System.Drawing.Size(216, 22);
             this.mnuMatchingUrls.Text = "Find matching URLs...";
             // 
             // mnuToggleTopic
             // 
             this.mnuToggleTopic.Name = "mnuToggleTopic";
-            this.mnuToggleTopic.Size = new System.Drawing.Size(189, 22);
+            this.mnuToggleTopic.Size = new System.Drawing.Size(216, 22);
             this.mnuToggleTopic.Text = "Topic!";
             this.mnuToggleTopic.Click += new System.EventHandler(this.mnuToggleTopic_Click);
+            // 
+            // mnuFindPathsContaining
+            // 
+            this.mnuFindPathsContaining.Name = "mnuFindPathsContaining";
+            this.mnuFindPathsContaining.Size = new System.Drawing.Size(216, 22);
+            this.mnuFindPathsContaining.Text = "View Paths Containing (50)";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(213, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(213, 6);
             // 
             // WikiGoldenTree
             // 
@@ -100,5 +122,8 @@
         private System.Windows.Forms.ToolStripSeparator mnuSep1;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolStripMenuItem mnuToggleTopic;
+        private System.Windows.Forms.ToolStripMenuItem mnuFindPathsContaining;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
