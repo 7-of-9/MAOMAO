@@ -21,17 +21,21 @@ const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
 export function* getGoogleSearchResult() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
-  const page = yield select(makeSelectPageNumber());
-  const query = queryString.stringify({
-    type: 'google',
-    url: `https://www.google.com/search?q=${encodeURI(keyword)}&start=${LIMIT * (page - 1)}`,
-  });
-  const crawlerUrl = `${CRALWER_API_URL}?${query}`;
-  try {
-    const response = yield call(request, crawlerUrl);
-    yield put(googleLoaded(response.result, keyword));
-  } catch (err) {
-    yield put(googleLoadingError(err));
+  if (keyword === '') {
+    yield put(googleLoaded([], keyword));
+  } else {
+    const page = yield select(makeSelectPageNumber());
+    const query = queryString.stringify({
+      type: 'google',
+      url: `https://www.google.com/search?q=${encodeURI(keyword)}&start=${LIMIT * (page - 1)}`,
+    });
+    const crawlerUrl = `${CRALWER_API_URL}?${query}`;
+    try {
+      const response = yield call(request, crawlerUrl);
+      yield put(googleLoaded(response.result, keyword));
+    } catch (err) {
+      yield put(googleLoadingError(err));
+    }
   }
 }
 
@@ -41,17 +45,21 @@ export function* getGoogleSearchResult() {
 export function* getGoogleNewsResult() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
-  const page = yield select(makeSelectPageNumber());
-  const query = queryString.stringify({
-    type: 'google',
-    url: `https://www.google.com/search?q=${encodeURI(keyword)}&tbm=nws&start=${LIMIT * (page - 1)}`,
-  });
-  const crawlerUrl = `${CRALWER_API_URL}?${query}`;
-  try {
-    const response = yield call(request, crawlerUrl);
-    yield put(googleNewsLoaded(response.result, keyword));
-  } catch (err) {
-    yield put(googleNewsLoadingError(err));
+  if (keyword === '') {
+    yield put(googleNewsLoaded([], keyword));
+  } else {
+    const page = yield select(makeSelectPageNumber());
+    const query = queryString.stringify({
+      type: 'google',
+      url: `https://www.google.com/search?q=${encodeURI(keyword)}&tbm=nws&start=${LIMIT * (page - 1)}`,
+    });
+    const crawlerUrl = `${CRALWER_API_URL}?${query}`;
+    try {
+      const response = yield call(request, crawlerUrl);
+      yield put(googleNewsLoaded(response.result, keyword));
+    } catch (err) {
+      yield put(googleNewsLoadingError(err));
+    }
   }
 }
 
@@ -61,19 +69,23 @@ export function* getGoogleNewsResult() {
 export function* getGoogleKnowledge() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
-  const page = yield select(makeSelectPageNumber());
-  const query = queryString.stringify({
-    query: encodeURI(keyword),
-    key: GOOGLE_API_KEY,
-    limit: LIMIT * page,
-    indent: 'True',
-  });
-  const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?${query}`;
-  try {
-    const result = yield call(request, requestURL);
-    yield put(googleKnowledgeLoaded(result.itemListElement || [], keyword));
-  } catch (err) {
-    yield put(googleKnowledgeLoadingError(err));
+  if (keyword === '') {
+    yield put(googleKnowledgeLoaded([], keyword));
+  } else {
+    const page = yield select(makeSelectPageNumber());
+    const buildQuery = queryString.stringify({
+      query: keyword,
+      key: GOOGLE_API_KEY,
+      limit: LIMIT * page,
+      indent: 'True',
+    });
+    const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?${buildQuery}`;
+    try {
+      const result = yield call(request, requestURL);
+      yield put(googleKnowledgeLoaded(result.itemListElement || [], keyword));
+    } catch (err) {
+      yield put(googleKnowledgeLoadingError(err));
+    }
   }
 }
 
@@ -84,25 +96,29 @@ export function* getGoogleKnowledge() {
 export function* getYoutubeVideo() {
   // Select keyword from store
   const keyword = yield select(makeSelectKeyword());
-  const youtubeState = yield select(makeSelectYoutube());
-  const pageToken = youtubeState.get('nextPageToken') || '';
-  // Youtube API support those types: video, channel and playlist
-  // For testing purpose, we will get only video
-  const query = queryString.stringify({
-    query: encodeURI(keyword),
-    key: GOOGLE_API_KEY,
-    maxResults: LIMIT,
-    part: 'snippet',
-    type: 'video',
-    pageToken,
-  });
-  const requestURL = `https://www.googleapis.com/youtube/v3/search?${query}`;
+  if (keyword === '') {
+    yield put(youtubeLoaded({ nextPageToken: '', youtubeVideos: [] }, keyword));
+  } else {
+    const youtubeState = yield select(makeSelectYoutube());
+    const pageToken = youtubeState.get('nextPageToken') || '';
+    // Youtube API support those types: video, channel and playlist
+    // For testing purpose, we will get only video
+    const buildQuery = queryString.stringify({
+      query: keyword,
+      key: GOOGLE_API_KEY,
+      maxResults: LIMIT,
+      part: 'snippet',
+      type: 'video',
+      pageToken,
+    });
+    const requestURL = `https://www.googleapis.com/youtube/v3/search?${buildQuery}`;
 
-  try {
-    const result = yield call(request, requestURL);
-    yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, keyword));
-  } catch (err) {
-    yield put(youtubeLoadingError(err));
+    try {
+      const result = yield call(request, requestURL);
+      yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, keyword));
+    } catch (err) {
+      yield put(youtubeLoadingError(err));
+    }
   }
 }
 

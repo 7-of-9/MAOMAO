@@ -1,4 +1,10 @@
 import { injectGlobal } from 'styled-components';
+
+export function randomColor() {
+  const rand = Math.random().toString(16).substr(-6);
+  return `#${rand}`;
+}
+
 /* eslint no-unused-expressions: 0 */
 injectGlobal`
   html,
@@ -41,6 +47,63 @@ injectGlobal`
     &:hover {
       background-color: #eaeaeb;
     }
+  }
+
+  /* React Tags*/
+  div.ReactTags__tags {
+      position: relative;
+      padding-top: 4px;
+  }
+
+  /* Styles for the input */
+  div.ReactTags__tagInput {
+      width: 200px;
+      border-radius: 2px;
+      display: inline-block;
+  }
+  div.ReactTags__tagInput input.ReactTags__tagInputField,
+  div.ReactTags__tagInput input.ReactTags__tagInputField:focus {
+      height: 31px;
+      margin: 0;
+      font-size: 12px;
+      width: 100%;
+      border: 1px solid #eee;
+  }
+
+  /* Styles for selected tags */
+  div.ReactTags__selected span.ReactTags__tag {
+      border: 1px solid #ddd;
+      background: #eee;
+      font-size: 12px;
+      display: inline-block;
+      padding: 5px;
+      margin: 0 5px;
+      cursor: move;
+      border-radius: 6px;
+      color: #fff;
+      &:nth-child(6n) {
+          background-color: #f44336;
+      }
+      &:nth-child(6n+1) {
+          background-color: #607d8b;
+      }
+      &:nth-child(6n+2) {
+          background-color: #795548;
+      }
+      &:nth-child(6n+3) {
+          background-color: #009688;
+      }
+      &:nth-child(6n+4) {
+          background-color: #4caf50;
+      }
+      &:nth-child(6n+5) {
+          background-color: #8bc34a;
+      }
+  }
+  div.ReactTags__selected a.ReactTags__remove {
+      color: #fff;
+      margin-left: 5px;
+      cursor: pointer;
   }
 
 `;

@@ -24,11 +24,6 @@ import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
 import LogoIcon from 'components/LogoIcon';
 import BlockElement from 'components/BlockElement';
-// import FacebookGraph from 'components/FacebookGraph';
-// import Imgur from 'components/Imgur';
-// import Instagram from 'components/Instagram';
-// import Reddit from 'components/Reddit';
-
 import { makeSelectKeyword } from './selectors';
 import {
   makeSelectLoading, makeSelectGoogle, makeSelectGoogleNews, makeSelectGoogleKnowledge, makeSelectYoutube,
@@ -46,6 +41,7 @@ const DataContainer = Block(InfiniteScroll);
  * @return {[type]}      [description]
  */
 function mashUp(props) {
+  // FIXME: The overlap data for google/youtube/news/google knowledge
   // Parse data
   const graphKnowledges = [];
   const search = [];
@@ -183,8 +179,8 @@ export function mapDispatchToProps(dispatch) {
       dispatch(googleNewsSearch());
       dispatch(youtubeSearch());
     },
-    onChange: (e) => {
-      dispatch(changeKeyword(e.target.value));
+    onChange: (keyword) => {
+      dispatch(changeKeyword(keyword));
     },
     doSearch: (e) => {
       if (e !== undefined && e.preventDefault) {

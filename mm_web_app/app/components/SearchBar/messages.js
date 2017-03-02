@@ -16,6 +16,6 @@ export default defineMessages({
   },
   placeholder: {
     id: 'app.components.SearchBar.placeholder',
-    defaultMessage: 'Keyword',
+    defaultMessage: 'Search',
   },
 });

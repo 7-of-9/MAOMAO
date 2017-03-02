@@ -20,16 +20,4 @@ const InputContainer = styled.div`
   height: 40px;
 `;
 
-const Input = styled.input`
-  padding-left: 52px;
-  color: #b5b5b5;
-  font-size: 16px;
-  font-weight: 600;
-  height: 100%;
-  line-height: 20px;
-  outline: none;
-  padding: 0;
-  width: 100%;
-`;
-
-export { InputWrapper, InputContainer, Input };
+export { InputWrapper, InputContainer };
