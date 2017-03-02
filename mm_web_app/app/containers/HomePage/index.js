@@ -17,6 +17,7 @@ import _ from 'lodash';
 import InfiniteScroll from 'redux-infinite-scroll';
 import ReactPlayer from 'react-player';
 import { pure, onlyUpdateForKeys } from 'recompose';
+import { List } from 'immutable';
 
 import Block from 'components/Block';
 import Loading from 'components/Loading';
@@ -26,14 +27,15 @@ import LogoIcon from 'components/LogoIcon';
 import BlockElement from 'components/BlockElement';
 import { makeSelectKeyword } from './selectors';
 import {
-  makeSelectLoading, makeSelectGoogle, makeSelectGoogleNews, makeSelectGoogleKnowledge, makeSelectYoutube,
+  makeSelectLoading, makeSelectGoogle, makeSelectGoogleNews, makeSelectGoogleKnowledge, makeSelectYoutube, makeSelectReddit,
 } from '../App/selectors';
 import {
-   googleKnowledgeSearch, googleSearch, googleNewsSearch, youtubeSearch, cleanSearchResult,
+   googleKnowledgeSearch, googleSearch, googleNewsSearch, youtubeSearch, redditSearch, cleanSearchResult,
 } from '../App/actions';
 import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
+const urls = List([]);
 
 /**
  * Mash up all result from API
@@ -41,23 +43,24 @@ const DataContainer = Block(InfiniteScroll);
  * @return {[type]}      [description]
  */
 function mashUp(props) {
-  // FIXME: The overlap data for google/youtube/news/google knowledge
   // Parse data
   const graphKnowledges = [];
   const search = [];
   const news = [];
   const videos = [];
+  const reddits = [];
   const { googleKnowledges } = props.googleKnowledge.toJS();
   const { youtubeVideos } = props.youtube.toJS();
   const { googleNews } = props.googleNews.toJS();
   const { googleSearchResult } = props.google.toJS();
-  let counter = 0;
-  if (googleKnowledges.length || youtubeVideos.length || googleNews.length || googleSearchResult.length) {
+  const { redditListing } = props.reddit.toJS();
+  if (googleKnowledges.length || youtubeVideos.length || googleNews.length || googleSearchResult.length || redditListing.length) {
     _.forEach(googleKnowledges, (item) => {
       const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url;
-      if (moreDetailUrl && item.result.image && item.result.image.contentUrl) {
+      if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
+        urls.insert(moreDetailUrl);
         graphKnowledges.push(
-          <div className="grid-item" key={counter += 1}>
+          <div className="grid-item" key={`GK-${moreDetailUrl}`}>
             <BlockElement
               name={item.result.name}
               description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
@@ -69,9 +72,10 @@ function mashUp(props) {
       }
     });
     _.forEach(googleNews, (item) => {
-      if (item.img) {
+      if (item.img && !urls.includes(item.url)) {
+        urls.insert(item.url);
         news.push(
-          <div className="grid-item" key={counter += 1}>
+          <div className="grid-item" key={`GN-${item.url}`}>
             <BlockElement
               title={item.title}
               description={item.description}
@@ -83,9 +87,10 @@ function mashUp(props) {
       }
     });
     _.forEach(googleSearchResult, (item) => {
-      if (item.img) {
+      if (item.img && !urls.includes(item.url)) {
+        urls.insert(item.url);
         search.push(
-          <div className="grid-item" key={counter += 1}>
+          <div className="grid-item" key={`GS-${item.url}`}>
             <BlockElement
               title={item.title}
               description={item.description}
@@ -97,15 +102,31 @@ function mashUp(props) {
       }
     });
     _.forEach(youtubeVideos, (item) => {
-      if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url) {
+      const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`;
+      if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
+        urls.insert(youtubeUrl);
         videos.push(
-          <div className="grid-item" key={counter += 1}>
+          <div className="grid-item" key={`YT-${youtubeUrl}`}>
             <BlockElement
               name={item.snippet.title}
               description={item.snippet.description}
               image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-              url={`https://www.youtube.com/watch?v=${item.id.videoId}`}
+              url={youtubeUrl}
               type={'Youtube'}
+            />
+          </div>);
+      }
+    });
+    _.forEach(redditListing, (item) => {
+      if (item.preview && item.preview.images && item.preview.images[0] && !urls.includes(item.url)) {
+        reddits.push(
+          <div className="grid-item" key={item.url}>
+            <BlockElement
+              name={item.title}
+              description={item.selftext || item.title}
+              image={item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url}
+              url={item.url}
+              type={'Reddit'}
             />
           </div>);
       }
@@ -113,7 +134,7 @@ function mashUp(props) {
   }
 
   // Mashup records
-  const result = [graphKnowledges, news, search, videos];
+  const result = [graphKnowledges, news, search, reddits, videos];
   const elements = [];
   const numberItems = _.map(result, (item) => item.length);
   const maxItems = _.max(numberItems);
@@ -177,6 +198,8 @@ export function mapDispatchToProps(dispatch) {
       dispatch(googleKnowledgeSearch());
       dispatch(googleSearch());
       dispatch(googleNewsSearch());
+      // TODO: pagination for reddit
+      // dispatch(redditSearch());
       dispatch(youtubeSearch());
     },
     onChange: (keyword) => {
@@ -191,6 +214,7 @@ export function mapDispatchToProps(dispatch) {
       dispatch(googleSearch());
       dispatch(googleNewsSearch());
       dispatch(youtubeSearch());
+      dispatch(redditSearch());
       dispatch(cleanSearchResult());
     },
   };
@@ -203,11 +227,12 @@ const mapStateToProps = createStructuredSelector({
   googleNews: makeSelectGoogleNews(),
   googleKnowledge: makeSelectGoogleKnowledge(),
   youtube: makeSelectYoutube(),
+  reddit: makeSelectReddit(),
 });
 
 const OptimizedComponent = pure(HomePage);
 const HyperOptimizedComponent = onlyUpdateForKeys([
-  'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube',
+  'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube', 'reddit',
 ])(OptimizedComponent);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HyperOptimizedComponent);

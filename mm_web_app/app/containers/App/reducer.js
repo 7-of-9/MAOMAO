@@ -26,6 +26,9 @@ import {
   YOUTUBE_SEARCH,
   YOUTUBE_SEARCH_ERROR,
   YOUTUBE_SEARCH_SUCCESS,
+  REDDIT_SEARCH,
+  REDDIT_SEARCH_ERROR,
+  REDDIT_SEARCH_SUCCESS,
 } from './constants';
 
 const initialGoogleState = fromJS({
@@ -41,6 +44,9 @@ const initialYoutubeState = fromJS({
   nextPageToken: '',
   youtubeVideos: [],
 });
+const initialRedditState = fromJS({
+  redditListing: [],
+});
 
 // The initial state of the App
 const initialState = fromJS({
@@ -49,6 +55,7 @@ const initialState = fromJS({
     isGoogleNewsLoading: false,
     isGoogleKnowledgeLoading: false,
     isYoutubeLoading: false,
+    isReadingLoading: false,
   },
   error: [],
   data: {
@@ -56,6 +63,7 @@ const initialState = fromJS({
     news: initialGoogleNewsState,
     knowledge: initialGoogleKnowledgeState,
     youtube: initialYoutubeState,
+    reddit: initialRedditState,
   },
 
 });
@@ -79,7 +87,7 @@ function appReducer(state = initialState, action) {
     case GOOGLE_KNOWLEDGE_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
-        .updateIn(['data', 'knowledge', 'googleKnowledges'], (items) => items.push(...action.data));
+        .updateIn(['data', 'knowledge', 'googleKnowledges'], () => action.data);
     case GOOGLE_KNOWLEDGE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
@@ -94,6 +102,17 @@ function appReducer(state = initialState, action) {
     case GOOGLE_NEWS_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleNewsLoading'], () => false)
+        .updateIn(['error'], (error) => error.push(action.error));
+    case REDDIT_SEARCH:
+      return state
+        .updateIn(['loading', 'isReadingLoading'], () => true);
+    case REDDIT_SEARCH_SUCCESS:
+      return state
+        .updateIn(['loading', 'isReadingLoading'], () => false)
+        .updateIn(['data', 'reddit', 'redditListing'], (items) => items.push(...action.data));
+    case REDDIT_SEARCH_ERROR:
+      return state
+        .updateIn(['loading', 'isReadingLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
     case YOUTUBE_SEARCH:
       return state.updateIn(['loading', 'isYoutubeLoading'], () => true);
@@ -110,7 +129,8 @@ function appReducer(state = initialState, action) {
       return state.updateIn(['data', 'google'], () => initialGoogleState)
        .updateIn(['data', 'knowledge'], () => initialGoogleKnowledgeState)
        .updateIn(['data', 'news'], () => initialGoogleNewsState)
-       .updateIn(['data', 'youtube'], () => initialYoutubeState);
+       .updateIn(['data', 'youtube'], () => initialYoutubeState)
+       .updateIn(['data', 'reddit'], () => initialRedditState);
     default:
       return state;
   }

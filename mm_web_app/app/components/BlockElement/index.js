@@ -11,6 +11,7 @@ import googleKnownledgeIcon from './images/google-knowledge-graph.png';
 import googleNewsIcon from './images/google-news.png';
 import googleIcon from './images/google.png';
 import youtubeIcon from './images/youtube.png';
+import redditIcon from './images/reddit.png';
 
 const Wrapper = styled.section`
   padding: 10px;
@@ -69,6 +70,8 @@ function iconType(type) {
       return googleNewsIcon;
     case 'Youtube':
       return youtubeIcon;
+    case 'Reddit':
+      return redditIcon;
     default:
       return googleIcon;
   }

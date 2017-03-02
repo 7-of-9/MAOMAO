@@ -18,6 +18,9 @@ import {
   YOUTUBE_SEARCH,
   YOUTUBE_SEARCH_SUCCESS,
   YOUTUBE_SEARCH_ERROR,
+  REDDIT_SEARCH,
+  REDDIT_SEARCH_SUCCESS,
+  REDDIT_SEARCH_ERROR,
 } from './constants';
 
 export function cleanSearchResult() {
@@ -106,6 +109,27 @@ export function youtubeLoaded(data, keyword) {
 export function youtubeLoadingError(error) {
   return {
     type: YOUTUBE_SEARCH_ERROR,
+    error,
+  };
+}
+
+export function redditSearch() {
+  return {
+    type: REDDIT_SEARCH,
+  };
+}
+
+export function redditLoaded(data, keyword) {
+  return {
+    type: REDDIT_SEARCH_SUCCESS,
+    data,
+    keyword,
+  };
+}
+
+export function redditLoadingError(error) {
+  return {
+    type: REDDIT_SEARCH_ERROR,
     error,
   };
 }

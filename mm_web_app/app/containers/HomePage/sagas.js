@@ -1,12 +1,15 @@
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import queryString from 'query-string';
+import snoowrap from 'snoowrap';
 import {
-  GOOGLE_API_KEY, GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_KNOWLEDGE_SEARCH, GOOGLE_NEWS_SEARCH,
+  GOOGLE_API_KEY, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET,
+  GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_KNOWLEDGE_SEARCH, GOOGLE_NEWS_SEARCH, REDDIT_SEARCH,
  } from 'containers/App/constants';
 import {
   googleKnowledgeLoaded, googleKnowledgeLoadingError, youtubeLoaded, youtubeLoadingError,
   googleLoaded, googleLoadingError, googleNewsLoaded, googleNewsLoadingError,
+  redditLoaded, redditLoadingError,
  } from 'containers/App/actions';
 
 import request from 'utils/request';
@@ -15,6 +18,16 @@ import { makeSelectYoutube } from 'containers/App/selectors';
 
 const LIMIT = 10;
 const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
+
+// Use reddit-oauth-helper to create an permanent token
+/* eslint new-cap: ["error", { "newIsCap": false }]*/
+const r = new snoowrap({
+  userAgent: 'webapp:maomao v1 (by Dung Huynh (dunghd.it@gmail.com))',
+  clientId: REDDIT_CLIENT_ID,
+  clientSecret: REDDIT_CLIENT_SECRET,
+  refreshToken: '69838591-jrgIILLyZ9z8M_5Z7pQXqXwZ2Z4',
+});
+
 /**
  * Google search request/response handler
  */
@@ -104,7 +117,7 @@ export function* getYoutubeVideo() {
     // Youtube API support those types: video, channel and playlist
     // For testing purpose, we will get only video
     const buildQuery = queryString.stringify({
-      query: keyword,
+      q: keyword,
       key: GOOGLE_API_KEY,
       maxResults: LIMIT,
       part: 'snippet',
@@ -118,6 +131,31 @@ export function* getYoutubeVideo() {
       yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, keyword));
     } catch (err) {
       yield put(youtubeLoadingError(err));
+    }
+  }
+}
+
+function redditSearchBaseOneKeyword(keyword) {
+  return r.search({
+    query: keyword,
+    relevance: 'top',
+  });
+}
+
+/**
+ * Reddit handler
+ */
+export function* getRedditListing() {
+  // Select keyword from store
+  const keyword = yield select(makeSelectKeyword());
+  if (keyword === '') {
+    yield put(redditLoaded([], keyword));
+  } else {
+    try {
+      const result = yield call(redditSearchBaseOneKeyword, keyword);
+      yield put(redditLoaded(result, keyword));
+    } catch (err) {
+      yield put(redditLoadingError(err));
     }
   }
 }
@@ -166,10 +204,22 @@ export function* youtubeData() {
   yield take(LOCATION_CHANGE);
   yield cancel(watcher);
 }
+
+/**
+ * Root saga manages watcher lifecycle
+ */
+export function* redditData() {
+  const watcher = yield takeLatest(REDDIT_SEARCH, getRedditListing);
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watcher);
+}
 // All sagas to be loaded
 export default [
   googleKnowledgeData,
   googleNewsData,
   youtubeData,
   googleSearchData,
+  redditData,
 ];
