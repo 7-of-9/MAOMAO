@@ -13,6 +13,7 @@ using mm_global.Extensions;
 using Newtonsoft.Json;
 using mm_svc.Terms;
 using System.Collections.Concurrent;
+using System.Data.SqlClient;
 
 namespace mm_svc
 {
@@ -88,8 +89,8 @@ namespace mm_svc
                     }
                     MapWikiGoldenTerms(calais_terms, url, reprocess);
                     db.SaveChangesTraceValidationErrors();
+                    g.LogInfo($"url_id={url_id} MapWikiGoldenTerms DONE: ms={sw.ElapsedMilliseconds} ");
                 }
-                g.LogInfo($"url_id={url_id} MapWikiGoldenTerms done: ms={sw.ElapsedMilliseconds} ");
 
                 //
                 // DEDUPE WIKI: dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
@@ -97,13 +98,13 @@ namespace mm_svc
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null).ToList();
                 if (wiki_url_terms != null) {
                     wiki_url_terms = DedupeWikiMappedTerms(url_id, db, wiki_url_terms);
+                    g.LogInfo($"url_id={url_id} DedupeWikiMappedTerms DONE: ms={sw.ElapsedMilliseconds} ");
                 }
-                g.LogInfo($"url_id={url_id} DedupeWikiMappedTerms done: ms={sw.ElapsedMilliseconds} ");
 
                 //
                 // PATHS TO ROOT: calc & store all paths to root for mapped & deduped golden terms
                 //
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id));//, reprocess));
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
 
                 //
                 // SUGGESTED PARENTS: calc & store parents for each wiki term - dynamic suggested parents and editorially defined parent topics
@@ -112,7 +113,7 @@ namespace mm_svc
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false); // reprocess);
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess); //***
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
@@ -155,6 +156,11 @@ namespace mm_svc
                 // WIP -- now, can get url_parent_terms (found_topic=true) for all URLs
                 //        >> looking for a way of picking out end results that REQUIRE MAINTENANCE, e.g. low S scores, or some other metric
                 //           to pick out these categories that need attention, automatically
+                //
+                //          (*) % of topics in PtR doesn't seem much help.
+                //
+                //          (*) max S value of term's topic parents > maybe... ???
+                //
                 //  *******
                 //
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
@@ -168,7 +174,7 @@ namespace mm_svc
                 //
                 // [url_parent_term]
                 //
-                if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) {
+                if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
                     // editorial topic parents
                     CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics);
 
@@ -229,23 +235,23 @@ namespace mm_svc
             counted_and_ranked = counted_and_ranked.Where(p => p.S_norm > 0.2).ToList();
 
             // remove
-            db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
-            db.SaveChangesTraceValidationErrors();
+            db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND [found_topic]=1", url_id);
+            //db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
+            //db.SaveChangesTraceValidationErrors();
 
             // add
             var pri = 0;
-            db.url_parent_term.AddRange(counted_and_ranked
-                                        //.Where(p => p.count > 1) // *** want real commonality
+            var url_parent_terms = counted_and_ranked//.Where(p => p.count > 1) // *** want real commonality
                                         .Select(p => new url_parent_term() {
                                             term_id = p.t.id,
-                                            url_id = url_id,
-                                            pri = ++pri,
-                                            found_topic = true,
-                                            avg_S = p.avg_S, 
-                                            S_norm = p.S_norm,
-                                            S = p.S,
-                                        }));
-            db.SaveChangesTraceValidationErrors();
+                                             url_id = url_id,
+                                                pri = ++pri,
+                                        found_topic = true,
+                                              avg_S = p.avg_S,
+                                             S_norm = p.S_norm,
+                                                  S = p.S,
+                                        }).ToList();
+            mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
 
             // walk each topic chain -- boost any top level matching topics by topic chain root S, scaled to 1/square of match depth
             // (wip...)
@@ -296,20 +302,22 @@ namespace mm_svc
             }).OrderByDescending(p => p.count).DistinctBy(p => p.t.id);
 
             // remove
-            db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.suggested_dynamic == true));
-            db.SaveChangesTraceValidationErrors();
+            db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND [suggested_dynamic]=1", url_id);
+            //g.RetryMaxOrThrow(() => db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.suggested_dynamic == true)));
+            //db.SaveChangesTraceValidationErrors();
 
             // add
             var pri = 0;
-            db.url_parent_term.AddRange(stemmed_count_contains
+            var url_parent_terms = stemmed_count_contains
                                         .Where(p => p.count > 1) // *** want real commonality
                                         .Select(p => new url_parent_term() {
                                             term_id = p.t.id,
-                                            url_id = url_id,
-                                            pri = ++pri,
-                                            S = p.count,
-                                            suggested_dynamic = true }));
-            db.SaveChangesTraceValidationErrors();
+                                             url_id = url_id,
+                                                pri = ++pri,
+                                                  S = p.count,
+                                  suggested_dynamic = true
+                                        }).ToList();
+            mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
         }
 
         private static List<url_term> DedupeWikiMappedTerms(long url_id, mm02Entities db, List<url_term> wiki_url_terms)

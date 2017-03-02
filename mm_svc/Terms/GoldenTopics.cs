@@ -108,12 +108,8 @@ namespace mm_svc.Terms
                     using (var db = mm02Entities.Create()) {
                         foreach (var parent_topic in parent_topics.Keys) {
 
-                            //// strange: art is a child of computer programming?!
-                            //if (parent_topic.id == 5204705 && child_topic.id == 4990963)
-                            //    Debugger.Break();
-
                             var distances = parent_topics[parent_topic];
-                            var topic_link = db.topic_link.FirstOrDefault(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id);
+                            var topic_link = db.topic_link.Where(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id).FirstOrDefaultNoLock();
                             if (topic_link == null) {
                                 // new topic link
                                 var new_link = new topic_link {
@@ -127,7 +123,7 @@ namespace mm_svc.Terms
                                 db.topic_link.Add(new_link);
                                 db.SaveChanges_IgnoreDupeKeyEx(); 
                                 //db.SaveChangesTraceValidationErrors();
-                                Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
+                                //Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
                                 //try {
@@ -146,7 +142,7 @@ namespace mm_svc.Terms
                                     //topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
 
                                     //if (db.SaveChangesTraceValidationErrors() != 0) //** ???
-                                        Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
+                                    //    Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
                                     //else
                                     //    Trace.WriteLine($"\t(nop: topic_link unchanged for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance})");
 

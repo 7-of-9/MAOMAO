@@ -144,27 +144,21 @@ namespace mm_svc.Terms
             {
                 var child_term = db.terms.Find(child_term_id);
 
-                //
-                // todo -- could rerun RecurseParents with ++PATH_MATCH_ABORT, to produce more paths, if the root_paths Count < some threshold?
-                //
-                // todo -- could make root_paths a list of list of <long:term_id> instead of term, and remove .Include(term) from GetParents()
-                //          (re. memory consumption of golden_term_cache)
-                //
-
+//again:
                 var sw = new Stopwatch(); sw.Start();
                 RecurseParents(root_paths, new List<long>() { }, child_term_id, child_term_id);
-                //if (child_term_id == 5067658)
-                //    Debugger.Break();
 
                 var paths = root_paths.ToList();
-                paths.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
+                //paths.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
+                g.LogLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - term={child_term.name} root_paths.Count={root_paths.Count} golden_term_cache.Count = {golden_term_cache.Count} opts.PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT} opts.INCLUDE_SIGNIFICANT_NODES={opts.INCLUDE_SIGNIFICANT_NODES} opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT} opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
 
-                Trace.WriteLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - root_paths.Count={root_paths.Count}");
-                Trace.WriteLine($"golden_term_cache.Count = {golden_term_cache.Count}");
-                Trace.WriteLine($"opts.PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT}");
-                Trace.WriteLine($"opts.INCLUDE_SIGNIFICANT_NODES={opts.INCLUDE_SIGNIFICANT_NODES}");
-                Trace.WriteLine($"opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT}");
-                Trace.WriteLine($"opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
+                //if (paths.Count < 20) {
+                //    g.LogLine($"*** child_term_id={child_term_id} not enough PtR found @ PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT}; increasing and retry...");
+                //    if (++opts.PATH_MATCH_ABORT < 6) {
+                //        goto again;
+                //    }
+                //    g.LogLine($"*** child_term_id={child_term_id} done increasing PATH_MATCH_ABORT; giving up.");
+                //}
 
                 // need to return terms, not longs
                 var distinct_term_ids = paths.SelectMany(p => p.Select(p2 => p2).Distinct()).Distinct().ToList().OrderBy(p => p).ToList();
@@ -179,7 +173,6 @@ namespace mm_svc.Terms
                 // also -- consider custom lightweight struct for golden_term cache
 
                 return ret;
-                // then walk all again, monitor memory consumption
             }
         }
 
@@ -188,12 +181,12 @@ namespace mm_svc.Terms
             long term_id,
             long orig_term_id, int? parent_mmcat_level = null, int? orig_mmcat_level = null)
         {
-            //Trace.WriteLine($"calc'ing path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}...");
+            //g.LogLine($"calc'ing path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}...");
             
             var links = GetParents(term_id, null);
             if (links.Count == 0) {
                 root_paths.Add(path);
-                Trace.WriteLine($">>> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p))}  -  child_term_id={term_id}");
+                //g.LogLine($">>> ADDED ROOT PATH: {string.Join(" / ", path.Select(p => p))}  -  child_term_id={term_id}");
             }
             if (parent_mmcat_level == null)
                 parent_mmcat_level = orig_mmcat_level = links.Max(p => p.mmcat_level);
@@ -235,7 +228,7 @@ namespace mm_svc.Terms
                 // a cut-off depth, then abandon this recursion (test/pathological case: 5140670, // September 11 attacks)
                 var this_path_ids = string.Join(",", new_path.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2));
                 if (root_paths.Any(p => string.Join(",", p.Take(opts.PATH_MATCH_ABORT).Select(p2 => p2)) == this_path_ids)) {
-                    //Trace.WriteLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
+                    //g.LogLine($"aborting - (already got path to root, matching to {path_match_abort} levels: path ==> {string.Join(" / ", path.Select(p => p.name + " #NS=" + p.wiki_nscount.ToString()))}");
                     return;
                 }
 

@@ -21,7 +21,8 @@ namespace tests
         [TestMethod]
         public void CalculatePathsToRoot_Test0()
         {
-            GoldenPaths.CalculatePathsToRoot(5067658); // netflix (big)
+            //GoldenPaths.CalculatePathsToRoot(7156727); //  low paths on default 3 abort
+            GoldenPaths.CalculatePathsToRoot(5076959); 
         }
 
 

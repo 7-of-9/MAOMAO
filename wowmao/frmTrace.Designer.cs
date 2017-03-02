@@ -27,20 +27,19 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.txtTrace = new System.Windows.Forms.TextBox();
+            this.txtTrace = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // txtTrace
             // 
             this.txtTrace.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtTrace.Font = new System.Drawing.Font("Courier New", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTrace.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTrace.Location = new System.Drawing.Point(0, 0);
-            this.txtTrace.Multiline = true;
             this.txtTrace.Name = "txtTrace";
-            this.txtTrace.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtTrace.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
             this.txtTrace.Size = new System.Drawing.Size(617, 90);
-            this.txtTrace.TabIndex = 15;
-            this.txtTrace.WordWrap = false;
+            this.txtTrace.TabIndex = 0;
+            this.txtTrace.Text = "";
             // 
             // frmTrace
             // 
@@ -51,12 +50,11 @@
             this.Name = "frmTrace";
             this.Text = "wowmao:  Trace";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        public System.Windows.Forms.TextBox txtTrace;
+        public System.Windows.Forms.RichTextBox txtTrace;
     }
 }

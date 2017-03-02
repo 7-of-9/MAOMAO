@@ -80,8 +80,10 @@ namespace mm_global
             if (cmdLine != null && cmdLine.Length > 1)
                 cmdLineStr = string.Join(" ", cmdLine.Skip(1));
 
-            string logStr = "MM* {" + System.Environment.MachineName + ":" + procName + ":" + cmdLineStr.TruncateMax(20) + "} [" + build + "] @ " + DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss.fff")
-                          + " (" + (mb.ReflectedType != null ? (mb.ReflectedType.Name + ".") : "???.") + mb.Name + ") "
+            string logStr = (!Debugger.IsAttached
+                          ? ("MM* {" + System.Environment.MachineName + ":" + procName + ":" + cmdLineStr.TruncateMax(20) + "} [" + build + "] @ " + DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss.fff") + " (" + (mb.ReflectedType != null ? (mb.ReflectedType.Name + ".") : "???.") + ") ") 
+                          : "")
+                          + $"[{mb.Name}]"
                           + userStr
                           + s
                           + " [" + sw.ElapsedMilliseconds + "ms]";
@@ -257,8 +259,10 @@ namespace mm_global
 
         public static int HandleOptimisticConcurrencyExceptions(DbContext db, Exception ex, int level = 1)
         {
+            return 0;
+
             // diag
-            if (ex is DbEntityValidationException)
+            /*if (ex is DbEntityValidationException)
             {
                 LogException(ex);
 
@@ -302,7 +306,7 @@ namespace mm_global
             else
             {
                 throw ex;
-            }
+            }*/
         }
 
         public static T RetryMaxOrThrow<T>(Func<T> p, int sleepSeconds = 1, int retryMax = 3, bool verboseErrorLog = true)

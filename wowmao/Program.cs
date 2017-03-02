@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.ApplicationInsights.Extensibility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,10 @@ namespace wowmao
         [STAThread]
         static void Main()
         {
+//#if DEBUG
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+//#endif
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new frmMain());

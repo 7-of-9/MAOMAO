@@ -37,8 +37,6 @@ namespace mm_svc.Terms
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
-                //if (term_id == 5067658)
-                //    Debugger.Break();
 
                 // static - pick out editorially defined topics from paths to root
                 var suggested_topics = GoldenTopics.GetTopics(paths);
@@ -62,10 +60,10 @@ namespace mm_svc.Terms
                     suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S, is_topic = true }));
 
                 db.gt_parent.AddRange(gt_parents);
-                //Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
-                //Trace.WriteLine($"GetOrProcessParents: term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
                 db.SaveChangesTraceValidationErrors();
 
+                g.LogLine($"term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
+                g.LogLine($"term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
                 return GetStoredParents(term_id);
             }
         }
@@ -86,7 +84,7 @@ namespace mm_svc.Terms
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
             // dbg
-            root_paths.ForEach(p => Debug.WriteLine("(GL=" + p[0].gl + ") " + p[0].t.name + "\t ... " + string.Join(" / ", p.Skip(1).Select(p2 => "(GL=" + p2.gl + ") " + p2.t.name + " (NS_norm=" + p2.t.NS_norm.ToString("0.00") + " NSLW=" + p2.t.NSLW.ToString("0.0") + " #NS=" + p2.t.wiki_nscount + ")"))));
+            //root_paths.ForEach(p => Debug.WriteLine("(GL=" + p[0].gl + ") " + p[0].t.name + "\t ... " + string.Join(" / ", p.Skip(1).Select(p2 => "(GL=" + p2.gl + ") " + p2.t.name + " (NS_norm=" + p2.t.NS_norm.ToString("0.00") + " NSLW=" + p2.t.NSLW.ToString("0.0") + " #NS=" + p2.t.wiki_nscount + ")"))));
 
             // remove any paths containing any exclusion terms (different to what ProcessRootPath does - it removes only individual terms from paths)
             root_paths = root_paths.Where(p => !p.Any(p2 => ProcessPathsToRoot_ExcludePathsWith_Exact.Contains(p2.t.name))
@@ -179,7 +177,7 @@ namespace mm_svc.Terms
             grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
 
             // cap list for better repeat analaysis -- remove long tail on mega terms
-            grouped_terms.ForEach(p => Trace.WriteLine($"\tS_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
+            //grouped_terms.ForEach(p => Trace.WriteLine($"\tS_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
             const int MAX_TERMS_FOR_REPEAT_ANALYSIS = 20;
             if (grouped_terms.Count > MAX_TERMS_FOR_REPEAT_ANALYSIS) {
                 //grouped_terms = grouped_terms.Where(p => p.S_norm > 0.05).ToList(); // better to remove bottom % of list, don't rely on s_norm being well distributed
@@ -206,13 +204,14 @@ namespace mm_svc.Terms
             // S norm - again
             grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
 
-            // dbg
             var leaf = root_paths.First().First();
-            Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
             var ordered_terms = grouped_terms.Where(p => p.S != 0).OrderByDescending(p => p.S_norm).ToList();
-            ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
-                (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
-                $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
+
+            // dbg
+            //Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            //ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
+            //    (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
+            //    $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
 
             return ordered_terms;
         }

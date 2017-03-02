@@ -34,12 +34,10 @@ namespace wowmao
         private frmTrace trace_form;
 
         public frmMain() {
-            //mm02Entities.static_instance = mm02Entities.Create();
-
-            /*trace_form = new frmTrace();
+            trace_form = new frmTrace();
             trace_form.Show();
             Trace.Listeners.Add(new TextBoxTraceListener(trace_form.txtTrace));
-            trace_form.WindowState = FormWindowState.Minimized;*/
+            trace_form.WindowState = FormWindowState.Minimized;
 
             //Correlations.OnCacheAdd += Correlations_cache_add;
             GoldenPaths.OnCacheAdd += GoldenPaths_OnCacheAdd;
@@ -152,8 +150,9 @@ namespace wowmao
                 var rnd = new Random();
                 var qry = db.urls
                     .AsNoTracking()
-                  //.Include("url_term.term.term_type")
-                  //.Include("url_term.term.cal_entity_type")
+                    .Include("url_term.term")
+                    //.Include("url_term.term.term_type")
+                    //.Include("url_term.term.cal_entity_type")
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(search_term)) {
@@ -323,9 +322,16 @@ namespace wowmao
             var remaining = urls_to_process.Count;
             var reprocess = chkReprocess.Checked;
             this.Cursor = Cursors.WaitCursor;
+            this.lblWalkInfo.Text = "walk(P) working...";
             Parallel.ForEach(urls_to_process, new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
-                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess);
-                this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));
+                Application.DoEvents();
+                Task.Run((Action)(() => {
+
+                    var a = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess);
+
+                    Application.DoEvents();
+                    this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));
+                }));
                 Application.DoEvents();
             });
             this.Cursor = Cursors.Default;
