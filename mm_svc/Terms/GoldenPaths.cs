@@ -17,10 +17,12 @@ namespace mm_svc.Terms
     public static class GoldenPaths
     {
         // pretty important for reasonable performance on calc'ing paths to root!
-        public static ConcurrentDictionary<long, List<GtLight>> golden_term_cache = new ConcurrentDictionary<long, List<GtLight>>();
-        public static event EventHandler OnCacheAdd = delegate { };
-
         public class GtLight { public short mmcat_level; public long parent_term_id; }
+        public static ConcurrentDictionary<long, List<GtLight>> golden_term_cache = new ConcurrentDictionary<long, List<GtLight>>();
+        public static event EventHandler OnCacheGtAdd = delegate { };
+
+        //public static ConcurrentBag<term> term_cache = new ConcurrentBag<term>();
+        //public static event EventHandler OnCacheTermAdd = delegate { };
 
         public static List<List<TermPath>> GetOrProcessPathsToRoot(long term_id)
         {
@@ -169,10 +171,8 @@ namespace mm_svc.Terms
                     path.ForEach(p => path_list.Add(terms.First(p2 => p2.id == p)));
                     ret.Add(path_list);
                 }
-
-                // also -- consider custom lightweight struct for golden_term cache
-
                 return ret;
+                //return paths;
             }
         }
 
@@ -212,8 +212,7 @@ namespace mm_svc.Terms
 
             // running parallel results in non-deterministic output! i guess because of sensitivity on previously processed paths...
             new ParallelOptions() { MaxDegreeOfParallelism =
-                Debugger.IsAttached ? (opts.RUN_PARALLEL ? 128 : 1)
-                                    : (opts.RUN_PARALLEL ? 128 : 1)
+                Debugger.IsAttached ? 8 : (opts.RUN_PARALLEL ? 8 : 1)
             }, link =>
             {
 
@@ -256,12 +255,13 @@ namespace mm_svc.Terms
                              .ToListNoLock()
                            //, 1, 3)
                              ;
+                //var ret = gts;
 
                 var ret = gts.Select(p => new GtLight { mmcat_level = (short)p.mmcat_level, parent_term_id = p.parent_term_id }).ToList();
 
                 if (golden_term_cache != null) {
                     golden_term_cache.TryAdd(child_term_id, ret);
-                    OnCacheAdd?.Invoke(typeof(GoldenPaths), EventArgs.Empty);
+                    OnCacheGtAdd?.Invoke(typeof(GoldenPaths), EventArgs.Empty);
                 }
 
                 return ret;

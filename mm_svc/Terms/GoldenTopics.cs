@@ -121,35 +121,16 @@ namespace mm_svc.Terms
                                     seen_count = 1,
                                 };
                                 db.topic_link.Add(new_link);
-                                db.SaveChanges_IgnoreDupeKeyEx(); 
+                                db.SaveChanges_IgnoreDupeKeyEx();
                                 //db.SaveChangesTraceValidationErrors();
                                 //Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
-                                //try {
-                                    db.Database.ExecuteSqlCommand("UPDATE [topic_link] SET seen_count={0}, max_distance={1}, min_distance={2} WHERE id={3}",
-                                        topic_link.seen_count + 1,
-                                        Math.Max(topic_link.max_distance, distances.Max()),
-                                        Math.Min(topic_link.min_distance, distances.Min()),
-                                        topic_link.id);
-
-                                    //// increase seen count - heuristic for how important this link is
-                                    //topic_link.seen_count++;
-                                    //db.SaveChangesTraceValidationErrors(); //** ??? WHY??? Violation of UNIQUE KEY constraint 'UQ_topic_link_child_parent'. Cannot insert duplicate key in object 'dbo.topic_link'. The duplicate key value is (4990960, 4990977).
-
-                                    //// update existing topic link - min/max distances
-                                    //topic_link.max_distance = Math.Max(topic_link.max_distance, distances.Max());
-                                    //topic_link.min_distance = Math.Min(topic_link.min_distance, distances.Min());
-
-                                    //if (db.SaveChangesTraceValidationErrors() != 0) //** ???
-                                    //    Trace.WriteLine($"\t>> UPDATE topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance}");
-                                    //else
-                                    //    Trace.WriteLine($"\t(nop: topic_link unchanged for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={topic_link.min_distance} MAX_DIST={topic_link.min_distance})");
-
-                                //} catch( Exception ex) {
-                                //    //Debugger.Break();
-                                //    throw ex;
-                                //}
+                                db.Database.ExecuteSqlCommand("UPDATE [topic_link] SET seen_count={0}, max_distance={1}, min_distance={2} WHERE id={3}",
+                                    topic_link.seen_count + 1,
+                                    Math.Max(topic_link.max_distance, distances.Max()),
+                                    Math.Min(topic_link.min_distance, distances.Min()),
+                                    topic_link.id);
                             }
                         }
                     }

@@ -104,31 +104,15 @@ namespace mm_svc
                 //
                 // PATHS TO ROOT: calc & store all paths to root for mapped & deduped golden terms
                 //
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
-
+                // ********
+                // PERF -- running this parallel seems to prevent cache from being hit, or at least prevents subsequent same term 
+                //         path processes from being fast --- WHY?? this could affect parallel walk, also in production...
                 //
-                // SUGGESTED PARENTS: calc & store parents for each wiki term - dynamic suggested parents and editorially defined parent topics
-                //
-                var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
-                var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
-                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
-
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess); //***
-
-                    if (term_parents != null) {
-                        var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
-                        var parents_topics = term_parents.Where(p2 => p2.is_topic == true).ToList();
-
-                        // dynamic parents: remove long tail - for better common parent finding
-                        var filtered_dynamic = parents_dynamic.OrderByDescending(p2 => p2.S_norm).Take(10).ToList();
-                        top_parents_dynamic.AddOrUpdate(p.term_id, filtered_dynamic, (k, v) => filtered_dynamic);
-
-                        // topic parents: add all sorted by rank
-                        top_parents_topics.AddOrUpdate(p.term_id, parents_topics, (k, v) => parents_topics);
-                    }
-                });
-                var all_parents_dynamic = top_parents_dynamic.Values.SelectMany(p => p).ToList();
-                var all_parents_topics = top_parents_topics.Values.SelectMany(p => p).ToList();
+                foreach (var p in wiki_url_terms)
+                    GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess);
+                
+                // broken -- why??
+                //Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
 
                 //  (done): topic hiearchies - how to maintain these:
                 //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
@@ -172,11 +156,37 @@ namespace mm_svc
                 //
 
                 //
+                // SUGGESTED PARENTS: calc & store parents for each wiki term - dynamic suggested parents and editorially defined parent topics
+                //
+                var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
+                var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
+                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
+
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess); //***
+
+                    if (term_parents != null) {
+                        var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
+                        var parents_topics = term_parents.Where(p2 => p2.is_topic == true).ToList();
+
+                        // dynamic parents: remove long tail - for better common parent finding
+                        var filtered_dynamic = parents_dynamic.OrderByDescending(p2 => p2.S_norm).Take(10).ToList();
+                        top_parents_dynamic.AddOrUpdate(p.term_id, filtered_dynamic, (k, v) => filtered_dynamic);
+
+                        // topic parents: add all sorted by rank
+                        top_parents_topics.AddOrUpdate(p.term_id, parents_topics, (k, v) => parents_topics);
+                    }
+
+                    g.LogInfo($"url_id={url_id} GetOrProcessParents DONE: ms={sw.ElapsedMilliseconds} ");  
+                });
+                var all_parents_dynamic = top_parents_dynamic.Values.SelectMany(p => p).ToList();
+                var all_parents_topics = top_parents_topics.Values.SelectMany(p => p).ToList();
+
+                //
                 // [url_parent_term]
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
                     // editorial topic parents
-                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics);
+                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics); 
 
                     // dynamic sugggest parents
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list

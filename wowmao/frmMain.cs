@@ -40,15 +40,13 @@ namespace wowmao
             trace_form.WindowState = FormWindowState.Minimized;
 
             //Correlations.OnCacheAdd += Correlations_cache_add;
-            GoldenPaths.OnCacheAdd += GoldenPaths_OnCacheAdd;
+            
+            GoldenPaths.OnCacheGtAdd += GoldenPaths_OnCacheAdd;
 
             InitializeComponent();
             this.cboTop.SelectedIndex = 2;
             InitTvwRootNodes();
 
-            //txtUrlSearch.SelectedIndex = 1;
-
-            //this.gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
             this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
 

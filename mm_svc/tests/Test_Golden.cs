@@ -3,6 +3,7 @@ using mm_svc.Terms;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,10 @@ namespace tests
         public void CalculatePathsToRoot_Test0()
         {
             //GoldenPaths.CalculatePathsToRoot(7156727); //  low paths on default 3 abort
-            GoldenPaths.CalculatePathsToRoot(5076959); 
+
+            var sw = new Stopwatch(); sw.Start();
+            GoldenPaths.CalculatePathsToRoot(5076959); // 12 seconds: empty cache
+            Debug.WriteLine(sw.Elapsed.TotalMilliseconds);
         }
 
 
