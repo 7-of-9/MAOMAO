@@ -87,7 +87,7 @@ function appReducer(state = initialState, action) {
     case GOOGLE_KNOWLEDGE_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
-        .updateIn(['data', 'knowledge', 'googleKnowledges'], () => action.data);
+        .updateIn(['data', 'knowledge', 'googleKnowledges'], (items) => items.push(...action.data));
     case GOOGLE_KNOWLEDGE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
