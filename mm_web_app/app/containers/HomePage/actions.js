@@ -5,20 +5,20 @@
  */
 
  import {
-   CHANGE_KEYWORD,
+   CHANGE_TERM,
    NEXT_PAGE,
    RESET_PAGE,
  } from './constants';
 
 /**
- * Change keyword
- * @param  String keyword
+ * Change terms
+ * @param  String terms
  * @return Object
  */
- export function changeKeyword(keyword) {
+ export function changeTerms(terms) {
    return {
-     type: CHANGE_KEYWORD,
-     keyword,
+     type: CHANGE_TERM,
+     terms,
    };
  }
 

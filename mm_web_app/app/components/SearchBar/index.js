@@ -63,7 +63,7 @@ const enhance = compose(
           });
         }
         const selectedTags = tags.map((item) => item.text);
-        props.onChange(selectedTags.join(' '));
+        props.onChange(selectedTags);
         props.onSearch();
         return tags;
       });
@@ -72,7 +72,7 @@ const enhance = compose(
       props.updateTags((tags) => {
         tags.splice(index, 1);
         const selectedTags = tags.map((item) => item.text);
-        props.onChange(selectedTags.join(' '));
+        props.onChange(selectedTags);
         props.onSearch();
         return tags;
       });
@@ -84,7 +84,7 @@ const enhance = compose(
           text: tag,
         });
         const selectedTags = tags.map((item) => item.text);
-        props.onChange(selectedTags.join(' '));
+        props.onChange(selectedTags);
         props.onSearch();
         return tags;
       });

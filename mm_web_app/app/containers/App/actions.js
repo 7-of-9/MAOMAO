@@ -35,11 +35,11 @@ export function googleSearch() {
   };
 }
 
-export function googleLoaded(data, keyword) {
+export function googleLoaded(data, terms) {
   return {
     type: GOOGLE_SEARCH_SUCCESS,
     data,
-    keyword,
+    terms,
   };
 }
 
@@ -56,11 +56,11 @@ export function googleNewsSearch() {
   };
 }
 
-export function googleNewsLoaded(data, keyword) {
+export function googleNewsLoaded(data, terms) {
   return {
     type: GOOGLE_NEWS_SEARCH_SUCCESS,
     data,
-    keyword,
+    terms,
   };
 }
 
@@ -77,11 +77,11 @@ export function googleKnowledgeSearch() {
   };
 }
 
-export function googleKnowledgeLoaded(data, keyword) {
+export function googleKnowledgeLoaded(data, terms) {
   return {
     type: GOOGLE_KNOWLEDGE_SEARCH_SUCCESS,
     data,
-    keyword,
+    terms,
   };
 }
 
@@ -98,11 +98,11 @@ export function youtubeSearch() {
   };
 }
 
-export function youtubeLoaded(data, keyword) {
+export function youtubeLoaded(data, terms) {
   return {
     type: YOUTUBE_SEARCH_SUCCESS,
     data,
-    keyword,
+    terms,
   };
 }
 
@@ -119,11 +119,11 @@ export function redditSearch() {
   };
 }
 
-export function redditLoaded(data, keyword) {
+export function redditLoaded(data, terms) {
   return {
     type: REDDIT_SEARCH_SUCCESS,
     data,
-    keyword,
+    terms,
   };
 }
 

@@ -14,7 +14,7 @@ describe('appReducer', () => {
       loading: false,
       error: false,
       home: {
-        keyword: '',
+        terms: '',
       },
       google: {},
     });
@@ -35,12 +35,12 @@ describe('appReducer', () => {
 
   it('should handle the googleLoaded action correctly', () => {
     const fixture = { done: 'okay' };
-    const keyword = 'test';
+    const terms = 'test';
     const expectedResult = state
     .set('loading', false)
     .set('google', fixture);
 
-    expect(appReducer(state, googleLoaded(fixture, keyword))).toEqual(expectedResult);
+    expect(appReducer(state, googleLoaded(fixture, terms))).toEqual(expectedResult);
   });
 
   it('should handle the googleLoadingError action correctly', () => {

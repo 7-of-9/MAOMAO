@@ -12,7 +12,7 @@ import { GOOGLE_SEARCH } from 'containers/App/constants';
 
 import { getGoogleKnowledge, googleData } from '../sagas';
 
-const keyword = 'taylor swift';
+const terms = 'taylor swift';
 
 describe('getGoogleKnowledge Saga', () => {
   let getGoogleKnowledgeGenerator;
@@ -22,7 +22,7 @@ describe('getGoogleKnowledge Saga', () => {
     const selectDescriptor = getGoogleKnowledgeGenerator.next().value;
     expect(selectDescriptor).toMatchSnapshot();
 
-    const callDescriptor = getGoogleKnowledgeGenerator.next(keyword).value;
+    const callDescriptor = getGoogleKnowledgeGenerator.next(terms).value;
     expect(callDescriptor).toMatchSnapshot();
   });
 
@@ -65,7 +65,7 @@ describe('getGoogleKnowledge Saga', () => {
       ],
     };
     const putDescriptor = getGoogleKnowledgeGenerator.next(response).value;
-    expect(putDescriptor).toEqual(put(googleLoaded(response, keyword)));
+    expect(putDescriptor).toEqual(put(googleLoaded(response, terms)));
   });
 
   it('should call the googleLoadingError action if the response errors', () => {

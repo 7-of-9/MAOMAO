@@ -2,15 +2,15 @@ import { fromJS } from 'immutable';
 
 import {
   selectHome,
-  makeSelectKeyword,
+  makeSelectTerms,
 } from '../selectors';
 
-const keyword = 'September 11';
+const terms = 'September 11';
 
 describe('selectHome', () => {
   it('should select the home state', () => {
     const homeState = fromJS({
-      keyword,
+      terms,
     });
     const mockedState = fromJS({
       home: homeState,
@@ -19,14 +19,14 @@ describe('selectHome', () => {
   });
 });
 
-describe('makeSelectKeyword', () => {
-  const keywordSelector = makeSelectKeyword();
-  it('should select the keyword', () => {
+describe('makeSelectTerms', () => {
+  const termsSelector = makeSelectTerms();
+  it('should select the terms', () => {
     const mockedState = fromJS({
       home: {
-        keyword,
+        terms,
       },
     });
-    expect(keywordSelector(mockedState)).toEqual(keyword);
+    expect(termsSelector(mockedState)).toEqual(terms);
   });
 });

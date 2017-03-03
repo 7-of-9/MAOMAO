@@ -13,7 +13,7 @@ import {
  } from 'containers/App/actions';
 
 import request from 'utils/request';
-import { makeSelectKeyword, makeSelectPageNumber } from 'containers/HomePage/selectors';
+import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
 import { makeSelectYoutube } from 'containers/App/selectors';
 
 const LIMIT = 10;
@@ -33,10 +33,11 @@ r.config({ debug: true });
  * Google search request/response handler
  */
 export function* getGoogleSearchResult() {
-  // Select keyword from store
-  const keyword = yield select(makeSelectKeyword());
+  // Select terms from store
+  const terms = yield select(makeSelectTerms());
+  const keyword = terms.join(',');
   if (keyword === '') {
-    yield put(googleLoaded([], keyword));
+    yield put(googleLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
     const query = queryString.stringify({
@@ -46,7 +47,7 @@ export function* getGoogleSearchResult() {
     const crawlerUrl = `${CRALWER_API_URL}?${query}`;
     try {
       const response = yield call(request, crawlerUrl);
-      yield put(googleLoaded(response.result, keyword));
+      yield put(googleLoaded(response.result, terms));
     } catch (err) {
       yield put(googleLoadingError(err));
     }
@@ -57,10 +58,11 @@ export function* getGoogleSearchResult() {
  * Google news request/response handler
  */
 export function* getGoogleNewsResult() {
-  // Select keyword from store
-  const keyword = yield select(makeSelectKeyword());
+  // Select terms from store
+  const terms = yield select(makeSelectTerms());
+  const keyword = terms.join(',');
   if (keyword === '') {
-    yield put(googleNewsLoaded([], keyword));
+    yield put(googleNewsLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
     const query = queryString.stringify({
@@ -70,7 +72,7 @@ export function* getGoogleNewsResult() {
     const crawlerUrl = `${CRALWER_API_URL}?${query}`;
     try {
       const response = yield call(request, crawlerUrl);
-      yield put(googleNewsLoaded(response.result, keyword));
+      yield put(googleNewsLoaded(response.result, terms));
     } catch (err) {
       yield put(googleNewsLoadingError(err));
     }
@@ -81,10 +83,11 @@ export function* getGoogleNewsResult() {
  * Google Knowledge request/response handler
  */
 export function* getGoogleKnowledge() {
-  // Select keyword from store
-  const keyword = yield select(makeSelectKeyword());
+  // Select terms from store
+  const terms = yield select(makeSelectTerms());
+  const keyword = terms.join(',');
   if (keyword === '') {
-    yield put(googleKnowledgeLoaded([], keyword));
+    yield put(googleKnowledgeLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
     const buildQuery = queryString.stringify({
@@ -96,7 +99,7 @@ export function* getGoogleKnowledge() {
     const requestURL = `https://kgsearch.googleapis.com/v1/entities:search?${buildQuery}`;
     try {
       const result = yield call(request, requestURL);
-      yield put(googleKnowledgeLoaded(result.itemListElement || [], keyword));
+      yield put(googleKnowledgeLoaded(result.itemListElement || [], terms));
     } catch (err) {
       yield put(googleKnowledgeLoadingError(err));
     }
@@ -108,10 +111,11 @@ export function* getGoogleKnowledge() {
  * Google Youtube request/response handler
  */
 export function* getYoutubeVideo() {
-  // Select keyword from store
-  const keyword = yield select(makeSelectKeyword());
+  // Select terms from store
+  const terms = yield select(makeSelectTerms());
+  const keyword = terms.join(',');
   if (keyword === '') {
-    yield put(youtubeLoaded({ nextPageToken: '', youtubeVideos: [] }, keyword));
+    yield put(youtubeLoaded({ nextPageToken: '', youtubeVideos: [] }, terms));
   } else {
     const youtubeState = yield select(makeSelectYoutube());
     const pageToken = youtubeState.get('nextPageToken') || '';
@@ -129,14 +133,14 @@ export function* getYoutubeVideo() {
 
     try {
       const result = yield call(request, requestURL);
-      yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, keyword));
+      yield put(youtubeLoaded({ nextPageToken: result.nextPageToken, youtubeVideos: result.items || [] }, terms));
     } catch (err) {
       yield put(youtubeLoadingError(err));
     }
   }
 }
 
-function redditSearchBaseOneKeyword(keyword, page) {
+function redditSearchBaseOneTerms(keyword, page) {
   return r.search({
     query: keyword,
     relevance: 'top',
@@ -148,15 +152,16 @@ function redditSearchBaseOneKeyword(keyword, page) {
  * Reddit handler
  */
 export function* getRedditListing() {
-  // Select keyword from store
-  const keyword = yield select(makeSelectKeyword());
+  // Select terms from store
+  const terms = yield select(makeSelectTerms());
+  const keyword = terms.join(',');
   if (keyword === '') {
-    yield put(redditLoaded([], keyword));
+    yield put(redditLoaded([], terms));
   } else {
     try {
       const page = yield select(makeSelectPageNumber());
-      const result = yield call(redditSearchBaseOneKeyword, keyword, page);
-      yield put(redditLoaded(result, keyword));
+      const result = yield call(redditSearchBaseOneTerms, keyword, page);
+      yield put(redditLoaded(result, terms));
     } catch (err) {
       yield put(redditLoadingError(err));
     }

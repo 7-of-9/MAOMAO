@@ -25,14 +25,14 @@ import Header from 'components/Header';
 import SearchBar from 'components/SearchBar';
 import LogoIcon from 'components/LogoIcon';
 import BlockElement from 'components/BlockElement';
-import { makeSelectKeyword } from './selectors';
+import { makeSelectTerms } from './selectors';
 import {
   makeSelectLoading, makeSelectGoogle, makeSelectGoogleNews, makeSelectGoogleKnowledge, makeSelectYoutube, makeSelectReddit,
 } from '../App/selectors';
 import {
    googleKnowledgeSearch, googleSearch, googleNewsSearch, youtubeSearch, redditSearch, cleanSearchResult,
 } from '../App/actions';
-import { changeKeyword, resetPage, nextPage } from './actions';
+import { changeTerms, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
 const urls = List([]);
@@ -200,8 +200,8 @@ export function mapDispatchToProps(dispatch) {
       dispatch(redditSearch());
       dispatch(youtubeSearch());
     },
-    onChange: (keyword) => {
-      dispatch(changeKeyword(keyword));
+    onChange: (terms) => {
+      dispatch(changeTerms(terms));
     },
     doSearch: (e) => {
       if (e !== undefined && e.preventDefault) {
@@ -219,7 +219,7 @@ export function mapDispatchToProps(dispatch) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  keyword: makeSelectKeyword(),
+  terms: makeSelectTerms(),
   loading: makeSelectLoading(),
   google: makeSelectGoogle(),
   googleNews: makeSelectGoogleNews(),

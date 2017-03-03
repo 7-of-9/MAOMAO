@@ -2,14 +2,14 @@
 import { fromJS } from 'immutable';
 import homeReducer from '../reducer';
 import {
-  changeKeyword,
+  changeTerms,
 } from '../actions';
 
 describe('homeReducer', () => {
   let state;
   beforeEach(() => {
     state = fromJS({
-      keyword: '',
+      terms: '',
       page: 1,
     });
   });
@@ -19,10 +19,10 @@ describe('homeReducer', () => {
     expect(homeReducer(undefined, {})).toEqual(expectedResult);
   });
 
-  it('should handle the changeKeyword action correctly', () => {
+  it('should handle the changeTerms action correctly', () => {
     const fixture = 'React';
-    const expectedResult = state.set('keyword', fixture);
+    const expectedResult = state.set('terms', fixture);
 
-    expect(homeReducer(state, changeKeyword(fixture))).toEqual(expectedResult);
+    expect(homeReducer(state, changeTerms(fixture))).toEqual(expectedResult);
   });
 });

@@ -24,14 +24,14 @@ describe('App Actions', () => {
   describe('googleLoaded', () => {
     it('should return the correct type and the passed result', () => {
       const data = {};
-      const keyword = 'test';
+      const terms = 'test';
       const expectedResult = {
         type: GOOGLE_SEARCH_SUCCESS,
         data,
-        keyword,
+        terms,
       };
 
-      expect(googleLoaded(data, keyword)).toEqual(expectedResult);
+      expect(googleLoaded(data, terms)).toEqual(expectedResult);
     });
   });
 
