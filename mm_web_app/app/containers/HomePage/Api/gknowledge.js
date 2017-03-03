@@ -39,7 +39,7 @@ export function* getGoogleKnowledge() {
     _.forEach(terms, (term) => {
       asyncCall.push(fork(googleKnowlegeBaseOnTerm, term, page));
     });
-    asyncCall.push(call(delay, 1000));
+    asyncCall.push(call(delay, 500));
     yield asyncCall;
   }
 }
