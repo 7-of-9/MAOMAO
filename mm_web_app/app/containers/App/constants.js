@@ -8,7 +8,8 @@
  * Follow this format:
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
-
+export const LIMIT = 10;
+export const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
 export const DEFAULT_LOCALE = 'en';
 export const GOOGLE_API_KEY = 'AIzaSyDa9LV6fTUGRvFYki0GLSS2NzNP-CylMEI';
 export const GOOGLE_CUSTOM_SEARCH_API_KEY = 'AIzaSyCj_iIAID29ZTZG7HQv8TxivT99x7QYeG4';
