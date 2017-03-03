@@ -20,6 +20,8 @@ namespace mm_svc.Terms
         public class GtLight { public short mmcat_level; public long parent_term_id; }
         public static ConcurrentDictionary<long, List<GtLight>> golden_term_cache = new ConcurrentDictionary<long, List<GtLight>>();
         public static event EventHandler OnCacheGtAdd = delegate { };
+        public static int gt_cache_hits = 0;
+        public static int gt_cache_misses = 0;
 
         //public static ConcurrentBag<term> term_cache = new ConcurrentBag<term>();
         //public static event EventHandler OnCacheTermAdd = delegate { };
@@ -152,7 +154,7 @@ namespace mm_svc.Terms
 
                 var paths = root_paths.ToList();
                 //paths.ForEach(p => Debug.WriteLine("ROOT PATH ==> " + child_term.name + " // " + string.Join(" / ", p.Select(p2 => p2))));
-                g.LogLine($"DONE: {sw.Elapsed.TotalSeconds} sec(s) - term={child_term.name} root_paths.Count={root_paths.Count} golden_term_cache.Count = {golden_term_cache.Count} opts.PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT} opts.INCLUDE_SIGNIFICANT_NODES={opts.INCLUDE_SIGNIFICANT_NODES} opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT} opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
+                g.LogLine($"DONE: {sw.Elapsed.TotalSeconds}s - term={child_term.name} hits={gt_cache_hits} misses={gt_cache_misses} paths.Count={root_paths.Count} golden_term_cache.Count={golden_term_cache.Count} opts.PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT} opts.INCLUDE_SIGNIFICANT_NODES={opts.INCLUDE_SIGNIFICANT_NODES} opts.SIG_NODE_MIN_NSCOUNT={opts.SIG_NODE_MIN_NSCOUNT} opts.SIG_NODE_MAX_PATH_COUNT={opts.SIG_NODE_MAX_PATH_COUNT}");
 
                 //if (paths.Count < 20) {
                 //    g.LogLine($"*** child_term_id={child_term_id} not enough PtR found @ PATH_MATCH_ABORT={opts.PATH_MATCH_ABORT}; increasing and retry...");
@@ -241,8 +243,10 @@ namespace mm_svc.Terms
 
         private static List<GtLight> GetParents(long child_term_id, int? max_mmcat_level = null)
         {
-            if (golden_term_cache != null && golden_term_cache.ContainsKey(child_term_id))
+            if (golden_term_cache != null && golden_term_cache.ContainsKey(child_term_id)) {
+                lock (golden_term_cache) { gt_cache_hits++; }
                 return golden_term_cache[child_term_id];
+            }
 
             using (var db = mm02Entities.Create()) {
 
@@ -260,8 +264,10 @@ namespace mm_svc.Terms
                 var ret = gts.Select(p => new GtLight { mmcat_level = (short)p.mmcat_level, parent_term_id = p.parent_term_id }).ToList();
 
                 if (golden_term_cache != null) {
-                    golden_term_cache.TryAdd(child_term_id, ret);
+                    if (!golden_term_cache.TryAdd(child_term_id, ret))
+                        ; // Debugger.Break();
                     OnCacheGtAdd?.Invoke(typeof(GoldenPaths), EventArgs.Empty);
+                    lock (golden_term_cache) { gt_cache_misses++; }
                 }
 
                 return ret;
@@ -310,7 +316,6 @@ namespace mm_svc.Terms
                 //db.Configuration.ValidateOnSaveEnabled = false;
                 //db.gt_path_to_root.AddRange(db_paths);
                 //db.SaveChangesTraceValidationErrors();
-
                 mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "gt_path_to_root", db_paths);
 
                 return true;

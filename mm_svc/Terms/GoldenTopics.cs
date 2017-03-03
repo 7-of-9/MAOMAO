@@ -23,8 +23,11 @@ namespace mm_svc.Terms
         //
         public static List<TopicWeighted> GetTopics(List<List<TermPath>> root_paths)
         {
+            if (root_paths == null || root_paths.Count == 0)
+                return null;
+
             // expects: all paths to root to be for the same leaf term!
-            var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);
+            var distinct_leaf_terms = root_paths.Select(p => p.FirstOrDefault()?.t.id).Where(p => p != null);
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
             // pick out topics from each path, save distance from leaf

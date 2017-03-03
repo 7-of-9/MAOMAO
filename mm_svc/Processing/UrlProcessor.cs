@@ -104,15 +104,10 @@ namespace mm_svc
                 //
                 // PATHS TO ROOT: calc & store all paths to root for mapped & deduped golden terms
                 //
-                // ********
-                // PERF -- running this parallel seems to prevent cache from being hit, or at least prevents subsequent same term 
-                //         path processes from being fast --- WHY?? this could affect parallel walk, also in production...
-                //
-                foreach (var p in wiki_url_terms)
-                    GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess);
-                
-                // broken -- why??
-                //Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
+                //foreach (var p in wiki_url_terms)
+                //    GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess);
+                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
+                g.LogInfo($"url_id={url_id} ProcessAndRecordPathsToRoot DONE: ms={sw.ElapsedMilliseconds} ");
 
                 //  (done): topic hiearchies - how to maintain these:
                 //      > a separate link table [topic_link]: GetOrProcessParents -> GetTopics should write into it 
@@ -162,6 +157,7 @@ namespace mm_svc
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
+                    // PERF: taking quite some time --
                     var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess); //***
 
                     if (term_parents != null) {
@@ -175,9 +171,8 @@ namespace mm_svc
                         // topic parents: add all sorted by rank
                         top_parents_topics.AddOrUpdate(p.term_id, parents_topics, (k, v) => parents_topics);
                     }
-
-                    g.LogInfo($"url_id={url_id} GetOrProcessParents DONE: ms={sw.ElapsedMilliseconds} ");  
                 });
+                g.LogInfo($"url_id={url_id} GetOrProcessParents DONE: ms={sw.ElapsedMilliseconds} ");
                 var all_parents_dynamic = top_parents_dynamic.Values.SelectMany(p => p).ToList();
                 var all_parents_topics = top_parents_topics.Values.SelectMany(p => p).ToList();
 
@@ -193,6 +188,7 @@ namespace mm_svc
                     // of suggested related parent terms and topic terms, for the url.
                     CalcAndStoreUrlParentTerms_Dynamic(url_id, db, all_parents_dynamic);
                 }
+                g.LogInfo($"url_id={url_id} CalcAndStoreUrlParentTerms DONE: ms={sw.ElapsedMilliseconds} ");
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
@@ -204,6 +200,8 @@ namespace mm_svc
                                      .AsNoTracking()
                                      .Where(p => p.url_id == url_id);
                 //Debug.WriteLine(qry.ToString());
+
+                g.LogInfo($"url_id={url_id} >>> ALL DONE: TOTAL ms={sw.ElapsedMilliseconds} ");
                 return qry.ToListNoLock();
             }
         }

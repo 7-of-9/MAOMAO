@@ -4,6 +4,7 @@ using mm_svc.InternalNlp.Utils;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -45,10 +46,11 @@ namespace mm_svc.Terms
                 var suggested_dynamic = CalcDynamicSuggestedParents(paths);
 
                 // remove -- have seen deadlocks here when running parallel
-                g.RetryMaxOrThrow(() => {
-                    db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
-                    return db.SaveChangesTraceValidationErrors();
-                }, 1, 3);
+                //g.RetryMaxOrThrow(() => {
+                //    db.gt_parent.RemoveRange(db.gt_parent.Where(p => p.child_term_id == term_id));
+                //    return db.SaveChangesTraceValidationErrors();
+                //}, 1, 3);
+                db.Database.ExecuteSqlCommand("DELETE FROM [gt_parent] WHERE [child_term_id]={0}", term_id);
 
                 // add
                 var gt_parents = new List<gt_parent>();
@@ -59,11 +61,12 @@ namespace mm_svc.Terms
                 if (suggested_topics != null)
                     suggested_topics.ForEach(p => gt_parents.Add(new gt_parent() { child_term_id = term_id, parent_term_id = p.t.id, S_norm = p.S_norm, S = p.S, is_topic = true }));
 
-                db.gt_parent.AddRange(gt_parents);
-                db.SaveChangesTraceValidationErrors();
+                //db.gt_parent.AddRange(gt_parents);
+                //db.SaveChangesTraceValidationErrors();
+                mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "gt_parent", gt_parents);
 
-                g.LogLine($"term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
-                g.LogLine($"term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
+                //g.LogLine($"term_id={term_id} term={term.name} suggested_dynamic={string.Join(",", suggested_dynamic.Select(p => p.t.name))}");
+                //g.LogLine($"term_id={term_id} term={term.name} suggested_topics={string.Join(",", suggested_topics.Select(p => p.t.name))}");
                 return GetStoredParents(term_id);
             }
         }
@@ -79,8 +82,10 @@ namespace mm_svc.Terms
         };
         public static List<TermGroup> CalcDynamicSuggestedParents(List<List<TermPath>> root_paths)
         {
+            if (root_paths == null || root_paths.Count == 0) return null;
+
             // expects: all paths to root to be for the same leaf term!
-            var distinct_leaf_terms = root_paths.Select(p => p.First().t.id);
+            var distinct_leaf_terms = root_paths.Select(p => p.FirstOrDefault()?.t.id).Where(p => p != null);
             if (distinct_leaf_terms.Distinct().Count() > 1) throw new ApplicationException("more than one leaf term in root_paths");
 
             // dbg
@@ -220,6 +225,8 @@ namespace mm_svc.Terms
         private static List<string> ProcessRootPath_ExclusionTerms_Contains = new List<string>() { "People by", " people", };
         private static bool ProcessRootPath(List<TermPath> root_path)
         {
+            if (root_path == null || root_path.Count == 0) return false;
+
             const int MIN_WIKI_NSCOUNT_TO_INCLUDE = 3;
             const int MIN_WIKI_NSCOUNT_TO_SCORE = 3;
             var leaf_term = root_path[0];
