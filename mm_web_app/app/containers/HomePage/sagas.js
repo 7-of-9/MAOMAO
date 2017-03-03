@@ -22,11 +22,12 @@ const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
 // Use reddit-oauth-helper to create an permanent token
 /* eslint new-cap: ["error", { "newIsCap": false }]*/
 const r = new snoowrap({
-  userAgent: 'webapp:maomao v1 (by Dung Huynh (dunghd.it@gmail.com))',
+  userAgent: 'webapp:maomao:v0.0.1 (by u/dunghd)',
   clientId: REDDIT_CLIENT_ID,
   clientSecret: REDDIT_CLIENT_SECRET,
   refreshToken: '69838591-jrgIILLyZ9z8M_5Z7pQXqXwZ2Z4',
 });
+r.config({ debug: true });
 
 /**
  * Google search request/response handler
@@ -135,10 +136,11 @@ export function* getYoutubeVideo() {
   }
 }
 
-function redditSearchBaseOneKeyword(keyword) {
+function redditSearchBaseOneKeyword(keyword, page) {
   return r.search({
     query: keyword,
     relevance: 'top',
+    limit: LIMIT * page,
   });
 }
 
@@ -152,7 +154,8 @@ export function* getRedditListing() {
     yield put(redditLoaded([], keyword));
   } else {
     try {
-      const result = yield call(redditSearchBaseOneKeyword, keyword);
+      const page = yield select(makeSelectPageNumber());
+      const result = yield call(redditSearchBaseOneKeyword, keyword, page);
       yield put(redditLoaded(result, keyword));
     } catch (err) {
       yield put(redditLoadingError(err));

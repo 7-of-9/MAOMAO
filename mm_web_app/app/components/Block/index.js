@@ -7,6 +7,8 @@
 import React from 'react';
 import Masonry from 'masonry-layout';
 
+const TIME_TO_RELOAD = 1000; // 1s
+
 function Block(WrappedComponent) {
   return class extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
@@ -17,15 +19,17 @@ function Block(WrappedComponent) {
         gutter: 10,
         itemSelector: '.grid-item',
       });
-      // Fix position when loading image
-      setTimeout(() => {
-        this.layer = new Masonry(this.container, {
-          fitWidth: true,
-          columnWidth: 240,
-          gutter: 10,
-          itemSelector: '.grid-item',
-        });
-      }, 1000);
+      // Fix position layer
+      this.timer = setInterval(() => {
+        if (this.container) {
+          this.layer = new Masonry(this.container, {
+            fitWidth: true,
+            columnWidth: 240,
+            gutter: 10,
+            itemSelector: '.grid-item',
+          });
+        }
+      }, TIME_TO_RELOAD);
     }
 
     componentDidUpdate() {
@@ -36,14 +40,10 @@ function Block(WrappedComponent) {
         gutter: 10,
         itemSelector: '.grid-item',
       });
-      setTimeout(() => {
-        this.layer = new Masonry(this.container, {
-          fitWidth: true,
-          columnWidth: 240,
-          gutter: 10,
-          itemSelector: '.grid-item',
-        });
-      }, 1000);
+    }
+
+    componentWillUnmount() {
+      clearInterval(this.timer);
     }
 
     render() {

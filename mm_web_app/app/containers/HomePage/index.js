@@ -120,7 +120,7 @@ function mashUp(props) {
     _.forEach(redditListing, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && !urls.includes(item.url)) {
         reddits.push(
-          <div className="grid-item" key={item.url}>
+          <div className="grid-item" key={`RD-${item.url}`}>
             <BlockElement
               name={item.title}
               description={item.selftext || item.title}
@@ -198,8 +198,7 @@ export function mapDispatchToProps(dispatch) {
       dispatch(googleKnowledgeSearch());
       dispatch(googleSearch());
       dispatch(googleNewsSearch());
-      // TODO: pagination for reddit
-      // dispatch(redditSearch());
+      dispatch(redditSearch());
       dispatch(youtubeSearch());
     },
     onChange: (keyword) => {

@@ -109,7 +109,7 @@ function appReducer(state = initialState, action) {
     case REDDIT_SEARCH_SUCCESS:
       return state
         .updateIn(['loading', 'isReadingLoading'], () => false)
-        .updateIn(['data', 'reddit', 'redditListing'], (items) => items.push(...action.data));
+        .updateIn(['data', 'reddit', 'redditListing'], () => action.data);
     case REDDIT_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isReadingLoading'], () => false)
