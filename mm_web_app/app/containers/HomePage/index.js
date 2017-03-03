@@ -36,7 +36,6 @@ import { changeKeyword, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
 const urls = List([]);
-
 /**
  * Mash up all result from API
  * @param  {[type]} props [description]

@@ -11,12 +11,22 @@ import { intlShape, injectIntl } from 'react-intl';
 import messages from './messages';
 
 import Form from './Form';
+import A from './A';
 import { InputWrapper, InputContainer } from './Input';
+
+const TEST_SET_1 = ['Classical music', 'Musical', 'Musical compositions', 'Musical history', '1840s', 'Arts'];
+const TEST_SET_2 = ['Hanna-Barbera', 'Warner Bros', 'Cartoon Network', 'Rivalry', 'Anthropomorphism'];
+const TEST_SET_3 = ['Chess', 'Traditional games', 'Games', 'Board games', 'Game theory'];
+const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 'Human behavior'];
 
 function SearchBar(props) {
   const { formatMessage } = props.intl;
   return (
     <Form onSubmit={props.onSearch}>
+      <A onClick={() => { props.changeTags(TEST_SET_1); }} className="foo" > Test Set 1 </A> |
+      <A onClick={() => { props.changeTags(TEST_SET_2); }} className="foo" > Test Set 2 </A> |
+      <A onClick={() => { props.changeTags(TEST_SET_3); }} className="foo" > Test Set 3 </A> |
+      <A onClick={() => { props.changeTags(TEST_SET_4); }} className="foo" > Test Set 4 </A> |
       <InputWrapper>
         <InputContainer>
           <ReactTags
@@ -37,11 +47,27 @@ SearchBar.propTypes = {
   tags: PropTypes.any,
   handleDelete: PropTypes.func,
   handleAddition: PropTypes.func,
+  changeTags: PropTypes.func,
 };
 
 const enhance = compose(
   withState('tags', 'updateTags', []),
   withHandlers({
+    changeTags: (props) => (newTags) => {
+      props.updateTags(() => {
+        const tags = [];
+        for (let counter = 0; counter < newTags.length; counter += 1) {
+          tags.push({
+            id: counter + 1,
+            text: newTags[counter],
+          });
+        }
+        const selectedTags = tags.map((item) => item.text);
+        props.onChange(selectedTags.join(' '));
+        props.onSearch();
+        return tags;
+      });
+    },
     handleDelete: (props) => (index) => {
       props.updateTags((tags) => {
         tags.splice(index, 1);
