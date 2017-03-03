@@ -41,6 +41,16 @@ const Image = styled.img`
   display: block;
 `;
 
+const Title = styled.h3`
+  font-size: 14px;
+  margin: 0;
+  padding: 0 8px 0px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
 const Description = styled.p`
   font-size: 12px;
   margin: 0;
@@ -83,6 +93,7 @@ function BlockElement(props) {
       <Anchor href={props.url} target="_blank">
         {props.image && <Image src={props.image} alt={props.name} />}
       </Anchor>
+      {props.name && <Title>{props.name}</Title>}
       {props.description && <Description>{truncate(props.description, { length: 100, separator: /,? +/ })}</Description>}
       <Source>
         <Icon src={iconType(props.type)} />

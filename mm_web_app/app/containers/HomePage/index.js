@@ -76,7 +76,7 @@ function mashUp(props) {
         news.push(
           <div className="grid-item" key={`GN-${item.url}`}>
             <BlockElement
-              title={item.title}
+              name={item.title}
               description={item.description}
               url={item.url}
               image={item.img}
@@ -91,7 +91,7 @@ function mashUp(props) {
         search.push(
           <div className="grid-item" key={`GS-${item.url}`}>
             <BlockElement
-              title={item.title}
+              name={item.title}
               description={item.description}
               url={item.url}
               image={item.img}
