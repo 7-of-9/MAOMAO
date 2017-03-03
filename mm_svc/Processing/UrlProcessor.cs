@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using mm_svc.Terms;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
+using static mm_svc.Terms.GoldenPaths;
 
 namespace mm_svc
 {
@@ -32,8 +33,14 @@ namespace mm_svc
         //
         // returns all from store (if present) unless reprocess_tss == true
         //
-        public static List<url_term> ProcessUrl(long url_id, bool reprocess = false, bool run_l2_boost = false)
+        public static List<url_term> ProcessUrl(
+            long url_id,
+            out List<List<TermPath>> all_term_paths,
+            bool reprocess = false,
+            bool run_l2_boost = false)
         {
+            all_term_paths = new List<List<TermPath>>();
+
             using (var db = mm02Entities.Create()) {
                 var sw = new Stopwatch(); sw.Start();
 
@@ -104,9 +111,14 @@ namespace mm_svc
                 //
                 // PATHS TO ROOT: calc & store all paths to root for mapped & deduped golden terms
                 //
-                //foreach (var p in wiki_url_terms)
-                //    GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess);
-                Parallel.ForEach(wiki_url_terms, p => GoldenPaths.ProcessAndRecordPathsToRoot(p.term_id, reprocess)); //***
+                var term_paths_P = new ConcurrentBag<List<TermPath>>();
+                Parallel.ForEach(wiki_url_terms, p => {
+
+                    var paths = GoldenPaths.GetOrProcessPathsToRoot(p.term_id, false); //reprocess); //***
+                    paths.ForEach(p2 => term_paths_P.Add(p2));
+
+                } );
+                all_term_paths = term_paths_P.ToList(); // all terms, all paths to root
                 g.LogInfo($"url_id={url_id} ProcessAndRecordPathsToRoot DONE: ms={sw.ElapsedMilliseconds} ");
 
                 //  (done): topic hiearchies - how to maintain these:
@@ -132,22 +144,19 @@ namespace mm_svc
                 //
                 // (done) then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
                 //
-                // WIP -- now, can get url_parent_terms (found_topic=true) for all URLs
-                //        >> looking for a way of picking out end results that REQUIRE MAINTENANCE, e.g. low S scores, or some other metric
-                //           to pick out these categories that need attention, automatically
+                // (done) AUTO-FLAG (flag urls/terms requiring manual editorialization) 
+                //          (*) % of topics in PtR > no good.
+                //          (*) min_S/max_S value of term's topic parents > no good.
+                //          (*) >>> third time lucky?? ** min_d/max_d ** of topics from leaf terms on all_term_paths -- seems reasonable
+                //               threshold seems to be about ~ >2 min_d indicates needs further editorialization
                 //
-                //          (*) % of topics in PtR doesn't seem much help.
-                //
-                //          (*) max S value of term's topic parents > maybe... ???
+                // NEXT: complete first cut of editorialization and promote to prod; >>>>
+                //      GET INTO PROD *NOW* for 12 MARCH DEMO *** >>> WANT HOMEPAGE W/ LIVE FULL CYCLE ADDING, CATEGORIZING, ETC.
                 //
                 //  *******
                 //
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
                 //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
-                //
-                // >>
-                // .... MIGRATION OF EDITORIAL TERMS TO PROD? soon time to try running wowmao against prod...? 
-                // >>
                 //
 
                 //
@@ -158,7 +167,7 @@ namespace mm_svc
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
                     // PERF: taking quite some time --
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess); //***
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false);// reprocess); //***
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
@@ -181,7 +190,7 @@ namespace mm_svc
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
                     // editorial topic parents
-                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics); 
+                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths); 
 
                     // dynamic sugggest parents
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
@@ -216,7 +225,11 @@ namespace mm_svc
             //public double other_chains_boost;
             //public List<int> appears_in_chains_depths = new List<int>();
         }
-        private static void CalcAndStoreUrlParentTerms_Topics(long url_id, mm02Entities db, List<gt_parent> all_parents_topics)
+        private static void CalcAndStoreUrlParentTerms_Topics(
+            long url_id,
+            mm02Entities db,
+            List<gt_parent> all_parents_topics,
+            List<List<TermPath>> all_term_paths)
         {
             // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
             all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
@@ -247,6 +260,11 @@ namespace mm_svc
             //db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
             //db.SaveChangesTraceValidationErrors();
 
+            //****
+            // AUTO FLAG !! min_d > ~2 seems to be RED FLAG
+            // get min/max distances from leaf terms for each topic, across all paths to root
+            // todo -- record in UrlProcessing
+
             // add
             var pri = 0;
             var url_parent_terms = counted_and_ranked//.Where(p => p.count > 1) // *** want real commonality
@@ -259,6 +277,18 @@ namespace mm_svc
                                              S_norm = p.S_norm,
                                                   S = p.S,
                                         }).ToList();
+
+            //
+            // AUTO FLAG (curation/requiring editorialization) -- 
+            // min /max distances for topics, from leaf terms across all paths to root of all URL terms
+            //
+            url_parent_terms.ForEach(p => {
+                int min_d = -1, max_d = -1;
+                GoldenPaths.GetMinMaxDistancesFromLeafTerms(all_term_paths, p.term_id, out min_d, out max_d);
+                p.min_d_paths_to_root_url_terms = min_d;
+                p.max_d_paths_to_root_url_terms = max_d;
+            });
+
             mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
 
             // walk each topic chain -- boost any top level matching topics by topic chain root S, scaled to 1/square of match depth

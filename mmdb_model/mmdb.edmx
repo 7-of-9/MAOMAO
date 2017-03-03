@@ -140,6 +140,8 @@
           <Property Name="S" Type="float" />
           <Property Name="avg_S" Type="float" />
           <Property Name="S_norm" Type="float" />
+          <Property Name="min_d_paths_to_root_url_terms" Type="int" Nullable="false" />
+          <Property Name="max_d_paths_to_root_url_terms" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="url_term">
           <Key>
@@ -1270,6 +1272,8 @@
           <Property Name="S" Type="Double" />
           <Property Name="avg_S" Type="Double" />
           <Property Name="S_norm" Type="Double" />
+          <Property Name="min_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
+          <Property Name="max_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="url_parent_term" ToRole="term" />
           <NavigationProperty Name="url" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url_parent_term" ToRole="url" />
         </EntityType>
@@ -1520,6 +1524,8 @@
           <EntitySetMapping Name="url_parent_term">
             <EntityTypeMapping TypeName="mm02Model.url_parent_term">
               <MappingFragment StoreEntitySet="url_parent_term">
+                <ScalarProperty Name="max_d_paths_to_root_url_terms" ColumnName="max_d_paths_to_root_url_terms" />
+                <ScalarProperty Name="min_d_paths_to_root_url_terms" ColumnName="min_d_paths_to_root_url_terms" />
                 <ScalarProperty Name="S_norm" ColumnName="S_norm" />
                 <ScalarProperty Name="avg_S" ColumnName="avg_S" />
                 <ScalarProperty Name="S" ColumnName="S" />

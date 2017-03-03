@@ -185,9 +185,7 @@ namespace wowmao.Controls
             this.no_pages = (int)Math.Ceiling((double)paths.Count / per_page);
             this.term_ids = paths.Select(p => p.First().t.id).Distinct().ToList();
 
-            this.no_terms_in_paths = paths.Sum(p => p.Count);
-            this.no_topics_in_paths = paths.Sum(p => p.Count(p2 => p2.t.IS_TOPIC));
-            this.perc_topics_in_paths = (double)no_topics_in_paths / no_terms_in_paths;
+            this.perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(paths);
 
             lblTermInfo.Text = $"term_ids=[{string.Join(", ", term_ids)}] paths={paths.Count}";
             lblPercTopics.Text = $"Percentage Topics (all pages): {(perc_topics_in_paths*100).ToString("0.0")}%";

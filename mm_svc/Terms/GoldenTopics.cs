@@ -18,6 +18,14 @@ namespace mm_svc.Terms
             public double S_norm;
         }
 
+        public static List<topic_link> GetTopicLinks(long child_term_id)
+        {
+            using (var db = mm02Entities.Create()) {
+                var ret = db.topic_link.AsNoTracking().Where(p => p.child_term_id == child_term_id).ToListNoLock();
+                return ret;
+            }
+        }
+
         //
         // Picks out editorially defined topics from paths to root; weights them by distance from leaf term, NS# and repetitions
         //

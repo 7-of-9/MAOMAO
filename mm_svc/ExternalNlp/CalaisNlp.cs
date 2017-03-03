@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using static mm_svc.Terms.GoldenPaths;
 
 namespace mm_svc
 {
@@ -93,7 +94,8 @@ namespace mm_svc
             //
             // Calculate TSS & TSS_norm for Calais terms -- updates TSS values on Calais url_terms & writes mapped wiki (golden) url_terms
             // 
-            mm_svc.UrlProcessor.ProcessUrl(db_url.id, reprocess: reprocessing_known_url);
+            List<List<TermPath>> all_term_paths = null;
+            mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocess: reprocessing_known_url);
 
             return ret;
         }

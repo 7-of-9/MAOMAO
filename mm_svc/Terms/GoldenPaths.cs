@@ -26,17 +26,39 @@ namespace mm_svc.Terms
         //public static ConcurrentBag<term> term_cache = new ConcurrentBag<term>();
         //public static event EventHandler OnCacheTermAdd = delegate { };
 
-        public static List<List<TermPath>> GetOrProcessPathsToRoot(long term_id)
+        public static List<List<TermPath>> GetOrProcessPathsToRoot(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);
-                if (root_paths.Count == 0) {
-                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id);
+
+                if (root_paths.Count == 0 || reprocess == true) {
+
+                    GoldenPaths.ProcessAndRecordPathsToRoot(term_id, reprocess);
+
                     term = g.RetryMaxOrThrow(() => db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p2 => p2.id == term_id));
                     root_paths = GoldenPaths.GetStoredPathsToRoot_ForTerm(term);
                 }
                 return root_paths;
+            }
+        }
+
+        //
+        // Gets the min/max distances of the supplied term from the path leaf terms - lower is closer to the leaf
+        //
+        public static void GetMinMaxDistancesFromLeafTerms(List<List<TermPath>> paths, long term_id, out int min_d, out int max_d)
+        {
+            min_d = 999;
+            max_d = -1;
+            foreach (var path in paths) {
+                var first_matching = path.FirstOrDefault(p => p.t.id == term_id);
+                if (first_matching != null) {
+                    var ndx = path.IndexOf(first_matching);
+                    if (ndx < min_d)
+                        min_d = ndx;
+                    if (ndx > max_d)
+                        max_d = ndx;
+                }
             }
         }
 
@@ -77,6 +99,16 @@ namespace mm_svc.Terms
                 });
             }
             return paths.ToList();
+        }
+
+        //
+        // Calc's % of defined topics in supplied PtR (testing: auto-flag badly editorialized terms/urls)
+        //
+        public static double GetPercentageTopicsInPaths(List<List<TermPath>> paths) {
+            var no_terms_in_paths = paths.Sum(p => p.Count);
+            var no_topics_in_paths = paths.Sum(p => p.Count(p2 => p2.t.IS_TOPIC));
+            var perc_topics_in_paths = (double)no_topics_in_paths / no_terms_in_paths;
+            return perc_topics_in_paths;
         }
 
         //

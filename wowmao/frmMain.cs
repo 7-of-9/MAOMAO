@@ -17,6 +17,7 @@ using static mm_svc.Terms.Correlations;
 using mm_svc;
 using System.Collections;
 using System.Data.Entity;
+using static mm_svc.Terms.GoldenPaths;
 
 namespace wowmao
 {
@@ -268,7 +269,8 @@ namespace wowmao
                 //
                 // ** ProcessTss **
                 //
-                var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess: chkReprocess.Checked);
+                List<List<TermPath>> all_term_paths = null;
+                var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess: chkReprocess.Checked);
 
                 // L1 terms -> for each L1 term: add to TermList
                 if (chkUpdateUi.Checked) { 
@@ -293,13 +295,19 @@ namespace wowmao
                     var topics = parents.Where(p => p.found_topic);
                     var suggested = parents.Where(p => p.suggested_dynamic);
 
-                    txtInfo.Text += "\r\n\r\nTOPICS:\r\n";
-                    topics.OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n"));
+                    txtInfo.Text += "\r\n";
 
                     txtInfo.AppendText("\r\nSUGGESTED (not in topics):\r\n");
                     suggested.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
                              .Where(p => !p.term.IS_TOPIC)
                              .OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} -> S={p.S?.ToString("0.00000")}\r\n"));
+
+                    txtInfo.Text += "\r\nTOPICS:\r\n";
+                    double perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
+                    txtInfo.AppendText($"\t(Percentage Topics (all terms): {(perc_topics_in_paths * 100).ToString("0.0")}%)\r\n");
+                    topics.OrderBy(p => p.pri).ToList().ForEach(p => {
+                        txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms}) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                    });
 
                     //txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 
@@ -321,11 +329,12 @@ namespace wowmao
             var reprocess = chkReprocess.Checked;
             this.Cursor = Cursors.WaitCursor;
             this.lblWalkInfo.Text = "walk(P) working...";
-            Parallel.ForEach(urls_to_process, new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
+            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, (url) => {
                 Application.DoEvents();
                 Task.Run((Action)(() => {
 
-                    var a = mm_svc.UrlProcessor.ProcessUrl(url.id, reprocess);
+                    List<List<TermPath>> all_term_paths = null;
+                    var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess);
 
                     Application.DoEvents();
                     this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));

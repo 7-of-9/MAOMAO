@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static mm_svc.Terms.GoldenPaths;
 
 namespace tests
 {
@@ -17,8 +18,12 @@ namespace tests
         [TestMethod]
         public void ProcessUrl_Test1()
         {
-            // testing most common parent
-            UrlProcessor.ProcessUrl(1973, reprocess: true);   // hignfy
+            List<List<TermPath>> all_term_paths = null;
+
+            // "FERN" -- edge case term, causing "Geography" topic
+            //   can find some way to measure distances from returned topics to each other?
+            //    i.e. to flag "Geography" as an outlier, not related to the terms?
+            UrlProcessor.ProcessUrl(1985, out all_term_paths, reprocess: true);   
         }
 
         [TestMethod]
