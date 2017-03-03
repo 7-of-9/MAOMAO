@@ -35,7 +35,6 @@ import {
 import { changeTerms, resetPage, nextPage } from './actions';
 
 const DataContainer = Block(InfiniteScroll);
-const urls = List([]);
 /**
  * Mash up all result from API
  * @param  {[type]} props [description]
@@ -43,6 +42,7 @@ const urls = List([]);
  */
 function mashUp(props) {
   // Parse data
+  let urls = List([]);
   const graphKnowledges = [];
   const search = [];
   const news = [];
@@ -57,7 +57,7 @@ function mashUp(props) {
     _.forEach(googleKnowledges, (item) => {
       const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url;
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
-        urls.insert(moreDetailUrl);
+        urls = urls.insert(urls.size, moreDetailUrl);
         graphKnowledges.push(
           <div className="grid-item" key={`GK-${moreDetailUrl}`}>
             <BlockElement
@@ -72,7 +72,7 @@ function mashUp(props) {
     });
     _.forEach(googleNews, (item) => {
       if (item.img && !urls.includes(item.url)) {
-        urls.insert(item.url);
+        urls = urls.insert(urls.size, item.url);
         news.push(
           <div className="grid-item" key={`GN-${item.url}`}>
             <BlockElement
@@ -87,7 +87,7 @@ function mashUp(props) {
     });
     _.forEach(googleSearchResult, (item) => {
       if (item.img && !urls.includes(item.url)) {
-        urls.insert(item.url);
+        urls = urls.insert(urls.size, item.url);
         search.push(
           <div className="grid-item" key={`GS-${item.url}`}>
             <BlockElement
@@ -103,7 +103,7 @@ function mashUp(props) {
     _.forEach(youtubeVideos, (item) => {
       const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`;
       if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
-        urls.insert(youtubeUrl);
+        urls = urls.insert(urls.size, youtubeUrl);
         videos.push(
           <div className="grid-item" key={`YT-${youtubeUrl}`}>
             <BlockElement
@@ -118,6 +118,7 @@ function mashUp(props) {
     });
     _.forEach(redditListing, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && !urls.includes(item.url)) {
+        urls = urls.insert(urls.size, item.url);
         reddits.push(
           <div className="grid-item" key={`RD-${item.url}`}>
             <BlockElement
@@ -131,7 +132,6 @@ function mashUp(props) {
       }
     });
   }
-
   // Mashup records
   const result = [graphKnowledges, news, search, reddits, videos];
   const elements = [];

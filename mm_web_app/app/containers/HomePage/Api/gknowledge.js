@@ -8,7 +8,7 @@ import { LIMIT, GOOGLE_API_KEY } from 'containers/App/constants';
 import { googleKnowledgeLoaded, googleKnowledgeLoadingError } from 'containers/App/actions';
 import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
 
-function* googleKnowlegeBaseOnTerm(term, page) {
+function* googleKnowlegeByTerm(term, page) {
   const buildQuery = queryString.stringify({
     query: term,
     key: GOOGLE_API_KEY,
@@ -37,7 +37,7 @@ export function* getGoogleKnowledge() {
     const page = yield select(makeSelectPageNumber());
     const asyncCall = [];
     _.forEach(terms, (term) => {
-      asyncCall.push(fork(googleKnowlegeBaseOnTerm, term, page));
+      asyncCall.push(fork(googleKnowlegeByTerm, term, page));
     });
     asyncCall.push(call(delay, 500));
     yield asyncCall;

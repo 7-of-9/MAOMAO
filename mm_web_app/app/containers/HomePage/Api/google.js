@@ -6,7 +6,7 @@ import { LIMIT, CRALWER_API_URL } from 'containers/App/constants';
 import { googleLoaded, googleLoadingError } from 'containers/App/actions';
 import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
 
-function* googleSearchBaseOnTerm(term, page) {
+function* googleSearchByTerm(term, page) {
   const query = queryString.stringify({
     type: 'google',
     url: `https://www.google.com/search?q=${encodeURI(term)}&start=${LIMIT * (page - 1)}`,
@@ -31,6 +31,6 @@ export function* getGoogleSearchResult() {
     yield put(googleLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
-    yield call(googleSearchBaseOnTerm, keyword, page);
+    yield call(googleSearchByTerm, keyword, page);
   }
 }

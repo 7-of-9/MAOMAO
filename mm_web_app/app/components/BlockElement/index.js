@@ -91,7 +91,7 @@ function BlockElement(props) {
   return (
     <Wrapper>
       <Anchor href={props.url} target="_blank">
-        {props.image && <Image src={props.image} alt={props.name} />}
+        <Image src={props.image} alt={props.name} />
       </Anchor>
       {props.name && <Title>{props.name}</Title>}
       {props.description && <Description>{truncate(props.description, { length: 100, separator: /,? +/ })}</Description>}
@@ -107,7 +107,7 @@ BlockElement.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
-  image: PropTypes.string,
+  image: PropTypes.string.required,
   url: PropTypes.string,
 };
 

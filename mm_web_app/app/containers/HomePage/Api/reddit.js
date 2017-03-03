@@ -1,4 +1,6 @@
-import { call, put, select } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import { fork, call, put, select } from 'redux-saga/effects';
+import _ from 'lodash';
 import snoowrap from 'snoowrap';
 
 import { LIMIT, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from 'containers/App/constants';
@@ -17,6 +19,24 @@ const r = new snoowrap({
 r.config({ debug: true });
 
 
+function* redditSearchByTerm(term, page) {
+  const { result, error } = yield call(redditListing, term, page);
+  if (result) {
+    yield put(redditLoaded(result, term));
+  } else {
+    yield put(redditLoadingError(error));
+  }
+}
+
+function redditListing(keyword, page) {
+  return r.search({
+    query: keyword,
+    relevance: 'top',
+    limit: LIMIT * page,
+  }).then((result) => ({ result }))
+  .catch((error) => ({ error }));
+}
+
 /**
  * Reddit handler
  */
@@ -27,16 +47,12 @@ export function* getRedditListing() {
   if (keyword === '') {
     yield put(redditLoaded([], terms));
   } else {
-    try {
-      const page = yield select(makeSelectPageNumber());
-      const result = yield call([r, r.search], {
-        query: keyword,
-        relevance: 'top',
-        limit: LIMIT * page,
-      });
-      yield put(redditLoaded(result, terms));
-    } catch (err) {
-      yield put(redditLoadingError(err));
-    }
+    const page = yield select(makeSelectPageNumber());
+    const asyncCall = [];
+    _.forEach(terms, (term) => {
+      asyncCall.push(fork(redditSearchByTerm, term, page));
+    });
+    asyncCall.push(call(delay, 500));
+    yield asyncCall;
   }
 }
