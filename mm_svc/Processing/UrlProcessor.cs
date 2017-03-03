@@ -150,8 +150,15 @@ namespace mm_svc
                 //          (*) >>> third time lucky?? ** min_d/max_d ** of topics from leaf terms on all_term_paths -- seems reasonable
                 //               threshold seems to be about ~ >2 min_d indicates needs further editorialization
                 //
-                // NEXT: complete first cut of editorialization and promote to prod; >>>>
+                // NEXT: *** complete first cut of editorialization and promote to prod ***
                 //      GET INTO PROD *NOW* for 12 MARCH DEMO *** >>> WANT HOMEPAGE W/ LIVE FULL CYCLE ADDING, CATEGORIZING, ETC.
+                //
+                // DEMO PHASE PLAN
+                // NEXT: phase 1 -- wire up to base Calais mm02ce flow & user_history (no return yet to client) (filter wowmao by user_id / history)
+                //       phase 2 -- returns topics & suggested to mm02ce for XP (+ user_xp! table)
+                //       phase 3 -- categorization of user_history; quite possibly per original concept, of url categorization
+                //                   being user-specific, i.e. clustering around previously categorized
+                //       phase 4 -- homepage is view of user_history + discovery
                 //
                 //  *******
                 //
@@ -189,6 +196,7 @@ namespace mm_svc
                 // [url_parent_term]
                 //
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
+                     
                     // editorial topic parents
                     CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths); 
 
@@ -196,6 +204,7 @@ namespace mm_svc
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
                     // of suggested related parent terms and topic terms, for the url.
                     CalcAndStoreUrlParentTerms_Dynamic(url_id, db, all_parents_dynamic);
+
                 }
                 g.LogInfo($"url_id={url_id} CalcAndStoreUrlParentTerms DONE: ms={sw.ElapsedMilliseconds} ");
 
@@ -436,7 +445,7 @@ namespace mm_svc
                 var term_url_tss = distinctObjects_tss[distinct];
                 var term_url_tss_norm = distinctObjects_tss_norm[distinct];
 
-                if (term_url_tss == 0)
+                if (term_url_tss == 0)  
                     continue;
 
                 using (var db = mm02Entities.Create()) {

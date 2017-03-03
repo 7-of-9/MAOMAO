@@ -35,10 +35,10 @@ namespace wowmao
         private frmTrace trace_form;
 
         public frmMain() {
-            trace_form = new frmTrace();
-            trace_form.Show();
-            Trace.Listeners.Add(new TextBoxTraceListener(trace_form.txtTrace));
-            trace_form.WindowState = FormWindowState.Minimized;
+            //trace_form = new frmTrace();
+            //trace_form.Show();
+            //Trace.Listeners.Add(new TextBoxTraceListener(trace_form.txtTrace));
+            //trace_form.WindowState = FormWindowState.Minimized;
 
             //Correlations.OnCacheAdd += Correlations_cache_add;
             
@@ -81,9 +81,12 @@ namespace wowmao
             public ListViewItemComparer(int column) { col = column; }
             public int Compare(object x, object y) {
                 int returnVal = -1;
-                returnVal = String.Compare(((ListViewItem)x).SubItems[col].Text,
-                ((ListViewItem)y).SubItems[col].Text);
-                return returnVal;
+                var text1 = ((ListViewItem)x).SubItems[col].Text;
+                var text2 = ((ListViewItem)y).SubItems[col].Text;
+                double num1, num2;
+                if (double.TryParse(text1, out num1) && double.TryParse(text2, out num2))
+                    return (int)(num1 - num2);
+                return String.Compare(text1, text2);
             }
         }
 
@@ -158,6 +161,7 @@ namespace wowmao
                 foreach (var x in data) {
                     var item = new ListViewItem(new string[] {
                         "-",
+                        "-",
                         x.id.ToString(),
                         x.url1,
                         x.meta_title,
@@ -174,50 +178,7 @@ namespace wowmao
                     //
                     // AUTO-FLAG -- multi-factor
                     //
-                    var topics = x.url_parent_term.Where(p => p.found_topic == true).OrderBy(p => p.pri).ToList();
-                    if (topics.Count == 0)
-                        item.ImageIndex = 2; // not fully processed
-                    else {
-                        var best_topic = topics.First();
-                        if (best_topic.min_d_paths_to_root_url_terms == 99)
-                            item.ImageIndex = 12; // not fully processed
-                        else {
-                            double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
-                            double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
-                            double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
-                            double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
-
-                            // FLAG 1 (Percentage Topics(all terms) < 5 %)
-                            var test_1 = best_topic.perc_ptr_topics < 0.05 ? 1 : 0;
-
-                            // FLAG 2 (AVG_MIN_D > 4.0)
-                            var test_2 = (avg_min_d > 4.0) ? 1 : 0;
-
-                            // FLAG 3 (AVG_MAX_D > 8.0)
-                            var test_3 = (avg_max_d > 8.0) ? 1 : 0;
-
-                            // FLAG 4 (avg_S_weighted: < 3.0)
-                            var test_4 = (avg_S_weighted < 3.0) ? 1 : 0;
-
-                            // FLAG 5 (Best Topic: min_d > 2)
-                            var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
-
-                            // FLAG 6 (Count Topics < 3)
-                            var test_6 = (topics.Count < 3) ? 1 : 0;
-
-                            var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6;
-
-                            if (warn_count > 4)
-                                item.ImageIndex = 1;
-                            else if (warn_count > 2)
-                                item.ImageIndex = 13;
-                            else if (warn_count == 1)
-                                item.ImageIndex = 15;
-                            else
-                                item.ImageIndex = 0;
-                            item.SubItems[0].Text = warn_count.ToString();
-                        }
-                    }
+                    AUTO_FLAG_LVI(item, x.url_parent_term.ToList());
 
                     item.Tag = x;
                     items.Add(item);
@@ -226,6 +187,75 @@ namespace wowmao
                 lvwUrls.EndUpdate();
             }
             //SetCols(lvwUrls);
+        }
+
+        //
+        // AUTO-FLAG: certainty is a blend of distinct # of warnings, and degree of warnings; -ve degrees is good, +ve is bad
+        //            0 or 1 warnings is pretty good, anything over is increasingly uncertain
+        //
+        private static void AUTO_FLAG_LVI(ListViewItem item, List<url_parent_term> parent_terms)
+        {
+            var topics = parent_terms.Where(p => p.found_topic == true).OrderBy(p => p.pri).ToList();
+
+            if (topics.Count == 0)
+                item.ImageIndex = 2; // not fully processed
+            else {
+                var best_topic = topics.First();
+                if (best_topic.min_d_paths_to_root_url_terms == 99)
+                    item.ImageIndex = 12; // not fully processed
+                else {
+                    double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
+                    double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
+                    double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                    double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+
+                    // FLAG 1 (Percentage Topics(all terms) < 5 %)
+                    const double C1 = 0.05;
+                    var test_1 = best_topic.perc_ptr_topics < C1 ? 1 : 0;
+                    var degree_1 = (C1 - best_topic.perc_ptr_topics) / C1;
+
+                    // FLAG 2 (AVG_MIN_D > 4.0)
+                    const double C2 = 4.0;
+                    var test_2 = (avg_min_d > C2) ? 1 : 0;
+                    var degree_2 = (avg_min_d - C2) / C2;
+
+                    // FLAG 3 (AVG_MAX_D > 8.0)
+                    const double C3 = 8.0;
+                    var test_3 = (avg_max_d > C3) ? 1 : 0;
+                    var degree_3 = (avg_max_d - C3) / C3;
+
+                    // FLAG 4 (avg_S_weighted: < 3.0)
+                    const double C4 = 3.0;
+                    var test_4 = (avg_S_weighted < C4) ? 1 : 0;
+                    var degree_4 = (C4 - avg_S_weighted) / avg_S_weighted;
+
+                    // FLAG 5 (Best Topic: min_d > 2)
+                    const double C5 = 2;
+                    var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
+                    var degree_5 = (best_topic.min_d_paths_to_root_url_terms - C5) / C5;
+
+                    // FLAG 6 (Count Topics < 5)
+                    const double C6 = 2;
+                    var test_6 = (topics.Count < 5) ? 1 : 0;
+                    var degree_6 = (C6 - topics.Count) / topics.Count;
+
+                    var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6;
+                    var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6;
+
+                    if (warn_count > 5)
+                        item.ImageIndex = 2;
+                    else if (warn_count > 3)
+                        item.ImageIndex = 1;
+                    else if (warn_count > 1)
+                        item.ImageIndex = 13;
+                    else if (warn_count == 1)
+                        item.ImageIndex = 15;
+                    else
+                        item.ImageIndex = 0;
+                    item.SubItems[0].Text = warn_count.ToString();
+                    item.SubItems[1].Text = warn_degree.ToString("0.000");
+                }
+            }
         }
 
         void SetCols(ListView lvw) {
@@ -325,6 +355,7 @@ namespace wowmao
                 //
                 if (chkUpdateUi.Checked) {
                     var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).ToListNoLock();
+
                     var topics = parents.Where(p => p.found_topic);
                     var suggested = parents.Where(p => p.suggested_dynamic);
 
@@ -338,24 +369,29 @@ namespace wowmao
                     txtInfo.Text += "\r\nTOPICS:\r\n";
                     double perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
                     txtInfo.AppendText($"\t(Percentage Topics (all terms): {(perc_topics_in_paths * 100).ToString("0.0")}%)\r\n");
-                    double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
-                    double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
-                    double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
-                    double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                    if (topics.Count() > 0) {
+                        double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
+                        double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
+                        double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                        double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
 
-                    txtInfo.AppendText($"\t(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
-                    txtInfo.AppendText($"\t(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
-                    txtInfo.AppendText($"\t(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
-                    txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_max_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"\t(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"\t(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"\t(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_max_d).ToString("0.0")})\r\n");
 
-                    topics.OrderBy(p => p.pri).ToList().ForEach(p => {
-                        txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={p.perc_ptr_topics.ToString("0.00")}%) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
-                    });
+                        topics.OrderBy(p => p.pri).ToList().ForEach(p => {
+                            txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                        });
+                    }
+                    else txtInfo.AppendText($"\t(NO TOPICS)\r\n");
 
                     //txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
 
                     txtInfo.AppendText("\r\n\r\n>>> HTTP: " + url.url1 + "\r\n");
                     txtInfo.ScrollToCaret();
+
+                    AUTO_FLAG_LVI(item, parents);
                 }
             }
 
@@ -372,17 +408,21 @@ namespace wowmao
             var reprocess = chkReprocess.Checked;
             this.Cursor = Cursors.WaitCursor;
             this.lblWalkInfo.Text = "walk(P) working...";
-            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, (url) => {
-                Application.DoEvents();
-                Task.Run((Action)(() => {
+            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
+                //Application.DoEvents();
+                //Task.Run((Action)(() => {
 
-                    List<List<TermPath>> all_term_paths = null;
-                    var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess);
+                List<List<TermPath>> all_term_paths = null;
+                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess);
 
-                    Application.DoEvents();
-                    this.BeginInvoke((Action)(() => this.lblWalkInfo.Text = $"remaining: {--remaining}..."));
-                }));
-                Application.DoEvents();
+                //Application.DoEvents();
+                //this.BeginInvoke((Action)(() => {
+                    this.lblWalkInfo.Text = $"remaining: {--remaining}...";
+                    this.lblWalkInfo.Refresh();
+                //}));
+
+                //}));
+                //Application.DoEvents();
             });
             this.Cursor = Cursors.Default;
         }
