@@ -279,14 +279,18 @@ namespace mm_svc
                                         }).ToList();
 
             //
-            // AUTO FLAG (curation/requiring editorialization) -- 
-            // min /max distances for topics, from leaf terms across all paths to root of all URL terms
+            // AUTO-FLAG (curation/requiring editorialization) -- 
             //
+            double perc_topics_all_term_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
             url_parent_terms.ForEach(p => {
+                // metric 1 -- min/max topic distances from leaf terms -- across all paths to root of all URL terms
                 int min_d = -1, max_d = -1;
                 GoldenPaths.GetMinMaxDistancesFromLeafTerms(all_term_paths, p.term_id, out min_d, out max_d);
                 p.min_d_paths_to_root_url_terms = min_d;
                 p.max_d_paths_to_root_url_terms = max_d;
+
+                // metric 2 -- % of term's path to root terms which are topics
+                p.perc_ptr_topics = perc_topics_all_term_paths;
             });
 
             mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);

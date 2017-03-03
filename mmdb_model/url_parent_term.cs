@@ -25,6 +25,7 @@ namespace mmdb_model
         public Nullable<double> S_norm { get; set; }
         public int min_d_paths_to_root_url_terms { get; set; }
         public int max_d_paths_to_root_url_terms { get; set; }
+        public double perc_ptr_topics { get; set; }
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }

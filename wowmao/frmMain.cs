@@ -65,31 +65,21 @@ namespace wowmao
             cmdSearchURLs_Click(null, null);
         }
 
-        private void RootPathViewer1_OnTopicToggled(object sender, Controls.RootPathViewer.OnTopicToggledEventArgs e)
-        {
+        private void RootPathViewer1_OnTopicToggled(object sender, Controls.RootPathViewer.OnTopicToggledEventArgs e) {
             this.txtGtSearch.Text = e.term_name;
             this.chkExactMatch.Checked = true;
             cmdGtSearch_Click(null, null);
         }
 
-        private void LvwUrls_ColumnClick(object sender, ColumnClickEventArgs e)
-        {
+        private void LvwUrls_ColumnClick(object sender, ColumnClickEventArgs e) {
             this.lvwUrls.ListViewItemSorter = new ListViewItemComparer(e.Column);
             lvwUrls.Sort();
         }
-        class ListViewItemComparer : IComparer
-        {
+        class ListViewItemComparer : IComparer {
             private int col;
-            public ListViewItemComparer()
-            {
-                col = 0;
-            }
-            public ListViewItemComparer(int column)
-            {
-                col = column;
-            }
-            public int Compare(object x, object y)
-            {
+            public ListViewItemComparer() { col = 0; }
+            public ListViewItemComparer(int column) { col = column; }
+            public int Compare(object x, object y) {
                 int returnVal = -1;
                 returnVal = String.Compare(((ListViewItem)x).SubItems[col].Text,
                 ((ListViewItem)y).SubItems[col].Text);
@@ -97,35 +87,29 @@ namespace wowmao
             }
         }
 
-        protected override void OnHandleCreated(EventArgs e)
-        {
+        protected override void OnHandleCreated(EventArgs e) {
             base.OnHandleCreated(e);
             this.wikiGoldTree.BuildTree();
         }
 
-        private void WikiGoldTree_OnSearchGoogle(object sender, Controls.WikiGoldenTree.OnSearchGoogleEventArgs e)
-        {
+        private void WikiGoldTree_OnSearchGoogle(object sender, Controls.WikiGoldenTree.OnSearchGoogleEventArgs e) {
             Process.Start($"chrome.exe", $"https://en.wikipedia.org/wiki/{e.search_term}");
         }
 
-        private void GtGoldTree_OnSearchGoogle(object sender, MmGoldenTree.OnSearchGoogleEventArgs e)
-        {
+        private void GtGoldTree_OnSearchGoogle(object sender, MmGoldenTree.OnSearchGoogleEventArgs e) {
             Process.Start($"https://www.google.com/#q={e.search_term}");
         }
 
-        private void GtGoldTree_OnSearchGoldenTerm(object sender, MmGoldenTree.SearchGoldenTermEventArgs e)
-        {
+        private void GtGoldTree_OnSearchGoldenTerm(object sender, MmGoldenTree.SearchGoldenTermEventArgs e) {
             //InitUrls(null, e.golden_term_id);
         }
 
         private void SetCaption() {
-
             Action set_title = () => this.Text = $"wowmao ~ gt_cache#={GoldenPaths.golden_term_cache.Count}";
             if (this.InvokeRequired)
                 this.BeginInvoke(set_title);
             else 
                 set_title();
-            
             //corr.cache={Correlations.cache.Count} (cache_tot_terms={Correlations.cache_tot_terms}";
             // url_term_cache.cache={url_term_cache.Count}";
         }
@@ -143,15 +127,14 @@ namespace wowmao
         void InitUrls(string search_term) {//, long? golden_term_id = null) {
           
             lvwUrls.Items.Clear();
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
+            using (var db = mm02Entities.Create()) {
                 lvwUrls.BeginUpdate();
                 var items = new List<ListViewItem>();
                 var rnd = new Random();
                 var qry = db.urls
                     .AsNoTracking()
                     .Include("url_term.term")
-                    //.Include("url_term.term.term_type")
-                    //.Include("url_term.term.cal_entity_type")
+                    .Include("url_parent_term")
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(search_term)) {
@@ -170,10 +153,11 @@ namespace wowmao
 
                 qry = qry.Take(take);
 
-                Debug.WriteLine(qry.ToString());
+                //Debug.WriteLine(qry.ToString());
                 var data = qry.ToListNoLock();
                 foreach (var x in data) {
                     var item = new ListViewItem(new string[] {
+                        "-",
                         x.id.ToString(),
                         x.url1,
                         x.meta_title,
@@ -186,6 +170,55 @@ namespace wowmao
                         x.processed_golden_count.ToString(),
                         x.img_url,
                     });
+
+                    //
+                    // AUTO-FLAG -- multi-factor
+                    //
+                    var topics = x.url_parent_term.Where(p => p.found_topic == true).OrderBy(p => p.pri).ToList();
+                    if (topics.Count == 0)
+                        item.ImageIndex = 2; // not fully processed
+                    else {
+                        var best_topic = topics.First();
+                        if (best_topic.min_d_paths_to_root_url_terms == 99)
+                            item.ImageIndex = 12; // not fully processed
+                        else {
+                            double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
+                            double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
+                            double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                            double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+
+                            // FLAG 1 (Percentage Topics(all terms) < 5 %)
+                            var test_1 = best_topic.perc_ptr_topics < 0.05 ? 1 : 0;
+
+                            // FLAG 2 (AVG_MIN_D > 4.0)
+                            var test_2 = (avg_min_d > 4.0) ? 1 : 0;
+
+                            // FLAG 3 (AVG_MAX_D > 8.0)
+                            var test_3 = (avg_max_d > 8.0) ? 1 : 0;
+
+                            // FLAG 4 (avg_S_weighted: < 3.0)
+                            var test_4 = (avg_S_weighted < 3.0) ? 1 : 0;
+
+                            // FLAG 5 (Best Topic: min_d > 2)
+                            var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
+
+                            // FLAG 6 (Count Topics < 3)
+                            var test_6 = (topics.Count < 3) ? 1 : 0;
+
+                            var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6;
+
+                            if (warn_count > 4)
+                                item.ImageIndex = 1;
+                            else if (warn_count > 2)
+                                item.ImageIndex = 13;
+                            else if (warn_count == 1)
+                                item.ImageIndex = 15;
+                            else
+                                item.ImageIndex = 0;
+                            item.SubItems[0].Text = warn_count.ToString();
+                        }
+                    }
+
                     item.Tag = x;
                     items.Add(item);
                 }
@@ -305,8 +338,18 @@ namespace wowmao
                     txtInfo.Text += "\r\nTOPICS:\r\n";
                     double perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
                     txtInfo.AppendText($"\t(Percentage Topics (all terms): {(perc_topics_in_paths * 100).ToString("0.0")}%)\r\n");
+                    double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
+                    double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
+                    double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                    double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+
+                    txtInfo.AppendText($"\t(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
+                    txtInfo.AppendText($"\t(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
+                    txtInfo.AppendText($"\t(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
+                    txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_max_d).ToString("0.0")})\r\n");
+
                     topics.OrderBy(p => p.pri).ToList().ForEach(p => {
-                        txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms}) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                        txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={p.perc_ptr_topics.ToString("0.00")}%) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
                     });
 
                     //txtInfo.AppendText("\r\n\r\n>>> (RelatedParents) url_parent_terms: " + string.Join(", ", parent_terms.Select(p => p.term.name)));
