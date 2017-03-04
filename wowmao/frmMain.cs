@@ -30,9 +30,7 @@ namespace wowmao
         private string db_name;
         private term root_term;
 
-        //private Dictionary<long, List<url_term>> url_term_cache = new Dictionary<long, List<url_term>>();
-
-        private frmTrace trace_form;
+        //private frmTrace trace_form;
 
         public frmMain() {
             //trace_form = new frmTrace();
@@ -108,7 +106,7 @@ namespace wowmao
         }
 
         private void SetCaption() {
-            Action set_title = () => this.Text = $"wowmao ~ gt_cache#={GoldenPaths.golden_term_cache.Count}";
+            Action set_title = () => this.Text = $"wowmao ~ ({this.db_name}) gt_cache#={GoldenPaths.golden_term_cache.Count}";
             if (this.InvokeRequired)
                 this.BeginInvoke(set_title);
             else 
@@ -146,7 +144,7 @@ namespace wowmao
                         qry = qry.Where(p => p.processed_at_utc == null);
                 }
 
-                qry = qry.Where(p => p.nlp_suitability_score > 10);
+                //qry = qry.Where(p => p.nlp_suitability_score > 10);
                 qry = qry.OrderByDescending(p => p.id);
 
                 var count_urls = qry.Count();
@@ -273,7 +271,7 @@ namespace wowmao
             this.Cursor = Cursors.WaitCursor;
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 root_term = db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
-                this.db_name = "winmao ~ " + db.Database.Connection.Database;
+                this.db_name = db.Database.Connection.Database;
                 SetCaption();
             }
             this.Cursor = Cursors.Default;

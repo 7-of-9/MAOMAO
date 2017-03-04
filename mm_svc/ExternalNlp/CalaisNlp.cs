@@ -255,9 +255,10 @@ namespace mm_svc
 
                     // record term-url link
                     var db_url_term = new url_term();
+                    db_url_term.term = db_term;
                     db_url_term.term_id = db_term.id;
                     db_url_term.url_id = url_id;
-                    db_url_term.S = db_url_term.S_CALC;
+
                     switch (term_type_id) {
                         case (int)g.TT.CALAIS_ENTITY:
                             db_url_term.cal_entity_relevance = Convert.ToDouble(item.relevance.ToString()); break;
@@ -266,6 +267,9 @@ namespace mm_svc
                         case (int)g.TT.CALAIS_TOPIC:
                             db_url_term.cal_topic_score = Convert.ToDouble(item.score.ToString()); break;
                     }
+
+                    db_url_term.S = db_url_term.S_CALC;
+
                     db.url_term.Add(db_url_term);
                     db.SaveChangesTraceValidationErrors();
                     g.LogLine($"wrote new url_term url_id={url_id}, term_id={db_term.id}");
