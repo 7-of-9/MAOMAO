@@ -28,7 +28,6 @@
         <EntityTypeShape EntityType="mm02Model.url_term" Width="1.5" PointX="13" PointY="6.875" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         <EntityTypeShape EntityType="mm02Model.gt_parent" Width="1.5" PointX="13" PointY="0.75" />
-        <EntityTypeShape EntityType="mm02Model.topic_link" Width="1.5" PointX="13" PointY="11.5" />
         <EntityTypeShape EntityType="mm02Model.term" Width="1.5" PointX="10.75" PointY="2.125" />
         <AssociationConnector Association="mm02Model.FK_term_cal_entity_type" />
         <AssociationConnector Association="mm02Model.FK_golden_term_child" />
@@ -40,13 +39,16 @@
         <AssociationConnector Association="mm02Model.FK_term_matrix_term" />
         <AssociationConnector Association="mm02Model.FK_term_matrix_term1" />
         <AssociationConnector Association="mm02Model.FK_term_term_type" />
-        <AssociationConnector Association="mm02Model.FK_topic_link_term" />
-        <AssociationConnector Association="mm02Model.FK_topic_link_term1" />
         <AssociationConnector Association="mm02Model.FK_urlTerm_term" />
         <AssociationConnector Association="mm02Model.FK_user_url_classification_term" />
         <EntityTypeShape EntityType="mm02Model.url_parent_term" Width="1.5" PointX="16" PointY="8.125" />
         <AssociationConnector Association="mm02Model.FK_url_parent_term_term" />
         <AssociationConnector Association="mm02Model.FK_url_parent_term_url" />
+        <EntityTypeShape EntityType="mm02Model.topic_link" Width="1.5" PointX="13.375" PointY="11.375" />
+        <EntityTypeShape EntityType="mm02Model.tmp_is_topic_ids" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="mm02Model.tmp_is_topic_root_ids" Width="1.5" PointX="2.75" PointY="4.75" />
+        <AssociationConnector Association="mm02Model.FK_topic_link_term" />
+        <AssociationConnector Association="mm02Model.FK_topic_link_term1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

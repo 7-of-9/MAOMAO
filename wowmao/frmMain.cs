@@ -232,10 +232,10 @@ namespace wowmao
                     var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
                     var degree_5 = (best_topic.min_d_paths_to_root_url_terms - C5) / C5;
 
-                    // FLAG 6 (Count Topics < 5)
-                    const double C6 = 2;
-                    var test_6 = (topics.Count < 5) ? 1 : 0;
-                    var degree_6 = (C6 - topics.Count) / topics.Count;
+                    // FLAG 6 (Count Topics < 3)
+                    const double C6 = 3;
+                    var test_6 = (topics.Count < C6) ? 1 : 0;
+                    var degree_6 = ((C6 - topics.Count) / topics.Count); 
 
                     var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6;
                     var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6;
@@ -370,13 +370,13 @@ namespace wowmao
                     if (topics.Count() > 0) {
                         double avg_min_d = topics.Average(p => (double)p.min_d_paths_to_root_url_terms);
                         double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
-                        double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
-                        double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                        double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count());
+                        double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count());
 
                         txtInfo.AppendText($"\t(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
                         txtInfo.AppendText($"\t(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
                         txtInfo.AppendText($"\t(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
-                        txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_max_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_avg_S_weighted).ToString("0.0000")})\r\n");
 
                         topics.OrderBy(p => p.pri).ToList().ForEach(p => {
                             txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
@@ -544,9 +544,9 @@ namespace wowmao
                         var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
 
                         txtTermParents.Text = "TOPICS:\r\n";
-                        parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                        parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
                         txtTermParents.AppendText("\r\nSUGGESTED:\r\n");
-                        parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S} S_norm={p.S_norm}\r\n"));
+                        parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
                         txtTermParents.Select(0, 0);
                         txtTermParents.ScrollToCaret();
                     }

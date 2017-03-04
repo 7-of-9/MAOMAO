@@ -18,7 +18,7 @@ namespace mmdb_model
         public term parent_term { get { return this.term1; } }
 
         public override string ToString() {
-            return $"{parent_term.name} ==> {child_term.name} (MIN_D={min_distance} MAX_D={max_distance} enabled={!disabled})";
+            return $"{parent_term.name} ==> {child_term.name} *TL={mmtopic_level} (MIN_D={min_distance} MAX_D={max_distance} enabled={!disabled})";
         }
     }
 }

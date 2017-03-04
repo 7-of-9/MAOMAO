@@ -12,18 +12,8 @@ namespace mmdb_model
     using System;
     using System.Collections.Generic;
     
-    public partial class topic_link
+    public partial class tmp_is_topic_root_ids
     {
         public long id { get; set; }
-        public long child_term_id { get; set; }
-        public long parent_term_id { get; set; }
-        public int min_distance { get; set; }
-        public int max_distance { get; set; }
-        public int seen_count { get; set; }
-        public bool disabled { get; set; }
-        public int mmtopic_level { get; set; }
-    
-        public virtual term term { get; set; }
-        public virtual term term1 { get; set; }
     }
 }

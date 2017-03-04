@@ -151,6 +151,12 @@ namespace mm_svc
                 //               threshold seems to be about ~ >2 min_d indicates needs further editorialization
                 //
                 // NEXT: *** complete first cut of editorialization and promote to prod ***
+                //
+                //      NEED --> topics' mmcat_level; this is possibly simplest and most robust AUTO-FLAG feature,
+                //                i.e. we should expect #1 topic parent to be at a certain min. mmcat_level in the topic tree...
+                //
+                // editorialize on local, push to prod - then run for all prod urls (will include some new urls)
+                //
                 //      GET INTO PROD *NOW* for 12 MARCH DEMO *** >>> WANT HOMEPAGE W/ LIVE FULL CYCLE ADDING, CATEGORIZING, ETC.
                 //
                 // DEMO PHASE PLAN
@@ -173,7 +179,8 @@ namespace mm_svc
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
-                    // PERF: taking quite some time --
+                    // perf: taking quite some time here...
+                    // TODO: weight parents by source term TSS?
                     var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false);// reprocess); //***
 
                     if (term_parents != null) {
@@ -198,7 +205,7 @@ namespace mm_svc
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
                      
                     // editorial topic parents
-                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths); 
+                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths, wiki_url_terms); 
 
                     // dynamic sugggest parents
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
@@ -224,11 +231,12 @@ namespace mm_svc
             }
         }
 
-        [DebuggerDisplay(@"{t} count = {count} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")})")]
+        [DebuggerDisplay(@"{t} count = {count} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_norm_leaf={avg_TSS_norm_leaf.ToString(""0.00"")})")]
         private class TopicInfo {
             public term t;
             public double avg_S, avg_S_norm;
             public double S, S_norm;
+            public double avg_TSS_leaf;
             public int count;
             //public List<term> chain;
             //public double other_chains_boost;
@@ -238,37 +246,64 @@ namespace mm_svc
             long url_id,
             mm02Entities db,
             List<gt_parent> all_parents_topics,
-            List<List<TermPath>> all_term_paths)
+            List<List<TermPath>> all_term_paths,
+            List<url_term> wiki_url_terms)
         {
             // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
             all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
             var sorted_new_s_norm = all_parents_topics.OrderByDescending(p => p.S_norm).ToList();
 
             // group/count topics -- weight by input topic S
+            // todo: get TSS of leaf term
             var counted_terms = all_parents_topics.Select(p => p.parent_term)
                                                 .GroupBy(p => p.id)
-                                                .Select(p => new { term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
+                                                .Select(p => new {
+                                                            parent_term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
                                                                   avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
                                                              avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
                                                                   count = p.Count() })
                                                 .OrderByDescending(p => p.avg_S)
                                                 .ToList();
 
-            // get topic chains to root (or to repetition, for unrootied topics) -- weight by input S, by sqrt repetition count
-            var counted_and_ranked = counted_terms.Select(p => new TopicInfo { t = p.term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count,
-                                                          S = Math.Pow(p.count, (1.0 / 2)) * p.avg_S,
-                                                    //chain = GetTopicChain(p.term, new List<term>() { p.term })
+            // move to TopicInfo 
+            var counted_info = counted_terms.Select(p => new TopicInfo {
+                    t = p.parent_term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count,
             }).OrderByDescending(p => p.S).ToList();
-            counted_and_ranked.ForEach(p => p.S_norm = p.S / counted_and_ranked.Max(p2 => p2.S));
+
+            // weight by originating wiki term's TSS
+            foreach (var ti in counted_info) {
+                // which paths does the topic appear in?
+                var topic_paths = all_term_paths.Where(p => p.Any(p2 => p2.t.id == ti.t.id)).ToList();
+
+                // what distinct leaf terms are there for these paths?
+                var leaf_terms = topic_paths.Select(p => p.First().t).Distinct().ToList();
+
+                // what are the TSS values for these leaf terms?
+                var matching_url_terms = wiki_url_terms.Where(p => leaf_terms.Select(p2 => p2.id).Contains(p.term_id)).ToList();
+                ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss);
+                Debug.WriteLine($"{ti.t.name} - appears in {leaf_terms.Count} distinct leaf term paths ({string.Join(", ", leaf_terms.Select(p => p.name))}): avg_TSS_norm={ti.avg_TSS_leaf.ToString("0.00")}");
+            }
+
+            // weightings
+            counted_info.ForEach(p => 
+                p.S = Math.Pow(p.count, (1.0 / 1.5))
+                    * Math.Pow(p.avg_S, (1.0 * 1.5)) 
+                    * Math.Pow(p.avg_TSS_leaf, (1.0 * 1.5))
+            );
+        
+            var counted_info_sorted = counted_info.OrderByDescending(p => p.S).ToList();
+
+            // below - removed, maybe add? : get topic chains to root (or to repetition, for unrooted topics)...
 
             // select top ranked
-            counted_and_ranked = counted_and_ranked.Where(p => p.S_norm > 0.2).ToList();
+            counted_info_sorted.ForEach(p => p.S_norm = p.S / counted_info.Max(p2 => p2.S));
+            counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.2).ToList();
 
             // remove
             db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND [found_topic]=1", url_id);
             //db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
             //db.SaveChangesTraceValidationErrors();
-
+            
             //****
             // AUTO FLAG !! min_d > ~2 seems to be RED FLAG
             // get min/max distances from leaf terms for each topic, across all paths to root
@@ -276,7 +311,7 @@ namespace mm_svc
 
             // add
             var pri = 0;
-            var url_parent_terms = counted_and_ranked//.Where(p => p.count > 1) // *** want real commonality
+            var url_parent_terms = counted_info_sorted//.Where(p => p.count > 1) // *** want real commonality
                                         .Select(p => new url_parent_term() {
                                             term_id = p.t.id,
                                              url_id = url_id,

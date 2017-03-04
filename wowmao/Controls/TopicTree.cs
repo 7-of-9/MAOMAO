@@ -48,6 +48,8 @@ namespace wowmao.Controls
         private ToolStripMenuItem mnuOnlyHere;
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripMenuItem mnuOnlyHere2;
+        private ToolStripSeparator toolStripSeparator8;
+        private ToolStripMenuItem mnuRefreshNode;
         private int count;
 
         public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
@@ -71,7 +73,7 @@ namespace wowmao.Controls
                 var explicit_root_topic_ids = db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock();
 
                 var computed_root_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(
-                    "SELECT DISTINCT [parent_term_id] FROM [topic_link] WHERE [parent_term_id] NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link])").ToList();
+                    "SELECT DISTINCT [parent_term_id] FROM [topic_link] WHERE [parent_term_id] NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link] WHERE [disabled]=0)").ToList();
 
                 var all_root_topic_ids = explicit_root_topic_ids.Union(computed_root_topic_ids);//.Distinct();
 
@@ -90,6 +92,7 @@ namespace wowmao.Controls
 
         private void AddChildren(TreeNode parent_node, long parent_topic_id) {
             this.Cursor = Cursors.WaitCursor;
+            this.tvw.BeginUpdate();
             using (var db = mm02Entities.Create()) {
                 var topic_links = db.topic_link.Include("term").Include("term1").AsNoTracking()
                                     .Where(p => p.parent_term_id == parent_topic_id)
@@ -99,15 +102,26 @@ namespace wowmao.Controls
                 foreach (var link in topic_links) {
                     if (!TermInParentsChain(parent_node, link.child_term_id)) {
 
+                        // maintain mmtopic_level
+                        if (link.disabled == false) {
+                            // TL 1 = root terms (no entry in topic_link!), TL 2 = first level children of root terms, TL 0 = undefined/not in topic tree
+                            var correct_mmtopic_level = parent_node.Level + 2;
+                            if (link.mmtopic_level != correct_mmtopic_level) {
+                                db.Database.ExecuteSqlCommand("UPDATE [topic_link] SET mmtopic_level={0} WHERE id={1}", correct_mmtopic_level, link.id);
+                                link.mmtopic_level = correct_mmtopic_level;
+                            }
+                        }
+
                         var child_node = NodeFromTerm(link.child_term, link);
                         parent_node.Nodes.Add(child_node);
 
-                        //if (!link.disabled)
-                        //    AddChildren(child_node, link.child_term_id);
+                        if (!link.disabled && child_node.Level < 3)
+                            tvw.SelectedNode = child_node;
                     }
                     else ;// Debugger.Break();
                 }
             }
+            this.tvw.EndUpdate();
             this.lblInfo.Text = $">> links loaded: {count}";
             this.Cursor = Cursors.Default;
         }
@@ -121,29 +135,31 @@ namespace wowmao.Controls
 
         private TreeNode NodeFromTerm(term t, topic_link link = null) {
 
-            // how many times does child appear in enabled state in topic_link -- we want only one parent per topic
             var enabled_child_link_count = -1;
             using (var db = mm02Entities.Create()) {
-                if (link != null)
+                if (link != null) {
+                    // how many times does child appear in enabled state in topic_link -- we want only one parent per topic
                     enabled_child_link_count = db.topic_link.Count(p => p.child_term_id == link.child_term_id && !p.disabled);
+                }
             }
 
             var node_desc = link != null && link.disabled ? ($"({t.ToString()})") : t.ToString();
+
             if (enabled_child_link_count != -1)
                 node_desc += $" C={enabled_child_link_count}";
 
             var tn = new TreeNode(node_desc);
             tn.Tag = new NodeTag() { t = t, link = link, enabled_child_link_count = enabled_child_link_count };
             if (link != null)
-                tn.Text += $" (#={link.seen_count} min_d={link.min_distance} max_d={link.max_distance})";
+                tn.Text += $" *TL={link.mmtopic_level} (#={link.seen_count} min_d={link.min_distance} max_d={link.max_distance})";
 
             // highlight topics linked more than once
             if (enabled_child_link_count > 1)
-                tn.NodeFont = new Font(tvw.Font, FontStyle.Underline);
+                { tn.Text = "### " + tn.Text; tn.NodeFont = new Font(tvw.Font, FontStyle.Underline); }
 
             // highlight root topics not at root
             if (t.is_topic_root && link != null)
-                tn.NodeFont = new Font(tvw.Font, FontStyle.Underline);
+                { tn.Text = "### " + tn.Text; tn.NodeFont = new Font(tvw.Font, FontStyle.Underline); }
 
             // format color node
             if (link != null && link.disabled)
@@ -203,9 +219,11 @@ namespace wowmao.Controls
             var tag = node.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
                 var link = db.topic_link.Find(tag.link.id);
-                link.disabled = !link.disabled;
-                db.SaveChangesTraceValidationErrors();
-                tag.link = link;
+                if (link != null) {
+                    link.disabled = !link.disabled;
+                    db.SaveChangesTraceValidationErrors();
+                    tag.link = link;
+                }
                 RefreshNode(node, tag.t, tag.link);
             }
         }
@@ -258,7 +276,7 @@ namespace wowmao.Controls
                     term.is_topic_root = !current_is_topic_root;
                 db.SaveChangesTraceValidationErrors();
             }
-            this.BuildTree();
+            //this.BuildTree();
         }
 
         // simplify tree -- only here: disables all other topic_link appearances for this child term, so that the only remaining link is this one
@@ -275,6 +293,16 @@ namespace wowmao.Controls
                 db.SaveChangesTraceValidationErrors();
                 RefreshNode(node, tag.t, tag.link);
             }
+            this.Cursor = Cursors.Default;
+        }
+
+        private void mnuRefreshNode_Click(object sender, EventArgs e) {
+            if (tvw.SelectedNode == null) return;
+            var node = tvw.SelectedNode;
+            var tag = node.Tag as NodeTag;
+            this.Cursor = Cursors.WaitCursor;
+            node.Nodes.Clear();
+            AddChildren(node, tag.link.child_term_id);
             this.Cursor = Cursors.Default;
         }
 
@@ -332,6 +360,8 @@ namespace wowmao.Controls
             this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuRefreshNode = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
@@ -361,9 +391,11 @@ namespace wowmao.Controls
             this.mnuRootTopic,
             this.mnuSep1,
             this.mnViewPathsContaining,
-            this.mnuFindInWikiTree});
+            this.mnuFindInWikiTree,
+            this.toolStripSeparator8,
+            this.mnuRefreshNode});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 182);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 232);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -581,6 +613,18 @@ namespace wowmao.Controls
             this.toolStripMenuItem9.Size = new System.Drawing.Size(167, 22);
             this.toolStripMenuItem9.Text = "Find in WikiTree...";
             // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(155, 6);
+            // 
+            // mnuRefreshNode
+            // 
+            this.mnuRefreshNode.Name = "mnuRefreshNode";
+            this.mnuRefreshNode.Size = new System.Drawing.Size(158, 22);
+            this.mnuRefreshNode.Text = "Refresh Node...";
+            this.mnuRefreshNode.Click += new System.EventHandler(this.mnuRefreshNode_Click);
+            // 
             // TopicTree
             // 
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
@@ -597,5 +641,6 @@ namespace wowmao.Controls
 
         }
 
+     
     }
 }

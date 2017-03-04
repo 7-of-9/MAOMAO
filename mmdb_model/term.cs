@@ -25,11 +25,11 @@ namespace mmdb_model
             this.gt_path_to_root1 = new HashSet<gt_path_to_root>();
             this.term_matrix = new HashSet<term_matrix>();
             this.term_matrix1 = new HashSet<term_matrix>();
-            this.topic_link = new HashSet<topic_link>();
-            this.topic_link1 = new HashSet<topic_link>();
             this.url_term = new HashSet<url_term>();
             this.user_url_classification = new HashSet<user_url_classification>();
             this.url_parent_term = new HashSet<url_parent_term>();
+            this.topic_link = new HashSet<topic_link>();
+            this.topic_link1 = new HashSet<topic_link>();
         }
     
         public long id { get; set; }
@@ -60,14 +60,14 @@ namespace mmdb_model
         public virtual ICollection<term_matrix> term_matrix1 { get; set; }
         public virtual term_type term_type { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<topic_link> topic_link { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<topic_link> topic_link1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_term> url_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_url_classification> user_url_classification { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_parent_term> url_parent_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<topic_link> topic_link { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<topic_link> topic_link1 { get; set; }
     }
 }

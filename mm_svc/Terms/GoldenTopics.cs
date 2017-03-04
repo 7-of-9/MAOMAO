@@ -120,28 +120,34 @@ namespace mm_svc.Terms
                         foreach (var parent_topic in parent_topics.Keys) {
 
                             var distances = parent_topics[parent_topic];
-                            var topic_link = db.topic_link.Where(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id).FirstOrDefaultNoLock();
-                            if (topic_link == null) {
+
+                            // look for exact parent-child link
+                            var topic_link_specific = db.topic_link.Where(p => p.child_term_id == child_topic.id && p.parent_term_id == parent_topic.id).FirstOrDefaultNoLock();
+
+                            // if the topic is already enabled in topic_link (anywhere) then add it in disabled state (easier maintenance)
+                            var topic_link_any_active = db.topic_link.Where(p => p.child_term_id == child_topic.id && p.disabled == false).FirstOrDefaultNoLock();
+
+                            // add specific link if not exists
+                            if (topic_link_specific == null) {
                                 // new topic link
                                 var new_link = new topic_link {
                                     child_term_id = child_topic.id,
                                     parent_term_id = parent_topic.id,
                                     max_distance = distances.Max(),
                                     min_distance = distances.Min(),
-                                    disabled = distances.Min() > 3,
+                                    disabled = distances.Min() > 3              // add disabled if indirectly related to parent
+                                              || topic_link_any_active != null, // or add disabled if child term is in an active link anywhere else already
                                     seen_count = 1,
                                 };
                                 db.topic_link.Add(new_link);
                                 db.SaveChanges_IgnoreDupeKeyEx();
-                                //db.SaveChangesTraceValidationErrors();
-                                //Trace.WriteLine($"\t>> INSERT topic_link for >{child_topic.name}<[{child_topic.id}] ==> >{parent_topic.name}<[{parent_topic.id}] MIN_DIST={new_link.min_distance} MAX_DIST={new_link.min_distance}");
                             }
                             else {
-                                db.Database.ExecuteSqlCommand("UPDATE [topic_link] SET seen_count={0}, max_distance={1}, min_distance={2} WHERE id={3}",
-                                    topic_link.seen_count + 1,
-                                    Math.Max(topic_link.max_distance, distances.Max()),
-                                    Math.Min(topic_link.min_distance, distances.Min()),
-                                    topic_link.id);
+                                    db.Database.ExecuteSqlCommand("UPDATE [topic_link] SET seen_count={0}, max_distance={1}, min_distance={2} WHERE id={3}",
+                                        topic_link_specific.seen_count + 1,
+                                        Math.Max(topic_link_specific.max_distance, distances.Max()),
+                                        Math.Min(topic_link_specific.min_distance, distances.Min()),
+                                        topic_link_specific.id);
                             }
                         }
                     }
