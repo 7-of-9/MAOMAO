@@ -113,6 +113,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Extensions\ControlExtensions.cs" />
     <Compile Include="Controls\RootPathViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>

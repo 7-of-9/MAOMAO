@@ -24,7 +24,7 @@ namespace tests
                 //int mapped_wiki_terms, unmapped_wiki_terms;
                 //mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, -1, out mapped_terms, out unmapped_terms);
 
-                var ret = mm_svc.CalaisNlp.ProcessNlpPacket(nlp_info, reprocessing_known_url: true);
+                var ret = mm_svc.CalaisNlp.ProcessNlpPacket_URL(nlp_info, reprocessing_known_url: true);
             }
         }
 

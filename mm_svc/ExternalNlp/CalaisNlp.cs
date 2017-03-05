@@ -13,11 +13,15 @@ namespace mm_svc
     public static class CalaisNlp
     {
         public class ProcessResult {
-            public int new_calais_terms = 0, new_calais_pairs = -1,
-                       mapped_wiki_terms = 0, unmapped_wiki_terms = 0, new_wiki_pairs = -1;
+            public int new_calais_terms = 0 // new_calais_pairs = -1,
+                       //mapped_wiki_terms = 0, unmapped_wiki_terms = 0 //, new_wiki_pairs = -1;
+                ;
+            public class ParentTerm { public string info; }
+            public List<ParentTerm> suggested;
+            public List<ParentTerm> topics;
         }
 
-        public static ProcessResult ProcessNlpPacket(dynamic nlp_info, bool reprocessing_known_url = false)
+        public static ProcessResult ProcessNlpPacket_URL(dynamic nlp_info, bool reprocessing_known_url = false)
         {
             var ret = new ProcessResult();
             if (nlp_info.url == null) throw new ArgumentException("missing url");
@@ -36,7 +40,7 @@ namespace mm_svc
             if (db_url != null && !reprocessing_known_url) throw new ApplicationException("url already known");
 
             // create new URL record 
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
+            using (var db = mm02Entities.Create()) {
                 // get calais language
                 var cal_langs = ((IEnumerable<dynamic>)nlp_info.items).Where(p => p.type == "LANG").ToList();
                 string cal_lang = null;
@@ -95,7 +99,15 @@ namespace mm_svc
             // Calculate TSS & TSS_norm for Calais terms -- updates TSS values on Calais url_terms & writes mapped wiki (golden) url_terms
             // 
             List<List<TermPath>> all_term_paths = null;
-            mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocess: reprocessing_known_url);
+            var l1_terms = mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocess: reprocessing_known_url);
+
+            // get processed suggested parents: editorial topics & suggested dynamic
+            using (var db = mm02Entities.Create()) {
+                var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == db_url.id).ToListNoLock();
+                var topics = parents.Where(p => p.found_topic).ToList();
+                ret.topics = topics.Select(p2 => new ProcessResult.ParentTerm() { info = $"{p2.term} *TL={p2.mmtopic_level} avg_TSS_leaf={p2.avg_TSS_leaf} (min_d={p2.min_d_paths_to_root_url_terms} max_d={p2.max_d_paths_to_root_url_terms} perc_ptr_topics={(p2.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p2.S?.ToString("0.00000")} S_norm={p2.S_norm?.ToString("0.00")} avg_S={p2.avg_S?.ToString("0.0000")}" }).ToList();
+                ret.suggested = parents.Where(p => p.suggested_dynamic && !topics.Select(p2 => p2.id).Contains(p.id)).ToList().Select(p2 => new ProcessResult.ParentTerm() { info = $"{p2.term} -> S={p2.S?.ToString("0.00000")}" }).ToList();
+            }
 
             return ret;
         }

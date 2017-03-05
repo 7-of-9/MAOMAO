@@ -84,7 +84,7 @@ namespace mmapi00.Controllers
             if (nlp_info == null) return BadRequest("bad nlp_info");
 
             // process terms & pairs
-            var ret = mm_svc.CalaisNlp.ProcessNlpPacket(nlp_info);
+            var ret = mm_svc.CalaisNlp.ProcessNlpPacket_URL(nlp_info);
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
@@ -92,13 +92,18 @@ namespace mmapi00.Controllers
             var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
             this.RemoveCacheVariants(cacheKey + "-url=" + url);
 
+            // record user_url history -- HACK: hardcode single user; TODO: pass user ID in nlp_info packet
+            var history_id = mm_svc.User.UserHistory.TrackUrl(url, 5, 0, 0, 0);
+
             return Ok(new { url = nlp_info.url.href,
                new_calais_terms = ret.new_calais_terms,
-               new_calais_pairs = ret.new_calais_pairs,
-              mapped_wiki_terms = ret.mapped_wiki_terms,
-            unmapped_wiki_terms = ret.unmapped_wiki_terms,
-                 new_wiki_pairs = ret.new_wiki_pairs,
-                             ms = sw.ElapsedMilliseconds });
+                      suggested = ret.suggested,
+                         topics = ret.topics,
+//               new_calais_pairs = ret.new_calais_pairs,
+//              mapped_wiki_terms = ret.mapped_wiki_terms,
+//            unmapped_wiki_terms = ret.unmapped_wiki_terms,
+//                 new_wiki_pairs = ret.new_wiki_pairs,
+                ms = sw.ElapsedMilliseconds });
         }
 
         /// <summary>

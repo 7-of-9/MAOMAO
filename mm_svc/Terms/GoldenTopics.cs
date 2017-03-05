@@ -129,12 +129,19 @@ namespace mm_svc.Terms
 
                             // add specific link if not exists
                             if (topic_link_specific == null) {
+                                // get parent topic link, for new topic link's topic level
+                                var new_topic_link_level = 1; // 1 root - default
+                                var parent_link = db.topic_link.Where(p => p.child_term_id == parent_topic.id).FirstOrDefaultNoLock();
+                                if (parent_link != null)
+                                    new_topic_link_level = parent_link.mmtopic_level + 1;
+
                                 // new topic link
                                 var new_link = new topic_link {
                                     child_term_id = child_topic.id,
                                     parent_term_id = parent_topic.id,
                                     max_distance = distances.Max(),
                                     min_distance = distances.Min(),
+                                    mmtopic_level = new_topic_link_level,
                                     disabled = distances.Min() > 3              // add disabled if indirectly related to parent
                                               || topic_link_any_active != null, // or add disabled if child term is in an active link anywhere else already
                                     seen_count = 1,

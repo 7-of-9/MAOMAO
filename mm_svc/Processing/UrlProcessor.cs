@@ -114,7 +114,7 @@ namespace mm_svc
                 var term_paths_P = new ConcurrentBag<List<TermPath>>();
                 Parallel.ForEach(wiki_url_terms, p => {
 
-                    var paths = GoldenPaths.GetOrProcessPathsToRoot(p.term_id, false); //reprocess); //***
+                    var paths = GoldenPaths.GetOrProcessPathsToRoot(p.term_id, false); //***
                     paths.ForEach(p2 => term_paths_P.Add(p2));
 
                 } );
@@ -145,22 +145,16 @@ namespace mm_svc
                 // (done) then: we can take top is_topic term as final grouping; new link table gives the hierarchy as needed.
                 //
                 // (done) AUTO-FLAG (flag urls/terms requiring manual editorialization) 
-                //          (*) % of topics in PtR > no good.
-                //          (*) min_S/max_S value of term's topic parents > no good.
-                //          (*) >>> third time lucky?? ** min_d/max_d ** of topics from leaf terms on all_term_paths -- seems reasonable
-                //               threshold seems to be about ~ >2 min_d indicates needs further editorialization
+                //         (done, albeit can be improved no doubt)
                 //
-                // NEXT: *** complete first cut of editorialization and promote to prod ***
-                //
-                //      NEED --> topics' mmcat_level; this is possibly simplest and most robust AUTO-FLAG feature,
-                //                i.e. we should expect #1 topic parent to be at a certain min. mmcat_level in the topic tree...
-                //
-                // editorialize on local, push to prod - then run for all prod urls (will include some new urls)
-                //
-                //      GET INTO PROD *NOW* for 12 MARCH DEMO *** >>> WANT HOMEPAGE W/ LIVE FULL CYCLE ADDING, CATEGORIZING, ETC.
+                // (done) --> topics' mmcat_level; this is possibly simplest and most robust AUTO-FLAG feature,
+                //          i.e. we should expect #1 topic parent to be at a certain min. mmcat_level in the topic tree...
                 //
                 // DEMO PHASE PLAN
-                // NEXT: phase 1 -- wire up to base Calais mm02ce flow & user_history (no return yet to client) (filter wowmao by user_id / history)
+                // NEXT: phase 1 -- wire up to base Calais mm02ce flow & user_history (no return yet to client)
+                //
+                //          WIP: (filter wowmao by user_id / history)
+                //
                 //       phase 2 -- returns topics & suggested to mm02ce for XP (+ user_xp! table)
                 //       phase 3 -- categorization of user_history; quite possibly per original concept, of url categorization
                 //                   being user-specific, i.e. clustering around previously categorized
@@ -180,8 +174,7 @@ namespace mm_svc
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
                     // perf: taking quite some time here...
-                    // TODO: weight parents by source term TSS?
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false);// reprocess); //***
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false); // reprocess); //***
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
@@ -231,9 +224,11 @@ namespace mm_svc
             }
         }
 
-        [DebuggerDisplay(@"{t} count = {count} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_norm_leaf={avg_TSS_norm_leaf.ToString(""0.00"")})")]
+        [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")})")]
         private class TopicInfo {
             public term t;
+            public topic_link link;
+            public int mmtopic_level;
             public double avg_S, avg_S_norm;
             public double S, S_norm;
             public double avg_TSS_leaf;
@@ -253,12 +248,16 @@ namespace mm_svc
             all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
             var sorted_new_s_norm = all_parents_topics.OrderByDescending(p => p.S_norm).ToList();
 
+            // get single active topic_link for supplied topics...
+            var topic_term_ids = all_parents_topics.Select(p => p.parent_term_id).ToList();
+            var topic_links = db.topic_link.AsNoTracking().Where(p => p.disabled == false && topic_term_ids.Contains(p.child_term_id)).ToListNoLock();
+
             // group/count topics -- weight by input topic S
-            // todo: get TSS of leaf term
             var counted_terms = all_parents_topics.Select(p => p.parent_term)
                                                 .GroupBy(p => p.id)
                                                 .Select(p => new {
                                                             parent_term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
+                                                                   link = topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key),
                                                                   avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
                                                              avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
                                                                   count = p.Count() })
@@ -267,7 +266,10 @@ namespace mm_svc
 
             // move to TopicInfo 
             var counted_info = counted_terms.Select(p => new TopicInfo {
-                    t = p.parent_term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count,
+                    t = p.parent_term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count, link = p.link,
+                    mmtopic_level = p.link == null 
+                                        ? 1                    // root term, no link to any parent
+                                        : p.link.mmtopic_level // child term in topic_link; use the defined level there
             }).OrderByDescending(p => p.S).ToList();
 
             // weight by originating wiki term's TSS
@@ -280,15 +282,19 @@ namespace mm_svc
 
                 // what are the TSS values for these leaf terms?
                 var matching_url_terms = wiki_url_terms.Where(p => leaf_terms.Select(p2 => p2.id).Contains(p.term_id)).ToList();
-                ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss);
+                if (matching_url_terms.Count > 0)
+                    ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss);
+                else
+                    ti.avg_TSS_leaf = 0;
                 Debug.WriteLine($"{ti.t.name} - appears in {leaf_terms.Count} distinct leaf term paths ({string.Join(", ", leaf_terms.Select(p => p.name))}): avg_TSS_norm={ti.avg_TSS_leaf.ToString("0.00")}");
             }
 
             // weightings
             counted_info.ForEach(p => 
-                p.S = Math.Pow(p.count, (1.0 / 1.5))
-                    * Math.Pow(p.avg_S, (1.0 * 1.5)) 
-                    * Math.Pow(p.avg_TSS_leaf, (1.0 * 1.5))
+                p.S = Math.Pow(p.count, 1.5)
+                    * Math.Pow(p.avg_S, 1.5) 
+                    * Math.Pow(p.avg_TSS_leaf, 2.0)
+                    * Math.Pow(p.mmtopic_level, 2.0) // ?
             );
         
             var counted_info_sorted = counted_info.OrderByDescending(p => p.S).ToList();
@@ -320,6 +326,8 @@ namespace mm_svc
                                               avg_S = p.avg_S,
                                              S_norm = p.S_norm,
                                                   S = p.S,
+                                      mmtopic_level = p.mmtopic_level,
+                                       avg_TSS_leaf = p.avg_TSS_leaf
                                         }).ToList();
 
             //
@@ -395,7 +403,7 @@ namespace mm_svc
             // add
             var pri = 0;
             var url_parent_terms = stemmed_count_contains
-                                        .Where(p => p.count > 1) // *** want real commonality
+                                        //.Where(p => p.count > 1) // *** want real commonality
                                         .Select(p => new url_parent_term() {
                                             term_id = p.t.id,
                                              url_id = url_id,

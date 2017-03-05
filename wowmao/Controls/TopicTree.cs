@@ -1,4 +1,5 @@
-﻿using mm_svc.Terms;
+﻿using mm_global.Extensions;
+using mm_svc.Terms;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,9 @@ namespace wowmao.Controls
         private ToolStripMenuItem mnuOnlyHere2;
         private ToolStripSeparator toolStripSeparator8;
         private ToolStripMenuItem mnuRefreshNode;
+        private TextBox txtSearch;
+        private Button cmdSearch;
+        private Button cmdClearSearch;
         private int count;
 
         public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
@@ -68,6 +72,8 @@ namespace wowmao.Controls
         {
             count = 0;
             this.Cursor = Cursors.WaitCursor;
+            this.tvw.Nodes.Clear();
+            var sw = new Stopwatch(); sw.Start();
             using (var db = mm02Entities.Create()) {
                 // get root topics
                 var explicit_root_topic_ids = db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock();
@@ -87,6 +93,10 @@ namespace wowmao.Controls
                 }
                 //tvw.EndUpdate();
             }
+
+            foreach (var node in this.tvw.Nodes)
+                (node as TreeNode).Collapse(false);
+            this.lblInfo.Text += $" ms={sw.Elapsed.TotalMilliseconds.ToString("0")}";
             this.Cursor = Cursors.Default;
         }
 
@@ -115,7 +125,7 @@ namespace wowmao.Controls
                         var child_node = NodeFromTerm(link.child_term, link);
                         parent_node.Nodes.Add(child_node);
 
-                        if (!link.disabled && child_node.Level < 3)
+                        if (!link.disabled)// && child_node.Level < 3)
                             tvw.SelectedNode = child_node;
                     }
                     else ;// Debugger.Break();
@@ -151,7 +161,7 @@ namespace wowmao.Controls
             var tn = new TreeNode(node_desc);
             tn.Tag = new NodeTag() { t = t, link = link, enabled_child_link_count = enabled_child_link_count };
             if (link != null)
-                tn.Text += $" *TL={link.mmtopic_level} (#={link.seen_count} min_d={link.min_distance} max_d={link.max_distance})";
+                tn.Text = $"*TL={link.mmtopic_level} " + tn.Text + $" (#={link.seen_count} min_d={link.min_distance} max_d={link.max_distance})";
 
             // highlight topics linked more than once
             if (enabled_child_link_count > 1)
@@ -164,16 +174,18 @@ namespace wowmao.Controls
             // format color node
             if (link != null && link.disabled)
                 tn.ForeColor = Color.Gray;
-            else {
-                tn.BackColor = RootPathViewer.ColorFromString(t.name);
-                tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
-                //tn.Text += 
-            }
+            else
+                FormatNodeColor(tn);
 
             tn.ToolTipText = (link == null ? node_desc : $"{link.parent_term.name} ==> {link.child_term.name}")
                              + $" (R={ tn.BackColor.R} G={ tn.BackColor.G} B ={ tn.BackColor.B})";
             count++;
             return tn;
+        }
+
+        private void FormatNodeColor(TreeNode tn) {
+            tn.BackColor = RootPathViewer.ColorFromString((tn.Tag as NodeTag).t.name);
+            tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
         }
 
         private void tvw_AfterSelect(object sender, TreeViewEventArgs e) {
@@ -212,7 +224,7 @@ namespace wowmao.Controls
         // find topic in wiki tree
         private void mnuFindInWikiTree_Click(object sender, EventArgs e) { if (tvw.SelectedNode == null) return; OnFindInWikiTree?.Invoke(this.GetType(), new OnFindInWikiTreeEventArgs() { term_id = (tvw.SelectedNode.Tag as NodeTag).t.id }); }
 
-        // marks the link as disabled -- retains terms as topics, just prevents the link being valid
+        // toggle link enabled/disabled -- retains terms as topics, just prevents the link being used
         private void mnuExcludeLink_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return;
             var node = tvw.SelectedNode;
@@ -221,7 +233,8 @@ namespace wowmao.Controls
                 var link = db.topic_link.Find(tag.link.id);
                 if (link != null) {
                     link.disabled = !link.disabled;
-                    db.SaveChangesTraceValidationErrors();
+                    link.mmtopic_level = node.Level + 1;
+                    try { db.SaveChanges(); } catch (Exception ex) { MessageBox.Show(ex.ToDetailedString()); link.disabled = !link.disabled; }
                     tag.link = link;
                 }
                 RefreshNode(node, tag.t, tag.link);
@@ -237,7 +250,7 @@ namespace wowmao.Controls
             tvw.SelectedNode = new_node;
         }
 
-        // set term as NOT TOPIC -- removes from tree
+        // set term as topic/not topic
         private void mnuToggleTopic_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return;
             var node = tvw.SelectedNode;
@@ -247,14 +260,6 @@ namespace wowmao.Controls
                 if (MessageBox.Show($"Set following term(s) as NOT topics?\r\n{string.Join("\r\n", terms.Select(p => p))}", "wowmao", MessageBoxButtons.YesNo) == DialogResult.Yes) {
 
                     Maintenance.SetTopicFlag(false, tag.t.name);
-
-                    // remove topic flag from term(s)
-                    //terms.ForEach(p => p.is_topic = false);
-                    //db.SaveChangesTraceValidationErrors();
-                    //// delete term() from topic_link
-                    //db.ObjectContext().ExecuteStoreCommand(
-                    //    "DELETE FROM [topic_link] WHERE [parent_term_id] IN ({0}) OR [child_term_id] IN ({0})",
-                    //    string.Join(",", terms.Select(p => p.id)));
 
                     if (node.Parent != null)
                         node.Parent.Nodes.Remove(node);
@@ -296,14 +301,29 @@ namespace wowmao.Controls
             this.Cursor = Cursors.Default;
         }
 
+        // refresh single node
         private void mnuRefreshNode_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return;
             var node = tvw.SelectedNode;
             var tag = node.Tag as NodeTag;
             this.Cursor = Cursors.WaitCursor;
             node.Nodes.Clear();
-            AddChildren(node, tag.link.child_term_id);
+            AddChildren(node, tag.t.id);// tag.link.child_term_id);
             this.Cursor = Cursors.Default;
+        }
+
+        // search
+        private void cmdSearch_Click(object sender, EventArgs e) {
+            var nodes = tvw.FlattenTree().Where(p => p.Text.ltrim().Contains(txtSearch.Text.ltrim())).ToList();
+            foreach (var node in nodes) {
+                node.BackColor = Color.Yellow;
+                node.ForeColor = Color.Black;
+            }
+        }
+        private void cmdClearSearch_Click(object sender, EventArgs e) {
+            var nodes = tvw.FlattenTree().ToList();
+            foreach (var node in nodes)
+                FormatNodeColor(node);
         }
 
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -362,6 +382,9 @@ namespace wowmao.Controls
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuRefreshNode = new System.Windows.Forms.ToolStripMenuItem();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.cmdSearch = new System.Windows.Forms.Button();
+            this.cmdClearSearch = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
@@ -374,7 +397,7 @@ namespace wowmao.Controls
             this.tvw.ContextMenuStrip = this.contextMenuStrip1;
             this.tvw.Location = new System.Drawing.Point(3, 26);
             this.tvw.Name = "tvw";
-            this.tvw.Size = new System.Drawing.Size(333, 295);
+            this.tvw.Size = new System.Drawing.Size(514, 295);
             this.tvw.TabIndex = 0;
             this.tvw.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvw_AfterSelect);
             // 
@@ -395,7 +418,7 @@ namespace wowmao.Controls
             this.toolStripSeparator8,
             this.mnuRefreshNode});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 232);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 210);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -625,15 +648,45 @@ namespace wowmao.Controls
             this.mnuRefreshNode.Text = "Refresh Node...";
             this.mnuRefreshNode.Click += new System.EventHandler(this.mnuRefreshNode_Click);
             // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(309, 2);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(80, 21);
+            this.txtSearch.TabIndex = 3;
+            // 
+            // cmdSearch
+            // 
+            this.cmdSearch.Location = new System.Drawing.Point(251, 3);
+            this.cmdSearch.Name = "cmdSearch";
+            this.cmdSearch.Size = new System.Drawing.Size(54, 20);
+            this.cmdSearch.TabIndex = 4;
+            this.cmdSearch.Text = "search:";
+            this.cmdSearch.UseVisualStyleBackColor = true;
+            this.cmdSearch.Click += new System.EventHandler(this.cmdSearch_Click);
+            // 
+            // cmdClearSearch
+            // 
+            this.cmdClearSearch.Location = new System.Drawing.Point(395, 3);
+            this.cmdClearSearch.Name = "cmdClearSearch";
+            this.cmdClearSearch.Size = new System.Drawing.Size(22, 20);
+            this.cmdClearSearch.TabIndex = 5;
+            this.cmdClearSearch.Text = "x";
+            this.cmdClearSearch.UseVisualStyleBackColor = true;
+            this.cmdClearSearch.Click += new System.EventHandler(this.cmdClearSearch_Click);
+            // 
             // TopicTree
             // 
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.Controls.Add(this.cmdClearSearch);
+            this.Controls.Add(this.cmdSearch);
+            this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.lblInfo);
             this.Controls.Add(this.cmdRefresh);
             this.Controls.Add(this.tvw);
             this.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TopicTree";
-            this.Size = new System.Drawing.Size(339, 325);
+            this.Size = new System.Drawing.Size(520, 325);
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);

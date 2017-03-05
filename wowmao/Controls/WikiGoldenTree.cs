@@ -40,8 +40,7 @@ namespace wowmao.Controls
             this.NodeMouseHover += WikiGoldenTree_NodeMouseHover;
         }
 
-        private void WikiGoldenTree_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
-        {
+        private void WikiGoldenTree_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e) {
             var theNode = e.Node;
             if ((theNode != null)) {
                 if (theNode.ToolTipText != null) {
@@ -55,8 +54,19 @@ namespace wowmao.Controls
 
         private void WikiGoldenTree_MouseMove(object sender, MouseEventArgs e) {}
 
-        public void BuildTree(string search = null, bool exact = false, bool topics_only = false)
+        public void ClearTree() { this.Nodes.Clear(); }
+        public void AddTerm(long term_id)
         {
+            using (var db = mm02Entities.Create()) {
+                var term = db.terms.AsNoTracking().Where(p => (p.id == term_id) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)).FirstOrDefaultNoLock();
+
+                var gts = GoldenTermsFromChildTermId(term.id); // term should be a wiki child 
+                var nodes = NodesFromGoldenTerms(gts);
+                this.Nodes.AddRange(nodes.ToArray());
+            }
+        }
+
+        public void BuildTree(string search = null, bool exact = false, bool topics_only = false) {
             total_gts_loaded = 0;
             this.BeginUpdate();
             this.Nodes.Clear();
@@ -131,14 +141,12 @@ namespace wowmao.Controls
             this.Cursor = Cursors.Default;
         }
 
-        private TreeNode GetRootParentNode(TreeNode node)
-        {
+        private TreeNode GetRootParentNode(TreeNode node) {
             if (node.Parent != null) return GetRootParentNode(node.Parent);
             return node;
         }
 
-        private void GetParentTreeForParentTermId(long term_id, List<TreeNode> nodes)
-        {
+        private void GetParentTreeForParentTermId(long term_id, List<TreeNode> nodes) {
             // immediate parent(s)
             var gts = GoldenTermsFromChildTermId(term_id);
             foreach (var gt_parent in gts)
@@ -149,8 +157,7 @@ namespace wowmao.Controls
             }
         }
 
-        private List<golden_term> GoldenTermsFromChildTermId(long child_term_id)
-        {
+        private List<golden_term> GoldenTermsFromChildTermId(long child_term_id) {
             using (var db = mm02Entities.Create()) {
                 var qry = db.golden_term
                                 .Include("term")//.Include("term.golden_term").Include("term.golden_term1")
@@ -167,8 +174,7 @@ namespace wowmao.Controls
             }
         }
 
-        private List<golden_term> GoldenTermsFromParentTermId(long parent_term_id)
-        {
+        private List<golden_term> GoldenTermsFromParentTermId(long parent_term_id) {
             using (var db = mm02Entities.Create()) {
                 var qry = db.golden_term
                                 .Include("term.golden_term").Include("term.golden_term1")
@@ -183,8 +189,7 @@ namespace wowmao.Controls
             }
         }
 
-        private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts)
-        {
+        private List<TreeNode> NodesFromGoldenTerms(List<golden_term> gts) {
             var nodes = new List<TreeNode>();
             foreach(var gt in gts) {
                 var node = new TreeNode(gt.ToString());
@@ -211,8 +216,7 @@ namespace wowmao.Controls
             }
         }
 
-        private void WikiGoldenTree_AfterSelect(object sender, TreeViewEventArgs e)
-        {
+        private void WikiGoldenTree_AfterSelect(object sender, TreeViewEventArgs e) {
             if (sender != null) {
                 this.Cursor = Cursors.WaitCursor;
                 this.BeginUpdate();
@@ -288,9 +292,7 @@ namespace wowmao.Controls
         //}
         #endregion
 
-        private void WikiGoldenTree_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-        }
+        private void WikiGoldenTree_AfterExpand(object sender, TreeViewEventArgs e) {}
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
             var pt = this.PointToClient(Cursor.Position);
@@ -330,7 +332,7 @@ namespace wowmao.Controls
             var new_is_topic_flag = !(gt.child_term.is_topic ?? false);
             var topic_name = gt.child_term.name;
 
-            Maintenance.SetTopicFlag(new_is_topic_flag, topic_name);
+            Maintenance.SetTopicFlag(new_is_topic_flag, topic_name, gt.parent_term_id);
 
             gt.child_term.is_topic = new_is_topic_flag;
             SetNodeFont(this.SelectedNode);

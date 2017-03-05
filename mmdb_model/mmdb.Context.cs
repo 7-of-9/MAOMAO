@@ -31,19 +31,19 @@ namespace mmdb_model
         public virtual DbSet<cal_entity_type> cal_entity_type { get; set; }
         public virtual DbSet<term_matrix> term_matrix { get; set; }
         public virtual DbSet<user> users { get; set; }
-        public virtual DbSet<golden_term> golden_term { get; set; }
         public virtual DbSet<wiki_page> wiki_page { get; set; }
         public virtual DbSet<wiki_catlink> wiki_catlink { get; set; }
         public virtual DbSet<gt_path_to_root> gt_path_to_root { get; set; }
         public virtual DbSet<url> urls { get; set; }
-        public virtual DbSet<user_url> user_url { get; set; }
         public virtual DbSet<user_url_classification> user_url_classification { get; set; }
         public virtual DbSet<url_term> url_term { get; set; }
         public virtual DbSet<gt_parent> gt_parent { get; set; }
         public virtual DbSet<term> terms { get; set; }
-        public virtual DbSet<url_parent_term> url_parent_term { get; set; }
         public virtual DbSet<topic_link> topic_link { get; set; }
         public virtual DbSet<tmp_is_topic_ids> tmp_is_topic_ids { get; set; }
         public virtual DbSet<tmp_is_topic_root_ids> tmp_is_topic_root_ids { get; set; }
+        public virtual DbSet<url_parent_term> url_parent_term { get; set; }
+        public virtual DbSet<golden_term> golden_term { get; set; }
+        public virtual DbSet<user_url> user_url { get; set; }
     }
 }

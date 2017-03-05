@@ -1,4 +1,9 @@
-declare @url_id bigint set @url_id = 10369
+
+--
+-- RUN FROM LOCAL: copies specified prod URL data to local
+--
+
+declare @url_id bigint set @url_id = 10375
 
 -- copy url
 IF NOT EXISTS (SELECT * FROM [url] WHERE id = @url_id)

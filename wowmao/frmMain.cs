@@ -28,9 +28,6 @@ namespace wowmao
     public partial class frmMain : Form
     {
         private string db_name;
-        private term root_term;
-
-        //private frmTrace trace_form;
 
         public frmMain() {
             //trace_form = new frmTrace();
@@ -44,7 +41,6 @@ namespace wowmao
 
             InitializeComponent();
             this.cboTop.SelectedIndex = 2;
-            InitTvwRootNodes();
 
             this.gtGoldTree.OnSearchGoldenTerm += GtGoldTree_OnSearchGoldenTerm;
             this.gtGoldTree.OnSearchGoogle += GtGoldTree_OnSearchGoogle;
@@ -59,7 +55,35 @@ namespace wowmao
 
             this.topicTree1.OnNodeSelect += TopicTree1_OnNodeSelect;
             this.topicTree1.OnFindInWikiTree += TopicTree1_OnFindInWikiTree;
+        }
 
+        protected override void OnHandleCreated(EventArgs e) {
+            base.OnHandleCreated(e);
+            chkProdEnv_CheckedChanged(null, null);
+            //cmdRefresh_Click_1(null, null);
+        }
+
+        private void chkProdEnv_CheckedChanged(object sender, EventArgs e) {
+            if (chkProdEnv.Checked) {
+                mm02Entities.con_str = @"metadata=res://*/mmdb.csdl|res://*/mmdb.ssdl|res://*/mmdb.msl;provider=System.Data.SqlClient;provider connection string=""data source=mmsql02.database.windows.net;initial catalog=mm02;persist security info=True;user id=dom;password=REDACTED_PASSWORD;MultipleActiveResultSets=True;App=EntityFramework""";
+                pnlTopLeftInner.BackColor = Color.Red;
+            }
+            else {
+                mm02Entities.con_str = @"metadata=res://*/mmdb.csdl|res://*/mmdb.ssdl|res://*/mmdb.msl;provider=System.Data.SqlClient;provider connection string=""data source=.;initial catalog=mm02_local;persist security info=True;Integrated Security = true;MultipleActiveResultSets=True;App=EntityFramework""";
+                pnlTopLeftInner.BackColor = Color.Green;
+            }
+            using (var db = mm02Entities.Create()) { this.db_name = db.Database.Connection.Database; }
+            //cmdRefresh_Click_1(null, null);
+        }
+
+        private void cmdRefresh_Click_1(object sender, EventArgs e) {
+            // clear cache & recycle object context
+            //Correlations.cache = new Dictionary<string, List<correlation>>();
+            //this.url_term_cache = new Dictionary<long, List<url_term>>();
+            this.SetCaption();
+            this.lvwUrls.Clear();
+
+            wikiGoldTree.BuildTree();
             cmdSearchURLs_Click(null, null);
         }
 
@@ -86,11 +110,6 @@ namespace wowmao
                     return (int)(num1 - num2);
                 return String.Compare(text1, text2);
             }
-        }
-
-        protected override void OnHandleCreated(EventArgs e) {
-            base.OnHandleCreated(e);
-            this.wikiGoldTree.BuildTree();
         }
 
         private void WikiGoldTree_OnSearchGoogle(object sender, Controls.WikiGoldenTree.OnSearchGoogleEventArgs e) {
@@ -129,7 +148,7 @@ namespace wowmao
           
             lvwUrls.Items.Clear();
             using (var db = mm02Entities.Create()) {
-                lvwUrls.BeginUpdate();
+                //lvwUrls.BeginUpdate();
                 var items = new List<ListViewItem>();
                 var rnd = new Random();
                 var qry = db.urls
@@ -182,7 +201,7 @@ namespace wowmao
                     items.Add(item);
                 }
                 lvwUrls.Items.AddRange(items.ToArray());
-                lvwUrls.EndUpdate();
+                //lvwUrls.EndUpdate();
             }
             //SetCols(lvwUrls);
         }
@@ -207,38 +226,52 @@ namespace wowmao
                     double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
                     double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
 
+                    item.ToolTipText = "";
+
                     // FLAG 1 (Percentage Topics(all terms) < 5 %)
                     const double C1 = 0.05;
                     var test_1 = best_topic.perc_ptr_topics < C1 ? 1 : 0;
                     var degree_1 = (C1 - best_topic.perc_ptr_topics) / C1;
+                    item.ToolTipText += $"FLAG 1 (Percentage Topics(all terms)): {degree_1.ToString("0.00")}\r\n";
 
                     // FLAG 2 (AVG_MIN_D > 4.0)
                     const double C2 = 4.0;
                     var test_2 = (avg_min_d > C2) ? 1 : 0;
                     var degree_2 = (avg_min_d - C2) / C2;
+                    item.ToolTipText += $"FLAG 2 (AVG_MIN_D > 4.0): {degree_2.ToString("0.00")}\r\n";
 
                     // FLAG 3 (AVG_MAX_D > 8.0)
                     const double C3 = 8.0;
                     var test_3 = (avg_max_d > C3) ? 1 : 0;
                     var degree_3 = (avg_max_d - C3) / C3;
+                    item.ToolTipText += $"FLAG 3 (AVG_MAX_D > 8.0): {degree_3.ToString("0.00")}\r\n";
 
                     // FLAG 4 (avg_S_weighted: < 3.0)
                     const double C4 = 3.0;
                     var test_4 = (avg_S_weighted < C4) ? 1 : 0;
                     var degree_4 = (C4 - avg_S_weighted) / avg_S_weighted;
+                    item.ToolTipText += $"FLAG 4 (avg_S_weighted: < 3.0): {degree_4.ToString("0.00")}\r\n";
 
                     // FLAG 5 (Best Topic: min_d > 2)
                     const double C5 = 2;
                     var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
                     var degree_5 = (best_topic.min_d_paths_to_root_url_terms - C5) / C5;
+                    item.ToolTipText += $"FLAG 5 (Best Topic: min_d > 2): {degree_5.ToString("0.00")}\r\n";
 
                     // FLAG 6 (Count Topics < 3)
                     const double C6 = 3;
                     var test_6 = (topics.Count < C6) ? 1 : 0;
-                    var degree_6 = ((C6 - topics.Count) / topics.Count); 
+                    var degree_6 = ((C6 - topics.Count) / topics.Count);
+                    item.ToolTipText += $"FLAG 6 (Count Topics < 3): {degree_6.ToString("0.00")}\r\n";
 
-                    var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6;
-                    var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6;
+                    // FLAG 7 (Best Topic: mmtopic_level < 3)
+                    const double C7 = 3;
+                    var test_7 = (best_topic.mmtopic_level < C7) ? 1 : 0;
+                    var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level);
+                    item.ToolTipText += $"FLAG 7 (Best Topic: mmtopic_level < 3): {degree_7.ToString("0.00")}\r\n";
+
+                    var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6 + test_7;
+                    var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6 + degree_7;
 
                     if (warn_count > 5)
                         item.ImageIndex = 2;
@@ -252,6 +285,8 @@ namespace wowmao
                         item.ImageIndex = 0;
                     item.SubItems[0].Text = warn_count.ToString();
                     item.SubItems[1].Text = warn_degree.ToString("0.000");
+
+
                 }
             }
         }
@@ -265,32 +300,6 @@ namespace wowmao
                 lvw.Columns[1].Width = 50;
                 lvw.Columns[2].Width = 200;
             }
-        }
-
-        void InitTvwRootNodes() {
-            this.Cursor = Cursors.WaitCursor;
-            var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
-                root_term = db.terms.Include("golden_term").Include("golden_term1").Single(p => p.id == g.MAOMAO_ROOT_TERM_ID);
-                this.db_name = db.Database.Connection.Database;
-                SetCaption();
-            }
-            this.Cursor = Cursors.Default;
-        }
-
-        private void cmdRefresh_Click_1(object sender, EventArgs e) {
-
-            // clear cache & recycle object context
-            //Correlations.cache = new Dictionary<string, List<correlation>>();
-            //this.url_term_cache = new Dictionary<long, List<url_term>>();
-
-            mm02Entities.static_instance.Dispose();
-            mm02Entities.static_instance = null;
-            mm02Entities.static_instance = mm02Entities.Create();
-            this.SetCaption();
-
-            InitTvwRootNodes();
-            //gtGoldTree.BuildTree(g.MAOMAO_ROOT_TERM_ID);
-            wikiGoldTree.BuildTree();
         }
 
         private void ZoomBrowser(int zoom) {
@@ -354,16 +363,23 @@ namespace wowmao
                 if (chkUpdateUi.Checked) {
                     var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).ToListNoLock();
 
-                    var topics = parents.Where(p => p.found_topic);
-                    var suggested = parents.Where(p => p.suggested_dynamic);
+                    var topics = parents.Where(p => p.found_topic).ToList();
+                    var suggested = parents.Where(p => p.suggested_dynamic).ToList();
 
                     txtInfo.Text += "\r\n";
 
-                    txtInfo.AppendText("\r\nSUGGESTED (not in topics):\r\n");
-                    suggested.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
+                    // suggested
+                    txtInfo.AppendText("\r\nSUGGESTED (all):\r\n");
+                    suggested//.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
                              .Where(p => !p.term.IS_TOPIC)
                              .OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} -> S={p.S?.ToString("0.00000")}\r\n"));
+                    this.wikiGoldTree.ClearTree();
+                    this.tabTrees.SelectedIndex = 0;
+                    this.wikiGoldTree.BeginUpdate();
+                    suggested.OrderBy(p => p.term.name).ToList().ForEach(p => this.wikiGoldTree.AddTerm(p.term_id));
+                    this.wikiGoldTree.EndUpdate();
 
+                    // defined topics
                     txtInfo.Text += "\r\nTOPICS:\r\n";
                     double perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
                     txtInfo.AppendText($"\t(Percentage Topics (all terms): {(perc_topics_in_paths * 100).ToString("0.0")}%)\r\n");
@@ -379,7 +395,7 @@ namespace wowmao
                         txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_avg_S_weighted).ToString("0.0000")})\r\n");
 
                         topics.OrderBy(p => p.pri).ToList().ForEach(p => {
-                            txtInfo.AppendText($"\t{p.term} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) -> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                            txtInfo.AppendText($"\t{p.term} *TL={p.mmtopic_level} avg_TSS_leaf={p.avg_TSS_leaf} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
                         });
                     }
                     else txtInfo.AppendText($"\t(NO TOPICS)\r\n");

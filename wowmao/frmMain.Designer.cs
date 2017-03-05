@@ -46,7 +46,8 @@
             this.topicTree1 = new wowmao.Controls.TopicTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.splitter7 = new System.Windows.Forms.Splitter();
-            this.pnlTermTreeAll = new System.Windows.Forms.Panel();
+            this.pnlTopLeftInner = new System.Windows.Forms.Panel();
+            this.chkProdEnv = new System.Windows.Forms.CheckBox();
             this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
             this.txtOut = new System.Windows.Forms.TextBox();
             this.cmdRefresh = new System.Windows.Forms.Button();
@@ -96,7 +97,7 @@
             this.tabTrees.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.pnlTermTreeAll.SuspendLayout();
+            this.pnlTopLeftInner.SuspendLayout();
             this.pnlTestMode.SuspendLayout();
             this.pnlDirectGoldenCorrelations.SuspendLayout();
             this.pnlLevel2Terms.SuspendLayout();
@@ -109,7 +110,7 @@
             // 
             this.pnlLeft.Controls.Add(this.pnlGoldenTree);
             this.pnlLeft.Controls.Add(this.splitter7);
-            this.pnlLeft.Controls.Add(this.pnlTermTreeAll);
+            this.pnlLeft.Controls.Add(this.pnlTopLeftInner);
             this.pnlLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlLeft.Location = new System.Drawing.Point(0, 0);
             this.pnlLeft.Name = "pnlLeft";
@@ -282,16 +283,28 @@
             this.splitter7.TabIndex = 5;
             this.splitter7.TabStop = false;
             // 
-            // pnlTermTreeAll
+            // pnlTopLeftInner
             // 
-            this.pnlTermTreeAll.Controls.Add(this.zoomBrowser1);
-            this.pnlTermTreeAll.Controls.Add(this.txtOut);
-            this.pnlTermTreeAll.Controls.Add(this.cmdRefresh);
-            this.pnlTermTreeAll.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlTermTreeAll.Location = new System.Drawing.Point(0, 0);
-            this.pnlTermTreeAll.Name = "pnlTermTreeAll";
-            this.pnlTermTreeAll.Size = new System.Drawing.Size(500, 400);
-            this.pnlTermTreeAll.TabIndex = 4;
+            this.pnlTopLeftInner.Controls.Add(this.chkProdEnv);
+            this.pnlTopLeftInner.Controls.Add(this.zoomBrowser1);
+            this.pnlTopLeftInner.Controls.Add(this.txtOut);
+            this.pnlTopLeftInner.Controls.Add(this.cmdRefresh);
+            this.pnlTopLeftInner.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlTopLeftInner.Location = new System.Drawing.Point(0, 0);
+            this.pnlTopLeftInner.Name = "pnlTopLeftInner";
+            this.pnlTopLeftInner.Size = new System.Drawing.Size(500, 400);
+            this.pnlTopLeftInner.TabIndex = 4;
+            // 
+            // chkProdEnv
+            // 
+            this.chkProdEnv.AutoSize = true;
+            this.chkProdEnv.Location = new System.Drawing.Point(68, 5);
+            this.chkProdEnv.Name = "chkProdEnv";
+            this.chkProdEnv.Size = new System.Drawing.Size(48, 17);
+            this.chkProdEnv.TabIndex = 10;
+            this.chkProdEnv.Text = "prod";
+            this.chkProdEnv.UseVisualStyleBackColor = true;
+            this.chkProdEnv.CheckedChanged += new System.EventHandler(this.chkProdEnv_CheckedChanged);
             // 
             // zoomBrowser1
             // 
@@ -310,11 +323,11 @@
             this.txtOut.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOut.Location = new System.Drawing.Point(328, 7);
+            this.txtOut.Location = new System.Drawing.Point(471, 7);
             this.txtOut.Multiline = true;
             this.txtOut.Name = "txtOut";
             this.txtOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtOut.Size = new System.Drawing.Size(166, 19);
+            this.txtOut.Size = new System.Drawing.Size(23, 19);
             this.txtOut.TabIndex = 8;
             this.txtOut.WordWrap = false;
             // 
@@ -322,7 +335,7 @@
             // 
             this.cmdRefresh.Location = new System.Drawing.Point(2, 3);
             this.cmdRefresh.Name = "cmdRefresh";
-            this.cmdRefresh.Size = new System.Drawing.Size(84, 19);
+            this.cmdRefresh.Size = new System.Drawing.Size(61, 19);
             this.cmdRefresh.TabIndex = 2;
             this.cmdRefresh.Text = "Refresh";
             this.cmdRefresh.UseVisualStyleBackColor = true;
@@ -463,7 +476,7 @@
             this.txtInfo.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtInfo.Location = new System.Drawing.Point(0, 0);
             this.txtInfo.Name = "txtInfo";
-            this.txtInfo.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedHorizontal;
+            this.txtInfo.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
             this.txtInfo.Size = new System.Drawing.Size(249, 350);
             this.txtInfo.TabIndex = 6;
             this.txtInfo.Text = "";
@@ -639,6 +652,7 @@
             this.lvwUrls.Location = new System.Drawing.Point(3, 23);
             this.lvwUrls.MultiSelect = false;
             this.lvwUrls.Name = "lvwUrls";
+            this.lvwUrls.ShowItemToolTips = true;
             this.lvwUrls.Size = new System.Drawing.Size(797, 325);
             this.lvwUrls.SmallImageList = this.imageList1;
             this.lvwUrls.TabIndex = 5;
@@ -755,8 +769,8 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.pnlTermTreeAll.ResumeLayout(false);
-            this.pnlTermTreeAll.PerformLayout();
+            this.pnlTopLeftInner.ResumeLayout(false);
+            this.pnlTopLeftInner.PerformLayout();
             this.pnlTestMode.ResumeLayout(false);
             this.pnlDirectGoldenCorrelations.ResumeLayout(false);
             this.pnlLevel2Terms.ResumeLayout(false);
@@ -810,7 +824,7 @@
         private System.Windows.Forms.Splitter splitter6;
         private System.Windows.Forms.ColumnHeader columnHeader16;
         private System.Windows.Forms.ColumnHeader columnHeader17;
-        private System.Windows.Forms.Panel pnlTermTreeAll;
+        private System.Windows.Forms.Panel pnlTopLeftInner;
         private System.Windows.Forms.Panel pnlGoldenTree;
         private MmGoldenTree gtGoldTree;
         private System.Windows.Forms.Splitter splitter7;
@@ -845,6 +859,7 @@
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ColumnHeader columnHeader26;
         private System.Windows.Forms.ColumnHeader columnHeader27;
+        private System.Windows.Forms.CheckBox chkProdEnv;
     }
 }
 

@@ -112,7 +112,7 @@ namespace wowmao.Controls
         }
 
         private List<List<TermPath>> all_paths;
-        private const int per_page = 200;
+        private const int per_page = 250;
         private int no_pages;
         private int cur_page;
         private void RenderPage()
