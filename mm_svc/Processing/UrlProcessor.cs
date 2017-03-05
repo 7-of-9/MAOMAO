@@ -36,8 +36,12 @@ namespace mm_svc
         public static List<url_term> ProcessUrl(
             long url_id,
             out List<List<TermPath>> all_term_paths,
-            bool reprocess = false,
-            bool run_l2_boost = false)
+            bool reprocess_all = false,
+            bool reprocess_map_wiki = false,
+            bool reprocess_PtR = false,
+            bool reprocess_term_parents = false,
+            bool reprocess_url_parents = false)
+            //bool run_l2_boost = false)
         {
             all_term_paths = new List<List<TermPath>>();
 
@@ -81,7 +85,7 @@ namespace mm_svc
                 //
                 // TSS: calc topic score specific values for Calais terms
                 //
-                new TssProducer().CalcTSS(meta_all, calais_terms, run_l2_boost);
+                new TssProducer().CalcTSS(meta_all, calais_terms, run_l2_boost: false);
                 calais_terms.ForEach(p => p.candidate_reason = p.candidate_reason.TruncateMax(256));
                 calais_terms.ForEach(p => p.S = p.S_CALC);
                 g.LogInfo($"url_id={url_id} CalcTSS done: ms={sw.ElapsedMilliseconds} ");
@@ -89,21 +93,18 @@ namespace mm_svc
                 //
                 // MAP WIKI : map & store wiki golden_terms
                 //
-                if (existing_wiki_terms.Count == 0) {// || reprocess == true) {
-                    if (reprocess) {
+                if (existing_wiki_terms.Count == 0 || reprocess_all || reprocess_map_wiki) {
+                    if (reprocess_all || reprocess_map_wiki) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
                         db.SaveChangesTraceValidationErrors();
                     }
-                    MapWikiGoldenTerms(calais_terms, url, reprocess);
+                    MapWikiGoldenTerms(calais_terms, url, reprocess_all);
                     db.SaveChangesTraceValidationErrors();
                     g.LogInfo($"url_id={url_id} MapWikiGoldenTerms DONE: ms={sw.ElapsedMilliseconds} ");
                 }
-
-                //
                 // DEDUPE WIKI: dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
-                //
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null).ToList();
-                if (wiki_url_terms != null) {
+                if (wiki_url_terms != null && (reprocess_all || reprocess_map_wiki)) {
                     wiki_url_terms = DedupeWikiMappedTerms(url_id, db, wiki_url_terms);
                     g.LogInfo($"url_id={url_id} DedupeWikiMappedTerms DONE: ms={sw.ElapsedMilliseconds} ");
                 }
@@ -114,7 +115,7 @@ namespace mm_svc
                 var term_paths_P = new ConcurrentBag<List<TermPath>>();
                 Parallel.ForEach(wiki_url_terms, p => {
 
-                    var paths = GoldenPaths.GetOrProcessPathsToRoot(p.term_id, false); //***
+                    var paths = GoldenPaths.GetOrProcessPathsToRoot(p.term_id, reprocess_all || reprocess_PtR); //***
                     paths.ForEach(p2 => term_paths_P.Add(p2));
 
                 } );
@@ -167,14 +168,14 @@ namespace mm_svc
                 //
 
                 //
-                // SUGGESTED PARENTS: calc & store parents for each wiki term - dynamic suggested parents and editorially defined parent topics
+                // WIKI PARENTS: calc & store parents for each wiki term - dynamic suggested and editorially defined topics
                 //
                 var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
                     // perf: taking quite some time here...
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, false); // reprocess); //***
+                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess_all || reprocess_term_parents); //***
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
@@ -195,7 +196,7 @@ namespace mm_svc
                 //
                 // [url_parent_term]
                 //
-                if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess == true) { //***
+                if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess_all || reprocess_url_parents) { //***
                      
                     // editorial topic parents
                     CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths, wiki_url_terms); 

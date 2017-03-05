@@ -79,6 +79,7 @@
     <Compile Include="Extensions\ObjectPartialExtensions\term_matrix_extensions.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\topic_link_extenion.cs" />
     <Compile Include="Extensions\ObjectPartialExtensions\url_term_extensions.cs" />
+    <Compile Include="Extensions\ObjectPartialExtensions\user_extensions.cs" />
     <Compile Include="golden_term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

@@ -55,12 +55,30 @@ namespace wowmao
 
             this.topicTree1.OnNodeSelect += TopicTree1_OnNodeSelect;
             this.topicTree1.OnFindInWikiTree += TopicTree1_OnFindInWikiTree;
+
         }
 
-        protected override void OnHandleCreated(EventArgs e) {
+        protected override void OnHandleCreated(EventArgs e)
+        {
             base.OnHandleCreated(e);
             chkProdEnv_CheckedChanged(null, null);
             //cmdRefresh_Click_1(null, null);
+        }
+
+        private void SetUrlUsers() {
+            using (var db = mm02Entities.Create()) {
+                db.ObjectContext().ContextOptions.ProxyCreationEnabled = false;
+                //cboUserUrl.Items.Clear();
+                var users = db.user_url.Select(p => p.user).Include(p => p.user_url).Distinct().ToList().Select(p => new {
+                    name = $"{p.email} (user_url #={p.user_url.Count()})", id = p.id }).ToList();
+                users.Insert(0, (new { name = "(none)", id = (long)-1 }));
+
+                //users.ForEach(p => cboUserUrl.Items.Add(p));
+
+                cboUserUrl.DataSource = users;
+                cboUserUrl.DisplayMember = "name";
+                cboUserUrl.ValueMember = "id";
+            }
         }
 
         private void chkProdEnv_CheckedChanged(object sender, EventArgs e) {
@@ -73,6 +91,7 @@ namespace wowmao
                 pnlTopLeftInner.BackColor = Color.Green;
             }
             using (var db = mm02Entities.Create()) { this.db_name = db.Database.Connection.Database; }
+            SetUrlUsers();
             //cmdRefresh_Click_1(null, null);
         }
 
@@ -145,7 +164,8 @@ namespace wowmao
         }
 
         void InitUrls(string search_term) {//, long? golden_term_id = null) {
-          
+            var user_id = (long)cboUserUrl.SelectedValue;
+
             lvwUrls.Items.Clear();
             using (var db = mm02Entities.Create()) {
                 //lvwUrls.BeginUpdate();
@@ -156,6 +176,9 @@ namespace wowmao
                     .Include("url_term.term")
                     .Include("url_parent_term")
                     .AsQueryable();
+
+                if (user_id != -1)
+                    qry = qry.Where(p => p.user_url.Any(p2 => p2.user_id == user_id));
 
                 if (!string.IsNullOrEmpty(search_term)) {
                     qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
@@ -175,6 +198,7 @@ namespace wowmao
 
                 //Debug.WriteLine(qry.ToString());
                 var data = qry.ToListNoLock();
+                this.lblWalkInfo.Text = $"{data.Count} url(s) loaded";
                 foreach (var x in data) {
                     var item = new ListViewItem(new string[] {
                         "-",
@@ -340,7 +364,7 @@ namespace wowmao
                 // ** ProcessTss **
                 //
                 List<List<TermPath>> all_term_paths = null;
-                var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess: chkReprocess.Checked);
+                var l1_url_terms = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, false, reprocess_map_wiki.Checked, reprocess_PtR.Checked, reprocess_term_parents.Checked, reprocess_url_parents.Checked);
 
                 // L1 terms -> for each L1 term: add to TermList
                 if (chkUpdateUi.Checked) { 
@@ -419,7 +443,10 @@ namespace wowmao
             for (int i = 0; i < lvwUrls.Items.Count; i++)
                 urls_to_process.Add(lvwUrls.Items[i].Tag as url);
             var remaining = urls_to_process.Count;
-            var reprocess = chkReprocess.Checked;
+            var b_reprocess_map_wiki = reprocess_map_wiki.Checked;
+            var b_reprocess_PtR = reprocess_PtR.Checked;
+            var b_reprocess_wiki_parents = reprocess_term_parents.Checked;
+            var b_reprocess_url_parents = reprocess_url_parents.Checked;
             this.Cursor = Cursors.WaitCursor;
             this.lblWalkInfo.Text = "walk(P) working...";
             Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
@@ -427,7 +454,7 @@ namespace wowmao
                 //Task.Run((Action)(() => {
 
                 List<List<TermPath>> all_term_paths = null;
-                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, reprocess);
+                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, false, b_reprocess_map_wiki, b_reprocess_PtR, b_reprocess_wiki_parents, b_reprocess_url_parents);
 
                 //Application.DoEvents();
                 //this.BeginInvoke((Action)(() => {
@@ -712,5 +739,9 @@ namespace wowmao
             }
         }
 
+        private void chkReprocess_All_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

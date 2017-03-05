@@ -15,6 +15,8 @@ namespace mm_svc
     /// </summary>  
     public static class UrlInfo
     {
+        public class ParentTerm { public string info; }
+
         public static url GetNlpInfo(string url)
         {
             using (var db = mm02Entities.Create())
@@ -26,6 +28,16 @@ namespace mm_svc
                     return db_url;
                 }
                 return null;
+            }
+        }
+
+        public static void GetTopicsAndSuggestions(long url_id, out List<UrlInfo.ParentTerm> ret_topics, out List<UrlInfo.ParentTerm> ret_suggested)
+        {
+            using (var db = mm02Entities.Create()) {
+                var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url_id).ToListNoLock();
+                var topics = parents.Where(p => p.found_topic).ToList();
+                ret_topics = topics.Select(p2 => new UrlInfo.ParentTerm() { info = $"{p2.term} *TL={p2.mmtopic_level} avg_TSS_leaf={p2.avg_TSS_leaf} (min_d={p2.min_d_paths_to_root_url_terms} max_d={p2.max_d_paths_to_root_url_terms} perc_ptr_topics={(p2.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p2.S?.ToString("0.00000")} S_norm={p2.S_norm?.ToString("0.00")} avg_S={p2.avg_S?.ToString("0.0000")}" }).ToList();
+                ret_suggested = parents.Where(p => p.suggested_dynamic && !topics.Select(p2 => p2.id).Contains(p.id)).ToList().Select(p2 => new UrlInfo.ParentTerm() { info = $"{p2.term} -> S={p2.S?.ToString("0.00000")}" }).ToList();
             }
         }
     }

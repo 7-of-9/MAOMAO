@@ -26,22 +26,22 @@ namespace mm_svc.User
 
                 // Base on userId and url
                 // Find last history, if not exist, will insert new one
-                var user_url = db.user_url.FirstOrDefault(p => p.userId == db_user.id && p.urlId == db_url.id);
+                var user_url = db.user_url.FirstOrDefault(p => p.user_id == db_user.id && p.url_id == db_url.id);
                 if (user_url != null) {
                     user_url.im_score += im_score_delta;
                     user_url.time_on_tab += time_on_tab_delta;
-                    user_url.navUtc = DateTime.UtcNow;  //saveAt;
+                    user_url.nav_utc = DateTime.UtcNow;  //saveAt;
                     user_url.audible_pings += audible_pings_delta;
                     db.SaveChangesTraceValidationErrors();
                     return user_url.id;
                 }
                 else {
                     user_url = new user_url();
-                    user_url.userId = db_user.id;
-                    user_url.urlId = db_url.id;
+                    user_url.user_id = db_user.id;
+                    user_url.url_id = db_url.id;
                     user_url.im_score = im_score_delta;
                     user_url.time_on_tab = time_on_tab_delta;
-                    user_url.navUtc = DateTime.UtcNow;
+                    user_url.nav_utc = DateTime.UtcNow;
                     user_url.audible_pings = audible_pings_delta;
                     db.user_url.Add(user_url);
                     db.SaveChangesTraceValidationErrors();

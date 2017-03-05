@@ -18,15 +18,9 @@ namespace mmdb_model
         public long parent_term_id { get; set; }
         public long child_term_id { get; set; }
         public int mmcat_level { get; set; }
-
         public Nullable<System.DateTime> autosuggested_at_utc { get; set; }
-
-        public Nullable<long> url_id { get; set; }
-
         public bool from_wiki { get; set; }
     
-        public virtual url url { get; set; }
-
         public virtual term term { get; set; }
         public virtual term term1 { get; set; }
     }

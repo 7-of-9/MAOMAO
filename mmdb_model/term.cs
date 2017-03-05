@@ -17,8 +17,6 @@ namespace mmdb_model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public term()
         {
-            this.golden_term = new HashSet<golden_term>();
-            this.golden_term1 = new HashSet<golden_term>();
             this.gt_parent = new HashSet<gt_parent>();
             this.gt_parent1 = new HashSet<gt_parent>();
             this.gt_path_to_root = new HashSet<gt_path_to_root>();
@@ -30,6 +28,8 @@ namespace mmdb_model
             this.topic_link = new HashSet<topic_link>();
             this.topic_link1 = new HashSet<topic_link>();
             this.url_parent_term = new HashSet<url_parent_term>();
+            this.golden_term = new HashSet<golden_term>();
+            this.golden_term1 = new HashSet<golden_term>();
         }
     
         public long id { get; set; }
@@ -42,10 +42,6 @@ namespace mmdb_model
         public bool is_topic_root { get; set; }
     
         public virtual cal_entity_type cal_entity_type { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<golden_term> golden_term { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<golden_term> golden_term1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<gt_parent> gt_parent { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -69,5 +65,9 @@ namespace mmdb_model
         public virtual ICollection<topic_link> topic_link1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url_parent_term> url_parent_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<golden_term> golden_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<golden_term> golden_term1 { get; set; }
     }
 }

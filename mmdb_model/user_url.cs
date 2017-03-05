@@ -21,9 +21,9 @@ namespace mmdb_model
         }
     
         public long id { get; set; }
-        public long userId { get; set; }
-        public long urlId { get; set; }
-        public System.DateTime navUtc { get; set; }
+        public long user_id { get; set; }
+        public long url_id { get; set; }
+        public System.DateTime nav_utc { get; set; }
         public Nullable<double> im_score { get; set; }
         public Nullable<int> audible_pings { get; set; }
         public Nullable<long> time_on_tab { get; set; }

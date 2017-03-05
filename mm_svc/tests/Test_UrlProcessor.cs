@@ -21,7 +21,7 @@ namespace tests
             List<List<TermPath>> all_term_paths = null;
 
             // not mapping wiki terms: because no underlying tss>0 calais terms - fixed w/ 42.42 fallback -- rerun all...
-            UrlProcessor.ProcessUrl(7101, out all_term_paths, reprocess: true); 
+            UrlProcessor.ProcessUrl(7101, out all_term_paths, reprocess_all: true); 
         }
 
         [TestMethod]

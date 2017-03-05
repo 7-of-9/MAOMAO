@@ -4,6 +4,9 @@ using WebApi.OutputCache.V2;
 using System.Threading.Tasks;
 using System;
 using System.Globalization;
+using static mm_svc.Terms.GoldenPaths;
+using System.Collections.Generic;
+using mm_svc;
 
 namespace mmapi00.Controllers
 {
@@ -63,8 +66,15 @@ namespace mmapi00.Controllers
 
             var db_url = mm_svc.UrlInfo.GetNlpInfo(url);
 
+            var topics = new List<UrlInfo.ParentTerm>();
+            var suggestions = new List<UrlInfo.ParentTerm>();
+            if (db_url != null)
+                UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions);
+
             return Ok( new { is_known = db_url != null,
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
+                          suggestions = suggestions,
+                               topics = topics,
                                   url = url });
         }
 
@@ -97,7 +107,7 @@ namespace mmapi00.Controllers
 
             return Ok(new { url = nlp_info.url.href,
                new_calais_terms = ret.new_calais_terms,
-                      suggested = ret.suggested,
+                    suggestions = ret.suggestions,
                          topics = ret.topics,
 //               new_calais_pairs = ret.new_calais_pairs,
 //              mapped_wiki_terms = ret.mapped_wiki_terms,

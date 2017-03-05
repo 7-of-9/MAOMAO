@@ -295,7 +295,7 @@ namespace mm_svc
                     {
                         var prior_common_user_url_ids = db.user_url_classification
                                                           .Where(p => p.user_id == user_id && url_all_classification_term_ids.Contains(p.term_id))
-                                                          .Select(p => p.user_url.urlId)
+                                                          .Select(p => p.user_url.url_id)
                                                           .Distinct().ToListNoLock();
 
                         foreach (var prior_common_user_url_id in prior_common_user_url_ids)
