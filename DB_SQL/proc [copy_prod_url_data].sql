@@ -1,45 +1,14 @@
+USE [mm02_local]
+GO
 
---
--- RUN FROM LOCAL: copies all missing prod URL data to local...
---
--- select count(id) from MM02.mm02.dbo.url where id not in (select id from url)
+/****** Object:  StoredProcedure [dbo].[copy_prod_url_data]    Script Date: 3/5/2017 6:01:34 PM ******/
+SET ANSI_NULLS ON
+GO
 
--- copy reference data: awis_
-	declare db_cursor_outer cursor for select id from MM02.mm02.dbo.awis_cat where id not in (select id from awis_cat)
-	declare @awis_cat_id bigint
-	open db_cursor_outer;
-	fetch next from db_cursor_outer into @awis_cat_id;
-	while @@FETCH_STATUS = 0
-	begin
-		SET IDENTITY_INSERT awis_cat on
-		insert into awis_cat (
-			id, title, abs_path
-		) select * from MM02.mm02.dbo.awis_cat where id not in (select id from awis_cat)
-		SET IDENTITY_INSERT awis_cat off
+SET QUOTED_IDENTIFIER ON
+GO
 
-		fetch next from db_cursor_outer into @awis_cat_id;
-	end;
-	DEALLOCATE db_cursor_outer;
-
--- copy URLs...
-	declare db_cursor_outer cursor for select id from MM02.mm02.dbo.url where id not in (select id from url)
-	declare @url_id bigint
-	open db_cursor_outer;
-	fetch next from db_cursor_outer into @url_id;
-	while @@FETCH_STATUS = 0
-	begin
-		declare @msg nvarchar(100) set @msg = N'copying ' + cast(@url_id as nvarchar) + N'...'
-		RAISERROR(@msg,0,1) WITH NOWAIT
-
-		exec copy_prod_url_data @url_id
-
-		fetch next from db_cursor_outer into @url_id;
-	end;
-	DEALLOCATE db_cursor_outer;
-
-
-/*
-alter proc copy_prod_url_data (@url_id bigint)
+CREATE proc [dbo].[copy_prod_url_data] (@url_id bigint)
 as begin
 
 --declare @url_id bigint set @url_id = 10375
@@ -130,4 +99,6 @@ as begin
 		SET IDENTITY_INSERT [url_term] off
 	end
 end
-*/
+GO
+
+
