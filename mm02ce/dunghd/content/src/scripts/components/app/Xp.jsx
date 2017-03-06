@@ -2,14 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
 import Radium from 'radium';
-import html2canvas from 'html2canvas';
-import StackBlur from 'stackblur-canvas';
 import $ from 'jquery';
-
-window.jQuery = $;
-
-require('../../vendors/vague');
-
 
 const styles = {
   bounceInUp: {
@@ -46,44 +39,6 @@ class Xp extends Component {
     };
   }
 
-  componentDidMount() {
-    const $window = $(window);
-    const $blurred = $('.blurred');
-    $(() => {
-      html2canvas(document.body).then((canvas) => {
-        $('#html2canvas').append(canvas);
-        $('canvas').attr('id', 'canvas');
-        const width = $(window).width();
-        const body = document.body;
-        const html = document.documentElement;
-        const height = Math.max(body.scrollHeight, body.offsetHeight,
-          html.clientHeight, html.scrollHeight, html.offsetHeight);
-        try {
-          StackBlur.canvasRGB(canvas, 0, 0, width, height, 20);
-          const scrollIframe = () => {
-            $blurred.find('canvas').css({
-              top: -$blurred.offset().top,
-            });
-          };
-          $window.on('scroll', scrollIframe);
-          setTimeout(() => {
-            $window.scrollTop($window.scrollTop() + 1);
-          }, 1000);
-        } catch (err) {
-          $blurred.find('canvas').replaceWith(`<iframe id="blurFrame" style="dipslay:none;" width="${width}" height="${height}" frameborder="0" scrolling="no" src="${window.location.href}"></iframe>`);
-          const vague = $blurred.find('iframe').Vague({ intensity: 5 });
-          vague.blur();
-          const scrollIframe = () => {
-            $blurred.find('#blurFrame').css({
-              top: -$blurred.offset().top,
-            });
-          };
-          $window.on('scroll', scrollIframe);
-        }
-      });
-    });
-  }
-
   componentWillReceiveProps(nextProps) {
     if (this.props.xp.score !== nextProps.xp.score || this.props.xp.text !== nextProps.xp.text) {
       if (this.state.show) {
@@ -107,7 +62,6 @@ class Xp extends Component {
       }
       $('.blurred').find('.nlp_score').css('font-size', '120%');
       $('body').children().not('#maomao-extension-anchor').css('opacity', '0.6');
-      $(window).scrollTop($(window).scrollTop() + 1);
     }
   }
 
@@ -138,7 +92,7 @@ class Xp extends Component {
               callback={resetFontSize}
             />
           </div>
-          <div id="html2canvas" />
+          <a className="share" href={this.props.shareTopics}>Share...</a>
         </div>
       </div>
     );
@@ -148,6 +102,7 @@ class Xp extends Component {
 Xp.propTypes = {
   xp: PropTypes.object.isRequired,
   scale: PropTypes.number.isRequired,
+  shareTopics: PropTypes.func,
 };
 
 export default Radium(Xp);
