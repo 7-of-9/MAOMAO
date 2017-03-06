@@ -286,7 +286,7 @@ function process_text(page_meta) {
         console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
         if (data.is_known == true) {
           // no need to text process, no need for calais
-          chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, } } });
+          chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } } });
           console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
 
           if (document.getElementById('maomao-extension-youtube-test')) {
@@ -295,7 +295,7 @@ function process_text(page_meta) {
             console.info("Disable youtube test");
           }
         } else {
-          chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false, } } });
+          chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false } } });
           nlp_calais(page_meta, t, document.location, mm_user_id());
         }
       }, function (error) {
