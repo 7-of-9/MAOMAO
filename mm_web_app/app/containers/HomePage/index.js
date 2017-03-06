@@ -18,6 +18,7 @@ import InfiniteScroll from 'redux-infinite-scroll';
 import ReactPlayer from 'react-player';
 import { pure, onlyUpdateForKeys } from 'recompose';
 import { List } from 'immutable';
+import { StickyContainer, Sticky } from 'react-sticky';
 
 import Block from 'components/Block';
 import Loading from 'components/Loading';
@@ -154,17 +155,19 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     // Mash up the result
     elements = mashUp(this.props);
     return (
-      <div>
+      <StickyContainer>
         <Helmet
           title="Home Page"
           meta={[
             { name: 'description', content: 'MaoMao homepage' },
           ]}
         />
-        <Header>
-          <LogoIcon />
-          <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
-        </Header>
+        <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
+          <Header>
+            <LogoIcon />
+            <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
+          </Header>
+        </Sticky>
         {
         elements.length > 0 &&
           <DataContainer
@@ -178,7 +181,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
         }
         <Loading isLoading={this.props.loading} />
         <ReactPlayer playing={false} />
-      </div>
+      </StickyContainer>
     );
   }
 }
