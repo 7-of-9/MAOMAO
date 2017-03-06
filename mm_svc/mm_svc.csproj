@@ -70,7 +70,6 @@
     <Compile Include="Terms\CorrelatedGoldens.cs" />
     <Compile Include="Terms\Correlations.cs" />
     <Compile Include="Terms\GoldenParents.cs" />
-    <Compile Include="Terms\GoldenSuggestions.cs" />
     <Compile Include="Terms\GoldenPaths.cs" />
     <Compile Include="Terms\GoldenTopics.cs" />
     <Compile Include="User\History.cs" />

@@ -32,21 +32,6 @@ namespace wowmao.Controls
         private ToolStripMenuItem mnuFindInWikiTree;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripSeparator toolStripSeparator2;
-        private ContextMenuStrip contextMenuStrip2;
-        private ToolStripMenuItem toolStripMenuItem1;
-        private ToolStripSeparator toolStripSeparator6;
-        private ToolStripSeparator toolStripSeparator3;
-        private ToolStripMenuItem toolStripMenuItem2;
-        private ToolStripSeparator toolStripSeparator4;
-        private ToolStripMenuItem toolStripMenuItem3;
-        private ToolStripMenuItem toolStripMenuItem4;
-        private ToolStripSeparator toolStripSeparator5;
-        private ToolStripMenuItem toolStripMenuItem5;
-        private ToolStripMenuItem toolStripMenuItem6;
-        private ToolStripMenuItem toolStripMenuItem7;
-        private ToolStripMenuItem toolStripMenuItem8;
-        private ToolStripMenuItem toolStripMenuItem9;
-        private ToolStripMenuItem mnuOnlyHere;
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripMenuItem mnuOnlyHere2;
         private ToolStripSeparator toolStripSeparator8;
@@ -54,6 +39,7 @@ namespace wowmao.Controls
         private TextBox txtSearch;
         private Button cmdSearch;
         private Button cmdClearSearch;
+        private ToolStripMenuItem mnuFindOthers;
         private int count;
 
         public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
@@ -250,6 +236,15 @@ namespace wowmao.Controls
             tvw.SelectedNode = new_node;
         }
 
+        // find others
+        private void mnuFindOthers_Click(object sender, EventArgs e) {
+            if (tvw.SelectedNode == null) return;
+            var node = tvw.SelectedNode;
+            var tag = node.Tag as NodeTag;
+            this.txtSearch.Text = tag.t.name;
+            cmdSearch_Click(null, null);
+        }
+
         // set term as topic/not topic
         private void mnuToggleTopic_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return;
@@ -314,12 +309,18 @@ namespace wowmao.Controls
 
         // search
         private void cmdSearch_Click(object sender, EventArgs e) {
-            var nodes = tvw.FlattenTree().Where(p => p.Text.ltrim().Contains(txtSearch.Text.ltrim())).ToList();
-            foreach (var node in nodes) {
-                node.BackColor = Color.Yellow;
-                node.ForeColor = Color.Black;
-            }
+            tvw.BeginUpdate();
+            tvw.CollapseAll();
+
+            var nodes_all = tvw.FlattenTree().ToList();
+            foreach (var node in nodes_all) { node.BackColor = Color.Transparent; node.ForeColor = Color.Gray; }
+
+            var nodes_matching = tvw.FlattenTree().Where(p => p.Text.ltrim().Contains(txtSearch.Text.ltrim())).ToList();
+            foreach (var node in nodes_matching) { node.BackColor = Color.Yellow; node.ForeColor = Color.Black; RecurseExpand(node); }
+
+            tvw.EndUpdate();
         }
+        private void RecurseExpand(TreeNode tn) { tn.Expand(); if (tn.Parent != null) RecurseExpand(tn.Parent); }
         private void cmdClearSearch_Click(object sender, EventArgs e) {
             var nodes = tvw.FlattenTree().ToList();
             foreach (var node in nodes)
@@ -334,7 +335,7 @@ namespace wowmao.Controls
                 tvw.SelectedNode = node;
                 var tag = tvw.SelectedNode.Tag as NodeTag;
                 this.mnuInfo.Text = tag.link != null ? tag.link.ToString() : tag.t.ToString();
-                this.mnuOnlyHere.Enabled = tag.enabled_child_link_count > 1;
+                this.mnuOnlyHere2.Enabled = tag.enabled_child_link_count > 1;
 
                 this.mnuExcludeLink.Enabled = tag.link != null;
                 this.mnuExcludeLink.Text = tag.link != null && tag.link.disabled ? "Enable Here" : "Not Here";
@@ -362,31 +363,16 @@ namespace wowmao.Controls
             this.mnuViewPaths50 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewPaths100 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFindInWikiTree = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.mnuRefreshNode = new System.Windows.Forms.ToolStripMenuItem();
             this.cmdRefresh = new System.Windows.Forms.Button();
             this.lblInfo = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.mnuOnlyHere = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.mnuRefreshNode = new System.Windows.Forms.ToolStripMenuItem();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.cmdSearch = new System.Windows.Forms.Button();
             this.cmdClearSearch = new System.Windows.Forms.Button();
+            this.mnuFindOthers = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
-            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tvw
@@ -414,11 +400,12 @@ namespace wowmao.Controls
             this.mnuRootTopic,
             this.mnuSep1,
             this.mnViewPathsContaining,
+            this.mnuFindOthers,
             this.mnuFindInWikiTree,
             this.toolStripSeparator8,
             this.mnuRefreshNode});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 210);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 254);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -515,6 +502,18 @@ namespace wowmao.Controls
             this.mnuFindInWikiTree.Text = "Find in WikiTree";
             this.mnuFindInWikiTree.Click += new System.EventHandler(this.mnuFindInWikiTree_Click);
             // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(155, 6);
+            // 
+            // mnuRefreshNode
+            // 
+            this.mnuRefreshNode.Name = "mnuRefreshNode";
+            this.mnuRefreshNode.Size = new System.Drawing.Size(158, 22);
+            this.mnuRefreshNode.Text = "Refresh Node...";
+            this.mnuRefreshNode.Click += new System.EventHandler(this.mnuRefreshNode_Click);
+            // 
             // cmdRefresh
             // 
             this.cmdRefresh.Location = new System.Drawing.Point(3, 3);
@@ -534,119 +533,6 @@ namespace wowmao.Controls
             this.lblInfo.Size = new System.Drawing.Size(25, 13);
             this.lblInfo.TabIndex = 2;
             this.lblInfo.Text = "......";
-            // 
-            // contextMenuStrip2
-            // 
-            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripSeparator6,
-            this.mnuOnlyHere,
-            this.toolStripSeparator3,
-            this.toolStripMenuItem2,
-            this.toolStripSeparator4,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4,
-            this.toolStripSeparator5,
-            this.toolStripMenuItem5,
-            this.toolStripMenuItem9});
-            this.contextMenuStrip2.Name = "contextMenuStrip1";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(168, 182);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Enabled = false;
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem1.Text = "(info)";
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(164, 6);
-            // 
-            // mnuOnlyHere
-            // 
-            this.mnuOnlyHere.Name = "mnuOnlyHere";
-            this.mnuOnlyHere.Size = new System.Drawing.Size(167, 22);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(164, 6);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem2.Text = "Not a Topic!";
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(164, 6);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem3.Text = "disable_link!";
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem4.Text = "toggle ROOT";
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(164, 6);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem6,
-            this.toolStripMenuItem7,
-            this.toolStripMenuItem8});
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem5.Text = "Sample Paths...";
-            // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(92, 22);
-            this.toolStripMenuItem6.Text = "10";
-            // 
-            // toolStripMenuItem7
-            // 
-            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(92, 22);
-            this.toolStripMenuItem7.Text = "50";
-            // 
-            // toolStripMenuItem8
-            // 
-            this.toolStripMenuItem8.Name = "toolStripMenuItem8";
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(92, 22);
-            this.toolStripMenuItem8.Text = "100";
-            // 
-            // toolStripMenuItem9
-            // 
-            this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(167, 22);
-            this.toolStripMenuItem9.Text = "Find in WikiTree...";
-            // 
-            // toolStripSeparator8
-            // 
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(155, 6);
-            // 
-            // mnuRefreshNode
-            // 
-            this.mnuRefreshNode.Name = "mnuRefreshNode";
-            this.mnuRefreshNode.Size = new System.Drawing.Size(158, 22);
-            this.mnuRefreshNode.Text = "Refresh Node...";
-            this.mnuRefreshNode.Click += new System.EventHandler(this.mnuRefreshNode_Click);
             // 
             // txtSearch
             // 
@@ -675,6 +561,13 @@ namespace wowmao.Controls
             this.cmdClearSearch.UseVisualStyleBackColor = true;
             this.cmdClearSearch.Click += new System.EventHandler(this.cmdClearSearch_Click);
             // 
+            // mnuFindOthers
+            // 
+            this.mnuFindOthers.Name = "mnuFindOthers";
+            this.mnuFindOthers.Size = new System.Drawing.Size(158, 22);
+            this.mnuFindOthers.Text = "Find Others";
+            this.mnuFindOthers.Click += new System.EventHandler(this.mnuFindOthers_Click);
+            // 
             // TopicTree
             // 
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
@@ -688,12 +581,10 @@ namespace wowmao.Controls
             this.Name = "TopicTree";
             this.Size = new System.Drawing.Size(520, 325);
             this.contextMenuStrip1.ResumeLayout(false);
-            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
-     
     }
 }

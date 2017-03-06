@@ -15,6 +15,8 @@ namespace mm_global
             CALAIS_SOCIALTAG = 3,
             WIKI_NS_0 = 0,
             WIKI_NS_14 = 14,
+            TLD = 100,
+            TLD_TITLE = 101,
         }
 
         public enum ET {

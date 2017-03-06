@@ -89,9 +89,12 @@ namespace mmapi00.Controllers
         public IHttpActionResult PutNlpInfoCalais([FromBody]dynamic nlp_info)
         {
             //g.LogLine(System.Web.Helpers.Json.Encode(nlp_info));
+            long user_id;
 
             Stopwatch sw = new Stopwatch(); sw.Start();
             if (nlp_info == null) return BadRequest("bad nlp_info");
+            if (nlp_info.user_id == null) throw new ArgumentException("missing user_id");
+            if (!long.TryParse(nlp_info.user_id.ToString(), out user_id)) throw new ArgumentException("bad user_id");
 
             // process terms & pairs
             var ret = mm_svc.CalaisNlp.ProcessNlpPacket_URL(nlp_info);
@@ -102,8 +105,8 @@ namespace mmapi00.Controllers
             var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
             this.RemoveCacheVariants(cacheKey + "-url=" + url);
 
-            // record user_url history -- HACK: hardcode single user; TODO: pass user ID in nlp_info packet
-            var history_id = mm_svc.User.UserHistory.TrackUrl(url, 5, 0, 0, 0);
+            // record user_url history
+            var history_id = mm_svc.User.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
 
             return Ok(new { url = nlp_info.url.href,
                new_calais_terms = ret.new_calais_terms,

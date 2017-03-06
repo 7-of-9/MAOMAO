@@ -56,9 +56,11 @@ namespace mm_svc
                 //if (url.processed_at_utc != null && reprocess == false)
                 //    goto ret1;
 
-                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                // get or add URL title term 
+                var url_title_term_id = GetOrAdd_TldTitleTerm(db, url.id);
 
                 // load - extract meta
+                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
                 if (!string.IsNullOrEmpty(url.meta_all) && meta_all != null) {
                     var nlp_suitability_score = meta_all.nlp_suitability_score;
                     var img_url = meta_all.ip_thumbnail_url
@@ -151,15 +153,21 @@ namespace mm_svc
                 // (done) --> topics' mmcat_level; this is possibly simplest and most robust AUTO-FLAG feature,
                 //          i.e. we should expect #1 topic parent to be at a certain min. mmcat_level in the topic tree...
                 //
-                // DEMO PHASE PLAN
-                // NEXT: phase 1 -- wire up to base Calais mm02ce flow & user_history (no return yet to client)
+                // *** DEMO PHASE PLAN ***
+                // (done) wire up to base Calais mm02ce flow & user_history 
+                // (done) filter wowmao by user_id / history
                 //
-                //          WIP: (filter wowmao by user_id / history)
+                //       
+                // WIP -- EDITORIALIZE TEST URLs on LOCAL and exercise TOPIC_TREE_TO_PROD migration script...
                 //
-                //       phase 2 -- returns topics & suggested to mm02ce for XP (+ user_xp! table)
-                //       phase 3 -- categorization of user_history; quite possibly per original concept, of url categorization
+                // TODO: return topics (NOTE: should wal topic_tree path UP for url_topics and also explicitly return parent topics, say 1/2 levels up)
+                //      + suggested terms
+                //      + url_title_topic
+                //            --> to mm02ce for XP (+ user_xp table)
+                //
+                //     phase 3 -- categorization of user_history; quite possibly per original concept, of url categorization
                 //                   being user-specific, i.e. clustering around previously categorized
-                //       phase 4 -- homepage is view of user_history + discovery
+                //     phase 4 -- homepage is view of user_history + discovery
                 //
                 //  *******
                 //
@@ -199,7 +207,7 @@ namespace mm_svc
                 if (db.url_parent_term.Count(p => p.url_id == url_id) == 0 || reprocess_all || reprocess_url_parents) { //***
                      
                     // editorial topic parents
-                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths, wiki_url_terms); 
+                    CalcAndStoreUrlParentTerms_Topics(url_id, db, all_parents_topics, all_term_paths, wiki_url_terms, url_title_term_id); 
 
                     // dynamic sugggest parents
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
@@ -225,6 +233,28 @@ namespace mm_svc
             }
         }
 
+        private static long GetOrAdd_TldTitleTerm(mm02Entities db, long url_id)
+        {
+            var url = db.urls.Find(url_id);
+
+            // get awis info
+            bool returned_from_db;
+            var awis_site = mm_svc.SiteInfo.GetOrQueryAwis(url.url1, out returned_from_db);
+            if (awis_site == null) throw new ApplicationException("bad site");
+
+            // create TLD term if not present
+            var tld_title_term = db.terms.Where(p => p.name == awis_site.title && p.term_type_id == (int)g.TT.TLD_TITLE).FirstOrDefaultNoLock();
+            if (tld_title_term == null) {
+                tld_title_term = new term() {
+                    name = awis_site.title,
+                    term_type_id = (int)g.TT.TLD_TITLE,
+                };
+                db.terms.Add(tld_title_term);
+                db.SaveChangesTraceValidationErrors();
+            }
+            return tld_title_term.id;
+        }
+
         [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")})")]
         private class TopicInfo {
             public term t;
@@ -243,7 +273,8 @@ namespace mm_svc
             mm02Entities db,
             List<gt_parent> all_parents_topics,
             List<List<TermPath>> all_term_paths,
-            List<url_term> wiki_url_terms)
+            List<url_term> wiki_url_terms,
+            long url_title_term_id)
         {
             // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
             all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
@@ -307,7 +338,7 @@ namespace mm_svc
             counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.2).ToList();
 
             // remove
-            db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND [found_topic]=1", url_id);
+            db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND ([found_topic]=1 OR [url_title_topic]=1)", url_id);
             //db.url_parent_term.RemoveRange(db.url_parent_term.Where(p => p.url_id == url_id && p.found_topic == true));
             //db.SaveChangesTraceValidationErrors();
             
@@ -345,6 +376,9 @@ namespace mm_svc
                 // metric 2 -- % of term's path to root terms which are topics
                 p.perc_ptr_topics = perc_topics_all_term_paths;
             });
+
+            // add url title term (special)
+            url_parent_terms.Insert(0, new url_parent_term() { term_id = url_title_term_id, url_id = url_id, pri = 0, url_title_topic = true });
 
             mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
 

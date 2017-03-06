@@ -84,7 +84,7 @@ namespace mm_svc.Terms
                                                .Distinct()
                                                .OrderBy(p => Guid.NewGuid())
                                                .Take(sample_size);
-                Debug.WriteLine(term_ids_and_paths_qry.ToString());
+                //Debug.WriteLine(term_ids_and_paths_qry.ToString());
                 var sample_paths = term_ids_and_paths_qry.ToListNoLock();
 
                 Parallel.ForEach(sample_paths, new ParallelOptions() { MaxDegreeOfParallelism = 16 }, path_info => {

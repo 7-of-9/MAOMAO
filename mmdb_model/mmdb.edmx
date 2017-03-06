@@ -161,6 +161,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="perc_ptr_topics" Type="float" Nullable="false" />
           <Property Name="mmtopic_level" Type="int" Nullable="false" />
           <Property Name="avg_TSS_leaf" Type="float" Nullable="false" />
+          <Property Name="url_title_topic" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="url_term">
           <Key>
@@ -731,15 +732,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="term" EntitySet="terms" />
             <End Role="topic_link" EntitySet="topic_link" />
           </AssociationSet>
-          <EntitySet Name="url_parent_term" EntityType="mm02Model.url_parent_term" />
-          <AssociationSet Name="FK_url_parent_term_term" Association="mm02Model.FK_url_parent_term_term">
-            <End Role="term" EntitySet="terms" />
-            <End Role="url_parent_term" EntitySet="url_parent_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_parent_term_url" Association="mm02Model.FK_url_parent_term_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_parent_term" EntitySet="url_parent_term" />
-          </AssociationSet>
           <EntitySet Name="golden_term" EntityType="mm02Model.golden_term" />
           <EntitySet Name="user_url" EntityType="mm02Model.user_url" />
           <AssociationSet Name="FK_golden_term_child" Association="mm02Model.FK_golden_term_child">
@@ -761,6 +753,15 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="fk_user_url_user" Association="mm02Model.fk_user_url_user">
             <End Role="user" EntitySet="users" />
             <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
+          <EntitySet Name="url_parent_term" EntityType="mm02Model.url_parent_term" />
+          <AssociationSet Name="FK_url_parent_term_term" Association="mm02Model.FK_url_parent_term_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_parent_term_url" Association="mm02Model.FK_url_parent_term_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -897,8 +898,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="nlp_suitability_score" Type="Int32" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
-          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
+          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -1005,9 +1006,9 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.FK_user_url_classification_term" FromRole="term" ToRole="user_url_classification" />
           <NavigationProperty Name="topic_link" Relationship="mm02Model.FK_topic_link_term" FromRole="term" ToRole="topic_link" />
           <NavigationProperty Name="topic_link1" Relationship="mm02Model.FK_topic_link_term1" FromRole="term" ToRole="topic_link" />
-          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="term" ToRole="url_parent_term" />
           <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_golden_term_child" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="golden_term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="term" ToRole="golden_term" />
+          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="term" ToRole="url_parent_term" />
         </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -1180,51 +1181,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="url_parent_term">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url_id" Type="Int64" Nullable="false" />
-          <Property Name="term_id" Type="Int64" Nullable="false" />
-          <Property Name="pri" Type="Int32" Nullable="false" />
-          <Property Name="suggested_dynamic" Type="Boolean" Nullable="false" />
-          <Property Name="found_topic" Type="Boolean" Nullable="false" />
-          <Property Name="S" Type="Double" />
-          <Property Name="avg_S" Type="Double" />
-          <Property Name="S_norm" Type="Double" />
-          <Property Name="min_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
-          <Property Name="max_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
-          <Property Name="perc_ptr_topics" Type="Double" Nullable="false" />
-          <Property Name="mmtopic_level" Type="Int32" Nullable="false" />
-          <Property Name="avg_TSS_leaf" Type="Double" Nullable="false" />
-          <NavigationProperty Name="term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="url_parent_term" ToRole="term" />
-          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url_parent_term" ToRole="url" />
-        </EntityType>
-        <Association Name="FK_url_parent_term_term">
-          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
-          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="term">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_parent_term">
-              <PropertyRef Name="term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_url_parent_term_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_parent_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="golden_term">
           <Key>
             <PropertyRef Name="id" />
@@ -1310,6 +1266,52 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Principal>
             <Dependent Role="user_url">
               <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="url_parent_term">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url_id" Type="Int64" Nullable="false" />
+          <Property Name="term_id" Type="Int64" Nullable="false" />
+          <Property Name="pri" Type="Int32" Nullable="false" />
+          <Property Name="suggested_dynamic" Type="Boolean" Nullable="false" />
+          <Property Name="found_topic" Type="Boolean" Nullable="false" />
+          <Property Name="S" Type="Double" />
+          <Property Name="avg_S" Type="Double" />
+          <Property Name="S_norm" Type="Double" />
+          <Property Name="min_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
+          <Property Name="max_d_paths_to_root_url_terms" Type="Int32" Nullable="false" />
+          <Property Name="perc_ptr_topics" Type="Double" Nullable="false" />
+          <Property Name="mmtopic_level" Type="Int32" Nullable="false" />
+          <Property Name="avg_TSS_leaf" Type="Double" Nullable="false" />
+          <Property Name="url_title_topic" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="url_parent_term" ToRole="term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url_parent_term" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_url_parent_term_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="term_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_url_parent_term_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1522,26 +1524,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="url_parent_term">
-            <EntityTypeMapping TypeName="mm02Model.url_parent_term">
-              <MappingFragment StoreEntitySet="url_parent_term">
-                <ScalarProperty Name="avg_TSS_leaf" ColumnName="avg_TSS_leaf" />
-                <ScalarProperty Name="mmtopic_level" ColumnName="mmtopic_level" />
-                <ScalarProperty Name="perc_ptr_topics" ColumnName="perc_ptr_topics" />
-                <ScalarProperty Name="max_d_paths_to_root_url_terms" ColumnName="max_d_paths_to_root_url_terms" />
-                <ScalarProperty Name="min_d_paths_to_root_url_terms" ColumnName="min_d_paths_to_root_url_terms" />
-                <ScalarProperty Name="S_norm" ColumnName="S_norm" />
-                <ScalarProperty Name="avg_S" ColumnName="avg_S" />
-                <ScalarProperty Name="S" ColumnName="S" />
-                <ScalarProperty Name="found_topic" ColumnName="found_topic" />
-                <ScalarProperty Name="suggested_dynamic" ColumnName="suggested_dynamic" />
-                <ScalarProperty Name="pri" ColumnName="pri" />
-                <ScalarProperty Name="term_id" ColumnName="term_id" />
-                <ScalarProperty Name="url_id" ColumnName="url_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="golden_term">
             <EntityTypeMapping TypeName="mm02Model.golden_term">
               <MappingFragment StoreEntitySet="golden_term">
@@ -1563,6 +1545,27 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="nav_utc" ColumnName="nav_utc" />
                 <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="url_parent_term">
+            <EntityTypeMapping TypeName="mm02Model.url_parent_term">
+              <MappingFragment StoreEntitySet="url_parent_term">
+                <ScalarProperty Name="url_title_topic" ColumnName="url_title_topic" />
+                <ScalarProperty Name="avg_TSS_leaf" ColumnName="avg_TSS_leaf" />
+                <ScalarProperty Name="mmtopic_level" ColumnName="mmtopic_level" />
+                <ScalarProperty Name="perc_ptr_topics" ColumnName="perc_ptr_topics" />
+                <ScalarProperty Name="max_d_paths_to_root_url_terms" ColumnName="max_d_paths_to_root_url_terms" />
+                <ScalarProperty Name="min_d_paths_to_root_url_terms" ColumnName="min_d_paths_to_root_url_terms" />
+                <ScalarProperty Name="S_norm" ColumnName="S_norm" />
+                <ScalarProperty Name="avg_S" ColumnName="avg_S" />
+                <ScalarProperty Name="S" ColumnName="S" />
+                <ScalarProperty Name="found_topic" ColumnName="found_topic" />
+                <ScalarProperty Name="suggested_dynamic" ColumnName="suggested_dynamic" />
+                <ScalarProperty Name="pri" ColumnName="pri" />
+                <ScalarProperty Name="term_id" ColumnName="term_id" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

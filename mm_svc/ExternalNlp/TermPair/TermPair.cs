@@ -63,11 +63,11 @@ namespace mm_svc
                         db_term_pair.occurs_together_count = 1;
                         db.term_matrix.Add(db_term_pair);
                         new_pairs++;
-                        g.LogLine($"writing new term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
+                        //g.LogLine($"writing new term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
                     }
                     else
                     {
-                        g.LogLine($"++occurs_count for known term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
+                        //g.LogLine($"++occurs_count for known term_pair a.id={pair.id_a}, b.id={pair.id_b} ...");
                         db_pair.occurs_together_count++;
                     }
                 }

@@ -126,7 +126,7 @@ namespace wowmao
                 var text2 = ((ListViewItem)y).SubItems[col].Text;
                 double num1, num2;
                 if (double.TryParse(text1, out num1) && double.TryParse(text2, out num2))
-                    return (int)(num1 - num2);
+                    return num1 == num2 ? 0 : num1 > num2 ? +1 : -1;
                 return String.Compare(text1, text2);
             }
         }
@@ -172,10 +172,14 @@ namespace wowmao
                 var items = new List<ListViewItem>();
                 var rnd = new Random();
                 var qry = db.urls
-                    .AsNoTracking()
-                    .Include("url_term.term")
-                    .Include("url_parent_term")
-                    .AsQueryable();
+                    
+                    //.Include("url_term.term")   // slow , esp. w/ second include
+
+                    // perf nightmare (see http://stackoverflow.com/questions/34724196/entity-framework-code-is-slow-when-using-include-many-times)
+                    // todo - remove need for it here -- move AUTO-FLAG stuff to ProcessUrl and persist metrics on [url]
+                    .Include(p => p.url_parent_term) 
+
+                    .AsQueryable().AsNoTracking();
 
                 if (user_id != -1)
                     qry = qry.Where(p => p.user_url.Any(p2 => p2.user_id == user_id));
@@ -196,7 +200,7 @@ namespace wowmao
 
                 qry = qry.Take(take);
 
-                //Debug.WriteLine(qry.ToString());
+                Debug.WriteLine(qry.ToString());
                 var data = qry.ToListNoLock();
                 this.lblWalkInfo.Text = $"{data.Count} url(s) loaded";
                 foreach (var x in data) {
@@ -207,8 +211,8 @@ namespace wowmao
                         x.url1,
                         x.meta_title,
                         x.nlp_suitability_score?.ToString(),
-                        x.url_term.Count().ToString(),
-                        string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.00")}]")),//"-",
+                        x.mapped_wiki_terms.ToString(), //x.url_term.Count().ToString(),
+                        "old", //string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.00")}]")),//"-",
                         "-",
                         "-",
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
@@ -238,8 +242,11 @@ namespace wowmao
         {
             var topics = parent_terms.Where(p => p.found_topic == true).OrderBy(p => p.pri).ToList();
 
-            if (topics.Count == 0)
+            if (topics.Count == 0) {
                 item.ImageIndex = 2; // not fully processed
+                item.SubItems[0].Text = "99";
+                item.SubItems[1].Text = "-99";
+            }
             else {
                 var best_topic = topics.First();
                 if (best_topic.min_d_paths_to_root_url_terms == 99)
@@ -255,31 +262,31 @@ namespace wowmao
                     // FLAG 1 (Percentage Topics(all terms) < 5 %)
                     const double C1 = 0.05;
                     var test_1 = best_topic.perc_ptr_topics < C1 ? 1 : 0;
-                    var degree_1 = (C1 - best_topic.perc_ptr_topics) / C1;
+                    var degree_1 = (C1 - best_topic.perc_ptr_topics) / C1 * -1;
                     item.ToolTipText += $"FLAG 1 (Percentage Topics(all terms)): {degree_1.ToString("0.00")}\r\n";
 
                     // FLAG 2 (AVG_MIN_D > 4.0)
                     const double C2 = 4.0;
                     var test_2 = (avg_min_d > C2) ? 1 : 0;
-                    var degree_2 = (avg_min_d - C2) / C2;
+                    var degree_2 = (avg_min_d - C2) / C2 * -1;
                     item.ToolTipText += $"FLAG 2 (AVG_MIN_D > 4.0): {degree_2.ToString("0.00")}\r\n";
 
                     // FLAG 3 (AVG_MAX_D > 8.0)
                     const double C3 = 8.0;
                     var test_3 = (avg_max_d > C3) ? 1 : 0;
-                    var degree_3 = (avg_max_d - C3) / C3;
+                    var degree_3 = (avg_max_d - C3) / C3 * -1;
                     item.ToolTipText += $"FLAG 3 (AVG_MAX_D > 8.0): {degree_3.ToString("0.00")}\r\n";
 
                     // FLAG 4 (avg_S_weighted: < 3.0)
                     const double C4 = 3.0;
                     var test_4 = (avg_S_weighted < C4) ? 1 : 0;
-                    var degree_4 = (C4 - avg_S_weighted) / avg_S_weighted;
+                    var degree_4 = (C4 - avg_S_weighted) / avg_S_weighted * -1;
                     item.ToolTipText += $"FLAG 4 (avg_S_weighted: < 3.0): {degree_4.ToString("0.00")}\r\n";
 
                     // FLAG 5 (Best Topic: min_d > 2)
                     const double C5 = 2;
                     var test_5 = (best_topic.min_d_paths_to_root_url_terms > 2) ? 1 : 0;
-                    var degree_5 = (best_topic.min_d_paths_to_root_url_terms - C5) / C5;
+                    var degree_5 = (best_topic.min_d_paths_to_root_url_terms - C5) / C5 * -1;
                     item.ToolTipText += $"FLAG 5 (Best Topic: min_d > 2): {degree_5.ToString("0.00")}\r\n";
 
                     // FLAG 6 (Count Topics < 3)
@@ -291,7 +298,7 @@ namespace wowmao
                     // FLAG 7 (Best Topic: mmtopic_level < 3)
                     const double C7 = 3;
                     var test_7 = (best_topic.mmtopic_level < C7) ? 1 : 0;
-                    var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level);
+                    var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level) * -1;
                     item.ToolTipText += $"FLAG 7 (Best Topic: mmtopic_level < 3): {degree_7.ToString("0.00")}\r\n";
 
                     var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6 + test_7;
@@ -334,8 +341,9 @@ namespace wowmao
             else { zoomBrowser1.Focus(); SendKeys.Send("^0"); } // [CTRL]+[0]
         }
 
-        private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        private void mnuReprocess_Click(object sender, EventArgs e) { lvwUrls_SelectedIndexChanged(null, null); }
+
+        private void lvwUrls_SelectedIndexChanged(object sender, EventArgs e) { 
             if (lvwUrls.SelectedItems.Count == 0) return;
             var item = lvwUrls.SelectedItems[0];
             var url = item.Tag as url;
@@ -389,6 +397,7 @@ namespace wowmao
 
                     var topics = parents.Where(p => p.found_topic).ToList();
                     var suggested = parents.Where(p => p.suggested_dynamic).ToList();
+                    var url_title_topic = parents.Where(p => p.url_title_topic).SingleOrDefault();
 
                     txtInfo.Text += "\r\n";
 
@@ -404,7 +413,7 @@ namespace wowmao
                     this.wikiGoldTree.EndUpdate();
 
                     // defined topics
-                    txtInfo.Text += "\r\nTOPICS:\r\n";
+                    txtInfo.Text += $"\r\nTOPICS ({url_title_topic?.term}):\r\n";
                     double perc_topics_in_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
                     txtInfo.AppendText($"\t(Percentage Topics (all terms): {(perc_topics_in_paths * 100).ToString("0.0")}%)\r\n");
                     if (topics.Count() > 0) {
@@ -419,8 +428,10 @@ namespace wowmao
                         txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_avg_S_weighted).ToString("0.0000")})\r\n");
 
                         topics.OrderBy(p => p.pri).ToList().ForEach(p => {
-                            txtInfo.AppendText($"\t{p.term} *TL={p.mmtopic_level} avg_TSS_leaf={p.avg_TSS_leaf} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                            txtInfo.AppendText($"\t\t{p.term} *TL={p.mmtopic_level} avg_TSS_leaf={p.avg_TSS_leaf} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
                         });
+
+                        txtInfo.AppendText(item.ToolTipText + "\r\n");
                     }
                     else txtInfo.AppendText($"\t(NO TOPICS)\r\n");
 
@@ -449,21 +460,25 @@ namespace wowmao
             var b_reprocess_url_parents = reprocess_url_parents.Checked;
             this.Cursor = Cursors.WaitCursor;
             this.lblWalkInfo.Text = "walk(P) working...";
-            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 8 }, (url) => {
-                //Application.DoEvents();
-                //Task.Run((Action)(() => {
+            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 16 }, (url) => {
+
+                Application.DoEvents();
 
                 List<List<TermPath>> all_term_paths = null;
                 var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, false, b_reprocess_map_wiki, b_reprocess_PtR, b_reprocess_wiki_parents, b_reprocess_url_parents);
 
-                //Application.DoEvents();
-                //this.BeginInvoke((Action)(() => {
+                Application.DoEvents();
+
+                var update_label = (Action)(() => {
                     this.lblWalkInfo.Text = $"remaining: {--remaining}...";
                     this.lblWalkInfo.Refresh();
-                //}));
+                });
+                if (this.InvokeRequired)
+                    this.Invoke(update_label);
+                else
+                    update_label();
 
-                //}));
-                //Application.DoEvents();
+                Application.DoEvents();
             });
             this.Cursor = Cursors.Default;
         }

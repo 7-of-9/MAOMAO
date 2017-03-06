@@ -42,8 +42,8 @@ namespace mmdb_model
         public virtual DbSet<topic_link> topic_link { get; set; }
         public virtual DbSet<tmp_is_topic_ids> tmp_is_topic_ids { get; set; }
         public virtual DbSet<tmp_is_topic_root_ids> tmp_is_topic_root_ids { get; set; }
-        public virtual DbSet<url_parent_term> url_parent_term { get; set; }
         public virtual DbSet<golden_term> golden_term { get; set; }
         public virtual DbSet<user_url> user_url { get; set; }
+        public virtual DbSet<url_parent_term> url_parent_term { get; set; }
     }
 }

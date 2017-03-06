@@ -14,6 +14,12 @@ namespace tests
     public class Test_Golden
     {
         [TestMethod]
+        public void GetOrProcessParents_Test0()
+        {
+            //var term_parents = GoldenParents.GetOrProcessParents(p.term_id, true);
+        }
+
+        [TestMethod]
         public void GetStoredPathsToRoot_ContainingTerm_Test0()
         {
             var data = GoldenPaths.GetStoredPathsToRoot_ContainingTerm(4990959);

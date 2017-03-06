@@ -54,15 +54,17 @@ namespace wowmao.Controls
 
         private void WikiGoldenTree_MouseMove(object sender, MouseEventArgs e) {}
 
-        public void ClearTree() { this.Nodes.Clear(); }
-        public void AddTerm(long term_id)
-        {
+        public void ClearTree() { this.Nodes.Clear(); total_gts_loaded = 0; }
+        public void AddTerm(long term_id) {
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.AsNoTracking().Where(p => (p.id == term_id) && (p.term_type_id == (int)g.TT.WIKI_NS_14 || p.term_type_id == (int)g.TT.WIKI_NS_0)).FirstOrDefaultNoLock();
 
                 var gts = GoldenTermsFromChildTermId(term.id); // term should be a wiki child 
                 var nodes = NodesFromGoldenTerms(gts);
                 this.Nodes.AddRange(nodes.ToArray());
+
+                total_gts_loaded += gts.Count;
+                OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
             }
         }
 
@@ -166,7 +168,7 @@ namespace wowmao.Controls
                                 .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
                 //Debug.WriteLine(qry.ToString());
                 var gts = qry.ToListNoLock();
-                gts.ForEach(p => Debug.WriteLine($"child_term_id={child_term_id} -> got GTs: {p.ToString()}"));
+                //gts.ForEach(p => Debug.WriteLine($"child_term_id={child_term_id} -> got GTs: {p.ToString()}"));
 
                 this.total_gts_loaded += gts.Count;
                 OnGtsLoaded?.Invoke(this.GetType(), new OnGtsLoadedEventArgs() { count_loaded = total_gts_loaded });
@@ -177,8 +179,8 @@ namespace wowmao.Controls
         private List<golden_term> GoldenTermsFromParentTermId(long parent_term_id) {
             using (var db = mm02Entities.Create()) {
                 var qry = db.golden_term
-                                .Include("term.golden_term").Include("term.golden_term1")
-                                .Include("term1.golden_term").Include("term1.golden_term1")
+                                .Include("term")//.Include("term.golden_term").Include("term.golden_term1")
+                                .Include("term1")//.Include("term1.golden_term").Include("term1.golden_term1")
                                 .Where(p => p.parent_term_id == parent_term_id)
                                 .OrderBy(p => p.mmcat_level).ThenBy(p => p.term.name).ThenBy(p => p.term1.name);
                 //Debug.WriteLine(qry.ToString());

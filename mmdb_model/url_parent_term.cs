@@ -28,6 +28,7 @@ namespace mmdb_model
         public double perc_ptr_topics { get; set; }
         public int mmtopic_level { get; set; }
         public double avg_TSS_leaf { get; set; }
+        public bool url_title_topic { get; set; }
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }

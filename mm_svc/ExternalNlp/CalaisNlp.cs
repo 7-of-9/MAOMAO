@@ -91,7 +91,11 @@ namespace mm_svc
             //       
             if (reprocessing_known_url == false)
             {
-                Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs));  //  - slow: run async
+                Task.Factory.StartNew<int>(() => { //  - slow: run async
+                    var new_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs);
+                    g.LogLine($"MaintainAppearanceMatrix: done - new_pairs={new_pairs}");
+                    return new_pairs;
+                });  
             }
 
             //

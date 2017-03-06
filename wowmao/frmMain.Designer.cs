@@ -60,6 +60,10 @@
             this.txtInfo = new System.Windows.Forms.RichTextBox();
             this.splitter3 = new System.Windows.Forms.Splitter();
             this.pnlURL_List = new System.Windows.Forms.Panel();
+            this.reprocess_url_parents = new System.Windows.Forms.CheckBox();
+            this.reprocess_term_parents = new System.Windows.Forms.CheckBox();
+            this.reprocess_PtR = new System.Windows.Forms.CheckBox();
+            this.cboUserUrl = new System.Windows.Forms.ComboBox();
             this.cmdWalkParallel = new System.Windows.Forms.Button();
             this.cmdWalkRndClassify = new System.Windows.Forms.Button();
             this.reprocess_map_wiki = new System.Windows.Forms.CheckBox();
@@ -86,16 +90,14 @@
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.cmdSearchURLs = new System.Windows.Forms.Button();
-            this.cboUserUrl = new System.Windows.Forms.ComboBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuReprocess = new System.Windows.Forms.ToolStripMenuItem();
             this.rootPathViewer1 = new wowmao.Controls.RootPathViewer();
             this.lvwUrlTerms = new wowmao.TermList();
             this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
             this.topicTree1 = new wowmao.Controls.TopicTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
-            this.reprocess_PtR = new System.Windows.Forms.CheckBox();
-            this.reprocess_term_parents = new System.Windows.Forms.CheckBox();
-            this.reprocess_url_parents = new System.Windows.Forms.CheckBox();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.tabTrees.SuspendLayout();
@@ -108,6 +110,7 @@
             this.pnlURLs.SuspendLayout();
             this.pnlUrlTerms.SuspendLayout();
             this.pnlURL_List.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlLeft
@@ -451,6 +454,58 @@
             this.pnlURL_List.Size = new System.Drawing.Size(800, 350);
             this.pnlURL_List.TabIndex = 1;
             // 
+            // reprocess_url_parents
+            // 
+            this.reprocess_url_parents.AutoSize = true;
+            this.reprocess_url_parents.Checked = true;
+            this.reprocess_url_parents.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.reprocess_url_parents.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.reprocess_url_parents.Location = new System.Drawing.Point(602, 30);
+            this.reprocess_url_parents.Name = "reprocess_url_parents";
+            this.reprocess_url_parents.Size = new System.Drawing.Size(139, 18);
+            this.reprocess_url_parents.TabIndex = 19;
+            this.reprocess_url_parents.Text = "reprocess_url_parents";
+            this.reprocess_url_parents.UseVisualStyleBackColor = true;
+            // 
+            // reprocess_term_parents
+            // 
+            this.reprocess_term_parents.AutoSize = true;
+            this.reprocess_term_parents.Checked = true;
+            this.reprocess_term_parents.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.reprocess_term_parents.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.reprocess_term_parents.Location = new System.Drawing.Point(457, 30);
+            this.reprocess_term_parents.Name = "reprocess_term_parents";
+            this.reprocess_term_parents.Size = new System.Drawing.Size(149, 18);
+            this.reprocess_term_parents.TabIndex = 18;
+            this.reprocess_term_parents.Text = "reprocess_term_parents";
+            this.reprocess_term_parents.UseVisualStyleBackColor = true;
+            // 
+            // reprocess_PtR
+            // 
+            this.reprocess_PtR.AutoSize = true;
+            this.reprocess_PtR.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.reprocess_PtR.Location = new System.Drawing.Point(357, 30);
+            this.reprocess_PtR.Name = "reprocess_PtR";
+            this.reprocess_PtR.Size = new System.Drawing.Size(100, 18);
+            this.reprocess_PtR.TabIndex = 17;
+            this.reprocess_PtR.Text = "reprocess_PtR";
+            this.reprocess_PtR.UseVisualStyleBackColor = true;
+            // 
+            // cboUserUrl
+            // 
+            this.cboUserUrl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUserUrl.FormattingEnabled = true;
+            this.cboUserUrl.Items.AddRange(new object[] {
+            "mission in kenya",
+            "arnold",
+            "tom and jerry",
+            "hillary",
+            "chess"});
+            this.cboUserUrl.Location = new System.Drawing.Point(6, 27);
+            this.cboUserUrl.Name = "cboUserUrl";
+            this.cboUserUrl.Size = new System.Drawing.Size(215, 21);
+            this.cboUserUrl.TabIndex = 16;
+            // 
             // cmdWalkParallel
             // 
             this.cmdWalkParallel.Location = new System.Drawing.Point(96, 2);
@@ -584,6 +639,7 @@
             this.columnHeader25,
             this.columnHeader22,
             this.columnHeader24});
+            this.lvwUrls.ContextMenuStrip = this.contextMenuStrip1;
             this.lvwUrls.FullRowSelect = true;
             this.lvwUrls.GridLines = true;
             this.lvwUrls.HideSelection = false;
@@ -687,20 +743,19 @@
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
             // 
-            // cboUserUrl
+            // contextMenuStrip1
             // 
-            this.cboUserUrl.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboUserUrl.FormattingEnabled = true;
-            this.cboUserUrl.Items.AddRange(new object[] {
-            "mission in kenya",
-            "arnold",
-            "tom and jerry",
-            "hillary",
-            "chess"});
-            this.cboUserUrl.Location = new System.Drawing.Point(6, 27);
-            this.cboUserUrl.Name = "cboUserUrl";
-            this.cboUserUrl.Size = new System.Drawing.Size(215, 21);
-            this.cboUserUrl.TabIndex = 16;
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuReprocess});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 26);
+            // 
+            // mnuReprocess
+            // 
+            this.mnuReprocess.Name = "mnuReprocess";
+            this.mnuReprocess.Size = new System.Drawing.Size(136, 22);
+            this.mnuReprocess.Text = "Reprocess...";
+            this.mnuReprocess.Click += new System.EventHandler(this.mnuReprocess_Click);
             // 
             // rootPathViewer1
             // 
@@ -771,41 +826,6 @@
             this.zoomBrowser1.TabIndex = 9;
             this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
             // 
-            // reprocess_PtR
-            // 
-            this.reprocess_PtR.AutoSize = true;
-            this.reprocess_PtR.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.reprocess_PtR.Location = new System.Drawing.Point(357, 30);
-            this.reprocess_PtR.Name = "reprocess_PtR";
-            this.reprocess_PtR.Size = new System.Drawing.Size(100, 18);
-            this.reprocess_PtR.TabIndex = 17;
-            this.reprocess_PtR.Text = "reprocess_PtR";
-            this.reprocess_PtR.UseVisualStyleBackColor = true;
-            // 
-            // reprocess_term_parents
-            // 
-            this.reprocess_term_parents.AutoSize = true;
-            this.reprocess_term_parents.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.reprocess_term_parents.Location = new System.Drawing.Point(457, 30);
-            this.reprocess_term_parents.Name = "reprocess_term_parents";
-            this.reprocess_term_parents.Size = new System.Drawing.Size(149, 18);
-            this.reprocess_term_parents.TabIndex = 18;
-            this.reprocess_term_parents.Text = "reprocess_term_parents";
-            this.reprocess_term_parents.UseVisualStyleBackColor = true;
-            // 
-            // reprocess_url_parents
-            // 
-            this.reprocess_url_parents.AutoSize = true;
-            this.reprocess_url_parents.Checked = true;
-            this.reprocess_url_parents.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.reprocess_url_parents.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.reprocess_url_parents.Location = new System.Drawing.Point(602, 30);
-            this.reprocess_url_parents.Name = "reprocess_url_parents";
-            this.reprocess_url_parents.Size = new System.Drawing.Size(139, 18);
-            this.reprocess_url_parents.TabIndex = 19;
-            this.reprocess_url_parents.Text = "reprocess_url_parents";
-            this.reprocess_url_parents.UseVisualStyleBackColor = true;
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -837,6 +857,7 @@
             this.pnlUrlTerms.ResumeLayout(false);
             this.pnlURL_List.ResumeLayout(false);
             this.pnlURL_List.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -922,6 +943,8 @@
         private System.Windows.Forms.CheckBox reprocess_PtR;
         private System.Windows.Forms.CheckBox reprocess_term_parents;
         private System.Windows.Forms.CheckBox reprocess_url_parents;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem mnuReprocess;
     }
 }
 
