@@ -1,5 +1,7 @@
-import { call, put, select } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import { fork, call, put, select } from 'redux-saga/effects';
 import queryString from 'query-string';
+import _ from 'lodash';
 
 import request from 'utils/request';
 import { LIMIT, CRALWER_API_URL } from 'containers/App/constants';
@@ -31,6 +33,10 @@ export function* getGoogleSearchResult() {
     yield put(googleLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
-    yield call(googleSearchByTerm, keyword, page);
+    yield [
+      fork(googleSearchByTerm, keyword, page),
+      _.map(terms, (term) => fork(googleSearchByTerm, term, page)),
+      call(delay, 500),
+    ];
   }
 }

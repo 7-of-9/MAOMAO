@@ -35,11 +35,9 @@ export function* getGoogleKnowledge() {
     yield put(googleKnowledgeLoaded([], terms));
   } else {
     const page = yield select(makeSelectPageNumber());
-    const asyncCall = [];
-    _.forEach(terms, (term) => {
-      asyncCall.push(fork(googleKnowlegeByTerm, term, page));
-    });
-    asyncCall.push(call(delay, 500));
-    yield asyncCall;
+    yield [
+      _.map(terms, (term) => fork(googleKnowlegeByTerm, term, page)),
+      call(delay, 500),
+    ];
   }
 }
