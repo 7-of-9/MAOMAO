@@ -72,7 +72,7 @@ function mashUp(props) {
       }
     });
     _.forEach(googleNews, (item) => {
-      if (item.img && !urls.includes(item.url)) {
+      if (item.img && item.url && !urls.includes(item.url)) {
         urls = urls.insert(urls.size, item.url);
         news.push(
           <div className="grid-item" key={`GN-${item.url}`}>
@@ -87,7 +87,7 @@ function mashUp(props) {
       }
     });
     _.forEach(googleSearchResult, (item) => {
-      if (item.img && !urls.includes(item.url)) {
+      if (item.img && item.url && !urls.includes(item.url)) {
         urls = urls.insert(urls.size, item.url);
         search.push(
           <div className="grid-item" key={`GS-${item.url}`}>
@@ -118,7 +118,7 @@ function mashUp(props) {
       }
     });
     _.forEach(redditListing, (item) => {
-      if (item.preview && item.preview.images && item.preview.images[0] && !urls.includes(item.url)) {
+      if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
         urls = urls.insert(urls.size, item.url);
         reddits.push(
           <div className="grid-item" key={`RD-${item.url}`}>
