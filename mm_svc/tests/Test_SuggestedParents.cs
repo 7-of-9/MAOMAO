@@ -16,6 +16,8 @@ namespace tests
 
         List<long> test_terms_ids = new List<long>() {
 
+                6095926, // arvind swamy
+
                 5354849, // bill clinton
 
                 5067658, // netflix

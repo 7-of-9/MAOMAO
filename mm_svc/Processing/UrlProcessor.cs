@@ -159,8 +159,10 @@ namespace mm_svc
                 //
                 //       
                 // WIP -- EDITORIALIZE TEST URLs on LOCAL and exercise TOPIC_TREE_TO_PROD migration script...
+                // 
+                //  (todo - disambigs; if no exact match,use highest #NS? PtR analysis is v. slow and looks quite unreliable - remove it?)
                 //
-                // TODO: return topics (NOTE: should wal topic_tree path UP for url_topics and also explicitly return parent topics, say 1/2 levels up)
+                // TODO: return topics (NOTE: should walk topic_tree path UP for url_topics and also explicitly return parent topics, say 1/2 levels up)
                 //      + suggested terms
                 //      + url_title_topic
                 //            --> to mm02ce for XP (+ user_xp table)
@@ -255,14 +257,14 @@ namespace mm_svc
             return tld_title_term.id;
         }
 
-        [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")})")]
+        [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")} max_TSS_leaf={max_TSS_leaf.ToString(""0.00"")})")]
         private class TopicInfo {
             public term t;
             public topic_link link;
             public int mmtopic_level;
             public double avg_S, avg_S_norm;
             public double S, S_norm;
-            public double avg_TSS_leaf;
+            public double avg_TSS_leaf, max_TSS_leaf;
             public int count;
             //public List<term> chain;
             //public double other_chains_boost;
@@ -289,7 +291,9 @@ namespace mm_svc
                                                 .GroupBy(p => p.id)
                                                 .Select(p => new {
                                                             parent_term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
-                                                                   link = topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key),
+                                                                   link = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1.is_topic_root
+                                                                            ? null
+                                                                            : topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key && p2.disabled == false),
                                                                   avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
                                                              avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
                                                                   count = p.Count() })
@@ -314,8 +318,10 @@ namespace mm_svc
 
                 // what are the TSS values for these leaf terms?
                 var matching_url_terms = wiki_url_terms.Where(p => leaf_terms.Select(p2 => p2.id).Contains(p.term_id)).ToList();
-                if (matching_url_terms.Count > 0)
-                    ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss);
+                if (matching_url_terms.Count > 0) {
+                    ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss_norm);
+                    ti.max_TSS_leaf = matching_url_terms.Max(p => (double)p.tss_norm);
+                }
                 else
                     ti.avg_TSS_leaf = 0;
                 Debug.WriteLine($"{ti.t.name} - appears in {leaf_terms.Count} distinct leaf term paths ({string.Join(", ", leaf_terms.Select(p => p.name))}): avg_TSS_norm={ti.avg_TSS_leaf.ToString("0.00")}");
@@ -324,9 +330,9 @@ namespace mm_svc
             // weightings
             counted_info.ForEach(p => 
                 p.S = Math.Pow(p.count, 1.5)
-                    * Math.Pow(p.avg_S, 1.5) 
-                    * Math.Pow(p.avg_TSS_leaf, 2.0)
-                    * Math.Pow(p.mmtopic_level, 2.0) // ?
+                    * Math.Pow(p.avg_S, 0.5) 
+                    * (Math.Pow(p.max_TSS_leaf, 2.0) / 1)
+                    * (Math.Pow(p.mmtopic_level, 0.8) / 100)
             );
         
             var counted_info_sorted = counted_info.OrderByDescending(p => p.S).ToList();
@@ -335,7 +341,7 @@ namespace mm_svc
 
             // select top ranked
             counted_info_sorted.ForEach(p => p.S_norm = p.S / counted_info.Max(p2 => p2.S));
-            counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.2).ToList();
+            counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.05).ToList();
 
             // remove
             db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND ([found_topic]=1 OR [url_title_topic]=1)", url_id);
@@ -528,9 +534,7 @@ namespace mm_svc
 
                 using (var db = mm02Entities.Create()) {
                     // lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
-                    var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name
-                                                                     && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14))
-                                                       .ToListNoLock();
+                    var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
                     bool skip_disambig = false;
                     if (wiki_terms_direct_matching.Any(p => p.wiki_nscount > 7)) {
                         Debug.WriteLine($">>> {term_name}: got direct matching high NS# (={wiki_terms_direct_matching.Max(p => p.wiki_nscount)}) terms; will not bother with disambiguation.");
@@ -539,15 +543,30 @@ namespace mm_svc
 
                     // are there any matching wiki terms that originate from disambiguation terms, e.g. "Ajax_(programming)" vs. "Ajax_(mythology)"
                     // if so, we want to match the most relevent disambiguated wiki term
+
+                    // todo -- (1) PtR analysis really needed, or working well?
+                    //         (2) saw case of single disambig - trvial count=1 case?
+
                     var wiki_disambiguated_terms_to_add = new List<term>();
                     if (!skip_disambig) {
                         var ambiguous_term_name_start = term_name + " (";
                         var qry = db.terms.Where(p => p.name.StartsWith(ambiguous_term_name_start) && p.name.EndsWith(")") && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14));
-                        //Debug.WriteLine(qry.ToString());
                         var wiki_ambig_terms = qry.ToListNoLock();
-                        if (wiki_ambig_terms.Count > 0) {
 
-                            wiki_ambig_terms = wiki_ambig_terms.Where(p => p.name.Count(p2 => p2 == '(') == 1).ToList();  // skip edge cases with more than one set of paren's, e.g. "European Union (Referendum) Act 2016 (Gibraltar)"
+                        // trivial case - nothing to resolve, only one wiki term originating from disambiguations
+                        if (wiki_ambig_terms.Count == 1)
+                            wiki_disambiguated_terms_to_add.Add(wiki_ambig_terms.First());
+
+                        // need to pick the best disambiguation
+                        else if (wiki_ambig_terms.Count > 0) {
+
+                            // skip edge cases with more than one set of paren's, e.g. "European Union (Referendum) Act 2016 (Gibraltar)"
+                            wiki_ambig_terms = wiki_ambig_terms.Where(p => p.name.Count(p2 => p2 == '(') == 1).ToList();
+
+                            // skip the wiki disambiguation page itself
+                            wiki_ambig_terms = wiki_ambig_terms.Where(p => !p.name.EndsWith("(disambiguation)")).ToList();
+
+                            // list of stemmed possible remaining disambiguations
                             var disambiguations = wiki_ambig_terms.Select(p => new { t = p, stemmed_words = stemmer.stem(p.name.Substring(p.name.IndexOf("(") + 1, p.name.IndexOf(")") - p.name.IndexOf("(") - 1)).Split(' ').ToList(), }).ToList();
 
                             // any stemmed calais terms that directly match the stemmed wiki disambiguation description (the part in brackets)? if so, use these
@@ -559,20 +578,19 @@ namespace mm_svc
                                 }
                             }
 
+                            // no direct matches on wiki disambiguation description; need to use suggested parents of the wiki disambiguation terms to find the most appropriate one to use
                             if (wiki_disambiguated_terms_to_add.Count == 0) {
-                                // no direct matches on wiki disambiguation description; need to use suggested parents of the wiki disambiguation terms to find the most appropriate one to use
 
                                 // get suggested parent for all wiki ambig terms
                                 var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(128)
                                         .Select(p => new {
-                                            t = p,
-                                            parents = GoldenParents.GetOrProcessParents(p.id).Select(p2 => new {
-                                                S_norm = p2.S_norm,
-                                                t = p2.parent_term,
-                                                term_stemmed = stemmer.stem(p2.parent_term.name),
-                                                stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList()
-                                            })
-                                        }).ToList();
+                                             t = p,
+                                       parents = GoldenParents.GetOrProcessParents(p.id).Select(p2 => new {
+                                        S_norm = p2.S_norm,
+                                             t = p2.parent_term,
+                                  term_stemmed = stemmer.stem(p2.parent_term.name),
+                                 stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList()
+                                })}).ToList();
 
                                 // for each ambig, get count of # of ambig's parent's stemmed words that are common with the URLs stemmed calais words
                                 //var calais_stemmed_terms = calais_terms_stemmed.Select(p2 => p2.term_stemmed).Distinct().ToList();
@@ -624,7 +642,7 @@ namespace mm_svc
                         }
                     }
 
-                    // standard case - no disambiguations to be resolved; look for wiki-type term match -- exact match on name
+                    // standard case - no disambiguations to be resolved (or could be resolved); look for wiki-type term match -- exact match on name
                     if (wiki_disambiguated_terms_to_add.Count == 0) {
                         if (wiki_terms_direct_matching.Count == 0) {
                             g.LogLine($"!! term NOT mapped to a known WIKI term (name={term_name})");

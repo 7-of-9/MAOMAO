@@ -83,8 +83,6 @@
             this.columnHeader23 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -92,6 +90,10 @@
             this.cmdSearchURLs = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuReprocess = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuAwisSite = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuAwisSite_DisallowToggle = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.rootPathViewer1 = new wowmao.Controls.RootPathViewer();
             this.lvwUrlTerms = new wowmao.TermList();
             this.wikiGoldTree = new wowmao.Controls.WikiGoldenTree();
@@ -635,7 +637,6 @@
             this.columnHeader3,
             this.columnHeader11,
             this.columnHeader16,
-            this.columnHeader17,
             this.columnHeader25,
             this.columnHeader22,
             this.columnHeader24});
@@ -657,7 +658,7 @@
             // 
             // columnHeader26
             // 
-            this.columnHeader26.Text = "?";
+            this.columnHeader26.Text = "W?";
             // 
             // columnHeader27
             // 
@@ -683,21 +684,13 @@
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "terms";
+            this.columnHeader3.Text = "W-terms";
             this.columnHeader3.Width = 40;
             // 
             // columnHeader11
             // 
-            this.columnHeader11.Text = "cur-gold";
+            this.columnHeader11.Text = "awis_site";
             this.columnHeader11.Width = 50;
-            // 
-            // columnHeader16
-            // 
-            this.columnHeader16.Text = "new-gold-L1";
-            // 
-            // columnHeader17
-            // 
-            this.columnHeader17.Text = "new-gold-L2";
             // 
             // columnHeader25
             // 
@@ -746,16 +739,43 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuReprocess});
+            this.mnuReprocess,
+            this.toolStripSeparator1,
+            this.mnuAwisSite});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 26);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 76);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuReprocess
             // 
             this.mnuReprocess.Name = "mnuReprocess";
-            this.mnuReprocess.Size = new System.Drawing.Size(136, 22);
+            this.mnuReprocess.Size = new System.Drawing.Size(152, 22);
             this.mnuReprocess.Text = "Reprocess...";
             this.mnuReprocess.Click += new System.EventHandler(this.mnuReprocess_Click);
+            // 
+            // mnuAwisSite
+            // 
+            this.mnuAwisSite.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuAwisSite_DisallowToggle});
+            this.mnuAwisSite.Name = "mnuAwisSite";
+            this.mnuAwisSite.Size = new System.Drawing.Size(152, 22);
+            this.mnuAwisSite.Text = "AWIS_SITE";
+            // 
+            // mnuAwisSite_DisallowToggle
+            // 
+            this.mnuAwisSite_DisallowToggle.Name = "mnuAwisSite_DisallowToggle";
+            this.mnuAwisSite_DisallowToggle.Size = new System.Drawing.Size(187, 22);
+            this.mnuAwisSite_DisallowToggle.Text = "Set HARD_DISSALOW";
+            this.mnuAwisSite_DisallowToggle.Click += new System.EventHandler(this.mnuAwisSite_DisallowToggle_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // columnHeader16
+            // 
+            this.columnHeader16.Text = "awis_HD?";
             // 
             // rootPathViewer1
             // 
@@ -901,8 +921,6 @@
         private System.Windows.Forms.ComboBox cboTop;
         private System.Windows.Forms.Panel pnlLevel2Terms;
         private System.Windows.Forms.Splitter splitter6;
-        private System.Windows.Forms.ColumnHeader columnHeader16;
-        private System.Windows.Forms.ColumnHeader columnHeader17;
         private System.Windows.Forms.Panel pnlTopLeftInner;
         private System.Windows.Forms.Panel pnlGoldenTree;
         private MmGoldenTree gtGoldTree;
@@ -945,6 +963,10 @@
         private System.Windows.Forms.CheckBox reprocess_url_parents;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem mnuReprocess;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem mnuAwisSite;
+        private System.Windows.Forms.ToolStripMenuItem mnuAwisSite_DisallowToggle;
+        private System.Windows.Forms.ColumnHeader columnHeader16;
     }
 }
 

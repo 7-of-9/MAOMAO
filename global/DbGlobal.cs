@@ -8,7 +8,8 @@ namespace mm_global
 {
     public static partial class g
     {
-        public enum TT {
+        public enum TT
+        {
             COMBINED = -99,
             CALAIS_TOPIC = 1,
             CALAIS_ENTITY = 2,
@@ -19,7 +20,8 @@ namespace mm_global
             TLD_TITLE = 101,
         }
 
-        public enum ET {
+        public enum ET
+        {
             Movie = 125,
             MusicAlbum = 132,
             MusicGroup = 131,
@@ -50,5 +52,12 @@ namespace mm_global
             527,
             533
         };
+
+        // special wiki terms, needing special handling
+        public enum WIKI_TERM
+        {
+            History = 4990959,
+            Geography = 4990976
+        }
     }
 }

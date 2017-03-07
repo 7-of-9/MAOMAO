@@ -113,21 +113,29 @@ namespace wowmao
         }
 
         private void LvwUrls_ColumnClick(object sender, ColumnClickEventArgs e) {
-            this.lvwUrls.ListViewItemSorter = new ListViewItemComparer(e.Column);
+            if (lvwUrls.Sorting == SortOrder.None || lvwUrls.Sorting == SortOrder.Ascending)
+                lvwUrls.Sorting = SortOrder.Descending;
+            else
+                lvwUrls.Sorting = SortOrder.Ascending;
+            this.lvwUrls.ListViewItemSorter = new ListViewItemComparer(e.Column, lvwUrls.Sorting);
             lvwUrls.Sort();
         }
         class ListViewItemComparer : IComparer {
             private int col;
+            private SortOrder sorting;
             public ListViewItemComparer() { col = 0; }
             public ListViewItemComparer(int column) { col = column; }
+            public ListViewItemComparer(int column, SortOrder sorting) : this(column) { this.sorting = sorting; }
             public int Compare(object x, object y) {
-                int returnVal = -1;
                 var text1 = ((ListViewItem)x).SubItems[col].Text;
                 var text2 = ((ListViewItem)y).SubItems[col].Text;
                 double num1, num2;
+                int ret = 0;
                 if (double.TryParse(text1, out num1) && double.TryParse(text2, out num2))
-                    return num1 == num2 ? 0 : num1 > num2 ? +1 : -1;
-                return String.Compare(text1, text2);
+                    ret = num1 == num2 ? 0 : num1 > num2 ? +1 : -1;
+                else
+                    ret = String.Compare(text1, text2);
+                return sorting == SortOrder.Descending ? ret * -1 : ret * +1;
             }
         }
 
@@ -165,6 +173,8 @@ namespace wowmao
 
         void InitUrls(string search_term) {//, long? golden_term_id = null) {
             var user_id = (long)cboUserUrl.SelectedValue;
+            long url_id = -1;
+            long.TryParse(search_term, out url_id);
 
             lvwUrls.Items.Clear();
             using (var db = mm02Entities.Create()) {
@@ -177,7 +187,8 @@ namespace wowmao
 
                     // perf nightmare (see http://stackoverflow.com/questions/34724196/entity-framework-code-is-slow-when-using-include-many-times)
                     // todo - remove need for it here -- move AUTO-FLAG stuff to ProcessUrl and persist metrics on [url]
-                    .Include(p => p.url_parent_term) 
+                    .Include(p => p.url_parent_term)
+                    .Include(p => p.awis_site)
 
                     .AsQueryable().AsNoTracking();
 
@@ -185,7 +196,10 @@ namespace wowmao
                     qry = qry.Where(p => p.user_url.Any(p2 => p2.user_id == user_id));
 
                 if (!string.IsNullOrEmpty(search_term)) {
-                    qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
+                    if (url_id != -1)
+                        qry = qry.Where(p => p.id == url_id); // search by url ID
+                    else
+                        qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string
                     if (chkExcludeProcessed.Checked)
                         qry = qry.Where(p => p.processed_at_utc == null);
                 }
@@ -204,6 +218,7 @@ namespace wowmao
                 var data = qry.ToListNoLock();
                 this.lblWalkInfo.Text = $"{data.Count} url(s) loaded";
                 foreach (var x in data) {
+                    var awis_site_HD = (x.awis_site.hard_disallow ?? false) == true ? "*HD*" : "-";
                     var item = new ListViewItem(new string[] {
                         "-",
                         "-",
@@ -212,9 +227,8 @@ namespace wowmao
                         x.meta_title,
                         x.nlp_suitability_score?.ToString(),
                         x.mapped_wiki_terms.ToString(), //x.url_term.Count().ToString(),
-                        "old", //string.Join(" / ", x.url_term.Where(p => p.tss_norm > 0.4 && p.term.term_type_id != (int)g.TT.WIKI_NS_0 && p.term.term_type_id != (int)g.TT.WIKI_NS_14).OrderByDescending(p => p.tss_norm).Select(p => $"{p.term.name} [TSS_N={p.tss_norm?.ToString("0.00")}]")),//"-",
-                        "-",
-                        "-",
+                        $"{x.awis_site.TLD}",
+                        awis_site_HD,
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
                         x.processed_golden_count.ToString(),
                         x.img_url,
@@ -238,6 +252,8 @@ namespace wowmao
         // AUTO-FLAG: certainty is a blend of distinct # of warnings, and degree of warnings; -ve degrees is good, +ve is bad
         //            0 or 1 warnings is pretty good, anything over is increasingly uncertain
         //
+        // expects: parent_terms[x].url to be populated
+        //
         private static void AUTO_FLAG_LVI(ListViewItem item, List<url_parent_term> parent_terms)
         {
             var topics = parent_terms.Where(p => p.found_topic == true).OrderBy(p => p.pri).ToList();
@@ -256,6 +272,7 @@ namespace wowmao
                     double avg_max_d = topics.Average(p => (double)p.max_d_paths_to_root_url_terms);
                     double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
                     double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count()) * 100;
+                    var url = parent_terms.First().url;
 
                     item.ToolTipText = "";
 
@@ -301,8 +318,14 @@ namespace wowmao
                     var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level) * -1;
                     item.ToolTipText += $"FLAG 7 (Best Topic: mmtopic_level < 3): {degree_7.ToString("0.00")}\r\n";
 
-                    var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6 + test_7;
-                    var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6 + degree_7;
+                    // FLAG 8 (mapped_wiki_terms: Count < 3)
+                    const double C8 = 3;
+                    var test_8 = (url.mapped_wiki_terms < C8) ? 1 : 0;
+                    var degree_8 = ((C8 - url.mapped_wiki_terms) / url.mapped_wiki_terms) * -1;
+                    item.ToolTipText += $"FLAG 8 (mapped_wiki_terms: Count < 3): {degree_8.ToString("0.00")}\r\n";
+
+                    var warn_count = test_1 + test_2 + test_3 + test_4 + test_5 + test_6 + test_7 + test_8;
+                    var warn_degree = degree_1 + degree_2 + degree_3 + degree_4 + degree_5 + degree_6 + degree_7 + degree_8;
 
                     if (warn_count > 5)
                         item.ImageIndex = 2;
@@ -319,6 +342,25 @@ namespace wowmao
 
 
                 }
+            }
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
+            if (lvwUrls.SelectedItems.Count == 0) return; var item = lvwUrls.SelectedItems[0]; var url = item.Tag as url;
+
+            mnuAwisSite.Text = $"{url.awis_site.TLD} [{url.awis_site.id}]";
+            if (url.awis_site.hard_disallow ?? false)
+                mnuAwisSite_DisallowToggle.Text = "REMOVE hard_disallow";
+            else
+                mnuAwisSite_DisallowToggle.Text = "SET hard_disallow";
+        }
+
+        private void mnuAwisSite_DisallowToggle_Click(object sender, EventArgs e) {
+            if (lvwUrls.SelectedItems.Count == 0) return; var item = lvwUrls.SelectedItems[0]; var url = item.Tag as url;
+            using (var db = mm02Entities.Create()) {
+                var awis_site = db.awis_site.Find(url.awis_site_id);
+                awis_site.hard_disallow = !(awis_site.hard_disallow ?? false);
+                db.SaveChangesTraceValidationErrors();
             }
         }
 
@@ -393,7 +435,7 @@ namespace wowmao
                 // url suggested/related parent terms (from UrlProcessing)
                 //
                 if (chkUpdateUi.Checked) {
-                    var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url.id).ToListNoLock();
+                    var parents = db.url_parent_term.AsNoTracking().Include(p => p.url).Include("term").Where(p => p.url_id == url.id).ToListNoLock();
 
                     var topics = parents.Where(p => p.found_topic).ToList();
                     var suggested = parents.Where(p => p.suggested_dynamic).ToList();

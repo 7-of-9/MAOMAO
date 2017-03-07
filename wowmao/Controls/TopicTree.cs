@@ -40,6 +40,7 @@ namespace wowmao.Controls
         private Button cmdSearch;
         private Button cmdClearSearch;
         private ToolStripMenuItem mnuFindOthers;
+        private CheckBox chkHideDisabled;
         private int count;
 
         public event EventHandler<OnNodeSelectEventArgs> OnNodeSelect = delegate { };
@@ -135,7 +136,9 @@ namespace wowmao.Controls
             using (var db = mm02Entities.Create()) {
                 if (link != null) {
                     // how many times does child appear in enabled state in topic_link -- we want only one parent per topic
-                    enabled_child_link_count = db.topic_link.Count(p => p.child_term_id == link.child_term_id && !p.disabled);
+                    var qry = db.topic_link.Where(p => p.child_term_id == link.child_term_id && !p.disabled);
+                    //Debug.WriteLine(qry.ToString());
+                    enabled_child_link_count = qry.Count();
                 }
             }
 
@@ -158,10 +161,7 @@ namespace wowmao.Controls
                 { tn.Text = "### " + tn.Text; tn.NodeFont = new Font(tvw.Font, FontStyle.Underline); }
 
             // format color node
-            if (link != null && link.disabled)
-                tn.ForeColor = Color.Gray;
-            else
-                FormatNodeColor(tn);
+            FormatNodeColor(tn);
 
             tn.ToolTipText = (link == null ? node_desc : $"{link.parent_term.name} ==> {link.child_term.name}")
                              + $" (R={ tn.BackColor.R} G={ tn.BackColor.G} B ={ tn.BackColor.B})";
@@ -170,17 +170,22 @@ namespace wowmao.Controls
         }
 
         private void FormatNodeColor(TreeNode tn) {
-            tn.BackColor = RootPathViewer.ColorFromString((tn.Tag as NodeTag).t.name);
-            tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
+            var tag = tn.Tag as NodeTag;
+            if (tag.link != null && tag.link.disabled) {
+                tn.ForeColor = Color.Gray;
+                tn.BackColor = Color.Transparent;
+            }
+            else {
+                tn.BackColor = RootPathViewer.ColorFromString((tn.Tag as NodeTag).t.name);
+                tn.ForeColor = RootPathViewer.InvertColor(tn.BackColor);
+            }
         }
 
         private void tvw_AfterSelect(object sender, TreeViewEventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
-            if (node.Nodes.Count == 0)
-                AddChildren(node, tag.t.id);
-            node.Expand();
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
+            if (tvw.SelectedNode.Nodes.Count == 0)
+                AddChildren(tvw.SelectedNode, tag.t.id);
+            tvw.SelectedNode.Expand();
         }
 
         private void Tvw_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e) {
@@ -212,24 +217,33 @@ namespace wowmao.Controls
 
         // toggle link enabled/disabled -- retains terms as topics, just prevents the link being used
         private void mnuExcludeLink_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
-                var link = db.topic_link.Find(tag.link.id);
+
+                // first disable any other links for this term
+                mnuOnlyHere2_Click(null, null);
+
+                // now enable it here
+                var link = db.topic_link.Where(p => p.id == tag.link.id).FirstOrDefaultNoLock();
                 if (link != null) {
                     link.disabled = !link.disabled;
-                    link.mmtopic_level = node.Level + 1;
+                    link.mmtopic_level = tvw.SelectedNode.Level + 1;
                     try { db.SaveChanges(); } catch (Exception ex) { MessageBox.Show(ex.ToDetailedString()); link.disabled = !link.disabled; }
                     tag.link = link;
                 }
-                RefreshNode(node, tag.t, tag.link);
+                RefreshNode(tvw.SelectedNode, tag.t, tag.link);
             }
         }
 
         private void RefreshNode(TreeNode node, term t, topic_link link) {
             var new_node = NodeFromTerm(t, link);
-            var parent_nodes = node.Parent?.Nodes ?? tvw.Nodes;
+            TreeNodeCollection parent_nodes;
+            if (node.Parent != null)
+                parent_nodes = node.Parent.Nodes;
+            else
+                parent_nodes = tvw.Nodes;
+            //var parent_nodes = node.Parent?.Nodes ?? tvw.Nodes;
+
             var old_ndx = node.Index;
             parent_nodes.Remove(node);
             parent_nodes.Insert(old_ndx, new_node);
@@ -238,37 +252,31 @@ namespace wowmao.Controls
 
         // find others
         private void mnuFindOthers_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             this.txtSearch.Text = tag.t.name;
             cmdSearch_Click(null, null);
         }
 
         // set term as topic/not topic
         private void mnuToggleTopic_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
                 var terms = db.terms.Where(p => p.name == tag.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14)).ToListNoLock();
                 if (MessageBox.Show($"Set following term(s) as NOT topics?\r\n{string.Join("\r\n", terms.Select(p => p))}", "wowmao", MessageBoxButtons.YesNo) == DialogResult.Yes) {
 
                     Maintenance.SetTopicFlag(false, tag.t.name);
 
-                    if (node.Parent != null)
-                        node.Parent.Nodes.Remove(node);
+                    if (tvw.SelectedNode.Parent != null)
+                        tvw.SelectedNode.Parent.Nodes.Remove(tvw.SelectedNode);
                     else
-                        tvw.Nodes.Remove(node);
+                        tvw.Nodes.Remove(tvw.SelectedNode);
                 }
             }
         }
 
         // toggles root-topic flag on term
         private void mnuRootTopic_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
                 var terms = db.terms.Where(p => p.id == tag.t.id).ToListNoLock();
                 bool current_is_topic_root = terms.First().is_topic_root;
@@ -281,29 +289,24 @@ namespace wowmao.Controls
 
         // simplify tree -- only here: disables all other topic_link appearances for this child term, so that the only remaining link is this one
         private void mnuOnlyHere2_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
-            this.Cursor = Cursors.WaitCursor;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
                 var links_to_disable =
                     tag.link != null ? db.topic_link.Where(p => p.child_term_id == tag.link.child_term_id && p.id != tag.link.id).ToListNoLock()
                                      : db.topic_link.Where(p => p.child_term_id == tag.t.id).ToListNoLock();
                 links_to_disable.ForEach(p => p.disabled = true);
                 db.SaveChangesTraceValidationErrors();
-                RefreshNode(node, tag.t, tag.link);
+                tag.link = db.topic_link.Where(p => p.id == tag.link.id).FirstOrDefaultNoLock();
+                RefreshNode(tvw.SelectedNode, tag.t, tag.link);
             }
-            this.Cursor = Cursors.Default;
         }
 
         // refresh single node
         private void mnuRefreshNode_Click(object sender, EventArgs e) {
-            if (tvw.SelectedNode == null) return;
-            var node = tvw.SelectedNode;
-            var tag = node.Tag as NodeTag;
+            if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             this.Cursor = Cursors.WaitCursor;
-            node.Nodes.Clear();
-            AddChildren(node, tag.t.id);// tag.link.child_term_id);
+            tvw.SelectedNode.Nodes.Clear();
+            AddChildren(tvw.SelectedNode, tag.t.id);// tag.link.child_term_id);
             this.Cursor = Cursors.Default;
         }
 
@@ -327,13 +330,22 @@ namespace wowmao.Controls
                 FormatNodeColor(node);
         }
 
+        // hide disabled
+        private void chkHideDisabled_CheckedChanged(object sender, EventArgs e) {
+            //var nodes_all = tvw.FlattenTree().ToList();
+            //foreach (var node in nodes_all) {
+            //    var tag = ((NodeTag)node.Tag);
+            //    if (chkHideDisabled.Checked && tag.link != null && tag.link.disabled)
+            //        node.Hi
+            //}
+        }
+
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
             var pt = tvw.PointToClient(Cursor.Position);
             var ht = tvw.HitTest(pt);
             var node = ht.Node;
             if (node != null && node.Tag != null) {
-                tvw.SelectedNode = node;
-                var tag = tvw.SelectedNode.Tag as NodeTag;
+                tvw.SelectedNode = node; var tag = tvw.SelectedNode.Tag as NodeTag;
                 this.mnuInfo.Text = tag.link != null ? tag.link.ToString() : tag.t.ToString();
                 this.mnuOnlyHere2.Enabled = tag.enabled_child_link_count > 1;
 
@@ -372,6 +384,7 @@ namespace wowmao.Controls
             this.cmdSearch = new System.Windows.Forms.Button();
             this.cmdClearSearch = new System.Windows.Forms.Button();
             this.mnuFindOthers = new System.Windows.Forms.ToolStripMenuItem();
+            this.chkHideDisabled = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -405,7 +418,7 @@ namespace wowmao.Controls
             this.toolStripSeparator8,
             this.mnuRefreshNode});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 254);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(159, 232);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuInfo
@@ -568,9 +581,21 @@ namespace wowmao.Controls
             this.mnuFindOthers.Text = "Find Others";
             this.mnuFindOthers.Click += new System.EventHandler(this.mnuFindOthers_Click);
             // 
+            // chkHideDisabled
+            // 
+            this.chkHideDisabled.AutoSize = true;
+            this.chkHideDisabled.Location = new System.Drawing.Point(431, 5);
+            this.chkHideDisabled.Name = "chkHideDisabled";
+            this.chkHideDisabled.Size = new System.Drawing.Size(90, 17);
+            this.chkHideDisabled.TabIndex = 6;
+            this.chkHideDisabled.Text = "hide disabled";
+            this.chkHideDisabled.UseVisualStyleBackColor = true;
+            this.chkHideDisabled.CheckedChanged += new System.EventHandler(this.chkHideDisabled_CheckedChanged);
+            // 
             // TopicTree
             // 
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.Controls.Add(this.chkHideDisabled);
             this.Controls.Add(this.cmdClearSearch);
             this.Controls.Add(this.cmdSearch);
             this.Controls.Add(this.txtSearch);
@@ -586,5 +611,6 @@ namespace wowmao.Controls
 
         }
 
+     
     }
 }

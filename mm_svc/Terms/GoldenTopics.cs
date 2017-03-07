@@ -1,4 +1,5 @@
-﻿using mmdb_model;
+﻿using mm_global;
+using mmdb_model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -53,9 +54,9 @@ namespace mm_svc.Terms
                                           .OrderByDescending(p => p.count).ToList();
 
             // exclude outlier terms - need min. # of repetitions in paths
-            const int MIN_REPS = 2;
-            topics.RemoveAll(p => topic_name_counts.Where(p2 => p2.count < MIN_REPS).Select(p2 => p2.term_name).Contains(p.t.name));
-            topic_name_counts.RemoveAll(p => p.count < MIN_REPS); 
+            //const int MIN_REPS = 2;
+            //topics.RemoveAll(p => topic_name_counts.Where(p2 => p2.count < MIN_REPS).Select(p2 => p2.term_name).Contains(p.t.name));
+            //topic_name_counts.RemoveAll(p => p.count < MIN_REPS); 
 
             // topics scored by count and golden level
             var topics_scored = topics.Select(p => new {
@@ -68,9 +69,27 @@ namespace mm_svc.Terms
                 count = topic_name_counts.Single(p2 => p2.term_name == p.t.name).count,
                 count_perc = (double)topic_name_counts.Single(p2 => p2.term_name == p.t.name).count / topics.Count,
 
-                S = (1 / (Math.Pow(p.gl_inv, 3.0)))
-                    * Math.Pow(p.t.wiki_nscount ?? 0, (1/3.0))
-                    * Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1 / 2.0))
+                S = //
+                    // main ranking -- score higher for parents close to leaf term
+                    //                 a bit less for parent repetition count
+                    //                 and much much less for NS# (editorial topic categorization kind of surplants this)
+                    //                 
+                    (1 / (Math.Pow(p.gl_inv, 2.0)))
+                    * Math.Pow(p.t.wiki_nscount ?? 0, (1 / 3.0))
+                    * Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1.5))
+
+                    //
+                    // apply a special penalty to wiki root terms History & Geography;
+                    //   seems that a lot of terms PtR termiante with these two root terms,
+                    //   probably because of so many wiki pages like "companies founded in 1989" or "publications by state", etc.
+                    // (example term suffering from this is "New York Times")
+                    //
+                    // idea is (hopefully) that this relative penalization will still allow them to be correctly scored (as high) for 
+                    // leaf terms that are actually historical or geographic
+                    //
+                    * (p.t.id == (long)g.WIKI_TERM.History ? 0.05 : 1)
+                    * (p.t.id == (long)g.WIKI_TERM.Geography ? 0.1 : 1)
+
             })
             .OrderByDescending(p => p.S).ToList();
 

@@ -21,7 +21,7 @@ namespace tests
             List<List<TermPath>> all_term_paths = null;
 
             // not mapping wiki terms: because no underlying tss>0 calais terms - fixed w/ 42.42 fallback -- rerun all...
-            UrlProcessor.ProcessUrl(7101, out all_term_paths, reprocess_all: true); 
+            UrlProcessor.ProcessUrl(9337, out all_term_paths, reprocess_term_parents: true, reprocess_url_parents: true); 
         }
 
         [TestMethod]
@@ -32,10 +32,11 @@ namespace tests
                 //foreach (var url in db.urls.Where(p => p.nlp_suitability_score > 30)/*.OrderByDescending(p => p.nlp_suitability_score)*/.OrderByDescending(p => p.id).Take(10).ToListNoLock())
                 {
                     //
-                    // DISAMBIGS: url_id=8195 dolls (calais) ==> maps to *multiple* wiki dolls tags (2 bad disambigs)
-                    //    (done)  --> raised threshold to 30%
+                    // DISAMBIGS:
+                    // url_id=8195 "dolls" (calais) ==> maps to *multiple* wiki dolls tags (2 bad disambigs)
+                    // url_id=8347 "the times" (calais) ==> maps to *multiple* wiki tags (3 bad disambigs)
                     //
-                    var url = db.urls.Find(8425);
+                    var url = db.urls.Find(8195);
 
                     // remove wiki terms first
                     db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url.id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
