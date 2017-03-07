@@ -1,9 +1,6 @@
 import React from 'react';
 import { pure } from 'recompose';
-import AutoComplete from 'material-ui/AutoComplete';
-import ChipInput from 'material-ui-chip-input';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
+import SelectSearch from 'react-select-search';
 
 const style = {
   container: {
@@ -14,7 +11,17 @@ const style = {
     zIndex: 1000,
     width: '400px',
     height: '400px',
-    backgroundColor: '#fff',
+    backgroundColor: '#dedede',
+    border: '3px solid #3f51b5',
+  },
+  topic: {
+    fontWeight: 'bolder',
+  },
+  heading: {
+    paddingLeft: '50px',
+    fontSize: '20px',
+    lineHeight: '40px',
+    height: '50px',
   },
   chip: {
     margin: 4,
@@ -25,33 +32,30 @@ const style = {
   },
 };
 
-const ShareTopic = pure(({ terms, contacts, handleChange }) =>
+const selectTopics = terms => terms && terms[0] && terms[0].text;
+const contactsSource = contacts => contacts.map((item) => {
+  const object = {
+    name: `${item.name} (${item.email})`,
+    value: item.email,
+  };
+  return object;
+}) || [];
+
+const ShareTopic = pure(({ terms, contacts, handleChange, sendEmails }) =>
   <div style={style.container}>
-    <h1 className="maomao-logo">
-      maomao
-    </h1>
-    <ChipInput
-      fullWidth
-      fullWidthInput
-      autoFocus
-      dataSource={contacts}
-      dataSourceConfig={{ text: 'text', value: 'email' }}
-      chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
-        <Chip
-          style={style.chip}
-          key={key}
-          onTouchTap={handleClick}
-          onRequestDelete={handleRequestDelete}
-        >
-          <Avatar size={32}>{value[0].toUpperCase()}</Avatar>
-          {text}
-        </Chip>
-      )}
-      hintText="To: "
+    <div className="maomao-logo" />
+    <h3 style={style.heading}>
+      Share <span style={style.topic}>{selectTopics(terms)}</span> with:
+    </h3>
+    <SelectSearch
+      multiple
+      height={250}
+      options={contactsSource(contacts)}
       onChange={handleChange}
-      filter={AutoComplete.caseInsensitiveFilter}
-      maxSearchResults={5}
+      name="emails"
+      placeholder="To:"
     />
-  </div>,
+    <a className="share-button" onClick={sendEmails}>Share Now</a>
+  </div >,
 );
 export default pure(ShareTopic);

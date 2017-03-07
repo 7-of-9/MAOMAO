@@ -2419,6 +2419,10 @@ function.prototype.name@^1.0.0:
     function-bind "^1.1.0"
     is-callable "^1.1.2"
 
+fuse.js@^2.6.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-2.6.2.tgz#d5d994fda96f543b5a51df38b72cec9cc60d9dea"
+
 gauge@~2.7.1:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/gauge/-/gauge-2.7.2.tgz#15cecc31b02d05345a5d6b0e171cdb3ad2307774"
@@ -4695,6 +4699,10 @@ react-materialui-notifications@^0.4.1:
     react-dom "^15.3.0"
     react-tap-event-plugin "^1.0.0"
 
+react-onclickoutside@^5.7.1:
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-5.9.0.tgz#c47bb506384adc98d686d134b34412ed17b97437"
+
 react-redux@^4.4.6:
   version "4.4.6"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-4.4.6.tgz#4b9d32985307a11096a2dd61561980044fcc6209"
@@ -4703,6 +4711,12 @@ react-redux@^4.4.6:
     invariant "^2.0.0"
     lodash "^4.2.0"
     loose-envify "^1.1.0"
+
+react-select-search@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/react-select-search/-/react-select-search-0.5.5.tgz#4fbd958355e1cd850f568ea25862d8567866b1df"
+  dependencies:
+    react-onclickoutside "^5.7.1"
 
 react-tap-event-plugin@^1.0.0:
   version "1.0.0"

@@ -24,7 +24,6 @@ const styles = {
 
 const resetFontSize = () => {
   $('.blurred').find('.nlp_score').css('font-size', '100%');
-  // $('body').children().not('#maomao-extension-anchor').css('opacity', '1');
 };
 
 const randomElement = items => items[Math.floor(Math.random() * items.length)];
@@ -34,6 +33,7 @@ class Xp extends Component {
   constructor(props) {
     super(props);
     this.closePopup = this.closePopup.bind(this);
+    this.openShare = this.openShare.bind(this);
     this.state = {
       show: true,
       textAnimate: {},
@@ -83,6 +83,14 @@ class Xp extends Component {
     }
   }
 
+  openShare() {
+    this.setState({ show: false });
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    this.props.shareTopics();
+  }
+
   render() {
     const dummies = Object.keys(styles).map(
       key => <span key={key} style={styles[key]} />,
@@ -107,7 +115,7 @@ class Xp extends Component {
               callback={resetFontSize}
             />
           </div>
-          <a className="share-button" onClick={this.props.shareTopics}>Share...</a>
+          <a className="share-button" onClick={this.openShare}>Share...</a>
         </div>
       </div>
     );
@@ -116,7 +124,7 @@ class Xp extends Component {
 
 Xp.propTypes = {
   terms: PropTypes.array.isRequired,
-  shareTopics: PropTypes.func,
+  shareTopics: PropTypes.func.isRequired,
 };
 
 export default Radium(Xp);
