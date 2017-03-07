@@ -229,6 +229,9 @@ function autoLogin() {
             },
           });
           syncImScore(false);
+          store.dispatch({
+            type: 'FETCH_CONTACTS',
+          });
           // register user
           axios({
             method: 'post',

@@ -5,8 +5,9 @@ import ToggleDisplay from 'react-toggle-display';
 import ReactMaterialUiNotifications from 'react-materialui-notifications';
 import moment from 'moment';
 import $ from 'jquery';
-import { WelcomeModal, ShareModal } from '../modal';
+import { WelcomeModal } from '../modal';
 import Score from './Score';
+import ShareTopic from './ShareTopic';
 import Xp from './Xp';
 import createUser from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
@@ -36,6 +37,7 @@ const defaultProps = {
     isLogin: false,
     accessToken: '',
     info: {},
+    contacts: [],
   },
   score: {
     isOpen: false,
@@ -59,6 +61,14 @@ const defaultProps = {
 const checkAuth = () => {
   const data = {
     type: 'AUTH_LOGIN',
+    payload: {},
+  };
+  return data;
+};
+
+const fetchContacts = () => {
+  const data = {
+    type: 'FETCH_CONTACTS',
     payload: {},
   };
   return data;
@@ -96,6 +106,7 @@ class App extends Component {
     this.props.dispatch(checkAuth())
       .then((token) => {
         if (token) {
+          this.props.dispatch(fetchContacts());
           return createUser(`${this.props.apiUrl}/users/google`, {
             email: token.info.email,
             firstName: token.info.family_name,
@@ -184,16 +195,10 @@ class App extends Component {
             isShareOpen={this.state.openShare}
             isOpen={this.props.isOpen}
           />
-          <ToggleDisplay if={this.props.auth.isLogin}>
-            <ShareModal
-              auth={this.props.auth}
-              mailgunKey={this.props.mailgunKey}
-              siteUrl={this.props.siteUrl}
-              isOpen={this.state.openShare}
-              onCloseModal={this.closeInvite}
-              notify={this.notify}
-            />
-          </ToggleDisplay>
+          <ShareTopic
+            terms={this.props.terms}
+            contacts={this.props.auth && this.props.auth.contacts}
+          />
           <ToggleDisplay
             if={
               this.props.auth.isLogin
@@ -204,7 +209,7 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp terms={this.props.terms} />
+          <Xp terms={this.props.terms} shareTopics={this.openInvite} />
         </div>
       </StyleRoot>
     );

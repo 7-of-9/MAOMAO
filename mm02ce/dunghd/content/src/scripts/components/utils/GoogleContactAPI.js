@@ -11,7 +11,7 @@ function guid() {
 
 function queryString(obj) {
   const str = [];
-  Object.keys(obj).forEach(prop => {
+  Object.keys(obj).forEach((prop) => {
     str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
   });
   return str.join('&');
@@ -58,7 +58,7 @@ function fetchContacts(token, opts) {
           'Content-Type': 'application/json',
         },
       })
-      .then(response => {
+      .then((response) => {
         if (response.status > 300 || response.status < 200) {
           return reject(new Error(`Status code: ${response.statusCode}`));
         }

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 function queryString(obj) {
   const str = [];
-  Object.keys(obj).forEach(prop => {
+  Object.keys(obj).forEach((prop) => {
     str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
   });
   return str.join('&');
