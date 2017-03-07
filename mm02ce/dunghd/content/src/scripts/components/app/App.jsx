@@ -9,6 +9,7 @@ import { WelcomeModal, ShareModal } from '../modal';
 import Score from './Score';
 import Xp from './Xp';
 import createUser from '../utils/UserApi';
+import getCurrentTerms from '../../selectors/term';
 
 window.jQuery = $;
 
@@ -22,6 +23,7 @@ const propTypes = {
   auth: PropTypes.object,
   score: PropTypes.object,
   icon: PropTypes.object,
+  terms: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
   siteUrl: PropTypes.string,
   mailgunKey: PropTypes.string,
@@ -45,6 +47,7 @@ const defaultProps = {
       topic: '',
     },
   },
+  terms: [],
   isShareOpen: false,
   isOpen: false,
   siteUrl: '',
@@ -133,8 +136,7 @@ class App extends Component {
 
   onLogout() {
     this.props.dispatch(logout())
-      .then((token) => {
-        console.log(token);
+      .then(() => {
         this.props.dispatch({
           type: 'USER_AFTER_LOGOUT',
         });
@@ -202,7 +204,7 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp xp={this.props.icon.xp} scale={this.props.icon.scale} />
+          <Xp terms={this.props.terms} />
         </div>
       </StyleRoot>
     );
@@ -213,10 +215,11 @@ App.propTypes = propTypes;
 App.defaultProps = defaultProps;
 
 const mapStateToProps = state => ({
-    auth: state.auth,
-    isOpen: state.modal,
-    score: state.score,
-    icon: state.icon,
-  });
+  auth: state.auth,
+  isOpen: state.modal,
+  score: state.score,
+  terms: getCurrentTerms(state),
+  icon: state.icon,
+});
 
 export default connect(mapStateToProps)(App);

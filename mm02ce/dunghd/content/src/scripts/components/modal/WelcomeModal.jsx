@@ -59,7 +59,6 @@ const propTypes = {
   onLogin: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  openInvite: PropTypes.func.isRequired,
   isShareOpen: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };
@@ -75,10 +74,6 @@ const defaultProps = {
 };
 
 class WelcomeModal extends Component {
-  constructor(props) {
-    super(props);
-    console.log('WelcomeModal props', props);
-  }
 
   componentDidMount() {
     $('.tlt').fitText(0.5).textillate();
@@ -105,10 +100,9 @@ class WelcomeModal extends Component {
                   title={this.props.auth.info.name}
                   subtitle={this.props.auth.info.email}
                   avatar={this.props.auth.info.picture}
-                  />
+                />
                 <CardTitle title="Welcome back!" />
                 <CardActions style={customStyles.cardAction}>
-                  <RaisedButton onTouchTap={this.props.openInvite} label="Share a topic" />
                   <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
                   <RaisedButton onTouchTap={this.props.onClose} label="Close" />
                 </CardActions>
@@ -123,6 +117,5 @@ class WelcomeModal extends Component {
 
 WelcomeModal.propTypes = propTypes;
 WelcomeModal.defaultProps = defaultProps;
-WelcomeModal = Radium(WelcomeModal);
 
-export default WelcomeModal;
+export default Radium(WelcomeModal);

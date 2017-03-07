@@ -24,8 +24,10 @@ const styles = {
 
 const resetFontSize = () => {
   $('.blurred').find('.nlp_score').css('font-size', '100%');
-  $('body').children().not('#maomao-extension-anchor').css('opacity', '1');
+  // $('body').children().not('#maomao-extension-anchor').css('opacity', '1');
 };
+
+const randomElement = items => items[Math.floor(Math.random() * items.length)];
 
 class Xp extends Component {
 
@@ -33,66 +35,79 @@ class Xp extends Component {
     super(props);
     this.closePopup = this.closePopup.bind(this);
     this.state = {
-      show: false,
+      show: true,
       textAnimate: {},
       scoreAnimate: {},
     };
+
+    this.timer = setInterval(() => {
+      if (this.props.terms.length > 1) {
+        console.time('start to animation');
+        if (this.state.show) {
+          this.setState({
+            textAnimate: styles.bounceOutUp,
+            scoreAnimate: styles.bounceOutUp,
+          }, () => {
+            console.timeEnd('end time to animation');
+            setTimeout(() => {
+              this.setState({
+                textAnimate: styles.bounceInUp,
+                scoreAnimate: styles.zoomInUp,
+              });
+            }, 1000);
+          });
+        } else {
+          this.state = {
+            scoreAnimate: styles.zoomInUp,
+            textAnimate: styles.bounceInUp,
+            show: true,
+          };
+        }
+        $('.blurred').find('.nlp_score').css('font-size', '120%');
+        // $('body').children().not('#maomao-extension-anchor').css('opacity', '0.6');
+      }
+    }, 10000);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.xp.score !== nextProps.xp.score || this.props.xp.text !== nextProps.xp.text) {
-      if (this.state.show) {
-        this.setState({
-          textAnimate: styles.bounceOutUp,
-          scoreAnimate: styles.bounceOutUp,
-        }, () => {
-          setTimeout(() => {
-            this.setState({
-              textAnimate: styles.bounceInUp,
-              scoreAnimate: styles.zoomInUp,
-            });
-          }, 1000);
-        });
-      } else {
-        this.state = {
-          scoreAnimate: styles.zoomInUp,
-          textAnimate: styles.bounceInUp,
-          show: true,
-        };
-      }
-      $('.blurred').find('.nlp_score').css('font-size', '120%');
-      $('body').children().not('#maomao-extension-anchor').css('opacity', '0.6');
+  componentWillUnmount() {
+    console.warn('componentDidUnmount');
+    if (this.timer) {
+      clearInterval(this.timer);
     }
   }
 
   closePopup() {
     this.setState({ show: false });
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
   }
 
   render() {
     const dummies = Object.keys(styles).map(
       key => <span key={key} style={styles[key]} />,
     );
+    const xp = randomElement(this.props.terms);
     return (
-      <div className="blurred" style={{ display: this.state.show ? 'block' : 'none', transform: `scale(${this.props.scale}) translate(-50%,-50%)` }}>
+      <div className="blurred" style={{ display: this.state.show && this.props.terms.length > 0 ? 'block' : 'none', transform: 'scale(1.0) translate(-50%,-50%)' }}>
         <div className="inner_bg">
           <a onClick={this.closePopup} className="close_button" />
           {dummies}
-          <div style={this.state.textAnimate} className="nlp_topic">{this.props.xp.text}</div>
+          <div style={this.state.textAnimate} className="nlp_topic">{xp && xp.text}</div>
           <div
             style={this.state.scoreAnimate}
             className="nlp_score"
           >
             <CountUp
               start={0}
-              end={this.props.xp.score}
+              end={xp && xp.score}
               useEasing
               prefix="+"
               suffix=" XP"
               callback={resetFontSize}
             />
           </div>
-          <a className="share" href={this.props.shareTopics}>Share...</a>
+          <a className="share-button" onClick={this.props.shareTopics}>Share...</a>
         </div>
       </div>
     );
@@ -100,8 +115,7 @@ class Xp extends Component {
 }
 
 Xp.propTypes = {
-  xp: PropTypes.object.isRequired,
-  scale: PropTypes.number.isRequired,
+  terms: PropTypes.array.isRequired,
   shareTopics: PropTypes.func,
 };
 
