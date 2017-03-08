@@ -4,7 +4,6 @@ import ChipInput from 'material-ui-chip-input';
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
-import moment from 'moment';
 
 const style = {
   container: {

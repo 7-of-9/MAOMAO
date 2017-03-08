@@ -26,7 +26,7 @@ const resetFontSize = () => {
   $('.blurred').find('.nlp_score').css('font-size', '100%');
 };
 
-const randomElement = items => items[Math.floor(Math.random() * items.length)];
+const randomElement = items => items[Math.floor(Math.random() * Math.min(items.length, 3))];
 
 class Xp extends Component {
 
