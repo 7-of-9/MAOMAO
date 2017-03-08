@@ -100,6 +100,7 @@
             this.topicTree1 = new wowmao.Controls.TopicTree();
             this.gtGoldTree = new wowmao.MmGoldenTree();
             this.zoomBrowser1 = new wowmao.Controls.ZoomBrowser();
+            this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.tabTrees.SuspendLayout();
@@ -635,6 +636,7 @@
             this.columnHeader2,
             this.columnHeader23,
             this.columnHeader3,
+            this.columnHeader17,
             this.columnHeader11,
             this.columnHeader16,
             this.columnHeader25,
@@ -743,13 +745,13 @@
             this.toolStripSeparator1,
             this.mnuAwisSite});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 76);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 54);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuReprocess
             // 
             this.mnuReprocess.Name = "mnuReprocess";
-            this.mnuReprocess.Size = new System.Drawing.Size(152, 22);
+            this.mnuReprocess.Size = new System.Drawing.Size(136, 22);
             this.mnuReprocess.Text = "Reprocess...";
             this.mnuReprocess.Click += new System.EventHandler(this.mnuReprocess_Click);
             // 
@@ -758,7 +760,7 @@
             this.mnuAwisSite.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuAwisSite_DisallowToggle});
             this.mnuAwisSite.Name = "mnuAwisSite";
-            this.mnuAwisSite.Size = new System.Drawing.Size(152, 22);
+            this.mnuAwisSite.Size = new System.Drawing.Size(136, 22);
             this.mnuAwisSite.Text = "AWIS_SITE";
             // 
             // mnuAwisSite_DisallowToggle
@@ -771,7 +773,7 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
             // 
             // columnHeader16
             // 
@@ -845,6 +847,10 @@
             this.zoomBrowser1.Size = new System.Drawing.Size(490, 371);
             this.zoomBrowser1.TabIndex = 9;
             this.zoomBrowser1.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.zoomBrowser1_DocumentCompleted);
+            // 
+            // columnHeader17
+            // 
+            this.columnHeader17.Text = "W-disambigs";
             // 
             // frmMain
             // 
@@ -967,6 +973,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuAwisSite;
         private System.Windows.Forms.ToolStripMenuItem mnuAwisSite_DisallowToggle;
         private System.Windows.Forms.ColumnHeader columnHeader16;
+        private System.Windows.Forms.ColumnHeader columnHeader17;
     }
 }
 

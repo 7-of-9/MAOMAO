@@ -130,11 +130,15 @@ namespace wowmao
                 var text1 = ((ListViewItem)x).SubItems[col].Text;
                 var text2 = ((ListViewItem)y).SubItems[col].Text;
                 double num1, num2;
+                DateTime date1, date2;
                 int ret = 0;
                 if (double.TryParse(text1, out num1) && double.TryParse(text2, out num2))
                     ret = num1 == num2 ? 0 : num1 > num2 ? +1 : -1;
                 else
-                    ret = String.Compare(text1, text2);
+                    if (DateTime.TryParse(text1, out date1) && DateTime.TryParse(text2, out date2))
+                        ret = date1 == date2 ? 0 : date1 > date2 ? +1 : -1;
+                    else
+                        ret = String.Compare(text1, text2);
                 return sorting == SortOrder.Descending ? ret * -1 : ret * +1;
             }
         }
@@ -226,7 +230,8 @@ namespace wowmao
                         x.url1,
                         x.meta_title,
                         x.nlp_suitability_score?.ToString(),
-                        x.mapped_wiki_terms.ToString(), //x.url_term.Count().ToString(),
+                        x.mapped_wiki_terms.ToString(), 
+                        x.disambig_wiki_terms.ToString(), 
                         $"{x.awis_site.TLD}",
                         awis_site_HD,
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
@@ -315,7 +320,7 @@ namespace wowmao
                     // FLAG 7 (Best Topic: mmtopic_level < 3)
                     const double C7 = 3;
                     var test_7 = (best_topic.mmtopic_level < C7) ? 1 : 0;
-                    var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level) * -1;
+                    var degree_7 = ((C7 - best_topic.mmtopic_level) / best_topic.mmtopic_level) * 5 * -1; // 5x warning penalty 
                     item.ToolTipText += $"FLAG 7 (Best Topic: mmtopic_level < 3): {degree_7.ToString("0.00")}\r\n";
 
                     // FLAG 8 (mapped_wiki_terms: Count < 3)
@@ -444,7 +449,7 @@ namespace wowmao
                     txtInfo.Text += "\r\n";
 
                     // suggested
-                    txtInfo.AppendText("\r\nSUGGESTED (all):\r\n");
+                    txtInfo.AppendText("\r\nSUGGESTED (not topics):\r\n");
                     suggested//.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
                              .Where(p => !p.term.IS_TOPIC)
                              .OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} -> S={p.S?.ToString("0.00000")}\r\n"));
@@ -464,13 +469,18 @@ namespace wowmao
                         double avg_S_weighted = (topics.Sum(p => (p.S ?? 0) * (1.0 / p.pri)) / (double)topics.Count());
                         double avg_avg_S_weighted = (topics.Sum(p => (p.avg_S ?? 0) * (1.0 / p.pri)) / (double)topics.Count());
 
-                        txtInfo.AppendText($"\t(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
-                        txtInfo.AppendText($"\t(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
-                        txtInfo.AppendText($"\t(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
-                        txtInfo.AppendText($"\t(avg_avg_S_weighted: {(avg_avg_S_weighted).ToString("0.0000")})\r\n");
+                        txtInfo.AppendText($"(AVG_MIN_D: {(avg_min_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"(AVG_MAX_D: {(avg_max_d).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"(avg_S_weighted: {(avg_S_weighted).ToString("0.0")})\r\n");
+                        txtInfo.AppendText($"(avg_avg_S_weighted: {(avg_avg_S_weighted).ToString("0.0000")})\r\n");
 
                         topics.OrderBy(p => p.pri).ToList().ForEach(p => {
-                            txtInfo.AppendText($"\t\t{p.term} *TL={p.mmtopic_level} avg_TSS_leaf={p.avg_TSS_leaf} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p.S?.ToString("0.00000")} S_norm={p.S_norm?.ToString("0.00")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                            // print topic
+                            txtInfo.AppendText($"\tS_norm={p.S_norm?.ToString("0.00")} {p.term} *TL={p.mmtopic_level} avg_TSS_leaf={p.avg_TSS_leaf} (min_d={p.min_d_paths_to_root_url_terms} max_d={p.max_d_paths_to_root_url_terms} perc_ptr_topics={(p.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p.S?.ToString("0.00000")} avg_S={p.avg_S?.ToString("0.0000")}\r\n");
+                            
+                            // get topic link chain
+                            var topic_chain = GoldenTopics.GetTopicLinkChain(p.term.id);
+                            txtInfo.AppendText($"\t\t{p.term.name} ==> ({string.Join(" > ", topic_chain.Select(p2 => p2.term1.name))})\r\n");
                         });
 
                         txtInfo.AppendText(item.ToolTipText + "\r\n");
@@ -640,7 +650,7 @@ namespace wowmao
                         this.rootPathViewer1.AddTermPaths(root_paths);
 
                         // recalc parents
-                        GoldenParents.GetOrProcessParents(tag.ut.term_id, reprocess: true);
+                        GoldenParents.GetOrProcessParents_SuggestedAndTopics(tag.ut.term_id, reprocess: true);
                         var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
 
                         txtTermParents.Text = "TOPICS:\r\n";
@@ -698,7 +708,7 @@ namespace wowmao
                 {
                     var url_ids = new List<long>();
                     for (int i = 0; i < 20; i++) url_ids.Add((this.lvwUrls.Items[/*rnd.Next(lvwUrls.Items.Count)*/i].Tag as url).id);
-                    var classifications = mm_svc.UrlClassifier.ClassifyUrlSet(url_ids, user_id);
+                    var classifications = mm_svc.UrlClassifier.ClassifyUrlSet(url_ids);
                 }
 
                 //

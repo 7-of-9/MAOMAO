@@ -28,7 +28,7 @@ namespace mm_svc.Terms
         //
         // If not already done, records results of ProcessPathsToRoot() in gt_parent table
         //
-        public static List<gt_parent> GetOrProcessParents(long term_id, bool reprocess = false)
+        public static List<gt_parent> GetOrProcessParents_SuggestedAndTopics(long term_id, bool reprocess = false)
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop

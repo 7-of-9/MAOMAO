@@ -185,7 +185,7 @@ namespace mm_svc
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > 0.1), p => {
 
                     // perf: taking quite some time here...
-                    var term_parents = GoldenParents.GetOrProcessParents(p.term_id, reprocess_all || reprocess_term_parents); //***
+                    var term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.term_id, reprocess_all || reprocess_term_parents); //***
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
@@ -330,7 +330,7 @@ namespace mm_svc
             // weightings
             counted_info.ForEach(p => 
                 p.S = Math.Pow(p.count, 1.5)
-                    * Math.Pow(p.avg_S, 0.5) 
+                    * Math.Pow(p.avg_S, 2.0)
                     * (Math.Pow(p.max_TSS_leaf, 2.0) / 1)
                     * (Math.Pow(p.mmtopic_level, 0.8) / 100)
             );
@@ -425,11 +425,12 @@ namespace mm_svc
             return GetTopicChain(first_parent_link.parent_term, topic_chain);
         }*/
 
-        private static void CalcAndStoreUrlParentTerms_Dynamic(long url_id, mm02Entities db, List<gt_parent> all_parents_dynamic)
+        public static List<url_parent_term> CalcAndStoreUrlParentTerms_Dynamic(long url_id, mm02Entities db, List<gt_parent> all_parents_dynamic)
         {
             // stemming, w/ contains -- count occurances of each dynamic parent stemmed name across all dynamic parents
             var stemmer = new Porter2_English();
-            var stemmed = all_parents_dynamic.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1 });
+            var parents_ordered = all_parents_dynamic.OrderByDescending(p => p.S);
+            var stemmed = parents_ordered.Select(p => new { stemmed = stemmer.stem(p.term1.name), t = p.term1, S = p.S, S_norm = p.S_norm });
             var stemmed_count_contains = stemmed.Select(p => new {
                 stemmed = p.stemmed,
                 t = p.t,
@@ -444,7 +445,7 @@ namespace mm_svc
             // add
             var pri = 0;
             var url_parent_terms = stemmed_count_contains
-                                        //.Where(p => p.count > 1) // *** want real commonality
+                                        .Where(p => p.count > 2) // *** want real commonality
                                         .Select(p => new url_parent_term() {
                                             term_id = p.t.id,
                                              url_id = url_id,
@@ -453,6 +454,8 @@ namespace mm_svc
                                   suggested_dynamic = true
                                         }).ToList();
             mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
+
+            return url_parent_terms;
         }
 
         private static List<url_term> DedupeWikiMappedTerms(long url_id, mm02Entities db, List<url_term> wiki_url_terms)
@@ -485,6 +488,7 @@ namespace mm_svc
             var unmapped_terms = 0;
             var mapped_terms = 0;
             var terms_added = 0;
+            db_url.disambig_wiki_terms = 0;
 
             var stemmer = new Porter2_English();
             var objects = calais_terms.Select(p => new {
@@ -543,10 +547,6 @@ namespace mm_svc
 
                     // are there any matching wiki terms that originate from disambiguation terms, e.g. "Ajax_(programming)" vs. "Ajax_(mythology)"
                     // if so, we want to match the most relevent disambiguated wiki term
-
-                    // todo -- (1) PtR analysis really needed, or working well?
-                    //         (2) saw case of single disambig - trvial count=1 case?
-
                     var wiki_disambiguated_terms_to_add = new List<term>();
                     if (!skip_disambig) {
                         var ambiguous_term_name_start = term_name + " (";
@@ -581,22 +581,22 @@ namespace mm_svc
                             // no direct matches on wiki disambiguation description; need to use suggested parents of the wiki disambiguation terms to find the most appropriate one to use
                             if (wiki_disambiguated_terms_to_add.Count == 0) {
 
-                                // get suggested parent for all wiki ambig terms
+                                // get suggested parents and topics for all wiki ambig terms
                                 var ambig_parents = wiki_ambig_terms.AsParallel().WithExecutionMode(ParallelExecutionMode.ForceParallelism).WithDegreeOfParallelism(128)
                                         .Select(p => new {
                                              t = p,
-                                       parents = GoldenParents.GetOrProcessParents(p.id).Select(p2 => new {
-                                        S_norm = p2.S_norm,
-                                             t = p2.parent_term,
-                                  term_stemmed = stemmer.stem(p2.parent_term.name),
-                                 stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList()
-                                })}).ToList();
+                                       parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.id).Select(p2 => new {
+                                                    S_norm = p2.S_norm,
+                                                         t = p2.parent_term,
+                                              term_stemmed = stemmer.stem(p2.parent_term.name),
+                                             stemmed_words = stemmer.stem(p2.parent_term.name).Split(' ').ToList()
+                                        }).Where(p2 => p2.S_norm > 0.2) // disambig accuracy: only use high-signal suggested parents & topics
+                                          .ToList()
+                                }).ToList();
 
-                                // for each ambig, get count of # of ambig's parent's stemmed words that are common with the URLs stemmed calais words
-                                //var calais_stemmed_terms = calais_terms_stemmed.Select(p2 => p2.term_stemmed).Distinct().ToList();
-
+                                // for each ambig term, get count of # of ambig's parents' stemmed words that are common with the URL's stemmed calais terms' words
                                 var calais_stemmed_words = calais_terms_stemmed
-                                    .Where(p => p.S == 9) // *** ONLY USE HIGHEST POSSIBLE CALAIS INPUTS FOR DISAMBIGUATION!! ***
+                                    .Where(p => p.S == 9) // disambig accuracy: only use high-signal calais terms for matching
                                     .SelectMany(p2 => p2.stemmed_words).Distinct().Except(term_stemmed_words).ToList();
 
                                 var counts = ambig_parents.Select(p => new {
@@ -637,6 +637,7 @@ namespace mm_svc
                             // record term-url link - if not already present
                             if (wiki_disambiguated_terms_to_add.Count > 0) {
                                 terms_added += AddMappedWikiUrlTerms(db, db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG", reprocess);
+                                db_url.disambig_wiki_terms += wiki_disambiguated_terms_to_add.Count;
                                 mapped_terms++;
                             }
                         }

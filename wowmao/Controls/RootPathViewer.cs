@@ -228,15 +228,18 @@ namespace wowmao.Controls
             l.ResumeLayout();
         }
 
+        // set topic / toggle topic
         private void Term_label_Click(object sender, EventArgs e)
         {
-            var tp = (sender as Label).Tag as TermPath;
+            var label = (sender as Label);
+            var tp = label.Tag as TermPath;
             var new_topic_flag = false;
             if (tp.t.is_topic == null || tp.t.is_topic == false)
                 new_topic_flag = true;
             else
                 new_topic_flag = false;
 
+            // format all labels (toggle topic)
             var a = page_labels.Where(p => (p.Tag as TermPath).t.name == tp.t.name).ToList();
             a.ForEach(p => {
                 var tp2 = p.Tag as TermPath;
@@ -244,7 +247,21 @@ namespace wowmao.Controls
                 FormatLabel((p), tp2.t);
             });
 
-            Maintenance.SetTopicFlag(new_topic_flag, tp.t.name);
+            // get any parent topic in clicked term path
+            var parent_panel = label.Parent as Panel;
+            var parent_labels = parent_panel.Controls;
+            var label_ndx = parent_labels.GetChildIndex(label);
+            term parent_topic = null;
+            for (int i = label_ndx + 1; i < parent_labels.Count; i++) {
+                var higher_label = parent_labels[i] as Label;
+                var higher_label_tag = higher_label.Tag as TermPath;
+                if (higher_label_tag.t.IS_TOPIC) {
+                    parent_topic = higher_label_tag.t;
+                    break;
+                }
+            }
+
+            Maintenance.SetTopicFlag(new_topic_flag, tp.t.name, parent_topic == null ? 0 : parent_topic.id);
 
             //using (var db = mm02Entities.Create()) {
             //    var terms = db.terms.Where(p => p.name == tp.t.name && (p.term_type_id == (int)mm_global.g.TT.WIKI_NS_0 || p.term_type_id == (int)mm_global.g.TT.WIKI_NS_14));

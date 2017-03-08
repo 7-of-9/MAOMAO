@@ -19,11 +19,23 @@ namespace mm_svc.Terms
             public double S_norm;
         }
 
-        public static List<topic_link> GetTopicLinks(long child_term_id)
-        {
+        //
+        // Gets the topic_link chain up to root topic 
+        //
+        public static List<topic_link> GetTopicLinkChain(long child_term_id) {
+            var chain = new List<topic_link>();
+            RecurseTopicLinkChain(chain, child_term_id);
+            return chain;
+        }
+        private static void RecurseTopicLinkChain(List<topic_link> chain, long child_term_id) {
             using (var db = mm02Entities.Create()) {
-                var ret = db.topic_link.AsNoTracking().Where(p => p.child_term_id == child_term_id).ToListNoLock();
-                return ret;
+                var parent_single = db.topic_link.Include("term").Include("term1").AsNoTracking()
+                                      .Where(p => p.child_term_id == child_term_id && p.disabled == false)
+                                      .FirstOrDefaultNoLock();
+                if (parent_single != null) {
+                    chain.Add(parent_single);
+                    RecurseTopicLinkChain(chain, parent_single.parent_term_id);
+                }
             }
         }
 

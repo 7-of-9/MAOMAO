@@ -15,11 +15,13 @@ namespace tests
         public void ClassifyUrlSet_Test1()
         {
             using (var db = mm02Entities.Create()) {
-                var test_user_id = 5;
-                var test_url_ids = db.urls.Where(p => p.nlp_suitability_score > 30).Select(p => p.id).ToListNoLock()
-                                     //.OrderByDescending(p => Guid.NewGuid())
-                                     .Take(100).ToList();
-                mm_svc.UrlClassifier.ClassifyUrlSet(test_url_ids, test_user_id);
+                //var test_url_ids = db.urls.Where(p => p.nlp_suitability_score > 30).Select(p => p.id).ToListNoLock()
+                //                     //.OrderByDescending(p => Guid.NewGuid())
+                //                     .Take(100).ToList();
+                //mm_svc.UrlClassifier.ClassifyUrlSet(test_url_ids);
+
+                var test_user_id = 5; // 2 = dung, 5 = dom
+                mm_svc.UrlClassifier.TmpDemo_ClassifyAllUserHistory(test_user_id);
             }
         }
     }

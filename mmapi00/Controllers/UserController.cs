@@ -30,5 +30,35 @@ namespace mmapi00.Controllers
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }
+
+        /// <summary>
+        /// Returns categorized URL history for the user.
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <returns></returns>
+        [Route("api/users/tmp_demo_history_calc")]
+        [HttpGet]
+        public IHttpActionResult DEMO_CalcCategorizedHistory_All(long user_id)
+        {
+            var data = mm_svc.UrlClassifier.TmpDemo_ClassifyAllUserHistory(user_id);
+
+            return Ok( new {
+                data = data.Select(p => p.Select(p2 => new {
+                    topic_name = p2.term.name, 
+                 mmtopic_level = p2.mmtopic_level,
+                  topic_S_norm = p2.topic_S_norm,
+                          urls = p2.urls.Select(p3 => new {
+                              suggestions_for_url = p3.suggestions.OrderByDescending(p4 => p4.S).Select(p4 => new {
+                                                            term_name = p4.term.name,
+                                                             is_topic = p4.term.IS_TOPIC,
+                                                         wiki_nscount = p4.term.wiki_nscount }),
+                                              url = new {
+                                                    url = p3.url.url1,
+                                                url_img = p3.url.img_url,
+                                             meta_title = p3.url.meta_title }
+                    }),
+                }))
+            });
+        }
     }
 }
