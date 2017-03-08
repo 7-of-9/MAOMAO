@@ -26,6 +26,10 @@ const style = {
     lineHeight: '40px',
     height: '50px',
   },
+  button: {
+    float: 'right',
+    textAlign: 'center',
+  },
   chip: {
     margin: 4,
   },
@@ -50,8 +54,9 @@ const enhance = compose(
   pure,
 );
 
-const ShareTopic = enhance(({ show, setDisplay, terms, contacts, handleChange, sendEmails }) =>
-  <div style={Object.assign({}, style.container, { display: show ? '' : 'none' })}>
+const ShareTopic = enhance(({
+  show, enable, setDisplay, terms, contacts, handleChange, sendEmails }) =>
+  <div style={Object.assign({}, style.container, { display: show && enable ? '' : 'none' })}>
     <div className="maomao-logo" />
     <a onClick={() => setDisplay(() => false)} className="close_button" />
     <h3 style={style.heading}>
@@ -80,7 +85,7 @@ const ShareTopic = enhance(({ show, setDisplay, terms, contacts, handleChange, s
       filter={AutoComplete.caseInsensitiveFilter}
       maxSearchResults={5}
     />
-    <a style={{ float: 'right' }} className="share-button" onClick={sendEmails}>Share Now!</a>
+    <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
   </div >,
 );
 export default ShareTopic;

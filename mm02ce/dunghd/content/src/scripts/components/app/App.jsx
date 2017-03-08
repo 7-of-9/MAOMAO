@@ -196,6 +196,7 @@ class App extends Component {
             isOpen={this.props.isOpen}
           />
           <ShareTopic
+            enable={this.state.openShare}
             terms={this.props.terms}
             contacts={this.props.auth && this.props.auth.contacts}
           />
