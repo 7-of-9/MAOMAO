@@ -1,9 +1,10 @@
 import React from 'react';
-import { pure, withState, compose } from 'recompose';
+import { pure, withState, withHandlers, compose } from 'recompose';
 import ChipInput from 'material-ui-chip-input';
 import AutoComplete from 'material-ui/AutoComplete';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import moment from 'moment';
 
 const style = {
   container: {
@@ -51,6 +52,27 @@ const contactsSource = contacts => contacts.map((item) => {
 
 const enhance = compose(
   withState('show', 'setDisplay', true),
+  withState('recipients', 'updateRecipients', []),
+  withHandlers({
+    handleChange: props => (emails) => {
+      props.updateRecipients(emails);
+    },
+    sendEmails: props => () => {
+      console.warn('sendEmails', props.recipients);
+      if (props.recipients.length) {
+        const topic = selectTopics(props.terms);
+        props.recipients.forEach((item) => {
+          // TODO: validate email addr
+          props.sendEmail(item.name, item.email, topic);
+        });
+      } else {
+        props.notify({
+          title: 'Please choose your friends to send invitations!',
+          autoHide: 3000,
+        });
+      }
+    },
+  }),
   pure,
 );
 
