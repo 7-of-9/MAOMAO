@@ -5,7 +5,7 @@ import snoowrap from 'snoowrap';
 
 import { LIMIT, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from 'containers/App/constants';
 import { redditLoaded, redditLoadingError } from 'containers/App/actions';
-import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
+import { makeSelectTerms, makeSelectPageNumber } from 'containers/Discovery/selectors';
 
 
 // Use reddit-oauth-helper to create an permanent token

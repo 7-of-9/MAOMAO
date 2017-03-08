@@ -6,7 +6,7 @@ import _ from 'lodash';
 import request from 'utils/request';
 import { LIMIT, CRALWER_API_URL } from 'containers/App/constants';
 import { googleNewsLoaded, googleNewsLoadingError } from 'containers/App/actions';
-import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
+import { makeSelectTerms, makeSelectPageNumber } from 'containers/Discovery/selectors';
 
 
 function* googleNewsByTerm(term, page) {

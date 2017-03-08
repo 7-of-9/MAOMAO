@@ -1,5 +1,5 @@
 /*
- * HomePage
+ * Discovery
  *
  * This is the first thing users see of our App, at the '/' route
  *
@@ -149,7 +149,7 @@ function mashUp(props) {
 }
 
 
-export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+export class Discovery extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     let elements = [];
     // Mash up the result
@@ -186,7 +186,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
   }
 }
 
-HomePage.propTypes = {
+Discovery.propTypes = {
   loadMore: PropTypes.func,
   onChange: PropTypes.func,
   doSearch: PropTypes.func,
@@ -231,7 +231,7 @@ const mapStateToProps = createStructuredSelector({
   reddit: makeSelectReddit(),
 });
 
-const OptimizedComponent = pure(HomePage);
+const OptimizedComponent = pure(Discovery);
 const HyperOptimizedComponent = onlyUpdateForKeys([
   'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube', 'reddit',
 ])(OptimizedComponent);

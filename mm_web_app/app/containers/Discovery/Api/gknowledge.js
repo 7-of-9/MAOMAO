@@ -6,7 +6,7 @@ import _ from 'lodash';
 import request from 'utils/request';
 import { LIMIT, GOOGLE_API_KEY } from 'containers/App/constants';
 import { googleKnowledgeLoaded, googleKnowledgeLoadingError } from 'containers/App/actions';
-import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
+import { makeSelectTerms, makeSelectPageNumber } from 'containers/Discovery/selectors';
 
 function* googleKnowlegeByTerm(term, page) {
   const buildQuery = queryString.stringify({

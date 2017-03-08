@@ -5,7 +5,7 @@ import request from 'utils/request';
 import { LIMIT, GOOGLE_API_KEY } from 'containers/App/constants';
 import { youtubeLoaded, youtubeLoadingError } from 'containers/App/actions';
 import { makeSelectYoutube } from 'containers/App/selectors';
-import { makeSelectTerms } from 'containers/HomePage/selectors';
+import { makeSelectTerms } from 'containers/Discovery/selectors';
 
 /**
  * Google Youtube request/response handler

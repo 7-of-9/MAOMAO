@@ -4,11 +4,11 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import {
   GOOGLE_SEARCH, YOUTUBE_SEARCH, GOOGLE_KNOWLEDGE_SEARCH, GOOGLE_NEWS_SEARCH, REDDIT_SEARCH,
  } from 'containers/App/constants';
-import { getGoogleSearchResult } from 'containers/HomePage/Api/google';
-import { getGoogleNewsResult } from 'containers/HomePage/Api/news';
-import { getGoogleKnowledge } from 'containers/HomePage/Api/gknowledge';
-import { getYoutubeVideo } from 'containers/HomePage/Api/youtube';
-import { getRedditListing } from 'containers/HomePage/Api/reddit';
+import { getGoogleSearchResult } from 'containers/Discovery/Api/google';
+import { getGoogleNewsResult } from 'containers/Discovery/Api/news';
+import { getGoogleKnowledge } from 'containers/Discovery/Api/gknowledge';
+import { getYoutubeVideo } from 'containers/Discovery/Api/youtube';
+import { getRedditListing } from 'containers/Discovery/Api/reddit';
 
 /**
  * Root saga manages watcher lifecycle

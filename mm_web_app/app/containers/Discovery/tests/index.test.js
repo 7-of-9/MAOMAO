@@ -1,12 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import { HomePage } from '../index';
+import { Discovery } from '../index';
 
-describe('<HomePage />', () => {
+describe('<Discovery />', () => {
   it('should render the page message', () => {
     const renderedComponent = shallow(
-      <HomePage />
+      <Discovery />
     );
     expect(renderedComponent).toBeDefined();
   });

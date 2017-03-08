@@ -6,7 +6,7 @@ import _ from 'lodash';
 import request from 'utils/request';
 import { LIMIT, CRALWER_API_URL } from 'containers/App/constants';
 import { googleLoaded, googleLoadingError } from 'containers/App/actions';
-import { makeSelectTerms, makeSelectPageNumber } from 'containers/HomePage/selectors';
+import { makeSelectTerms, makeSelectPageNumber } from 'containers/Discovery/selectors';
 
 function* googleSearchByTerm(term, page) {
   const query = queryString.stringify({
