@@ -1,6 +1,9 @@
 import React from 'react';
-import { pure } from 'recompose';
-import SelectSearch from 'react-select-search';
+import { pure, withState, compose } from 'recompose';
+import ChipInput from 'material-ui-chip-input';
+import AutoComplete from 'material-ui/AutoComplete';
+import Chip from 'material-ui/Chip';
+import Avatar from 'material-ui/Avatar';
 
 const style = {
   container: {
@@ -9,8 +12,8 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 1000,
-    width: '400px',
-    height: '400px',
+    minWidth: '400px',
+    maxHeight: '400px',
     backgroundColor: '#dedede',
     border: '3px solid #3f51b5',
   },
@@ -27,35 +30,57 @@ const style = {
     margin: 4,
   },
   wrapper: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    overflow: 'auto',
+    maxHeight: '300px',
   },
 };
 
 const selectTopics = terms => terms && terms[0] && terms[0].text;
 const contactsSource = contacts => contacts.map((item) => {
   const object = {
-    name: `${item.name} (${item.email})`,
-    value: item.email,
+    text: item.name ? `${item.name} (${item.email})` : item.email,
+    name: item.name,
+    email: item.email,
   };
   return object;
 }) || [];
 
-const ShareTopic = pure(({ terms, contacts, handleChange, sendEmails }) =>
-  <div style={style.container}>
+const enhance = compose(
+  withState('show', 'setDisplay', true),
+  pure,
+);
+
+const ShareTopic = enhance(({ show, setDisplay, terms, contacts, handleChange, sendEmails }) =>
+  <div style={Object.assign({}, style.container, { display: show ? '' : 'none' })}>
     <div className="maomao-logo" />
+    <a onClick={() => setDisplay(() => false)} className="close_button" />
     <h3 style={style.heading}>
       Share <span style={style.topic}>{selectTopics(terms)}</span> with:
     </h3>
-    <SelectSearch
-      multiple
-      height={250}
-      options={contactsSource(contacts)}
+    <ChipInput
+      fullWidth
+      fullWidthInput
+      autoFocus
+      style={style.wrapper}
+      dataSource={contactsSource(contacts)}
+      dataSourceConfig={{ text: 'text', value: 'email' }}
+      chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
+        <Chip
+          style={style.chip}
+          key={key}
+          onTouchTap={handleClick}
+          onRequestDelete={handleRequestDelete}
+        >
+          <Avatar size={32}>{value[0].toUpperCase()}</Avatar>
+          {text}
+        </Chip>
+      )}
+      hintText="To: "
       onChange={handleChange}
-      name="emails"
-      placeholder="To:"
+      filter={AutoComplete.caseInsensitiveFilter}
+      maxSearchResults={5}
     />
-    <a className="share-button" onClick={sendEmails}>Share Now</a>
+    <a style={{ float: 'right' }} className="share-button" onClick={sendEmails}>Share Now!</a>
   </div >,
 );
-export default pure(ShareTopic);
+export default ShareTopic;

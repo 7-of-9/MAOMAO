@@ -1,10 +1,7 @@
 @import 'fonts/Roboto/font';
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
-@import url(http://weloveiconfonts.com/api/?family=fontawesome);
-[class*="fontawesome-"]:before {
-	font-family: 'fontawesome', sans-serif;
-}
+
 .maomao-ext-component {
     @import 'utils/all';
     @import 'base/all';
