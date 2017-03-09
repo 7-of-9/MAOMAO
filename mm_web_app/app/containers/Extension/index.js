@@ -6,23 +6,52 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
+import { intlShape, injectIntl } from 'react-intl';
+import { StickyContainer, Sticky } from 'react-sticky';
+import Helmet from 'react-helmet';
+import Header from 'components/Header';
+import LogoIcon from 'components/LogoIcon';
+import Slogan from 'components/Slogan';
+import ChromeInstall from 'components/ChromeInstall';
+import FriendStream from 'components/FriendStream';
+import UnlockNow from 'components/UnlockNow';
+
 import makeSelectExtension from './selectors';
 import messages from './messages';
 
 export class Extension extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
+    const { query } = this.props.location;
+    const { formatMessage } = this.props.intl;
     return (
-      <div>
-        <FormattedMessage {...messages.header} />
-      </div>
+      <StickyContainer style={{ width: '960px', margin: '0 auto' }}>
+        <Helmet
+          title="extension"
+          meta={[
+            { name: 'description', content: 'Maomao extension' },
+          ]}
+        />
+        <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
+          <Header>
+            <LogoIcon />
+            <Slogan />
+            <ChromeInstall />
+          </Header>
+        </Sticky>
+        {query && query.name &&
+          <FriendStream name={query.name} />
+        }
+        <UnlockNow title={formatMessage(messages.unlock)} />
+      </StickyContainer>
     );
   }
 }
 
 Extension.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  location: PropTypes.any,
+  intl: intlShape.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -35,4 +64,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Extension);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Extension));
