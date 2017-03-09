@@ -39,8 +39,8 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
             <ChromeInstall />
           </Header>
         </Sticky>
-        {query && query.name &&
-          <FriendStream name={query.name} />
+        {query && query.from &&
+          <FriendStream name={query.from} topic={query.stream} />
         }
         <UnlockNow title={formatMessage(messages.unlock)} />
       </StickyContainer>
