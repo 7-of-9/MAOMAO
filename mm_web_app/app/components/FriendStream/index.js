@@ -115,7 +115,7 @@ function FriendStream({ name, topic }) {
     <Wrapper>
       <Title>{name} wants to share with you: <BoldText>{'"'}{topic}{'"'}</BoldText></Title>
       <Stream>
-        <Intro>{name} has xp {topic.length * 100} XP in <BoldText>{topic}</BoldText>. Some of his best picks...</Intro>
+        <Intro>{name} has xp {(topic && topic.length * 100) || (Math.floor(Math.random() * 100) + 1)} XP in <BoldText>{topic}</BoldText>. Some of his best picks...</Intro>
         <LeftArrow />
         <StreamItem>
           <Thumbnail src="http://placehold.it/100x75?text=Url Thumbnail" />

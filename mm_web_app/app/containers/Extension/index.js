@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
+import { browserHistory } from 'react-router';
 import { createStructuredSelector } from 'reselect';
 import { intlShape, injectIntl } from 'react-intl';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -27,7 +27,7 @@ import messages from './messages';
 /* global chrome */
 
 function hasInstalledExtension() {
-  return chrome.app.isInstalled;
+  return document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
 }
 
 export class Extension extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -47,7 +47,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 
   onInstallSucess() {
     this.addNotification('Yeah! You have been installed maomao extension successfully. You will be redirected to homepage.');
-    this.props.dispatch(push('/'));
+    browserHistory.push('/');
   }
 
   onInstallFail(error) {
@@ -113,7 +113,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
           <FriendStream name={query.from} topic={query.stream} />
         }
         <UnlockNow install={this.inlineInstall} hasInstalled={hasInstalledExtension()} title={formatMessage(messages.unlock)} />
-        <h4 style={{ margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
+        <h4 style={{ display: hasInstalledExtension() ? 'none' : '', margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
           Install maomao in your browser to view {query && query.from && `${query.from}'s shared` } topic!
         </h4>
         <Footer />
@@ -125,7 +125,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 Extension.propTypes = {
   location: PropTypes.any,
   intl: intlShape.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  // dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
