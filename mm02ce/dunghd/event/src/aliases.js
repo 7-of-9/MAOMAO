@@ -168,10 +168,10 @@ const authLogout = () => (
         type: 'AUTH_PENDING',
       });
       return logout(auth.accessToken)
-        .then(data => dispatch(
-          actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info })),
-      )
-        .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
+        .then((data) => {
+          dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }));
+          dispatch(actionCreator('USER_AFTER_LOGOUT'));
+        }).catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
     }
     return dispatch(
       actionCreator('LOGOUT_FULFILLED', { token: '', info: {} }),
