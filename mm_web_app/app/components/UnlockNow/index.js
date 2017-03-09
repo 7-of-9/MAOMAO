@@ -19,9 +19,9 @@ const Button = styled.button`
   color: #fff;
 `;
 
-function UnlockNow({ title, install }) {
+function UnlockNow({ title, install, hasInstalled }) {
   return (
-    <Wrapper>
+    <Wrapper style={{ display: hasInstalled ? 'none' : '' }} >
       <Button onClick={install}>{title} </Button>
     </Wrapper>
   );
@@ -29,7 +29,8 @@ function UnlockNow({ title, install }) {
 
 UnlockNow.propTypes = {
   title: React.PropTypes.string.isRequired,
-  install: React.PropTypes.function,
+  hasInstalled: React.PropTypes.bool.isRequired,
+  install: React.PropTypes.func,
 };
 
 export default UnlockNow;

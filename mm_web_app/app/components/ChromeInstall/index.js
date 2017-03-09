@@ -27,17 +27,18 @@ const Share = styled.button`
 `;
 
 
-function ChromeInstall({ install }) {
+function ChromeInstall({ install, hasInstalled }) {
   return (
     <Wrapper>
-      <AddToChrome onClick={install}><i className="fa fa-plus" aria-hidden="true" /> ADD TO CHROME</AddToChrome>
+      <AddToChrome style={{ display: hasInstalled ? 'none' : '' }} onClick={install}><i className="fa fa-plus" aria-hidden="true" /> ADD TO CHROME</AddToChrome>
       <Share><i className="fa fa-share-alt" aria-hidden="true" /></Share>
     </Wrapper>
   );
 }
 
 ChromeInstall.propTypes = {
-  install: React.PropTypes.function,
+  install: React.PropTypes.func,
+  hasInstalled: React.PropTypes.bool.isRequired,
 };
 
 export default ChromeInstall;

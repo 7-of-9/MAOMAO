@@ -6,9 +6,12 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { createStructuredSelector } from 'reselect';
 import { intlShape, injectIntl } from 'react-intl';
 import { StickyContainer, Sticky } from 'react-sticky';
+import { NotificationStack } from 'react-notification';
+import { OrderedSet } from 'immutable';
 import Helmet from 'react-helmet';
 import Header from 'components/Header';
 import LogoIcon from 'components/LogoIcon';
@@ -21,7 +24,66 @@ import Footer from 'components/Footer';
 import makeSelectExtension from './selectors';
 import messages from './messages';
 
+/* global chrome */
+
+function hasInstalledExtension() {
+  return chrome.app.isInstalled;
+}
+
 export class Extension extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  constructor() {
+    super();
+    this.state = {
+      notifications: OrderedSet(),
+      count: 0,
+    };
+    this.onInstallSucess = this.onInstallSucess.bind(this);
+    this.onInstallFail = this.onInstallFail.bind(this);
+    this.inlineInstall = this.inlineInstall.bind(this);
+    this.addNotification = this.addNotification.bind(this);
+    this.removeNotification = this.removeNotification.bind(this);
+  }
+
+  onInstallSucess() {
+    this.addNotification('Yeah! You have been installed maomao extension successfully. You will be redirected to homepage.');
+    this.props.dispatch(push('/'));
+  }
+
+  onInstallFail(error) {
+    this.addNotification(error);
+  }
+
+
+  addNotification(msg) {
+    const uuid = Date.now();
+    return this.setState({
+      notifications: this.state.notifications.add({
+        message: msg,
+        key: uuid,
+        action: 'Dismiss',
+        onClick: (deactivate) => {
+          this.removeNotification(deactivate.key);
+        },
+      }),
+    });
+  }
+
+  inlineInstall() {
+    chrome.webstore.install(
+                   'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
+                   this.onInstallSucess,
+                   this.onInstallFail);
+  }
+
+  removeNotification(uuid) {
+    const notifications = this.state.notifications.filter((item) => item.key !== uuid);
+    this.setState({
+      notifications,
+    });
+  }
+
+
   render() {
     const { query } = this.props.location;
     const { formatMessage } = this.props.intl;
@@ -33,17 +95,24 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
             { name: 'description', content: 'Maomao extension' },
           ]}
         />
+        <NotificationStack
+          notifications={this.state.notifications.toArray()}
+          dismissAfter={5000}
+          onDismiss={(notification) => this.setState({
+            notifications: this.state.notifications.delete(notification),
+          })}
+        />
         <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
           <Header>
             <LogoIcon />
             <Slogan />
-            <ChromeInstall />
+            <ChromeInstall install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
           </Header>
         </Sticky>
         {query && query.from &&
           <FriendStream name={query.from} topic={query.stream} />
         }
-        <UnlockNow title={formatMessage(messages.unlock)} />
+        <UnlockNow install={this.inlineInstall} hasInstalled={hasInstalledExtension()} title={formatMessage(messages.unlock)} />
         <h4 style={{ margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
           Install maomao in your browser to view {query && query.from && `${query.from}'s shared` } topic!
         </h4>
@@ -54,9 +123,9 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 }
 
 Extension.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   location: PropTypes.any,
   intl: intlShape.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
