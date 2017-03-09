@@ -6,8 +6,8 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  header: {
-    id: 'app.containers.Extension.header',
-    defaultMessage: 'This is Extension container !',
+  unlock: {
+    id: 'app.containers.Extension.unlock',
+    defaultMessage: 'Unlock Now...',
   },
 });

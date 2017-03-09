@@ -11,10 +11,10 @@ const getCurrentTerms = createSelector(
       const term = terms.filter(item => item.url === url);
       if (term[0] && term[0].topics) {
         term[0].topics.forEach((topic) => {
-          const text = topic.info;
+          const text = topic.term_name;
           // FIXME: Fake score base on text length, we need to improve later on
           xp.push({
-            text: text.substr(0, text.indexOf('...')),
+            text,
             score: text.length,
           });
         });

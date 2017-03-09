@@ -7,23 +7,47 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
+import { StickyContainer, Sticky } from 'react-sticky';
+import Header from 'components/Header';
+import LogoIcon from 'components/LogoIcon';
+import Slogan from 'components/Slogan';
+import Footer from 'components/Footer';
+import GoogleLogin from 'react-google-login';
+
 import makeSelectHome from './selectors';
-import messages from './messages';
+
+const responseGoogle = (response) => {
+  console.log('responseGoogle', response);
+};
+
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
     return (
-      <div>
+      <StickyContainer style={{ width: '960px', margin: '0 auto' }}>
         <Helmet
-          title="Home"
+          title="Homepage"
           meta={[
-            { name: 'description', content: 'Description of Home' },
+            { name: 'description', content: 'Maomao extension' },
           ]}
         />
-        <FormattedMessage {...messages.header} />
-      </div>
+        <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
+          <Header>
+            <LogoIcon />
+            <Slogan />
+            <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
+              <GoogleLogin
+                clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
+                buttonText="Connect with Google"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+              />
+            </div>
+          </Header>
+        </Sticky>
+        <Footer />
+      </StickyContainer>
     );
   }
 }

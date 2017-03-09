@@ -8,6 +8,7 @@ const initialState = {
   isPending: false,
   isFetchContacts: false,
   info: {},
+  userId: -1,
   contacts: [],
 };
 
@@ -27,6 +28,10 @@ export default (state = initialState, action) => {
         isPending: false,
         isLogin: true,
       });
+    case 'USER_AFTER_LOGIN':
+      return Object.assign({}, state, action.payload);
+    case 'USER_AFTER_LOGOUT':
+      return Object.assign({}, state, { userId: -1 });
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
     case 'AUTH_REJECTED':
