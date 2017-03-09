@@ -81,7 +81,7 @@ namespace mm_svc
             foreach (var t in title_exact_terms) {
                 var boost = BASE_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                            * t.S2;
+                            * t.S2;  //***
                 t.candidate_reason += $" TITLE_EXACT({(int)boost}) ";
                 t.tss += boost;
             }
@@ -90,7 +90,7 @@ namespace mm_svc
             foreach (var t in title_exact_start_terms) {
                 var boost = TITLE_EXACT_START_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                            * t.S2;
+                            * t.S2; //***
                 t.candidate_reason += $" TITLE_EXACT_START({(int)boost}) ";
                 t.tss += boost;
             }
@@ -99,7 +99,7 @@ namespace mm_svc
             foreach (var t in all.Except(title_exact_terms).Where(p => title_ltrim_nopunc.IndexOf(p.term.name.nopunc()) != -1)) {
                 var boost = BASE_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                            * t.S2;
+                            * t.S2; //***
                 t.candidate_reason += $" TITLE_EXACT_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
                 t.tss += boost;
             }
@@ -107,7 +107,7 @@ namespace mm_svc
             foreach (var t in all.Except(title_exact_start_terms).Where(p => title_ltrim_nopunc.StartsWith(p.term.name.nopunc()))) {
                 var boost = TITLE_EXACT_START_BOOST
                             * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                            * t.S2;
+                            * t.S2; //***
                 t.candidate_reason += $" TITLE_EXACT_START_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
                 t.tss += boost;
             }
@@ -118,7 +118,7 @@ namespace mm_svc
                 foreach (var t in desc_exact_terms) {
                     var boost = BASE_BOOST
                                 * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" DESC_EXACT({(int)boost}) ";
                     t.tss += boost;
                 }
@@ -127,7 +127,7 @@ namespace mm_svc
                 foreach (var t in all.Except(desc_exact_terms).Where(p => desc_ltrim_nopunc.IndexOf(p.term.name.nopunc()) != -1)) {
                     var boost = BASE_BOOST
                                 * t.term.name.LengthNorm(MAX_BOOST_LEN)
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" DESC_EXACT_NOPUNC({(int)boost}[{t.term.name.nopunc()}]) ";
                     t.tss += boost;
                 }
@@ -152,14 +152,14 @@ namespace mm_svc
                 if (t.words_X_title_stemmed.Count > 0) {
                     var boost = TITLE_DESC_BOOST
                                 * t.words_X_title_stemmed.Count
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" TITLE(S)({(int)boost}) ";
                     t.tss += boost;
                 }
                 if (t.words_X_desc_stemmed.Count > 0) {
                     var boost = TITLE_DESC_BOOST
                                 * t.words_X_desc_stemmed.Count
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" DESC(S)({(int)boost}) ";
                     t.tss += boost;
                 }
@@ -169,7 +169,7 @@ namespace mm_svc
                 if (t.words_X_title_stemmed.Count > 0) {
                     var boost = TITLE_DESC_BOOST
                                 * t.words_X_title_stemmed.Count
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" TITLE(S)_BEST({(int)boost}) ";
                     t.tss += boost;
                 }
@@ -179,7 +179,7 @@ namespace mm_svc
                 if (t.words_X_desc_stemmed.Count > 0) {
                     var boost = TITLE_DESC_BOOST
                                 * t.words_X_desc_stemmed.Count
-                                * t.S2;
+                                * t.S2; //***
                     t.candidate_reason += $" DESC(S)_BEST({(int)boost}) ";
                     t.tss += boost;
                 }

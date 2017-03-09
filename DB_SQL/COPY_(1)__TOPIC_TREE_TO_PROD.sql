@@ -1,16 +1,41 @@
 
 --
--- RUN FROM LOCAL *** REPLACES ALL TOPIC TREE DATA ON PROD, with data from local!! ***
---
--- ( also: Export Data (SMSS) for [gt_parent] and [url_parent_term] )
+-- RUN FROM LOCAL *** REPLACES ALL TOPIC TREE DATA ON PROD, with data from local;
+--					  also copies any missing is_topic=1 terms to prod from local ***
+-- 
+-- ( also need to run: Export Data (SMSS) for [gt_parent] and [url_parent_term] )
 --
 -- some (3) urls missing in prod compared to local (strange) -- prevents [url_parent_term] bulk copy:
---
 --   select distinct url_id into #tmp1 from url_parent_term
 --   delete from url_parent_term where url_id in (select url_id from #tmp1 where url_id not in (select id from mm02.mm02.dbo.url))
 --
 
 declare @term_id bigint
+
+-- sync terms created on local, missing on prod
+--
+-- delete from MM02.mm02.dbo.url_parent_term where term_id in (select id from term where id < 0)
+-- delete from MM02.mm02.dbo.term where id < 0
+-- select * from MM02.mm02.dbo.term where id < 0
+	declare db_cursor_outer cursor for select id from [term] where id < 0 and id not in (select id from MM02.mm02.dbo.[term] where id < 0)
+	open db_cursor_outer;
+	fetch next from db_cursor_outer into @term_id;
+	while @@FETCH_STATUS = 0
+	begin
+		declare @id [bigint]				set @id					= @term_id
+		declare @name [nvarchar](128)		set @name				= (select [name] from [term] where id=@id)
+		declare @term_type_id [int]			set @term_type_id		= (select term_type_id from [term] where id=@id)
+		declare @cal_entity_type_id [int]	set @cal_entity_type_id = (select cal_entity_type_id from [term] where id=@id)
+		declare @occurs_count [bigint]		set @occurs_count		= (select occurs_count from [term] where id=@id)
+		declare @wiki_nscount [smallint]	set @wiki_nscount		= (select wiki_nscount from [term] where id=@id)
+		declare @is_topic [bit]				set @is_topic			= (select is_topic from [term] where id=@id)
+		declare @is_topic_root [bit]		set @is_topic_root		= (select is_topic_root from [term] where id=@id)
+
+		exec MM02.mm02.dbo.ident_ins_term @id, @name, @term_type_id, @cal_entity_type_id, @occurs_count, @wiki_nscount, @is_topic, @is_topic_root
+		fetch next from db_cursor_outer into @term_id;
+	end;
+	DEALLOCATE db_cursor_outer;
+
 
 -- sync is_topic_root -> prod
 exec MM02.mm02.dbo.upd_term_clear_topic_root_all_terms;
@@ -59,3 +84,4 @@ select count(*) from term where is_topic=1
 			   [seen_count],
 			   [disabled] ,
 			   [mmtopic_level] from topic_link
+

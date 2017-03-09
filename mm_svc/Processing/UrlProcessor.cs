@@ -156,23 +156,32 @@ namespace mm_svc
                 // *** DEMO PHASE PLAN ***
                 // (done) wire up to base Calais mm02ce flow & user_history 
                 // (done) filter wowmao by user_id / history
-                //
-                //       
-                // WIP -- EDITORIALIZE TEST URLs on LOCAL and exercise TOPIC_TREE_TO_PROD migration script...
-                // 
-                //  (todo - disambigs; if no exact match,use highest #NS? PtR analysis is v. slow and looks quite unreliable - remove it?)
-                //
-                // TODO: return topics (NOTE: should walk topic_tree path UP for url_topics and also explicitly return parent topics, say 1/2 levels up)
-                //      + suggested terms
-                //      + url_title_topic
-                //            --> to mm02ce for XP (+ user_xp table)
-                //
-                //     phase 3 -- categorization of user_history; quite possibly per original concept, of url categorization
-                //                   being user-specific, i.e. clustering around previously categorized
-                //     phase 4 -- homepage is view of user_history + discovery
+                // (done) return topics (NOTE: should walk topic_tree path UP for url_topics and also explicitly return parent topics, say 1/2 levels up)
+                //      + suggested terms + url_title_topic --> to mm02ce
+                //     (demo done) -- categorization of user_history; quite possibly per original concept, of url categorization
+                //                     being user-specific, i.e. clustering around previously categorized
+                //     (demo WIP...) -- homepage is view of user_history + discovery
+                // *** TODO *** log XP, return URL title topic, persist categorizatons (perf)
                 //
                 //  *******
                 //
+                // WIP -- EDITORIALIZATION 
+                // 
+                // NOTES: * avg_S_weighted values are pretty crazy, making quantification difficult: originate from Topic S value (0.01 - 2629 !)
+                //
+                //        * TSS boost for title/desc matches by S2 term is maybe not good
+                //              (e.g. 4453 - "comedian" term is not featuring at all)
+                //        * LOW WIKI # MAPPED TERMS NEEDS MUCH STRONGER NUMERIC WEIGHTING -- big leading indicator of failed classifications
+                //        * "Ryan Rems" (6787271) -- missing underlying wiki_link data ("filipino comedians" link, according to web wiki) --> wiki_crawler!
+                //      ...
+                //
+                // TODO: move auto-flag logic to persist against [url]; don't write [url_parent_term] topic rows for 
+                //       URLs under threshold (only suggestions & url title topic?); want XP popup to only credit good categorization topics
+                //       and cateogrization on homepage to exclude badly categorized;
+                //
+                //   first -- include url title topic in categorization...
+                //
+                // -------
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
                 //        the paths to root **CAN BE DELETED**; or at least it's not critically required. Surely good news.
                 //
@@ -245,14 +254,18 @@ namespace mm_svc
             if (awis_site == null) throw new ApplicationException("bad site");
 
             // create TLD term if not present
+            int retry = 0;
+again:
             var tld_title_term = db.terms.Where(p => p.name == awis_site.title && p.term_type_id == (int)g.TT.TLD_TITLE).FirstOrDefaultNoLock();
             if (tld_title_term == null) {
                 tld_title_term = new term() {
                     name = awis_site.title,
+                    is_topic = true,
                     term_type_id = (int)g.TT.TLD_TITLE,
                 };
                 db.terms.Add(tld_title_term);
-                db.SaveChangesTraceValidationErrors();
+                if (db.SaveChanges_IgnoreDupeKeyEx() == false) // grim
+                    if (++retry < 3) goto again;
             }
             return tld_title_term.id;
         }

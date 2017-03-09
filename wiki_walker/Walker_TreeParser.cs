@@ -96,8 +96,8 @@ namespace wiki_walker
 
         private static bool WalkDownTree(List<long> parent_page_ids, List<string> parent_page_names, string parent_page_search, int level)
         {
-            int par_max_terms = Debugger.IsAttached ? 1 : 1;// 1;    // definitely slows down if any >1 parallelism, over both loops!!
-            int par_max_recurse = Debugger.IsAttached ? 1 : 1;// 16; // definitely slows down if any >1 parallelism, over both loops!!
+            int par_max_terms = Debugger.IsAttached ? 1 : 8;// 1;    // definitely slows down if any >1 parallelism, over both loops!!
+            int par_max_recurse = Debugger.IsAttached ? 1 : 8;// 16; // definitely slows down if any >1 parallelism, over both loops!!
             var parent_path = "";// string.Join("/", parent_page_names);
 
             //if (parent_page_counter % 5000 == 0) {

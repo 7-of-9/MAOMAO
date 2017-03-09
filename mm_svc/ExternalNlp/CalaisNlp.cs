@@ -16,8 +16,9 @@ namespace mm_svc
             public int new_calais_terms = 0 // new_calais_pairs = -1,
                        //mapped_wiki_terms = 0, unmapped_wiki_terms = 0 //, new_wiki_pairs = -1;
                 ;
-            public List<UrlInfo.ParentTerm> suggestions;
-            public List<UrlInfo.ParentTerm> topics;
+            public List<UrlInfo.UrlParent> suggestions;
+            public List<UrlInfo.UrlParent> topics;
+            public UrlInfo.UrlParent url_title_term;
         }
 
         public static ProcessResult ProcessNlpPacket_URL(dynamic nlp_info, bool reprocessing_known_url = false)
@@ -104,7 +105,7 @@ namespace mm_svc
             List<List<TermPath>> all_term_paths = null;
             var l1_terms = mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocess_all: reprocessing_known_url);
 
-            UrlInfo.GetTopicsAndSuggestions(db_url.id, out ret.topics, out ret.suggestions);
+            UrlInfo.GetTopicsAndSuggestions(db_url.id, out ret.topics, out ret.suggestions, out ret.url_title_term);
             
             return ret;
         }

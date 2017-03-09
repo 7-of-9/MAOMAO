@@ -512,26 +512,30 @@ namespace wowmao
             var b_reprocess_url_parents = reprocess_url_parents.Checked;
             this.Cursor = Cursors.WaitCursor;
             this.lblWalkInfo.Text = "walk(P) working...";
-            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 16 }, (url) => {
+            Parallel.ForEach(urls_to_process.OrderBy(p => Guid.NewGuid()), new ParallelOptions() { MaxDegreeOfParallelism = 2 }, (url) => {
 
-                Application.DoEvents();
+                //Application.DoEvents();
 
-                List<List<TermPath>> all_term_paths = null;
-                var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, false, b_reprocess_map_wiki, b_reprocess_PtR, b_reprocess_wiki_parents, b_reprocess_url_parents);
+                try {
+                    List<List<TermPath>> all_term_paths = null;
+                    var a = mm_svc.UrlProcessor.ProcessUrl(url.id, out all_term_paths, false, b_reprocess_map_wiki, b_reprocess_PtR, b_reprocess_wiki_parents, b_reprocess_url_parents);
 
-                Application.DoEvents();
+                    //Application.DoEvents();
 
-                var update_label = (Action)(() => {
-                    this.lblWalkInfo.Text = $"remaining: {--remaining}...";
-                    this.lblWalkInfo.Refresh();
-                });
-                if (this.InvokeRequired)
-                    this.Invoke(update_label);
-                else
-                    update_label();
+                    var update_label = (Action)(() => {
+                        this.lblWalkInfo.Text = $"remaining: {--remaining}...";
+                        //this.lblWalkInfo.Refresh();
+                    });
+                    if (this.InvokeRequired) this.Invoke(update_label); else update_label();
 
-                Application.DoEvents();
+                    //Application.DoEvents();
+                }
+                catch (Exception ex) {
+                    MessageBox.Show(ex.ToString());
+                }
+
             });
+            MessageBox.Show("done.");
             this.Cursor = Cursors.Default;
         }
 

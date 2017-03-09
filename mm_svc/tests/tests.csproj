@@ -73,6 +73,7 @@
     <Compile Include="Test_StanfordCoreNlp.cs" />
     <Compile Include="Test_SuggestedParents.cs" />
     <Compile Include="Test_UrlClassifier.cs" />
+    <Compile Include="Test_UrlInfo.cs" />
     <Compile Include="Test_UrlProcessor.cs" />
   </ItemGroup>
   <ItemGroup>

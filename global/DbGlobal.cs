@@ -57,7 +57,8 @@ namespace mm_global
         public enum WIKI_TERM
         {
             History = 4990959,
-            Geography = 4990976
+            Geography = 4990976,
+            TopLevelDomain = 12683325 
         }
     }
 }

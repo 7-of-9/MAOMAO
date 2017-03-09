@@ -29,12 +29,21 @@ namespace mm_svc.Terms
         }
         private static void RecurseTopicLinkChain(List<topic_link> chain, long child_term_id) {
             using (var db = mm02Entities.Create()) {
+                //Debug.WriteLine($"getting parent_single for {child_term_id}...");
+
                 var parent_single = db.topic_link.Include("term").Include("term1").AsNoTracking()
                                       .Where(p => p.child_term_id == child_term_id && p.disabled == false)
                                       .FirstOrDefaultNoLock();
                 if (parent_single != null) {
-                    chain.Add(parent_single);
-                    RecurseTopicLinkChain(chain, parent_single.parent_term_id);
+                    if (chain.Any(p => p.id == parent_single.id)) {
+                        g.LogLine($"### RecurseTopicLinkChain - CIRCULAR REF for {child_term_id}: abort.");
+                        if (Debugger.IsAttached) Debugger.Break();
+                    }
+                    else {
+                        chain.Add(parent_single);
+                        if (parent_single.parent_term.is_topic_root == false)
+                            RecurseTopicLinkChain(chain, parent_single.parent_term_id);
+                    }
                 }
             }
         }

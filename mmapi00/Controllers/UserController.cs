@@ -43,21 +43,35 @@ namespace mmapi00.Controllers
             var data = mm_svc.UrlClassifier.TmpDemo_ClassifyAllUserHistory(user_id);
 
             return Ok( new {
-                data = data.Select(p => p.Select(p2 => new {
-                    topic_name = p2.term.name, 
-                 mmtopic_level = p2.mmtopic_level,
-                  topic_S_norm = p2.topic_S_norm,
-                          urls = p2.urls.Select(p3 => new {
-                              suggestions_for_url = p3.suggestions.OrderByDescending(p4 => p4.S).Select(p4 => new {
-                                                            term_name = p4.term.name,
-                                                             is_topic = p4.term.IS_TOPIC,
-                                                         wiki_nscount = p4.term.wiki_nscount }),
-                                              url = new {
-                                                    url = p3.url.url1,
-                                                url_img = p3.url.img_url,
-                                             meta_title = p3.url.meta_title }
-                    }),
-                }))
+
+                topics = data.topics,
+                  urls = data.urls.Select(p => new {
+                    suggestions_for_url = p.suggestions,//.Select(p2 => new { suggested_term = p2.term_name, S = p2.S }),
+                                     id = p.url.id,
+                                   href = p.url.url1,
+                                    img = p.url.img_url,
+                                  title = p.url.meta_title,
+                })
+
+            //    data = data
+            //    .Select(p => new {
+            //        chain = p.Select(p2 => new {
+            //                    topic_name = p2.term.name,
+            //                 //mmtopic_level = p2.mmtopic_level,
+            //                 // topic_S_norm = p2.topic_S_norm,
+            //                          urls = p2.urls.Select(p3 => new {
+            //                                                    url = new {
+            //                                                        url_href = p3.url.url1,
+            //                                                         url_img = p3.url.img_url,
+            //                                                      meta_title = p3.url.meta_title },
+
+            //                                    suggestions_for_url = p3.suggestions.OrderByDescending(p4 => p4.S).Select(p4 => new {
+            //                                                 suggestion_name = p4.term.name,
+            //                                                        is_topic = p4.term.IS_TOPIC,
+            //                                                    wiki_nscount = p4.term.wiki_nscount }),
+            //                          }),
+            //}) })
+
             });
         }
     }

@@ -66,15 +66,17 @@ namespace mmapi00.Controllers
 
             var db_url = mm_svc.UrlInfo.GetNlpInfo(url);
 
-            var topics = new List<UrlInfo.ParentTerm>();
-            var suggestions = new List<UrlInfo.ParentTerm>();
+            var topics = new List<UrlInfo.UrlParent>();
+            var suggestions = new List<UrlInfo.UrlParent>();
+            UrlInfo.UrlParent url_title_term = null;
             if (db_url != null)
-                UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions);
+                UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
 
             return Ok( new { is_known = db_url != null,
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
                           suggestions = suggestions,
                                topics = topics,
+                       url_title_term = url_title_term,
                                   url = url });
         }
 
@@ -101,11 +103,12 @@ namespace mmapi00.Controllers
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-            string url = nlp_info.url.href.ToString();
             var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
-            this.RemoveCacheVariants(cacheKey + "-url=" + url);
+            var url_href = (string)(nlp_info.url.href.ToString());
+            this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
 
             // record user_url history
+            var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
             var history_id = mm_svc.User.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
 
             return Ok(new { url = nlp_info.url.href,

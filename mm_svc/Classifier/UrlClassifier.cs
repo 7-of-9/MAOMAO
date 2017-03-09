@@ -35,15 +35,25 @@ namespace mm_svc
             public List<SuggestionInfo> suggestions;
             public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
         }
-        public class SuggestionInfo { public term term; public double S;  }
+        public class SuggestionInfo {
+            public string term_name;
+            public double S;
+        }
+        [DebuggerDisplay("{term.name} ({children.Count})")]
         public class TopicInfo {
-            public term term;
-            public int mmtopic_level;
-            public double topic_S_norm;
-            public List<UrlInfo> urls = new List<UrlInfo>();
+            public string term_name;
+            public long term_id;
+            public bool url_title_topic;
+            public List<long> urls = new List<long>();
+            public List<TopicInfo> children = new List<TopicInfo>();
         }
 
-        public static List<List<TopicInfo>> ClassifyUrlSet(List<long> url_ids)
+        public class ClassifyInfo {
+            public List<TopicInfo> topics;
+            public List<UrlInfo> urls;
+        }
+
+        public static ClassifyInfo ClassifyUrlSet(List<long> url_ids)
         {
             using (var db = mm02Entities.Create()) {
 
@@ -55,31 +65,30 @@ namespace mm_svc
                 //Debug.WriteLine(url_parent_terms_qry.ToString());
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
 
-                //***
                 var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
                 var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList(); 
-                var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic).Where(p => p.S > 2).OrderByDescending(p => p.S).ToList();
+                var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic && !p.term.IS_TOPIC).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
 
                 var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
                 var url_infos = urls.Select(p => new UrlInfo() {
                             url = p,
-                    suggestions = new List<SuggestionInfo>(
-                        url_suggestions.Where(p2 => p2.url_id == p.id)
-                                       .Select(p2 => new SuggestionInfo() { term = p2.term, S = p2.S ?? 0 })
-                                       .ToList())
+                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id)
+                            .Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0 }).ToList())
                 }).ToList();
 
-                // get topic link chains
+                // get topic link chains - regular topics & url title topics
                 var topic_chains = new Dictionary<long, List<TopicInfo>>();
-                foreach (var url_parent_topic in url_topics.DistinctBy(p => p.term_id)) {
-                    var topic_term = url_parent_topic.term;
-                    var topic_chain = GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
-                    var chain = topic_chain.Select(p => new TopicInfo() {
-                                 term = p.parent_term,
-                        mmtopic_level = p.mmtopic_level,
-                         topic_S_norm = url_parent_topic.S_norm ?? 0,
-                    }).ToList();
-                    chain.Insert(0, new TopicInfo() { term = topic_term, mmtopic_level = url_parent_topic.mmtopic_level, topic_S_norm = url_parent_topic.S_norm ?? 0 });
+                foreach (var topic in url_topics.Union(url_title_topics) // regular topics & url title topics
+                                                .DistinctBy(p => p.term_id)) {
+                    var topic_term = topic.term;
+                    var topic_chain = topic.url_title_topic 
+                                            ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
+                                            : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
+
+                    var chain = topic_chain.Select(p => new TopicInfo() { term_name = p.parent_term.name, term_id = p.parent_term_id, }).ToList();
+                    chain.Reverse();
+
+                    chain.Add(new TopicInfo() { term_name = topic_term.name, term_id = topic_term.id, url_title_topic = topic.url_title_topic });
                     topic_chains.Add(topic_term.id, chain);
                 }
 
@@ -87,42 +96,78 @@ namespace mm_svc
                 var topic_ids_to_remove = new List<long>();
                 foreach (var chain_id in topic_chains.Keys) {
                     var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
-                    if (other_chains.Any(p => p.Any(p2 => p2.term.id == chain_id)))
+                    if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
                         topic_ids_to_remove.Add(chain_id);
                 }
                 topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
 
                 // urls --> topic chains
                 foreach (var url_info in url_infos) {
-                    var topics_for_url = url_topics.Where(p => p.url_id == url_info.url.id).ToList();
+                    var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
+                                                   .Where(p => p.url_id == url_info.url.id).ToList();
                     foreach (var topic in topics_for_url) {
                         if (topic_chains.ContainsKey(topic.term_id)) {
                             var topic_chain = topic_chains[topic.term_id];
                             url_info.topic_chains.Add(topic_chain);
                         }
                     }
-                    url_info.topic_chains = url_info.topic_chains.OrderByDescending(p => p.Max(p2 => p2.topic_S_norm)).ToList();
+                    //url_info.topic_chains = url_info.topic_chains.OrderByDescending(p => p.Max(p2 => p2.topic_S_norm)).ToList();
                 }
 
                 // walk topic chains; add urls that match each topic in chain
                 foreach (var topic_chain in topic_chains.Values) {
                     foreach (var topic in topic_chain) {
-                        var urls_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term.id == topic.term.id)))
+                        var urls_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id)))
                                                      .Select(p => new UrlInfo() { url = p.url,
                                                                           suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
-                        topic.urls.AddRange(urls_matching);
+                        topic.urls.AddRange(urls_matching.Select(p => p.url.id));
                     }
                 }
+                
+                // dbg: order & print 
+                var chains = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
+                foreach (var topic_chain in chains)
+                    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term_name + $" ({topic.urls.Count} urls)"))})");
 
-                // order chains
-                var ordered_chains = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term.name).Reverse())).ToList();
+                // ***
+                // convert flat chains of TopicInfo to tree of TopicInfo
 
-                // print 
-                foreach (var topic_chain in ordered_chains) {
-                    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term.name + $" ({topic.urls.Count} urls)"))})");
+                // (1) link each TopcInfo to its single child, for each chain, e.g.
+                //      (Television (4 urls) > Film (4 urls) > Animation (1 urls))
+                //      (Science(2 urls) > Anthropology(1 urls))
+                //  ...
+                foreach (var chain in chains)
+                    for (int i = 0; i < chain.Count - 1; i++)
+                        chain[i].children.Add(chain[i + 1]);
+
+                // (2) combine TopicInfo children for identical topics
+                for (int i = 0; i < chains.Count; i++ ) {
+                    var chain = chains[i];
+
+                    for (int j = chain.Count - 1; j >= 0; j--) {
+                        var topic = chain[j];
+
+                        var identical_topics = chains.SelectMany(p => p.Where(p2 => p2.term_id == topic.term_id)).Where(p => p != topic).ToList();
+                        foreach (var same_topic in identical_topics) {
+                            // add children to new master TopicInfo
+                            topic.children.AddRange(same_topic.children.Where(p => !topic.children.Select(p2 => p2.term_id).Contains(p.term_id)));
+
+                            // remove from other chain
+                            var other_chain = chains.Single(p => p.Contains(same_topic));
+                            var ndx = other_chain.IndexOf(same_topic);
+                            other_chain.RemoveRange(ndx, other_chain.Count - ndx);
+                        }
+                    }
                 }
+                chains.RemoveAll(p => p.Count == 0);
+                chains.ForEach(p => { if (p.Count > 1) p.RemoveRange(1, p.Count - 1); });
+                var tree_roots = chains.Select(p => p.First()).ToList();
 
-                return ordered_chains;
+                var ret = new ClassifyInfo() {
+                    topics = tree_roots,
+                    urls = url_infos
+                };
+                return ret;
 
                 // -----
                 // ok, working on wiki terms or calais terms is not good enough - they're too disparate
@@ -158,7 +203,7 @@ namespace mm_svc
             }
         }
 
-        public static List<List<TopicInfo>> TmpDemo_ClassifyAllUserHistory(long user_id) {
+        public static ClassifyInfo TmpDemo_ClassifyAllUserHistory(long user_id) {
             using (var db = mm02Entities.Create()) {
                 var url_ids = db.user_url.Where(p => p.user_id == user_id).Select(p => p.url_id).Distinct().ToListNoLock();
                 return ClassifyUrlSet(url_ids);
