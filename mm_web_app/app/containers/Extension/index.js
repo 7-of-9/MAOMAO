@@ -16,6 +16,7 @@ import Slogan from 'components/Slogan';
 import ChromeInstall from 'components/ChromeInstall';
 import FriendStream from 'components/FriendStream';
 import UnlockNow from 'components/UnlockNow';
+import Footer from 'components/Footer';
 
 import makeSelectExtension from './selectors';
 import messages from './messages';
@@ -43,6 +44,10 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
           <FriendStream name={query.from} topic={query.stream} />
         }
         <UnlockNow title={formatMessage(messages.unlock)} />
+        <h4 style={{ margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
+          Install maomao in your browser to view {query && query.from && `${query.from}'s shared` } topic!
+        </h4>
+        <Footer />
       </StickyContainer>
     );
   }
