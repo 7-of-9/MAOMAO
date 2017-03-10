@@ -6,6 +6,9 @@
 
 import {
   CLEAN_SEARCH_RESULT,
+  GOOGLE_CONNECT,
+  GOOGLE_CONNECT_SUCCESS,
+  GOOGLE_CONNECT_ERROR,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_SUCCESS,
   GOOGLE_SEARCH_ERROR,
@@ -26,6 +29,27 @@ import {
 export function cleanSearchResult() {
   return {
     type: CLEAN_SEARCH_RESULT,
+  };
+}
+
+export function googleConnect(data) {
+  return {
+    type: GOOGLE_CONNECT,
+    data,
+  };
+}
+
+export function googleConnectLoaded(data) {
+  return {
+    type: GOOGLE_CONNECT_SUCCESS,
+    data,
+  };
+}
+
+export function googleConnectLoadingError(error) {
+  return {
+    type: GOOGLE_CONNECT_ERROR,
+    error,
   };
 }
 

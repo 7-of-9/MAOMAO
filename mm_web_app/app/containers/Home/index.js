@@ -15,12 +15,11 @@ import Slogan from 'components/Slogan';
 import Footer from 'components/Footer';
 import GoogleLogin from 'react-google-login';
 
+import {
+   googleConnect, googleConnectLoadingError,
+} from '../App/actions';
+
 import makeSelectHome from './selectors';
-
-const responseGoogle = (response) => {
-  console.log('responseGoogle', response);
-};
-
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
@@ -40,8 +39,8 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               <GoogleLogin
                 clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
                 buttonText="Connect with Google"
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
+                onSuccess={this.props.onGoogleSuccess}
+                onFailure={this.props.onGoogleFailure}
               />
             </div>
           </Header>
@@ -53,7 +52,8 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 }
 
 Home.propTypes = {
-  dispatch: PropTypes.func.isRequired,
+  onGoogleSuccess: PropTypes.func.isRequired,
+  onGoogleFailure: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -62,7 +62,12 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    dispatch,
+    onGoogleSuccess: (response) => {
+      dispatch(googleConnect(response));
+    },
+    onGoogleFailure: (error) => {
+      dispatch(googleConnectLoadingError(error));
+    },
   };
 }
 

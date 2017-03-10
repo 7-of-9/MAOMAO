@@ -10,6 +10,7 @@
  */
 export const LIMIT = 10;
 export const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
+export const MAOMAO_API_URL = 'https://mmapi00.azurewebsites.net/api/';
 export const DEFAULT_LOCALE = 'en';
 export const GOOGLE_API_KEY = 'AIzaSyDa9LV6fTUGRvFYki0GLSS2NzNP-CylMEI';
 export const GOOGLE_CUSTOM_SEARCH_API_KEY = 'AIzaSyCj_iIAID29ZTZG7HQv8TxivT99x7QYeG4';
@@ -25,6 +26,9 @@ export const CLEAN_SEARCH_RESULT = 'app/App/CLEAN_SEARCH_RESULT';
 export const GOOGLE_SEARCH = 'app/App/GOOGLE_SEARCH';
 export const GOOGLE_SEARCH_SUCCESS = 'app/App/GOOGLE_SEARCH_SUCCESS';
 export const GOOGLE_SEARCH_ERROR = 'app/App/GOOGLE_SEARCH_ERROR';
+export const GOOGLE_CONNECT = 'app/App/GOOGLE_CONNECT';
+export const GOOGLE_CONNECT_SUCCESS = 'app/App/GOOGLE_CONNECT_SUCCESS';
+export const GOOGLE_CONNECT_ERROR = 'app/App/GOOGLE_CONNECT_ERROR';
 export const GOOGLE_NEWS_SEARCH = 'app/App/GOOGLE_NEWS_SEARCH';
 export const GOOGLE_NEWS_SEARCH_SUCCESS = 'app/App/GOOGLE_NEWS_SEARCH_SUCCESS';
 export const GOOGLE_NEWS_SEARCH_ERROR = 'app/App/GOOGLE_NEWS_SEARCH_ERROR';

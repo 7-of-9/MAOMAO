@@ -14,6 +14,9 @@ import { fromJS } from 'immutable';
 
 import {
   CLEAN_SEARCH_RESULT,
+  GOOGLE_CONNECT,
+  GOOGLE_CONNECT_ERROR,
+  GOOGLE_CONNECT_SUCCESS,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
@@ -30,6 +33,11 @@ import {
   REDDIT_SEARCH_ERROR,
   REDDIT_SEARCH_SUCCESS,
 } from './constants';
+
+const initialGoogleConnectState = fromJS({
+  googleResponse: {},
+  user: {},
+});
 
 const initialGoogleState = fromJS({
   googleSearchResult: [],
@@ -52,6 +60,7 @@ const initialRedditState = fromJS({
 const initialState = fromJS({
   loading: {
     isGoogleLoading: false,
+    isGoogleConnectLoading: false,
     isGoogleNewsLoading: false,
     isGoogleKnowledgeLoading: false,
     isYoutubeLoading: false,
@@ -60,6 +69,7 @@ const initialState = fromJS({
   error: [],
   data: {
     google: initialGoogleState,
+    googleConnect: initialGoogleConnectState,
     news: initialGoogleNewsState,
     knowledge: initialGoogleKnowledgeState,
     youtube: initialYoutubeState,
@@ -80,6 +90,18 @@ function appReducer(state = initialState, action) {
     case GOOGLE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
+        .updateIn(['error'], (error) => error.push(action.error));
+    case GOOGLE_CONNECT:
+      return state
+        .updateIn(['loading', 'isGoogleConnectLoading'], () => true)
+        .updateIn(['data', 'googleConnect', 'googleResponse'], () => action.data);
+    case GOOGLE_CONNECT_SUCCESS:
+      return state
+        .updateIn(['loading', 'isGoogleConnectLoading'], () => false)
+        .updateIn(['data', 'googleConnect', 'user'], () => action.data);
+    case GOOGLE_CONNECT_ERROR:
+      return state
+        .updateIn(['loading', 'isGoogleConnectLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
     case GOOGLE_KNOWLEDGE_SEARCH:
       return state

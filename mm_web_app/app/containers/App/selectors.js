@@ -30,6 +30,11 @@ const makeSelectGoogle = () => createSelector(
   (globalState) => globalState.getIn(['data', 'google'])
 );
 
+const makeSelectGoogleConnect = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['data', 'googleConnect'])
+);
+
 const makeSelectGoogleNews = () => createSelector(
   selectGlobal,
   (globalState) => globalState.getIn(['data', 'news'])
@@ -58,9 +63,10 @@ const makeSelectLocationState = () => {
 
 export {
   selectGlobal,
-  makeSelectGoogleKnowledge,
   makeSelectGoogle,
   makeSelectGoogleNews,
+  makeSelectGoogleConnect,
+  makeSelectGoogleKnowledge,
   makeSelectYoutube,
   makeSelectReddit,
   makeSelectLoading,
