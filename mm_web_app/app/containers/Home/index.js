@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import _ from 'lodash';
 import { createStructuredSelector } from 'reselect';
-import { StickyContainer, Sticky } from 'react-sticky';
 import Header from 'components/Header';
 import LogoIcon from 'components/LogoIcon';
 import YourStreams from 'components/YourStreams';
@@ -44,7 +43,7 @@ function selectUrls(ids, urls) {
   return [];
 }
 
-const friends = ['Dung', 'Dominic', 'Winston'];
+const friends = [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }];
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -58,19 +57,19 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
     const currentTopic = selectTopics(currentTermId, topics);
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
     return (
-      <StickyContainer style={{ width: '100%', margin: '0 auto' }}>
+      <div style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
           title="Homepage"
           meta={[
             { name: 'description', content: 'Maomao extension' },
           ]}
         />
-        <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
+        <div style={{ zIndex: 100, backgroundColor: '#fff' }}>
           <Header>
             <LogoIcon />
             <Slogan />
-            <ShareWithFriends friends={friends} />
             <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
+              <ShareWithFriends friends={friends} />
               <GoogleLogin
                 clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
                 buttonText="Connect with Google"
@@ -81,9 +80,10 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
           </Header>
           <YourStreams activeTermId={currentTermId} topics={topics} change={this.props.changeTerm} />
           <StreamList topic={currentTopic} urls={currentUrls} />
-        </Sticky>
+        </div>
+        <div style={{ clear: 'both' }} />
         <Footer />
-      </StickyContainer>
+      </div>
     );
   }
 }

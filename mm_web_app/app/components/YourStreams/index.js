@@ -28,14 +28,12 @@ const TopicName = styled.li`
   &:hover {
     background: #9e9e9e;
     color: #000;
+    cursor: pointer;
   }
 `;
 
 const Link = styled.a`
   width: 100%;
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 function YourStreams({ topics, activeTermId, change }) {
@@ -49,13 +47,13 @@ function YourStreams({ topics, activeTermId, change }) {
     const sortedTopicByUrls = _.reverse(_.sortBy(topics, [(topic) => topic.url_ids.length]));
     _.forEach(sortedTopicByUrls, (topic) => {
       if (topic.term_id) {
-        items.push(<TopicName style={{ color: activeTermId === topic.term_id ? '#000' : '#fff' }} key={topic.term_id}>
-          <Link
-            onClick={(event) => {
-              event.preventDefault();
-              change(topic.term_id);
-            }}
-          >{topic.term_name} ({topic.url_ids.length})</Link>
+        items.push(<TopicName
+          onClick={(e) => {
+            e.preventDefault();
+            change(topic.term_id);
+          }} style={{ color: activeTermId === topic.term_id ? '#000' : '#fff' }} key={topic.term_id}
+        >
+          <Link>{topic.term_name} ({topic.url_ids.length})</Link>
         </TopicName>);
       }
     });

@@ -23,11 +23,13 @@ const Title = styled.h1`
 function StreamList({ topic, urls }) {
   const items = [];
   if (topic && topic.child_topics) {
+    items.push(<div key={Date.now()} style={{ clear: 'both' }} />);
     _.forEach(topic.child_topics, (item) => {
       items.push(<StreamCategory key={item.term_id} topic={item} />);
     });
   }
   if (urls && urls.length) {
+    items.push(<div key={Date.now() + 1} style={{ clear: 'both' }} />);
     _.forEach(urls, (item) => {
       items.push(<StreamItem key={item.id} url={item} />);
     });
