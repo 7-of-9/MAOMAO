@@ -43,6 +43,7 @@
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "fake:api": "json-server https://mmapi00.azurewebsites.net/api/users/tmp_demo_history_calc?user_id=2 --port 3001",
     "heroku-postbuild": "npm run build",
     "deploy:heroku": "npm run build && cd build && git add --all && git commit --no-verify -m 'update heroku site' && git push -f heroku master"
   },
@@ -290,6 +291,7 @@
     "image-webpack-loader": "2.0.0",
     "imports-loader": "0.6.5",
     "jest-cli": "18.0.0",
+    "json-server": "^0.9.6",
     "lint-staged": "3.2.1",
     "node-plop": "0.5.4",
     "null-loader": "0.1.1",

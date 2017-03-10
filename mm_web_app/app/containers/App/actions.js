@@ -6,6 +6,9 @@
 
 import {
   CLEAN_SEARCH_RESULT,
+  USER_HISTORY,
+  USER_HISTORY_SUCCESS,
+  USER_HISTORY_ERROR,
   GOOGLE_CONNECT,
   GOOGLE_CONNECT_SUCCESS,
   GOOGLE_CONNECT_ERROR,
@@ -49,6 +52,27 @@ export function googleConnectLoaded(data) {
 export function googleConnectLoadingError(error) {
   return {
     type: GOOGLE_CONNECT_ERROR,
+    error,
+  };
+}
+
+export function userHistory(data) {
+  return {
+    type: USER_HISTORY,
+    data,
+  };
+}
+
+export function userHistoryLoaded(data) {
+  return {
+    type: USER_HISTORY_SUCCESS,
+    data,
+  };
+}
+
+export function userHistoryLoadingError(error) {
+  return {
+    type: USER_HISTORY_ERROR,
     error,
   };
 }

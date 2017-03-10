@@ -17,6 +17,9 @@ import {
   GOOGLE_CONNECT,
   GOOGLE_CONNECT_ERROR,
   GOOGLE_CONNECT_SUCCESS,
+  USER_HISTORY,
+  USER_HISTORY_ERROR,
+  USER_HISTORY_SUCCESS,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_ERROR,
   GOOGLE_SEARCH_SUCCESS,
@@ -34,9 +37,13 @@ import {
   REDDIT_SEARCH_SUCCESS,
 } from './constants';
 
+const initialUserHistoryState = fromJS({});
+
 const initialGoogleConnectState = fromJS({
   googleResponse: {},
-  user: {},
+  user: {
+    id: 2,
+  },
 });
 
 const initialGoogleState = fromJS({
@@ -63,6 +70,7 @@ const initialState = fromJS({
     isGoogleConnectLoading: false,
     isGoogleNewsLoading: false,
     isGoogleKnowledgeLoading: false,
+    isUserHistoryLoading: false,
     isYoutubeLoading: false,
     isReadingLoading: false,
   },
@@ -74,6 +82,7 @@ const initialState = fromJS({
     knowledge: initialGoogleKnowledgeState,
     youtube: initialYoutubeState,
     reddit: initialRedditState,
+    userHistory: initialUserHistoryState,
   },
 
 });
@@ -90,6 +99,17 @@ function appReducer(state = initialState, action) {
     case GOOGLE_SEARCH_ERROR:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
+        .updateIn(['error'], (error) => error.push(action.error));
+    case USER_HISTORY:
+      return state
+        .updateIn(['loading', 'isUserHistoryLoading'], () => true);
+    case USER_HISTORY_SUCCESS:
+      return state
+        .updateIn(['loading', 'isUserHistoryLoading'], () => false)
+        .updateIn(['data', 'userHistory'], () => action.data);
+    case USER_HISTORY_ERROR:
+      return state
+        .updateIn(['loading', 'isUserHistoryLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
     case GOOGLE_CONNECT:
       return state
