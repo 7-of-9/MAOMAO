@@ -42,13 +42,14 @@
     "test:clean": "rimraf ./coverage",
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "heroku-postbuild": "npm run build",
+    "deploy:heroku": "npm run build && cd build && git add --all && git commit --no-verify -m 'update heroku site' && git push -f heroku master"
   },
   "lint-staged": {
     "*.js": "lint:eslint"
   },
-  "pre-commit": "lint:staged",
-  "heroku-postbuild": "npm run build",
+  "pre-commit": "lint-staged",
   "babel": {
     "presets": [
       [
@@ -247,7 +248,6 @@
     "rxjs": "^5.1.1",
     "sanitize.css": "4.1.0",
     "screenfull": "^3.0.2",
-    "snoowrap": "^1.12.0",
     "styled-components": "1.1.2",
     "warning": "3.0.0",
     "whatwg-fetch": "2.0.1"

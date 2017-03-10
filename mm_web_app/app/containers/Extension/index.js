@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { browserHistory } from 'react-router';
+// import { browserHistory } from 'react-router';
 import { createStructuredSelector } from 'reselect';
 import { intlShape, injectIntl } from 'react-intl';
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -47,7 +47,9 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 
   onInstallSucess() {
     this.addNotification('Yeah! You have been installed maomao extension successfully. You will be redirected to homepage.');
-    browserHistory.push('/');
+    // browserHistory.push('/');
+    // FIXME: hack to homepage
+    window.location.href = 'https://maomao-demo.herokuapp.com/';
   }
 
   onInstallFail(error) {
@@ -71,9 +73,9 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 
   inlineInstall() {
     chrome.webstore.install(
-                   'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
-                   this.onInstallSucess,
-                   this.onInstallFail);
+      'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
+      this.onInstallSucess,
+      this.onInstallFail);
   }
 
   removeNotification(uuid) {
@@ -114,7 +116,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
         }
         <UnlockNow install={this.inlineInstall} hasInstalled={hasInstalledExtension()} title={formatMessage(messages.unlock)} />
         <h4 style={{ display: hasInstalledExtension() ? 'none' : '', margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
-          Install maomao in your browser to view {query && query.from && `${query.from}'s shared` } topic!
+          Install maomao in your browser to view {query && query.from && `${query.from}'s shared`} topic!
         </h4>
         <Footer />
       </StickyContainer>

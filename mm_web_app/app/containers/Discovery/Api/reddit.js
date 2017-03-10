@@ -1,7 +1,6 @@
 import { delay } from 'redux-saga';
 import { fork, call, put, select } from 'redux-saga/effects';
 import _ from 'lodash';
-import snoowrap from 'snoowrap';
 
 import { LIMIT, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from 'containers/App/constants';
 import { redditLoaded, redditLoadingError } from 'containers/App/actions';
@@ -10,6 +9,7 @@ import { makeSelectTerms, makeSelectPageNumber } from 'containers/Discovery/sele
 
 // Use reddit-oauth-helper to create an permanent token
 /* eslint new-cap: ["error", { "newIsCap": false }]*/
+/* global snoowrap */
 const r = new snoowrap({
   userAgent: 'webapp:maomao:v0.0.1 (by u/dunghd)',
   clientId: REDDIT_CLIENT_ID,
@@ -34,7 +34,7 @@ function redditListing(keyword, page) {
     relevance: 'top',
     limit: LIMIT * page,
   }).then((result) => ({ result }))
-  .catch((error) => ({ error }));
+    .catch((error) => ({ error }));
 }
 
 /**
