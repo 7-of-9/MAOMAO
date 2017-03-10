@@ -37,7 +37,10 @@ import {
   REDDIT_SEARCH_SUCCESS,
 } from './constants';
 
-const initialUserHistoryState = fromJS({});
+const initialUserHistoryState = fromJS({
+  topics: [],
+  urls: [],
+});
 
 const initialGoogleConnectState = fromJS({
   googleResponse: {},
@@ -106,7 +109,7 @@ function appReducer(state = initialState, action) {
     case USER_HISTORY_SUCCESS:
       return state
         .updateIn(['loading', 'isUserHistoryLoading'], () => false)
-        .updateIn(['data', 'userHistory'], () => action.data);
+        .updateIn(['data', 'userHistory'], () => fromJS(action.data));
     case USER_HISTORY_ERROR:
       return state
         .updateIn(['loading', 'isUserHistoryLoading'], () => false)
@@ -114,11 +117,11 @@ function appReducer(state = initialState, action) {
     case GOOGLE_CONNECT:
       return state
         .updateIn(['loading', 'isGoogleConnectLoading'], () => true)
-        .updateIn(['data', 'googleConnect', 'googleResponse'], () => action.data);
+        .updateIn(['data', 'googleConnect', 'googleResponse'], () => fromJS(action.data));
     case GOOGLE_CONNECT_SUCCESS:
       return state
         .updateIn(['loading', 'isGoogleConnectLoading'], () => false)
-        .updateIn(['data', 'googleConnect', 'user'], () => action.data);
+        .updateIn(['data', 'googleConnect', 'user'], () => fromJS(action.data));
     case GOOGLE_CONNECT_ERROR:
       return state
         .updateIn(['loading', 'isGoogleConnectLoading'], () => false)

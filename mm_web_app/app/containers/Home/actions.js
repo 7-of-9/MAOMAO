@@ -5,11 +5,12 @@
  */
 
 import {
-  DEFAULT_ACTION,
+  CHANGE_TERM,
 } from './constants';
 
-export function defaultAction() {
+export function changeTerm(data) {
   return {
-    type: DEFAULT_ACTION,
+    type: CHANGE_TERM,
+    data,
   };
 }

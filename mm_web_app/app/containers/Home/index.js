@@ -7,6 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
+import _ from 'lodash';
 import { createStructuredSelector } from 'reselect';
 import { StickyContainer, Sticky } from 'react-sticky';
 import Header from 'components/Header';
@@ -14,7 +15,6 @@ import LogoIcon from 'components/LogoIcon';
 import YourStreams from 'components/YourStreams';
 import ShareWithFriends from 'components/ShareWithFriends';
 import StreamList from 'components/StreamList';
-import StreamItem from 'components/StreamItem';
 import Slogan from 'components/Slogan';
 import Footer from 'components/Footer';
 import GoogleLogin from 'react-google-login';
@@ -23,7 +23,28 @@ import {
    googleConnect, googleConnectLoadingError, userHistory,
 } from '../App/actions';
 
+import {
+   makeSelectUserHistory,
+} from '../App/selectors';
+
 import makeSelectHome from './selectors';
+import { changeTerm } from './actions';
+
+function selectTopics(termId, topics) {
+  if (termId > 0) {
+    return _.find(topics, { term_id: Number(termId) });
+  }
+  return {};
+}
+
+function selectUrls(ids, urls) {
+  if (ids && ids.length > 0) {
+    return _.filter(urls, (item) => ids.indexOf(item.id) !== -1);
+  }
+  return [];
+}
+
+const friends = ['Dung', 'Dominic', 'Winston'];
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -32,6 +53,10 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   }
 
   render() {
+    const { topics, urls } = this.props.history.toJS();
+    const { currentTermId } = this.props.home;
+    const currentTopic = selectTopics(currentTermId, topics);
+    const currentUrls = selectUrls(currentTopic.url_ids, urls);
     return (
       <StickyContainer style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
@@ -44,7 +69,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
           <Header>
             <LogoIcon />
             <Slogan />
-            <ShareWithFriends friends={['Dung', 'Dominic', 'Winston']} />
+            <ShareWithFriends friends={friends} />
             <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
               <GoogleLogin
                 clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
@@ -54,13 +79,8 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               />
             </div>
           </Header>
-          <YourStreams />
-          <StreamList>
-            <StreamItem />
-            <StreamItem />
-            <StreamItem />
-            <StreamItem />
-          </StreamList>
+          <YourStreams activeTermId={currentTermId} topics={topics} change={this.props.changeTerm} />
+          <StreamList topic={currentTopic} urls={currentUrls} />
         </Sticky>
         <Footer />
       </StickyContainer>
@@ -69,13 +89,17 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 }
 
 Home.propTypes = {
+  history: PropTypes.object,
+  home: PropTypes.object,
+  changeTerm: PropTypes.func,
   dispatch: PropTypes.func.isRequired,
   onGoogleSuccess: PropTypes.func.isRequired,
   onGoogleFailure: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  Home: makeSelectHome(),
+  home: makeSelectHome(),
+  history: makeSelectUserHistory(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -85,6 +109,9 @@ function mapDispatchToProps(dispatch) {
     },
     onGoogleFailure: (error) => {
       dispatch(googleConnectLoadingError(error));
+    },
+    changeTerm: (termId) => {
+      dispatch(changeTerm(termId));
     },
     dispatch,
   };

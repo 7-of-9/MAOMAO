@@ -6,15 +6,17 @@
 
 import { fromJS } from 'immutable';
 import {
-  DEFAULT_ACTION,
+  CHANGE_TERM,
 } from './constants';
 
-const initialState = fromJS({});
+const initialState = fromJS({
+  currentTermId: -1,
+});
 
 function homeReducer(state = initialState, action) {
   switch (action.type) {
-    case DEFAULT_ACTION:
-      return state;
+    case CHANGE_TERM:
+      return state.set('currentTermId', action.data);
     default:
       return state;
   }

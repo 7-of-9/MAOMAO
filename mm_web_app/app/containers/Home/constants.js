@@ -4,4 +4,4 @@
  *
  */
 
-export const DEFAULT_ACTION = 'app/Home/DEFAULT_ACTION';
+export const CHANGE_TERM = 'app/Home/CHANGE_TERM';

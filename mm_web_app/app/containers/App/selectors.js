@@ -45,6 +45,11 @@ const makeSelectReddit = () => createSelector(
   (globalState) => globalState.getIn(['data', 'reddit'])
 );
 
+const makeSelectUserHistory = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['data', 'userHistory'])
+);
+
 const makeSelectLocationState = () => {
   let prevRoutingState;
   let prevRoutingStateJS;
@@ -67,6 +72,7 @@ export {
   makeSelectGoogleNews,
   makeSelectGoogleConnect,
   makeSelectGoogleKnowledge,
+  makeSelectUserHistory,
   makeSelectYoutube,
   makeSelectReddit,
   makeSelectLoading,
