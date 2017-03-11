@@ -56,10 +56,9 @@ export function googleConnectLoadingError(error) {
   };
 }
 
-export function userHistory(data) {
+export function userHistory() {
   return {
     type: USER_HISTORY,
-    data,
   };
 }
 

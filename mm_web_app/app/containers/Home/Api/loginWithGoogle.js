@@ -2,7 +2,7 @@ import { call, put, select } from 'redux-saga/effects';
 import axios from 'axios';
 
 import { MAOMAO_API_URL } from 'containers/App/constants';
-import { googleConnectLoaded, googleConnectLoadingError } from 'containers/App/actions';
+import { googleConnectLoaded, googleConnectLoadingError, userHistory } from 'containers/App/actions';
 import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 import { login } from 'utils/simpleAuth';
@@ -27,6 +27,7 @@ function* googleConnect(info) {
     });
     login(data.id, data.email);
     yield put(googleConnectLoaded(data));
+    yield put(userHistory());
   } catch (err) {
     yield put(googleConnectLoadingError(err));
   }

@@ -14,9 +14,8 @@ import YourStreams from 'components/YourStreams';
 import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 
-// import { userHistory } from '../App/actions';
+import { userHistory } from '../App/actions';
 import { makeSelectUserHistory } from '../App/selectors';
-
 import makeSelectHome from './selectors';
 import { changeTerm } from './actions';
 
@@ -37,6 +36,10 @@ function selectUrls(ids, urls) {
 const friends = [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }];
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  componentDidMount() {
+    this.props.dispatch(userHistory());
+  }
 
   render() {
     const { topics, urls } = this.props.history.toJS();
@@ -67,6 +70,7 @@ Home.propTypes = {
   history: PropTypes.object,
   home: PropTypes.object,
   changeTerm: PropTypes.func,
+  dispatch: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({

@@ -25,8 +25,6 @@ import {
 
 export class AppHeader extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
-    const { currentUser } = this.props;
-    console.log('currentUser', currentUser.toJS());
     return (
       <Header>
         <LogoIcon />
@@ -66,7 +64,6 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
 
 AppHeader.propTypes = {
   friends: PropTypes.array.isRequired,
-  currentUser: PropTypes.object,
   onGoogleSuccess: PropTypes.func.isRequired,
   onGoogleFailure: PropTypes.func.isRequired,
 };
