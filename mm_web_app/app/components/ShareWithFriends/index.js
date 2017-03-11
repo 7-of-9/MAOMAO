@@ -37,6 +37,8 @@ function ShareWithFriends({ friends }) {
           tags={friends}
           labelField={'name'}
           autofocus={false}
+          handleDelete={() => {}}
+          handleAddition={() => {}}
         />
       </YourFriends>
     </Wrapper>

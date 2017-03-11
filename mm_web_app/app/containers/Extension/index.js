@@ -18,7 +18,6 @@ import LogoIcon from 'components/LogoIcon';
 import Slogan from 'components/Slogan';
 import ChromeInstall from 'components/ChromeInstall';
 import FriendStream from 'components/FriendStream';
-import UnlockNow from 'components/UnlockNow';
 import Footer from 'components/Footer';
 
 import makeSelectExtension from './selectors';
@@ -108,13 +107,14 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
           <Header>
             <LogoIcon />
             <Slogan />
-            <ChromeInstall install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
           </Header>
         </Sticky>
         {query && query.from &&
           <FriendStream name={query.from} topic={query.stream} />
         }
-        <UnlockNow install={this.inlineInstall} hasInstalled={hasInstalledExtension()} title={formatMessage(messages.unlock)} />
+        <div style={{ margin: '0 auto', padding: '1em' }}>
+          <ChromeInstall title={formatMessage(messages.unlock)} install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
+        </div>
         <h4 style={{ display: hasInstalledExtension() ? 'none' : '', margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
           Install maomao in your browser to view {query && query.from && `${query.from}'s shared`} topic!
         </h4>

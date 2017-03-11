@@ -7,9 +7,7 @@ import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 
 function* getUserHistory(userId) {
-  let apiUrl = `${MAOMAO_API_URL}users/tmp_demo_history_calc?user_id=${userId}`;
-  console.warn('apiUrl', apiUrl);
-  apiUrl = 'http://localhost:3001/db'; // fake API
+  const apiUrl = `${MAOMAO_API_URL}users/tmp_demo_history_calc?user_id=${userId}`;
   try {
     const { data } = yield call(axios, {
       method: 'get',
