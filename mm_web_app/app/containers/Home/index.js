@@ -22,7 +22,7 @@ import ChromeInstall from 'components/ChromeInstall';
 import { userHistory, switchUser } from '../App/actions';
 import { makeSelectUserHistory } from '../App/selectors';
 import makeSelectHome from './selectors';
-import { changeTerm } from './actions';
+import { changeTerm, changeSubTerm } from './actions';
 
 function selectTopics(termId, topics) {
   console.log('termId', termId, topics);
@@ -122,8 +122,9 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   render() {
     const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
     const { topics, urls } = this.props.history.toJS();
-    const { currentTermId } = this.props.home;
-    const currentTopic = selectTopics(currentTermId, topics);
+    const { currentTermId, breadcrumb } = this.props.home;
+    const { termId } = breadcrumb;
+    const currentTopic = selectTopics(termId || currentTermId, topics);
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
     return (
       <div style={{ width: '100%', margin: '0 auto' }}>
@@ -141,15 +142,15 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               notifications: this.state.notifications.delete(notification),
             })}
           />
-          <AppHeader friends={friends} />
+          <AppHeader breadcrumb={currentTopic && currentTopic.term_name} friends={friends} />
           {
             !hasInstalledExtension() &&
             <div style={{ margin: '0 auto', padding: '5em' }}>
               <ChromeInstall title="Install Now!" install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
             </div>
           }
-          <YourStreams activeTermId={currentTermId} topics={topics} change={this.props.changeTerm} />
-          <StreamList change={this.props.changeTerm} topic={currentTopic} urls={currentUrls} />
+          <YourStreams breadcrumb={breadcrumb} activeTermId={currentTermId} topics={topics} topic={currentTopic} change={this.props.changeTerm} />
+          <StreamList change={this.props.changeSubTerm} topic={currentTopic} urls={currentUrls} />
         </div>
         <div style={{ clear: 'both' }} />
         <Footer />
@@ -162,6 +163,7 @@ Home.propTypes = {
   location: PropTypes.object,
   history: PropTypes.object,
   home: PropTypes.object,
+  changeSubTerm: PropTypes.func,
   changeTerm: PropTypes.func,
   dispatch: PropTypes.func,
 };
@@ -175,6 +177,9 @@ function mapDispatchToProps(dispatch) {
   return {
     changeTerm: (termId) => {
       dispatch(changeTerm(termId));
+    },
+    changeSubTerm: (termId) => {
+      dispatch(changeSubTerm(termId));
     },
     dispatch,
   };

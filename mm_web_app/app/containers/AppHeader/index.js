@@ -29,6 +29,7 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
       <Header>
         <LogoIcon />
         <Slogan />
+        { this.props.breadcrumb && <h1>{this.props.breadcrumb}</h1>}
         <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
           {this.props.friends && this.props.friends.length > 0 && <ShareWithFriends friends={this.props.friends} />}
           {
@@ -63,6 +64,7 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
 }
 
 AppHeader.propTypes = {
+  breadcrumb: PropTypes.string,
   friends: PropTypes.array.isRequired,
   onGoogleSuccess: PropTypes.func.isRequired,
   onGoogleFailure: PropTypes.func.isRequired,

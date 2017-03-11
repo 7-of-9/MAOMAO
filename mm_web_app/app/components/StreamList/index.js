@@ -16,25 +16,12 @@ const Wrapper = styled.div`
   padding: 1em;
 `;
 
-const Title = styled.h1`
-  padding: 1em;
-`;
-
-const Link = styled.a`
-    &:hover {
-      padding: 10px;
-      background: #9e9e9e;
-      color: #000;
-      cursor: pointer;
-    }
-`;
-
 function StreamList({ topic, urls, change }) {
   const items = [];
   if (topic && topic.child_topics) {
     items.push(<div key={Date.now()} style={{ clear: 'both' }} />);
     _.forEach(topic.child_topics, (item) => {
-      items.push(<StreamCategory change={change} key={item.term_id} topic={item} />);
+      items.push(<StreamCategory parentId={topic.term_id} parentName={topic.term_name} change={change} key={item.term_id} topic={item} />);
     });
   }
   if (urls && urls.length) {
@@ -45,15 +32,6 @@ function StreamList({ topic, urls, change }) {
   }
   return (
     <Wrapper>
-      <Title>
-        <Link
-          onClick={(e) => {
-            e.preventDefault();
-            change(topic.term_id);
-          }}
-        >{topic.term_name}
-        </Link>
-      </Title>
       {items}
     </Wrapper>
   );

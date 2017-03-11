@@ -23,13 +23,19 @@ const Link = styled.a`
     }
 `;
 
-function StreamCategory({ topic, change }) {
+function StreamCategory({ parentId, parentName, topic, change }) {
   return (
     <Wrapper>
       <Link
         onClick={(e) => {
           e.preventDefault();
-          change(topic.term_id);
+          change({
+            termId: topic.term_id,
+            termName: topic.term_name,
+            termUrls: topic.url_ids.length,
+            parentId,
+            parentName,
+          });
         }}
       >{topic.term_name} ({topic.url_ids.length})</Link>
     </Wrapper>
@@ -38,6 +44,8 @@ function StreamCategory({ topic, change }) {
 
 StreamCategory.propTypes = {
   topic: React.PropTypes.object,
+  parentId: React.PropTypes.number,
+  parentName: React.PropTypes.string,
   change: React.PropTypes.func,
 };
 
