@@ -30,7 +30,7 @@ const Share = styled.button`
 function ChromeInstall({ title, install, hasInstalled }) {
   return (
     <Wrapper style={{ display: hasInstalled ? 'none' : '' }}>
-      <UnlockNow onClick={install} title={title} hasInstalled={hasInstalled} />
+      <UnlockNow install={install} title={title} hasInstalled={hasInstalled} />
       <AddToChrome onClick={install}><i className="fa fa-plus" aria-hidden="true" /> ADD TO CHROME</AddToChrome>
       <Share><i className="fa fa-share-alt" aria-hidden="true" /></Share>
     </Wrapper>
