@@ -22,6 +22,7 @@ export const IMGUR_CLIENT_SECRET = '31b69276f1041518d2dd3e9488b9ce2b618efba8';
 export const REDDIT_CLIENT_ID = 'CuFq5x8GtBDLuA';
 export const REDDIT_CLIENT_SECRET = '0KaZNPLLIzlGt3qckbgL77YZ-44';
 
+export const SWITCH_USER = 'app/App/SWITCH_USER';
 export const CLEAN_SEARCH_RESULT = 'app/App/CLEAN_SEARCH_RESULT';
 export const USER_HISTORY = 'app/App/USER_HISTORY';
 export const USER_HISTORY_SUCCESS = 'app/App/USER_HISTORY_SUCCESS';

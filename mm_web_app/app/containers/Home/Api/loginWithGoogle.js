@@ -27,7 +27,7 @@ function* googleConnect(info) {
     });
     login(data.id, data.email);
     yield put(googleConnectLoaded(data));
-    yield put(userHistory());
+    yield put(userHistory(data.id));
   } catch (err) {
     yield put(googleConnectLoadingError(err));
   }

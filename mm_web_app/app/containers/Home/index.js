@@ -16,9 +16,10 @@ import YourStreams from 'components/YourStreams';
 import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
+import { isLogin, userId } from 'utils/simpleAuth';
 import ChromeInstall from 'components/ChromeInstall';
 
-import { userHistory } from '../App/actions';
+import { userHistory, switchUser } from '../App/actions';
 import { makeSelectUserHistory } from '../App/selectors';
 import makeSelectHome from './selectors';
 import { changeTerm } from './actions';
@@ -37,7 +38,7 @@ function selectUrls(ids, urls) {
   return [];
 }
 
-const friends = hasInstalledExtension() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
+const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -55,7 +56,13 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   }
 
   componentDidMount() {
-    this.props.dispatch(userHistory());
+    let id = userId();
+    const { query } = this.props.location;
+    if (query && query.user_id) {
+      id = query.user_id;
+      this.props.dispatch(switchUser(id));
+    }
+    this.props.dispatch(userHistory(id));
   }
 
   onInstallSucess() {
@@ -137,6 +144,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 }
 
 Home.propTypes = {
+  location: PropTypes.object,
   history: PropTypes.object,
   home: PropTypes.object,
   changeTerm: PropTypes.func,

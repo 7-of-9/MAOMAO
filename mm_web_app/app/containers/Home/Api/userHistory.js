@@ -7,6 +7,7 @@ import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 
 function* getUserHistory(userId) {
+  console.log('getUserHistory', userId);
   const apiUrl = `${MAOMAO_API_URL}users/tmp_demo_history_calc?user_id=${userId}`;
   try {
     const { data } = yield call(axios, {

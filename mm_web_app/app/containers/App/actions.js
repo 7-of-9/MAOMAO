@@ -5,6 +5,7 @@
  */
 
 import {
+  SWITCH_USER,
   CLEAN_SEARCH_RESULT,
   USER_HISTORY,
   USER_HISTORY_SUCCESS,
@@ -35,6 +36,13 @@ export function cleanSearchResult() {
   };
 }
 
+export function switchUser(data) {
+  return {
+    type: SWITCH_USER,
+    data,
+  };
+}
+
 export function googleConnect(data) {
   return {
     type: GOOGLE_CONNECT,
@@ -56,9 +64,10 @@ export function googleConnectLoadingError(error) {
   };
 }
 
-export function userHistory() {
+export function userHistory(data) {
   return {
     type: USER_HISTORY,
+    data,
   };
 }
 

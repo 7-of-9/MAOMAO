@@ -13,6 +13,7 @@
 import { fromJS } from 'immutable';
 import { userId, userEmail } from 'utils/simpleAuth';
 import {
+  SWITCH_USER,
   CLEAN_SEARCH_RESULT,
   GOOGLE_CONNECT,
   GOOGLE_CONNECT_ERROR,
@@ -104,6 +105,9 @@ function appReducer(state = initialState, action) {
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
+    case SWITCH_USER:
+      return state
+        .updateIn(['data', 'googleConnect', 'user', 'id'], () => action.data);
     case USER_HISTORY:
       return state
         .updateIn(['loading', 'isUserHistoryLoading'], () => true);
