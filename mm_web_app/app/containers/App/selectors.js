@@ -35,6 +35,11 @@ const makeSelectGoogleConnect = () => createSelector(
   (globalState) => globalState.getIn(['data', 'googleConnect'])
 );
 
+const makeSelectCurrentUser = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['data', 'googleConnect', 'user'])
+);
+
 const makeSelectGoogleNews = () => createSelector(
   selectGlobal,
   (globalState) => globalState.getIn(['data', 'news'])
@@ -68,6 +73,7 @@ const makeSelectLocationState = () => {
 
 export {
   selectGlobal,
+  makeSelectCurrentUser,
   makeSelectGoogle,
   makeSelectGoogleNews,
   makeSelectGoogleConnect,

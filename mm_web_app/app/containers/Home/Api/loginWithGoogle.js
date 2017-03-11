@@ -5,6 +5,7 @@ import { MAOMAO_API_URL } from 'containers/App/constants';
 import { googleConnectLoaded, googleConnectLoadingError } from 'containers/App/actions';
 import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
+import { login } from 'utils/simpleAuth';
 
 function* googleConnect(info) {
   const user = {
@@ -22,8 +23,9 @@ function* googleConnect(info) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(user),
+      data: user,
     });
+    login(data.id, data.email);
     yield put(googleConnectLoaded(data));
   } catch (err) {
     yield put(googleConnectLoadingError(err));

@@ -10,11 +10,8 @@ import { createStructuredSelector } from 'reselect';
 import { intlShape, injectIntl } from 'react-intl';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
-import GoogleLogin from 'react-google-login';
 import Helmet from 'react-helmet';
-import Header from 'components/Header';
-import LogoIcon from 'components/LogoIcon';
-import Slogan from 'components/Slogan';
+import AppHeader from 'containers/AppHeader';
 import ChromeInstall from 'components/ChromeInstall';
 import FriendStream from 'components/FriendStream';
 import Footer from 'components/Footer';
@@ -22,9 +19,6 @@ import { hasInstalledExtension } from 'utils/chrome';
 
 import makeSelectExtension from './selectors';
 import messages from './messages';
-import {
-   googleConnect, googleConnectLoadingError,
-} from '../App/actions';
 
 /* global chrome */
 
@@ -90,7 +84,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
     return (
       <div style={{ width: '960px', margin: '0 auto' }}>
         <Helmet
-          title="extension"
+          title="Maomao Extension"
           meta={[
             { name: 'description', content: 'Maomao extension' },
           ]}
@@ -102,28 +96,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
             notifications: this.state.notifications.delete(notification),
           })}
         />
-        <Header>
-          <LogoIcon />
-          <Slogan />
-          <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
-            <GoogleLogin
-              style={{
-                width: '130px',
-                backgroundColor: '#0b9803',
-                color: '#fff',
-                paddingTop: '10px',
-                paddingBottom: '10px',
-                borderRadius: '2px',
-                border: '2px solid #000',
-                display: hasInstalledExtension() ? '' : 'none',
-              }}
-              clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
-              buttonText="Login..."
-              onSuccess={this.props.onGoogleSuccess}
-              onFailure={this.props.onGoogleFailure}
-            />
-          </div>
-        </Header>
+        <AppHeader friends={[]} />
         {query && query.from &&
           <FriendStream name={query.from} topic={query.stream} />
         }
@@ -142,8 +115,6 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 Extension.propTypes = {
   location: PropTypes.any,
   intl: intlShape.isRequired,
-  onGoogleSuccess: PropTypes.func,
-  onGoogleFailure: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -152,12 +123,6 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    onGoogleSuccess: (response) => {
-      dispatch(googleConnect(response));
-    },
-    onGoogleFailure: (error) => {
-      dispatch(googleConnectLoadingError(error));
-    },
     dispatch,
   };
 }

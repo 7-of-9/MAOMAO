@@ -9,23 +9,13 @@ import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
 import _ from 'lodash';
 import { createStructuredSelector } from 'reselect';
-import Header from 'components/Header';
-import LogoIcon from 'components/LogoIcon';
+import AppHeader from 'containers/AppHeader';
 import YourStreams from 'components/YourStreams';
-import ShareWithFriends from 'components/ShareWithFriends';
 import StreamList from 'components/StreamList';
-import Slogan from 'components/Slogan';
 import Footer from 'components/Footer';
-import GoogleLogin from 'react-google-login';
-import { hasInstalledExtension } from 'utils/chrome';
 
-import {
-   googleConnect, googleConnectLoadingError, userHistory,
-} from '../App/actions';
-
-import {
-   makeSelectUserHistory,
-} from '../App/selectors';
+// import { userHistory } from '../App/actions';
+import { makeSelectUserHistory } from '../App/selectors';
 
 import makeSelectHome from './selectors';
 import { changeTerm } from './actions';
@@ -48,10 +38,6 @@ const friends = [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { 
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
-  componentDidMount() {
-    this.props.dispatch(userHistory());
-  }
-
   render() {
     const { topics, urls } = this.props.history.toJS();
     const { currentTermId } = this.props.home;
@@ -66,29 +52,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
           ]}
         />
         <div style={{ zIndex: 100 }}>
-          <Header>
-            <LogoIcon />
-            <Slogan />
-            <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
-              <ShareWithFriends friends={friends} />
-              <GoogleLogin
-                style={{
-                  width: '130px',
-                  backgroundColor: '#0b9803',
-                  color: '#fff',
-                  paddingTop: '10px',
-                  paddingBottom: '10px',
-                  borderRadius: '2px',
-                  border: '2px solid #000',
-                  display: hasInstalledExtension() ? '' : 'none',
-                }}
-                clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
-                buttonText="Login..."
-                onSuccess={this.props.onGoogleSuccess}
-                onFailure={this.props.onGoogleFailure}
-              />
-            </div>
-          </Header>
+          <AppHeader friends={friends} />
           <YourStreams activeTermId={currentTermId} topics={topics} change={this.props.changeTerm} />
           <StreamList topic={currentTopic} urls={currentUrls} />
         </div>
@@ -103,9 +67,6 @@ Home.propTypes = {
   history: PropTypes.object,
   home: PropTypes.object,
   changeTerm: PropTypes.func,
-  dispatch: PropTypes.func.isRequired,
-  onGoogleSuccess: PropTypes.func.isRequired,
-  onGoogleFailure: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -115,12 +76,6 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    onGoogleSuccess: (response) => {
-      dispatch(googleConnect(response));
-    },
-    onGoogleFailure: (error) => {
-      dispatch(googleConnectLoadingError(error));
-    },
     changeTerm: (termId) => {
       dispatch(changeTerm(termId));
     },
