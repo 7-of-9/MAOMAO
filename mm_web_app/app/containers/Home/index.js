@@ -17,6 +17,7 @@ import StreamList from 'components/StreamList';
 import Slogan from 'components/Slogan';
 import Footer from 'components/Footer';
 import GoogleLogin from 'react-google-login';
+import { hasInstalledExtension } from 'utils/chrome';
 
 import {
    googleConnect, googleConnectLoadingError, userHistory,
@@ -64,15 +65,25 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
             { name: 'description', content: 'Maomao extension' },
           ]}
         />
-        <div style={{ zIndex: 100, backgroundColor: '#fff' }}>
+        <div style={{ zIndex: 100 }}>
           <Header>
             <LogoIcon />
             <Slogan />
             <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
               <ShareWithFriends friends={friends} />
               <GoogleLogin
+                style={{
+                  width: '130px',
+                  backgroundColor: '#0b9803',
+                  color: '#fff',
+                  paddingTop: '10px',
+                  paddingBottom: '10px',
+                  borderRadius: '2px',
+                  border: '2px solid #000',
+                  display: hasInstalledExtension() ? '' : 'none',
+                }}
                 clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
-                buttonText="Connect with Google"
+                buttonText="Login..."
                 onSuccess={this.props.onGoogleSuccess}
                 onFailure={this.props.onGoogleFailure}
               />

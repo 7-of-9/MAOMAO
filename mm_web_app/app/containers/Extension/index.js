@@ -6,12 +6,11 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-// import { browserHistory } from 'react-router';
 import { createStructuredSelector } from 'reselect';
 import { intlShape, injectIntl } from 'react-intl';
-import { StickyContainer, Sticky } from 'react-sticky';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
+import GoogleLogin from 'react-google-login';
 import Helmet from 'react-helmet';
 import Header from 'components/Header';
 import LogoIcon from 'components/LogoIcon';
@@ -19,15 +18,15 @@ import Slogan from 'components/Slogan';
 import ChromeInstall from 'components/ChromeInstall';
 import FriendStream from 'components/FriendStream';
 import Footer from 'components/Footer';
+import { hasInstalledExtension } from 'utils/chrome';
 
 import makeSelectExtension from './selectors';
 import messages from './messages';
+import {
+   googleConnect, googleConnectLoadingError,
+} from '../App/actions';
 
 /* global chrome */
-
-function hasInstalledExtension() {
-  return document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
-}
 
 export class Extension extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -46,9 +45,9 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 
   onInstallSucess() {
     this.addNotification('Yeah! You have been installed maomao extension successfully. You will be redirected to homepage.');
-    // browserHistory.push('/');
-    // FIXME: hack to homepage
-    window.location.href = 'https://maomao-demo.herokuapp.com/';
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1000);
   }
 
   onInstallFail(error) {
@@ -89,7 +88,7 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
     const { query } = this.props.location;
     const { formatMessage } = this.props.intl;
     return (
-      <StickyContainer style={{ width: '960px', margin: '0 auto' }}>
+      <div style={{ width: '960px', margin: '0 auto' }}>
         <Helmet
           title="extension"
           meta={[
@@ -103,23 +102,39 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
             notifications: this.state.notifications.delete(notification),
           })}
         />
-        <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
-          <Header>
-            <LogoIcon />
-            <Slogan />
-          </Header>
-        </Sticky>
+        <Header>
+          <LogoIcon />
+          <Slogan />
+          <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
+            <GoogleLogin
+              style={{
+                width: '130px',
+                backgroundColor: '#0b9803',
+                color: '#fff',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+                borderRadius: '2px',
+                border: '2px solid #000',
+                display: hasInstalledExtension() ? '' : 'none',
+              }}
+              clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
+              buttonText="Login..."
+              onSuccess={this.props.onGoogleSuccess}
+              onFailure={this.props.onGoogleFailure}
+            />
+          </div>
+        </Header>
         {query && query.from &&
           <FriendStream name={query.from} topic={query.stream} />
         }
-        <div style={{ margin: '0 auto', padding: '1em' }}>
-          <ChromeInstall title={formatMessage(messages.unlock)} install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
+        <div style={{ margin: '0 auto', padding: '5em' }}>
+          <ChromeInstall title={query.from ? formatMessage(messages.unlock) : formatMessage(messages.install)} install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
         </div>
         <h4 style={{ display: hasInstalledExtension() ? 'none' : '', margin: '0 auto', padding: '1em', textAlign: 'center', fontStyle: 'italic' }}>
           Install maomao in your browser to view {query && query.from && `${query.from}'s shared`} topic!
         </h4>
         <Footer />
-      </StickyContainer>
+      </div>
     );
   }
 }
@@ -127,7 +142,8 @@ export class Extension extends React.PureComponent { // eslint-disable-line reac
 Extension.propTypes = {
   location: PropTypes.any,
   intl: intlShape.isRequired,
-  // dispatch: PropTypes.func.isRequired,
+  onGoogleSuccess: PropTypes.func,
+  onGoogleFailure: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -136,6 +152,12 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
+    onGoogleSuccess: (response) => {
+      dispatch(googleConnect(response));
+    },
+    onGoogleFailure: (error) => {
+      dispatch(googleConnectLoadingError(error));
+    },
     dispatch,
   };
 }

@@ -1,5 +1,5 @@
 import { injectGlobal } from 'styled-components';
-
+import bg from './bg.png';
 export function randomColor() {
   const rand = Math.random().toString(16).substr(-6);
   return `#${rand}`;
@@ -22,7 +22,8 @@ injectGlobal`
   }
 
   #app {
-    background-color: #fff;
+    background-image: url(${bg});
+    background-repeat: repeat;
     min-height: 100%;
     min-width: 100%;
   }

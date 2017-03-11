@@ -6,7 +6,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import demoImg from './images/demo.jpg';
+import demoImg from './images/demo.png';
 import maomaoImg from './images/maomao.png';
 
 const Wrapper = styled.div`
@@ -21,6 +21,9 @@ const MaomaoImage = styled.img`
   margin-left: 0px;
   margin-top: 30px;
   float: left;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Description = styled.p`
@@ -33,7 +36,9 @@ const Description = styled.p`
 function Slogan() {
   return (
     <Wrapper>
-      <MaomaoImage src={maomaoImg} />
+      <MaomaoImage
+        onClick={() => { window.location.href = '/'; }} src={maomaoImg}
+      />
       <Description> get smarter </Description>
     </Wrapper>
   );

@@ -6,6 +6,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import logoImg from './images/maomao.png';
 
 const Wrapper = styled.div`
   margin: 0 auto;
@@ -13,11 +14,12 @@ const Wrapper = styled.div`
   height: 100px;
 `;
 
-const Title = styled.h1`
+const FooterLogo = styled.img`
   color: #7d7b6f;
 `;
 
 const Description = styled.span`
+  margin-left: 10px;
   font-size: 17px;
   color: #c0c0c0;
   font-weight: lighter;
@@ -27,8 +29,8 @@ const Description = styled.span`
 function Footer() {
   return (
     <Wrapper>
-      <Title>Maomao <Description>the smarter way to share</Description>
-      </Title>
+      <FooterLogo src={logoImg} />
+      <Description>the smarter way to share</Description>
     </Wrapper>
   );
 }
