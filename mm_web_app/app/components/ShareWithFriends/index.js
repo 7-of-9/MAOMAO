@@ -16,24 +16,30 @@ const Wrapper = styled.div`
 const ShareWith = styled.button`
   float: left;
   padding: 0.75em;
-  backgroundColor: #d14836;
+  backgroundColor: #0b9803;
   color: #fff;
   margin-right: 10px;
+  border: 2px solid #000;
 `;
 
 const YourFriends = styled.div`
   float: left;
-  margin-right: 40px;
 `;
 
+const Description = styled.p`
+  width: 90px;
+  float: left;
+  line-height: 15px;
+`;
 
 function ShareWithFriends({ friends }) {
   return (
     <Wrapper>
-      <ShareWith>Share with</ShareWith>
+      <ShareWith>Share ...</ShareWith>
       <YourFriends>
+        <Description>Share with:</Description>
         <ReactTags
-          placeholder={'Invite your friends'}
+          placeholder={''}
           tags={friends}
           labelField={'name'}
           autofocus={false}

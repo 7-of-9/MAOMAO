@@ -66,7 +66,6 @@ injectGlobal`
   div.ReactTags__tagInput input.ReactTags__tagInputField:focus {
       height: 31px;
       margin: 0;
-      font-size: 12px;
       width: 100%;
       border: 1px solid #eee;
   }
@@ -75,11 +74,10 @@ injectGlobal`
   div.ReactTags__selected span.ReactTags__tag {
       border: 1px solid #ddd;
       background: #eee;
-      font-size: 12px;
       display: inline-block;
       padding: 5px;
       margin: 0 5px;
-      cursor: move;
+      cursor: pointer;
       border-radius: 6px;
       color: #fff;
       &:nth-child(6n) {

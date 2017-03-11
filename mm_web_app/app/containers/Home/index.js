@@ -38,7 +38,6 @@ function selectUrls(ids, urls) {
   return [];
 }
 
-const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -106,6 +105,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   }
 
   render() {
+    const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
     const { topics, urls } = this.props.history.toJS();
     const { currentTermId } = this.props.home;
     const currentTopic = selectTopics(currentTermId, topics);
