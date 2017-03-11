@@ -25,8 +25,23 @@ import makeSelectHome from './selectors';
 import { changeTerm } from './actions';
 
 function selectTopics(termId, topics) {
+  console.log('termId', termId, topics);
   if (termId > 0) {
-    return _.find(topics, { term_id: Number(termId) });
+    // find root
+    let topic = _.find(topics, { term_id: Number(termId) });
+    if (topic) {
+      return topic;
+    }
+    for (let counter = 0; counter < topics.length; counter += 1) {
+      const currentTopic = topics[counter];
+      if (currentTopic.child_topics && currentTopic.child_topics.length) {
+        topic = selectTopics(termId, currentTopic.child_topics);
+        if (topic) {
+          return topic;
+        }
+      }
+    }
+    return topic;
   }
   return {};
 }
@@ -134,7 +149,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
             </div>
           }
           <YourStreams activeTermId={currentTermId} topics={topics} change={this.props.changeTerm} />
-          <StreamList topic={currentTopic} urls={currentUrls} />
+          <StreamList change={this.props.changeTerm} topic={currentTopic} urls={currentUrls} />
         </div>
         <div style={{ clear: 'both' }} />
         <Footer />
