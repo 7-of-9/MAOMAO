@@ -25,7 +25,6 @@ import makeSelectHome from './selectors';
 import { changeTerm, changeSubTerm } from './actions';
 
 function selectTopics(termId, topics) {
-  console.log('termId', termId, topics);
   if (termId > 0) {
     // find root
     let topic = _.find(topics, { term_id: Number(termId) });
@@ -122,8 +121,12 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   render() {
     const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
     const { topics, urls } = this.props.history.toJS();
-    const { currentTermId, breadcrumb } = this.props.home;
-    const { termId } = breadcrumb;
+    const { currentTermId, breadcrumbs } = this.props.home;
+    let termId;
+    if (breadcrumbs && breadcrumbs.length) {
+      termId = breadcrumbs[breadcrumbs.length - 1].termId;
+    }
+    console.log('termId, currentTermId', termId, currentTermId);
     const currentTopic = selectTopics(termId || currentTermId, topics);
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
     return (
@@ -149,7 +152,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               <ChromeInstall title="Install Now!" install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
             </div>
           }
-          <YourStreams breadcrumb={breadcrumb} activeTermId={currentTermId} topics={topics} topic={currentTopic} change={this.props.changeTerm} />
+          <YourStreams breadcrumbs={breadcrumbs} activeTermId={currentTermId} topics={topics} topic={currentTopic} change={this.props.changeTerm} />
           <StreamList change={this.props.changeSubTerm} topic={currentTopic} urls={currentUrls} />
         </div>
         <div style={{ clear: 'both' }} />
@@ -176,9 +179,11 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     changeTerm: (termId) => {
+      console.log('changeTerm', termId);
       dispatch(changeTerm(termId));
     },
     changeSubTerm: (termId) => {
+      console.log('changeSubTerm', termId);
       dispatch(changeSubTerm(termId));
     },
     dispatch,

@@ -9,22 +9,28 @@ import {
   CHANGE_TERM, CHANGE_SUB_TERM,
 } from './constants';
 
-const initialBreadcrumbState = fromJS({
-});
+const initialBreadcrumbState = fromJS([]);
 
 
 const initialState = fromJS({
   currentTermId: -1,
-  breadcrumb: initialBreadcrumbState,
+  breadcrumbs: initialBreadcrumbState,
 });
 
 function homeReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_TERM:
-      return state.set('currentTermId', action.data)
-        .update('breadcrumb', () => initialBreadcrumbState);
+      {
+        const currentTermId = action.data;
+        if (state.get('breadcrumbs').filter((item) => item.termId === currentTermId)) {
+          return state.set('currentTermId', currentTermId)
+            .update('breadcrumbs', (breadcrumbs) => breadcrumbs.pop());
+        }
+        return state.set('currentTermId', currentTermId)
+          .update('breadcrumbs', () => initialBreadcrumbState);
+      }
     case CHANGE_SUB_TERM:
-      return state.set('breadcrumb', action.data);
+      return state.update('breadcrumbs', (breadcrumbs) => breadcrumbs.push(action.data));
     default:
       return state;
   }

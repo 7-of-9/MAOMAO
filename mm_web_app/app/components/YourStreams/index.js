@@ -36,14 +36,27 @@ const Link = styled.a`
   width: 100%;
 `;
 
-function YourStreams({ breadcrumb, topics, activeTermId, change }) {
+function YourStreams({ breadcrumbs, topics, activeTermId, change }) {
   const items = [];
-  const { parentId, termName, termUrls } = breadcrumb;
+  let parentId;
+  let rootId;
+  let termName;
+  let termUrls;
+  if (breadcrumbs && breadcrumbs.length) {
+    rootId = breadcrumbs[0].parentId;
+    parentId = breadcrumbs[breadcrumbs.length - 1].parentId;
+    termName = breadcrumbs[breadcrumbs.length - 1].termName;
+    termUrls = breadcrumbs[breadcrumbs.length - 1].termUrls;
+  }
   let activeId = activeTermId;
   if (activeId === -1) {
       // set active to first term_id
     activeId = (topics && topics[0] && topics[0].term_id) || -1;
   }
+  console.log('parentId', parentId);
+  console.log('rootId', rootId);
+  console.log('activeId', activeId);
+  console.log('termName', termName);
   if (topics && topics.length) {
     const sortedTopicByUrls = _.reverse(_.sortBy(topics, [(topic) => topic.url_ids.length]));
     _.forEach(sortedTopicByUrls, (topic) => {
@@ -51,19 +64,19 @@ function YourStreams({ breadcrumb, topics, activeTermId, change }) {
         items.push(<TopicName
           onClick={(e) => {
             e.preventDefault();
-            if (parentId === topic.term_id) {
+            if (rootId && rootId !== activeId) {
               change(parentId);
             } else {
               change(topic.term_id);
             }
-          }} style={{ color: activeTermId === topic.term_id ? '#000' : '#fff' }} key={topic.term_id}
+          }} style={{ color: activeTermId === topic.term_id || (rootId > 0 && rootId === topic.term_id) ? '#000' : '#fff' }} key={topic.term_id}
         >
-          { parentId !== topic.term_id &&
+          { rootId !== topic.term_id &&
             <Link>
               {topic.term_name} ({topic.url_ids.length})
               </Link>
             }
-          { parentId === topic.term_id &&
+          { rootId === topic.term_id &&
           <Link>
             {'<'} {termName} ({termUrls})
                 </Link>
@@ -83,7 +96,7 @@ function YourStreams({ breadcrumb, topics, activeTermId, change }) {
 }
 
 YourStreams.propTypes = {
-  breadcrumb: React.PropTypes.object.isRequired,
+  breadcrumbs: React.PropTypes.array.isRequired,
   topics: React.PropTypes.array.isRequired,
   activeTermId: React.PropTypes.number.isRequired,
   change: React.PropTypes.func,
