@@ -6,6 +6,8 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import DiscoveryButton from 'components/DiscoveryButton';
+import _ from 'lodash';
 
 const Wrapper = styled.div`
     padding: 0.5em;
@@ -24,6 +26,10 @@ const Link = styled.a`
 `;
 
 function StreamCategory({ parentId, parentName, topic, change }) {
+  let discoveryKeys = [];
+  if (topic && topic.suggestions && topic.suggestions.length) {
+    discoveryKeys = _.map(topic.suggestions, 'term_name');
+  }
   return (
     <Wrapper>
       <Link
@@ -38,6 +44,7 @@ function StreamCategory({ parentId, parentName, topic, change }) {
           });
         }}
       >{topic.term_name} ({topic.url_ids.length})</Link>
+      {discoveryKeys && discoveryKeys.length && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
     </Wrapper>
   );
 }

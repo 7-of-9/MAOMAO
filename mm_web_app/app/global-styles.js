@@ -67,7 +67,6 @@ injectGlobal`
       height: 31px;
       margin: 0;
       width: 100%;
-      border: 1px solid #eee;
   }
 
   /* Styles for selected tags */

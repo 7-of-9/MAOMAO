@@ -18,9 +18,10 @@ import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
 import { isLogin, userId } from 'utils/simpleAuth';
 import ChromeInstall from 'components/ChromeInstall';
+import Loading from 'components/Loading';
 
 import { userHistory, switchUser } from '../App/actions';
-import { makeSelectUserHistory } from '../App/selectors';
+import { makeSelectUserHistory, makeSelectHomeLoading } from '../App/selectors';
 import makeSelectHome from './selectors';
 import { changeTerm, changeSubTerm } from './actions';
 
@@ -168,6 +169,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
           <StreamList change={this.props.changeSubTerm} topic={currentTopic} urls={currentUrls} />
         </div>
         <div style={{ clear: 'both' }} />
+        <Loading isLoading={this.props.loading} />
         <Footer />
       </div>
     );
@@ -178,6 +180,7 @@ Home.propTypes = {
   location: PropTypes.object,
   history: PropTypes.object,
   home: PropTypes.object,
+  loading: PropTypes.bool,
   changeSubTerm: PropTypes.func,
   changeTerm: PropTypes.func,
   dispatch: PropTypes.func,
@@ -186,6 +189,7 @@ Home.propTypes = {
 const mapStateToProps = createStructuredSelector({
   home: makeSelectHome(),
   history: makeSelectUserHistory(),
+  loading: makeSelectHomeLoading(),
 });
 
 function mapDispatchToProps(dispatch) {

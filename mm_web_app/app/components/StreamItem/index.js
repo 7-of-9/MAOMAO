@@ -8,12 +8,18 @@ import React from 'react';
 import styled from 'styled-components';
 import ReactStars from 'react-stars';
 import moment from 'moment';
+import _ from 'lodash';
+import DiscoveryButton from 'components/DiscoveryButton';
+
 import noImage from './images/no-image.png';
 const Wrapper = styled.section`
   padding: 10px;
   margin: 10px;
   width: 100%;
   float: left;
+  &:hover {
+    box-shadow: 0px 2px 20px 2px rgba(153,150,153,0.72);
+  }
   &:after {
       content: '';
       display: block;
@@ -62,6 +68,10 @@ const Description = styled.p`
 function StreamItem({ url, maxScore }) {
   const { href, img, title, im_score, time_on_tab, hit_utc } = url;
   const rate = Math.ceil((im_score / maxScore) * 5);
+  let discoveryKeys = [];
+  if (url && url.suggestions_for_url && url.suggestions_for_url.length) {
+    discoveryKeys = _.map(url.suggestions_for_url, 'term_name');
+  }
   return (
     <Wrapper>
       <Anchor href={href} target="_blank">
@@ -73,6 +83,7 @@ function StreamItem({ url, maxScore }) {
       <Description>
         {moment(hit_utc).fromNow()}
       </Description>
+      {discoveryKeys && discoveryKeys.length && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
     </Wrapper>
   );
 }

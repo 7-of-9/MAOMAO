@@ -150,10 +150,25 @@ function mashUp(props) {
 
 
 export class Discovery extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  componentDidMount() {
+    const { query } = this.props.location;
+    if (query.search) {
+      const terms = query.search.split(',');
+      this.props.onChange(terms);
+      this.props.doSearch();
+    }
+  }
+
   render() {
     let elements = [];
+    let terms = [];
     // Mash up the result
     elements = mashUp(this.props);
+    const { query } = this.props.location;
+    if (query.search) {
+      terms = query.search.split(',');
+    }
     return (
       <StickyContainer>
         <Helmet
@@ -165,7 +180,7 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
         <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
           <Header>
             <LogoIcon />
-            <SearchBar onChange={this.props.onChange} onSearch={this.props.doSearch} />
+            <SearchBar tags={terms} onChange={this.props.onChange} onSearch={this.props.doSearch} />
           </Header>
         </Sticky>
         {
@@ -187,6 +202,7 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
 }
 
 Discovery.propTypes = {
+  location: PropTypes.object,
   loadMore: PropTypes.func,
   onChange: PropTypes.func,
   doSearch: PropTypes.func,

@@ -8,6 +8,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import Header from 'components/Header';
+import DiscoveryButton from 'components/DiscoveryButton';
 import LogoIcon from 'components/LogoIcon';
 import ShareWithFriends from 'components/ShareWithFriends';
 import Slogan from 'components/Slogan';
@@ -30,7 +31,7 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
         <LogoIcon />
         <Slogan />
         { this.props.breadcrumb && <h3>{this.props.breadcrumb}</h3>}
-        <div style={{ position: 'absolute', top: '50px', right: '40px' }}>
+        <div style={{ position: 'absolute', top: '65px', right: '40px' }}>
           {this.props.friends && this.props.friends.length > 0 && <ShareWithFriends friends={this.props.friends} />}
           {
             !isLogin() &&
@@ -57,6 +58,7 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
               window.location.href = '/';
             }}
           /> }
+          <DiscoveryButton />
         </div>
       </Header>
     );

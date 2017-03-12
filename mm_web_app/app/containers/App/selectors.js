@@ -10,6 +10,13 @@ const makeSelectLoading = () => createSelector(
     globalState.getIn(['loading', 'isYoutubeLoading'])
 );
 
+const makeSelectHomeLoading = () => createSelector(
+  selectGlobal,
+  (globalState) => globalState.getIn(['loading', 'isUserHistoryLoading']) ||
+    globalState.getIn(['loading', 'isGoogleConnectLoading'])
+);
+
+
 const makeSelectError = () => createSelector(
   selectGlobal,
   (globalState) => globalState.get('error')
@@ -82,6 +89,7 @@ export {
   makeSelectYoutube,
   makeSelectReddit,
   makeSelectLoading,
+  makeSelectHomeLoading,
   makeSelectError,
   makeSelectLocationState,
 };
