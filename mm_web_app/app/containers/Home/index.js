@@ -126,9 +126,21 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
     if (breadcrumbs && breadcrumbs.length) {
       termId = breadcrumbs[breadcrumbs.length - 1].termId;
     }
-    // console.log('termId, currentTermId', termId, currentTermId);
     const currentTopic = selectTopics(termId || currentTermId, topics);
+    let navPath = '';
+    // build breadcrumbs path
+    if (breadcrumbs && breadcrumbs.length) {
+      const navPaths = [];
+      _.forEach(breadcrumbs, (path) => {
+        navPaths.push(path.parentName);
+      });
+      navPaths.push(breadcrumbs[breadcrumbs.length - 1].termName);
+      navPath = navPaths.join(' > ');
+    } else {
+      navPath = currentTopic && currentTopic.term_name;
+    }
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
+    console.log('termId, currentTermId', termId, currentTermId);
     return (
       <div style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
@@ -145,7 +157,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               notifications: this.state.notifications.delete(notification),
             })}
           />
-          <AppHeader breadcrumb={currentTopic && currentTopic.term_name} friends={friends} />
+          <AppHeader breadcrumb={navPath} friends={friends} />
           {
             !hasInstalledExtension() &&
             <div style={{ margin: '0 auto', padding: '5em' }}>
@@ -179,11 +191,11 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     changeTerm: (termId) => {
-      // console.log('changeTerm', termId);
+      console.log('changeTerm', termId);
       dispatch(changeTerm(termId));
     },
     changeSubTerm: (termId) => {
-      // console.log('changeSubTerm', termId);
+      console.log('changeSubTerm', termId);
       dispatch(changeSubTerm(termId));
     },
     dispatch,
