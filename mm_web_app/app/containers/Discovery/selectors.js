@@ -4,20 +4,20 @@
 
 import { createSelector } from 'reselect';
 
-const selectHome = (state) => state.get('home');
+const selectDiscovery = (state) => state.get('discovery');
 
 const makeSelectTerms = () => createSelector(
-  selectHome,
-  (homeState) => homeState.get('terms')
+  selectDiscovery,
+  (discoveryState) => discoveryState.get('terms').toJS()
 );
 
 const makeSelectPageNumber = () => createSelector(
-  selectHome,
-  (homeState) => homeState.get('page')
+  selectDiscovery,
+  (discoveryState) => discoveryState.get('page')
 );
 
 export {
-  selectHome,
+  selectDiscovery,
   makeSelectTerms,
   makeSelectPageNumber,
 };

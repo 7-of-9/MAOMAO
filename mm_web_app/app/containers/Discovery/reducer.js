@@ -19,7 +19,7 @@ const initialState = fromJS({
 function homeReducer(state = initialState, action) {
   switch (action.type) {
     case CHANGE_TERM:
-      return state.set('terms', action.terms);
+      return state.set('terms', fromJS(action.terms));
     case NEXT_PAGE:
       return state.set('page', Number(state.get('page') + 1));
     case RESET_PAGE:

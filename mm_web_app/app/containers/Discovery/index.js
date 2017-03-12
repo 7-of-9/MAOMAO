@@ -155,6 +155,7 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
     const { query } = this.props.location;
     if (query.search) {
       const terms = query.search.split(',');
+      console.log('search terms', terms);
       this.props.onChange(terms);
       this.props.doSearch();
     }
@@ -162,13 +163,18 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
 
   render() {
     let elements = [];
-    let terms = [];
+    console.log('render', this.props);
     // Mash up the result
     elements = mashUp(this.props);
-    const { query } = this.props.location;
-    if (query.search) {
-      terms = query.search.split(',');
-    }
+    const tags = [];
+    let counter = 1;
+    _.forEach(this.props.terms, (term) => {
+      tags.push({
+        id: counter,
+        text: term,
+      });
+      counter += 1;
+    });
     return (
       <StickyContainer>
         <Helmet
@@ -180,7 +186,7 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
         <Sticky style={{ zIndex: 100, backgroundColor: '#fff' }}>
           <Header>
             <LogoIcon />
-            <SearchBar tags={terms} onChange={this.props.onChange} onSearch={this.props.doSearch} />
+            <SearchBar terms={tags} onChange={this.props.onChange} onSearch={this.props.doSearch} />
           </Header>
         </Sticky>
         {
@@ -203,6 +209,7 @@ export class Discovery extends React.PureComponent { // eslint-disable-line reac
 
 Discovery.propTypes = {
   location: PropTypes.object,
+  terms: PropTypes.any,
   loadMore: PropTypes.func,
   onChange: PropTypes.func,
   doSearch: PropTypes.func,
@@ -249,7 +256,7 @@ const mapStateToProps = createStructuredSelector({
 
 const OptimizedComponent = pure(Discovery);
 const HyperOptimizedComponent = onlyUpdateForKeys([
-  'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube', 'reddit',
+  'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube', 'reddit', 'terms',
 ])(OptimizedComponent);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HyperOptimizedComponent);
