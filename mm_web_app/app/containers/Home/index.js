@@ -126,7 +126,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
     if (breadcrumbs && breadcrumbs.length) {
       termId = breadcrumbs[breadcrumbs.length - 1].termId;
     }
-    console.log('termId, currentTermId', termId, currentTermId);
+    // console.log('termId, currentTermId', termId, currentTermId);
     const currentTopic = selectTopics(termId || currentTermId, topics);
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
     return (
@@ -179,11 +179,11 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     changeTerm: (termId) => {
-      console.log('changeTerm', termId);
+      // console.log('changeTerm', termId);
       dispatch(changeTerm(termId));
     },
     changeSubTerm: (termId) => {
-      console.log('changeSubTerm', termId);
+      // console.log('changeSubTerm', termId);
       dispatch(changeSubTerm(termId));
     },
     dispatch,

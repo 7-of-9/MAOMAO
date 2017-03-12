@@ -104,5 +104,4 @@ injectGlobal`
       margin-left: 5px;
       cursor: pointer;
   }
-
 `;

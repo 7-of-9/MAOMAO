@@ -6,14 +6,14 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import ReactStars from 'react-stars';
+import moment from 'moment';
 
 const Wrapper = styled.section`
   padding: 10px;
   margin: 10px;
-  background: #607d8b;
-  width: 300px;
+  width: 100%;
   float: left;
-  border-radius: 6px;
   &:after {
       content: '';
       display: block;
@@ -32,11 +32,13 @@ const Anchor = styled.a`
 const Image = styled.img`
   object-fit contain;
   width: 210px;
-  margin-bottom: 10px;
-  border-radius: 8px;
+  padding: 10px;
+  margin-right: 20px;
+  background: #eee;
+  box-shadow: 4px 7px 10px 8px rgba(153,150,153,0.72);
   vertical-align: middle;
-  margin: 5px auto;
   display: block;
+  float: left;
 `;
 
 const Title = styled.h3`
@@ -57,21 +59,27 @@ const Description = styled.p`
 `;
 
 /* eslint-disable camelcase */
-function StreamItem({ url }) {
-  const { href, img, title, im_score, time_on_tab } = url;
+function StreamItem({ url, maxScore }) {
+  const { href, img, title, im_score, time_on_tab, hit_utc } = url;
+  const rate = Math.ceil((im_score / maxScore) * 5);
   return (
     <Wrapper>
       <Anchor href={href} target="_blank">
-        {img && <Image src={img} alt={title} /> }
+        <Image src={img || 'https://placehold.it/210?text=Thumbnail unavailable'} alt={title} />
         <Title>{title}</Title>
       </Anchor>
-      <Description> Score: {im_score}, Time on tabs: {time_on_tab} </Description>
+      <Description> Earned XP {href.length} {moment.duration(time_on_tab).humanize()} </Description>
+      <ReactStars edit={false} size={30} count={5} value={rate} />
+      <Description>
+        {moment(hit_utc).fromNow()}
+      </Description>
     </Wrapper>
   );
 }
 
 StreamItem.propTypes = {
   url: React.PropTypes.object,
+  maxScore: React.PropTypes.number,
 };
 
 export default StreamItem;

@@ -25,9 +25,10 @@ function StreamList({ topic, urls, change }) {
     });
   }
   if (urls && urls.length) {
+    const maxScore = _.maxBy(urls, 'im_score');
     items.push(<div key={Date.now() + 1} style={{ clear: 'both' }} />);
     _.forEach(urls, (item) => {
-      items.push(<StreamItem key={item.id} url={item} />);
+      items.push(<StreamItem key={item.id} url={item} maxScore={maxScore.im_score} />);
     });
   }
   return (
