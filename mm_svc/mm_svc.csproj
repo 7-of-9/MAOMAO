@@ -56,22 +56,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classifier\UrlClassifier.cs" />
+    <Compile Include="Shares\ShareAcceptor.cs" />
+    <Compile Include="Shares\ShareCreator.cs" />
+    <Compile Include="UrlClassify\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />
     <Compile Include="Info\SiteInfo.cs" />
-    <Compile Include="Processing\TssProducer.cs" />
-    <Compile Include="Processing\UrlProcessor.cs" />
-    <Compile Include="InternalNlp\Porter2_English.cs" />
-    <Compile Include="InternalNlp\Utils\Words.cs" />
-    <Compile Include="InternalNlp\Utils\Word.cs" />
+    <Compile Include="UrlProcess\TssProducer.cs" />
+    <Compile Include="UrlProcess\UrlProcessor.cs" />
+    <Compile Include="Util\Porter2_English.cs" />
+    <Compile Include="Util\Utils\Words.cs" />
+    <Compile Include="Util\Utils\Word.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExternalNlp\TermPair\TermPair.cs" />
     <Compile Include="Info\UrlInfo.cs" />
-    <Compile Include="Terms\CorrelatedGoldens.cs" />
-    <Compile Include="Terms\Correlations.cs" />
-    <Compile Include="Terms\GoldenParents.cs" />
-    <Compile Include="Terms\GoldenPaths.cs" />
-    <Compile Include="Terms\GoldenTopics.cs" />
+    <Compile Include="Terms_Topics\CorrelatedGoldens.cs" />
+    <Compile Include="Terms_Topics\Correlations.cs" />
+    <Compile Include="Terms_Topics\GoldenParents.cs" />
+    <Compile Include="Terms_Topics\GoldenPaths.cs" />
+    <Compile Include="Terms_Topics\GoldenTopics.cs" />
     <Compile Include="User\History.cs" />
     <Compile Include="User\Register.cs" />
   </ItemGroup>

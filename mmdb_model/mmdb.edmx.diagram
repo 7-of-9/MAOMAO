@@ -48,6 +48,14 @@
         <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.25" PointY="0.625" />
         <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
         <AssociationConnector Association="mm02Model.fk_user_url_user" />
+        <EntityTypeShape EntityType="mm02Model.share_active" Width="1.5" PointX="19.25" PointY="2.625" />
+        <AssociationConnector Association="mm02Model.FK_share_active_user" />
+        <EntityTypeShape EntityType="mm02Model.share" Width="1.5" PointX="17" PointY="2.625" />
+        <AssociationConnector Association="mm02Model.FK_share_active_share" />
+        <AssociationConnector Association="mm02Model.fk_share_source_user" />
+        <AssociationConnector Association="mm02Model.fk_share_target_user" />
+        <AssociationConnector Association="mm02Model.FK_share_term" />
+        <AssociationConnector Association="mm02Model.FK_share_url" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1,8 +1,7 @@
 --
--- RUN FROM DEV: copies missing url & (todo: user_url) prod URL data to dev...
+-- RUN FROM DEV: copies missing url & user_url prod URL data to dev...
 --
 -- select count(id) from MM02.mm02.dbo.url where id not in (select id from url)
--- (todo: select count(id) from MM02.mm02.dbo.user_url where id not in (select id from user_url))
 
 -- copy reference data: awis_
 	declare db_cursor_outer cursor for select id from MM02.mm02.dbo.awis_cat where id not in (select id from awis_cat)
@@ -37,15 +36,15 @@
 	end;
 	DEALLOCATE db_cursor_outer;
 
--- copy user-URL data
+-- copy user-url data
 	declare db_cursor_outer cursor for select id from MM02.mm02.dbo.user_url where id not in (select id from user_url)
 	declare @user_url_id bigint
 	open db_cursor_outer;
 	fetch next from db_cursor_outer into @user_url_id;
 	while @@FETCH_STATUS = 0
 	begin
-		declare @msg nvarchar(100) set @msg = N'copying user-url data:' + cast(@user_url_id as nvarchar) + N'...'
-		RAISERROR(@msg,0,1) WITH NOWAIT
+		declare @msg3 nvarchar(100) set @msg3 = N'copying user-url data:' + cast(@user_url_id as nvarchar) + N'...'
+		RAISERROR(@msg3,0,1) WITH NOWAIT
 		SET IDENTITY_INSERT user_url on
 
 		insert into user_url (id, user_id, url_id, nav_utc, im_score, audible_pings, time_on_tab)
@@ -59,7 +58,7 @@
 
 
 /*
-alter proc copy_prod_url_data (@url_id bigint)
+ALTER proc [dbo].[copy_prod_url_data] (@url_id bigint)
 as begin
 
 --declare @url_id bigint set @url_id = 10375
@@ -97,10 +96,11 @@ as begin
 			[meta_all] ,
 			[processed_at_utc] ,
 			[processed_golden_count] ,
-			[mapped_wiki_terms] ,
 			[unmapped_wiki_terms] ,
+			[mapped_wiki_terms] ,
 			[img_url] ,
-			[nlp_suitability_score] 
+			[nlp_suitability_score],
+			[disambig_wiki_terms]
 		)  select * from MM02.mm02.dbo.url where id = @url_id
 		SET IDENTITY_INSERT [url] off
 	end
@@ -132,22 +132,24 @@ as begin
 	DEALLOCATE db_cursor;
 
 	-- copy url_terms
-	IF NOT EXISTS (SELECT * FROM [url_term] WHERE url_id = @url_id)
-	begin
-		SET IDENTITY_INSERT [url_term] ON
-		insert into url_term (
-			[id] ,
-			[url_id],
-			[term_id] ,
-			[cal_topic_score],
-			[cal_socialtag_importance],
-			[cal_entity_relevance] ,
-			[wiki_S] ,
-			[candidate_reason] ,
-			[tss] ,
-			[tss_norm],
-			[S] ) select * from mm02.mm02.dbo.url_term where url_id = @url_id
-		SET IDENTITY_INSERT [url_term] off
-	end
+	DELETE FROM [url_term] where url_id = @url_id
+	--SET IDENTITY_INSERT [url_term] ON
+	INSERT INTO url_term (url_id, term_id, cal_topic_score, cal_socialtag_importance, cal_entity_relevance, wiki_S, candidate_reason, tss, tss_norm, S)
+		SELECT url_id, term_id, cal_topic_score, cal_socialtag_importance, cal_entity_relevance, wiki_S, candidate_reason, tss, tss_norm, S
+		FROM mm02.mm02.dbo.url_term WHERE url_id = @url_id
+	--SET IDENTITY_INSERT [url_term] off
+
+	-- copy url_parent_terms
+	DELETE FROM [url_parent_term] where url_id = @url_id
+	--SET IDENTITY_INSERT [url_parent_term] ON
+	INSERT INTO url_parent_term (url_id, term_id, pri, suggested_dynamic, found_topic, S, avg_S, S_norm, min_d_paths_to_root_url_terms, max_d_paths_to_root_url_terms, perc_ptr_topics, mmtopic_level, avg_TSS_leaf, url_title_topic)
+		SELECT url_id, term_id, pri, suggested_dynamic, found_topic, S, avg_S, S_norm, min_d_paths_to_root_url_terms, max_d_paths_to_root_url_terms, perc_ptr_topics, mmtopic_level, avg_TSS_leaf, url_title_topic
+		FROM mm02.mm02.dbo.url_parent_term WHERE url_id = @url_id
+	--SET IDENTITY_INSERT [url_parent_term] off
 end
+
+
+GO
+
+
 */

@@ -67,6 +67,28 @@
           <Property Name="seq" Type="int" Nullable="false" />
           <Property Name="seq_term_id" Type="bigint" Nullable="false" />
         </EntityType>
+        <EntityType Name="share">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="share_code" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="source_user_id" Type="bigint" Nullable="false" />
+          <Property Name="created_utc" Type="datetime" Nullable="false" />
+          <Property Name="url_id" Type="bigint" />
+          <Property Name="topic_id" Type="bigint" />
+          <Property Name="share_all" Type="bit" Nullable="false" />
+          <Property Name="target_user_id" Type="bigint" />
+        </EntityType>
+        <EntityType Name="share_active">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="share_id" Type="bigint" Nullable="false" />
+          <Property Name="user_id" Type="bigint" Nullable="false" />
+          <Property Name="accepted_utc" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="term">
           <Key>
             <PropertyRef Name="id" />
@@ -323,6 +345,78 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_share_active_share">
+          <End Role="share" Type="Self.share" Multiplicity="1" />
+          <End Role="share_active" Type="Self.share_active" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="share">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share_active">
+              <PropertyRef Name="share_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_active_user">
+          <End Role="user" Type="Self.user" Multiplicity="1" />
+          <End Role="share_active" Type="Self.share_active" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share_active">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_source_user">
+          <End Role="user" Type="Self.user" Multiplicity="1" />
+          <End Role="share" Type="Self.share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="source_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_target_user">
+          <End Role="user" Type="Self.user" Multiplicity="0..1" />
+          <End Role="share" Type="Self.share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="target_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_term">
+          <End Role="term" Type="Self.term" Multiplicity="0..1" />
+          <End Role="share" Type="Self.share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="topic_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_url">
+          <End Role="url" Type="Self.url" Multiplicity="0..1" />
+          <End Role="share" Type="Self.share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_term_cal_entity_type">
           <End Role="cal_entity_type" Type="Self.cal_entity_type" Multiplicity="0..1" />
           <End Role="term" Type="Self.term" Multiplicity="*" />
@@ -522,6 +616,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySet Name="golden_term" EntityType="Self.golden_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="gt_parent" EntityType="Self.gt_parent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="gt_path_to_root" EntityType="Self.gt_path_to_root" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="share" EntityType="Self.share" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="share_active" EntityType="Self.share_active" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term" EntityType="Self.term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_matrix" EntityType="Self.term_matrix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_type" EntityType="Self.term_type" Schema="dbo" store:Type="Tables" />
@@ -571,6 +667,30 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_gt_path_term_id" Association="Self.FK_gt_path_term_id">
             <End Role="term" EntitySet="term" />
             <End Role="gt_path_to_root" EntitySet="gt_path_to_root" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_active_share" Association="Self.FK_share_active_share">
+            <End Role="share" EntitySet="share" />
+            <End Role="share_active" EntitySet="share_active" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_active_user" Association="Self.FK_share_active_user">
+            <End Role="user" EntitySet="user" />
+            <End Role="share_active" EntitySet="share_active" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_source_user" Association="Self.fk_share_source_user">
+            <End Role="user" EntitySet="user" />
+            <End Role="share" EntitySet="share" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_target_user" Association="Self.fk_share_target_user">
+            <End Role="user" EntitySet="user" />
+            <End Role="share" EntitySet="share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_term" Association="Self.FK_share_term">
+            <End Role="term" EntitySet="term" />
+            <End Role="share" EntitySet="share" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_url" Association="Self.FK_share_url">
+            <End Role="url" EntitySet="url" />
+            <End Role="share" EntitySet="share" />
           </AssociationSet>
           <AssociationSet Name="FK_term_cal_entity_type" Association="Self.FK_term_cal_entity_type">
             <End Role="cal_entity_type" EntitySet="cal_entity_type" />
@@ -764,6 +884,32 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="user" EntitySet="users" />
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
+          <EntitySet Name="share_active" EntityType="mm02Model.share_active" />
+          <AssociationSet Name="FK_share_active_user" Association="mm02Model.FK_share_active_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share_active" EntitySet="share_active" />
+          </AssociationSet>
+          <EntitySet Name="shares" EntityType="mm02Model.share" />
+          <AssociationSet Name="FK_share_active_share" Association="mm02Model.FK_share_active_share">
+            <End Role="share" EntitySet="shares" />
+            <End Role="share_active" EntitySet="share_active" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_source_user" Association="mm02Model.fk_share_source_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_target_user" Association="mm02Model.fk_share_target_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_term" Association="mm02Model.FK_share_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_url" Association="mm02Model.FK_share_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
           <Key>
@@ -933,6 +1079,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="golden_term" Relationship="mm02Model.FK_golden_term_child" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="golden_term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="term" ToRole="url_parent_term" />
+          <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_term" FromRole="term" ToRole="share" />
         </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -1225,6 +1372,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
+          <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_url" FromRole="url" ToRole="share" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -1292,6 +1440,9 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="google_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.fk_user_url_classification_user" FromRole="user" ToRole="user_url_classification" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_user" FromRole="user" ToRole="user_url" />
+          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_user" FromRole="user" ToRole="share_active" />
+          <NavigationProperty Name="shares" Relationship="mm02Model.fk_share_source_user" FromRole="user" ToRole="share" />
+          <NavigationProperty Name="shares1" Relationship="mm02Model.fk_share_target_user" FromRole="user" ToRole="share" />
         </EntityType>
         <Association Name="fk_user_url_classification_user">
           <End Type="mm02Model.user" Role="user" Multiplicity="1" />
@@ -1314,6 +1465,107 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Principal>
             <Dependent Role="user_url">
               <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="share_active">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="share_id" Type="Int64" Nullable="false" />
+          <Property Name="user_id" Type="Int64" Nullable="false" />
+          <Property Name="accepted_utc" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="user" Relationship="mm02Model.FK_share_active_user" FromRole="share_active" ToRole="user" />
+          <NavigationProperty Name="share" Relationship="mm02Model.FK_share_active_share" FromRole="share_active" ToRole="share" />
+        </EntityType>
+        <Association Name="FK_share_active_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.share_active" Role="share_active" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share_active">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="share">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="share_code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="source_user_id" Type="Int64" Nullable="false" />
+          <Property Name="created_utc" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="url_id" Type="Int64" />
+          <Property Name="topic_id" Type="Int64" />
+          <Property Name="share_all" Type="Boolean" Nullable="false" />
+          <Property Name="target_user_id" Type="Int64" />
+          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_share" FromRole="share" ToRole="share_active" />
+          <NavigationProperty Name="user" Relationship="mm02Model.fk_share_source_user" FromRole="share" ToRole="user" />
+          <NavigationProperty Name="user1" Relationship="mm02Model.fk_share_target_user" FromRole="share" ToRole="user" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_share_term" FromRole="share" ToRole="term" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_share_url" FromRole="share" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_share_active_share">
+          <End Type="mm02Model.share" Role="share" Multiplicity="1" />
+          <End Type="mm02Model.share_active" Role="share_active" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="share">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share_active">
+              <PropertyRef Name="share_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_source_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="source_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_target_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="0..1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="target_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="0..1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="topic_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="0..1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1569,6 +1821,30 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="lastname" ColumnName="lastname" />
                 <ScalarProperty Name="firstname" ColumnName="firstname" />
                 <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="share_active">
+            <EntityTypeMapping TypeName="mm02Model.share_active">
+              <MappingFragment StoreEntitySet="share_active">
+                <ScalarProperty Name="accepted_utc" ColumnName="accepted_utc" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="share_id" ColumnName="share_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="shares">
+            <EntityTypeMapping TypeName="mm02Model.share">
+              <MappingFragment StoreEntitySet="share">
+                <ScalarProperty Name="target_user_id" ColumnName="target_user_id" />
+                <ScalarProperty Name="share_all" ColumnName="share_all" />
+                <ScalarProperty Name="topic_id" ColumnName="topic_id" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
+                <ScalarProperty Name="created_utc" ColumnName="created_utc" />
+                <ScalarProperty Name="source_user_id" ColumnName="source_user_id" />
+                <ScalarProperty Name="share_code" ColumnName="share_code" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

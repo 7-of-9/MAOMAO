@@ -7,12 +7,14 @@ using System.Globalization;
 using static mm_svc.Terms.GoldenPaths;
 using System.Collections.Generic;
 using mm_svc;
+using System.Web.Http.Cors;
 
 namespace mmapi00.Controllers
 {
     /// <summary>
     /// Returns top-level info about a URL
     /// </summary>
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class InfoController : ApiController
     {
         /// <summary>
@@ -22,7 +24,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/allowable")]
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
+        //[CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
         public IHttpActionResult IsAllowable(string tld)
         {
             if (string.IsNullOrEmpty(tld)) return BadRequest("bad tld");

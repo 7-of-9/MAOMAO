@@ -45,5 +45,7 @@ namespace mmdb_model
         public virtual DbSet<url_parent_term> url_parent_term { get; set; }
         public virtual DbSet<url> urls { get; set; }
         public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<share_active> share_active { get; set; }
+        public virtual DbSet<share> shares { get; set; }
     }
 }

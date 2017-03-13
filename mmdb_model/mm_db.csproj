@@ -105,6 +105,12 @@
       <DependentUpon>mmdb.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="share.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="share_active.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

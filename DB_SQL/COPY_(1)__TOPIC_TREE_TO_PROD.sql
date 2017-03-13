@@ -3,7 +3,7 @@
 -- RUN FROM LOCAL *** REPLACES ALL TOPIC TREE DATA ON PROD, with data from local;
 --					  also copies any missing is_topic=1 terms to prod from local ***
 -- 
--- ( >> also need to run: Export Data (SMSS) for [gt_parent] and [url_parent_term] )
+-- ( >> ??? also need to run: Export Data (SMSS) for [gt_parent] and [url_parent_term] ??? )
 --
 -- some (3) urls missing in prod compared to local (strange) -- prevents [url_parent_term] bulk copy:
 --   select distinct url_id into #tmp1 from url_parent_term

@@ -444,14 +444,14 @@ namespace wowmao
 
                     var topics = parents.Where(p => p.found_topic).ToList();
                     var suggested = parents.Where(p => p.suggested_dynamic).ToList();
-                    var url_title_topic = parents.Where(p => p.url_title_topic).SingleOrDefault();
+                    var url_title_topic = parents.Where(p => p.url_title_topic).FirstOrDefault();
 
                     txtInfo.Text += "\r\n";
 
                     // suggested
-                    txtInfo.AppendText("\r\nSUGGESTED (not topics):\r\n");
-                    suggested//.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
-                             .Where(p => !p.term.IS_TOPIC)
+                    txtInfo.AppendText("\r\nSUGGESTED (inc. other topics):\r\n");
+                    suggested.Where(p => !topics.Select(p2 => p2.term_id).Contains(p.term_id))
+                             //.Where(p => !p.term.IS_TOPIC)
                              .OrderBy(p => p.pri).ToList().ForEach(p => txtInfo.AppendText($"\t{p.term} -> S={p.S?.ToString("0.00000")}\r\n"));
                     this.wikiGoldTree.ClearTree();
                     this.tabTrees.SelectedIndex = 0;
@@ -654,8 +654,8 @@ namespace wowmao
                         this.rootPathViewer1.AddTermPaths(root_paths);
 
                         // recalc parents
-                        GoldenParents.GetOrProcessParents_SuggestedAndTopics(tag.ut.term_id, reprocess: true);
-                        var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
+                        var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(tag.ut.term_id, reprocess: true);
+                        //var parents = GoldenParents.GetStoredParents(tag.ut.term_id);
 
                         txtTermParents.Text = "TOPICS:\r\n";
                         parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
@@ -712,7 +712,7 @@ namespace wowmao
                 {
                     var url_ids = new List<long>();
                     for (int i = 0; i < 20; i++) url_ids.Add((this.lvwUrls.Items[/*rnd.Next(lvwUrls.Items.Count)*/i].Tag as url).id);
-                    var classifications = mm_svc.UrlClassifier.ClassifyUrlSet(url_ids);
+                    //var classifications = mm_svc.UrlClassifier.ClassifyUrlSet(url_ids);
                 }
 
                 //

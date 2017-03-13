@@ -62,15 +62,15 @@ namespace mmdb_model
 
         public static int SaveChangesTraceValidationErrors(this DbContext db)
         {
-            try
+            //try
             {
                 //return (int)thc.Global.RetryMaxOrThrow(() => db.SaveChanges(), 1, 3); 
                 return db.SaveChanges();
             }
-            catch (Exception ex)
-            {
-                return g.HandleOptimisticConcurrencyExceptions(db, ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    return g.HandleOptimisticConcurrencyExceptions(db, ex);
+            //}
         }
     }
 }

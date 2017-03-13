@@ -18,9 +18,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_db", "mmdb_model\mm_db.c
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BrowserExtension", "BrowserExtension", "{303B31D1-A582-4C5F-B138-8160E99480B2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Website", "Website", "{5C39C6C8-67C0-4DA9-966D-DD06D9A61452}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Websites", "Websites", "{5C39C6C8-67C0-4DA9-966D-DD06D9A61452}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{88D4EF12-311E-4451-8B3A-2DBBF849A07B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APIs", "APIs", "{88D4EF12-311E-4451-8B3A-2DBBF849A07B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{BB2DF415-8703-467C-BABB-763B99582B3F}"
 EndProject
@@ -46,13 +46,55 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm02ce", "mm02ce\mm02ce.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{89487825-29E5-4A17-B4B9-3C1EE99DA891}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MaomaoWeb", "MaomaoWeb\MaomaoWeb.xproj", "{4189327E-C2CF-4D8E-9E42-63DB5C305858}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MaomaoWebOld", "MaomaoWeb\MaomaoWebOld.xproj", "{4189327E-C2CF-4D8E-9E42-63DB5C305858}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wowmao", "wowmao\wowmao.csproj", "{C4D1A008-DACA-469E-9458-3FA758AA5BB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki_cat_crawler", "wiki_cat_crawler\wiki_cat_crawler.csproj", "{0364D81E-9497-499A-84CD-1F6D26B1D682}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki_walker", "wiki_walker\wiki_walker.csproj", "{BE74CB97-5171-49EB-86CB-BD8DA900C87E}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mm_web_app", "mm_web_app\", "{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_21092"
+		Debug.AspNetCompiler.PhysicalPath = "mm_web_app\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21092\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_21092"
+		Release.AspNetCompiler.PhysicalPath = "mm_web_app\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21092\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "21092"
+		SlnRelativePath = "mm_web_app\"
+	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mm_web_services", "mm_web_services\", "{9E009D5F-7D23-4403-BD04-3AC9480658D1}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_21296"
+		Debug.AspNetCompiler.PhysicalPath = "mm_web_services\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21296\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_21296"
+		Release.AspNetCompiler.PhysicalPath = "mm_web_services\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21296\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "21296"
+		SlnRelativePath = "mm_web_services\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +148,14 @@ Global
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,5 +175,7 @@ Global
 		{C4D1A008-DACA-469E-9458-3FA758AA5BB8} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
 		{0364D81E-9497-499A-84CD-1F6D26B1D682} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
+		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
+		{9E009D5F-7D23-4403-BD04-3AC9480658D1} = {88D4EF12-311E-4451-8B3A-2DBBF849A07B}
 	EndGlobalSection
 EndGlobal

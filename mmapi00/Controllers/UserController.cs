@@ -12,9 +12,11 @@ using WebApi.OutputCache.V2;
 using System.Dynamic;
 using WebApi.OutputCache.Core.Cache;
 using System.Threading.Tasks;
+using System.Web.Http.Cors;
 
 namespace mmapi00.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class UserController : ApiController
     {
         /// <summary>
@@ -51,7 +53,10 @@ namespace mmapi00.Controllers
                                    href = p.url.url1,
                                     img = p.url.img_url,
                                   title = p.url.meta_title,
-                })
+                                hit_utc = p.hit_utc,
+                               im_score = p.im_score,
+                            time_on_tab = p.time_on_tab
+                    })
 
             //    data = data
             //    .Select(p => new {
