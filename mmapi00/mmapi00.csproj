@@ -339,9 +339,9 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\AiExceptionFilterAttribute.cs" />
-    <Compile Include="Controllers\InfoController.cs" />
+    <Compile Include="Controllers\InfoUrlController.cs" />
+    <Compile Include="Controllers\ProcessUrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DTOs\UrlNlpInfoDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

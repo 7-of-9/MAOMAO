@@ -320,35 +320,17 @@ function nlp_calais(page_meta, test_data, url, user_id) {
   var millis = new Date().getTime();
   var content_lang = "?";
   $.ajax({
-    // TH -- old API, removed?
-    //type: "POST",
-    //url: "http://api.opencalais.com/enlighten/rest",
-
-    //data: { licenseID: 'ktkre4zbjaq96er8twch4zt3',
-    //        paramsXML: '<c:params xmlns:c=""http://s.opencalais.com/1/pred/"" xmlns:rdf=""http://www.w3.org/1999/02/22-rdf-syntax-ns#""><c:processingDirectives c:contentType=""text/txt"" c:outputFormat=""application/json"" c:discardMetadata="";""></c:processingDirectives><c:userDirectives c:allowDistribution=""true"" c:allowSearch=""true"" c:externalID=""calaisbridge"" c:submitter=""calaisbridge""></c:userDirectives><c:externalMetadata c:caller=""GnosisFirefox""/></c:params>',
-    //          content: test_data },
-
-    //crossDomain: true,
-    //contentType: "application/x-www-form-urlencoded",
-    //headers: {
-    //    "Content-Type": "application/x-www-form-urlencoded",
-    //    "outputformat": "application/json"
-    //},
-    //dataType: "JSON",
-
-    // maomao
     type: "POST",
     url: "https://api.thomsonreuters.com/permid/calais",
     data: test_data, // remove unicode from str, Calais doesn't like it
-    //async: false,
+
+      //async: false,
     contentType: "text/raw",
     crossDomain: true,
     headers: {
       "X-AG-Access-Token": millis % 3 == 0 ? "BFRb8pCzYflF9ndHBGryXZXUZXAZBYXd" // dunghd.it@gmail.com
-        :
-        millis % 3 == 1 ? "tDRSzbuifZKYL2QfH2nM37vpDMiQv4sN" // a12pct@gmail.com
-          :
-          "mq9C5G9BrsS8PMEjKjR0FTnmiISABWDx" // khapcd@gmail.com
+                         : millis % 3 == 1 ? "tDRSzbuifZKYL2QfH2nM37vpDMiQv4sN" // a12pct@gmail.com
+                         :                   "mq9C5G9BrsS8PMEjKjR0FTnmiISABWDx" // khapcd@gmail.com
       ,
       "Content-Type": "text/raw",
       "outputformat": "application/json"

@@ -34,6 +34,25 @@ namespace mmapi00.Controllers
         }
 
         /// <summary>
+        /// Stores user history
+        /// </summary>
+        /// <param name="history">JSON of user history.</param>
+        /// <returns></returns>
+        [Route("api/url_history")]
+        [HttpPost]
+        public IHttpActionResult PostUserHistory([FromBody]dynamic history)
+        {
+            if (history == null) return BadRequest("bad user_history");
+            if (history.url == null) return BadRequest("missing url");
+            if (history.userId == null) return BadRequest("missing user id");
+
+            var history_id = mm_svc.User.UserHistory.TrackUrl(
+                (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
+
+            return Ok(new { id = history_id });
+        }
+
+        /// <summary>
         /// Returns categorized URL history for the user.
         /// </summary>
         /// <param name="user_id"></param>

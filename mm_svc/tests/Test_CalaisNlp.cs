@@ -3,12 +3,24 @@ using System.Reflection;
 using System.IO;
 using Newtonsoft.Json;
 using mmdb_model;
+using mm_svc.UrlProcess;
 
 namespace tests
 {
     [TestClass]
     public class Test_CalaisNlp
     {
+        [TestMethod]
+        public void ProcessCalais_Test0()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_raw_text1.txt"))
+            using (StreamReader reader = new StreamReader(stream)) {
+                string text = reader.ReadToEnd();
+                CalaisProcessor.ProcessCalais(text);
+            }
+        }
+
         [TestMethod]
         public void ProcessNlpInfo_Calais()
         {

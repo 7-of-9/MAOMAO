@@ -15,7 +15,7 @@ namespace mmapi00.Controllers
     /// Returns top-level info about a URL
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class InfoController : ApiController
+    public class InfoUrlController : ApiController
     {
         /// <summary>
         /// Returns top-level allowability info for a TLD
@@ -24,7 +24,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/allowable")]
         [HttpGet]
-        //[CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
+        [CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
         public IHttpActionResult IsAllowable(string tld)
         {
             if (string.IsNullOrEmpty(tld)) return BadRequest("bad tld");
@@ -105,7 +105,7 @@ namespace mmapi00.Controllers
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoController t) => t.GetNlpInfo(null));
+            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoUrlController t) => t.GetNlpInfo(null));
             var url_href = (string)(nlp_info.url.href.ToString());
             this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
 
@@ -117,30 +117,9 @@ namespace mmapi00.Controllers
                new_calais_terms = ret.new_calais_terms,
                     suggestions = ret.suggestions,
                          topics = ret.topics,
-//               new_calais_pairs = ret.new_calais_pairs,
-//              mapped_wiki_terms = ret.mapped_wiki_terms,
-//            unmapped_wiki_terms = ret.unmapped_wiki_terms,
-//                 new_wiki_pairs = ret.new_wiki_pairs,
-                ms = sw.ElapsedMilliseconds });
+                             ms = sw.ElapsedMilliseconds });
         }
 
-        /// <summary>
-        /// Stores user history
-        /// </summary>
-        /// <param name="history">JSON of user history.</param>
-        /// <returns></returns>
-        [Route("api/url_history")]
-        [HttpPost]
-        public IHttpActionResult PostUserHistory([FromBody]dynamic history)
-        {
-            if (history == null) return BadRequest("bad user_history");
-            if (history.url == null) return BadRequest("missing url");
-            if (history.userId == null) return BadRequest("missing user id");
-
-            var history_id = mm_svc.User.UserHistory.TrackUrl(
-                (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
-
-            return Ok( new { id = history_id });
-        }
+  
     }
 }
