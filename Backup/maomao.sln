@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 		PublishScripts\Configurations\web1-WAWS-dev.json = PublishScripts\Configurations\web1-WAWS-dev.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_db", "mmdb_model\mm_db.csproj", "{2A14FBEE-79BC-4845-9129-0F3527426A4E}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BrowserExtension", "BrowserExtension", "{303B31D1-A582-4C5F-B138-8160E99480B2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Websites", "Websites", "{5C39C6C8-67C0-4DA9-966D-DD06D9A61452}"
@@ -24,21 +26,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{BB2DF415-8703-
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AWS", "AWS", "{28F502E6-9CE4-4A26-9F42-FA96FEFDC965}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{010A1AEA-99CB-401D-A3E7-651CF9397978}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{D722EDBD-A4B9-4C53-A0C7-25EA263C727E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{89487825-29E5-4A17-B4B9-3C1EE99DA891}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_db", "mmdb_model\mm_db.csproj", "{2A14FBEE-79BC-4845-9129-0F3527426A4E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_aws", "mm_aws\mm_aws.csproj", "{CDC450EA-3727-4BB5-BD2D-124FC51F272F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "mm_aws\tests\tests.csproj", "{70056333-80F6-4D71-86CF-0456FEEDEB29}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{010A1AEA-99CB-401D-A3E7-651CF9397978}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_svc", "mm_svc\mm_svc.csproj", "{98894532-0239-49C0-9D82-D1BFB71F9553}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "mm_svc\tests\tests.csproj", "{5ABD7D8C-E31D-4CF3-8A52-8357D0B466F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{D722EDBD-A4B9-4C53-A0C7-25EA263C727E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_global", "global\mm_global.csproj", "{17D58E56-2A83-4552-8AFE-664D78183A6B}"
 EndProject
@@ -46,7 +44,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mmapi00", "mmapi00\mmapi00.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm02ce", "mm02ce\mm02ce.csproj", "{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaomaoWeb", "MaomaoWeb\MaomaoWeb.csproj", "{4189327E-C2CF-4D8E-9E42-63DB5C305858}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{89487825-29E5-4A17-B4B9-3C1EE99DA891}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MaomaoWebOld", "MaomaoWeb\MaomaoWebOld.xproj", "{4189327E-C2CF-4D8E-9E42-63DB5C305858}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wowmao", "wowmao\wowmao.csproj", "{C4D1A008-DACA-469E-9458-3FA758AA5BB8}"
 EndProject

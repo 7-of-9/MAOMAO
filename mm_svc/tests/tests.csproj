@@ -69,6 +69,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Test_DOS_Filter.cs" />
+    <Compile Include="Test_Flow.cs" />
     <Compile Include="Test_Golden.cs" />
     <Compile Include="Test_Correlations.cs" />
     <Compile Include="Test_Porter2_English.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Test_UrlClassifier.cs" />
     <Compile Include="Test_UrlInfo.cs" />
     <Compile Include="Test_UrlProcessor.cs" />
+    <Compile Include="Test_UrlRecorder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

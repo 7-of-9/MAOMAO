@@ -65,9 +65,10 @@
     <Compile Include="UrlClassify\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />
     <Compile Include="Info\SiteInfo.cs" />
-    <Compile Include="UrlProcess\CalaisProcessor.cs" />
-    <Compile Include="UrlProcess\TssProducer.cs" />
-    <Compile Include="UrlProcess\UrlProcessor.cs" />
+    <Compile Include="UrlRecordAndProcess\CalaisProcessor_WIP.cs" />
+    <Compile Include="UrlRecordAndProcess\TssProducer.cs" />
+    <Compile Include="UrlRecordAndProcess\UrlProcessor.cs" />
+    <Compile Include="UrlRecordAndProcess\UrlRecorder.cs" />
     <Compile Include="Util\Porter2_English.cs" />
     <Compile Include="Util\Utils\Words.cs" />
     <Compile Include="Util\Utils\Word.cs" />

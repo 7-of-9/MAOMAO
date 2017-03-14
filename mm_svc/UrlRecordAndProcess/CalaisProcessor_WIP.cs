@@ -8,14 +8,19 @@ using System.Threading.Tasks;
 
 namespace mm_svc.UrlProcess
 {
-    public static class CalaisProcessor
+    public static class CalaisProcessor_WIP
     {
         /// <summary>
-        /// Processs a block of text in Calais.
+        /// Processs a block of text in Calais (ON HOLD)
         /// </summary>
         /// <param name="text"></param>
         public static void ProcessCalais(string text)
         {
+            //
+            // WIP -- this basic block is working; but figure it's probably best for now
+            //        to distribute the calls by IP address (i.e. let mm02ce do them); Reuters will just
+            //        ban the accounts if too many come from the server's single IP addr.
+            //
             var client = new RestClient("https://api.thomsonreuters.com");
             
             var req = new RestRequest("/permid/calais", Method.POST);
@@ -24,13 +29,7 @@ namespace mm_svc.UrlProcess
             req.AddHeader("X-AG-Access-Token", "tDRSzbuifZKYL2QfH2nM37vpDMiQv4sN");
             req.AddHeader("Content-Type", "text/raw");
             req.AddHeader("outputformat", "application/json");
-
-            //request.RequestFormat = DataFormat.Json;
-
             IRestResponse response = client.Execute(req);
-
-            //dynamic data = JsonConvert.DeserializeObject(response.Content);
-
             var dict = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(response.Content.ToString()) as Dictionary<string, dynamic>;
             foreach (var key in dict.Keys) {
                 if (key != "doc") {

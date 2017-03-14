@@ -35,11 +35,11 @@ namespace mm_svc
             if (awis_site == null) throw new ApplicationException("bad site");
             if (!mm_svc.SiteInfo.IsSiteAllowable(awis_site)) throw new ApplicationException("bad site");
 
-            // get URL, should not be known
-            var db_url = (url)mm_svc.UrlInfo.GetNlpInfo(url);
-            if (db_url != null && !reprocessing_known_url) throw new ApplicationException("url already known");
+            // get URL, should be known, from RecordUrl()
+            var db_url = (url)mm_svc.UrlInfo.GetUrl(url);
+            if (db_url == null) throw new ApplicationException("url not known - should already be recorded");
 
-            // create new URL record 
+            // update URL - add calais & meta data
             using (var db = mm02Entities.Create()) {
                 // get calais language
                 var cal_langs = ((IEnumerable<dynamic>)nlp_info.items).Where(p => p.type == "LANG").ToList();
@@ -47,19 +47,13 @@ namespace mm_svc
                 if (cal_langs.Count > 0)
                     cal_lang = cal_langs.First().language.ToString();
 
-                // create new url row as necessary
-                if (db_url == null) {
-                    db_url = new url();
-                    db.urls.Add(db_url);
-                    g.LogLine($"writing new url row url1={db_url.url1}");
-                }
-                else {
-                    db_url = db.urls.Find(db_url.id); // set to tracking reference
-                    g.LogLine($"updating existing url row url1={db_url.url1}");
-                    foreach (var db_url_term in db.url_term.Where(p => p.url_id == db_url.id))
-                        db.ObjectContext().DeleteObject(db_url_term);
-                    db.SaveChangesTraceValidationErrors();
-                }
+                db_url = db.urls.Find(db_url.id); // set to tracking reference
+                g.LogLine($"updating existing url row url1={db_url.url1}");
+
+                // remove [url_terms] (note: TLD title term is on [url_parent_term]
+                foreach (var db_url_term in db.url_term.Where(p => p.url_id == db_url.id))
+                    db.ObjectContext().DeleteObject(db_url_term);
+                db.SaveChangesTraceValidationErrors();
 
                 db_url.url1 = url;
                 db_url.awis_site_id = awis_site.id;
@@ -69,41 +63,33 @@ namespace mm_svc
                 db_url.meta_all = Newtonsoft.Json.JsonConvert.SerializeObject(nlp_info.meta);
                 db.SaveChangesTraceValidationErrors();
 
-                g.LogLine($"wrote/updated url url1={db_url.url1}");
+                g.LogLine($"updated url url1={db_url.url1}");
             }
 
             //
-            // Wiki terms - "corresponding" to raw underlying Calais terms (mapped by exact name match - case insensitive, accent insensitive)
-            //
-            //var mapped_wiki_term_ids = mm_svc.CalaisNlp.MaintainWikiTypeTerms(nlp_info, db_url.id, out ret.unmapped_wiki_terms);
-            //ret.mapped_wiki_terms = mapped_wiki_term_ids.Count;
-            //var wiki_pairs = mm_svc.TermPair.GetUniqueTermPairs(mapped_wiki_term_ids); // compute unique term pairs
-            //Task.Factory.StartNew<int>(() => mm_svc.TermPair.MaintainAppearanceMatrix(wiki_pairs)); // update term-pair appearance matrix - slow: run async
-
-            //
-            // "Underlying" Calais terms -- creates url_terms
+            // Underlying Calais terms -- creates [url_terms]
             //
             var calais_term_ids = mm_svc.CalaisNlp.MaintainCalaisTypeTerms(nlp_info, db_url.id, out ret.new_calais_terms); // record calais NLP terms
             calais_term_ids.Add(g.MAOMAO_ROOT_TERM_ID);                                                                    // add a master "root node" term
-            var calais_pairs = (List<TermPair>)mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);   // compute unqiue combinations of term pairs
 
             //
-            // update term-pair appearance matrix - only for new URL
-            //       
-            if (reprocessing_known_url == false)
-            {
-                Task.Factory.StartNew<int>(() => { //  - slow: run async
-                    var new_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs);
-                    g.LogLine($"MaintainAppearanceMatrix: done - new_pairs={new_pairs}");
-                    return new_pairs;
-                });  
-            }
+            // maintain term-pair appearance matrix - only for new URL
+            // UPDATE: why? not using this in any path at the moment; superceded by wiki tree, PtR & topic tree...
+            //
+            //var calais_pairs = (List<TermPair>)mm_svc.TermPair.GetUniqueTermPairs(calais_term_ids);   // compute unqiue combinations of term pairs
+            //if (reprocessing_known_url == false) {
+            //    Task.Factory.StartNew<int>(() => { //  - slow: run async
+            //        var new_pairs = mm_svc.TermPair.MaintainAppearanceMatrix(calais_pairs);
+            //        g.LogLine($"MaintainAppearanceMatrix: done - new_pairs={new_pairs}");
+            //        return new_pairs;
+            //    });  
+            //}
 
             //
             // Calculate TSS & TSS_norm for Calais terms -- updates TSS values on Calais url_terms & writes mapped wiki (golden) url_terms
             // 
             List<List<TermPath>> all_term_paths = null;
-            var l1_terms = mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocess_all: reprocessing_known_url);
+            var l1_terms = mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocessing_known_url);
 
             UrlInfo.GetTopicsAndSuggestions(db_url.id, out ret.topics, out ret.suggestions, out ret.url_title_term);
             

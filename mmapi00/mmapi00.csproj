@@ -340,7 +340,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\AiExceptionFilterAttribute.cs" />
     <Compile Include="Controllers\InfoUrlController.cs" />
-    <Compile Include="Controllers\ProcessUrlController.cs" />
+    <Compile Include="Controllers\RecordUrlController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DTOs\UrlNlpInfoDto.cs" />
     <Compile Include="Global.asax.cs">

@@ -15,7 +15,7 @@ namespace mmapi00.Controllers
     /// Returns top-level info about a URL
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class InfoUrlController : ApiController
+    public class UrlInfo : ApiController
     {
         /// <summary>
         /// Returns top-level allowability info for a TLD
@@ -52,7 +52,6 @@ namespace mmapi00.Controllers
             });
         }
 
-       
         /// <summary>
         /// Returns NLP info (if known) and overall known state for a URL
         /// </summary>
@@ -60,19 +59,17 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/url_nlpinfo")]
         [HttpGet]
-        // FIXME: NO CACHE!! seeing weird behavior on Dung's testing
-        //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days 
         public IHttpActionResult GetNlpInfo(string url)
         {
             if (string.IsNullOrEmpty(url)) return BadRequest("bad url");
 
-            var db_url = mm_svc.UrlInfo.GetNlpInfo(url);
+            var db_url = mm_svc.UrlInfo.GetUrl(url);
 
-            var topics = new List<UrlInfo.UrlParent>();
-            var suggestions = new List<UrlInfo.UrlParent>();
-            UrlInfo.UrlParent url_title_term = null;
+            var topics = new List<mm_svc.UrlInfo.UrlParent>();
+            var suggestions = new List<mm_svc.UrlInfo.UrlParent>();
+            mm_svc.UrlInfo.UrlParent url_title_term = null;
             if (db_url != null)
-                UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
+                mm_svc.UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
 
             return Ok( new { is_known = db_url != null,
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
@@ -82,44 +79,5 @@ namespace mmapi00.Controllers
                                   url = url });
         }
 
-        /// <summary>
-        /// Stores Calais NLP info for a URL
-        /// </summary>
-        /// <param name="nlp_info">JSON of Calais NLP info.</param>
-        /// <returns></returns>
-        [Route("api/url_nlpinfo_calais")]
-        [HttpPut]
-        //[InvalidateCacheOutput("GetNlpInfo")] // not desired - invalidates the cache for all URL params!! see below fixme
-        public IHttpActionResult PutNlpInfoCalais([FromBody]dynamic nlp_info)
-        {
-            //g.LogLine(System.Web.Helpers.Json.Encode(nlp_info));
-            long user_id;
-
-            Stopwatch sw = new Stopwatch(); sw.Start();
-            if (nlp_info == null) return BadRequest("bad nlp_info");
-            if (nlp_info.user_id == null) throw new ArgumentException("missing user_id");
-            if (!long.TryParse(nlp_info.user_id.ToString(), out user_id)) throw new ArgumentException("bad user_id");
-
-            // process terms & pairs
-            var ret = mm_svc.CalaisNlp.ProcessNlpPacket_URL(nlp_info);
-
-            // decache GetNlpInfo() for this url 
-            // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((InfoUrlController t) => t.GetNlpInfo(null));
-            var url_href = (string)(nlp_info.url.href.ToString());
-            this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
-
-            // record user_url history
-            var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
-            var history_id = mm_svc.User.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
-
-            return Ok(new { url = nlp_info.url.href,
-               new_calais_terms = ret.new_calais_terms,
-                    suggestions = ret.suggestions,
-                         topics = ret.topics,
-                             ms = sw.ElapsedMilliseconds });
-        }
-
-  
     }
 }

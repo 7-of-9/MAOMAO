@@ -17,7 +17,7 @@ namespace tests
             using (Stream stream = assembly.GetManifestResourceStream("tests.Resources.cal_raw_text1.txt"))
             using (StreamReader reader = new StreamReader(stream)) {
                 string text = reader.ReadToEnd();
-                CalaisProcessor.ProcessCalais(text);
+                CalaisProcessor_WIP.ProcessCalais(text);
             }
         }
 

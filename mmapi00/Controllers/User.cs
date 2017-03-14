@@ -13,11 +13,12 @@ using System.Dynamic;
 using WebApi.OutputCache.Core.Cache;
 using System.Threading.Tasks;
 using System.Web.Http.Cors;
+using mmapi00.Util;
 
 namespace mmapi00.Controllers
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class UserController : ApiController
+    public class User : ApiController
     {
         /// <summary>
         /// Register new user by google
@@ -34,17 +35,23 @@ namespace mmapi00.Controllers
         }
 
         /// <summary>
-        /// Stores user history
+        /// Stores user browse history
         /// </summary>
-        /// <param name="history">JSON of user history.</param>
+        /// <param name="user_id"></param>
+        /// <param name="hash"></param>
+        /// <param name="history">JSON of user history</param>
         /// <returns></returns>
         [Route("api/url_history")]
         [HttpPost]
-        public IHttpActionResult PostUserHistory([FromBody]dynamic history)
+        public IHttpActionResult PostUserHistory(
+            int user_id, string hash,
+            [FromBody]dynamic history)
         {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             if (history == null) return BadRequest("bad user_history");
             if (history.url == null) return BadRequest("missing url");
             if (history.userId == null) return BadRequest("missing user id");
+            if (history.userId != user_id) throw new ArgumentException("user_id mismatch");
 
             var history_id = mm_svc.User.UserHistory.TrackUrl(
                 (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
@@ -56,11 +63,14 @@ namespace mmapi00.Controllers
         /// Returns categorized URL history for the user.
         /// </summary>
         /// <param name="user_id"></param>
+        /// <param name="hash"></param>
         /// <returns></returns>
         [Route("api/users/tmp_demo_history_calc")]
         [HttpGet]
-        public IHttpActionResult DEMO_CalcCategorizedHistory_All(long user_id)
+        public IHttpActionResult DEMO_CalcCategorizedHistory_All(
+            long user_id, string hash)
         {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             var data = mm_svc.UrlClassifier.TmpDemo_ClassifyAllUserHistory(user_id);
 
             return Ok( new {
