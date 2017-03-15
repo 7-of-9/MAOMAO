@@ -11,11 +11,13 @@ namespace mm_svc.User
 {
     public static class UserHistory
     {
-        public static long TrackUrl(string url, long user_id,
+        public static long TrackUrl(string href, long user_id,
             double im_score_delta = 0,
             int time_on_tab_delta = 0,
             int audible_pings_delta = 0)
         {
+            var url = mm_global.Util.RemoveHashFromUrl(href.ToString());
+
             var db = mm02Entities.Create(); { //using (var db = mm02Entities.Create()) {
                 var db_user = db.users.Find(user_id);
                 if (db_user == null)

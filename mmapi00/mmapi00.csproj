@@ -339,15 +339,18 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\AiExceptionFilterAttribute.cs" />
-    <Compile Include="Controllers\InfoUrlController.cs" />
-    <Compile Include="Controllers\RecordUrlController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\Share.cs" />
+    <Compile Include="Controllers\UrlInfo.cs" />
+    <Compile Include="Controllers\UrlProcess.cs" />
+    <Compile Include="Controllers\UrlRecord.cs" />
+    <Compile Include="Controllers\User.cs" />
     <Compile Include="DTOs\UrlNlpInfoDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\CacheApiControllerExtensions.cs" />
+    <Compile Include="Util\CheckUserHash.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\mmapi00.pubxml" />

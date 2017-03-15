@@ -8,6 +8,7 @@ using static mm_svc.Terms.GoldenPaths;
 using System.Collections.Generic;
 using mm_svc;
 using System.Web.Http.Cors;
+using mmapi00.Util;
 
 namespace mmapi00.Controllers
 {
@@ -31,6 +32,7 @@ namespace mmapi00.Controllers
             int user_id, string hash,
             string href, string text)
         {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             if (string.IsNullOrEmpty(href) || string.IsNullOrEmpty(text)) return BadRequest();
 
             Stopwatch sw = new Stopwatch(); sw.Start();

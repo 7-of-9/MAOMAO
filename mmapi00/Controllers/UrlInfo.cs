@@ -59,6 +59,7 @@ namespace mmapi00.Controllers
         /// <returns></returns>
         [Route("api/url_nlpinfo")]
         [HttpGet]
+        //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days  // FIXME: NO CACHE!! seeing weird behavior on Dung's testing
         public IHttpActionResult GetNlpInfo(string url)
         {
             if (string.IsNullOrEmpty(url)) return BadRequest("bad url");
