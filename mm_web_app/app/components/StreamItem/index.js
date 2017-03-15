@@ -66,7 +66,7 @@ const Description = styled.p`
 
 /* eslint-disable camelcase */
 function StreamItem({ url, maxScore }) {
-  const { href, img, title, im_score, time_on_tab, hit_utc } = url;
+  const { id, href, img, title, im_score, time_on_tab, hit_utc } = url;
   const rate = Math.ceil((im_score / maxScore) * 5);
   let discoveryKeys = [];
   if (url && url.suggestions_for_url && url.suggestions_for_url.length) {
@@ -76,14 +76,14 @@ function StreamItem({ url, maxScore }) {
     <Wrapper>
       <Anchor href={href} target="_blank">
         <Image src={img || noImage} alt={title} />
-        <Title>{title}</Title>
+        <Title>{title} ({id})</Title>
       </Anchor>
       <Description> Earned XP {href.length} {moment.duration(time_on_tab).humanize()} </Description>
       <ReactStars edit={false} size={22} count={5} value={rate} />
       <Description>
         {moment(hit_utc).fromNow()}
       </Description>
-      {discoveryKeys && discoveryKeys.length && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+      {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
     </Wrapper>
   );
 }

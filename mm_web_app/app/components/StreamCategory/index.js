@@ -44,7 +44,7 @@ function StreamCategory({ parentId, parentName, topic, change }) {
           });
         }}
       >{topic.term_name} ({topic.url_ids.length})</Link>
-      {discoveryKeys && discoveryKeys.length && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+      {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
     </Wrapper>
   );
 }
