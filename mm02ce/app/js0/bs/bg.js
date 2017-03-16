@@ -369,6 +369,9 @@ function inject_cs(session, tab_id, skip_text) {
                 chrome.tabs.executeScript({
                   code: 'function mm_user_id(){ return ' + window.userId + '};'
                 });
+                chrome.tabs.executeScript({
+                  code: 'function mm_user_hash(){ return ' + window.userHash + '};'
+                });
                 $.each(cs_files, function (ndx, cs) {
                   try {
                     chrome.tabs.executeScript({
@@ -423,6 +426,9 @@ function inject_cs(session, tab_id, skip_text) {
                 if (data.allowable) {
                   chrome.tabs.executeScript({
                     code: 'function mm_user_id(){ return ' + window.userId + '};'
+                  });
+                  chrome.tabs.executeScript({
+                    code: 'function mm_user_hash(){ return ' + window.userHash + '};'
                   });
                   $.each(cs_files, function (ndx, cs) {
                     try {

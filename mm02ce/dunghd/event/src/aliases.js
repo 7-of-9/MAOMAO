@@ -93,6 +93,7 @@ function logout(token) {
     // NOTE: set value for bg_session.js
     window.isGuest = true;
     window.userId = -1;
+    window.userHash = '';
     window.enableTestYoutube = false;
 
     chrome.identity.removeCachedAuthToken({ token }, () => {

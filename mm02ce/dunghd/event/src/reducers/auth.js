@@ -32,7 +32,8 @@ export default (state = initialState, action) => {
     case 'USER_AFTER_LOGIN':
       return Object.assign({}, state, action.payload);
     case 'USER_HASH':
-      return Object.assign({}, state, { userHash: md5hash(action.payload.userHash) });
+      window.userHash = md5hash(action.payload.userHash);
+      return Object.assign({}, state, { userHash: window.userHash });
     case 'USER_AFTER_LOGOUT':
       return Object.assign({}, state, { userId: -1, userHash: '' });
     case 'FETCH_CONTACTS_FULFILLED':
