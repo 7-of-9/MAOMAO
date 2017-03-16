@@ -14,7 +14,7 @@ namespace mmapi00.Controllers
     /// Accepts and processes NLP data for a URL
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class UrlProcess : ApiController
+    public class UrlProcessController : ApiController
     {
         /// <summary>
         /// Stores Calais NLP info for a URL
@@ -23,7 +23,7 @@ namespace mmapi00.Controllers
         /// <param name="hash"></param>
         /// <param name="nlp_info">JSON of Calais NLP info</param>
         /// <returns></returns>
-        [Route("api/url_nlpinfo_calais")]
+        [Route("url/process")]
         [HttpPut]
         //[InvalidateCacheOutput("GetNlpInfo")] // not desired - invalidates the cache for all URL params!! see below fixme
         public IHttpActionResult PutNlpInfoCalais(
@@ -46,7 +46,7 @@ namespace mmapi00.Controllers
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfo t) => t.GetNlpInfo(null));
+            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfoController t) => t.GetNlpInfo(null));
             var url_href = (string)(nlp_info.url.href.ToString());
             this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
 

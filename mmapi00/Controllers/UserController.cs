@@ -18,13 +18,13 @@ using mmapi00.Util;
 namespace mmapi00.Controllers
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class User : ApiController
+    public class UserController : ApiController
     {
         /// <summary>
         /// Register new user by google
         /// </summary>
         /// <returns></returns>
-        [Route("api/users/google")]
+        [Route("user/google")]
         [HttpPost]
         public IHttpActionResult CreateUser([FromBody]user user)
         {
@@ -41,7 +41,7 @@ namespace mmapi00.Controllers
         /// <param name="hash"></param>
         /// <param name="history">JSON of user history</param>
         /// <returns></returns>
-        [Route("api/url_history")]
+        [Route("user/history")]
         [HttpPost]
         public IHttpActionResult PostUserHistory(
             int user_id, string hash,
@@ -65,7 +65,7 @@ namespace mmapi00.Controllers
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
         /// <returns></returns>
-        [Route("api/users/tmp_demo_history_calc")]
+        [Route("user/home")]
         [HttpGet]
         public IHttpActionResult DEMO_CalcCategorizedHistory_All(
             long user_id, string hash)

@@ -200,7 +200,7 @@ namespace wowmao
                     qry = qry.Where(p => p.user_url.Any(p2 => p2.user_id == user_id));
 
                 if (!string.IsNullOrEmpty(search_term)) {
-                    if (url_id != -1)
+                    if (url_id != 0)
                         qry = qry.Where(p => p.id == url_id); // search by url ID
                     else
                         qry = qry.Where(p => p.meta_all.ToLower().Contains(search_term.ToLower())); // search by meta string

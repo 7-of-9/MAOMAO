@@ -15,14 +15,14 @@ namespace mmapi00.Controllers
     /// Returns top-level info about a URL
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class UrlInfo : ApiController
+    public class UrlInfoController : ApiController
     {
         /// <summary>
         /// Returns top-level allowability info for a TLD
         /// </summary>
         /// <param name="tld">TLD on which you would like info</param>
         /// <returns></returns>
-        [Route("api/allowable")]
+        [Route("info/allowable")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60, ServerTimeSpan = 60 * 60 * 24 * 30)] // 1 hr / 30 days
         public IHttpActionResult IsAllowable(string tld)
@@ -57,7 +57,7 @@ namespace mmapi00.Controllers
         /// </summary>
         /// <param name="url">URL on which you would like NLP and known info</param>
         /// <returns></returns>
-        [Route("api/url_nlpinfo")]
+        [Route("info/get")]
         [HttpGet]
         //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days  // FIXME: NO CACHE!! seeing weird behavior on Dung's testing
         public IHttpActionResult GetNlpInfo(string url)
