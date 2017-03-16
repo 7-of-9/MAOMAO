@@ -1,12 +1,10 @@
 /* eslint consistent-return:0 */
 
 const express = require('express');
-const logger = require('./logger');
+const logger = require('./server/logger');
 
 const argv = require('minimist')(process.argv.slice(2));
-const setup = require('./middlewares/frontendMiddleware');
-const isDev = process.env.NODE_ENV !== 'production';
-const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false;
+const setup = require('./server/middlewares/frontendMiddleware');
 const resolve = require('path').resolve;
 const app = express();
 
@@ -33,15 +31,5 @@ app.listen(port, host, (err) => {
   }
 
   // Connect to ngrok in dev mode
-  if (ngrok) {
-    ngrok.connect(port, (innerErr, url) => {
-      if (innerErr) {
-        return logger.error(innerErr);
-      }
-
-      logger.appStarted(port, prettyHost, url);
-    });
-  } else {
-    logger.appStarted(port, prettyHost);
-  }
+  logger.appStarted(port, prettyHost);
 });

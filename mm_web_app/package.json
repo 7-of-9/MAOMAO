@@ -24,10 +24,10 @@
     "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress",
     "build:clean": "npm run test:clean && rimraf ./build",
     "build:dll": "node ./internals/scripts/dependencies.js",
-    "start": "cross-env NODE_ENV=development node server",
+    "start": "node ./server.js",
     "start:production": "npm run test && npm run build && npm run start:prod",
-    "start:dev": "cross-env NODE_ENV=development node server",
-    "start:prod": "cross-env NODE_ENV=production node server",
+    "start:dev": "cross-env NODE_ENV=development node server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js",
     "presetup": "npm i chalk shelljs",
     "setup": "node ./internals/scripts/setup.js",
     "postsetup": "npm run build:dll",
@@ -37,20 +37,13 @@
     "lint": "npm run lint:js",
     "lint:eslint": "eslint --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint:js": "npm run lint:eslint -- . ",
-    "lint:staged": "lint-staged",
     "pretest": "npm run test:clean && npm run lint",
     "test:clean": "rimraf ./coverage",
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "fake:api": "json-server https://mmapi00.azurewebsites.net/api/users/tmp_demo_history_calc?user_id=2 --port 3001",
-    "heroku-postbuild": "npm run build",
-    "deploy:heroku": "npm run build && cd build && git add --all && git commit --no-verify -m 'update heroku site' && git push -f heroku master"
+    "fake:api": "json-server https://mmapi00.azurewebsites.net/api/users/tmp_demo_history_calc?user_id=2 --port 3001"
   },
-  "lint-staged": {
-    "*.js": "lint:eslint"
-  },
-  "pre-commit": "lint-staged",
   "babel": {
     "presets": [
       [
@@ -294,11 +287,9 @@
     "imports-loader": "0.6.5",
     "jest-cli": "18.0.0",
     "json-server": "^0.9.6",
-    "lint-staged": "3.2.1",
     "node-plop": "0.5.4",
     "null-loader": "0.1.1",
     "plop": "1.7.3",
-    "pre-commit": "1.1.3",
     "react-addons-test-utils": "15.4.1",
     "rimraf": "2.5.4",
     "shelljs": "0.7.5",
