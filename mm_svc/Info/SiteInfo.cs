@@ -82,7 +82,7 @@ namespace mm_svc
         {
             using (var db = mm02Entities.Create())
             {
-                string tld = Util.GetTldFromUrl(site_tld_or_url);
+                string tld = mm_global.Util.GetTldFromUrl(site_tld_or_url);
 
                 // in DB list of known sites?
                 awis_cat db_cat = null;

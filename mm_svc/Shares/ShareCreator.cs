@@ -10,7 +10,7 @@ namespace mm_svc
 {
     public static class ShareCreator
     {
-        public static void CreateShare(
+        public static string CreateShare(
             
             long user_id,
 
@@ -51,6 +51,8 @@ again:
                 };
                 db.shares.Add(share);
                 db.SaveChangesTraceValidationErrors();
+
+                return share_code;
             }
         }
 

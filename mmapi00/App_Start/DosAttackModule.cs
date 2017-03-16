@@ -42,7 +42,7 @@ public class DosAttackModule : IHttpModule
 
   #endregion
 
-  private const int BANNED_REQUESTS = 20; // max requests per:
+  private const int BANNED_REQUESTS = 100; // max requests per:
   private const int REDUCTION_INTERVAL = 1000; // 1 second
   private const int RELEASE_INTERVAL = 5 * 60 * 1000; // allowed again after: 5 minutes
 

@@ -19,7 +19,7 @@ namespace mmapi00.Util
                 string goog_uid_hash = null;
                 string fb_uid_hash = null;
                 if (!string.IsNullOrEmpty(user.google_user_id))
-                    goog_uid_hash = MD5(user.google_user_id);
+                    goog_uid_hash = mm_svc.Util.Hashing.MD5(user.google_user_id);
                 else
                     ; // ***TODO: FB
 
@@ -27,21 +27,7 @@ namespace mmapi00.Util
                 var matches_fb = fb_uid_hash != null && fb_uid_hash == hash;
 
                 return matches_goog || matches_fb;
-            }
-        }
-
-        private static string MD5(string input)
-        {
-            MD5 md5 = System.Security.Cryptography.MD5.Create();
-
-            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
-            byte[] hash = md5.ComputeHash(inputBytes);
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < hash.Length; i++)
-                sb.Append(hash[i].ToString("X2"));
-
-            return sb.ToString();
+            }   
         }
     }
 }

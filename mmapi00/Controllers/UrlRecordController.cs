@@ -16,7 +16,7 @@ namespace mmapi00.Controllers
     /// Records a URL and returns its TLD title topic
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class UrlRecord : ApiController
+    public class UrlRecordController : ApiController
     {
         /// <summary>
         /// Records a URL and returns its TLD title topic
@@ -26,7 +26,7 @@ namespace mmapi00.Controllers
         /// <param name="href">URI for URL</param>
         /// <param name="text">NLP text for URL</param>
         /// <returns></returns>
-        [Route("api/url/record")]
+        [Route("url/record")]
         [HttpPut]
         public IHttpActionResult RecordUrl(
             int user_id, string hash,

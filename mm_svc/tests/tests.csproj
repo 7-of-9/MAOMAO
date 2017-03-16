@@ -72,6 +72,7 @@
     <Compile Include="Test_Flow.cs" />
     <Compile Include="Test_Golden.cs" />
     <Compile Include="Test_Correlations.cs" />
+    <Compile Include="Test_Misc.cs" />
     <Compile Include="Test_Porter2_English.cs" />
     <Compile Include="Test_Shares.cs" />
     <Compile Include="Test_SiteInfo.cs" />
