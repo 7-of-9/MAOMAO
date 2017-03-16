@@ -115,7 +115,7 @@ class App extends Component {
       .then((token) => {
         if (token) {
           this.props.dispatch(fetchContacts());
-          return createUser(`${this.props.apiUrl}/users/google`, {
+          return createUser(`${this.props.apiUrl}/user/google`, {
             email: token.info.email,
             firstName: token.info.family_name,
             lastName: token.info.given_name,

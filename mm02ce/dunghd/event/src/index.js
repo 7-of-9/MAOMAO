@@ -222,6 +222,12 @@ function autoLogin() {
       axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
         .then((response) => {
           store.dispatch({
+            type: 'USER_HASH',
+            payload: {
+              userHash: response.data.sub,
+            },
+          });
+          store.dispatch({
             type: 'AUTH_FULFILLED',
             payload: {
               token,
@@ -235,7 +241,7 @@ function autoLogin() {
           // register user
           axios({
             method: 'post',
-            url: `${config.apiUrl}/users/google`,
+            url: `${config.apiUrl}/user/google`,
             data: queryString({
               email: response.data.email,
               firstName: response.data.family_name,

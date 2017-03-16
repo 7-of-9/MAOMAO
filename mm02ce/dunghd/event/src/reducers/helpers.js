@@ -1,3 +1,11 @@
+import md5 from 'blueimp-md5';
+
+export function md5hash(userId) {
+  const hash = md5(userId);
+  const toUpperCase = String.prototype.toUpperCase;
+  return toUpperCase.call(hash);
+}
+
 function debugCtxMenu() {
   chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
@@ -10,7 +18,7 @@ function debugCtxMenu() {
 export function ctxMenuLogin(userInfo) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.4.12',
+    title: 'v0.4.13',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });
@@ -30,7 +38,7 @@ export function ctxMenuLogin(userInfo) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.4.12',
+    title: 'v0.4.13',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });

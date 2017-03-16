@@ -188,17 +188,18 @@ const authLogin = () => (
         type: 'AUTH_PENDING',
       });
       return checkAuth()
-        .then(data => dispatch(
-          actionCreator('AUTH_FULFILLED', data)),
-      ).catch((error) => {
-        // Try to logout and remove cache token
-        if (firebase.auth().currentUser) {
-          firebase.auth().signOut();
-        }
-
-        dispatch(actionCreator('AUTH_REJECTED', { error }));
-      });
+        .then((data) => {
+          dispatch(actionCreator('USER_HASH', { userHash: data.info.sub }));
+          dispatch(actionCreator('AUTH_FULFILLED', data));
+        }).catch((error) => {
+          // Try to logout and remove cache token
+          if (firebase.auth().currentUser) {
+            firebase.auth().signOut();
+          }
+          dispatch(actionCreator('AUTH_REJECTED', { error }));
+        });
     }
+    dispatch(actionCreator('USER_HASH', { userHash: auth.info.sub }));
     return dispatch(
       actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
     );

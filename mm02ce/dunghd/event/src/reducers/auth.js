@@ -1,5 +1,5 @@
 // read data from local storage for checking user has login or not
-import { ctxMenuLogin, ctxMenuLogout } from './helpers';
+import { ctxMenuLogin, ctxMenuLogout, md5hash } from './helpers';
 
 const initialState = {
   isLogin: false,
@@ -9,6 +9,7 @@ const initialState = {
   isFetchContacts: false,
   info: {},
   userId: -1,
+  userHash: '',
   contacts: [],
 };
 
@@ -30,8 +31,10 @@ export default (state = initialState, action) => {
       });
     case 'USER_AFTER_LOGIN':
       return Object.assign({}, state, action.payload);
+    case 'USER_HASH':
+      return Object.assign({}, state, { userHash: md5hash(action.payload.userHash) });
     case 'USER_AFTER_LOGOUT':
-      return Object.assign({}, state, { userId: -1 });
+      return Object.assign({}, state, { userId: -1, userHash: '' });
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
     case 'AUTH_REJECTED':
