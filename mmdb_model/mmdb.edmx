@@ -79,6 +79,7 @@
           <Property Name="topic_id" Type="bigint" />
           <Property Name="share_all" Type="bit" Nullable="false" />
           <Property Name="target_user_id" Type="bigint" />
+          <Property Name="target_user_ref" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="share_active">
           <Key>
@@ -165,6 +166,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="img_url" Type="nvarchar" MaxLength="512" />
           <Property Name="nlp_suitability_score" Type="int" />
           <Property Name="disambig_wiki_terms" Type="int" Nullable="false" />
+          <Property Name="W" Type="float" Nullable="false" />
         </EntityType>
         <EntityType Name="url_parent_term">
           <Key>
@@ -858,23 +860,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="term" EntitySet="terms" />
             <End Role="url_parent_term" EntitySet="url_parent_term" />
           </AssociationSet>
-          <EntitySet Name="urls" EntityType="mm02Model.url" />
-          <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
-            <End Role="awis_site" EntitySet="awis_site" />
-            <End Role="url" EntitySet="urls" />
-          </AssociationSet>
-          <AssociationSet Name="FK_url_parent_term_url" Association="mm02Model.FK_url_parent_term_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_parent_term" EntitySet="url_parent_term" />
-          </AssociationSet>
-          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="url_term" EntitySet="url_term" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
-            <End Role="url" EntitySet="urls" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
           <EntitySet Name="users" EntityType="mm02Model.user" />
           <AssociationSet Name="fk_user_url_classification_user" Association="mm02Model.fk_user_url_classification_user">
             <End Role="user" EntitySet="users" />
@@ -906,9 +891,26 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="term" EntitySet="terms" />
             <End Role="share" EntitySet="shares" />
           </AssociationSet>
+          <EntitySet Name="urls" EntityType="mm02Model.url" />
+          <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
+            <End Role="awis_site" EntitySet="awis_site" />
+            <End Role="url" EntitySet="urls" />
+          </AssociationSet>
           <AssociationSet Name="FK_share_url" Association="mm02Model.FK_share_url">
             <End Role="url" EntitySet="urls" />
             <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_parent_term_url" Association="mm02Model.FK_url_parent_term_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_parent_term" EntitySet="url_parent_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_urlTerms_url" Association="mm02Model.FK_urlTerms_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -1277,8 +1279,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="audible_pings" Type="Int32" />
           <Property Name="time_on_tab" Type="Int64" />
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.FK_user_url_classification_user_url" FromRole="user_url" ToRole="user_url_classification" />
-          <NavigationProperty Name="url" Relationship="mm02Model.fk_user_url_url" FromRole="user_url" ToRole="url" />
           <NavigationProperty Name="user" Relationship="mm02Model.fk_user_url_user" FromRole="user_url" ToRole="user" />
+          <NavigationProperty Name="url" Relationship="mm02Model.fk_user_url_url" FromRole="user_url" ToRole="url" />
         </EntityType>
         <Association Name="FK_golden_term_child">
           <End Type="mm02Model.term" Role="term" Multiplicity="1" />
@@ -1347,78 +1349,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Principal>
             <Dependent Role="url_parent_term">
               <PropertyRef Name="term_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="url">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="url1" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
-          <Property Name="calais_as_of_utc" Type="DateTime" Precision="3" />
-          <Property Name="awis_site_id" Type="Int64" Nullable="false" />
-          <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="processed_at_utc" Type="DateTime" Precision="3" />
-          <Property Name="processed_golden_count" Type="Int32" Nullable="false" />
-          <Property Name="unmapped_wiki_terms" Type="Int32" Nullable="false" />
-          <Property Name="mapped_wiki_terms" Type="Int32" Nullable="false" />
-          <Property Name="img_url" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
-          <Property Name="nlp_suitability_score" Type="Int32" />
-          <Property Name="disambig_wiki_terms" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
-          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
-          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
-          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
-          <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_url" FromRole="url" ToRole="share" />
-        </EntityType>
-        <Association Name="FK_url_awis_site">
-          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
-          <End Type="mm02Model.url" Role="url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="awis_site">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url">
-              <PropertyRef Name="awis_site_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_url_parent_term_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_parent_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_urlTerms_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="url_term">
-              <PropertyRef Name="url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user_url_url">
-          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
-          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1507,6 +1437,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="user" Relationship="mm02Model.fk_share_source_user" FromRole="share" ToRole="user" />
           <NavigationProperty Name="user1" Relationship="mm02Model.fk_share_target_user" FromRole="share" ToRole="user" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_share_term" FromRole="share" ToRole="term" />
+          <Property Name="target_user_ref" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="url" Relationship="mm02Model.FK_share_url" FromRole="share" ToRole="url" />
         </EntityType>
         <Association Name="FK_share_active_share">
@@ -1557,6 +1488,43 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="url">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url1" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="calais_as_of_utc" Type="DateTime" Precision="3" />
+          <Property Name="awis_site_id" Type="Int64" Nullable="false" />
+          <Property Name="cal_lang" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="meta_title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="meta_all" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="processed_at_utc" Type="DateTime" Precision="3" />
+          <Property Name="processed_golden_count" Type="Int32" Nullable="false" />
+          <Property Name="unmapped_wiki_terms" Type="Int32" Nullable="false" />
+          <Property Name="mapped_wiki_terms" Type="Int32" Nullable="false" />
+          <Property Name="img_url" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="nlp_suitability_score" Type="Int32" />
+          <Property Name="disambig_wiki_terms" Type="Int32" Nullable="false" />
+          <Property Name="W" Type="Double" Nullable="false" />
+          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
+          <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_url" FromRole="url" ToRole="share" />
+          <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
+          <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
+          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
+        </EntityType>
+        <Association Name="FK_url_awis_site">
+          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
+          <End Type="mm02Model.url" Role="url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="awis_site">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url">
+              <PropertyRef Name="awis_site_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_share_url">
           <End Type="mm02Model.url" Role="url" Multiplicity="0..1" />
           <End Type="mm02Model.share" Role="share" Multiplicity="*" />
@@ -1565,6 +1533,42 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="share">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_url_parent_term_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_parent_term" Role="url_parent_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_parent_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_urlTerms_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_term" Role="url_term" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_term">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_user_url_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
               <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -1787,26 +1791,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="urls">
-            <EntityTypeMapping TypeName="mm02Model.url">
-              <MappingFragment StoreEntitySet="url">
-                <ScalarProperty Name="disambig_wiki_terms" ColumnName="disambig_wiki_terms" />
-                <ScalarProperty Name="nlp_suitability_score" ColumnName="nlp_suitability_score" />
-                <ScalarProperty Name="img_url" ColumnName="img_url" />
-                <ScalarProperty Name="mapped_wiki_terms" ColumnName="mapped_wiki_terms" />
-                <ScalarProperty Name="unmapped_wiki_terms" ColumnName="unmapped_wiki_terms" />
-                <ScalarProperty Name="processed_golden_count" ColumnName="processed_golden_count" />
-                <ScalarProperty Name="processed_at_utc" ColumnName="processed_at_utc" />
-                <ScalarProperty Name="meta_all" ColumnName="meta_all" />
-                <ScalarProperty Name="meta_title" ColumnName="meta_title" />
-                <ScalarProperty Name="cal_lang" ColumnName="cal_lang" />
-                <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
-                <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
-                <ScalarProperty Name="url1" ColumnName="url" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="mm02Model.user">
               <MappingFragment StoreEntitySet="user">
@@ -1838,6 +1822,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySetMapping Name="shares">
             <EntityTypeMapping TypeName="mm02Model.share">
               <MappingFragment StoreEntitySet="share">
+                <ScalarProperty Name="target_user_ref" ColumnName="target_user_ref" />
                 <ScalarProperty Name="target_user_id" ColumnName="target_user_id" />
                 <ScalarProperty Name="share_all" ColumnName="share_all" />
                 <ScalarProperty Name="topic_id" ColumnName="topic_id" />
@@ -1845,6 +1830,27 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="created_utc" ColumnName="created_utc" />
                 <ScalarProperty Name="source_user_id" ColumnName="source_user_id" />
                 <ScalarProperty Name="share_code" ColumnName="share_code" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="urls">
+            <EntityTypeMapping TypeName="mm02Model.url">
+              <MappingFragment StoreEntitySet="url">
+                <ScalarProperty Name="W" ColumnName="W" />
+                <ScalarProperty Name="disambig_wiki_terms" ColumnName="disambig_wiki_terms" />
+                <ScalarProperty Name="nlp_suitability_score" ColumnName="nlp_suitability_score" />
+                <ScalarProperty Name="img_url" ColumnName="img_url" />
+                <ScalarProperty Name="mapped_wiki_terms" ColumnName="mapped_wiki_terms" />
+                <ScalarProperty Name="unmapped_wiki_terms" ColumnName="unmapped_wiki_terms" />
+                <ScalarProperty Name="processed_golden_count" ColumnName="processed_golden_count" />
+                <ScalarProperty Name="processed_at_utc" ColumnName="processed_at_utc" />
+                <ScalarProperty Name="meta_all" ColumnName="meta_all" />
+                <ScalarProperty Name="meta_title" ColumnName="meta_title" />
+                <ScalarProperty Name="cal_lang" ColumnName="cal_lang" />
+                <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
+                <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
+                <ScalarProperty Name="url1" ColumnName="url" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

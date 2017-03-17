@@ -28,6 +28,7 @@ namespace mmdb_model
         public Nullable<long> topic_id { get; set; }
         public bool share_all { get; set; }
         public Nullable<long> target_user_id { get; set; }
+        public string target_user_ref { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<share_active> share_active { get; set; }

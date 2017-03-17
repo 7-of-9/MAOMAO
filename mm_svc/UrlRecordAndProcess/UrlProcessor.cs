@@ -163,25 +163,22 @@ namespace mm_svc
                 //     (demo done) -- categorization of user_history; quite possibly per original concept, of url categorization
                 //                     being user-specific, i.e. clustering around previously categorized
                 //     (demo WIP...) -- homepage is view of user_history + discovery
-                // *** TODO *** log XP, return URL title topic, persist categorizatons (perf)
+                //
+                //   (done) -- include url title topic in categorization
                 //
                 //  *******
                 //
                 // WIP -- EDITORIALIZATION 
-                // 
                 // NOTES: * avg_S_weighted values are pretty crazy, making quantification difficult: originate from Topic S value (0.01 - 2629 !)
-                //
                 //        * TSS boost for title/desc matches by S2 term is maybe not good
                 //              (e.g. 4453 - "comedian" term is not featuring at all)
                 //        * LOW WIKI # MAPPED TERMS NEEDS MUCH STRONGER NUMERIC WEIGHTING -- big leading indicator of failed classifications
                 //        * "Ryan Rems" (6787271) -- missing underlying wiki_link data ("filipino comedians" link, according to web wiki) --> wiki_crawler!
                 //      ...
                 //
-                // TODO: move auto-flag logic to persist against [url]; don't write [url_parent_term] topic rows for 
+                // (done): move auto-flag logic to persist against [url]; don't write [url_parent_term] topic rows for 
                 //       URLs under threshold (only suggestions & url title topic?); want XP popup to only credit good categorization topics
                 //       and cateogrization on homepage to exclude badly categorized;
-                //
-                //   first -- include url title topic in categorization...
                 //
                 // -------
                 // NOTE: in all of this -- once a term has had its parents processed, (i.e once gt_parent is populated)
@@ -229,6 +226,16 @@ namespace mm_svc
 
                 }
                 g.LogInfo($"url_id={url_id} CalcAndStoreUrlParentTerms DONE: ms={sw.ElapsedMilliseconds} ");
+
+                //
+                // AUTO-FLAG -- save W value (overall quality/fit of parent topic(s))
+                //
+                int warn_count;
+                double warn_degree;
+                string info;
+                var url_parent_terms = db.url_parent_term.Where(p => p.url_id == url_id && !p.url_title_topic).ToListNoLock();
+                UrlAutoFlag.CalcAutoFlag(url_parent_terms, out warn_count, out warn_degree, out info);
+                url.W = warn_degree;
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms

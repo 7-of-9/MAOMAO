@@ -30,7 +30,7 @@ namespace mmdb_model
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_url_classification> user_url_classification { get; set; }
-        public virtual url url { get; set; }
         public virtual user user { get; set; }
+        public virtual url url { get; set; }
     }
 }
