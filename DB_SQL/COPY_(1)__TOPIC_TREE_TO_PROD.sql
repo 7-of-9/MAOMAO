@@ -12,6 +12,7 @@
  
 declare @term_id bigint
 
+/*
 -- sync terms created on local, missing on prod
 --
 -- delete from MM02.mm02.dbo.url_parent_term where term_id in (select id from term where id < 0)
@@ -35,7 +36,7 @@ declare @term_id bigint
 		fetch next from db_cursor_outer into @term_id;
 	end;
 	DEALLOCATE db_cursor_outer;
-
+*/
 
 -- sync is_topic_root -> prod
 exec MM02.mm02.dbo.upd_term_clear_topic_root_all_terms;

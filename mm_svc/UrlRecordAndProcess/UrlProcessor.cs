@@ -251,9 +251,7 @@ namespace mm_svc
                 //               pushing results to common root terms, e.g. "arts", "politics", "history" etc. )
                 //
                 // >>> todo -- problem URLs --- 
-                //   10821 (bugatti),
-                //   3991 (vines), 
-                //   283 (too much weight to low TSS term)
+                //   3991 (vines),  
                 // 
                 // >>> todo -- full reprocess run on PROD (somehow?!) them restore to dev
                 //          -- run with some reasonable filter in XP Popup mode to spot-fix URLs "organically"

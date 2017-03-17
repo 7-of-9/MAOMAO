@@ -122,7 +122,7 @@ namespace wowmao.Controls
                         var child_node = NodeFromTerm(link.child_term, link);
                         parent_node.Nodes.Add(child_node);
 
-                        if (!link.disabled)// && child_node.Level < 3)
+                        if (!link.disabled && !Debugger.IsAttached)
                             tvw.SelectedNode = child_node;
                     }
                     else ;// Debugger.Break();
@@ -226,21 +226,23 @@ namespace wowmao.Controls
         private void mnuFindInWikiTree_Click(object sender, EventArgs e) { if (tvw.SelectedNode == null) return; OnFindInWikiTree?.Invoke(this.GetType(), new OnFindInWikiTreeEventArgs() { term_id = (tvw.SelectedNode.Tag as NodeTag).t.id }); }
 
         // toggle link enabled/disabled -- retains terms as topics, just prevents the link being used
-        private void mnuExcludeLink_Click(object sender, EventArgs e) {
+        private void mnuToggleEnableLink_Click(object sender, EventArgs e) {
             if (tvw.SelectedNode == null) return; var tag = tvw.SelectedNode.Tag as NodeTag;
             using (var db = mm02Entities.Create()) {
-
-                // first disable any other links for this term
-                mnuOnlyHere2_Click(null, null);
-
-                // now enable it here
                 var link = db.topic_link.Where(p => p.id == tag.link.id).FirstOrDefaultNoLock();
+
                 if (link != null) {
+                    // if enabling here, first disable any other links for this term
+                    if (link.disabled)
+                        mnuOnlyHere2_Click(null, null);
+                    
+                    // toggle enabled state here
                     link.disabled = !link.disabled;
                     link.mmtopic_level = tvw.SelectedNode.Level + 1;
                     try { db.SaveChanges(); } catch (Exception ex) { MessageBox.Show(ex.ToDetailedString()); link.disabled = !link.disabled; }
-                    tag.link = link;
+                    //tag.link = link;
                 }
+                tag.link = db.topic_link.Where(p => p.id == tag.link.id).FirstOrDefaultNoLock();
                 RefreshNode(tvw.SelectedNode, tag.t, tag.link);
             }
         }
@@ -472,7 +474,7 @@ namespace wowmao.Controls
             this.mnuExcludeLink.Name = "mnuExcludeLink";
             this.mnuExcludeLink.Size = new System.Drawing.Size(158, 22);
             this.mnuExcludeLink.Text = "toggle DISABLE";
-            this.mnuExcludeLink.Click += new System.EventHandler(this.mnuExcludeLink_Click);
+            this.mnuExcludeLink.Click += new System.EventHandler(this.mnuToggleEnableLink_Click);
             // 
             // mnuRootTopic
             // 
