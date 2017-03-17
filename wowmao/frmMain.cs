@@ -182,6 +182,8 @@ namespace wowmao
 
             lvwUrls.Items.Clear();
             using (var db = mm02Entities.Create()) {
+                db.Database.CommandTimeout = 60 * 10; // 10 mins!
+
                 //lvwUrls.BeginUpdate();
                 var items = new List<ListViewItem>();
                 var rnd = new Random();
@@ -608,6 +610,10 @@ namespace wowmao
                         parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList().ForEach(p => txtTermParents.AppendText($"\t{p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
                         txtTermParents.Select(0, 0);
                         txtTermParents.ScrollToCaret();
+
+                        // show suggestions in wikitree
+                        this.wikiGoldTree.ClearTree();
+                        parents.Where(p => !p.is_topic).ToList().ForEach(p => this.wikiGoldTree.AddTerm(p.parent_term.id));
                     }
                 }
             }

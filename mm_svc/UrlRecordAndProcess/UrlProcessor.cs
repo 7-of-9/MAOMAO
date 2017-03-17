@@ -23,8 +23,6 @@ namespace mm_svc
     /// </summary>
     public class UrlProcessor
     {
-
-
         // TODO: record calais_nlp & rawText for dung's node.js wiki crawler
 
         //
@@ -106,11 +104,16 @@ namespace mm_svc
                     db.SaveChangesTraceValidationErrors();
                     g.LogInfo($"url_id={url_id} MapWikiGoldenTerms DONE: ms={sw.ElapsedMilliseconds} ");
                 }
-                // DEDUPE WIKI: dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
                 var wiki_url_terms = url.url_term.Where(p => p.wiki_S != null).ToList();
                 if (wiki_url_terms != null && (reprocess_all || reprocess_map_wiki)) {
+                    
+                    // DEDUPE WIKI: dedupe wiki mapped terms by name (for NS0/14 collisons); pick the term that has the best (highest count) golden parents chain
                     wiki_url_terms = DedupeWikiMappedTerms(url_id, db, wiki_url_terms);
                     g.LogInfo($"url_id={url_id} DedupeWikiMappedTerms DONE: ms={sw.ElapsedMilliseconds} ");
+
+                    // RENORMALIZE TSS FOR WIKI TERMS...
+                    wiki_url_terms.ForEach(p => p.tss_norm = p.tss / wiki_url_terms.Max(p2 => p2.tss));
+                    db.SaveChangesTraceValidationErrors();
                 }
 
                 //
@@ -223,7 +226,6 @@ namespace mm_svc
                     // find most common suggested parent, across all wiki terms; i.e. map from multiple suggested parents (dynamic & topics) down to ranked list
                     // of suggested related parent terms and topic terms, for the url.
                     CalcAndStoreUrlParentTerms_Dynamic(url_id, db, all_parents_dynamic);
-
                 }
                 g.LogInfo($"url_id={url_id} CalcAndStoreUrlParentTerms DONE: ms={sw.ElapsedMilliseconds} ");
 
@@ -240,7 +242,24 @@ namespace mm_svc
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
 
-            ret1:
+                //
+                // NOTES: * low-W urls -- consider "promoting" top suggested parent to true topic parent; seems very often a good match?
+                //
+                //        * consider taking top topic for EACH wiki url term - this might work well
+                //          (instead of (or as well as) current scoring/aggregating for topics across all url terms (commonality of topics))
+                //             ( this is quite fundamental; a URL can be about MULTIPLE disparate terms -- the search for "commonality" is
+                //               pushing results to common root terms, e.g. "arts", "politics", "history" etc. )
+                //
+                // >>> todo -- problem URLs --- 
+                //   10821 (bugatti),
+                //   3991 (vines), 
+                //   283 (too much weight to low TSS term)
+                // 
+                // >>> todo -- full reprocess run on PROD (somehow?!) them restore to dev
+                //          -- run with some reasonable filter in XP Popup mode to spot-fix URLs "organically"
+                //
+
+ret1:
                 var qry = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type")
                                      .Include("term.golden_term").Include("term.golden_term1")
                                      .Include("term.gt_path_to_root1").Include("term.gt_path_to_root1.term")
@@ -287,12 +306,12 @@ namespace mm_svc
             mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
         }
 
-        [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.00"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.00"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")} max_TSS_leaf={max_TSS_leaf.ToString(""0.00"")})")]
+        [DebuggerDisplay(@"{t} count = {count} mmtopic_level = {mmtopic_level} S = {S.ToString(""0.0000"")} S_norm = {S_norm.ToString(""0.0000"")} (avg_S={avg_S.ToString(""0.0000"")} avg_S_norm={avg_S_norm.ToString(""0.0000"")} max_S_norm={max_S_norm.ToString(""0.0000"")} avg_TSS_leaf={avg_TSS_leaf.ToString(""0.00"")} max_TSS_leaf={max_TSS_leaf.ToString(""0.00"")})")]
         private class TopicInfo {
             public term t;
             public topic_link link;
             public int mmtopic_level;
-            public double avg_S, avg_S_norm;
+            public double avg_S, avg_S_norm, max_S_norm;
             public double S, S_norm;
             public double avg_TSS_leaf, max_TSS_leaf;
             public int count;
@@ -312,7 +331,9 @@ namespace mm_svc
             //if (all_parents_topics != null && all_term_paths != null && wiki_url_terms != null) {
 
                 // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
-                all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
+                // NO!!!!! this is terrible! CANNOT compare or normalize raw S values from different parent term lists!
+                //all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
+
                 var sorted_new_s_norm = all_parents_topics.OrderByDescending(p => p.S_norm).ToList();
 
                 // get single active topic_link for supplied topics...
@@ -329,13 +350,14 @@ namespace mm_svc
                                                                                 : topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key && p2.disabled == false),
                                                         avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
                                                         avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
+                                                        max_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Max(p2 => p2.S_norm),
                                                         count = p.Count() })
                                                     .OrderByDescending(p => p.avg_S)
                                                     .ToList();
 
                 // move to TopicInfo 
                 var counted_info = counted_terms.Select(p => new TopicInfo {
-                    t = p.parent_term, avg_S = p.avg_S, avg_S_norm = p.avg_S_norm, count = p.count, link = p.link,
+                    t = p.parent_term, avg_S = p.avg_S, max_S_norm = p.max_S_norm, avg_S_norm = p.avg_S_norm, count = p.count, link = p.link,
                     mmtopic_level = p.link == null
                                             ? 1                    // root term, no link to any parent
                                             : p.link.mmtopic_level // child term in topic_link; use the defined level there
@@ -363,8 +385,8 @@ namespace mm_svc
                 // weightings
                 counted_info.ForEach(p =>
                     p.S = Math.Pow(p.count, 1.5)
-                        * Math.Pow(p.avg_S, 2.0)
-                        * (Math.Pow(p.max_TSS_leaf, 2.0) / 1)
+                        * Math.Pow(p.max_S_norm, 1.5)//* Math.Pow(p.avg_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
+                        * (Math.Pow(p.max_TSS_leaf, 2.0))
                         * (Math.Pow(p.mmtopic_level, 0.8) / 100)
                 );
 
@@ -391,9 +413,7 @@ namespace mm_svc
                                                 avg_TSS_leaf = p.avg_TSS_leaf
                                             }).ToList();
 
-                //
-                // AUTO-FLAG (curation/requiring editorialization) -- 
-                //
+                // AUTO-FLAG (curation/requiring editorialization) -- metadata
                 double perc_topics_all_term_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
                 url_parent_terms.ForEach(p => {
                     // metric 1 -- min/max topic distances from leaf terms -- across all paths to root of all URL terms

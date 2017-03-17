@@ -95,7 +95,7 @@ namespace mm_svc.Terms
                     //                 a bit less for parent repetition count
                     //                 and much much less for NS# (editorial topic categorization kind of surplants this)
                     //                 
-                    (1 / (Math.Pow(p.gl_inv, 2.0)))
+                    (1 / (Math.Pow(p.gl_inv, 8.0)))
                     * Math.Pow(p.t.wiki_nscount ?? 0, (1 / 3.0))
                     * Math.Pow(topic_name_counts.Single(p2 => p2.term_name == p.t.name).count, (1.5))
 
@@ -110,6 +110,8 @@ namespace mm_svc.Terms
                     //
                     * (p.t.id == (long)g.WIKI_TERM.History ? 0.05 : 1)
                     * (p.t.id == (long)g.WIKI_TERM.Geography ? 0.1 : 1)
+
+                    * 10000
 
             })
             .OrderByDescending(p => p.S).ToList();
