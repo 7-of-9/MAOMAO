@@ -91,7 +91,7 @@ namespace mm_svc
             List<List<TermPath>> all_term_paths = null;
             var l1_terms = mm_svc.UrlProcessor.ProcessUrl(db_url.id, out all_term_paths, reprocessing_known_url);
 
-            UrlInfo.GetTopicsAndSuggestions(db_url.id, out ret.topics, out ret.suggestions, out ret.url_title_term);
+            UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out ret.topics, out ret.suggestions, out ret.url_title_term);
             
             return ret;
         }

@@ -54,12 +54,15 @@ namespace mmapi00.Controllers
             var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
             var history_id = mm_svc.User.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
 
-            return Ok(new {
-                url = nlp_info.url.href,
+            var db_url = mm_svc.UrlInfo.GetUrl(url);
+
+            return Ok( new { url = nlp_info.url.href,
                 new_calais_terms = ret.new_calais_terms,
-                suggestions = ret.suggestions,
-                topics = ret.topics,
-                ms = sw.ElapsedMilliseconds
+                           url_W = db_url != null ? db_url.W : -1000,
+                         url_W_n = db_url != null ? db_url.W_n : -1000,
+                          topics = ret.topics,
+                     suggestions = ret.suggestions,
+                              ms = sw.ElapsedMilliseconds
             });
         }
     }

@@ -50,7 +50,7 @@
         <AssociationConnector Association="mm02Model.fk_share_source_user" />
         <AssociationConnector Association="mm02Model.fk_share_target_user" />
         <AssociationConnector Association="mm02Model.FK_share_term" />
-        <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="7.875" />
+        <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="8" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <AssociationConnector Association="mm02Model.FK_share_url" />
         <AssociationConnector Association="mm02Model.FK_url_parent_term_url" />

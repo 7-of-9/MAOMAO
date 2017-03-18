@@ -167,6 +167,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="nlp_suitability_score" Type="int" />
           <Property Name="disambig_wiki_terms" Type="int" Nullable="false" />
           <Property Name="W" Type="float" Nullable="false" />
+          <Property Name="W_n" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="url_parent_term">
           <Key>
@@ -1507,6 +1508,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="nlp_suitability_score" Type="Int32" />
           <Property Name="disambig_wiki_terms" Type="Int32" Nullable="false" />
           <Property Name="W" Type="Double" Nullable="false" />
+          <Property Name="W_n" Type="Int32" Nullable="false" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_url_awis_site" FromRole="url" ToRole="awis_site" />
           <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_url" FromRole="url" ToRole="share" />
           <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
@@ -1837,6 +1839,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySetMapping Name="urls">
             <EntityTypeMapping TypeName="mm02Model.url">
               <MappingFragment StoreEntitySet="url">
+                <ScalarProperty Name="W_n" ColumnName="W_n" />
                 <ScalarProperty Name="W" ColumnName="W" />
                 <ScalarProperty Name="disambig_wiki_terms" ColumnName="disambig_wiki_terms" />
                 <ScalarProperty Name="nlp_suitability_score" ColumnName="nlp_suitability_score" />

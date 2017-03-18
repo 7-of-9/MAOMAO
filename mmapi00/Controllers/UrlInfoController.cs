@@ -70,12 +70,14 @@ namespace mmapi00.Controllers
             var suggestions = new List<mm_svc.UrlInfo.UrlParent>();
             mm_svc.UrlInfo.UrlParent url_title_term = null;
             if (db_url != null)
-                mm_svc.UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
+                mm_svc.UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
 
             return Ok( new { is_known = db_url != null,
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
-                          suggestions = suggestions,
+                                url_W = db_url != null ? db_url.W : -1000,
+                              url_W_n = db_url != null ? db_url.W_n : -1000,
                                topics = topics,
+                          suggestions = suggestions,
                        url_title_term = url_title_term,
                                   url = url });
         }

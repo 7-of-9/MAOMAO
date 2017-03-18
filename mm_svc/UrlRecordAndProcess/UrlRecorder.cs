@@ -53,7 +53,7 @@ namespace mm_svc
             List<UrlInfo.UrlParent> topics = null;
             List<UrlInfo.UrlParent> suggestions = null;
             UrlInfo.UrlParent url_title_term;
-            UrlInfo.GetTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
+            UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
 
             return url_title_term;
         }

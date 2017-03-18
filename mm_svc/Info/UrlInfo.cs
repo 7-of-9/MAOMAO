@@ -34,18 +34,23 @@ namespace mm_svc
             }
         }
 
-        public static void GetTopicsAndSuggestions(long url_id,
+        public static void GetFilteredTopicsAndSuggestions(long url_id,
             out List<UrlInfo.UrlParent> ret_topics,
             out List<UrlInfo.UrlParent> ret_suggested,
-            out UrlInfo.UrlParent ret_url_title_term
+            out UrlInfo.UrlParent ret_tld_title_term
             )
         {
             using (var db = mm02Entities.Create()) {
                 var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url_id).ToListNoLock();
 
+                // topics: take top 3 max by S desc
                 var topics = parents.Where(p => p.found_topic).OrderByDescending(p => p.S).Take(3).ToList();
+
+                // suggested: take top 3 max by S desc
                 var suggested = parents.Where(p => p.suggested_dynamic).OrderByDescending(p => p.S).Take(3).ToList();
-                var title_term = parents.Where(p => p.url_title_topic).FirstOrDefault();
+
+                // TLD title term: take single
+                var tld_title_term = parents.Where(p => p.url_title_topic).FirstOrDefault();
 
                 ret_topics = topics.Select(p2 => new UrlInfo.UrlParent() {
                    term_name = p2.term.name,
@@ -61,8 +66,8 @@ namespace mm_svc
                     dbg_info = $"{p2.term} -> S={p2.S?.ToString("0.00000")}"
                 }).ToList();
 
-                ret_url_title_term = new UrlInfo.UrlParent() {
-                   term_name = title_term.term.name,
+                ret_tld_title_term = new UrlInfo.UrlParent() {
+                   term_name = tld_title_term.term.name,
                     is_topic = false,
                            S = 1.0,
                     dbg_info = "",

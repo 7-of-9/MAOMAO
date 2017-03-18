@@ -38,6 +38,7 @@ namespace mmdb_model
         public Nullable<int> nlp_suitability_score { get; set; }
         public int disambig_wiki_terms { get; set; }
         public double W { get; set; }
+        public int W_n { get; set; }
     
         public virtual awis_site awis_site { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

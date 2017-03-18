@@ -242,6 +242,7 @@ namespace mm_svc
                 var url_parent_terms = db.url_parent_term.Where(p => p.url_id == url_id && !p.url_title_topic).ToListNoLock();
                 UrlAutoFlag.CalcAutoFlag(url_parent_terms, out warn_count, out warn_degree, out info);
                 url.W = warn_degree;
+                url.W_n = warn_count;
 
                 url.processed_at_utc = DateTime.UtcNow;
                 db.SaveChangesTraceValidationErrors(); // save url_term tss, tss_norm & reason, url processed & mapped wiki terms
@@ -255,13 +256,23 @@ namespace mm_svc
                 //               pushing results to common root terms, e.g. "arts", "politics", "history" etc. )
                 //
                 // >>> todo -- problem URLs --- 
-                //   3991 (vines),  
+                //
+                //   *** 3991 (vines),  --> CALAIS BLACKLIST TERMS? todo: fix ***
+                //
+                //   11155 -- large # of wiki terms; resolving "History" - fixed: tweak CalcAndStoreUrlParentTerms_Topics --> S calc
+                //              (use avg_TSS_leaf, lower count Pow)
+                //
+                //   10821 (bugatti), -- fixed: don't renormalize gt_parent s_norm values in CalcAndStoreUrlParentTerms_Topics
+                //
+                //   283 (too much weight to low TSS term) -- fixed: still ok
+                //
+                // ...
                 // 
                 // >>> todo -- full reprocess run on PROD (somehow?!) them restore to dev
                 //          -- run with some reasonable filter in XP Popup mode to spot-fix URLs "organically"
                 //
 
-ret1:
+                ret1:
                 var qry = db.url_term.Include("term").Include("term.term_type").Include("term.cal_entity_type")
                                      .Include("term.golden_term").Include("term.golden_term1")
                                      .Include("term.gt_path_to_root1").Include("term.gt_path_to_root1.term")
@@ -386,9 +397,9 @@ ret1:
 
                 // weightings
                 counted_info.ForEach(p =>
-                    p.S = Math.Pow(p.count, 1.5)
-                        * Math.Pow(p.max_S_norm, 1.5)//* Math.Pow(p.avg_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
-                        * (Math.Pow(p.max_TSS_leaf, 2.0))
+                    p.S = Math.Pow(p.count, 0.75)
+                        * Math.Pow(p.avg_S_norm, 1.5) // Math.Pow(p.max_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
+                        * (Math.Pow(p.avg_TSS_leaf, 2.0)) //* (Math.Pow(p.max_TSS_leaf, 2.0))
                         * (Math.Pow(p.mmtopic_level, 0.8) / 100)
                 );
 
@@ -396,7 +407,7 @@ ret1:
 
                 // below - removed, maybe add? : get topic chains to root (or to repetition, for unrooted topics)...
 
-                // select top ranked
+                // select top ranked - dicard low S_norm
                 counted_info_sorted.ForEach(p => p.S_norm = p.S / counted_info.Max(p2 => p2.S));
                 counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.05).ToList();
 
