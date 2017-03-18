@@ -52,7 +52,81 @@ namespace wowmao.Controls
         public TopicTree() {
             InitializeComponent();
             tvw.NodeMouseHover += Tvw_NodeMouseHover;
+
+            tvw.AllowDrop = true;
+            tvw.ItemDrag += Tvw_ItemDrag;
+            tvw.DragEnter += Tvw_DragEnter;
+            tvw.DragDrop += Tvw_DragDrop;
+            tvw.DragOver += Tvw_DragOver;
         }
+
+        private void Tvw_ItemDrag(object sender, ItemDragEventArgs e) {
+            var tn = (TreeNode)e.Item as TreeNode;
+            var node_tag = tn.Tag as NodeTag;
+            //if (...) return; // no drag start    
+            DoDragDrop(e.Item, DragDropEffects.Move);// | DragDropEffects.None);
+        }
+
+        private void Tvw_DragOver(object sender, DragEventArgs e) {
+            var targetPoint = this.tvw.PointToClient(new Point(e.X, e.Y));
+            var tn = this.tvw.GetNodeAt(targetPoint);
+            var tag = tn.Tag as NodeTag;
+            e.Effect = DragDropEffects.Move; // DragDropEffects.None;
+        }
+
+        private void Tvw_DragDrop(object sender, DragEventArgs e) {
+            var targetPoint = this.tvw.PointToClient(new Point(e.X, e.Y));
+
+            var tn_source = (TreeNode)e.Data.GetData(typeof(TreeNode));
+            var tn_dest = this.tvw.GetNodeAt(targetPoint);
+
+            var tag_source = tn_source.Tag as NodeTag;
+            var tag_dest = tn_dest.Tag as NodeTag;
+
+            //var source_link_id = tag_source.link.id;
+            //var dest_link_id = tag_dest.link.id;
+
+            // source becomes child of dest
+            using (var db = mm02Entities.Create()) {
+                // disable all current links to source node
+                var links_to_disable = db.topic_link.Where(p => p.child_term_id == tag_source.t.id && p.disabled == false).ToListNoLock();
+                links_to_disable.ForEach(p => p.disabled = true);
+                db.SaveChangesTraceValidationErrors();
+
+                // add or enable link source, child of dest
+                var link = db.topic_link.SingleOrDefault(p => p.parent_term_id == tag_dest.t.id && p.child_term_id == tag_source.t.id);
+                if (link != null) {
+                    link.disabled = false;
+                    db.SaveChangesTraceValidationErrors();
+                }
+                else {
+                    link = new topic_link() { parent_term_id = tag_dest.t.id, child_term_id = tag_source.t.id, disabled = false };
+                    db.topic_link.Add(link);
+                    db.SaveChangesTraceValidationErrors();
+                }
+
+                // remove any ROOT flag
+                var term_source = db.terms.Find(tag_source.t.id);
+                term_source.is_topic_root = false;
+                db.SaveChangesTraceValidationErrors();
+
+                // move & refresh treenode
+                var parent_nodes = tn_source.Parent?.Nodes ?? tvw.Nodes;
+                parent_nodes.Remove(tn_source);
+                var new_node = NodeFromTerm(tag_source.t, link);
+                tn_dest.Nodes.Add(new_node);
+                tvw.SelectedNode = new_node;
+
+                //RefreshNode(tvw.SelectedNode, tag.t, tag.link);
+            }
+
+            MessageBox.Show($"tag_target: {tag_dest.t}\r\ntag_source: {tag_source.t}");
+            //mnuOnlyHere2_Click(null, null);
+        }
+
+        private void Tvw_DragEnter(object sender, DragEventArgs e) {
+        }
+
 
         private class NodeTag { public term t; public topic_link link; public int enabled_child_link_count; }
         public void BuildTree()
@@ -386,6 +460,7 @@ namespace wowmao.Controls
             this.mnuViewPaths10 = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuViewPaths50 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewPaths100 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuFindOthers = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuFindInWikiTree = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.mnuRefreshNode = new System.Windows.Forms.ToolStripMenuItem();
@@ -395,17 +470,18 @@ namespace wowmao.Controls
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.cmdSearch = new System.Windows.Forms.Button();
             this.cmdClearSearch = new System.Windows.Forms.Button();
-            this.mnuFindOthers = new System.Windows.Forms.ToolStripMenuItem();
             this.chkHideDisabled = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tvw
             // 
+            this.tvw.AllowDrop = true;
             this.tvw.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tvw.ContextMenuStrip = this.contextMenuStrip1;
+            this.tvw.FullRowSelect = true;
             this.tvw.Location = new System.Drawing.Point(3, 26);
             this.tvw.Name = "tvw";
             this.tvw.Size = new System.Drawing.Size(514, 295);
@@ -520,6 +596,13 @@ namespace wowmao.Controls
             this.menuViewPaths100.Text = "100";
             this.menuViewPaths100.Click += new System.EventHandler(this.menuViewPaths100_Click);
             // 
+            // mnuFindOthers
+            // 
+            this.mnuFindOthers.Name = "mnuFindOthers";
+            this.mnuFindOthers.Size = new System.Drawing.Size(158, 22);
+            this.mnuFindOthers.Text = "Find Others";
+            this.mnuFindOthers.Click += new System.EventHandler(this.mnuFindOthers_Click);
+            // 
             // mnuFindInWikiTree
             // 
             this.mnuFindInWikiTree.Name = "mnuFindInWikiTree";
@@ -585,13 +668,6 @@ namespace wowmao.Controls
             this.cmdClearSearch.Text = "x";
             this.cmdClearSearch.UseVisualStyleBackColor = true;
             this.cmdClearSearch.Click += new System.EventHandler(this.cmdClearSearch_Click);
-            // 
-            // mnuFindOthers
-            // 
-            this.mnuFindOthers.Name = "mnuFindOthers";
-            this.mnuFindOthers.Size = new System.Drawing.Size(158, 22);
-            this.mnuFindOthers.Text = "Find Others";
-            this.mnuFindOthers.Click += new System.EventHandler(this.mnuFindOthers_Click);
             // 
             // chkHideDisabled
             // 

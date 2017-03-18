@@ -60,7 +60,11 @@ namespace mm_svc
                 //var tld_title_term_id = GetOrAdd_TldTitleTerm(db, url.id);
 
                 // load - extract meta
-                dynamic meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                dynamic meta_all = null;
+                try {
+                    meta_all = JsonConvert.DeserializeObject(url.meta_all);
+                }
+                catch(Exception) { return null; }
                 if (!string.IsNullOrEmpty(url.meta_all) && meta_all != null) {
                     var nlp_suitability_score = meta_all.nlp_suitability_score;
                     var img_url = meta_all.ip_thumbnail_url

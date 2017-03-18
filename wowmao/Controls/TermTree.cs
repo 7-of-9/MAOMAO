@@ -32,8 +32,7 @@ namespace wowmao
             this.DragOver += TermTree_DragOver;
         }
 
-        private void TermTree_ItemDrag(object sender, ItemDragEventArgs e)
-        {
+        private void TermTree_ItemDrag(object sender, ItemDragEventArgs e) {
             // can only drag golden children
             var draggedNode = (TreeNode)e.Item as TreeNode;
             var corr = draggedNode.Tag as correlation;
@@ -43,12 +42,9 @@ namespace wowmao
                 DoDragDrop(e.Item, DragDropEffects.Move | DragDropEffects.None);
         }
 
-        private void TermTree_DragEnter(object sender, DragEventArgs e)
-        {
-        }
+        private void TermTree_DragEnter(object sender, DragEventArgs e) { }
 
-        private void TermTree_DragOver(object sender, DragEventArgs e)
-        {
+        private void TermTree_DragOver(object sender, DragEventArgs e) {
             // can only drop onto golden children
             var targetPoint = this.PointToClient(new Point(e.X, e.Y));
             var targetNode = this.GetNodeAt(targetPoint);
@@ -59,8 +55,7 @@ namespace wowmao
                 e.Effect = DragDropEffects.Move;
         }
 
-        private void TermTree_DragDrop(object sender, DragEventArgs e)
-        {
+        private void TermTree_DragDrop(object sender, DragEventArgs e) {
             var targetPoint = this.PointToClient(new Point(e.X, e.Y));
             var targetNode = this.GetNodeAt(targetPoint);
             var draggedNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
