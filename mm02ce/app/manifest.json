@@ -50,7 +50,7 @@
   "browser_action": {
     "default_title": "Maomao - Share this",
     "default_icon": "img/icon.png",
-    "default_popup": "popup.html"
+    "default_popup": "build/popup.html"
   },
   "oauth2": {
     "client_id": "323116239222-rgs4qqmu234iafmtg1s5jmbhpkppbv8a.apps.googleusercontent.com",
