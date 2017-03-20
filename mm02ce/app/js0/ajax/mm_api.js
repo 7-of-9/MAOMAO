@@ -109,7 +109,7 @@ function ajax_put_UrlNlpInfoCalais(user_id, hash, nlp_info, successFn, errorFn) 
  * @param {function} callback_success
  */
 function ajax_put_UrlHistory(user_id, hash, history, errorFn, successFn) {
-  $.ajax(api_base + 'url/history?user_id=' + user_id + '&hash=' + hash, {
+  $.ajax(api_base + 'user/history?user_id=' + user_id + '&hash=' + hash, {
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(history),
