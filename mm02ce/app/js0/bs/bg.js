@@ -7,13 +7,26 @@ var BG_INACTIVE_COLOR = '#999999';
 var BG_EXCEPTION_COLOR = '#990000';
 
 // ERROR handler
+var errBack = function(err) { console.log(err.message); };
 
-window.onerror = function (msg, file, line, col, error) {
-  // callback is called with an Array[StackFrame]
-  console.trace('onerror');
-  StackTrace.fromError(error).then(callback).catch(errback);
+var errorStackTracking = function(stackframes) {
+    var stringifiedStack = stackframes.map(function(sf) {
+        return sf.toString();
+    }).join('\n');
+    console.warn('error stack', stringifiedStack);
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    }, function (tabs) {
+      if (tabs != null && tabs.length > 0) {
+        setIconApp(tabs[0].url, 'black', '*EXBG', BG_EXCEPTION_COLOR);
+      }
+    });
 };
 
+window.onerror = function (msg, file, line, col, error) {
+  StackTrace.fromError(error).then(errorStackTracking).catch(errBack);
+};
 
 //////////////////////////////////////////////////////
 // STARTUP !!!
