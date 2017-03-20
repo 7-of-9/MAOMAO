@@ -415,7 +415,7 @@ function inject_cs(session, tab_id, skip_text) {
       }
       if (tab != null) {
         var process = process_url(tab.url);
-        if (process && !isGuest) {
+        if (process && !isGuest && apiErrorUrls.indexOf(tab.url) === -1) {
           // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
           ajax_isTldAllowable(tab.url, function (data) {
             console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
