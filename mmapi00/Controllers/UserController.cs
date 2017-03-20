@@ -50,11 +50,11 @@ namespace mmapi00.Controllers
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             if (history == null) return BadRequest("bad user_history");
             if (history.url == null) return BadRequest("missing url");
-            if (history.userId == null) return BadRequest("missing user id");
-            if (history.userId != user_id) throw new ArgumentException("user_id mismatch");
+            //if (history.userId == null) return BadRequest("missing user id");
+            //if (history.userId != user_id) throw new ArgumentException("user_id mismatch");
 
             var history_id = mm_svc.User.UserHistory.TrackUrl(
-                (string)history.url, (int)history.userId, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
+                (string)history.url, user_id, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
 
             return Ok(new { id = history_id });
         }

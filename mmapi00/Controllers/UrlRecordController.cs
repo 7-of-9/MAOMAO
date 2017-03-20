@@ -18,34 +18,36 @@ namespace mmapi00.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class UrlRecordController : ApiController
     {
+        public class RecordUrlParam {
+            public string href { get; set; }
+            public string text { get; set; }
+        }
+
         /// <summary>
         /// Records a URL and returns its TLD title topic
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
-        /// <param name="href">URI for URL</param>
-        /// <param name="text">NLP text for URL</param>
+        /// <param name="param">input data</param>
         /// <returns></returns>
         [Route("url/record")]
         [HttpPut]
         public IHttpActionResult RecordUrl(
             int user_id, string hash,
-            [FromBody] string href,
-            [FromBody] string text)
+            [FromBody] RecordUrlParam param) //[FromBody] string href, [FromBody] string text)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
-            if (string.IsNullOrEmpty(href) || string.IsNullOrEmpty(text)) return BadRequest();
-
+            if (param == null) return BadRequest();
+            if (string.IsNullOrEmpty(param.href) || string.IsNullOrEmpty(param.text)) return BadRequest();
             Stopwatch sw = new Stopwatch(); sw.Start();
 
-            var tld_topic = UrlRecorder.RecordUrl(href, text);
+            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text);
 
-            // record user_url history
-            var history_id = mm_svc.User.UserHistory.TrackUrl(href, user_id, 0, 0, 0);
+            var history_id = mm_svc.User.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
 
             return Ok( new {
-                ms = sw.ElapsedMilliseconds,
                 tld_topic = tld_topic.term_name,
+                ms = sw.ElapsedMilliseconds,
             });
         }
     }

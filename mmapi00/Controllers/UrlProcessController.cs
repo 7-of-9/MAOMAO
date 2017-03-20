@@ -28,18 +28,15 @@ namespace mmapi00.Controllers
         //[InvalidateCacheOutput("GetNlpInfo")] // not desired - invalidates the cache for all URL params!! see below fixme
         public IHttpActionResult PutNlpInfoCalais(
             long user_id, string hash,
-            [FromBody]dynamic nlp_info)
+            [FromBody] dynamic nlp_info)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
-
-            //g.LogLine(System.Web.Helpers.Json.Encode(nlp_info));
-            long user_id_nlp;
-
-            Stopwatch sw = new Stopwatch(); sw.Start();
             if (nlp_info == null) return BadRequest("bad nlp_info");
-            if (nlp_info.user_id == null) throw new ArgumentException("missing user_id");
-            if (!long.TryParse(nlp_info.user_id.ToString(), out user_id_nlp)) throw new ArgumentException("bad NLP user_id");
-            if (user_id != user_id_nlp) throw new ArgumentException("user_id mismatch");
+            //long user_id_nlp;
+            //if (nlp_info.user_id == null) throw new ArgumentException("missing user_id");
+            //if (!long.TryParse(nlp_info.user_id.ToString(), out user_id_nlp)) throw new ArgumentException("bad NLP user_id");
+            //if (user_id != user_id_nlp) throw new ArgumentException("user_id mismatch");
+            Stopwatch sw = new Stopwatch(); sw.Start();
 
             // process terms & pairs
             var ret = mm_svc.CalaisNlp.ProcessNlpPacket_URL(nlp_info);

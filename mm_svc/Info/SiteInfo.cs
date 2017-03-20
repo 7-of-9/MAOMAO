@@ -38,6 +38,7 @@ namespace mm_svc
 
             "Software/Groupware",
             "Project_Management/Hosted",
+            "Servers/Collaboration", 
 
             "Software/Word_Processors",
 
