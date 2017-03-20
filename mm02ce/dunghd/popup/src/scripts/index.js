@@ -8,6 +8,9 @@ const proxyStore = new Store({
   portName: 'maomao-extension',
 });
 
-render(
-  <Provider store={proxyStore}><App /></Provider>
-  , document.getElementById('app'));
+// wait for the store to connect to the background page
+proxyStore.ready().then(() => {
+  render(
+    <Provider store={proxyStore}><App /></Provider>
+    , document.getElementById('app'));
+});

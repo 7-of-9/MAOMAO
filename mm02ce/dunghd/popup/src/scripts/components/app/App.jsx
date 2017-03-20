@@ -1,4 +1,4 @@
-import React, { PureComponent, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 const propTypes = {
@@ -14,10 +14,10 @@ const defaultProps = {
   },
 };
 
-class App extends PureComponent {
+class App extends React.PureComponent {
   render() {
     return (
-      <div>
+      <div style={{ width: '200px' }}>
         Hello {this.props.auth.info.name}
       </div>
     );

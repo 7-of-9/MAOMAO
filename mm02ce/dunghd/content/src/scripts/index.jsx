@@ -22,8 +22,8 @@ document.body.insertBefore(anchor, document.body.childNodes[0]);
 
 injectTapEventPlugin();
 
-const unsubscribe = proxyStore.subscribe(() => {
-  unsubscribe(); // make sure to only fire once
+// wait for the store to connect to the background page
+proxyStore.ready().then(() => {
   render(
     <MuiThemeProvider>
       <Provider store={proxyStore}>
