@@ -306,7 +306,6 @@ function handle_cs_doc_event(data, sender) {
 function inject_cs(session, tab_id, skip_text) {
   console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
   console.trace('inject_cs');
-
   //***
 
   //if (session.hasOwnProperty('injected_cs_timestamp')) {
@@ -356,7 +355,7 @@ function inject_cs(session, tab_id, skip_text) {
         var current_tab = tabs[0];
 
       var process = process_url(tab.url);
-      if (process && !isGuest) {
+      if (process && !isGuest && apiErrorUrls.indexOf(tab.url) !== -1) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(tab.url, function (data) {
           console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
@@ -400,8 +399,13 @@ function inject_cs(session, tab_id, skip_text) {
           });
         }, function (error) {
           console.warn(error);
+          if(apiErrorUrls.indexOf(tab.url) === -1) {
+            apiErrorUrls.push(tab.url);
+          }
           setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
         });
+      } else {
+        console.warn('Do not inject cs on url #1', tab.url);
       }
     });
   } else {
@@ -457,6 +461,9 @@ function inject_cs(session, tab_id, skip_text) {
             });
           }, function (error) {
             console.warn(error);
+            if(apiErrorUrls.indexOf(tab.url) === -1) {
+              apiErrorUrls.push(tab.url);
+            }
             setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
           });
         }

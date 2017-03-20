@@ -10,7 +10,7 @@ var enableTestYoutube = false;
 var enableImscore = true;
 var userId = -1;
 var userHash = '';
-
+var apiErrorUrls = [];
 
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
   console.trace('extension.onMessage');
@@ -124,6 +124,9 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         }
       }, function (error) {
         console.warn(error);
+        if(apiErrorUrls.indexOf(url_ex_hash) === -1) {
+          apiErrorUrls.push(url_ex_hash);
+        }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
       });
 
@@ -162,6 +165,9 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         }
       }, function (error) {
         console.warn(error);
+        if(apiErrorUrls.indexOf(url_ex_hash) === -1) {
+          apiErrorUrls.push(url_ex_hash);
+        }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
       });
 
