@@ -16,6 +16,7 @@
   ],
   "content_security_policy": "script-src 'self' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
   "permissions": [
+    "webRequest",
     "contextMenus",
     "activeTab",
     "tabs",
