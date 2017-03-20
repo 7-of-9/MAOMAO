@@ -67,7 +67,7 @@ namespace mm_svc
                 }).ToList();
 
                 ret_tld_title_term = new UrlInfo.UrlParent() {
-                   term_name = tld_title_term.term.name,
+                   term_name = tld_title_term?.term.name,
                     is_topic = false,
                            S = 1.0,
                     dbg_info = "",
