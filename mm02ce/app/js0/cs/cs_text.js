@@ -41,7 +41,7 @@ $(document).ready(function () {
 
               get_page_metadata(true, function (error, page_meta) {
                 if (error) {
-                  console.warn(error);
+                  console.error(error);
                   chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                 } else {
                   chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -58,7 +58,7 @@ $(document).ready(function () {
                 function () { // element found
                   get_page_metadata(true, function (error, page_meta) {
                     if (error) {
-                      console.warn(error);
+                      console.error(error);
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                     } else {
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -71,7 +71,7 @@ $(document).ready(function () {
                 function () { // element not found
                   get_page_metadata(true, function (error, page_meta) {
                     if (error) {
-                      console.warn(error);
+                      console.error(error);
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                     } else {
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -92,7 +92,7 @@ $(document).ready(function () {
 
           get_page_metadata(true, function (error, page_meta) { // force-refresh of page_meta
             if (error) {
-              console.warn(error);
+              console.error(error);
               chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
             } else {
               chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -296,7 +296,12 @@ function process_text(page_meta) {
           }
         } else {
           chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false } } });
-          nlp_calais(page_meta, t, document.location, mm_user_id());
+          ajax_put_UrlRecord({ user_id: mm_user_id(), hash: mm_user_hash(), href: remove_hash_url(document.location.href), text: t }, function(data) {
+            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } } });
+            nlp_calais(page_meta, t, document.location, mm_user_id(), mm_user_hash());
+          }, function(error) {
+            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } } });
+          });
         }
       }, function (error) {
         chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_ERROR', payload: { lang: detectLang, url: remove_hash_url(document.location.href), error: error, } } });
