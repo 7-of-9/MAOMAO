@@ -47,5 +47,6 @@ namespace mmdb_model
         public virtual DbSet<share_active> share_active { get; set; }
         public virtual DbSet<share> shares { get; set; }
         public virtual DbSet<url> urls { get; set; }
+        public virtual DbSet<url_text> url_text { get; set; }
     }
 }

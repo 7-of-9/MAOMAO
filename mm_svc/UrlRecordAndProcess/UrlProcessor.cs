@@ -255,19 +255,31 @@ namespace mm_svc
                 //             ( this is quite fundamental; a URL can be about MULTIPLE disparate terms -- the search for "commonality" is
                 //               pushing results to common root terms, e.g. "arts", "politics", "history" etc. )
                 //
-                // >>> todo -- problem URLs --- 
+                // >>> WIP -- problem URLs --- 
                 //
-                //   *** 3991 (vines),  --> CALAIS BLACKLIST TERMS? todo: fix ***
                 //
-                //   11155 -- large # of wiki terms; resolving "History" - fixed: tweak CalcAndStoreUrlParentTerms_Topics --> S calc
+                // 11155 -- large # of wiki terms; resolving "History" - fixed: tweak CalcAndStoreUrlParentTerms_Topics --> S calc
                 //              (use avg_TSS_leaf, lower count Pow)
+                // 10821 (bugatti), -- fixed: don't renormalize gt_parent s_norm values in CalcAndStoreUrlParentTerms_Topics
+                // 283 (too much weight to low TSS term) -- fixed: still ok
+                // 1983 -- (fixed) discard source terms with raw S < ~0.1
                 //
-                //   10821 (bugatti), -- fixed: don't renormalize gt_parent s_norm values in CalcAndStoreUrlParentTerms_Topics
+                // BADLY CATEGORIZED (BINARY CUT-OFF CRITERIA ... W# ~ 3-4  W  < ~ -10   wiki terms  < ~ 4-5  )
                 //
-                //   283 (too much weight to low TSS term) -- fixed: still ok
+                //  e.g. 793, 6231, ... - badcat "webdev" -- W# = 4,  W = -7.4,  Wiki terms # = 2
+                //
+                //  *** 11001 *** -- badcat "visual arts" (WWE) ... NEEDS editorial input -- W = -30
+                //  *** 8419 *** badcat "visual arts"
+                //  *** 3991 (vines),  --> CALAIS BLACKLIST TERMS? todo: fix ***
+                //  *** 6943 *** badcat -- 3 terms "copyleft" "free content" "public copyright licenses"
+                //
+                //  *** 2049 *** (vines disambig, LOL disambig) ...
+                //
+                //  *** 2043 ** "sex toys" -- blacklist text/meta terms?
+                //
+                // *** Sports *** lot of badcats e.g. 4557
                 //
                 // ...
-                // 
                 // >>> todo -- full reprocess run on PROD (somehow?!) them restore to dev
                 //          -- run with some reasonable filter in XP Popup mode to spot-fix URLs "organically"
                 //
@@ -341,129 +353,132 @@ namespace mm_svc
         {
             var url_parent_terms = new List<url_parent_term>();
 
-            //if (all_parents_topics != null && all_term_paths != null && wiki_url_terms != null) {
 
-                // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
-                // NO!!!!! this is terrible! CANNOT compare or normalize raw S values from different parent term lists!
-                //all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
+            // renormalize -- input S_norms came from multiple unrelated wiki term -> topic processing runs
+            // NO!!!!! this is terrible! CANNOT compare or normalize raw S values from different parent term lists!
+            //all_parents_topics.ForEach(p => p.S_norm = p.S / all_parents_topics.Max(p2 => p2.S));
 
-                var sorted_new_s_norm = all_parents_topics.OrderByDescending(p => p.S_norm).ToList();
+            // IMPORTANT! remove low raw S parent terms -- this is sensitive to S calculation in gt_parent rows -- but it is necessary
+            const double MIN_S = 0.1;
+            //var min_S = all_parents_topics.Min(p => p.S); 
+            //var max_S = all_parents_topics.Max(p => p.S);
+            var parent_topics_high_S = all_parents_topics.Where(p => p.S > MIN_S).ToList();
 
-                // get single active topic_link for supplied topics...
-                var topic_term_ids = all_parents_topics.Select(p => p.parent_term_id).ToList();
-                var topic_links = db.topic_link.AsNoTracking().Where(p => p.disabled == false && topic_term_ids.Contains(p.child_term_id)).ToListNoLock();
+            // get single active topic_link for supplied topics...
+            var topic_term_ids = all_parents_topics.Select(p => p.parent_term_id).ToList();
+            var topic_links = db.topic_link.AsNoTracking().Where(p => p.disabled == false && topic_term_ids.Contains(p.child_term_id)).ToListNoLock();
 
-                // group/count topics -- weight by input topic S
-                var counted_terms = all_parents_topics.Select(p => p.parent_term)
-                                                    .GroupBy(p => p.id)
-                                                    .Select(p => new {
-                                                        parent_term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
-                                                        link = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1.is_topic_root
-                                                                                ? null
-                                                                                : topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key && p2.disabled == false),
-                                                        avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
-                                                        avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
-                                                        max_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Max(p2 => p2.S_norm),
-                                                        count = p.Count() })
-                                                    .OrderByDescending(p => p.avg_S)
-                                                    .ToList();
+            // group/count topics -- weight by input topic S
+            var counted_terms = parent_topics_high_S.Select(p => p.parent_term)
+                                                .GroupBy(p => p.id)
+                                                .Select(p => new {
+                                                    parent_term = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1,
+                                                    link = all_parents_topics.First(p2 => p2.parent_term_id == p.Key).term1.is_topic_root
+                                                                            ? null
+                                                                            : topic_links.SingleOrDefault(p2 => p2.child_term_id == p.Key && p2.disabled == false),
+                                                    avg_S = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S),
+                                                    avg_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Average(p2 => p2.S_norm),
+                                                    max_S_norm = all_parents_topics.Where(p2 => p2.parent_term_id == p.Key).Max(p2 => p2.S_norm),
+                                                    count = p.Count() })
+                                                .OrderByDescending(p => p.avg_S)
+                                                .ToList();
 
-                // move to TopicInfo 
-                var counted_info = counted_terms.Select(p => new TopicInfo {
-                    t = p.parent_term, avg_S = p.avg_S, max_S_norm = p.max_S_norm, avg_S_norm = p.avg_S_norm, count = p.count, link = p.link,
-                    mmtopic_level = p.link == null
-                                            ? 1                    // root term, no link to any parent
-                                            : p.link.mmtopic_level // child term in topic_link; use the defined level there
-                }).OrderByDescending(p => p.S).ToList();
+            // move to TopicInfo 
+            var counted_info = counted_terms.Select(p => new TopicInfo {
+                t = p.parent_term, avg_S = p.avg_S, max_S_norm = p.max_S_norm, avg_S_norm = p.avg_S_norm, count = p.count, link = p.link,
+                mmtopic_level = p.link == null
+                                        ? 1                    // root term, no link to any parent
+                                        : p.link.mmtopic_level // child term in topic_link; use the defined level there
+            }).OrderByDescending(p => p.S).ToList();
 
-                // weight by originating wiki term's TSS
-                foreach (var ti in counted_info) {
-                    // which paths does the topic appear in?
-                    var topic_paths = all_term_paths.Where(p => p.Any(p2 => p2.t.id == ti.t.id)).ToList();
+            // weight by originating wiki term's TSS
+            foreach (var ti in counted_info) {
+                // which paths does the topic appear in?
+                var topic_paths = all_term_paths.Where(p => p.Any(p2 => p2.t.id == ti.t.id)).ToList();
 
-                    // what distinct leaf terms are there for these paths?
-                    var leaf_terms = topic_paths.Select(p => p.First().t).Distinct().ToList();
+                // what distinct leaf terms are there for these paths?
+                var leaf_terms = topic_paths.Select(p => p.First().t).Distinct().ToList();
 
-                    // what are the TSS values for these leaf terms?
-                    var matching_url_terms = wiki_url_terms.Where(p => leaf_terms.Select(p2 => p2.id).Contains(p.term_id)).ToList();
-                    if (matching_url_terms.Count > 0) {
-                        ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss_norm);
-                        ti.max_TSS_leaf = matching_url_terms.Max(p => (double)p.tss_norm);
-                    }
-                    else
-                        ti.avg_TSS_leaf = 0;
-                    Debug.WriteLine($"{ti.t.name} - appears in {leaf_terms.Count} distinct leaf term paths ({string.Join(", ", leaf_terms.Select(p => p.name))}): avg_TSS_norm={ti.avg_TSS_leaf.ToString("0.00")}");
+                // what are the TSS values for these leaf terms?
+                var matching_url_terms = wiki_url_terms.Where(p => leaf_terms.Select(p2 => p2.id).Contains(p.term_id)).ToList();
+                if (matching_url_terms.Count > 0) {
+                    ti.avg_TSS_leaf = matching_url_terms.Average(p => (double)p.tss_norm);
+                    ti.max_TSS_leaf = matching_url_terms.Max(p => (double)p.tss_norm);
                 }
+                else
+                    ti.avg_TSS_leaf = 0;
+                Debug.WriteLine($"{ti.t.name} - appears in {leaf_terms.Count} distinct leaf term paths ({string.Join(", ", leaf_terms.Select(p => p.name))}): avg_TSS_norm={ti.avg_TSS_leaf.ToString("0.00")}");
+            }
 
-                // weightings
-                counted_info.ForEach(p =>
-                    p.S = Math.Pow(p.count, 0.75)
-                        * Math.Pow(p.avg_S_norm, 1.5) // Math.Pow(p.max_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
-                        * (Math.Pow(p.avg_TSS_leaf, 2.0)) //* (Math.Pow(p.max_TSS_leaf, 2.0))
-                        * (Math.Pow(p.mmtopic_level, 0.8) / 100)
-                );
+            // weightings
+            counted_info.ForEach(p =>
+                p.S = Math.Pow(p.count, 0.75)
+                    * Math.Pow(p.avg_S_norm, 1.5) // Math.Pow(p.max_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
+                    * (Math.Pow(p.avg_TSS_leaf, 2.0)) //* (Math.Pow(p.max_TSS_leaf, 2.0))
+                    * (Math.Pow(p.mmtopic_level, 0.8) / 100)
+            );
 
-                var counted_info_sorted = counted_info.OrderByDescending(p => p.S).ToList();
+            var counted_info_sorted = counted_info.OrderByDescending(p => p.S).ToList();
 
-                // below - removed, maybe add? : get topic chains to root (or to repetition, for unrooted topics)...
+            // below - removed, maybe add? : get topic chains to root (or to repetition, for unrooted topics)...
 
-                // select top ranked - dicard low S_norm
-                counted_info_sorted.ForEach(p => p.S_norm = p.S / counted_info.Max(p2 => p2.S));
-                counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.05).ToList();
+            // select top ranked - dicard low S_norm
+            counted_info_sorted.ForEach(p => p.S_norm = p.S / counted_info.Max(p2 => p2.S));
+            counted_info_sorted = counted_info_sorted.Where(p => p.S_norm > 0.05).ToList();
 
-                // add
-                var pri = 0;
-                url_parent_terms = counted_info_sorted//.Where(p => p.count > 1) // *** want real commonality
-                                            .Select(p => new url_parent_term() {
-                                                term_id = p.t.id,
-                                                url_id = url_id,
-                                                pri = ++pri,
-                                                found_topic = true,
-                                                avg_S = p.avg_S,
-                                                S_norm = p.S_norm,
-                                                S = p.S,
-                                                mmtopic_level = p.mmtopic_level,
-                                                avg_TSS_leaf = p.avg_TSS_leaf
-                                            }).ToList();
+            // add
+            var pri = 0;
+            url_parent_terms = counted_info_sorted//.Where(p => p.count > 1) // *** want real commonality
+                                        .Select(p => new url_parent_term() {
+                                            term_id = p.t.id,
+                                            url_id = url_id,
+                                            pri = ++pri,
+                                            found_topic = true,
+                                            avg_S = p.avg_S,
+                                            S_norm = p.S_norm,
+                                            S = p.S,
+                                            mmtopic_level = p.mmtopic_level,
+                                            avg_TSS_leaf = p.avg_TSS_leaf
+                                        }).ToList();
 
-                // AUTO-FLAG (curation/requiring editorialization) -- metadata
-                double perc_topics_all_term_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
-                url_parent_terms.ForEach(p => {
-                    // metric 1 -- min/max topic distances from leaf terms -- across all paths to root of all URL terms
-                    int min_d = -1, max_d = -1;
-                    GoldenPaths.GetMinMaxDistancesFromLeafTerms(all_term_paths, p.term_id, out min_d, out max_d);
-                    p.min_d_paths_to_root_url_terms = min_d;
-                    p.max_d_paths_to_root_url_terms = max_d;
+            // AUTO-FLAG (curation/requiring editorialization) -- metadata
+            double perc_topics_all_term_paths = GoldenPaths.GetPercentageTopicsInPaths(all_term_paths);
+            url_parent_terms.ForEach(p => {
+                // metric 1 -- min/max topic distances from leaf terms -- across all paths to root of all URL terms
+                int min_d = -1, max_d = -1;
+                GoldenPaths.GetMinMaxDistancesFromLeafTerms(all_term_paths, p.term_id, out min_d, out max_d);
+                p.min_d_paths_to_root_url_terms = min_d;
+                p.max_d_paths_to_root_url_terms = max_d;
 
-                    // metric 2 -- % of term's path to root terms which are topics
-                    p.perc_ptr_topics = perc_topics_all_term_paths;
+                // metric 2 -- % of term's path to root terms which are topics
+                p.perc_ptr_topics = perc_topics_all_term_paths;
+            });
+        //}
+
+        // add url title term (special)
+        //url_parent_terms.Insert(0, new url_parent_term() { term_id = tld_title_term_id, url_id = url_id, pri = 0, url_title_topic = true });
+
+        // remove [url_parent_term]
+        db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND ([found_topic]=1)", url_id);
+
+        // add [url_parent_term]
+        mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
+
+        // walk each topic chain -- boost any top level matching topics by topic chain root S, scaled to 1/square of match depth
+        // (wip...)
+        /*terms_and_chains.ForEach(p => {
+            for (int d = 1; d < p.chain.Count; d++) { // first item is leaf of topic chain (== p)
+                var chain_term = p.chain[d];
+                terms_and_chains.Where(p2 => p2.term.id == chain_term.id).ToList().ForEach(p2 => {
+                    p2.appears_in_chains_depths.Add(d);
                 });
-            //}
-
-            // add url title term (special)
-            //url_parent_terms.Insert(0, new url_parent_term() { term_id = tld_title_term_id, url_id = url_id, pri = 0, url_title_topic = true });
-
-            // remove [url_parent_term]
-            db.Database.ExecuteSqlCommand("DELETE FROM [url_parent_term] WHERE [url_id]={0} AND ([found_topic]=1)", url_id);
-
-            // add [url_parent_term]
-            mmdb_model.Extensions.BulkCopy.BulkInsert(db.Database.Connection as SqlConnection, "url_parent_term", url_parent_terms);
-
-            // walk each topic chain -- boost any top level matching topics by topic chain root S, scaled to 1/square of match depth
-            // (wip...)
-            /*terms_and_chains.ForEach(p => {
-                for (int d = 1; d < p.chain.Count; d++) { // first item is leaf of topic chain (== p)
-                    var chain_term = p.chain[d];
-                    terms_and_chains.Where(p2 => p2.term.id == chain_term.id).ToList().ForEach(p2 => {
-                        p2.appears_in_chains_depths.Add(d);
-                    });
-                }
-            });
-            terms_and_chains.ForEach(p => {
-                if (p.appears_in_chains_depths.Count > 0)
-                    p.other_chains_boost = p.S * Math.Sqrt(p.appears_in_chains_depths.Count) * (1.0 / p.appears_in_chains_depths.Max());
-            });
-            var order_by_chain_boost = terms_and_chains.OrderByDescending(p => p.other_chains_boost).ToList();*/
+            }
+        });
+        terms_and_chains.ForEach(p => {
+            if (p.appears_in_chains_depths.Count > 0)
+                p.other_chains_boost = p.S * Math.Sqrt(p.appears_in_chains_depths.Count) * (1.0 / p.appears_in_chains_depths.Max());
+        });
+        var order_by_chain_boost = terms_and_chains.OrderByDescending(p => p.other_chains_boost).ToList();*/
         }
 
         /*private static List<term> GetTopicChain(term child_topic, List<term> topic_chain) {
@@ -600,6 +615,7 @@ namespace mm_svc
                     // lookup direct term match first -- if wiki_nscount > threshold, then don't bother with disambiguations, e.g. "United States", "Politcs" etc.
                     var wiki_terms_direct_matching = db.terms.Where(p => p.name == term_name && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).ToListNoLock();
                     bool skip_disambig = false;
+                    bool added_disambig_term = false;
                     if (wiki_terms_direct_matching.Any(p => p.wiki_nscount > 7)) {
                         Debug.WriteLine($">>> {term_name}: got direct matching high NS# (={wiki_terms_direct_matching.Max(p => p.wiki_nscount)}) terms; will not bother with disambiguation.");
                         skip_disambig = true;
@@ -699,12 +715,13 @@ namespace mm_svc
                                 terms_added += AddMappedWikiUrlTerms(db, db_url, term_url_S, term_url_tss, term_url_tss_norm, wiki_disambiguated_terms_to_add, "WIKI_DISAMBIG", reprocess);
                                 db_url.disambig_wiki_terms += wiki_disambiguated_terms_to_add.Count;
                                 mapped_terms++;
+                                added_disambig_term = true;
                             }
                         }
                     }
 
                     // standard case - no disambiguations to be resolved (or could be resolved); look for wiki-type term match -- exact match on name
-                    if (wiki_disambiguated_terms_to_add.Count == 0) {
+                    if (added_disambig_term == false || wiki_disambiguated_terms_to_add.Count == 0) {
                         if (wiki_terms_direct_matching.Count == 0) {
                             g.LogLine($"!! term NOT mapped to a known WIKI term (name={term_name})");
                             unmapped_terms++;

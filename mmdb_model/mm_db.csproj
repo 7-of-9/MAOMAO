@@ -138,6 +138,9 @@
     <Compile Include="url_term.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="url_text.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="user.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

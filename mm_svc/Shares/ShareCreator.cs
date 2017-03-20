@@ -10,6 +10,10 @@ namespace mm_svc
 {
     public static class ShareCreator
     {
+        //
+        // todo -- add "url_channel_id" (nvarchar) to [share]
+        //  >> to allow sharing of ONE specific YT channel (gets put into share.url_channel_id and into url.channel_id by RecordUrl) <<
+        //
         public static string CreateShare(
             
             long user_id,

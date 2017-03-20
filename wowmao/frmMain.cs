@@ -188,13 +188,15 @@ namespace wowmao
                 var items = new List<ListViewItem>();
                 var rnd = new Random();
                 var qry = db.urls
-                    
-                    //.Include("url_term.term")   // slow , esp. w/ second include
 
                     // perf nightmare (see http://stackoverflow.com/questions/34724196/entity-framework-code-is-slow-when-using-include-many-times)
-                    // todo - remove need for it here -- move AUTO-FLAG stuff to ProcessUrl and persist metrics on [url]
-                    .Include(p => p.url_parent_term)
-                    .Include(p => p.awis_site)
+                    //.Include("url_term.term")   // slow , esp. w/ second include
+
+                    .Include("url_parent_term.term")
+                    .Include("awis_site")
+
+                    //.Include(p => p.url_parent_term)
+                    //.Include(p => p.awis_site)
 
                     .AsQueryable().AsNoTracking();
 
@@ -228,6 +230,7 @@ namespace wowmao
                     var item = new ListViewItem(new string[] {
                         "-",
                         "-",
+                        x.url_parent_term.Where(p => p.found_topic == true).OrderByDescending(p => p.S_norm).FirstOrDefault()?.term.name,
                         x.id.ToString(),
                         x.url1,
                         x.meta_title,
@@ -237,7 +240,6 @@ namespace wowmao
                         $"{x.awis_site.TLD}",
                         awis_site_HD,
                         x.processed_at_utc?.ToString("dd MMM yyyy HH:mm"),
-                        x.processed_golden_count.ToString(),
                         x.img_url,
                     });
 

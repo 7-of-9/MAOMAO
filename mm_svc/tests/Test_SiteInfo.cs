@@ -11,7 +11,9 @@ namespace tests
         public void GetSiteAllowable()
         {
             bool returned_from_db;
-            var awis_site = mm_svc.SiteInfo.GetOrQueryAwis("docs.google.com", out returned_from_db);
+
+            var awis_site = mm_svc.SiteInfo.GetOrQueryAwis("plarium.com", out returned_from_db);
+            //var awis_site = mm_svc.SiteInfo.GetOrQueryAwis("docs.google.com", out returned_from_db);
             bool allowable = mm_svc.SiteInfo.IsSiteAllowable(awis_site);
         }
 

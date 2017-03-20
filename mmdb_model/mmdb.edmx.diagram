@@ -56,6 +56,8 @@
         <AssociationConnector Association="mm02Model.FK_url_parent_term_url" />
         <AssociationConnector Association="mm02Model.FK_urlTerms_url" />
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
+        <EntityTypeShape EntityType="mm02Model.url_text" Width="1.5" PointX="5.5" PointY="16.625" />
+        <AssociationConnector Association="mm02Model.FK_url_text_url" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

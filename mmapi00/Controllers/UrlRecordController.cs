@@ -30,19 +30,14 @@ namespace mmapi00.Controllers
         [HttpPut]
         public IHttpActionResult RecordUrl(
             int user_id, string hash,
-            string href, string text)
+            [FromBody] string href,
+            [FromBody] string text)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             if (string.IsNullOrEmpty(href) || string.IsNullOrEmpty(text)) return BadRequest();
 
             Stopwatch sw = new Stopwatch(); sw.Start();
 
-            //
-            // ***TODO: mm02 needs to call this fn. first, then use returned tld_topic
-            //          for sharing by TLD UX.
-            //
-            //  (in parallel, it's calling calais and will PUT the results when they're ready)
-            //
             var tld_topic = UrlRecorder.RecordUrl(href, text);
 
             // record user_url history
