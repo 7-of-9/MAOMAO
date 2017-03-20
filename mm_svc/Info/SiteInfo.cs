@@ -8,6 +8,7 @@ using mmdb_model;
 using mm_global;
 using mm_aws;
 using System.Diagnostics;
+using mm_global.Extensions;
 
 namespace mm_svc
 {
@@ -83,11 +84,15 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 string tld = mm_global.Util.GetTldFromUrl(site_tld_or_url);
+                int try_count = 0;
+
+retry:
+                if (try_count > 2)
+                    throw new ApplicationException("too many SaveChanges_IgnoreDupeKeyEx failures.");
 
                 // in DB list of known sites?
                 awis_cat db_cat = null;
                 var db_site_qry = db.awis_site.Include("awis_cat").Where(p => p.TLD == tld);
-                //Debug.WriteLine(db_site_qry.ToString());
                 var db_site = db_site_qry.FirstOrDefaultNoLock();
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
@@ -119,10 +124,11 @@ namespace mm_svc
                     db_cat = db.awis_cat.Where(p => p.abs_path == cat_path).FirstOrDefaultNoLock();
                     if (db_cat == null) {
                         db_cat = new awis_cat();
-                        db_cat.abs_path = cat_path;
+                        db_cat.abs_path = cat_path.TruncateMax(128);
                         db_cat.title = cat_title;
                         db.awis_cat.Add(db_cat);
-                        db.SaveChangesTraceValidationErrors();
+                        if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
+
                         g.LogLine($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
                     }
                     else
@@ -151,7 +157,7 @@ namespace mm_svc
                 db_site.url = url;
                 db_site.desc = desc;
                 db.awis_site.Add(db_site);
-                db.SaveChangesTraceValidationErrors();
+                if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
                 g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
                 returned_from_db = false;

@@ -14,6 +14,8 @@ namespace tests
         [TestMethod]
         public void RecordUrl_Test0()
         {
+            var tld_title0 = UrlRecorder.RecordUrl("blah", "blah");
+
             var tld_title2 = UrlRecorder.RecordUrl("www.blahblah.com.xyz", "test text"); 
             var tld_title1 = UrlRecorder.RecordUrl("www.youtube.com", "test text");
         }

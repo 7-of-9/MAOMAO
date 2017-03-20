@@ -205,6 +205,15 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="tss_norm" Type="float" />
           <Property Name="S" Type="float" />
         </EntityType>
+        <EntityType Name="url_text">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="url_id" Type="bigint" Nullable="false" />
+          <Property Name="raw_text" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="as_of_utc" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="user">
           <Key>
             <PropertyRef Name="id" />
@@ -528,6 +537,18 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_url_text_url">
+          <End Role="url" Type="Self.url" Multiplicity="1" />
+          <End Role="url_text" Type="Self.url_text" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_text">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_urlTerm_term">
           <End Role="term" Type="Self.term" Multiplicity="1" />
           <End Role="url_term" Type="Self.url_term" Multiplicity="*" />
@@ -628,6 +649,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySet Name="url" EntityType="Self.url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_parent_term" EntityType="Self.url_parent_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_term" EntityType="Self.url_term" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="url_text" EntityType="Self.url_text" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user" EntityType="Self.user" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url" EntityType="Self.user_url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url_classification" EntityType="Self.user_url_classification" Schema="dbo" store:Type="Tables" />
@@ -730,6 +752,10 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_url_parent_term_url" Association="Self.FK_url_parent_term_url">
             <End Role="url" EntitySet="url" />
             <End Role="url_parent_term" EntitySet="url_parent_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_url_text_url" Association="Self.FK_url_text_url">
+            <End Role="url" EntitySet="url" />
+            <End Role="url_text" EntitySet="url_text" />
           </AssociationSet>
           <AssociationSet Name="FK_urlTerm_term" Association="Self.FK_urlTerm_term">
             <End Role="term" EntitySet="term" />
@@ -912,6 +938,11 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="fk_user_url_url" Association="mm02Model.fk_user_url_url">
             <End Role="url" EntitySet="urls" />
             <End Role="user_url" EntitySet="user_url" />
+          </AssociationSet>
+          <EntitySet Name="url_text" EntityType="mm02Model.url_text" />
+          <AssociationSet Name="FK_url_text_url" Association="mm02Model.FK_url_text_url">
+            <End Role="url" EntitySet="urls" />
+            <End Role="url_text" EntitySet="url_text" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_site">
@@ -1514,6 +1545,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_url" FromRole="url" ToRole="url_parent_term" />
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
+          <NavigationProperty Name="url_text" Relationship="mm02Model.FK_url_text_url" FromRole="url" ToRole="url_text" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -1571,6 +1603,28 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="user_url">
+              <PropertyRef Name="url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="url_text">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="url_id" Type="Int64" Nullable="false" />
+          <Property Name="raw_text" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="as_of_utc" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="url" Relationship="mm02Model.FK_url_text_url" FromRole="url_text" ToRole="url" />
+        </EntityType>
+        <Association Name="FK_url_text_url">
+          <End Type="mm02Model.url" Role="url" Multiplicity="1" />
+          <End Type="mm02Model.url_text" Role="url_text" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="url_text">
               <PropertyRef Name="url_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -1854,6 +1908,16 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="awis_site_id" ColumnName="awis_site_id" />
                 <ScalarProperty Name="calais_as_of_utc" ColumnName="calais_as_of_utc" />
                 <ScalarProperty Name="url1" ColumnName="url" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="url_text">
+            <EntityTypeMapping TypeName="mm02Model.url_text">
+              <MappingFragment StoreEntitySet="url_text">
+                <ScalarProperty Name="as_of_utc" ColumnName="as_of_utc" />
+                <ScalarProperty Name="raw_text" ColumnName="raw_text" />
+                <ScalarProperty Name="url_id" ColumnName="url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

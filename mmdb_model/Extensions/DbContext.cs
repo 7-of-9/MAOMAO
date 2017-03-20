@@ -28,11 +28,11 @@ namespace mmdb_model
                 db.SaveChanges();
                 return true;
             }
-            catch (DbEntityValidationException avex)
-            {
-                Trace.WriteLine(avex.ToDetailedString());
-                return g.HandleOptimisticConcurrencyExceptions(db, avex) > 0;
-            }
+            //catch (DbEntityValidationException avex)
+            //{
+            //    Trace.WriteLine(avex.ToDetailedString());
+            //    return g.HandleOptimisticConcurrencyExceptions(db, avex) > 0;
+            //}
             catch (SqlException sqlex)
             {
                 if (sqlex.Message.Contains("Cannot insert duplicate key"))
