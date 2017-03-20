@@ -77,17 +77,18 @@ function ajax_put_UrlRecord(user_id, hash, url_info, successFn, errorFn) {
 
 /**
  * api/url_nlpinfo_calais -- put
- *
+ * @param  number user_id user id
+ * @param  string hash  md5hash for google id or facebook id
  * @param string nlp_info
  * @param function callback_success
  * @param function errorFn
  */
-function ajax_put_UrlNlpInfoCalais(nlp_info, successFn, errorFn) {
+function ajax_put_UrlNlpInfoCalais(user_id, hash, nlp_info, successFn, errorFn) {
 
   // DUNG*** pass the NLP text to the server (2)
   // --> tell me when you're ready, i'll add the DB tables and url_nlpinfo_calais server.
 
-  $.ajax(api_base + 'url/process', {
+  $.ajax(api_base + 'url/process?user_id=' + user_id + '&hash=' + hash, {
     type: 'PUT',
     contentType: 'application/json',
     data: JSON.stringify(nlp_info),
@@ -102,11 +103,13 @@ function ajax_put_UrlNlpInfoCalais(nlp_info, successFn, errorFn) {
 /**
  * api/url_history -- put
  * Tracking im_score for each url by user
+ * @param  number user_id user id
+ * @param  string hash  md5hash for google id or facebook id
  * @param {userId: number, url: string, score: number } history
  * @param {function} callback_success
  */
-function ajax_put_UrlHistory(history, errorFn, successFn) {
-  $.ajax(api_base + '/url/history', {
+function ajax_put_UrlHistory(user_id, hash, history, errorFn, successFn) {
+  $.ajax(api_base + 'url/history?user_id=' + user_id + '&hash=' + hash, {
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(history),

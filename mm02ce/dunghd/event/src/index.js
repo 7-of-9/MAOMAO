@@ -162,7 +162,7 @@ function syncImScore(forceSave) {
             saveImScore(
               window.sessionObservable,
               window.ajax_put_UrlHistory,
-              store, url, Number(window.userId));
+              store, url, Number(window.userId), window.userHash);
           }
         }
       }

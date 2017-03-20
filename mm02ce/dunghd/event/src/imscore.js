@@ -28,10 +28,10 @@ export function getImScore(sessionObservable, rawUrl) {
 /**
  * Save im_score and save latest record on for tracking history
  */
-export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, userId) {
+export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, userId, hash) {
     const now = new Date().toISOString();
     const url = window.bglib_remove_hash_url(rawUrl);
-    const data = Object.assign({}, getImScore(sessionObservable, url), { userId });
+    const data = Object.assign({}, getImScore(sessionObservable, url));
 
     // find which changes from last time
     if (histories[url]) {
@@ -47,7 +47,7 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
 
     // Only save when im_score change
     if (Number(data.im_score) > 0) {
-        apiSaveImScore(data,
+        apiSaveImScore(userId, hash, data,
             (error) => {
                 histories[url] = data;
                 store.dispatch({

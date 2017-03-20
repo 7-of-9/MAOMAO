@@ -387,8 +387,6 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
       });
 
       nlp = {
-        user_id: user_id,
-        hash :hash,
         url: url, // NLP refdata
         meta: page_meta, // NLP refdata
         items: nlp_items, // NLP raw Calais
@@ -400,7 +398,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
 
       cslib_info(JSON.stringify(nlp, null, 2));
       // put NLP packet to DB
-      ajax_put_UrlNlpInfoCalais(nlp, function (data) {
+      ajax_put_UrlNlpInfoCalais(user_id, hash, nlp, function (data) {
 
         cslib_info("%c ]] ajax_put_UrlNlpInfoCalais: " + JSON.stringify(data), "color:green; font-weight:bold;");
         chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_TERMS', payload: { url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } } });

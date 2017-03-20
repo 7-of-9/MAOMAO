@@ -3,6 +3,7 @@ const initialState = {
   texts: [],
   scores: [],
   terms: [],
+  records: [],
 };
 
 const MIN_NSS = 10;
@@ -34,7 +35,11 @@ export default (nlp = initialState, action) => {
         if (nlp.terms.length) {
           terms = nlp.terms.filter(item => item.url !== url);
         }
-        terms = terms.concat({ url, topics: action.payload.topics, suggestions: action.payload.suggestions });
+        terms = terms.concat({
+          url,
+          topics: action.payload.topics,
+          suggestions: action.payload.suggestions,
+        });
         return Object.assign({}, nlp, { terms });
       }
     case 'NLP_INFO_UNKNOWN':
@@ -57,6 +62,9 @@ export default (nlp = initialState, action) => {
     case 'NLP_CALAIS_ERROR':
       window.setIconApp(action.payload.url, 'black', '*EX4', window.BG_EXCEPTION_COLOR);
       return nlp;
+    case 'URL_RECORD_ERROR':
+      window.setIconApp(action.payload.url, 'black', '*EX3.1', window.BG_EXCEPTION_COLOR);
+      return nlp;
     case 'NNS_SCORE':
       {
         const url = action.payload.url;
@@ -73,6 +81,16 @@ export default (nlp = initialState, action) => {
 
         scores = scores.concat(action.payload);
         return Object.assign({}, nlp, { scores });
+      }
+    case 'URL_RECORD_SUCCESS':
+      {
+        const url = action.payload.url;
+        let records = [];
+        if (nlp.records.length) {
+          records = nlp.records.filter(item => item.url !== url);
+        }
+        records = records.concat(action.payload);
+        return Object.assign({}, nlp, { records });
       }
     case 'NLP':
       {
