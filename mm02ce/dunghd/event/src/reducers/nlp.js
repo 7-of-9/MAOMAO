@@ -10,8 +10,17 @@ const MIN_NSS = 10;
 
 export default (nlp = initialState, action) => {
   switch (action.type) {
-    case 'NLP_RESULT':
-      {
+    case 'IM_SAVE_SUCCESS': {
+      const url = action.payload.url;
+      let score = 'N/A';
+      const hasExist = nlp.scores.find(item => item.url === url);
+      if (hasExist) {
+        score = hasExist.score;
+      }
+      window.setIconApp(url, 'blue', `${score} /`, window.BG_SUCCESS_COLOR);
+      return nlp;
+    }
+    case 'NLP_RESULT': {
         const url = action.payload.url;
         let score = 'N/A';
         const hasExist = nlp.scores.find(item => item.url === url);
@@ -22,8 +31,7 @@ export default (nlp = initialState, action) => {
         return nlp;
       }
     case 'NLP_TERMS':
-    case 'NLP_INFO_KNOWN':
-      {
+    case 'NLP_INFO_KNOWN': {
         const url = action.payload.url;
         let score = 'N/A';
         const hasExist = nlp.scores.find(item => item.url === url);
@@ -42,8 +50,7 @@ export default (nlp = initialState, action) => {
         });
         return Object.assign({}, nlp, { terms });
       }
-    case 'NLP_INFO_UNKNOWN':
-      {
+    case 'NLP_INFO_UNKNOWN': {
         const url = action.payload.url;
         let score = 'N/A';
         const hasExist = nlp.scores.find(item => item.url === url);
@@ -65,8 +72,7 @@ export default (nlp = initialState, action) => {
     case 'URL_RECORD_ERROR':
       window.setIconApp(action.payload.url, 'black', '*EX3.1', window.BG_EXCEPTION_COLOR);
       return nlp;
-    case 'NNS_SCORE':
-      {
+    case 'NNS_SCORE': {
         const url = action.payload.url;
         let scores = [];
         if (nlp.scores.length) {
@@ -82,8 +88,7 @@ export default (nlp = initialState, action) => {
         scores = scores.concat(action.payload);
         return Object.assign({}, nlp, { scores });
       }
-    case 'URL_RECORD_SUCCESS':
-      {
+    case 'URL_RECORD_SUCCESS': {
         const url = action.payload.url;
         let records = [];
         if (nlp.records.length) {
@@ -92,8 +97,7 @@ export default (nlp = initialState, action) => {
         records = records.concat(action.payload);
         return Object.assign({}, nlp, { records });
       }
-    case 'NLP':
-      {
+    case 'NLP': {
         const url = action.payload.url;
         let nlps = [];
         if (nlp.nlps.length) {
@@ -103,8 +107,7 @@ export default (nlp = initialState, action) => {
         nlps = nlps.concat(action.payload);
         return Object.assign({}, nlp, { nlps });
       }
-    case 'TEXT_NOT_ENGLISH':
-      {
+    case 'TEXT_NOT_ENGLISH': {
         const url = action.payload.url;
         let score = 'N/A';
         const hasExist = nlp.scores.find(item => item.url === url);
@@ -114,8 +117,7 @@ export default (nlp = initialState, action) => {
         window.setIconApp(url, 'black', `${score} !EN`, window.BG_SUCCESS_COLOR);
         return nlp;
       }
-    case 'PROCESS_TEXT_RESULT':
-      {
+    case 'PROCESS_TEXT_RESULT': {
         const url = action.payload.url;
         let texts = [];
         if (nlp.texts.length) {

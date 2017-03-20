@@ -17,7 +17,7 @@ const defaultProps = {
 class App extends React.PureComponent {
   render() {
     return (
-      <div style={{ width: '200px' }}>
+      <div style={{ width: '200px', minHeight: '100px' }}>
         Hello {this.props.auth.info.name}
       </div>
     );

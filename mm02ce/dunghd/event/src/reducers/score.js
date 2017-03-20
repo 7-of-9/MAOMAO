@@ -14,14 +14,24 @@ export default (score = initialState, action) => {
   switch (action.type) {
     case 'IM_ALLOWABLE':
       return Object.assign({}, score, action.payload);
-    case 'IM_SAVE_SUCCESS':
     case 'IM_SAVE_ERROR': {
+        const url = action.payload.url;
+        let histories = [];
+        if (score.histories.length) {
+          histories = score.histories.filter(item => item.url !== url);
+        }
+        histories = histories.concat(action.payload);
+        window.setIconApp(url, 'blue', '*EX5', window.BG_EXCEPTION_COLOR);
+        return Object.assign({}, score, { histories });
+      }
+    case 'IM_SAVE_SUCCESS': {
       const url = action.payload.url;
       let histories = [];
       if (score.histories.length) {
         histories = score.histories.filter(item => item.url !== url);
       }
       histories = histories.concat(action.payload);
+
       return Object.assign({}, score, { histories });
     }
     case 'IM_SCORE':
