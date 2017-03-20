@@ -123,7 +123,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
-        console.warn(error);
+        console.error(error);
         if(apiErrorUrls.indexOf(url_ex_hash) === -1) {
           apiErrorUrls.push(url_ex_hash);
         }
@@ -164,7 +164,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
-        console.warn(error);
+        console.error(error);
         if(apiErrorUrls.indexOf(url_ex_hash) === -1) {
           apiErrorUrls.push(url_ex_hash);
         }

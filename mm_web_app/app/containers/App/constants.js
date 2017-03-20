@@ -10,7 +10,7 @@
  */
 export const LIMIT = 10;
 export const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
-export const MAOMAO_API_URL = 'https://mmapi00.azurewebsites.net/api/';
+export const MAOMAO_API_URL = 'https://mmapi00.azurewebsites.net/';
 export const DEFAULT_LOCALE = 'en';
 export const GOOGLE_API_KEY = 'AIzaSyDa9LV6fTUGRvFYki0GLSS2NzNP-CylMEI';
 export const GOOGLE_CUSTOM_SEARCH_API_KEY = 'AIzaSyCj_iIAID29ZTZG7HQv8TxivT99x7QYeG4';

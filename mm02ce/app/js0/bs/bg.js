@@ -355,7 +355,7 @@ function inject_cs(session, tab_id, skip_text) {
         var current_tab = tabs[0];
 
       var process = process_url(tab.url);
-      if (process && !isGuest && apiErrorUrls.indexOf(tab.url) !== -1) {
+      if (process && !isGuest && apiErrorUrls.indexOf(tab.url) === -1) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(tab.url, function (data) {
           console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
@@ -366,10 +366,7 @@ function inject_cs(session, tab_id, skip_text) {
             if (existTab && existTab.url === tab.url) {
               if (data.allowable) {
                 chrome.tabs.executeScript({
-                  code: 'function mm_user_id(){ return ' + window.userId + '};'
-                });
-                chrome.tabs.executeScript({
-                  code: 'function mm_user_hash(){ return ' + window.userHash + '};'
+                  code: 'function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
                 });
                 $.each(cs_files, function (ndx, cs) {
                   try {
@@ -398,7 +395,7 @@ function inject_cs(session, tab_id, skip_text) {
             }
           });
         }, function (error) {
-          console.warn(error);
+          console.error(error);
           if(apiErrorUrls.indexOf(tab.url) === -1) {
             apiErrorUrls.push(tab.url);
           }
@@ -429,10 +426,7 @@ function inject_cs(session, tab_id, skip_text) {
               if (existTab && existTab.url === tab.url) {
                 if (data.allowable) {
                   chrome.tabs.executeScript({
-                    code: 'function mm_user_id(){ return ' + window.userId + '};'
-                  });
-                  chrome.tabs.executeScript({
-                    code: 'function mm_user_hash(){ return ' + window.userHash + '};'
+                    code: 'function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
                   });
                   $.each(cs_files, function (ndx, cs) {
                     try {
@@ -460,7 +454,7 @@ function inject_cs(session, tab_id, skip_text) {
               }
             });
           }, function (error) {
-            console.warn(error);
+            console.error(error);
             if(apiErrorUrls.indexOf(tab.url) === -1) {
               apiErrorUrls.push(tab.url);
             }

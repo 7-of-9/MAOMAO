@@ -296,7 +296,7 @@ function process_text(page_meta) {
           }
         } else {
           chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false } } });
-          ajax_put_UrlRecord({ user_id: mm_user_id(), hash: mm_user_hash(), href: remove_hash_url(document.location.href), text: t }, function(data) {
+          ajax_put_UrlRecord(mm_user_id(),mm_user_hash(), { href: remove_hash_url(document.location.href), text: t }, function(data) {
             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } } });
             nlp_calais(page_meta, t, document.location, mm_user_id(), mm_user_hash());
           }, function(error) {

@@ -55,6 +55,27 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
 }
 
 /**
+ * Record URL
+ * @param  number user_id user id
+ * @param  string hash  md5hash for google id or facebook id
+ * @param  object url_info  [description]
+ * @param  function successFn [description]
+ * @param  function errorFn   [description]
+ */
+function ajax_put_UrlRecord(user_id, hash, url_info, successFn, errorFn) {
+  console.warn('ajax_put_UrlRecord', url_info);
+  $.ajax(api_base + 'url/record?user_id=' + user_id + '&hash=' + hash, {
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify(url_info),
+    processData: false,
+    dataType: 'json',
+    success: successFn,
+    error: errorFn,
+  });
+}
+
+/**
  * api/url_nlpinfo_calais -- put
  *
  * @param string nlp_info

@@ -314,7 +314,7 @@ function calais_process(nlp) {
   return nlp;
 }
 
-function nlp_calais(page_meta, test_data, url, user_id) {
+function nlp_calais(page_meta, test_data, url, user_id, hash) {
   var nlp_items = [];
   var nlp = null;
   var millis = new Date().getTime();
@@ -388,6 +388,7 @@ function nlp_calais(page_meta, test_data, url, user_id) {
 
       nlp = {
         user_id: user_id,
+        hash :hash,
         url: url, // NLP refdata
         meta: page_meta, // NLP refdata
         items: nlp_items, // NLP raw Calais

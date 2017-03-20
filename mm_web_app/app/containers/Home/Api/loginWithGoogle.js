@@ -6,6 +6,7 @@ import { googleConnectLoaded, googleConnectLoadingError, userHistory } from 'con
 import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 import { login } from 'utils/simpleAuth';
+import { md5hash } from 'utils/hash';
 
 function* googleConnect(info) {
   const user = {
@@ -26,8 +27,9 @@ function* googleConnect(info) {
       data: user,
     });
     login(data.id, data.email);
-    yield put(googleConnectLoaded(data));
-    yield put(userHistory(data.id));
+    const userData = Object.assign({}, data, { userHash: md5hash(info.googleId) });
+    yield put(googleConnectLoaded(userData));
+    yield put(userHistory(userData.id));
   } catch (err) {
     yield put(googleConnectLoadingError(err));
   }

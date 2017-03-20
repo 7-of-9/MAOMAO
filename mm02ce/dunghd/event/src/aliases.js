@@ -66,7 +66,7 @@ function checkAuth() {
                 chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
                 return;
               }
-              console.warn(error);
+              console.error(error);
               reject(error);
             });
         }
