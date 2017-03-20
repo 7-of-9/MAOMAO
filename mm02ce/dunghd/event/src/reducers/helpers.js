@@ -1,18 +1,9 @@
 import md5 from 'blueimp-md5';
 
-export function md5hash(userId) {
-  const hash = md5(userId);
-  const toUpperCase = String.prototype.toUpperCase;
-  return toUpperCase.call(hash);
-}
-
-function debugCtxMenu() {
+function ctxMenu() {
   chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  // const parent = chrome.contextMenus.create({ title: 'XP Popup' });
-  // chrome.contextMenus.create({ id: 'mm-btn-xp-popup', title: 'Test', parentId: parent });
-  // chrome.contextMenus.create({ id: 'mm-btn-xp-scale-up-popup', title: 'Scale Up', parentId: parent });
-  // chrome.contextMenus.create({ id: 'mm-btn-xp-scale-down-popup', title: 'Scale Down', parentId: parent });
+  chrome.contextMenus.create({ id: 'mm-btn-share', title: 'Share' });
 }
 
 export function ctxMenuLogin(userInfo) {
@@ -32,7 +23,7 @@ export function ctxMenuLogin(userInfo) {
     contexts: ['browser_action'],
     id: 'mm-btn-logout',
   });
-  debugCtxMenu();
+  ctxMenu();
 }
 
 export function ctxMenuLogout() {
@@ -47,5 +38,11 @@ export function ctxMenuLogout() {
     contexts: ['browser_action'],
     id: 'mm-btn-login',
   });
-  debugCtxMenu();
+  ctxMenu();
+}
+
+export function md5hash(userId) {
+  const hash = md5(userId);
+  const toUpperCase = String.prototype.toUpperCase;
+  return toUpperCase.call(hash);
 }

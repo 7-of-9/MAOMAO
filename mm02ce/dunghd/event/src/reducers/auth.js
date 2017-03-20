@@ -47,7 +47,10 @@ export default (state = initialState, action) => {
         isLogin: false,
       });
     case 'FETCH_CONTACTS_REJECTED':
-      return Object.assign({}, state, { message: action.payload.error.message, isFetchContacts: false });
+      return Object.assign({}, state, {
+         message: action.payload.error.message,
+          isFetchContacts: false,
+         });
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();
       // TODO: clear all sessions on bg and tracking tab

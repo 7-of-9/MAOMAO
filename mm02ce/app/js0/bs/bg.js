@@ -355,7 +355,7 @@ function inject_cs(session, tab_id, skip_text) {
         var current_tab = tabs[0];
 
       var process = process_url(tab.url);
-      if (process && !isGuest && apiErrorUrls.indexOf(tab.url) === -1) {
+      if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(tab.url, function (data) {
           console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
@@ -396,8 +396,8 @@ function inject_cs(session, tab_id, skip_text) {
           });
         }, function (error) {
           console.error(error);
-          if(apiErrorUrls.indexOf(tab.url) === -1) {
-            apiErrorUrls.push(tab.url);
+          if(NotInjectCSUrls.indexOf(tab.url) === -1) {
+            NotInjectCSUrls.push(tab.url);
           }
           setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
         });
@@ -415,7 +415,7 @@ function inject_cs(session, tab_id, skip_text) {
       }
       if (tab != null) {
         var process = process_url(tab.url);
-        if (process && !isGuest && apiErrorUrls.indexOf(tab.url) === -1) {
+        if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
           // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
           ajax_isTldAllowable(tab.url, function (data) {
             console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
@@ -455,8 +455,8 @@ function inject_cs(session, tab_id, skip_text) {
             });
           }, function (error) {
             console.error(error);
-            if(apiErrorUrls.indexOf(tab.url) === -1) {
-              apiErrorUrls.push(tab.url);
+            if(NotInjectCSUrls.indexOf(tab.url) === -1) {
+              NotInjectCSUrls.push(tab.url);
             }
             setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
           });
