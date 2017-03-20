@@ -17,7 +17,7 @@ namespace tests
             var topics = new List<UrlInfo.UrlParent>();
             var suggestions = new List<UrlInfo.UrlParent>();
             UrlInfo.UrlParent url_title_term = null;
-            UrlInfo.GetFilteredTopicsAndSuggestions(10441, out topics, out suggestions, out url_title_term);
+            UrlInfo.GetFilteredTopicsAndSuggestions(7807, out topics, out suggestions, out url_title_term);
         }
     }
 }
