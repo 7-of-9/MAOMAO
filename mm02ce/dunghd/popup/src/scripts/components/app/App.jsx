@@ -1,18 +1,34 @@
-import React, { Component } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-  }
+const propTypes = {
+  auth: PropTypes.object,
+};
 
+const defaultProps = {
+  auth: {
+    isLogin: false,
+    accessToken: '',
+    info: {},
+    contacts: [],
+  },
+};
+
+class App extends PureComponent {
   render() {
     return (
       <div>
-        Hello World
+        Hello {this.props.auth.info.name}
       </div>
     );
   }
 }
 
-export default App;
+App.propTypes = propTypes;
+App.defaultProps = defaultProps;
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(App);
