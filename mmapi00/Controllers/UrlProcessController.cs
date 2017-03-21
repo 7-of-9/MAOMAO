@@ -57,6 +57,7 @@ namespace mmapi00.Controllers
                 new_calais_terms = ret.new_calais_terms,
                            url_W = db_url != null ? db_url.W : -1000,
                          url_W_n = db_url != null ? db_url.W_n : -1000,
+                          url_id = db_url != null ? (long?)db_url.id : null,
                           topics = ret.topics,
                      suggestions = ret.suggestions,
                               ms = sw.ElapsedMilliseconds

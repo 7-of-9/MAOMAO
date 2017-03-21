@@ -41,13 +41,15 @@ namespace mmapi00.Controllers
             if (string.IsNullOrEmpty(param.href) || string.IsNullOrEmpty(param.text)) return BadRequest();
             Stopwatch sw = new Stopwatch(); sw.Start();
 
-            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text);
+            long? url_id;
+            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id);
 
             var history_id = mm_svc.User.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
 
             return Ok( new {
-                tld_topic = tld_topic.term_name,
-                ms = sw.ElapsedMilliseconds,
+                    url_id = url_id,
+                 tld_topic = tld_topic.term_name,
+                        ms = sw.ElapsedMilliseconds,
             });
         }
     }

@@ -76,6 +76,7 @@ namespace mmapi00.Controllers
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
                                 url_W = db_url != null ? db_url.W : -1000,
                               url_W_n = db_url != null ? db_url.W_n : -1000,
+                               url_id = db_url != null ? (long?)db_url.id : null,
                                topics = topics,
                           suggestions = suggestions,
                        url_title_term = url_title_term,

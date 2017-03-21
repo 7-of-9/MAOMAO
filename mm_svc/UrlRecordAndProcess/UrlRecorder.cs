@@ -14,8 +14,10 @@ namespace mm_svc
         //
         // Initial call: records URL w/ single url title term
         //
-        public static UrlInfo.UrlParent RecordUrl(string href, string raw_text)
+        public static UrlInfo.UrlParent RecordUrl(string href, string raw_text, out long? url_id)
         {
+            url_id = null;
+
             // get awis site -- prep/sanity checking
             var url = mm_global.Util.RemoveHashFromUrl(href.ToString());
             bool returned_from_db;
@@ -55,6 +57,7 @@ namespace mm_svc
             UrlInfo.UrlParent url_title_term;
             UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
 
+            url_id = db_url.id;
             return url_title_term;
         }
     }
