@@ -41,7 +41,7 @@ $(document).ready(function () {
 
               get_page_metadata(true, function (error, page_meta) {
                 if (error) {
-                  console.error(error);
+                  StackTrace.fromError(error).then(cslib_errorStack).catch(cslib_errBack);
                   chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                 } else {
                   chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -58,7 +58,7 @@ $(document).ready(function () {
                 function () { // element found
                   get_page_metadata(true, function (error, page_meta) {
                     if (error) {
-                      console.error(error);
+                      StackTrace.fromError(error).then(cslib_errorStack).catch(cslib_errBack);
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                     } else {
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -71,7 +71,7 @@ $(document).ready(function () {
                 function () { // element not found
                   get_page_metadata(true, function (error, page_meta) {
                     if (error) {
-                      console.error(error);
+                      StackTrace.fromError(error).then(cslib_errorStack).catch(cslib_errBack);
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
                     } else {
                       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
@@ -92,7 +92,7 @@ $(document).ready(function () {
 
           get_page_metadata(true, function (error, page_meta) { // force-refresh of page_meta
             if (error) {
-              console.error(error);
+              StackTrace.fromError(error).then(cslib_errorStack).catch(cslib_errBack);
               chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META_ERROR', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });
             } else {
               chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PAGE_META', payload: { url: remove_hash_url(document.location.href), page_meta: page_meta, } } });

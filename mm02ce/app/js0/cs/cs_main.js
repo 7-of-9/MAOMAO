@@ -221,3 +221,14 @@ function cslib_isYouTubeSite() {
         return true;
     return false;
 }
+
+function cslib_errorStack(stackframes) {
+    var stringifiedStack = stackframes.map(function(sf) {
+        return sf.toString();
+    }).join('\n');
+    console.log('error stack',stringifiedStack);
+}
+
+function cslib_errBack(err) {
+  console.log(err.message);
+}

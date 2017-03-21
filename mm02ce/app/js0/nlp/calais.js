@@ -420,7 +420,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
       calais_process(nlp); // todo: nop -- server should do this ...
     },
     error: function (jqXHR, status) {
-      console.error(jqXHR);
+      StackTrace.fromError(jqXHR).then(cslib_errorStack).catch(cslib_errBack);
       chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'API_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), jqXHR: jqXHR, status: status } } });
       if (jqXHR.status == 429) {
         // TODO: handle

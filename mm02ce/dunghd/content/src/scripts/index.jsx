@@ -11,6 +11,7 @@ import Config from './config';
 /* eslint-disable */
 require('expose?justext!justext');
 require('expose?franc!franc');
+require('expose?StackTrace!stacktrace-js');
 /* eslint-enable */
 
 const config = new Config();
