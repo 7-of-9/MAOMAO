@@ -120,7 +120,7 @@ class Xp extends Component {
 }
 
 Xp.propTypes = {
-  terms: PropTypes.array.isRequired,
+  terms: PropTypes.array,
   shareTopics: PropTypes.func.isRequired,
 };
 

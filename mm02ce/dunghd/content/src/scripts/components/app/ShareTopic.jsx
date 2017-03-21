@@ -1,6 +1,6 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
-import { GoogleShare } from '../share';
+import { GoogleShare, Toolbar } from '../share';
 
 const style = {
   container: {
@@ -14,12 +14,15 @@ const style = {
     backgroundColor: '#dedede',
     border: '3px solid #3f51b5',
   },
+  toolbar: {
+    float: 'right',
+  },
   topic: {
     fontWeight: 'bolder',
   },
   heading: {
     paddingLeft: '50px',
-    fontSize: '20px',
+    fontSize: '18px',
     lineHeight: '40px',
     height: '50px',
   },
@@ -70,8 +73,9 @@ const ShareTopic = enhance(({
          onClick={closeShare} className="close_button"
        />
        <h3 style={style.heading}>
-      Share <span style={style.topic}>{selectTopics(terms)}</span> with:
-    </h3>
+        Share <span style={style.topic}>{selectTopics(terms)}</span> with:
+         <Toolbar />
+       </h3>
        <GoogleShare contacts={contacts} handleChange={handleChange} />
        <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
      </div >,
