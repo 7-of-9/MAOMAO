@@ -42,13 +42,11 @@ class Xp extends Component {
 
     this.timer = setInterval(() => {
       if (this.props.terms.length > 1) {
-        console.time('start to animation');
         if (this.state.show) {
           this.setState({
             textAnimate: styles.bounceOutUp,
             scoreAnimate: styles.bounceOutUp,
           }, () => {
-            console.timeEnd('end time to animation');
             setTimeout(() => {
               this.setState({
                 textAnimate: styles.bounceInUp,
@@ -70,7 +68,6 @@ class Xp extends Component {
   }
 
   componentWillUnmount() {
-    console.warn('componentDidUnmount');
     if (this.timer) {
       clearInterval(this.timer);
     }

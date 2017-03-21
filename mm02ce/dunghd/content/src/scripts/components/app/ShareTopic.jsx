@@ -39,7 +39,6 @@ const style = {
 const selectTopics = terms => terms && terms[0] && terms[0].text;
 
 const enhance = compose(
-  withState('show', 'setDisplay', true),
   withState('recipients', 'updateRecipients', []),
   withHandlers({
     handleChange: props => (emails) => {
@@ -64,15 +63,17 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-  show, enable, setDisplay, terms, contacts, handleChange, sendEmails }) =>
-    <div style={Object.assign({}, style.container, { display: show && enable ? '' : 'none' })}>
-      <div className="maomao-logo" />
-      <a onClick={() => setDisplay(() => false)} className="close_button" />
-      <h3 style={style.heading}>
+   enable, terms, contacts, handleChange, sendEmails, closeShare }) =>
+     <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
+       <div className="maomao-logo" />
+       <a
+         onClick={closeShare} className="close_button"
+       />
+       <h3 style={style.heading}>
       Share <span style={style.topic}>{selectTopics(terms)}</span> with:
     </h3>
-      <GoogleShare contacts={contacts} handleChange={handleChange} />
-      <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
-    </div >,
+       <GoogleShare contacts={contacts} handleChange={handleChange} />
+       <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
+     </div >,
 );
 export default ShareTopic;

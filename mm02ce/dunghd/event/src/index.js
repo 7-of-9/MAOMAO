@@ -47,7 +47,7 @@ function onClickHandler(info) {
     case 'mm-btn-share':
       {
         store.dispatch({
-          type: 'SHARE_TOPICS',
+          type: 'OPEN_SHARE_MODAL',
         });
       }
       break;

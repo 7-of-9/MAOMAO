@@ -32,6 +32,7 @@ const propTypes = {
   icon: PropTypes.object,
   terms: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
+  isShareOpen: PropTypes.bool.isRequired,
   siteUrl: PropTypes.string,
   mailgunKey: PropTypes.string,
   apiUrl: PropTypes.string,
@@ -92,17 +93,13 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      openShare: false, // hide on loading, trigger show login by ctx
-    };
     this.onClose = this.onClose.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.onLogout = this.onLogout.bind(this);
-    this.openInvite = this.openInvite.bind(this);
-    this.closeInvite = this.closeInvite.bind(this);
+    this.closeShare = this.closeShare.bind(this);
+    this.openShare = this.openShare.bind(this);
     this.sendEmail = this.sendEmail.bind(this);
     this.notify = this.notify.bind(this);
-
     this.mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
   }
 
@@ -163,15 +160,15 @@ class App extends Component {
     this.forceUpdate();
   }
 
-  closeInvite() {
-    this.setState({
-      openShare: false,
+  openShare() {
+    this.props.dispatch({
+      type: 'OPEN_SHARE_MODAL',
     });
   }
 
-  openInvite() {
-    this.setState({
-      openShare: true,
+  closeShare() {
+    this.props.dispatch({
+      type: 'CLOSE_SHARE_MODAL',
     });
   }
 
@@ -180,7 +177,7 @@ class App extends Component {
     this.userId = this.props.auth.userId;
     this.fullName = this.props.auth.info.name;
     this.title = `Join Maomao! ${this.fullName} want to share with you...`;
-
+    // FIXME: email logo url
     const emailTemplate = `
       <!doctype html>
       <html>
@@ -372,7 +369,6 @@ class App extends Component {
         \n\n ${emailTemplate}`,
       (err) => {
         if (err) {
-          console.warn(err);
           this.notify({
             title: `Sending error to ${email}`,
             icon: <ErrorOutline />,
@@ -420,16 +416,15 @@ class App extends Component {
             onLogin={this.onLogin}
             onClose={this.onClose}
             onLogout={this.onLogout}
-            openInvite={this.openInvite}
-            isShareOpen={this.state.openShare}
             isOpen={this.props.isOpen}
           />
           <ShareTopic
-            enable={this.state.openShare}
+            enable={this.props.isShareOpen}
             terms={this.props.terms}
             sendEmail={this.sendEmail}
             contacts={this.props.auth && this.props.auth.contacts}
             notify={this.notify}
+            closeShare={this.closeShare}
           />
           <ToggleDisplay
             if={
@@ -441,7 +436,7 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp terms={this.props.terms} shareTopics={this.openInvite} />
+          <Xp terms={this.props.terms} shareTopics={this.openShare} />
         </div>
       </StyleRoot>
     );
@@ -454,6 +449,7 @@ App.defaultProps = defaultProps;
 const mapStateToProps = state => ({
   auth: state.auth,
   isOpen: state.modal,
+  isShareOpen: state.share,
   score: state.score,
   terms: getCurrentTerms(state),
   icon: state.icon,
