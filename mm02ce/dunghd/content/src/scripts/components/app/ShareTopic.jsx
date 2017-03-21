@@ -1,9 +1,6 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
-import ChipInput from 'material-ui-chip-input';
-import AutoComplete from 'material-ui/AutoComplete';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
+import { GoogleShare } from '../share';
 
 const style = {
   container: {
@@ -40,14 +37,6 @@ const style = {
 };
 
 const selectTopics = terms => terms && terms[0] && terms[0].text;
-const contactsSource = contacts => contacts.map((item) => {
-  const object = {
-    text: item.name ? `${item.name} (${item.email})` : item.email,
-    name: item.name,
-    email: item.email,
-  };
-  return object;
-}) || [];
 
 const enhance = compose(
   withState('show', 'setDisplay', true),
@@ -57,7 +46,6 @@ const enhance = compose(
       props.updateRecipients(emails);
     },
     sendEmails: props => () => {
-      console.warn('sendEmails', props.recipients);
       if (props.recipients.length) {
         const topic = selectTopics(props.terms);
         props.recipients.forEach((item) => {
@@ -77,36 +65,14 @@ const enhance = compose(
 
 const ShareTopic = enhance(({
   show, enable, setDisplay, terms, contacts, handleChange, sendEmails }) =>
-  <div style={Object.assign({}, style.container, { display: show && enable ? '' : 'none' })}>
-    <div className="maomao-logo" />
-    <a onClick={() => setDisplay(() => false)} className="close_button" />
-    <h3 style={style.heading}>
+    <div style={Object.assign({}, style.container, { display: show && enable ? '' : 'none' })}>
+      <div className="maomao-logo" />
+      <a onClick={() => setDisplay(() => false)} className="close_button" />
+      <h3 style={style.heading}>
       Share <span style={style.topic}>{selectTopics(terms)}</span> with:
     </h3>
-    <ChipInput
-      fullWidth
-      fullWidthInput
-      autoFocus
-      style={style.wrapper}
-      dataSource={contactsSource(contacts)}
-      dataSourceConfig={{ text: 'text', value: 'email' }}
-      chipRenderer={({ value, text, isFocused, isDisabled, handleClick, handleRequestDelete }, key) => (
-        <Chip
-          style={style.chip}
-          key={key}
-          onTouchTap={handleClick}
-          onRequestDelete={handleRequestDelete}
-        >
-          <Avatar size={32}>{value[0].toUpperCase()}</Avatar>
-          {text}
-        </Chip>
-      )}
-      hintText="To: "
-      onChange={handleChange}
-      filter={AutoComplete.caseInsensitiveFilter}
-      maxSearchResults={5}
-    />
-    <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
-  </div >,
+      <GoogleShare contacts={contacts} handleChange={handleChange} />
+      <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
+    </div >,
 );
 export default ShareTopic;
