@@ -10,10 +10,11 @@ import { deepOrange500 } from 'material-ui/styles/colors';
 import Message from 'material-ui/svg-icons/communication/message';
 import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
 
-import { WelcomeModal } from '../modal';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
 import Xp from './Xp';
+import { WelcomeModal } from '../modal';
+import FloatingShare from '../share';
 import createUser from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
 
@@ -413,6 +414,7 @@ class App extends Component {
             transitionAppear={false}
             transitionLeave={false}
           />
+          <FloatingShare />
           <WelcomeModal
             auth={this.props.auth}
             onLogin={this.onLogin}
