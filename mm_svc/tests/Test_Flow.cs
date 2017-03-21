@@ -20,7 +20,8 @@ namespace tests
             var test_url = "http://datagenetics.com/blog/march12011/index.html";
 
             // (1) record new URL
-            var tld_title = UrlRecorder.RecordUrl(test_url, "test text");
+            long? url_id;
+            var tld_title = UrlRecorder.RecordUrl(test_url, "test text", out url_id);
 
             // (2) PUT NLP for new URL
             var assembly = Assembly.GetExecutingAssembly();
