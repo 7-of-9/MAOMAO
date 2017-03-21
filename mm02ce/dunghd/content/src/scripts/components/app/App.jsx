@@ -14,7 +14,7 @@ import Score from './Score';
 import ShareTopic from './ShareTopic';
 import Xp from './Xp';
 import { WelcomeModal } from '../modal';
-import FloatingShare from '../share';
+// import FloatingShare from '../share';
 import createUser from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
 
@@ -414,7 +414,7 @@ class App extends Component {
             transitionAppear={false}
             transitionLeave={false}
           />
-          <FloatingShare />
+          {/* <FloatingShare /> */}
           <WelcomeModal
             auth={this.props.auth}
             onLogin={this.onLogin}
