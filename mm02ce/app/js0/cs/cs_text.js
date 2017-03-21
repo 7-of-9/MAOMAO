@@ -284,11 +284,10 @@ function process_text(page_meta) {
     if (detectLang === 'eng') {
       ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function (data) {
         console.log("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
-        if (data.is_known == true) {
+        if (data.is_known == true && data.has_calais_info == true) {
           // no need to text process, no need for calais
           chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } } });
           console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
-
           if (document.getElementById('maomao-extension-youtube-test')) {
             cslib_test_NextYouTubeVid();
           } else {
