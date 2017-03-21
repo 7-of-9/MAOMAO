@@ -6,35 +6,48 @@ import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import TwitterButton from './TwitterButton';
 import LinkButton from './LinkButton';
+import icon from './images/floating-icon.png';
 
 const styles = {
   wrap: {
-    zIndex: 9999,
     position: 'fixed',
     top: '0px',
     left: '0px',
     right: '0px',
     bottom: '0px',
   },
+  container: {
+    zIndex: 9999,
+    width: 'fit-content',
+    color: '#000',
+    borderRadius: '6px',
+    background: '#fff',
+    boxShadow: 'rgba(0, 0, 0, 0.14902) 3px 3px 11px 3px',
+    textAlign: 'left',
+  },
   floating: {
+    zIndex: 9999,
     position: 'relative',
-    width: '60px',
-    height: '60px',
+    width: '40px',
+    height: '40px',
   },
 };
 
-const FloatingShare = ({ show, onShow }) =>
+const FloatingShare = ({ show, onShow, onHide, onToggle }) =>
   <Draggable
     axis="both"
-    handle=".maomao-logo"
+    handle=".drag"
     defaultPosition={{ x: 0, y: 0 }}
     position={null}
     grid={[25, 25]}
     zIndex={1000}
   >
     <div style={styles.wrap}>
-      <div onClick={onShow} style={styles.floating} className="maomao-logo" />
-      <div style={{ display: show ? '' : 'none' }}>
+      <div onMouseEnter={onShow} style={styles.floating}>
+        <img onClick={onToggle} className="drag" width="40" height="40" src={icon} alt="Maomao" />
+      </div>
+      <div style={{ display: show ? '' : 'none' }} className="arrow-up" />
+      <div onMouseLeave={onHide} style={{ display: show ? '' : 'none', ...styles.container }}>
         <h3>Share this topic</h3>
         <div>
           <FacebookButton />
@@ -49,7 +62,9 @@ const FloatingShare = ({ show, onShow }) =>
 const enhance = compose(
   withState('show', 'toggleShow', false),
   withHandlers({
-     onShow: ({ toggleShow }) => () => toggleShow(show => !show),
+     onToggle: ({ toggleShow }) => () => toggleShow(show => !show),
+     onHide: ({ toggleShow }) => () => toggleShow(false),
+     onShow: ({ toggleShow }) => () => toggleShow(true),
   }),
   pure,
 );

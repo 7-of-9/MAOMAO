@@ -157,3 +157,12 @@ $close-btn-img: url('./images/close_button.png');
     background: $logo-img;
     background-size: contain;
 }
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  z-index: 9999;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(0, 0, 0, 0.22);
+}
