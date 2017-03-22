@@ -62,12 +62,19 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, selectedContacts, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
+const GoogleShare = ({ value, contacts, selectedContacts, addContact, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
   <div style={{ display: 'inline-block', width: '100%' }}>
     {
-      selectedContacts.map(contact => (
-        <Contact key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
-        ))
+      contacts.slice(0, 3).map((contact) => {
+        if (!selectedContacts.map(item => item.email).includes(contact.email)) {
+          return (
+            <Contact
+              onClick={() => { addContact(contact); }} key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image}
+            />
+           );
+        }
+        return '';
+      })
     }
   </div>
   <Autosuggest
@@ -82,7 +89,15 @@ const GoogleShare = ({ value, selectedContacts, onChange, suggestions, onSuggest
       value,
       onChange,
     }}
-  /></div>;
+  />
+  <div style={{ display: 'inline-block', width: '100%' }}>
+    {
+      selectedContacts.map(contact => (
+        <Contact key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+        ))
+    }
+  </div>
+</div>;
 
 const enhance = compose(
   withState('suggestions', 'changeSuggestions', []),
@@ -97,11 +112,22 @@ const enhance = compose(
     onSuggestionsClearRequested: props => () => {
       props.changeSuggestions([]);
     },
+    addContact: props => (contact) => {
+      const emails = props.selectedContacts.map(item => item.email);
+      if (!emails.includes(contact.email)) {
+          props.changeSelectedContacts([].concat(props.selectedContacts, contact));
+      }
+    },
+    removeContact: props => (contact) => {
+      const sources = props.selectedContacts.filter(item => item.email !== contact.email);
+      props.changeSelectedContacts(sources);
+    },
     onChange: props => (event, { newValue, method }) => {
       if (method === 'click' || method === 'enter') {
         const selected = getSuggestions(props.suggestions, newValue);
-        props.changeSelectedContacts([].concat(props.selectedContacts, selected && selected[0] || []));
-        console.log('addSelectedContacts', newValue, selected);
+        props.changeSelectedContacts(
+          [].concat(props.selectedContacts, (selected && selected[0]) || []),
+        );
         props.changeValue('');
       } else {
         props.changeValue(newValue);
