@@ -5,9 +5,11 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { pure, onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import noImage from './images/no-image.png';
+import Contact from './Contact';
+import guid from '../utils/guid';
 
 function getSuggestionValue(suggestion) {
-  return `${suggestion.name} suggestion.email`;
+  return suggestion.email;
 }
 
 function getSuggestions(contacts, value) {
@@ -37,6 +39,7 @@ function getSuggestions(contacts, value) {
 }
 
 function renderSuggestion(suggestion, { query }) {
+  console.log('renderSuggestion', suggestion);
   const suggestionText = `${suggestion.name} ${suggestion.email}`;
   const matches = match(suggestionText, query);
   const parts = parse(suggestionText, matches);
@@ -50,7 +53,7 @@ function renderSuggestion(suggestion, { query }) {
           parts.map((part) => {
             const className = part.highlight ? 'highlight' : null;
             return (
-              <span className={className} key={suggestion.uuid}>{part.text}</span>
+              <span className={className} key={guid()}>{part.text}</span>
             );
           })
         }
@@ -59,34 +62,53 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div><Autosuggest
-  suggestions={suggestions}
-  onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-  onSuggestionsClearRequested={onSuggestionsClearRequested}
-  getSuggestionValue={getSuggestionValue}
-  renderSuggestion={renderSuggestion}
-  inputProps={{
+const GoogleShare = ({ value, selectedContacts, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
+  <div style={{ display: 'inline-block', width: '100%' }}>
+    {
+      selectedContacts.map(contact => (
+        <Contact key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+        ))
+    }
+  </div>
+  <Autosuggest
+    suggestions={suggestions}
+    onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+    onSuggestionsClearRequested={onSuggestionsClearRequested}
+    getSuggestionValue={getSuggestionValue}
+    renderSuggestion={renderSuggestion}
+    highlightFirstSuggestion
+    inputProps={{
       placeholder: 'To: type name to search...',
       value,
       onChange,
     }}
-/></div>;
+  /></div>;
 
 const enhance = compose(
   withState('suggestions', 'changeSuggestions', []),
+  withState('selectedContacts', 'changeSelectedContacts', []),
   withState('value', 'changeValue', ''),
   withHandlers({
     onSuggestionsFetchRequested: props => () => {
-      props.changeSuggestions(getSuggestions(props.contacts, props.value));
+      const emails = props.selectedContacts.map(item => item.email);
+      const sources = props.contacts.filter(item => emails.indexOf(item.email) === -1);
+      props.changeSuggestions(getSuggestions(sources, props.value));
     },
     onSuggestionsClearRequested: props => () => {
       props.changeSuggestions([]);
     },
-    onChange: props => (event, { newValue }) => {
-      props.changeValue(newValue);
+    onChange: props => (event, { newValue, method }) => {
+      if (method === 'click' || method === 'enter') {
+        const selected = getSuggestions(props.suggestions, newValue);
+        props.changeSelectedContacts([].concat(props.selectedContacts, selected && selected[0] || []));
+        console.log('addSelectedContacts', newValue, selected);
+        props.changeValue('');
+      } else {
+        props.changeValue(newValue);
+      }
     },
   }),
-  onlyUpdateForKeys(['value']),
+  onlyUpdateForKeys(['value', 'selectedContacts']),
   pure,
 );
 

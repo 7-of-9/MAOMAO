@@ -9,8 +9,7 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     zIndex: 1000,
-    minWidth: '400px',
-    maxHeight: '400px',
+    minWidth: '600px',
     backgroundColor: '#dedede',
     border: '3px solid #3f51b5',
   },
@@ -22,9 +21,9 @@ const style = {
   },
   heading: {
     paddingLeft: '50px',
-    fontSize: '18px',
+    height: '40px',
     lineHeight: '40px',
-    height: '50px',
+    fontSize: '16px',
   },
   button: {
     float: 'right',
@@ -75,7 +74,7 @@ const ShareTopic = enhance(({
        <Toolbar />
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
-       </h3>
+      </h3>
        <GoogleShare contacts={contacts} handleChange={handleChange} />
        <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
      </div >,
