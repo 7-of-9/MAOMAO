@@ -134,11 +134,16 @@ function fetchContacts(token, page, limit) {
           total = Number(data.feed.openSearch$totalResults.$t);
           data.feed.entry.forEach((item) => {
             const ref = item.gd$email;
+            let image = '';
+            if (item.link && item.link[0] && item.link[0].href) {
+              image = `${item.link[0].href}&access_token=${token}`;
+            }
             if (ref && ref[0] && ref[0].address) {
               contacts.push({
                 email: ref[0].address,
                 name: item.title.$t,
                 key: guid(),
+                image,
               });
             }
           });

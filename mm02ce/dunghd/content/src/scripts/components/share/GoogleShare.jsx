@@ -1,57 +1,93 @@
-import React, { PropTypes } from 'react';
-import ChipInput from 'material-ui-chip-input';
-import AutoComplete from 'material-ui/AutoComplete';
-import Chip from 'material-ui/Chip';
-import Avatar from 'material-ui/Avatar';
+import React from 'react';
+import Fuse from 'fuse.js';
+import Autosuggest from 'react-autosuggest';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+import { pure, onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 
-const style = {
-  chip: { margin: 4 },
-  wrapper: { overflow: 'auto', maxHeight: '300px' },
-};
-const propTypes = {
-  contacts: PropTypes.array,
-  handleChange: PropTypes.func.isRequired,
-};
-const defaultProps = { contacts: [] };
+function getSuggestionValue(suggestion) {
+  console.warn('getSuggestionValue', suggestion);
+  return `${suggestion.name} (${suggestion.email})`;
+}
 
-const contactsSource = contacts => contacts.map(
-  (item) => {
-    const object = {
-      text: item.name ? `${item.name} (${item.email})` : item.email,
-      name: item.name,
-      email: item.email,
-    };
-    return object;
-  },
-) || [];
+function getSuggestions(contacts, value) {
+  console.warn('getSuggestions', contacts, value);
+  if (value === '') {
+    return [];
+  }
 
-const GoogleShare = ({ contacts, handleChange }) => <ChipInput
-  fullWidth
-  fullWidthInput
-  autoFocus
-  style={style.wrapper}
-  dataSource={contactsSource(contacts)}
-  dataSourceConfig={{ text: 'text', value: 'email' }}
-  chipRenderer={(
-    { value, text, isFocused, isDisabled, handleClick, handleRequestDelete },
-    key,
-  ) => (
-    <Chip
-      style={style.chip}
-      key={key}
-      onTouchTap={handleClick}
-      onRequestDelete={handleRequestDelete}
-    >
-      <Avatar size={32}>{value[0].toUpperCase()}</Avatar>
-      {text}
-    </Chip>)}
-  hintText="To: "
-  onChange={handleChange}
-  filter={AutoComplete.caseInsensitiveFilter}
-  maxSearchResults={5}
-/>;
+  const options = {
+      include: ['score'],
+      shouldSort: true,
+      tokenize: true,
+      matchAllTokens: true,
+      threshold: 0.6,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: [
+        'name',
+        'email',
+    ],
+  };
+  const fuse = new Fuse(contacts, options);
+  const result = fuse.search(value);
+  return result.slice(0, 5).map(item => item && item.item);
+}
 
-GoogleShare.propTypes = propTypes;
-GoogleShare.defaultProps = defaultProps;
+function renderSuggestion(suggestion, { query }) {
+  console.warn('renderSuggestion', suggestion, query);
+  const suggestionText = `${suggestion.name} ${suggestion.email}`;
+  const matches = match(suggestionText, query);
+  const parts = parse(suggestionText, matches);
+  return (
+    <span className="suggestion-content">
+      <span className="name">
+        {
+          parts.map((part, index) => {
+            const className = part.highlight ? 'highlight' : null;
+            return (
+              <span className={className} key={index}>{part.text}</span>
+            );
+          })
+        }
+      </span>
+    </span>
+  );
+}
 
-export default GoogleShare;
+const GoogleShare = ({ value, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div><Autosuggest
+  suggestions={suggestions}
+  onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+  onSuggestionsClearRequested={onSuggestionsClearRequested}
+  getSuggestionValue={getSuggestionValue}
+  renderSuggestion={renderSuggestion}
+  inputProps={{
+      placeholder: 'To: type name to search...',
+      value,
+      onChange,
+    }}
+/></div>;
+
+const enhance = compose(
+  withState('suggestions', 'changeSuggestions', []),
+  withState('value', 'changeValue', ''),
+  withHandlers({
+    onSuggestionsFetchRequested: props => () => {
+      console.warn('onSuggestionsFetchRequested', props);
+      props.changeSuggestions(getSuggestions(props.contacts, props.value));
+    },
+    onSuggestionsClearRequested: props => () => {
+      console.warn('onSuggestionsClearRequested', props);
+      props.changeSuggestions([]);
+    },
+    onChange: props => (event) => {
+      props.changeValue(event.target.value);
+    },
+  }),
+  onlyUpdateForKeys(['value']),
+  pure,
+);
+
+export default enhance(GoogleShare);
