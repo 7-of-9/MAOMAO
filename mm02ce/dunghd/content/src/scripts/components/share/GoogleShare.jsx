@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import Fuse from 'fuse.js';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
@@ -39,7 +39,6 @@ function getSuggestions(contacts, value) {
 }
 
 function renderSuggestion(suggestion, { query }) {
-  console.log('renderSuggestion', suggestion);
   const suggestionText = `${suggestion.name} ${suggestion.email}`;
   const matches = match(suggestionText, query);
   const parts = parse(suggestionText, matches);
@@ -62,7 +61,7 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, contacts, selectedContacts, addContact, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
+const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeContact, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
   <div style={{ display: 'inline-block', width: '100%' }}>
     {
       contacts.slice(0, 3).map((contact) => {
@@ -93,11 +92,38 @@ const GoogleShare = ({ value, contacts, selectedContacts, addContact, onChange, 
   <div style={{ display: 'inline-block', width: '100%' }}>
     {
       selectedContacts.map(contact => (
-        <Contact key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+        <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
     }
   </div>
 </div>;
+
+GoogleShare.propTypes = {
+  value: PropTypes.string,
+  contacts: PropTypes.array,
+  selectedContacts: PropTypes.array,
+  suggestions: PropTypes.array,
+  addContact: PropTypes.func,
+  removeContact: PropTypes.func,
+  onChange: PropTypes.func,
+  onSuggestionsFetchRequested: PropTypes.func,
+  onSuggestionsClearRequested: PropTypes.func,
+  handleChange: PropTypes.func,
+};
+
+GoogleShare.defaultProps = {
+  value: '',
+  contacts: [],
+  selectedContacts: [],
+  suggestions: [],
+  addContact: () => {},
+  removeContact: () => {},
+  onChange: () => {},
+  onSuggestionsFetchRequested: () => {},
+  onSuggestionsClearRequested: () => {},
+  handleChange: () => {},
+};
+
 
 const enhance = compose(
   withState('suggestions', 'changeSuggestions', []),
@@ -116,18 +142,20 @@ const enhance = compose(
       const emails = props.selectedContacts.map(item => item.email);
       if (!emails.includes(contact.email)) {
           props.changeSelectedContacts([].concat(props.selectedContacts, contact));
+          props.handleChange([].concat(props.selectedContacts, contact));
       }
     },
     removeContact: props => (contact) => {
       const sources = props.selectedContacts.filter(item => item.email !== contact.email);
+      props.handleChange(sources);
       props.changeSelectedContacts(sources);
     },
     onChange: props => (event, { newValue, method }) => {
       if (method === 'click' || method === 'enter') {
         const selected = getSuggestions(props.suggestions, newValue);
-        props.changeSelectedContacts(
-          [].concat(props.selectedContacts, (selected && selected[0]) || []),
-        );
+        const result = [].concat(props.selectedContacts, (selected && selected[0]) || []);
+        props.handleChange(result);
+        props.changeSelectedContacts(result);
         props.changeValue('');
       } else {
         props.changeValue(newValue);

@@ -44,6 +44,7 @@ const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withHandlers({
     handleChange: props => (emails) => {
+      console.log('handleChange', emails);
       props.updateRecipients(emails);
     },
     sendEmails: props => () => {

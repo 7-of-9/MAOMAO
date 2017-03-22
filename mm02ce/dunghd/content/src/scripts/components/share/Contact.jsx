@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { compose, pure } from 'recompose';
 import styled from 'styled-components';
 import noImage from './images/no-image.png';
+import removeIcon from './images/minus.png';
 
 const Wrapper = styled.div`
   height: 40px;
@@ -31,7 +32,15 @@ const Item = styled.li`
   text-align: left;
 `;
 
-const Contact = ({ onClick, name, email, image }) =>
+const Remove = styled.a`
+  &:hover {
+    background: #dedede;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+`;
+
+const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
   <Wrapper onClick={onClick}>
     <Image>
       <img onError={(ev) => { ev.target.src = noImage; }} src={image} alt={name || email} height="40" width="40" />
@@ -41,8 +50,29 @@ const Contact = ({ onClick, name, email, image }) =>
       <Item>{name}</Item>
       }
       <Item>{email}</Item>
+      {
+        isEdit && <Remove onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt="Remove" /></Remove>
+      }
     </Info>
   </Wrapper>;
+
+  Contact.propTypes = {
+    name: PropTypes.string,
+    email: PropTypes.string,
+    image: PropTypes.string,
+    isEdit: PropTypes.bool,
+    onClick: PropTypes.func,
+    onRemove: PropTypes.func,
+  };
+
+  Contact.defaultProps = {
+    name: '',
+    email: '',
+    image: '',
+    isEdit: false,
+    onClick: () => {},
+    onRemove: () => {},
+  };
 
 const enhance = compose(
   pure,
