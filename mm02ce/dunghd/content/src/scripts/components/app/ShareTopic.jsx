@@ -72,9 +72,9 @@ const ShareTopic = enhance(({
        <a
          onClick={closeShare} className="close_button"
        />
+       <Toolbar />
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
-         <Toolbar />
        </h3>
        <GoogleShare contacts={contacts} handleChange={handleChange} />
        <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
