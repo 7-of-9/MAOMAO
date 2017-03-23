@@ -47,33 +47,34 @@ function buildUrlPath(params) {
 
 export function checkGoogleAuth() {
   const promise = new Promise((resolve, reject) => {
-    let retry = true; // retry once when get error
-    function getTokenAndXhr() {
-      chrome.identity.getAuthToken({ interactive: true }, (token) => {
-        if (chrome.runtime.lastError) {
-          console.error(chrome.runtime.lastError);
-          return reject(chrome.runtime.lastError);
-        } else if (token) {
-          const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-          firebase.auth()
-            .signInWithCredential(credential)
-            .catch(error => console.warn(error));
-          return axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
-            .then(response => resolve({ token, info: response.data }))
-            .catch((error) => {
-              if (error.response.status === 401 && retry) {
-                retry = false;
-                chrome.identity.removeCachedAuthToken({ token }, getTokenAndXhr);
-                return;
-              }
-              console.error(error);
-              reject(error);
-            });
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/plus.me');
+    provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+    provider.addScope('https://www.google.com/m8/feeds/');
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    firebase.auth().signInWithPopup(provider).then((result) => {
+      const token = result.credential.accessToken;
+      const user = result.user;
+      console.warn('google user', user, result);
+      let googleUserId = '';
+      if (user.providerData && user.providerData.length) {
+        for (let counter = 0; counter < user.providerData.length; counter += 1) {
+          if (user.providerData[counter].providerId === 'google.com') {
+            googleUserId = user.providerData[counter].uid;
+            break;
+          }
         }
-        return reject(new Error('The OAuth Token was null'));
+      }
+      return resolve({
+        googleUserId,
+        token,
+        info: {
+          name: user.displayName,
+          email: user.email,
+          picture: user.photoURL,
+       },
       });
-    }
-    getTokenAndXhr();
+    }).catch(error => reject(error));
   });
   return promise;
 }

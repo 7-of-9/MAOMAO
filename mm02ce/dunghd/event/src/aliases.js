@@ -68,7 +68,7 @@ const authGoogleLogin = () => (
       });
       return checkGoogleAuth()
         .then((data) => {
-          dispatch(actionCreator('USER_HASH', { userHash: data.info.sub }));
+          dispatch(actionCreator('USER_HASH', { userHash: data.googleUserId }));
           dispatch(actionCreator('AUTH_FULFILLED', data));
         }).catch((error) => {
           // Try to logout and remove cache token
@@ -78,9 +78,9 @@ const authGoogleLogin = () => (
           dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
-    dispatch(actionCreator('USER_HASH', { userHash: auth.info.sub }));
+    dispatch(actionCreator('USER_HASH', { userHash: auth.googleUserId }));
     return dispatch(
-      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
+      actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, token: auth.accessToken, info: auth.info }),
     );
   }
 );
@@ -94,7 +94,7 @@ const authFacebookLogin = () => (
       });
       return checkFacebookAuth()
         .then((data) => {
-          dispatch(actionCreator('USER_HASH', { userHash: data.info.sub }));
+          dispatch(actionCreator('USER_HASH', { userHash: data.facebookUserId }));
           dispatch(actionCreator('AUTH_FULFILLED', data));
         }).catch((error) => {
           // Try to logout and remove cache token
@@ -104,12 +104,13 @@ const authFacebookLogin = () => (
           dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
-    dispatch(actionCreator('USER_HASH', { userHash: auth.info.sub }));
+    dispatch(actionCreator('USER_HASH', { userHash: auth.facebookUserId }));
     return dispatch(
-      actionCreator('AUTH_FULFILLED', { token: auth.token, info: auth.info }),
+      actionCreator('AUTH_FULFILLED', { facebookUserId: auth.facebookUserId, token: auth.accessToken, info: auth.info }),
     );
   }
 );
+
 
 const getContacts = () => (
   (dispatch, getState) => {

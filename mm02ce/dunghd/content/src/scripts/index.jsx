@@ -19,17 +19,20 @@ const proxyStore = new Store({ portName: 'maomao-extension' });
 const anchor = document.createElement('div');
 anchor.id = 'maomao-extension-anchor';
 
-document.body.insertBefore(anchor, document.body.childNodes[0]);
-
-injectTapEventPlugin();
-
-// wait for the store to connect to the background page
-proxyStore.ready().then(() => {
-  render(
-    <MuiThemeProvider>
-      <Provider store={proxyStore}>
-        <App {...config} />
-      </Provider>
-    </MuiThemeProvider>
-    , document.getElementById('maomao-extension-anchor'));
-});
+// turn off for firebase auth
+const url = document.URL;
+console.log('inject maomao url', url);
+if (url.indexOf('maomao-testing.firebaseapp.com') === -1) {
+ document.body.insertBefore(anchor, document.body.childNodes[0]);
+ injectTapEventPlugin();
+ // wait for the store to connect to the background page
+ proxyStore.ready().then(() => {
+   render(
+     <MuiThemeProvider>
+       <Provider store={proxyStore}>
+         <App {...config} />
+       </Provider>
+     </MuiThemeProvider>
+     , document.getElementById('maomao-extension-anchor'));
+ });
+}

@@ -107,26 +107,29 @@ class App extends Component {
 
   onGoogleLogin() {
     this.notify({
-      title: 'Prepare to login!',
-      autoHide: 1000,
+      title: 'Prepare to login with google!',
+      autoHide: 3000,
       timestamp: moment().format('h:mm A'),
     });
     this.props.dispatch(checkAuth('GOOGLE'))
-      .then((token) => {
-        if (token) {
+      .then(() => {
+        if (this.props.auth.isLogin) {
           this.props.dispatch(fetchContacts());
+          const names = this.props.auth.info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
           return createUser(`${this.props.apiUrl}/user/google`, {
-            email: token.info.email,
-            firstName: token.info.family_name,
-            lastName: token.info.given_name,
-            avatar: token.info.picture,
-            gender: token.info.gender,
-            google_user_id: token.info.sub,
+            firstName,
+            lastName,
+            email: this.props.auth.info.email,
+            avatar: this.props.auth.info.picture,
+            google_user_id: this.props.auth.googleUserId,
           });
         }
         throw new Error(this.props.auth.message);
       })
       .then((user) => {
+        console.log('create new user', user);
         let userId = -1;
         if (user.data && user.data.id) {
           userId = user.data.id;
@@ -149,45 +152,46 @@ class App extends Component {
 
   onFacebookLogin() {
     this.notify({
-      title: 'Prepare to login!',
-      autoHide: 1000,
+      title: 'Prepare to login with facebook!',
+      autoHide: 3000,
       timestamp: moment().format('h:mm A'),
     });
     this.props.dispatch(checkAuth('FACEBOOK'))
-      .then((data) => {
-        console.log('facebook data', data);
-        // if (token) {
-        //   this.props.dispatch(fetchContacts());
-        //   return createUser(`${this.props.apiUrl}/user/fb`, {
-        //     email: token.info.email,
-        //     firstName: token.info.family_name,
-        //     lastName: token.info.given_name,
-        //     avatar: token.info.picture,
-        //     gender: token.info.gender,
-        //     fb_user_id: token.info.sub,
-        //   });
-        // }
-        // throw new Error(this.props.auth.message);
-      })
-      // .then((user) => {
-      //   let userId = -1;
-      //   if (user.data && user.data.id) {
-      //     userId = user.data.id;
-      //   }
-      //   this.props.dispatch({
-      //     type: 'USER_AFTER_LOGIN',
-      //     payload: {
-      //       userId,
-      //     },
-      //   });
-      // })
-      .catch((err) => {
-        this.notify({
-          title: err.message,
-          autoHide: 3000,
-          timestamp: moment().format('h:mm A'),
+    .then(() => {
+      if (this.props.auth.isLogin) {
+        const names = this.props.auth.info.name.split(' ');
+        const firstName = names[0];
+        const lastName = names.slice(1, names.length).join(' ');
+        return createUser(`${this.props.apiUrl}/user/fb`, {
+          firstName,
+          lastName,
+          email: this.props.auth.info.email,
+          avatar: this.props.auth.info.picture,
+          fb_user_id: this.props.auth.facebookUserId,
         });
+      }
+      throw new Error(this.props.auth.message);
+    })
+    .then((user) => {
+      console.log('create new user', user);
+      let userId = -1;
+      if (user.data && user.data.id) {
+        userId = user.data.id;
+      }
+      this.props.dispatch({
+        type: 'USER_AFTER_LOGIN',
+        payload: {
+          userId,
+        },
       });
+    })
+    .catch((err) => {
+      this.notify({
+        title: err.message,
+        autoHide: 3000,
+        timestamp: moment().format('h:mm A'),
+      });
+    });
   }
 
   onClose() {

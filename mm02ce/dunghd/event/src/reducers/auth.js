@@ -10,6 +10,8 @@ const initialState = {
   info: {},
   userId: -1,
   userHash: '',
+  googleUserId: '',
+  facebookUserId: '',
   contacts: [],
 };
 
@@ -26,6 +28,8 @@ export default (state = initialState, action) => {
         message: 'authentication is done',
         accessToken: action.payload.token,
         info: action.payload.info,
+        googleUserId: action.payload.googleUserId || '',
+        facebookUserId: action.payload.facebookUserId || '',
         isPending: false,
         isLogin: true,
       });

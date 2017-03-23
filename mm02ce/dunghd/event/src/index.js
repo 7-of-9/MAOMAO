@@ -185,15 +185,9 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-function queryString(obj) {
-  const str = [];
-  Object.keys(obj).forEach((prop) => {
-    str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
-  });
-  return str.join('&');
-}
-
 function autoLogin() {
+  // TODO: Need to implement autoLogin
+  /*
   chrome.identity.getAuthToken({
     interactive: false,
   }, (token) => {
@@ -254,6 +248,7 @@ function autoLogin() {
         .catch(error => console.warn(error));
     } else console.warn('The OAuth Token was null');
   });
+  */
 }
 
 function initFirebaseApp() {
