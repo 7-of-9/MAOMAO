@@ -1,22 +1,6 @@
 import axios from 'axios';
 import firebase from 'firebase';
-
-function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}${s4()}`;
-}
-
-function queryString(obj) {
-  const str = [];
-  Object.keys(obj).forEach((prop) => {
-    str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
-  });
-  return str.join('&');
-}
+import { guid, queryString } from '../utils';
 
 function buildUrlPath(params) {
   let options = {

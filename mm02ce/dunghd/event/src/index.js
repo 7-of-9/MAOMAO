@@ -13,6 +13,7 @@ import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
+import { queryString } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -185,9 +186,32 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-function autoLogin() {
+let runOnStartUp = true;
+function autoLogin(user) {
   // TODO: Need to implement autoLogin
-  /*
+  if (runOnStartUp) {
+    console.warn('currentUser', user);
+    runOnStartUp = false;
+    let googleUserId = '';
+    let facebookUserId = '';
+    if (user.providerData && user.providerData.length) {
+      for (let counter = 0; counter < user.providerData.length; counter += 1) {
+        if (user.providerData[counter].providerId === 'google.com') {
+          googleUserId = user.providerData[counter].uid;
+        }
+        if (user.providerData[counter].providerId === 'faceook.com') {
+          facebookUserId = user.providerData[counter].uid;
+        }
+      }
+    }
+
+    if (googleUserId) {
+       googleAutoLogin();
+    }
+  }
+}
+
+function googleAutoLogin() {
   chrome.identity.getAuthToken({
     interactive: false,
   }, (token) => {
@@ -248,7 +272,6 @@ function autoLogin() {
         .catch(error => console.warn(error));
     } else console.warn('The OAuth Token was null');
   });
-  */
 }
 
 function initFirebaseApp() {
@@ -256,11 +279,11 @@ function initFirebaseApp() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       console.warn('... firebase :', user);
+      autoLogin(user);
     }
   });
 }
 
 window.onload = () => {
   initFirebaseApp();
-  autoLogin();
 };
