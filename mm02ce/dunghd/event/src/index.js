@@ -182,6 +182,7 @@ firebase.initializeApp({
   apiKey: config.firebaseKey,
   databaseURL: config.firebaseDB,
   storageBucket: config.firebaseStore,
+  authDomain: config.firebaseAuthDomain,
 });
 
 function queryString(obj) {
@@ -257,9 +258,9 @@ function autoLogin() {
 
 function initFirebaseApp() {
   // Listen for auth state changes.
-  firebase.auth().onAuthStateChanged((googleUser) => {
-    if (googleUser) {
-      console.warn('... firebase googleUser :', googleUser);
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      console.warn('... firebase :', user);
     }
   });
 }

@@ -1,4 +1,4 @@
-﻿import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
 import $ from 'jquery';
@@ -56,7 +56,8 @@ const customStyles = {
 
 const propTypes = {
   auth: PropTypes.object,
-  onLogin: PropTypes.func.isRequired,
+  onGoogleLogin: PropTypes.func.isRequired,
+  onFacebookLogin: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isShareOpen: PropTypes.bool.isRequired,
@@ -89,8 +90,9 @@ class WelcomeModal extends Component {
               maomao
              </h1>
             <ToggleDisplay hide={this.props.auth.isLogin}>
-              <h2 style={customStyles.title}>Join MaoMao with Google login!</h2>
-              <RaisedButton onTouchTap={this.props.onLogin} label="Login" />
+              <h2 style={customStyles.title}>Join MaoMao!</h2>
+              <RaisedButton onTouchTap={this.props.onGoogleLogin} label="Google Connect" />
+              <RaisedButton onTouchTap={this.props.onFacebookLogin} label="Facebook Connect" />
               <RaisedButton onTouchTap={this.props.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>

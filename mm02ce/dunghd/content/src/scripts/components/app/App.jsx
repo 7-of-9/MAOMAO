@@ -65,10 +65,11 @@ const defaultProps = {
   dispatch: () => { },
 };
 
-const checkAuth = () => {
+const checkAuth = (type) => {
   const data = {
-    type: 'AUTH_LOGIN',
-    payload: {},
+    type: `AUTH_LOGIN_${type}`,
+    payload: {
+    },
   };
   return data;
 };
@@ -94,7 +95,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.onClose = this.onClose.bind(this);
-    this.onLogin = this.onLogin.bind(this);
+    this.onGoogleLogin = this.onGoogleLogin.bind(this);
+    this.onFacebookLogin = this.onFacebookLogin.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.closeShare = this.closeShare.bind(this);
     this.openShare = this.openShare.bind(this);
@@ -103,13 +105,13 @@ class App extends Component {
     this.mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
   }
 
-  onLogin() {
+  onGoogleLogin() {
     this.notify({
       title: 'Prepare to login!',
       autoHide: 1000,
       timestamp: moment().format('h:mm A'),
     });
-    this.props.dispatch(checkAuth())
+    this.props.dispatch(checkAuth('GOOGLE'))
       .then((token) => {
         if (token) {
           this.props.dispatch(fetchContacts());
@@ -136,6 +138,49 @@ class App extends Component {
           },
         });
       })
+      .catch((err) => {
+        this.notify({
+          title: err.message,
+          autoHide: 3000,
+          timestamp: moment().format('h:mm A'),
+        });
+      });
+  }
+
+  onFacebookLogin() {
+    this.notify({
+      title: 'Prepare to login!',
+      autoHide: 1000,
+      timestamp: moment().format('h:mm A'),
+    });
+    this.props.dispatch(checkAuth('FACEBOOK'))
+      .then((data) => {
+        console.log('facebook data', data);
+        // if (token) {
+        //   this.props.dispatch(fetchContacts());
+        //   return createUser(`${this.props.apiUrl}/user/fb`, {
+        //     email: token.info.email,
+        //     firstName: token.info.family_name,
+        //     lastName: token.info.given_name,
+        //     avatar: token.info.picture,
+        //     gender: token.info.gender,
+        //     fb_user_id: token.info.sub,
+        //   });
+        // }
+        // throw new Error(this.props.auth.message);
+      })
+      // .then((user) => {
+      //   let userId = -1;
+      //   if (user.data && user.data.id) {
+      //     userId = user.data.id;
+      //   }
+      //   this.props.dispatch({
+      //     type: 'USER_AFTER_LOGIN',
+      //     payload: {
+      //       userId,
+      //     },
+      //   });
+      // })
       .catch((err) => {
         this.notify({
           title: err.message,
@@ -413,7 +458,8 @@ class App extends Component {
           {/* <FloatingShare /> */}
           <WelcomeModal
             auth={this.props.auth}
-            onLogin={this.onLogin}
+            onGoogleLogin={this.onGoogleLogin}
+            onFacebookLogin={this.onFacebookLogin}
             onClose={this.onClose}
             onLogout={this.onLogout}
             isOpen={this.props.isOpen}
