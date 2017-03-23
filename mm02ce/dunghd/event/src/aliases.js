@@ -2,13 +2,7 @@ import axios from 'axios';
 import firebase from 'firebase';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
-
-function actionCreator(type, payload) {
-  return {
-    type,
-    payload,
-  };
-}
+import { actionCreator } from './utils';
 
 function logout(auth) {
   const promise = new Promise((resolve, reject) => {

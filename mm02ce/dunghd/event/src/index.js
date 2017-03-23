@@ -1,4 +1,3 @@
-import axios from 'axios';
 import firebase from 'firebase';
 import mobx from 'mobx';
 // import faker from 'faker';
@@ -13,7 +12,7 @@ import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
-import { queryString } from './utils';
+import { googleAutoLogin, facebookAutoLogin } from './autologin';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -186,90 +185,34 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-function googleAutoLogin() {
-  chrome.identity.getAuthToken({
-    interactive: false,
-  }, (token) => {
-    if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError);
-    } else if (token) {
-      const credential = firebase.auth.GoogleAuthProvider.credential(null, token);
-      firebase.auth().signInWithCredential(credential).catch(error => console.warn(error));
-      axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`)
-        .then((response) => {
-          store.dispatch({
-            type: 'USER_HASH',
-            payload: {
-              userHash: response.data.sub,
-            },
-          });
-          store.dispatch({
-            type: 'AUTH_FULFILLED',
-            payload: {
-              token,
-              info: response.data,
-            },
-          });
-          syncImScore(false);
-          store.dispatch({
-            type: 'FETCH_CONTACTS',
-          });
-          // register user
-          axios({
-            method: 'post',
-            url: `${config.apiUrl}/user/google`,
-            data: queryString({
-              email: response.data.email,
-              firstName: response.data.family_name,
-              lastName: response.data.given_name,
-              avatar: response.data.picture,
-              gender: response.data.gender,
-              google_user_id: response.data.sub,
-            }),
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-          }).then((user) => {
-            let userId = -1;
-            if (user.data && user.data.id) {
-              userId = user.data.id;
-            }
-            store.dispatch({
-              type: 'USER_AFTER_LOGIN',
-              payload: {
-                userId,
-              },
-            });
-            window.userId = userId;
-            window.isGuest = false;
-          }).catch(error => console.warn(error));
-        })
-        .catch(error => console.warn(error));
-    } else console.warn('The OAuth Token was null');
-  });
-}
 
 let runOnStartUp = true;
 function autoLogin(user) {
   // TODO: Need to implement autoLogin
   if (runOnStartUp) {
-    console.warn('currentUser', user);
     runOnStartUp = false;
     let googleUserId = '';
     let facebookUserId = '';
+    let facebookEmail = '';
     if (user.providerData && user.providerData.length) {
       for (let counter = 0; counter < user.providerData.length; counter += 1) {
         if (user.providerData[counter].providerId === 'google.com') {
           googleUserId = user.providerData[counter].uid;
         }
-        if (user.providerData[counter].providerId === 'faceook.com') {
+        if (user.providerData[counter].providerId === 'facebook.com') {
           facebookUserId = user.providerData[counter].uid;
+          facebookEmail = user.providerData[counter].email;
         }
       }
     }
-
+    console.warn('googleUserId', googleUserId);
+    console.warn('facebookUserId', facebookUserId);
     if (googleUserId) {
-       googleAutoLogin();
+       googleAutoLogin(store, syncImScore, config, googleUserId, user);
+    }
+
+    if (facebookUserId) {
+       facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
     }
   }
 }

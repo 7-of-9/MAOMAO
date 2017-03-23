@@ -14,3 +14,10 @@ export function queryString(obj) {
   });
   return str.join('&');
 }
+
+export function actionCreator(type, payload) {
+  return {
+    type,
+    payload,
+  };
+}
