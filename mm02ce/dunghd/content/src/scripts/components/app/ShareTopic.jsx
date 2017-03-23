@@ -1,6 +1,6 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
-import { GoogleShare, Toolbar } from '../share';
+import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
 const style = {
   container: {
@@ -76,6 +76,7 @@ const ShareTopic = enhance(({
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
       </h3>
+       <ShareOptions tld="Youtube.com" />
        <GoogleShare contacts={contacts} handleChange={handleChange} />
        <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
      </div >,
