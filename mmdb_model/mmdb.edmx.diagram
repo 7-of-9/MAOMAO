@@ -40,15 +40,9 @@
         <AssociationConnector Association="mm02Model.FK_user_url_classification_user_url" />
         <EntityTypeShape EntityType="mm02Model.url_parent_term" Width="1.5" PointX="16" PointY="7.75" />
         <AssociationConnector Association="mm02Model.FK_url_parent_term_term" />
-        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.25" PointY="0.625" />
-        <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
-        <AssociationConnector Association="mm02Model.fk_user_url_user" />
         <EntityTypeShape EntityType="mm02Model.share_active" Width="1.5" PointX="19.25" PointY="2.625" />
-        <AssociationConnector Association="mm02Model.FK_share_active_user" />
         <EntityTypeShape EntityType="mm02Model.share" Width="1.5" PointX="17" PointY="2.625" />
         <AssociationConnector Association="mm02Model.FK_share_active_share" />
-        <AssociationConnector Association="mm02Model.fk_share_source_user" />
-        <AssociationConnector Association="mm02Model.fk_share_target_user" />
         <AssociationConnector Association="mm02Model.FK_share_term" />
         <EntityTypeShape EntityType="mm02Model.url" Width="1.5" PointX="3.25" PointY="8" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
@@ -58,6 +52,12 @@
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
         <EntityTypeShape EntityType="mm02Model.url_text" Width="1.5" PointX="5.5" PointY="16.625" />
         <AssociationConnector Association="mm02Model.FK_url_text_url" />
+        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="0.75" />
+        <AssociationConnector Association="mm02Model.fk_share_source_user" />
+        <AssociationConnector Association="mm02Model.fk_share_target_user" />
+        <AssociationConnector Association="mm02Model.FK_share_active_user" />
+        <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
+        <AssociationConnector Association="mm02Model.fk_user_url_user" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
