@@ -17,11 +17,11 @@ namespace mmdb_model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public user()
         {
-            this.user_url_classification = new HashSet<user_url_classification>();
-            this.user_url = new HashSet<user_url>();
-            this.share_active = new HashSet<share_active>();
             this.shares = new HashSet<share>();
             this.shares1 = new HashSet<share>();
+            this.share_active = new HashSet<share_active>();
+            this.user_url_classification = new HashSet<user_url_classification>();
+            this.user_url = new HashSet<user_url>();
         }
     
         public long id { get; set; }
@@ -36,16 +36,17 @@ namespace mmdb_model
         public string password { get; set; }
         public string salt { get; set; }
         public string google_user_id { get; set; }
+        public string fb_user_id { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<user_url_classification> user_url_classification { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<user_url> user_url { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<share_active> share_active { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<share> shares { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<share> shares1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<share_active> share_active { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<user_url_classification> user_url_classification { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<user_url> user_url { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace mmdb_model
         public long user_id { get; set; }
         public System.DateTime accepted_utc { get; set; }
     
-        public virtual user user { get; set; }
         public virtual share share { get; set; }
+        public virtual user user { get; set; }
     }
 }
