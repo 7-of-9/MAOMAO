@@ -186,31 +186,6 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-let runOnStartUp = true;
-function autoLogin(user) {
-  // TODO: Need to implement autoLogin
-  if (runOnStartUp) {
-    console.warn('currentUser', user);
-    runOnStartUp = false;
-    let googleUserId = '';
-    let facebookUserId = '';
-    if (user.providerData && user.providerData.length) {
-      for (let counter = 0; counter < user.providerData.length; counter += 1) {
-        if (user.providerData[counter].providerId === 'google.com') {
-          googleUserId = user.providerData[counter].uid;
-        }
-        if (user.providerData[counter].providerId === 'faceook.com') {
-          facebookUserId = user.providerData[counter].uid;
-        }
-      }
-    }
-
-    if (googleUserId) {
-       googleAutoLogin();
-    }
-  }
-}
-
 function googleAutoLogin() {
   chrome.identity.getAuthToken({
     interactive: false,
@@ -272,6 +247,31 @@ function googleAutoLogin() {
         .catch(error => console.warn(error));
     } else console.warn('The OAuth Token was null');
   });
+}
+
+let runOnStartUp = true;
+function autoLogin(user) {
+  // TODO: Need to implement autoLogin
+  if (runOnStartUp) {
+    console.warn('currentUser', user);
+    runOnStartUp = false;
+    let googleUserId = '';
+    let facebookUserId = '';
+    if (user.providerData && user.providerData.length) {
+      for (let counter = 0; counter < user.providerData.length; counter += 1) {
+        if (user.providerData[counter].providerId === 'google.com') {
+          googleUserId = user.providerData[counter].uid;
+        }
+        if (user.providerData[counter].providerId === 'faceook.com') {
+          facebookUserId = user.providerData[counter].uid;
+        }
+      }
+    }
+
+    if (googleUserId) {
+       googleAutoLogin();
+    }
+  }
 }
 
 function initFirebaseApp() {

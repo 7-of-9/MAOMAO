@@ -10,12 +10,21 @@ function actionCreator(type, payload) {
   };
 }
 
-function logout(token) {
+function logout(auth) {
   const promise = new Promise((resolve, reject) => {
     // revoke token
-    axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${token}`)
-      .then(response => console.log('revoke', response))
-      .catch(error => console.log('revoke error', error));
+    if (auth.googleUserId) {
+      // revoke token for google
+      axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${auth.accessToken}`)
+        .then(response => console.log('revoke', response))
+        .catch(error => console.log('revoke error', error));
+    } else {
+      // revoke token for fb
+      axios.delete(`https://graph.facebook.com/${auth.facebookUserId}/permissions?access_token=${auth.accessToken}`)
+        .then(response => console.log('revoke', response))
+        .catch(error => console.log('revoke error', error));
+    }
+
     // logout firebase
     if (firebase.auth().currentUser) {
       console.log('firebase logout');
@@ -27,15 +36,18 @@ function logout(token) {
     window.userId = -1;
     window.userHash = '';
     window.enableTestYoutube = false;
-
-    chrome.identity.removeCachedAuthToken({ token }, () => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        // validate token
-        resolve({ token: '', info: {} });
-      }
-    });
+    if (auth.googleUserId) {
+      chrome.identity.removeCachedAuthToken({ token: auth.accessToken }, () => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          // validate token
+          resolve({ token: '', info: {} });
+        }
+      });
+    } else {
+      resolve({ token: '', info: {} });
+    }
   });
   return promise;
 }
@@ -47,7 +59,7 @@ const authLogout = () => (
       dispatch({
         type: 'AUTH_PENDING',
       });
-      return logout(auth.accessToken)
+      return logout(auth)
         .then((data) => {
           dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }));
           dispatch(actionCreator('USER_AFTER_LOGOUT'));
