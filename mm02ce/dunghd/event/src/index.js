@@ -5,7 +5,7 @@ import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
-import createLogger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import { batchActions, enableBatching } from 'redux-batched-actions';
 
 import aliases from './aliases';

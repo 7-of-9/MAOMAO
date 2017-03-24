@@ -8,7 +8,6 @@ import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
 import moment from 'moment';
 import $ from 'jquery';
 
-import GoogleContact from '../google';
 import fetchContacts from '../utils/GoogleContactAPI';
 
 const propTypes = {
@@ -82,7 +81,7 @@ class ShareModal extends Component {
   loadPage(page) {
     const limit = 5000;
     fetchContacts(this.props.auth.accessToken, { limit, page })
-      .then(result => {
+      .then((result) => {
         const contacts = result.data.map((item) => {
           const object = {
             text: `${item.name} (${item.email})`,
@@ -346,7 +345,7 @@ class ShareModal extends Component {
       if (!this.title) {
         this.title = `${this.fullName} would like to share the MaoMao stream with you!`;
       }
-      this.recipients.forEach(item => {
+      this.recipients.forEach((item) => {
         this.sendEmail(item.name, item.email);
       });
       this.recipients = [];
@@ -360,12 +359,12 @@ class ShareModal extends Component {
         label="Cancel"
         primary
         onTouchTap={this.props.onCloseModal}
-        />,
+      />,
       <FlatButton
         label="Send"
         primary
         onTouchTap={this.sendInvitation}
-        />,
+      />,
     ];
 
     return (
@@ -378,7 +377,7 @@ class ShareModal extends Component {
         open={this.props.isOpen}
         onRequestClose={this.onCloseModal}
         autoScrollBodyContent
-        >
+      >
         <div className="maomao-logo" />
         <h1 className="tlt glow in" style={customStyles.animateText}>
           maomao
@@ -389,7 +388,7 @@ class ShareModal extends Component {
           selectRecipient={this.selectRecipient}
           changeSubject={this.changeSubject}
           contacts={this.state.contacts}
-          />
+        />
       </Dialog>
     );
   }

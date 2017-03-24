@@ -74,7 +74,6 @@ function setIconApp(rawUrl, image, msg, color) {
 }
 
 function setIconText(s, c) {
-  console.trace('calling icon text');
   chrome.browserAction.setBadgeText({
     text: s
   });

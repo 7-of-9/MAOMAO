@@ -413,13 +413,11 @@ class App extends Component {
           this.notify({
             title: 'Oops!',
             message: `Sending error to ${email}`,
-            imageUrl: this.props.auth.info.picture,
           });
         } else {
           this.notify({
             title: 'Sending invitation!',
             message: `Email has been sent to ${email}`,
-            imageUrl: this.props.auth.info.picture,
           });
         }
       });
