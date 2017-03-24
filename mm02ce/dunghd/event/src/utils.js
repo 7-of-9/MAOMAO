@@ -21,3 +21,14 @@ export function actionCreator(type, payload) {
     payload,
   };
 }
+
+export function notifyMsg(title, message) {
+  const options = {
+    title,
+    message,
+    type: 'basic',
+    iconUrl: 'img/ps_sirius_dog_blue.png',
+  };
+  const id = guid();
+  chrome.notifications.create(id, options, () => {});
+}

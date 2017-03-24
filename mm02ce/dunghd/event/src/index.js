@@ -13,6 +13,7 @@ import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
 import { googleAutoLogin, facebookAutoLogin } from './autologin';
+import { notifyMsg } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -209,10 +210,12 @@ function autoLogin(user) {
     console.warn('facebookUserId', facebookUserId);
     if (googleUserId) {
        googleAutoLogin(store, syncImScore, config, googleUserId, user);
+       notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
     }
 
     if (facebookUserId) {
        facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
+       notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
     }
   }
 }
