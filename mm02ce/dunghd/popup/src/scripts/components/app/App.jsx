@@ -7,13 +7,13 @@ import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 
 const propTypes = {
-  activeUrl: PropTypes.func,
+  url: PropTypes.string,
   auth: PropTypes.object,
   nlp: PropTypes.object,
   onReady: PropTypes.func,
  };
 const defaultProps = {
-  activeUrl: () => {},
+  url: '',
   auth: {
     isLogin: false,
     accessToken: '',
@@ -31,6 +31,7 @@ const defaultProps = {
 };
 
 const isAllowToShare = (url, records) => {
+  console.warn('isAllowToShare on url', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -53,14 +54,14 @@ const render = (isLogin, nlp, url) => {
         </div>
       );
     }
-    return 'This site is not ready to share!';
+    return 'This site is not ready to sharing. Please wait in a few mins for processing this site!';
   }
   return 'Please login to see the magic :)';
 };
 
-const App = ({ auth, nlp, activeUrl, onReady }) => <div style={{ width: '250px', minHeight: '100px' }} >
+const App = ({ auth, nlp, url, onReady }) => <div style={{ width: '250px', minHeight: '100px' }} >
   {onReady()}
-  {render(auth.isLogin, nlp, activeUrl)}
+  {render(auth.isLogin, nlp, url)}
 </div>;
 
 App.propTypes = propTypes;

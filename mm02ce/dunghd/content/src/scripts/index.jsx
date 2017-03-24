@@ -21,7 +21,7 @@ anchor.id = 'maomao-extension-anchor';
 
 // turn off for firebase auth
 const url = document.URL;
-console.log('inject maomao url', url);
+console.log('inject maomao app on url', url);
 if (url.indexOf('maomao-testing.firebaseapp.com') === -1 && url.indexOf('accounts.google.com') === -1) {
  document.body.insertBefore(anchor, document.body.childNodes[0]);
  injectTapEventPlugin();
