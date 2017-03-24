@@ -2236,14 +2236,6 @@ faye-websocket@0.9.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbjs@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.2.1.tgz#622061630a43e11f845017b9044aaa648ed3f731"
-  dependencies:
-    core-js "^1.0.0"
-    promise "^7.0.3"
-    whatwg-fetch "^0.9.0"
-
 fbjs@^0.3.1:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.3.2.tgz#033a540595084b5de3509a405d06f1a2a8e5b9fb"
@@ -2254,7 +2246,7 @@ fbjs@^0.3.1:
     ua-parser-js "^0.7.9"
     whatwg-fetch "^0.9.0"
 
-fbjs@^0.8.0, fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.5, fbjs@^0.8.6, fbjs@^0.8.7, fbjs@^0.8.8:
+fbjs@^0.8.1, fbjs@^0.8.4, fbjs@^0.8.5, fbjs@^0.8.6, fbjs@^0.8.7, fbjs@^0.8.8:
   version "0.8.8"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.8.tgz#02f1b6e0ea0d46c24e0b51a2d24df069563a5ad6"
   dependencies:
@@ -3690,7 +3682,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1:
+lodash@^4.0.0, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.2, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -3749,20 +3741,6 @@ map-obj@^1.0.0, map-obj@^1.0.1:
 material-ui-chip-input@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/material-ui-chip-input/-/material-ui-chip-input-0.12.0.tgz#da0d43a545c8651c636910da929f3b868c47dcee"
-
-material-ui@^0.15.3:
-  version "0.15.4"
-  resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.15.4.tgz#c66b210884f1584108526c498b2c462aee4c3dbb"
-  dependencies:
-    inline-style-prefixer "^2.0.1"
-    keycode "^2.1.1"
-    lodash "^4.13.1"
-    react-addons-create-fragment "^15.2.1"
-    react-addons-transition-group "^15.2.1"
-    react-event-listener "^0.2.1"
-    recompose "^0.20.2"
-    simple-assign "^0.1.0"
-    warning "^3.0.0"
 
 material-ui@^0.16.6:
   version "0.16.6"
@@ -4709,14 +4687,14 @@ rc@~1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~1.0.4"
 
-react-addons-create-fragment@^15.0.0, react-addons-create-fragment@^15.2.1:
+react-addons-create-fragment@^15.0.0:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-addons-create-fragment/-/react-addons-create-fragment-15.4.2.tgz#11372924f730a97dff4c690535211bb73d8f8815"
   dependencies:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-"react-addons-css-transition-group@^15.0.0 || ^16.0.0", react-addons-css-transition-group@^15.3.0:
+"react-addons-css-transition-group@^15.0.0 || ^16.0.0":
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-addons-css-transition-group/-/react-addons-css-transition-group-15.4.2.tgz#b7828834dfa14229fe07750e331e8a8cb6fb7745"
   dependencies:
@@ -4737,7 +4715,7 @@ react-addons-test-utils@^15.3.1:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-react-addons-transition-group@^15.0.0, react-addons-transition-group@^15.2.1:
+react-addons-transition-group@^15.0.0:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-addons-transition-group/-/react-addons-transition-group-15.4.2.tgz#4c42fa1c2ce024acab2924316c0f11268ded1af3"
   dependencies:
@@ -4785,7 +4763,7 @@ react-css-modules@^4.0.3:
     lodash "^4.16.6"
     object-unfreeze "^1.1.0"
 
-"react-dom@^15.0.0 || ^16.0.0", react-dom@^15.3.0, react-dom@^15.3.1, react-dom@^15.3.2, react-dom@^15.4.0:
+"react-dom@^15.0.0 || ^16.0.0", react-dom@^15.3.1, react-dom@^15.3.2, react-dom@^15.4.0:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.4.2.tgz#015363f05b0a1fd52ae9efdd3a0060d90695208f"
   dependencies:
@@ -4799,28 +4777,12 @@ react-draggable@^2.2.3:
   dependencies:
     classnames "^2.2.5"
 
-react-event-listener@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/react-event-listener/-/react-event-listener-0.2.1.tgz#9fc2e17aac264d5c9fc21cc78d5fa02e969914f3"
-  dependencies:
-    fbjs "^0.8.0"
-
 react-event-listener@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/react-event-listener/-/react-event-listener-0.4.0.tgz#26c40ab18f9f0e0d8d1fed9c3465e79c0a99c9a5"
   dependencies:
     react-addons-shallow-compare "^0.14.0 || ^15.0.0"
     warning "^3.0.0"
-
-react-materialui-notifications@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-materialui-notifications/-/react-materialui-notifications-0.4.1.tgz#b944e001e28908ba96fe62cc46721ec8ffe79e23"
-  dependencies:
-    material-ui "^0.15.3"
-    react "^15.3.0"
-    react-addons-css-transition-group "^15.3.0"
-    react-dom "^15.3.0"
-    react-tap-event-plugin "^1.0.0"
 
 react-mfb@^0.4.1:
   version "0.4.1"
@@ -4848,12 +4810,6 @@ react-select-search@^0.5.5:
   dependencies:
     react-onclickoutside "^5.7.1"
 
-react-tap-event-plugin@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-tap-event-plugin/-/react-tap-event-plugin-1.0.0.tgz#7a248505a9e9abecc352b2dab313d17685c51adf"
-  dependencies:
-    fbjs "^0.2.1"
-
 react-tap-event-plugin@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-tap-event-plugin/-/react-tap-event-plugin-2.0.1.tgz#316beb3bc6556e29ec869a7293e89c826a9074d2"
@@ -4870,7 +4826,7 @@ react-toggle-display@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/react-toggle-display/-/react-toggle-display-2.1.1.tgz#8a36f6f482c8e3cc5283e7ecfed527cb251561dc"
 
-"react@^15.0.0 || ^16.0.0", react@^15.3.0, react@^15.3.2, react@^15.4.0:
+"react@^15.0.0 || ^16.0.0", react@^15.3.2, react@^15.4.0:
   version "15.4.2"
   resolved "https://registry.yarnpkg.com/react/-/react-15.4.2.tgz#41f7991b26185392ba9bae96c8889e7e018397ef"
   dependencies:
@@ -4957,15 +4913,6 @@ rechoir@^0.6.2:
   resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.6.2.tgz#85204b54dba82d5742e28c96756ef43af50e3384"
   dependencies:
     resolve "^1.1.6"
-
-recompose@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.20.2.tgz#113d6ac7e29ca664cfffec16b681ddddf15250bc"
-  dependencies:
-    change-emitter "^0.1.2"
-    fbjs "^0.8.1"
-    hoist-non-react-statics "^1.0.0"
-    symbol-observable "^0.2.4"
 
 recompose@^0.21.0, recompose@^0.21.2:
   version "0.21.2"
@@ -5617,10 +5564,6 @@ svgo@^0.7.0:
     mkdirp "~0.5.1"
     sax "~1.2.1"
     whet.extend "~0.9.9"
-
-symbol-observable@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-0.2.4.tgz#95a83db26186d6af7e7a18dbd9760a2f86d08f40"
 
 symbol-observable@^1.0.2, symbol-observable@^1.0.4:
   version "1.0.4"

@@ -186,38 +186,36 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-
-let runOnStartUp = true;
-function autoLogin(user) {
-  // TODO: Need to implement autoLogin
-  if (runOnStartUp) {
-    runOnStartUp = false;
-    let googleUserId = '';
-    let facebookUserId = '';
-    let facebookEmail = '';
-    if (user.providerData && user.providerData.length) {
-      for (let counter = 0; counter < user.providerData.length; counter += 1) {
-        if (user.providerData[counter].providerId === 'google.com') {
-          googleUserId = user.providerData[counter].uid;
-        }
-        if (user.providerData[counter].providerId === 'facebook.com') {
-          facebookUserId = user.providerData[counter].uid;
-          facebookEmail = user.providerData[counter].email;
+function autoLogin() {
+    const user = firebase.auth().currentUser;
+    console.warn('autoLogin', user);
+    if (user) {
+      let googleUserId = '';
+      let facebookUserId = '';
+      let facebookEmail = '';
+      if (user.providerData && user.providerData.length) {
+        for (let counter = 0; counter < user.providerData.length; counter += 1) {
+          if (user.providerData[counter].providerId === 'google.com') {
+            googleUserId = user.providerData[counter].uid;
+          }
+          if (user.providerData[counter].providerId === 'facebook.com') {
+            facebookUserId = user.providerData[counter].uid;
+            facebookEmail = user.providerData[counter].email;
+          }
         }
       }
-    }
-    console.warn('googleUserId', googleUserId);
-    console.warn('facebookUserId', facebookUserId);
-    if (googleUserId) {
-       googleAutoLogin(store, syncImScore, config, googleUserId, user);
-       notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
-    }
+      console.warn('googleUserId', googleUserId);
+      console.warn('facebookUserId', facebookUserId);
+      if (googleUserId) {
+         googleAutoLogin(store, syncImScore, config, googleUserId, user);
+         notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
+      }
 
-    if (facebookUserId) {
-       facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
-       notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
+      if (facebookUserId) {
+         facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
+         notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
+      }
     }
-  }
 }
 
 function initFirebaseApp() {
@@ -225,11 +223,14 @@ function initFirebaseApp() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       console.warn('... firebase :', user);
-      autoLogin(user);
     }
   });
 }
 
 window.onload = () => {
   initFirebaseApp();
+  setTimeout(() => {
+    // try to fix by use timeout
+    autoLogin();
+  }, 2000);
 };

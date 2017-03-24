@@ -2,14 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
-import ReactMaterialUiNotifications from 'react-materialui-notifications';
-import moment from 'moment';
 import Mailgun from 'mailgun';
 import $ from 'jquery';
-import { deepOrange500 } from 'material-ui/styles/colors';
-import Message from 'material-ui/svg-icons/communication/message';
-import ErrorOutline from 'material-ui/svg-icons/alert/error-outline';
-
 import Score from './Score';
 import ShareTopic from './ShareTopic';
 import Xp from './Xp';
@@ -107,9 +101,8 @@ class App extends Component {
 
   onGoogleLogin() {
     this.notify({
-      title: 'Prepare to login with google!',
-      autoHide: 3000,
-      timestamp: moment().format('h:mm A'),
+      title: 'Google Login',
+      message: 'Please wait in a minute!',
     });
     this.props.dispatch(checkAuth('GOOGLE'))
       .then(() => {
@@ -143,18 +136,16 @@ class App extends Component {
       })
       .catch((err) => {
         this.notify({
-          title: err.message,
-          autoHide: 3000,
-          timestamp: moment().format('h:mm A'),
+          title: 'Oops!',
+          message: err.message,
         });
       });
   }
 
   onFacebookLogin() {
     this.notify({
-      title: 'Prepare to login with facebook!',
-      autoHide: 3000,
-      timestamp: moment().format('h:mm A'),
+      title: 'Facebook Login',
+      message: 'Please wait in a minute!',
     });
     this.props.dispatch(checkAuth('FACEBOOK'))
     .then(() => {
@@ -187,9 +178,8 @@ class App extends Component {
     })
     .catch((err) => {
       this.notify({
-        title: err.message,
-        autoHide: 3000,
-        timestamp: moment().format('h:mm A'),
+        title: 'Oops!',
+        message: err.message,
       });
     });
   }
@@ -205,8 +195,10 @@ class App extends Component {
   }
 
   notify(msg) {
-    ReactMaterialUiNotifications.showNotification(msg);
-    this.forceUpdate();
+    this.props.dispatch({
+      type: 'NOTIFY_MESSAGE',
+      payload: msg,
+    });
   }
 
   openShare() {
@@ -419,27 +411,15 @@ class App extends Component {
       (err) => {
         if (err) {
           this.notify({
-            title: `Sending error to ${email}`,
-            icon: <ErrorOutline />,
-            iconBadgeColor: deepOrange500,
-            additionalText: err.message,
-            overflowText: this.fromEmail,
-            avatar: this.props.auth.info.picture,
-            personalised: true,
-            autoHide: 2500,
-            timestamp: moment().format('h:mm A'),
+            title: 'Oops!',
+            message: `Sending error to ${email}`,
+            imageUrl: this.props.auth.info.picture,
           });
         } else {
           this.notify({
             title: 'Sending invitation!',
-            icon: <Message />,
-            iconBadgeColor: deepOrange500,
-            additionalText: `Email has been sent to ${email}`,
-            overflowText: this.fromEmail,
-            avatar: this.props.auth.info.picture,
-            personalised: true,
-            autoHide: 2500,
-            timestamp: moment().format('h:mm A'),
+            message: `Email has been sent to ${email}`,
+            imageUrl: this.props.auth.info.picture,
           });
         }
       });
@@ -449,16 +429,6 @@ class App extends Component {
     return (
       <StyleRoot>
         <div className="maomao-ext-component">
-          <ReactMaterialUiNotifications
-            rootStyle={{
-              zIndex: 10000,
-              top: 20,
-              right: 25,
-            }}
-            desktop
-            transitionAppear={false}
-            transitionLeave={false}
-          />
           {/* <FloatingShare /> */}
           <WelcomeModal
             auth={this.props.auth}

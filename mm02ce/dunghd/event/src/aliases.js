@@ -2,7 +2,7 @@ import axios from 'axios';
 import firebase from 'firebase';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
-import { actionCreator } from './utils';
+import { actionCreator, notifyMsg } from './utils';
 
 function logout(auth) {
   const promise = new Promise((resolve, reject) => {
@@ -133,9 +133,17 @@ const getContacts = () => (
   }
 );
 
+const notifyUI = data => (
+  () => {
+    const { title, message, imageUrl } = data.payload;
+    notifyMsg(title, message, imageUrl);
+  }
+);
+
 export default {
   AUTH_LOGIN_GOOGLE: authGoogleLogin,
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
   AUTH_LOGOUT: authLogout,
   FETCH_CONTACTS: getContacts,
+  NOTIFY_MESSAGE: notifyUI,
 };

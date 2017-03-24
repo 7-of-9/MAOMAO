@@ -45,7 +45,6 @@
     "react-css-modules": "^4.0.3",
     "react-dom": "^15.4.0",
     "react-draggable": "^2.2.3",
-    "react-materialui-notifications": "^0.4.1",
     "react-mfb": "^0.4.1",
     "react-redux": "^4.4.6",
     "react-select-search": "^0.5.5",

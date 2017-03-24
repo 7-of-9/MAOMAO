@@ -22,13 +22,16 @@ export function actionCreator(type, payload) {
   };
 }
 
-export function notifyMsg(title, message) {
-  const options = {
+export function notifyMsg(title, message, imageUrl) {
+  let options = {
     title,
     message,
     type: 'basic',
     iconUrl: 'img/ps_sirius_dog_blue.png',
   };
+  if (imageUrl) {
+    options = Object.assign({}, options, { type: 'image', imageUrl });
+  }
   const id = guid();
   chrome.notifications.create(id, options, () => {});
 }
