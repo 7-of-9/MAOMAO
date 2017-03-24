@@ -1,3 +1,5 @@
+import { ctxMenuLogin } from './helpers';
+
 const initialState = {
   nlps: [],
   texts: [],
@@ -8,7 +10,7 @@ const initialState = {
 
 const MIN_NSS = 10;
 
-export default (nlp = initialState, action) => {
+export default (nlp = initialState, action, auth) => {
   switch (action.type) {
     case 'IM_SAVE_SUCCESS': {
       const url = action.payload.url;
@@ -95,6 +97,7 @@ export default (nlp = initialState, action) => {
           records = nlp.records.filter(item => item.url !== url);
         }
         records = records.concat(action.payload);
+        ctxMenuLogin(auth.info, records);
         return Object.assign({}, nlp, { records });
       }
     case 'NLP': {

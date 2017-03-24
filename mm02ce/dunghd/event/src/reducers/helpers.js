@@ -1,12 +1,40 @@
 import md5 from 'blueimp-md5';
 
-function ctxMenu() {
-  chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
-  chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  chrome.contextMenus.create({ id: 'mm-btn-share', title: 'Share' });
+
+const isAllowToShare = (url, records) => {
+  console.warn('isAllowToShare on url', url, records);
+  if (records && records.length) {
+    const isExist = records.filter(item => item.url === url);
+    return isExist.length > 0;
+  }
+  return false;
+};
+
+function createShareCtxMenu(records) {
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  }, (tabs) => {
+    if (tabs != null && tabs.length > 0) {
+      const url = tabs[0].url;
+      if (isAllowToShare(url, records)) {
+        chrome.contextMenus.create({ id: 'mm-btn-share', title: 'Share' });
+      }
+    }
+  });
 }
 
-export function ctxMenuLogin(userInfo) {
+
+function ctxMenu(records) {
+  chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
+  chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
+  console.warn('records on ctxMenu', records);
+  if (records && records.length) {
+    createShareCtxMenu(records);
+  }
+}
+
+export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
     title: 'v0.5.3',
@@ -23,7 +51,7 @@ export function ctxMenuLogin(userInfo) {
     contexts: ['browser_action'],
     id: 'mm-btn-logout',
   });
-  ctxMenu();
+  ctxMenu(records);
 }
 
 export function ctxMenuLogout() {
@@ -38,7 +66,7 @@ export function ctxMenuLogout() {
     contexts: ['browser_action'],
     id: 'mm-btn-login',
   });
-  ctxMenu();
+  ctxMenu([]);
 }
 
 export function md5hash(userId) {

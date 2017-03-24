@@ -7,11 +7,11 @@ import icon from './icon';
 
 export default function reducer(state = {}, action) {
     return {
-        auth: auth(state.auth, action),
+        nlp: nlp(state.nlp, action, state.auth),
+        auth: auth(state.auth, action, state.nlp),
         modal: modal(state.modal, action),
         share: share(state.share, action),
         score: score(state.score, action),
-        nlp: nlp(state.nlp, action),
-        icon: icon(state.icon, action, state.auth),
+        icon: icon(state.icon, action, state.auth, state.nlp),
     };
 }

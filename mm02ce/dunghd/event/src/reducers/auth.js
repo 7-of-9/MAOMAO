@@ -15,14 +15,14 @@ const initialState = {
   contacts: [],
 };
 
-export default (state = initialState, action) => {
+export default (state = initialState, action, nlp) => {
   switch (action.type) {
     case 'AUTH_PENDING':
       return Object.assign({}, state, { isPending: true });
     case 'FETCH_CONTACTS_PENDING':
       return Object.assign({}, state, { isFetchContacts: true });
     case 'AUTH_FULFILLED':
-      ctxMenuLogin(action.payload.info);
+      ctxMenuLogin(action.payload.info, nlp.records);
       window.setIconApp(window.sessionObservable.activeUrl, 'black', '', window.BG_INACTIVE_COLOR);
       return Object.assign({}, state, {
         message: 'authentication is done',
