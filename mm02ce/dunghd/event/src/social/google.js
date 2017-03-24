@@ -41,10 +41,12 @@ export function checkGoogleAuth() {
       const user = result.user;
       console.warn('google user', user, result);
       let googleUserId = '';
+      let googleEmail = '';
       if (user.providerData && user.providerData.length) {
         for (let counter = 0; counter < user.providerData.length; counter += 1) {
           if (user.providerData[counter].providerId === 'google.com') {
             googleUserId = user.providerData[counter].uid;
+            googleEmail = user.providerData[counter].email;
             break;
           }
         }
@@ -54,7 +56,7 @@ export function checkGoogleAuth() {
         token,
         info: {
           name: user.displayName,
-          email: user.email,
+          email: user.email || googleEmail,
           picture: user.photoURL,
        },
       });

@@ -218,7 +218,6 @@ class App extends Component {
     this.userId = this.props.auth.userId;
     this.fullName = this.props.auth.info.name;
     this.title = `Join Maomao! ${this.fullName} want to share with you...`;
-    // FIXME: email logo url
     const emailTemplate = `
       <!doctype html>
       <html>
@@ -349,7 +348,7 @@ class App extends Component {
                       <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
                         <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
                           <tr><td style="font-family: 'Rokkitt', sans-serif; vertical-align: top;" valign="top"><h1> Maomao </h1></td></tr>
-                          <tr><td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top"> <img src="https://maomaoweb.azurewebsites.net/images/logo.png" /> </td></tr>
+                          <tr><td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top"> <img src="https://firebasestorage.googleapis.com/v0/b/maomao-testing.appspot.com/o/ps_sirius_dog_blue.png?alt=media&token=36329989-7ca0-4210-a56a-d7a76592ad55" /> </td></tr>
                           <tr>
                             <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                               <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hi ${name || 'there'},</p>

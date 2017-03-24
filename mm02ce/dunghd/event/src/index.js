@@ -208,12 +208,12 @@ function autoLogin() {
       console.warn('facebookUserId', facebookUserId);
       if (googleUserId) {
          googleAutoLogin(store, syncImScore, config, googleUserId, user);
-         notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
+         notifyMsg('Auto Login', `Welcome back, ${user.displayName}`);
       }
 
       if (facebookUserId) {
          facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
-         notifyMsg('Auto Login', `Welcome back ${user.displayName}`);
+         notifyMsg('Auto Login', `Welcome back, ${user.displayName}`);
       }
     }
 }
