@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
       window.userHash = md5hash(action.payload.userHash);
       return Object.assign({}, state, { userHash: window.userHash });
     case 'USER_AFTER_LOGOUT':
-      return Object.assign({}, state, { userId: -1, userHash: '', googleUserId: '', facebookUserId: '' });
+      return Object.assign({}, state, { contacts: [], userId: -1, userHash: '', googleUserId: '', facebookUserId: '' });
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
     case 'AUTH_REJECTED':

@@ -1,6 +1,6 @@
 {
   "name": "mm02ce",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "maomao demo",
   "background": {
     "page": "bg.html"
@@ -27,9 +27,8 @@
     "identity",
     "notifications",
     "https://ssl.gstatic.com/",
-    "https://www.googleapis.com/",
-    "https://accounts.google.com/",
-    "*://apis.google.com/*",
+    "*://*.googleapis.com/",
+    "*://*.google.com/*",
     "https://dunghd.auth0.com/*",
     "http://*/*",
     "https://*/*"
