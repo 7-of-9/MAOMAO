@@ -44,7 +44,6 @@ const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withHandlers({
     handleChange: props => (emails) => {
-      console.log('handleChange', emails);
       props.updateRecipients(emails);
     },
     sendEmails: props => () => {
@@ -66,7 +65,7 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-   enable, terms, contacts, handleChange, sendEmails, closeShare }) =>
+   enable, terms, topic, contacts, handleChange, sendEmails, closeShare }) =>
      <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
        <div className="maomao-logo" />
        <a
@@ -76,7 +75,7 @@ const ShareTopic = enhance(({
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
       </h3>
-       <ShareOptions tld="Youtube.com" />
+       <ShareOptions tld={topic} />
        <GoogleShare contacts={contacts} handleChange={handleChange} />
        <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
      </div >,

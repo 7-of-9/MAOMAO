@@ -7,10 +7,11 @@ import $ from 'jquery';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
 import Xp from './Xp';
-import { WelcomeModal } from '../modal';
+import WelcomeModal from './WelcomeModal';
 // import FloatingShare from '../share';
 import createUser from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
+import getCurrentTopic from '../../selectors/topic';
 
 window.jQuery = $;
 
@@ -25,6 +26,7 @@ const propTypes = {
   score: PropTypes.object,
   icon: PropTypes.object,
   terms: PropTypes.array,
+  topic: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
   isShareOpen: PropTypes.bool.isRequired,
   siteUrl: PropTypes.string,
@@ -50,6 +52,7 @@ const defaultProps = {
       topic: '',
     },
   },
+  topic: '',
   terms: [],
   isShareOpen: false,
   isOpen: false,
@@ -122,7 +125,6 @@ class App extends Component {
         throw new Error(this.props.auth.message);
       })
       .then((user) => {
-        console.log('create new user', user);
         let userId = -1;
         if (user.data && user.data.id) {
           userId = user.data.id;
@@ -164,7 +166,6 @@ class App extends Component {
       throw new Error(this.props.auth.message);
     })
     .then((user) => {
-      console.log('create new user', user);
       let userId = -1;
       if (user.data && user.data.id) {
         userId = user.data.id;
@@ -438,6 +439,7 @@ class App extends Component {
           <ShareTopic
             enable={this.props.isShareOpen}
             terms={this.props.terms}
+            topic={this.props.topic}
             sendEmail={this.sendEmail}
             contacts={this.props.auth && this.props.auth.contacts}
             notify={this.notify}
@@ -469,6 +471,7 @@ const mapStateToProps = state => ({
   isShareOpen: state.share,
   score: state.score,
   terms: getCurrentTerms(state),
+  topic: getCurrentTopic(state),
   icon: state.icon,
 });
 

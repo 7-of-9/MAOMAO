@@ -11,6 +11,7 @@ const propTypes = {
   auth: PropTypes.object,
   nlp: PropTypes.object,
   onReady: PropTypes.func,
+  dispatch: PropTypes.func,
  };
 const defaultProps = {
   url: '',
@@ -27,11 +28,11 @@ const defaultProps = {
     terms: [],
     records: [],
   },
+  dispatch: () => {},
   onReady: () => {},
 };
 
 const isAllowToShare = (url, records) => {
-  console.warn('isAllowToShare on url', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -39,17 +40,17 @@ const isAllowToShare = (url, records) => {
   return false;
 };
 
-const render = (isLogin, nlp, url) => {
+const render = (isLogin, nlp, url, dispatch) => {
   if (isLogin) {
     if (isAllowToShare(url, nlp.records)) {
       return (
         <div>
           <h3>Share this topic</h3>
           <div>
-            <GoogleButton />
-            <FacebookButton />
-            <FacebookMessengerButton />
-            <LinkButton />
+            <GoogleButton onClick={() => { dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Google' } }); }} />
+            <FacebookButton onClick={() => { dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Facebook' } }); }} />
+            <FacebookMessengerButton onClick={() => { dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'FacebookMessenger' } }); }} />
+            <LinkButton onClick={() => { dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Link' } }); }} />
           </div>
         </div>
       );
@@ -59,9 +60,9 @@ const render = (isLogin, nlp, url) => {
   return 'Please login to see the magic :)';
 };
 
-const App = ({ auth, nlp, url, onReady }) => <div style={{ width: '250px', minHeight: '100px' }} >
+const App = ({ auth, nlp, url, onReady, dispatch }) => <div style={{ width: '250px', minHeight: '100px' }} >
   {onReady()}
-  {render(auth.isLogin, nlp, url)}
+  {render(auth.isLogin, nlp, url, dispatch)}
 </div>;
 
 App.propTypes = propTypes;
@@ -71,7 +72,6 @@ const enhance = compose(
   withState('url', 'activeUrl', ''),
   withHandlers({
     onReady: props => () => {
-      console.warn('onReady', props);
       if (props.auth.isLogin) {
         chrome.tabs.query({
           active: true,
