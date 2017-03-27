@@ -9,9 +9,9 @@ import Config from './config';
 
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
-require('expose?justext!justext');
-require('expose?franc!franc');
-require('expose?StackTrace!stacktrace-js');
+require('expose-loader?justext!justext');
+require('expose-loader?franc!franc');
+require('expose-loader?StackTrace!stacktrace-js');
 /* eslint-enable */
 
 const config = new Config();

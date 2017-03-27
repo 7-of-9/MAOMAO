@@ -17,12 +17,12 @@ import { notifyMsg } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
-require('expose?$!expose?jQuery!jquery');
-require('expose?_!underscore');
-require('expose?StackTrace!stacktrace-js');
-require('expose?moment!moment');
-require('expose?firebase!firebase');
-require('expose?mobx!mobx');
+require('expose-loader?$!expose-loader?jQuery!jquery');
+require('expose-loader?_!underscore');
+require('expose-loader?StackTrace!stacktrace-js');
+require('expose-loader?moment!moment');
+require('expose-loader?firebase!firebase');
+require('expose-loader?mobx!mobx');
 /* eslint-enable */
 
 const logger = createLogger();

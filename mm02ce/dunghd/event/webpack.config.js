@@ -14,20 +14,22 @@ module.exports = {
   devtool: 'source-map',
 
   resolve: {
-    extensions: ['', '.js', '.json'],
-    modulesDirectories: ['node_modules'],
+    extensions: ['.js', '.json'],
+    modules: ['node_modules'],
   },
 
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.(js)?$/,
-        loader: 'babel',
+        test: /\.(jsx|js)?$/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: { presets: ['es2015', 'react'] },
+          },
+        ],
         exclude: /(node_modules)/,
         include: path.join(__dirname, 'src'),
-        query: {
-          presets: ['es2015', 'react'],
-        },
       },
     ],
   },
