@@ -2,13 +2,15 @@ import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
 import styled from 'styled-components';
 
+/* eslint-disable no-confusing-arrow */
 const Option = styled.button`
   float: left;
-  background-color: ${props => props.primary ? '#0084ff' : '#9e9e9e'} ;
+  background-color: ${props => props.primary ? '#0084ff' : '#9e9e9e'};
   color: ${props => props.primary ? '#fff' : '#000'} ;
   width: fit-content;
   min-width: 100px;
-  height: 40px;
+  height: 50px;
+  font-size: 14px;
   border: ${props => props.primary ? '1px solid #607d8b' : '0'};
   border-radius: 10px;
   text-align: center;
@@ -23,7 +25,6 @@ const Option = styled.button`
 const style = {
   margin: '10px auto',
   width: '100%',
-  height: '70px',
 };
 
 const enhance = compose(

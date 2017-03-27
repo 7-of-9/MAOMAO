@@ -10,19 +10,19 @@
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
   console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
-  console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_start_time()], cs_log_style_info);
-  console.info("%c > document.location=" + document.location, cs_log_style_info);
-  console.info("%c > extension started " + mm_start_time(), cs_log_style_info);
+  console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()], cs_log_style_info);
+  console.info("%c > document.location.href=" + document.location.href, cs_log_style_info);
+  console.info("%c > mm_app_uuid " + mm_app_uuid(), cs_log_style_info);
   //document.addEventListener("DOMContentLoaded", function (event)
   {
     // TODO: Try to clear sessionStorage when extension reload
     // FIXME: Use sessionStorage is not stable
     //if (!have_run_text_proc) {
-    if (document.location != sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_start_time()]) {
+    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()]) {
       //have_run_text_proc = true;
-      console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_start_time()], cs_log_style_info);
-      sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_start_time()] = document.location;
-      console.info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location, cs_log_style_info);
+      console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()], cs_log_style_info);
+      sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()] = document.location.href;
+      console.info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location.href, cs_log_style_info);
       console.info("%c $(document).ready{ajax_get_UrlNlpInfo.complete} -- readyState=" + document.readyState, cs_log_style_info);
 
       // this *masks* the problem of $.ready being called an indeterminate # of times??
@@ -112,10 +112,10 @@ $(document).ready(function () {
 function process_text(page_meta) {
 
   // prevent running text processing more than once (see above: $.ready firing more than once on a variety of conditions)
-  console.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_start_time()], "background:white; color:orange; font-weight:bold;");
-  console.info("%c >> document.location=" + document.location, "background:white; color:orange; font-weight:bold;");
-  if (document.location == sessionStorage["mm_cs_text_haveRunTextProc_" + mm_start_time()]) {
-    console.info("%c >> mm_cs_text_haveRunTextProc=document.location -- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_start_time()] + "]", "background:orange; color:black; font-weight:bold;");
+  console.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()], "background:white; color:orange; font-weight:bold;");
+  console.info("%c >> document.location=" + document.location.href, "background:white; color:orange; font-weight:bold;");
+  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()]) {
+    console.info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()] + "]", "background:orange; color:black; font-weight:bold;");
     if (document.getElementById('maomao-extension-youtube-test')) {
       cslib_test_NextYouTubeVid();
     } else {
@@ -123,7 +123,7 @@ function process_text(page_meta) {
     }
     return;
   }
-  sessionStorage["mm_cs_text_haveRunTextProc_" + mm_start_time()] = document.location;
+  sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()] = document.location.href;
 
   console.info("%c **** CS TEXT PROCESSING RUNNING... [" + window.location + "] ****", "background: #888; color: #bada55; font-weight:bold; font-size:large;");
   console.info("%c >> sending process_text_start...", "background:blue; color:white; font-weight:bold;");
@@ -288,6 +288,11 @@ function process_text(page_meta) {
         if (data.is_known == true && data.has_calais_info == true) {
           // no need to text process, no need for calais
           chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } } });
+          ajax_put_UrlRecord(mm_user_id(),mm_user_hash(), { href: remove_hash_url(document.location.href), text: t }, function(data) {
+            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } } });
+          }, function(error) {
+            chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } } });
+          });
           console.log("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
           if (document.getElementById('maomao-extension-youtube-test')) {
             cslib_test_NextYouTubeVid();

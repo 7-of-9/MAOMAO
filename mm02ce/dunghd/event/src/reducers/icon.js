@@ -4,7 +4,18 @@ const initialState = {
   isEnable: false,
   isYoutubeTest: false,
   isEnableIM: true,
+  isReadyShare: true,
+  isReadyXP: true,
  };
+
+const isAllowToShare = (url, records) => {
+ if (records && records.length) {
+   const isExist = records.filter(item => item.url === url);
+   return isExist.length > 0;
+ }
+
+ return false;
+};
 
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
@@ -13,18 +24,17 @@ export default (state = initialState, action, auth, nlp) => {
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
 
-    case 'MAOMAO_DISABLE':
+    case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
         title: 'v0.5.3',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });
+      const url = action.payload.url;
       if (auth.isLogin) {
         let isInternalTab = false;
-        const url = action.payload.url;
         const startsWith = String.prototype.startsWith;
-
         if (
           startsWith.call(url, 'chrome://') ||
           startsWith.call(url, 'chrome-extension://')
@@ -46,15 +56,20 @@ export default (state = initialState, action, auth, nlp) => {
           window.BG_SUCCESS_COLOR,
         );
       }
-      return Object.assign({}, state, { isEnable: false });
+      return Object.assign({}, state, {
+        isEnable: false,
+        isReadyXP: isAllowToShare(url, nlp.records),
+        isReadyShare: isAllowToShare(url, nlp.records),
+      });
+    }
 
     case 'MAOMAO_ENABLE':
       {
+        const url = action.payload.url;
         if (auth.isLogin) {
+          // TODO: Check share, xp is ready on url or not
           ctxMenuLogin(auth.info, nlp.records);
-          const url = action.payload.url;
           const activeTabUrl = window.sessionObservable.icons.get(url);
-
           if (activeTabUrl) {
             if (activeTabUrl.image === 'gray') {
               window.setIconApp(
@@ -83,8 +98,11 @@ export default (state = initialState, action, auth, nlp) => {
             window.BG_SUCCESS_COLOR,
           );
         }
-
-        return Object.assign({}, state, { isEnable: true });
+        return Object.assign({}, state, {
+          isEnable: true,
+          isReadyXP: isAllowToShare(url, nlp.records),
+          isReadyShare: isAllowToShare(url, nlp.records),
+        });
       }
 
     default:

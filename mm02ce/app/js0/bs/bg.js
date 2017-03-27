@@ -5,7 +5,7 @@
 var BG_SUCCESS_COLOR = '#009900';
 var BG_INACTIVE_COLOR = '#999999';
 var BG_EXCEPTION_COLOR = '#990000';
-var BG_START_TIME = Date.now();
+var BG_APP_UUID = new_guid();
 
 // ERROR handler
 var errBack = function(err) { console.log(err.message); };
@@ -379,7 +379,7 @@ function inject_cs(session, tab_id, skip_text) {
             if (existTab && existTab.url === tab.url) {
               if (data.allowable) {
                 chrome.tabs.executeScript({
-                  code: 'function mm_start_time(){ return ' + window.BG_START_TIME + ';} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
+                  code: 'function mm_app_uuid(){ return "' + window.BG_APP_UUID + '";} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
                 });
                 $.each(cs_files, function (ndx, cs) {
                   try {
@@ -439,7 +439,7 @@ function inject_cs(session, tab_id, skip_text) {
               if (existTab && existTab.url === tab.url) {
                 if (data.allowable) {
                   chrome.tabs.executeScript({
-                    code: 'function mm_start_time(){ return ' + window.BG_START_TIME + ';} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
+                    code: 'function mm_app_uuid(){ return "' + window.BG_APP_UUID + '";} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
                   });
                   $.each(cs_files, function (ndx, cs) {
                     try {

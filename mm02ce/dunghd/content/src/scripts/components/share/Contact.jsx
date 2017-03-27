@@ -23,13 +23,16 @@ const Image = styled.span`
 const Info = styled.ul`
   float: right;
   width: 120px;
+  height: 50px;
   text-align: left;
+  background: #fff;
 `;
 const Item = styled.li`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+  font-size: 11px;
 `;
 
 const Remove = styled.a`
@@ -40,10 +43,17 @@ const Remove = styled.a`
   }
 `;
 
+/* eslint-disable no-param-reassign */
 const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
   <Wrapper onClick={onClick}>
     <Image>
-      <img onError={(ev) => { ev.target.src = noImage; }} src={image} alt={name || email} height="40" width="40" />
+      <img
+        onError={(ev) => { ev.target.src = noImage; }}
+        src={image}
+        alt={name || email}
+        height="40"
+        width="40"
+      />
     </Image>
     <Info>
       {name && name.length > 0 &&

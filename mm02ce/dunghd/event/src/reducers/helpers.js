@@ -1,8 +1,6 @@
 import md5 from 'blueimp-md5';
 
-
 const isAllowToShare = (url, records) => {
-  console.warn('isAllowToShare on url', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -28,7 +26,6 @@ function createShareCtxMenu(records) {
 function ctxMenu(records) {
   chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  console.warn('records on ctxMenu', records);
   if (records && records.length) {
     createShareCtxMenu(records);
   }

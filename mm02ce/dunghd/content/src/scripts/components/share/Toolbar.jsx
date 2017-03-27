@@ -8,15 +8,19 @@ import fbMsgIcon from './images/facebook-messenger.svg';
 import linkIcon from './images/link.svg';
 
 const GoogleButton = styled(Button)`
+  float: left;
   background-image: url(${ggIcon});
 `;
 const FacebookButton = styled(Button)`
+  float: left;
   background-image: url(${fbIcon});
 `;
 const FacebookMessengerButton = styled(Button)`
+  float: left;
   background-image: url(${fbMsgIcon});
 `;
 const LinkButton = styled(Button)`
+  float: left;
   background-image: url(${linkIcon});
 `;
 

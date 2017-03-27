@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { compose, onlyUpdateForKeys, pure } from 'recompose';
 import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
@@ -47,10 +48,11 @@ const defaultProps = {
     im_score: 0,
   },
   icon: {
-    xp: {
-      score: 0,
-      topic: '',
-    },
+    isEnable: false,
+    isYoutubeTest: false,
+    isEnableIM: true,
+    isReadyShare: true,
+    isReadyXP: true,
   },
   topic: '',
   terms: [],
@@ -203,6 +205,12 @@ class App extends Component {
   }
 
   openShare() {
+    this.props.dispatch({
+      type: 'MAOMAO_ENABLE',
+      payload: {
+        url: window.location.href,
+      },
+    });
     this.props.dispatch({
       type: 'OPEN_SHARE_MODAL',
     });
@@ -437,7 +445,7 @@ class App extends Component {
             isOpen={this.props.isOpen}
           />
           <ShareTopic
-            enable={this.props.isShareOpen}
+            enable={this.props.isShareOpen && this.props.icon.isReadyShare}
             terms={this.props.terms}
             topic={this.props.topic}
             sendEmail={this.sendEmail}
@@ -455,7 +463,9 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp terms={this.props.terms} shareTopics={this.openShare} />
+          <Xp
+            terms={this.props.terms} shareTopics={this.openShare}
+          />
         </div>
       </StyleRoot>
     );
@@ -464,6 +474,12 @@ class App extends Component {
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
+
+const enhance = compose(
+  onlyUpdateForKeys(['auth', 'isOpen', 'isShareOpen', 'score', 'terms', 'topic', 'icon']),
+  pure,
+);
+
 
 const mapStateToProps = state => ({
   auth: state.auth,
@@ -475,4 +491,4 @@ const mapStateToProps = state => ({
   icon: state.icon,
 });
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps)(enhance(App));

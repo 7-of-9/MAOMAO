@@ -2,7 +2,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-  entry: ['./dunghd/popup/src/scripts/index.js'],
+  entry: ['./dunghd/popup/src/scripts/index.jsx'],
   output: {
     filename: 'popup.js',
     path: path.join(__dirname, '../../app/', 'build'),
