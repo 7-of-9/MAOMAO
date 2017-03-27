@@ -22,6 +22,7 @@ const style = {
   heading: {
     paddingLeft: '50px',
     height: '40px',
+    width: 'fit-content',
     lineHeight: '40px',
     fontSize: '16px',
   },

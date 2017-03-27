@@ -30,6 +30,7 @@ function logout(auth) {
     window.userId = -1;
     window.userHash = '';
     window.enableTestYoutube = false;
+    window.enableXp = false;
     if (auth.googleUserId) {
       chrome.identity.removeCachedAuthToken({ token: auth.accessToken }, () => {
         if (chrome.runtime.lastError) {

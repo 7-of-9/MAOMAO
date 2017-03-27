@@ -43,6 +43,7 @@ wrapStore(store, { portName: 'maomao-extension' });
 chrome.contextMenus.removeAll();
 
 // NOTE: Handler all browser action events
+/* eslint-disable no-console */
 function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-share':
@@ -72,6 +73,22 @@ function onClickHandler(info) {
           type: 'SWITCH_IM_SCORE',
           payload: {
             isEnableIM: window.enableImscore,
+          },
+        };
+        store.dispatch(data);
+      }
+      break;
+    case 'mm-btn-switch-xp':
+      {
+        if (window.enableXp) {
+          window.enableXp = false;
+        } else {
+          window.enableXp = true;
+        }
+        const data = {
+          type: 'SWITCH_XP',
+          payload: {
+            isEnableXp: window.enableXp,
           },
         };
         store.dispatch(data);

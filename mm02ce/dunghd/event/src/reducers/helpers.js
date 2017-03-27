@@ -26,6 +26,7 @@ function createShareCtxMenu(records) {
 function ctxMenu(records) {
   chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
+  chrome.contextMenus.create({ id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXp });
   if (records && records.length) {
     createShareCtxMenu(records);
   }

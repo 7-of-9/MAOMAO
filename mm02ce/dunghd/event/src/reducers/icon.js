@@ -5,7 +5,7 @@ const initialState = {
   isYoutubeTest: false,
   isEnableIM: true,
   isReadyShare: true,
-  isReadyXP: true,
+  isEnableXp: true,
  };
 
 const isAllowToShare = (url, records) => {
@@ -20,6 +20,7 @@ const isAllowToShare = (url, records) => {
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
     case 'SWITCH_IM_SCORE':
+    case 'SWITCH_XP':
     case 'YOUTUBE_TEST':
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
@@ -58,7 +59,7 @@ export default (state = initialState, action, auth, nlp) => {
       }
       return Object.assign({}, state, {
         isEnable: false,
-        isReadyXP: isAllowToShare(url, nlp.records),
+        isEnableXp: isAllowToShare(url, nlp.records),
         isReadyShare: isAllowToShare(url, nlp.records),
       });
     }
@@ -100,7 +101,6 @@ export default (state = initialState, action, auth, nlp) => {
         }
         return Object.assign({}, state, {
           isEnable: true,
-          isReadyXP: isAllowToShare(url, nlp.records),
           isReadyShare: isAllowToShare(url, nlp.records),
         });
       }

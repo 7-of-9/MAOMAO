@@ -52,7 +52,7 @@ const defaultProps = {
     isYoutubeTest: false,
     isEnableIM: true,
     isReadyShare: true,
-    isReadyXP: true,
+    isEnableXp: true,
   },
   topic: '',
   terms: [],
@@ -463,9 +463,16 @@ class App extends Component {
           >
             <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
           </ToggleDisplay>
-          <Xp
-            terms={this.props.terms} shareTopics={this.openShare}
-          />
+          <ToggleDisplay
+            if={
+              this.props.auth.isLogin
+              && this.props.icon.isEnableXp
+            }
+          >
+            <Xp
+              terms={this.props.terms} shareTopics={this.openShare}
+            />
+          </ToggleDisplay>
         </div>
       </StyleRoot>
     );
