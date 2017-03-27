@@ -6,7 +6,7 @@ export default function checkFacebookAuth(isLinked = false) {
     provider.addScope('email');
     if (firebase.auth().currentUser && isLinked) {
       firebase.auth().currentUser.linkWithPopup(provider).then((result) => {
-        const token = result.credential.accessToken;
+        const facebookToken = result.credential.accessToken;
         const user = result.user;
         let email = '';
         let facebookUserId = '';
@@ -21,7 +21,7 @@ export default function checkFacebookAuth(isLinked = false) {
         }
         return resolve({
           facebookUserId,
-          token,
+          facebookToken,
           info: {
             name: user.displayName,
             email,
@@ -31,7 +31,7 @@ export default function checkFacebookAuth(isLinked = false) {
       }).catch(error => reject(error));
     } else {
       firebase.auth().signInWithPopup(provider).then((result) => {
-        const token = result.credential.accessToken;
+        const facebookToken = result.credential.accessToken;
         const user = result.user;
         let email = '';
         let facebookUserId = '';
@@ -46,7 +46,7 @@ export default function checkFacebookAuth(isLinked = false) {
         }
         return resolve({
           facebookUserId,
-          token,
+          facebookToken,
           info: {
             name: user.displayName,
             email,

@@ -4,7 +4,8 @@ import { ctxMenuLogin, ctxMenuLogout, md5hash } from './helpers';
 const initialState = {
   isLogin: false,
   message: '',
-  accessToken: '',
+  googleToken: '',
+  facebookToken: '',
   isPending: false,
   isFetchContacts: false,
   info: {},
@@ -35,7 +36,8 @@ export default (state = initialState, action, nlp) => {
       window.setIconApp(window.sessionObservable.activeUrl, 'black', '', window.BG_INACTIVE_COLOR);
       return Object.assign({}, state, {
         message: 'authentication is done',
-        accessToken: action.payload.token,
+        googleToken: action.payload.googleToken || state.googleToken,
+        facebookToken: action.payload.facebookToken || state.facebookToken,
         info: action.payload.info,
         googleUserId: action.payload.googleUserId || state.googleUserId,
         facebookUserId: action.payload.facebookUserId || state.facebookUserId,
@@ -54,7 +56,8 @@ export default (state = initialState, action, nlp) => {
     case 'AUTH_REJECTED':
       return Object.assign({}, state, {
         message: action.payload.error.message,
-        accessToken: '',
+        googleToken: '',
+        facebookToken: '',
         info: {},
         isPending: false,
         isLogin: false,
@@ -70,7 +73,8 @@ export default (state = initialState, action, nlp) => {
       window.setIconApp('', 'gray', '', window.BG_INACTIVE_COLOR);
       return Object.assign({}, state, {
         message: 'user has been logout',
-        accessToken: action.payload.token,
+        googleToken: '',
+        facebookToken: '',
         info: action.payload.info,
         isPending: false,
         isLogin: false,

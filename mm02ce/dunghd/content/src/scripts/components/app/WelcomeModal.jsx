@@ -69,7 +69,8 @@ const propTypes = {
 const defaultProps = {
   auth: {
     isLogin: false,
-    accessToken: '',
+    googleToken: '',
+    facebookToken: '',
     info: {},
   },
   isShareOpen: false,
@@ -94,7 +95,9 @@ class WelcomeModal extends Component {
             <ToggleDisplay hide={this.props.auth.isLogin}>
               <h2 style={customStyles.title}>Join MaoMao!</h2>
               <RaisedButton onTouchTap={this.props.onGoogleLogin} label="Google Connect" />
+              <br />
               <RaisedButton onTouchTap={this.props.onFacebookLogin} label="Facebook Connect" />
+              <br />
               <RaisedButton onTouchTap={this.props.onClose} label="Close" />
             </ToggleDisplay>
             <ToggleDisplay show={this.props.auth.isLogin}>
@@ -107,7 +110,6 @@ class WelcomeModal extends Component {
                 />
                 <CardTitle title="Welcome back!" />
                 <CardActions style={customStyles.cardAction}>
-                  <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
                   { this.props.auth &&
                     this.props.auth.facebookUserId.length === 0 &&
                     <RaisedButton
@@ -116,6 +118,9 @@ class WelcomeModal extends Component {
                   { this.props.auth &&
                     this.props.auth.googleUserId.length === 0 &&
                     <RaisedButton onTouchTap={this.props.onLinkedGoogle} label="Google Connect" />}
+                  <br />
+                  <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
+                  <br />
                   <RaisedButton onTouchTap={this.props.onClose} label="Close" />
                 </CardActions>
               </Card>

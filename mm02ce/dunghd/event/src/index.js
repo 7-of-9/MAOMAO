@@ -138,7 +138,6 @@ function onClickHandler(info) {
 
 chrome.contextMenus.onClicked.addListener(onClickHandler);
 
-
 function syncImScore(forceSave) {
   chrome.tabs.query({
     active: true,

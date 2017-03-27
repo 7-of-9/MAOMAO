@@ -9,12 +9,12 @@ function logout(auth) {
     // revoke token
     if (auth.googleUserId) {
       // revoke token for google
-      axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${auth.accessToken}`)
+      axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${auth.googleToken}`)
         .then(response => console.log('revoke', response))
         .catch(error => console.log('revoke error', error));
     } else {
       // revoke token for fb
-      axios.delete(`https://graph.facebook.com/${auth.facebookUserId}/permissions?access_token=${auth.accessToken}`)
+      axios.delete(`https://graph.facebook.com/${auth.facebookUserId}/permissions?access_token=${auth.facebookToken}`)
         .then(response => console.log('revoke', response))
         .catch(error => console.log('revoke error', error));
     }
@@ -32,7 +32,7 @@ function logout(auth) {
     window.enableTestYoutube = false;
     window.enableXp = false;
     if (auth.googleUserId) {
-      chrome.identity.removeCachedAuthToken({ token: auth.accessToken }, () => {
+      chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
@@ -66,17 +66,18 @@ const authLogout = () => (
   }
 );
 
-const authGoogleLogin = () => (
+const authGoogleLogin = data => (
   (dispatch, getState) => {
+    const { isLinked } = data.payload;
     const { auth } = getState();
-    if (!auth.isPending || auth.accessToken === '') {
+    if (!auth.isPending || auth.googleToken === '') {
       dispatch({
         type: 'AUTH_PENDING',
       });
-      return checkGoogleAuth()
-        .then((data) => {
-          dispatch(actionCreator('USER_HASH', { userHash: data.googleUserId }));
-          dispatch(actionCreator('AUTH_FULFILLED', data));
+      return checkGoogleAuth(isLinked)
+        .then((result) => {
+          dispatch(actionCreator('USER_HASH', { userHash: result.googleUserId }));
+          dispatch(actionCreator('AUTH_FULFILLED', result));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
@@ -87,7 +88,7 @@ const authGoogleLogin = () => (
     }
     dispatch(actionCreator('USER_HASH', { userHash: auth.googleUserId }));
     return dispatch(
-      actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, token: auth.accessToken, info: auth.info }),
+      actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, googleToken: auth.googleToken, info: auth.info }),
     );
   }
 );
@@ -96,7 +97,7 @@ const authFacebookLogin = data => (
   (dispatch, getState) => {
     const { isLinked } = data.payload;
     const { auth } = getState();
-    if (!auth.isPending || auth.accessToken === '') {
+    if (!auth.isPending || auth.facebookToken === '') {
       dispatch({
         type: 'AUTH_PENDING',
       });
@@ -114,7 +115,7 @@ const authFacebookLogin = data => (
     }
     dispatch(actionCreator('USER_HASH', { userHash: auth.facebookUserId }));
     return dispatch(
-      actionCreator('AUTH_FULFILLED', { facebookUserId: auth.facebookUserId, token: auth.accessToken, info: auth.info }),
+      actionCreator('AUTH_FULFILLED', { facebookUserId: auth.facebookUserId, facebookToken: auth.facebookToken, info: auth.info }),
     );
   }
 );
@@ -126,7 +127,7 @@ const getContacts = () => (
     dispatch({
       type: 'FETCH_CONTACTS_PENDING',
     });
-    return fetchContacts(auth.accessToken, 1, 1000)
+    return fetchContacts(auth.googleToken, 1, 1000)
       .then(data => dispatch(
         actionCreator('FETCH_CONTACTS_FULFILLED', data)),
     ).catch((error) => {

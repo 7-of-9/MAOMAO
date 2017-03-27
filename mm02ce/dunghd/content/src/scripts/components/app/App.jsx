@@ -39,7 +39,8 @@ const propTypes = {
 const defaultProps = {
   auth: {
     isLogin: false,
-    accessToken: '',
+    googleToken: '',
+    facebookToken: '',
     info: {},
     contacts: [],
   },
@@ -111,6 +112,13 @@ class App extends Component {
     this.notify({
       title: 'Connect with Google',
       message: 'Please wait in a minute!',
+    });
+    this.props.dispatch(checkAuth('GOOGLE'), true)
+    .catch((err) => {
+      this.notify({
+        title: 'Oops!',
+        message: err.message,
+      });
     });
   }
 

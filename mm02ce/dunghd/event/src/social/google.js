@@ -38,7 +38,7 @@ export function checkGoogleAuth(isLinked = false) {
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
     if (firebase.auth().currentUser && isLinked) {
       firebase.auth().currentUser.linkWithPopup(provider).then((result) => {
-        const token = result.credential.accessToken;
+        const googleToken = result.credential.accessToken;
         const user = result.user;
         let googleUserId = '';
         let googleEmail = '';
@@ -53,7 +53,7 @@ export function checkGoogleAuth(isLinked = false) {
         }
         return resolve({
           googleUserId,
-          token,
+          googleToken,
           info: {
             name: user.displayName,
             email: user.email || googleEmail,
@@ -63,7 +63,7 @@ export function checkGoogleAuth(isLinked = false) {
       }).catch(error => reject(error));
     } else {
       firebase.auth().signInWithPopup(provider).then((result) => {
-        const token = result.credential.accessToken;
+        const googleToken = result.credential.accessToken;
         const user = result.user;
         let googleUserId = '';
         let googleEmail = '';
@@ -78,7 +78,7 @@ export function checkGoogleAuth(isLinked = false) {
         }
         return resolve({
           googleUserId,
-          token,
+          googleToken,
           info: {
             name: user.displayName,
             email: user.email || googleEmail,
