@@ -75,17 +75,26 @@ const render = (isLogin, nlp, url, dispatch) => {
           </div>
         );
       }
-      return 'This site is not ready to sharing. Please wait in a few mins for processing this site!';
+      return (
+        <div>
+          This site is not ready to sharing. Please wait in a few mins for processing this site!
+        </div>);
     }
-    return 'Maomao sharing is off on this tab!';
+    return (
+      <div>
+        Maomao sharing is off on this tab!
+      </div>);
   }
-  return 'Please login to see the magic :)';
+  return (
+    <div>
+      Please login to see the magic :)
+    </div>);
 };
 
 const App = (
   { auth, nlp, url, dispatch },
 ) => <div
-  style={{ width: '250px', minHeight: '100px' }}
+  style={{ margin: '0 auto' }}
 >
   {render(auth.isLogin, nlp, url, dispatch)}
 </div>;

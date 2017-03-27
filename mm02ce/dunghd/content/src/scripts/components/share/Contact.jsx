@@ -32,7 +32,7 @@ const Item = styled.li`
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-  font-size: 11px;
+  font-size: 11px !important;
 `;
 
 const Remove = styled.a`
