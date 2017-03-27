@@ -100,6 +100,7 @@ class App extends Component {
     this.onLinkedGoogle = this.onLinkedGoogle.bind(this);
     this.onFacebookLogin = this.onFacebookLogin.bind(this);
     this.onLinkedFacebook = this.onLinkedFacebook.bind(this);
+    this.closeXp = this.closeXp.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.closeShare = this.closeShare.bind(this);
     this.openShare = this.openShare.bind(this);
@@ -233,6 +234,15 @@ class App extends Component {
     this.props.dispatch({
       type: 'NOTIFY_MESSAGE',
       payload: msg,
+    });
+  }
+
+  closeXp() {
+    this.props.dispatch({
+      type: 'SWITCH_XP',
+      payload: {
+        isEnableXp: !this.props.icon.isEnableXp,
+      },
     });
   }
 
@@ -504,7 +514,7 @@ class App extends Component {
             }
           >
             <Xp
-              terms={this.props.terms} shareTopics={this.openShare}
+              terms={this.props.terms} shareTopics={this.openShare} closeXp={this.closeXp}
             />
           </ToggleDisplay>
         </div>
@@ -520,7 +530,6 @@ const enhance = compose(
   onlyUpdateForKeys(['auth', 'isOpen', 'isShareOpen', 'score', 'terms', 'topic', 'icon']),
   pure,
 );
-
 
 const mapStateToProps = state => ({
   auth: state.auth,

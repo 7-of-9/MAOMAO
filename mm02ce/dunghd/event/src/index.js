@@ -143,6 +143,7 @@ function syncImScore(forceSave) {
     active: true,
     currentWindow: true,
   }, (tabs) => {
+    console.log('tabs', tabs);
     if (tabs != null && tabs.length > 0) {
       let url = '';
       const now = new Date().toISOString();
@@ -228,5 +229,6 @@ window.onload = () => {
     store.dispatch({
       type: 'AUTO_LOGIN',
     });
+    syncImScore(false);
   }, 1000);
 };

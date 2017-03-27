@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
+import { compose, onlyUpdateForKeys, pure } from 'recompose';
 import Radium from 'radium';
 import $ from 'jquery';
 
@@ -75,6 +76,7 @@ class Xp extends Component {
 
   closePopup() {
     this.setState({ show: false });
+    this.props.closeXp();
     if (this.timer) {
       clearInterval(this.timer);
     }
@@ -122,6 +124,12 @@ class Xp extends Component {
 Xp.propTypes = {
   terms: PropTypes.array,
   shareTopics: PropTypes.func.isRequired,
+  closeXp: PropTypes.func.isRequired,
 };
 
-export default Radium(Xp);
+const enhance = compose(
+  onlyUpdateForKeys(['terms']),
+  pure,
+);
+
+export default Radium(enhance(Xp));
