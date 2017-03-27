@@ -25,6 +25,8 @@ const Option = styled.button`
 const style = {
   margin: '10px auto',
   width: '100%',
+  height: '100%',
+  overflow: 'hidden',
 };
 
 const enhance = compose(

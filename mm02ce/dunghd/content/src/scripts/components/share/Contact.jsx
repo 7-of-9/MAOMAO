@@ -25,7 +25,6 @@ const Info = styled.ul`
   width: 120px;
   height: 50px;
   text-align: left;
-  background: #fff;
 `;
 const Item = styled.li`
   white-space: nowrap;
