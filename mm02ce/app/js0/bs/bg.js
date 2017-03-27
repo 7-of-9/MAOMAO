@@ -198,6 +198,7 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
     isGuest = true;
     userId = -1;
+    BG_APP_UUID = new_guid();
   }
 
   // replaces deprecated sendRequest

@@ -29,38 +29,64 @@ function buildUrlPath(params) {
   return path;
 }
 
-export function checkGoogleAuth() {
+export function checkGoogleAuth(isLinked = false) {
   const promise = new Promise((resolve, reject) => {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/plus.me');
     provider.addScope('https://www.googleapis.com/auth/userinfo.email');
     provider.addScope('https://www.google.com/m8/feeds/');
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-    firebase.auth().signInWithPopup(provider).then((result) => {
-      const token = result.credential.accessToken;
-      const user = result.user;
-      console.warn('google user', user, result);
-      let googleUserId = '';
-      let googleEmail = '';
-      if (user.providerData && user.providerData.length) {
-        for (let counter = 0; counter < user.providerData.length; counter += 1) {
-          if (user.providerData[counter].providerId === 'google.com') {
-            googleUserId = user.providerData[counter].uid;
-            googleEmail = user.providerData[counter].email;
-            break;
+    if (firebase.auth().currentUser && isLinked) {
+      firebase.auth().currentUser.linkWithPopup(provider).then((result) => {
+        const token = result.credential.accessToken;
+        const user = result.user;
+        let googleUserId = '';
+        let googleEmail = '';
+        if (user.providerData && user.providerData.length) {
+          for (let counter = 0; counter < user.providerData.length; counter += 1) {
+            if (user.providerData[counter].providerId === 'google.com') {
+              googleUserId = user.providerData[counter].uid;
+              googleEmail = user.providerData[counter].email;
+              break;
+            }
           }
         }
-      }
-      return resolve({
-        googleUserId,
-        token,
-        info: {
-          name: user.displayName,
-          email: user.email || googleEmail,
-          picture: user.photoURL,
-       },
-      });
-    }).catch(error => reject(error));
+        return resolve({
+          googleUserId,
+          token,
+          info: {
+            name: user.displayName,
+            email: user.email || googleEmail,
+            picture: user.photoURL,
+          },
+        });
+      }).catch(error => reject(error));
+    } else {
+      firebase.auth().signInWithPopup(provider).then((result) => {
+        const token = result.credential.accessToken;
+        const user = result.user;
+        let googleUserId = '';
+        let googleEmail = '';
+        if (user.providerData && user.providerData.length) {
+          for (let counter = 0; counter < user.providerData.length; counter += 1) {
+            if (user.providerData[counter].providerId === 'google.com') {
+              googleUserId = user.providerData[counter].uid;
+              googleEmail = user.providerData[counter].email;
+              break;
+            }
+          }
+        }
+        return resolve({
+          googleUserId,
+          token,
+          info: {
+            name: user.displayName,
+            email: user.email || googleEmail,
+            picture: user.photoURL,
+          },
+        });
+      }).catch(error => reject(error));
+    }
   });
   return promise;
 }

@@ -75,6 +75,7 @@ const render = (isLogin, nlp, url, dispatch) => {
           </div>
         );
       }
+      // TODO: check on site is allowable or not
       return (
         <div>
           This site is not ready to sharing. Please wait in a few mins for processing this site!

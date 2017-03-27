@@ -28,8 +28,8 @@ export default (state = initialState, action, nlp) => {
         message: 'authentication is done',
         accessToken: action.payload.token,
         info: action.payload.info,
-        googleUserId: action.payload.googleUserId || '',
-        facebookUserId: action.payload.facebookUserId || '',
+        googleUserId: action.payload.googleUserId || state.googleUserId,
+        facebookUserId: action.payload.facebookUserId || state.facebookUserId,
         isPending: false,
         isLogin: true,
       });

@@ -64,10 +64,11 @@ const defaultProps = {
   dispatch: () => { },
 };
 
-const checkAuth = (type) => {
+const checkAuth = (type, isLinked = false) => {
   const data = {
     type: `AUTH_LOGIN_${type}`,
     payload: {
+      isLinked,
     },
   };
   return data;
@@ -95,13 +96,36 @@ class App extends Component {
     super(props);
     this.onClose = this.onClose.bind(this);
     this.onGoogleLogin = this.onGoogleLogin.bind(this);
+    this.onLinkedGoogle = this.onLinkedGoogle.bind(this);
     this.onFacebookLogin = this.onFacebookLogin.bind(this);
+    this.onLinkedFacebook = this.onLinkedFacebook.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.closeShare = this.closeShare.bind(this);
     this.openShare = this.openShare.bind(this);
     this.sendEmail = this.sendEmail.bind(this);
     this.notify = this.notify.bind(this);
     this.mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
+  }
+
+  onLinkedGoogle() {
+    this.notify({
+      title: 'Connect with Google',
+      message: 'Please wait in a minute!',
+    });
+  }
+
+  onLinkedFacebook() {
+    this.notify({
+      title: 'Connect with Facebook',
+      message: 'Please wait in a minute!',
+    });
+    this.props.dispatch(checkAuth('FACEBOOK'), true)
+    .catch((err) => {
+      this.notify({
+        title: 'Oops!',
+        message: err.message,
+      });
+    });
   }
 
   onGoogleLogin() {
@@ -440,6 +464,8 @@ class App extends Component {
             auth={this.props.auth}
             onGoogleLogin={this.onGoogleLogin}
             onFacebookLogin={this.onFacebookLogin}
+            onLinkedFacebook={this.onLinkedFacebook}
+            onLinkedGoogle={this.onLinkedGoogle}
             onClose={this.onClose}
             onLogout={this.onLogout}
             isOpen={this.props.isOpen}

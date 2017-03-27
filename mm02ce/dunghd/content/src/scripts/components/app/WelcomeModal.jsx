@@ -58,6 +58,8 @@ const propTypes = {
   auth: PropTypes.object,
   onGoogleLogin: PropTypes.func.isRequired,
   onFacebookLogin: PropTypes.func.isRequired,
+  onLinkedFacebook: PropTypes.func.isRequired,
+  onLinkedGoogle: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isShareOpen: PropTypes.bool.isRequired,
@@ -106,6 +108,14 @@ class WelcomeModal extends Component {
                 <CardTitle title="Welcome back!" />
                 <CardActions style={customStyles.cardAction}>
                   <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />
+                  { this.props.auth &&
+                    this.props.auth.facebookUserId.length === 0 &&
+                    <RaisedButton
+                      onTouchTap={this.props.onLinkedFacebook} label="Facebook Connect"
+                    />}
+                  { this.props.auth &&
+                    this.props.auth.googleUserId.length === 0 &&
+                    <RaisedButton onTouchTap={this.props.onLinkedGoogle} label="Google Connect" />}
                   <RaisedButton onTouchTap={this.props.onClose} label="Close" />
                 </CardActions>
               </Card>

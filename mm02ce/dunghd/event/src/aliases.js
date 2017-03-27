@@ -3,7 +3,7 @@ import firebase from 'firebase';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
 import { actionCreator, notifyMsg } from './utils';
-
+/* eslint-disable no-console */
 function logout(auth) {
   const promise = new Promise((resolve, reject) => {
     // revoke token
@@ -92,17 +92,18 @@ const authGoogleLogin = () => (
   }
 );
 
-const authFacebookLogin = () => (
+const authFacebookLogin = data => (
   (dispatch, getState) => {
+    const { isLinked } = data.payload;
     const { auth } = getState();
     if (!auth.isPending || auth.accessToken === '') {
       dispatch({
         type: 'AUTH_PENDING',
       });
-      return checkFacebookAuth()
-        .then((data) => {
-          dispatch(actionCreator('USER_HASH', { userHash: data.facebookUserId }));
-          dispatch(actionCreator('AUTH_FULFILLED', data));
+      return checkFacebookAuth(isLinked)
+        .then((result) => {
+          dispatch(actionCreator('USER_HASH', { userHash: result.facebookUserId }));
+          dispatch(actionCreator('AUTH_FULFILLED', result));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
