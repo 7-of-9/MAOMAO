@@ -4,6 +4,8 @@ import mobx from 'mobx';
 import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
+import { persistStore, autoRehydrate } from 'redux-persist';
+import createMigration from 'redux-persist-migrate';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import { createLogger } from 'redux-logger';
 import { batchActions, enableBatching } from 'redux-batched-actions';
@@ -12,8 +14,6 @@ import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
-import { googleAutoLogin, facebookAutoLogin } from './autologin';
-import { notifyMsg } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -32,11 +32,22 @@ const middleware = [
   thunkMiddleware,
   logger,
 ];
+
+const manifest = {
+ 1: state => ({ ...state, staleReducer: undefined }),
+ 2: state => ({ ...state, app: { ...state.app, staleKey: undefined } }),
+};
+const reducerKey = 'app';
+const migration = createMigration(manifest, reducerKey);
+
 const composeEnhancers = composeWithDevTools({ realtime: true });
 const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
+  migration,
+  autoRehydrate(),
   applyMiddleware(...middleware),
 ));
 
+persistStore(store);
 wrapStore(store, { portName: 'maomao-extension' });
 
 // ctx menu handler
@@ -203,38 +214,6 @@ firebase.initializeApp({
   authDomain: config.firebaseAuthDomain,
 });
 
-function autoLogin() {
-    const user = firebase.auth().currentUser;
-    console.warn('autoLogin', user);
-    if (user) {
-      let googleUserId = '';
-      let facebookUserId = '';
-      let facebookEmail = '';
-      if (user.providerData && user.providerData.length) {
-        for (let counter = 0; counter < user.providerData.length; counter += 1) {
-          if (user.providerData[counter].providerId === 'google.com') {
-            googleUserId = user.providerData[counter].uid;
-          }
-          if (user.providerData[counter].providerId === 'facebook.com') {
-            facebookUserId = user.providerData[counter].uid;
-            facebookEmail = user.providerData[counter].email;
-          }
-        }
-      }
-      console.warn('googleUserId', googleUserId);
-      console.warn('facebookUserId', facebookUserId);
-      if (googleUserId) {
-         googleAutoLogin(store, syncImScore, config, googleUserId, user);
-         notifyMsg('Auto Login', `Welcome back, ${user.displayName}`);
-      }
-
-      if (facebookUserId) {
-         facebookAutoLogin(store, syncImScore, config, facebookUserId, facebookEmail, user);
-         notifyMsg('Auto Login', `Welcome back, ${user.displayName}`);
-      }
-    }
-}
-
 function initFirebaseApp() {
   // Listen for auth state changes.
   firebase.auth().onAuthStateChanged((user) => {
@@ -247,7 +226,8 @@ function initFirebaseApp() {
 window.onload = () => {
   initFirebaseApp();
   setTimeout(() => {
-    // try to fix by use timeout
-    autoLogin();
-  }, 2000);
+    store.dispatch({
+      type: 'AUTO_LOGIN',
+    });
+  }, 1000);
 };

@@ -17,6 +17,15 @@ const initialState = {
 
 export default (state = initialState, action, nlp) => {
   switch (action.type) {
+    case 'AUTO_LOGIN': {
+      window.userId = state.userId;
+      if (state.userId !== -1) {
+        window.isGuest = false;
+        window.userHash = md5hash(state.googleUserId || state.facebookUserId);
+        ctxMenuLogin(state.info, nlp.records);
+      }
+      return state;
+    }
     case 'AUTH_PENDING':
       return Object.assign({}, state, { isPending: true });
     case 'FETCH_CONTACTS_PENDING':
