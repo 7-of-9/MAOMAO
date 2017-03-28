@@ -13,6 +13,7 @@ import WelcomeModal from './WelcomeModal';
 import createUser from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
 import getCurrentTopic from '../../selectors/topic';
+import shareOnUrl from '../../selectors/share';
 
 window.jQuery = $;
 
@@ -29,7 +30,7 @@ const propTypes = {
   terms: PropTypes.array,
   topic: PropTypes.string,
   isOpen: PropTypes.bool.isRequired,
-  isShareOpen: PropTypes.bool.isRequired,
+  isShareOnUrl: PropTypes.object,
   siteUrl: PropTypes.string,
   mailgunKey: PropTypes.string,
   apiUrl: PropTypes.string,
@@ -52,12 +53,15 @@ const defaultProps = {
     isEnable: false,
     isYoutubeTest: false,
     isEnableIM: true,
-    isReadyShare: true,
     isEnableXp: true,
   },
   topic: '',
   terms: [],
-  isShareOpen: false,
+  isShareOnUrl: {
+    url: '',
+    type: '',
+    enable: false,
+  },
   isOpen: false,
   siteUrl: '',
   apiUrl: '',
@@ -248,19 +252,19 @@ class App extends Component {
 
   openShare() {
     this.props.dispatch({
-      type: 'MAOMAO_ENABLE',
+      type: 'OPEN_SHARE_MODAL',
       payload: {
         url: window.location.href,
       },
-    });
-    this.props.dispatch({
-      type: 'OPEN_SHARE_MODAL',
     });
   }
 
   closeShare() {
     this.props.dispatch({
       type: 'CLOSE_SHARE_MODAL',
+      payload: {
+        url: window.location.href,
+      },
     });
   }
 
@@ -489,7 +493,7 @@ class App extends Component {
             isOpen={this.props.isOpen}
           />
           <ShareTopic
-            enable={this.props.isShareOpen && this.props.icon.isReadyShare}
+            enable={this.props.isShareOnUrl.enable}
             terms={this.props.terms}
             topic={this.props.topic}
             sendEmail={this.sendEmail}
@@ -535,7 +539,7 @@ const enhance = compose(
 const mapStateToProps = state => ({
   auth: state.auth,
   isOpen: state.modal,
-  isShareOpen: state.share,
+  isShareOnUrl: shareOnUrl(state),
   score: state.score,
   terms: getCurrentTerms(state),
   topic: getCurrentTopic(state),

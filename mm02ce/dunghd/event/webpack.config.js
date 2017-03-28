@@ -25,7 +25,7 @@ if (isProduction) {
     }),
   ]);
 } else {
-  sourceMap = 'cheap-module-eval-source-map';
+  sourceMap = 'eval';
   plugins = plugins.concat([
     new webpack.LoaderOptionsPlugin({
         minimize: false,

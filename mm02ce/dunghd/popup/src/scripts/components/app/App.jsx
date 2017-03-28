@@ -50,25 +50,25 @@ const render = (isLogin, nlp, url, dispatch) => {
               <GoogleButton
                 onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Google' } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
               }}
               />
               <FacebookButton
                 onClick={() => {
                   dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Facebook' } });
+                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Facebook' } });
                 }}
               />
               <FacebookMessengerButton
                 onClick={() => {
                     dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                    dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'FacebookMessenger' } });
+                    dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'FacebookMessenger' } });
                   }}
               />
               <LinkButton
                 onClick={() => {
                   dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { type: 'Link' } });
+                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
               }}
               />
             </div>

@@ -59,8 +59,24 @@ function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-share':
       {
-        store.dispatch({
-          type: 'OPEN_SHARE_MODAL',
+        chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        }, (tabs) => {
+          console.log('tabs', tabs);
+          if (tabs != null && tabs.length > 0) {
+            let url = '';
+            if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
+              url = tabs[0].url;
+              store.dispatch({
+                type: 'OPEN_SHARE_MODAL',
+                payload: {
+                  url,
+                  type: 'Google',
+                },
+              });
+            }
+          }
         });
       }
       break;

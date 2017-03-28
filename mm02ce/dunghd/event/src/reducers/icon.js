@@ -2,20 +2,10 @@ import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 
 const initialState = {
   isEnable: false,
-  isYoutubeTest: false,
-  isEnableIM: true,
-  isReadyShare: true,
-  isEnableXp: true,
+  isEnableIM: window.enableImscore,
+  isEnableXp: window.enableXp,
+  isYoutubeTest: window.enableTestYoutube,
  };
-
-const isAllowToShare = (url, records) => {
- if (records && records.length) {
-   const isExist = records.filter(item => item.url === url);
-   return isExist.length > 0;
- }
-
- return false;
-};
 
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
@@ -64,8 +54,6 @@ export default (state = initialState, action, auth, nlp) => {
       }
       return Object.assign({}, state, {
         isEnable: false,
-        isEnableXp: isAllowToShare(url, nlp.records),
-        isReadyShare: isAllowToShare(url, nlp.records),
       });
     }
 
@@ -106,7 +94,6 @@ export default (state = initialState, action, auth, nlp) => {
         }
         return Object.assign({}, state, {
           isEnable: true,
-          isReadyShare: isAllowToShare(url, nlp.records),
         });
       }
 
