@@ -1,4 +1,4 @@
-// / <binding BeforeBuild='build' />
+/// <binding BeforeBuild='build' />
 /* eslint-disable import/first */
 require('dotenv').config();
 
