@@ -1,5 +1,7 @@
-/// <binding BeforeBuild='build' />
+// / <binding BeforeBuild='build' />
+/* eslint-disable import/first */
 require('dotenv').config();
+
 import gulp from 'gulp';
 import loadPlugins from 'gulp-load-plugins';
 import webpack from 'webpack';

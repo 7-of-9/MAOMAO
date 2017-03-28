@@ -511,6 +511,7 @@ class App extends Component {
             if={
               this.props.auth.isLogin
               && this.props.icon.isEnableXp
+              && this.props.terms.length > 0
             }
           >
             <Xp

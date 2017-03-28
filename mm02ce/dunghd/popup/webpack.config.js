@@ -1,5 +1,39 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
+const webpack = require('webpack');
+
+const env = process.env.NODE_ENV || 'development';
+const isProduction = env !== 'development';
+let sourceMap = '';
+let plugins = [
+  new webpack.DefinePlugin({
+    'process.env.NODE_ENV': JSON.stringify(env),
+  }),
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+  }),
+];
+if (isProduction) {
+  sourceMap = 'source-map';
+  plugins = plugins.concat([
+    new webpack.LoaderOptionsPlugin({
+        minimize: true,
+        debug: false,
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+    }),
+  ]);
+} else {
+  sourceMap = 'cheap-module-eval-source-map';
+  plugins = plugins.concat([
+    new webpack.LoaderOptionsPlugin({
+        minimize: false,
+        debug: true,
+    }),
+  ]);
+}
 
 module.exports = {
   entry: ['./dunghd/popup/src/scripts/index.jsx'],
@@ -8,10 +42,14 @@ module.exports = {
     path: path.join(__dirname, '../../app/', 'build'),
     publicPath: '/',
   },
-  devtool: 'source-map',
+  devtool: sourceMap,
   resolve: {
     extensions: ['.js', '.jsx', '.scss', '.json'],
     modules: ['node_modules'],
+    alias: {
+        jquery: 'jquery/src/jquery',
+        'stacktrace-js': 'stacktrace-js/stacktrace',
+    },
   },
   module: {
     rules: [
@@ -67,4 +105,5 @@ module.exports = {
       },
     ],
   },
+  plugins,
 };

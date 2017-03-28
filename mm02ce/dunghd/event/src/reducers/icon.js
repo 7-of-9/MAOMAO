@@ -20,11 +20,7 @@ const isAllowToShare = (url, records) => {
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
     case 'SWITCH_XP': {
-      if (action.payload && action.payload.isEnableXp) {
-        window.enableTestYoutube = false;
-      } else {
-        window.enableTestYoutube = true;
-      }
+      window.enableXp = action.payload.isEnableXp;
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
     }

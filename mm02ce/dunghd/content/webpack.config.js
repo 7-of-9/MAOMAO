@@ -1,5 +1,41 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack');
+
+const env = process.env.NODE_ENV || 'development';
+const isProduction = env !== 'development';
+let sourceMap = '';
+let plugins = [
+  new ExtractTextPlugin('styles.css'),
+  new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+  }),
+  new webpack.DefinePlugin({
+    'process.env.NODE_ENV': JSON.stringify(env),
+  }),
+];
+if (isProduction) {
+  sourceMap = 'source-map';
+  plugins = plugins.concat([
+    new webpack.LoaderOptionsPlugin({
+        minimize: true,
+        debug: false,
+    }),
+    // FIXME: production build fail on content.js
+    // new webpack.optimize.UglifyJsPlugin({
+    //   sourceMap: true,
+    // }),
+  ]);
+} else {
+  sourceMap = 'cheap-module-eval-source-map';
+  plugins = plugins.concat([
+    new webpack.LoaderOptionsPlugin({
+        minimize: false,
+        debug: true,
+    }),
+  ]);
+}
 
 module.exports = {
 
@@ -13,12 +49,15 @@ module.exports = {
         publicPath: '/',
     },
 
+    devtool: sourceMap,
+
     resolve: {
         extensions: ['.js', '.jsx', '.scss', '.json'],
         modules: ['node_modules'],
+        alias: {
+            jquery: 'jquery/src/jquery',
+        },
     },
-
-    devtool: 'source-map',
 
     module: {
         rules: [{
@@ -55,7 +94,5 @@ module.exports = {
             },
         ],
     },
-    plugins: [
-        new ExtractTextPlugin('styles.css'),
-    ],
+    plugins,
 };
