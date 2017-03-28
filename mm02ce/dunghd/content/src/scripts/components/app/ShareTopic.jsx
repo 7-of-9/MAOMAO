@@ -1,8 +1,10 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
+import PopoutWindow from 'react-popout';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
+// const FB_APP_ID = '386694335037120';
 const style = {
   container: {
     position: 'fixed',
@@ -88,6 +90,11 @@ const ShareTopic = enhance(({
          >
            Share Now!
          </button>
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'Facebook'}>
+         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://productsway.com" title="Window title">
+           <div>Loading...</div>
+         </PopoutWindow>
        </ToggleDisplay>
      </div >,
 );

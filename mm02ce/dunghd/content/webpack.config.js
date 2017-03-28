@@ -64,6 +64,7 @@ module.exports = {
                 test: /\.scss$/,
                 use: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader?sourceMap!sass-loader?sourceMap' }),
             },
+            { test: /\.gif$/, loader: 'url-loader?limit=65000&mimetype=image/gif&name=[name].[ext]' },
             { test: /\.png$/, loader: 'url-loader?limit=65000&mimetype=image/png&name=[name].[ext]' },
             { test: /\.svg$/, loader: 'url-loader?limit=65000&mimetype=image/svg+xml&name=[name].[ext]' },
             { test: /\.woff$/, loader: 'url-loader?limit=65000&mimetype=application/font-woff&name=[name].[ext]' },

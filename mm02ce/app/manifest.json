@@ -14,7 +14,7 @@
     "build/*.*",
     "css/*.*"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://*.google.com https://*.googleapis.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://*.google.com https://*.googleapis.com https://connect.facebook.net; object-src 'self'",
   "permissions": [
     "webRequest",
     "contextMenus",

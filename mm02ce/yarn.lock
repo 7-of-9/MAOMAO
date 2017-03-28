@@ -4877,6 +4877,10 @@ react-mfb@^0.4.1:
     classnames "^1.2.0"
     react-dom "^15.3.1"
 
+react-popout@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-popout/-/react-popout-0.6.0.tgz#f5947cb857151e2ba680129769844762aea7a1fe"
+
 react-redux@^5.0.3:
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.0.3.tgz#86c3b68d56e74294a42e2a740ab66117ef6c019f"
