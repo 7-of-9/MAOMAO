@@ -98,7 +98,7 @@ class Xp extends Component {
     return (
       <div className="blurred" style={{ display: this.state.show && this.props.terms.length > 0 ? 'block' : 'none', transform: 'scale(1.0) translate(-50%,-50%)' }}>
         <div className="inner_bg">
-          <a onClick={this.closePopup} className="close_button" />
+          <button onClick={this.closePopup} className="close_button" />
           {dummies}
           <div style={this.state.textAnimate} className="nlp_topic">{xp && xp.text}</div>
           <div
@@ -114,7 +114,7 @@ class Xp extends Component {
               callback={resetFontSize}
             />
           </div>
-          <a className="share-button" onClick={this.openShare}>Share...</a>
+          <button className="share-button" onClick={this.openShare}>Share...</button>
         </div>
       </div>
     );

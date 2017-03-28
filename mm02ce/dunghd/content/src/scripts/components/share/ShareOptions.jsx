@@ -42,7 +42,7 @@ const enhance = compose(
 const ShareOptions = enhance(({ tld, active, handleChange }) =>
   <div style={style}>
     <Option primary={active === 'site'} onClick={() => { handleChange('site'); }} >just this page</Option>
-    <Option primary={active === 'tld'} onClick={() => { handleChange('tld'); }}>{tld}</Option>
+    { tld && <Option primary={active === 'tld'} onClick={() => { handleChange('tld'); }}>{tld}</Option> }
     <Option primary={active === 'all'} onClick={() => { handleChange('all'); }}> *.* <br />all my browsing!</Option>
   </div>,
 );
