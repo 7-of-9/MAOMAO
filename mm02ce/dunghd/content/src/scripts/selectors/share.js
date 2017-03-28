@@ -13,7 +13,6 @@ const shareOnUrl = createSelector(
         share = Object.assign({}, share, exist, { enable: true });
       }
     }
-    console.log('share', share);
     return share;
   },
 );

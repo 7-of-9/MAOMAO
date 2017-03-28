@@ -128,8 +128,8 @@ Xp.propTypes = {
 };
 
 const enhance = compose(
-  onlyUpdateForKeys(['terms']),
   pure,
+  onlyUpdateForKeys(['terms']),
 );
 
 export default Radium(enhance(Xp));

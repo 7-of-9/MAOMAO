@@ -162,8 +162,8 @@ const enhance = compose(
       }
     },
   }),
-  onlyUpdateForKeys(['value', 'selectedContacts']),
   pure,
+  onlyUpdateForKeys(['value', 'selectedContacts']),
 );
 
 export default enhance(GoogleShare);

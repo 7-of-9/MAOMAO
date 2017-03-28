@@ -1,5 +1,5 @@
 import React from 'react';
-import { pure, withState, withHandlers, compose } from 'recompose';
+import { pure, compose } from 'recompose';
 import styled from 'styled-components';
 import Button from './Button';
 import ggIcon from './images/google.svg';
@@ -32,21 +32,15 @@ const style = {
 };
 
 const enhance = compose(
-  withState('active', 'setActive', 'google'),
-  withHandlers({
-    handleChange: props => (val) => {
-      props.setActive(val);
-    },
-  }),
   pure,
 );
 
-const Toolbar = enhance(({ active, handleChange }) =>
+const Toolbar = enhance(({ active, onChange }) =>
   <div style={style.toolbar}>
-    <GoogleButton primary={active === 'google'} onClick={() => { handleChange('google'); }} />
-    <FacebookButton primary={active === 'facebook'} onClick={() => { handleChange('facebook'); }} />
-    <FacebookMessengerButton primary={active === 'facebook-messenger'} onClick={() => { handleChange('facebook-messenger'); }} />
-    <LinkButton primary={active === 'link'} onClick={() => { handleChange('link'); }} />
+    <GoogleButton primary={active === 'Google'} onClick={() => onChange('Google')} />
+    <FacebookButton primary={active === 'Facebook'} onClick={() => onChange('Facebook')} />
+    <FacebookMessengerButton primary={active === 'FacebookMessenger'} onClick={() => onChange('FacebookMessenger')} />
+    <LinkButton primary={active === 'Link'} onClick={() => onChange('Link')} />
   </div>,
 );
 export default Toolbar;

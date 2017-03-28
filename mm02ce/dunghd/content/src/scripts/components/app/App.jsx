@@ -108,6 +108,7 @@ class App extends Component {
     this.onLogout = this.onLogout.bind(this);
     this.closeShare = this.closeShare.bind(this);
     this.openShare = this.openShare.bind(this);
+    this.changeShareType = this.changeShareType.bind(this);
     this.sendEmail = this.sendEmail.bind(this);
     this.notify = this.notify.bind(this);
     this.mailgun = new Mailgun.Mailgun(this.props.mailgunKey);
@@ -255,6 +256,16 @@ class App extends Component {
       type: 'OPEN_SHARE_MODAL',
       payload: {
         url: window.location.href,
+      },
+    });
+  }
+
+  changeShareType(type) {
+    this.props.dispatch({
+      type: 'OPEN_SHARE_MODAL',
+      payload: {
+        url: window.location.href,
+        type,
       },
     });
   }
@@ -494,9 +505,11 @@ class App extends Component {
           />
           <ShareTopic
             enable={this.props.isShareOnUrl.enable}
+            type={this.props.isShareOnUrl.type}
             terms={this.props.terms}
             topic={this.props.topic}
             sendEmail={this.sendEmail}
+            changeShareType={this.changeShareType}
             contacts={this.props.auth && this.props.auth.contacts}
             notify={this.notify}
             closeShare={this.closeShare}
@@ -532,8 +545,8 @@ App.propTypes = propTypes;
 App.defaultProps = defaultProps;
 
 const enhance = compose(
-  onlyUpdateForKeys(['auth', 'isOpen', 'isShareOpen', 'score', 'terms', 'topic', 'icon']),
   pure,
+  onlyUpdateForKeys(['isOpen', 'auth', 'terms', 'score', 'topic']),
 );
 
 const mapStateToProps = state => ({

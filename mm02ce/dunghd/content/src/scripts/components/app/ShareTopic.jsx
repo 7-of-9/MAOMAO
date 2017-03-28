@@ -1,5 +1,6 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
+import ToggleDisplay from 'react-toggle-display';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
 const style = {
@@ -66,19 +67,28 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-   enable, terms, topic, contacts, handleChange, sendEmails, closeShare }) =>
+   enable, type, terms, topic, contacts, handleChange, changeShareType, sendEmails, closeShare }) =>
      <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
        <div className="maomao-logo" />
-       <a
+       <button
          onClick={closeShare} className="close_button"
        />
-       <Toolbar />
+       <Toolbar active={type} onChange={changeShareType} />
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
       </h3>
        <ShareOptions tld={topic} />
-       <GoogleShare contacts={contacts} handleChange={handleChange} />
-       <a style={style.button} className="share-button" onClick={sendEmails}>Share Now!</a>
+       {type}
+       <ToggleDisplay if={type === 'Google'}>
+         <GoogleShare contacts={contacts} handleChange={handleChange} />
+         <button
+           style={style.button}
+           className="share-button"
+           onClick={sendEmails}
+         >
+           Share Now!
+         </button>
+       </ToggleDisplay>
      </div >,
 );
 export default ShareTopic;

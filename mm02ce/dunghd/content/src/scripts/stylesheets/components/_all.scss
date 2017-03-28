@@ -66,6 +66,7 @@ $close-btn-img: url('./images/close_button.png');
     height: 40px;
     top: -16px;
     right: -16px;
+    border: 0;
     background: $close-btn-img no-repeat center center;
     &:hover {
       text-decoration: none;
