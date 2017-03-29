@@ -18,6 +18,18 @@ const initialState = {
 
 export default (state = initialState, action, nlp) => {
   switch (action.type) {
+    case 'PHOTO_NO_IMAGE':
+    case 'PHOTO_IMAGE': {
+      const email = action.payload.email;
+      let contacts = [];
+      if (state.contacts.length) {
+        contacts = state.contacts.filter(item => item.email !== email);
+        // only downloadPhoto for exist  contacts
+        contacts = contacts.concat(action.payload);
+        return Object.assign({}, state, { contacts });
+      }
+      return state;
+    }
     case 'AUTO_LOGIN': {
       window.userId = state.userId;
       if (state.userId !== -1) {

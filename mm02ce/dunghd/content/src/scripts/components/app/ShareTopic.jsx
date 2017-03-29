@@ -4,7 +4,7 @@ import ToggleDisplay from 'react-toggle-display';
 import PopoutWindow from 'react-popout';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
-// const FB_APP_ID = '386694335037120';
+const FB_APP_ID = '386694335037120';
 const style = {
   container: {
     position: 'fixed',
@@ -92,7 +92,12 @@ const ShareTopic = enhance(({
          </button>
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Facebook'}>
-         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://productsway.com" title="Window title">
+         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://maomao.rocks" title="Post to Facebook">
+           <div>Loading...</div>
+         </PopoutWindow>
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'FacebookMessenger'}>
+         <PopoutWindow url={`http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=http://maomao.rocks&redirect_uri=http://maomao.rocks/`} title="Send a message">
            <div>Loading...</div>
          </PopoutWindow>
        </ToggleDisplay>

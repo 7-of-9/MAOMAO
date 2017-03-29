@@ -3,6 +3,11 @@ import firebase from 'firebase';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
 import { actionCreator, notifyMsg } from './utils';
+
+const throttledQueue = require('throttled-queue');
+
+const throttle = throttledQueue(10, 1000); // at most make 10 request every second.
+
 /* eslint-disable no-console */
 function logout(auth) {
   const promise = new Promise((resolve, reject) => {
@@ -45,6 +50,47 @@ function logout(auth) {
     }
   });
   return promise;
+}
+
+function base64ImageFromUrl(url, callback) {
+  const xhr = new XMLHttpRequest();
+  xhr.onload = (ev) => {
+    if (ev.target && ev.target.status === 200) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        callback(null, reader.result);
+      };
+      reader.readAsDataURL(xhr.response);
+    } else {
+      callback(new Error(`Not found image, error code ${ev.target.status}`));
+    }
+  };
+  xhr.open('GET', url);
+  xhr.responseType = 'blob';
+  xhr.send();
+}
+
+function downloadPhoto(dispatch, contacts) {
+  contacts.forEach((contact) => {
+    if (contact.image && contact.image.indexOf('http') !== -1) {
+      throttle(() => {
+        base64ImageFromUrl(contact.image, (err, base64Image) => {
+          if (err) {
+            dispatch(actionCreator('PHOTO_NO_IMAGE', {
+              ...contact,
+              image: '',
+            }));
+            console.error(err);
+          } else {
+            dispatch(actionCreator('PHOTO_IMAGE', {
+              ...contact,
+              image: base64Image,
+            }));
+          }
+        });
+      });
+    }
+  });
 }
 
 const authLogout = () => (
@@ -128,8 +174,11 @@ const getContacts = () => (
       type: 'FETCH_CONTACTS_PENDING',
     });
     return fetchContacts(auth.googleToken, 1, 1000)
-      .then(data => dispatch(
-        actionCreator('FETCH_CONTACTS_FULFILLED', data)),
+      .then((data) => {
+          // Download images
+          downloadPhoto(dispatch, data.data);
+          dispatch(actionCreator('FETCH_CONTACTS_FULFILLED', data));
+        },
     ).catch((error) => {
       dispatch(actionCreator('FETCH_CONTACTS_REJECTED', { error }));
     });
