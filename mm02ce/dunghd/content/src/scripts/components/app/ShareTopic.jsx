@@ -1,6 +1,5 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
-import ToggleDisplay from 'react-toggle-display';
 import PopoutWindow from 'react-popout';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
@@ -44,6 +43,10 @@ const style = {
 
 const selectTopics = terms => terms && terms[0] && terms[0].text;
 
+function closeShareWindow() {
+  console.log('closeShareWindow');
+}
+
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withHandlers({
@@ -81,26 +84,29 @@ const ShareTopic = enhance(({
       </h3>
        <ShareOptions tld={topic} />
        {type}
-       <ToggleDisplay if={type === 'Google'}>
-         <GoogleShare contacts={contacts} handleChange={handleChange} />
-         <button
-           style={style.button}
-           className="share-button"
-           onClick={sendEmails}
-         >
-           Share Now!
-         </button>
-       </ToggleDisplay>
-       <ToggleDisplay if={type === 'Facebook'}>
-         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://maomao.rocks" title="Post to Facebook">
+       {type === 'Google' &&
+         <div>
+           <GoogleShare contacts={contacts} handleChange={handleChange} />
+           <button
+             style={style.button}
+             className="share-button"
+             onClick={sendEmails}
+           >
+             Share Now!
+           </button>
+         </div>
+       }
+       {
+         type === 'Facebook' &&
+         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://maomao.rocks&hashtag=#maomao&quote=Are you ready to rocks?" title="Post to Facebook">
            <div>Loading...</div>
          </PopoutWindow>
-       </ToggleDisplay>
-       <ToggleDisplay if={type === 'FacebookMessenger'}>
-         <PopoutWindow url={`http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=http://maomao.rocks&redirect_uri=http://maomao.rocks/`} title="Send a message">
-           <div>Loading...</div>
-         </PopoutWindow>
-       </ToggleDisplay>
+       }
+       { type === 'FacebookMessenger' &&
+       <PopoutWindow url={`http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=http://maomao.rocks&redirect_uri=http://maomao.rocks/`} title="Send a message">
+         <div>Loading...{closeShareWindow()}</div>
+       </PopoutWindow>
+       }
      </div >,
 );
 export default ShareTopic;

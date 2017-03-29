@@ -246,8 +246,5 @@ window.onload = () => {
       type: 'AUTO_LOGIN',
     });
     syncImScore(false);
-    store.dispatch({
-      type: 'FETCH_CONTACTS',
-    });
   }, 1000);
 };
