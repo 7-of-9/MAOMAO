@@ -14,6 +14,11 @@ namespace mm_svc.User
                 var db_user = db.users.FirstOrDefault(p => p.email == email);
                 if (db_user != null)
                 {
+                    if (!string.IsNullOrEmpty(google_user_id))
+                    {
+                        db_user.google_user_id = google_user_id;
+                        db.SaveChangesTraceValidationErrors();
+                    }
                     return db_user;
                 }
                 else
@@ -40,6 +45,11 @@ namespace mm_svc.User
                 // check that Google email is exist 
                 var db_user = db.users.FirstOrDefault(p => p.email == email);
                 if (db_user != null) {
+                    if (!string.IsNullOrEmpty(fb_user_id))
+                    {
+                        db_user.fb_user_id = fb_user_id;
+                        db.SaveChangesTraceValidationErrors();
+                    }
                     return db_user;
                 }
                 else {

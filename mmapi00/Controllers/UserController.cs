@@ -59,13 +59,13 @@ namespace mmapi00.Controllers
         [HttpPost]
         public IHttpActionResult PostUserLinkAccount(
             int user_id, string hash,
-            [FromBody]dynamic account)
+            [FromBody]user account)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
             if (account == null) return BadRequest("bad linked account");
-            if (account.google_user_id == null || account.fb_user_id) return BadRequest("missing google_user_id or fb_user_id");
+            if (account.google_user_id == null && account.fb_user_id == null) return BadRequest("missing google_user_id or fb_user_id");
 
-            var db_user = mm_svc.User.Register.LinkAccount(user_id, account.google_user_id, account.fb_user_id);
+            var db_user = mm_svc.User.Register.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }
