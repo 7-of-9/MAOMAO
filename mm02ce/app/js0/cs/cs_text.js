@@ -10,18 +10,18 @@
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
   console.log("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
-  console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()], cs_log_style_info);
+  console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())], cs_log_style_info);
   console.info("%c > document.location.href=" + document.location.href, cs_log_style_info);
-  console.info("%c > mm_app_uuid " + mm_app_uuid(), cs_log_style_info);
+  console.info("%c > mm_app_uuid " + (mm_app_uuid && mm_app_uuid()), cs_log_style_info);
   //document.addEventListener("DOMContentLoaded", function (event)
   {
     // TODO: Try to clear sessionStorage when extension reload
     // FIXME: Use sessionStorage is not stable
     //if (!have_run_text_proc) {
-    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()]) {
+    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())]) {
       //have_run_text_proc = true;
-      console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()], cs_log_style_info);
-      sessionStorage["mm_cs_text_haveFiredDocReady_" + mm_app_uuid()] = document.location.href;
+      console.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())], cs_log_style_info);
+      sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())] = document.location.href;
       console.info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location.href, cs_log_style_info);
       console.info("%c $(document).ready{ajax_get_UrlNlpInfo.complete} -- readyState=" + document.readyState, cs_log_style_info);
 
@@ -112,10 +112,10 @@ $(document).ready(function () {
 function process_text(page_meta) {
 
   // prevent running text processing more than once (see above: $.ready firing more than once on a variety of conditions)
-  console.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()], "background:white; color:orange; font-weight:bold;");
+  console.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())], "background:white; color:orange; font-weight:bold;");
   console.info("%c >> document.location=" + document.location.href, "background:white; color:orange; font-weight:bold;");
-  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()]) {
-    console.info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()] + "]", "background:orange; color:black; font-weight:bold;");
+  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())]) {
+    console.info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())] + "]", "background:orange; color:black; font-weight:bold;");
     if (document.getElementById('maomao-extension-youtube-test')) {
       cslib_test_NextYouTubeVid();
     } else {
@@ -123,7 +123,7 @@ function process_text(page_meta) {
     }
     return;
   }
-  sessionStorage["mm_cs_text_haveRunTextProc_" + mm_app_uuid()] = document.location.href;
+  sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())] = document.location.href;
 
   console.info("%c **** CS TEXT PROCESSING RUNNING... [" + window.location + "] ****", "background: #888; color: #bada55; font-weight:bold; font-size:large;");
   console.info("%c >> sending process_text_start...", "background:blue; color:white; font-weight:bold;");

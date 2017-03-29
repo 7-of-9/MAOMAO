@@ -38,6 +38,7 @@ function getSuggestions(contacts, value) {
   return result.slice(0, 5).map(item => item && item.item);
 }
 
+/* eslint-disable no-param-reassign */
 function renderSuggestion(suggestion, { query }) {
   const suggestionText = `${suggestion.name} ${suggestion.email}`;
   const matches = match(suggestionText, query);
@@ -45,7 +46,13 @@ function renderSuggestion(suggestion, { query }) {
   return (
     <span className="suggestion-content">
       <span className="photo">
-        <img onError={(ev) => { ev.target.src = noImage; }} src={suggestion.image} alt={suggestion.name || suggestion.email} height="40" width="40" />
+        <img
+          onError={(ev) => { ev.target.src = noImage; }}
+          src={suggestion.image}
+          alt={suggestion.name || suggestion.email}
+          height="40"
+          width="40"
+        />
       </span>
       <span className="name">
         {
@@ -61,9 +68,10 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeContact, onChange, suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
-  <div style={{ display: 'inline-block', width: '100%' }}>
-    {
+const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeContact, onChange,
+   suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
+     <div style={{ display: 'inline-block', width: '100%' }}>
+       {
       contacts.slice(0, 3).map((contact) => {
         if (!selectedContacts.map(item => item.email).includes(contact.email)) {
           return (
@@ -75,28 +83,28 @@ const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeCont
         return '';
       })
     }
-  </div>
-  <Autosuggest
-    suggestions={suggestions}
-    onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-    onSuggestionsClearRequested={onSuggestionsClearRequested}
-    getSuggestionValue={getSuggestionValue}
-    renderSuggestion={renderSuggestion}
-    highlightFirstSuggestion
-    inputProps={{
+     </div>
+     <Autosuggest
+       suggestions={suggestions}
+       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+       onSuggestionsClearRequested={onSuggestionsClearRequested}
+       getSuggestionValue={getSuggestionValue}
+       renderSuggestion={renderSuggestion}
+       highlightFirstSuggestion
+       inputProps={{
       placeholder: 'To: type name to search...',
       value,
       onChange,
     }}
-  />
-  <div style={{ display: 'inline-block', width: '100%' }}>
-    {
+     />
+     <div style={{ display: 'inline-block', width: '100%' }}>
+       {
       selectedContacts.map(contact => (
         <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
     }
-  </div>
-</div>;
+     </div>
+   </div>;
 
 GoogleShare.propTypes = {
   value: PropTypes.string,

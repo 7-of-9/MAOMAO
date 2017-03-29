@@ -87,6 +87,14 @@ const fetchContacts = () => {
   return data;
 };
 
+const googleContacts = () => {
+  const data = {
+    type: 'GOOGLE_CONTACTS',
+    payload: {},
+  };
+  return data;
+};
+
 const logout = () => {
   const data = {
     type: 'AUTH_LOGOUT',
@@ -101,6 +109,7 @@ class App extends Component {
     super(props);
     this.onClose = this.onClose.bind(this);
     this.onGoogleLogin = this.onGoogleLogin.bind(this);
+    this.accessGoogleContacts = this.accessGoogleContacts.bind(this);
     this.onLinkedGoogle = this.onLinkedGoogle.bind(this);
     this.onFacebookLogin = this.onFacebookLogin.bind(this);
     this.onLinkedFacebook = this.onLinkedFacebook.bind(this);
@@ -239,6 +248,14 @@ class App extends Component {
 
   onLogout() {
     this.props.dispatch(logout());
+  }
+
+  accessGoogleContacts() {
+    this.notify({
+      title: 'Google Connect',
+      message: 'Please wait in a minute!',
+    });
+    this.props.dispatch(googleContacts());
   }
 
   notify(msg) {
@@ -516,6 +533,7 @@ class App extends Component {
             topic={this.props.topic}
             sendEmail={this.sendEmail}
             changeShareType={this.changeShareType}
+            accessGoogleContacts={this.accessGoogleContacts}
             contacts={this.props.auth && this.props.auth.contacts}
             notify={this.notify}
             closeShare={this.closeShare}

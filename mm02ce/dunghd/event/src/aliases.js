@@ -197,6 +197,16 @@ const getContacts = () => (
   }
 );
 
+const googleContacts = () => (
+  (dispatch) => {
+    // const { auth } = getState();
+    dispatch({
+      type: 'GOOGLE_CONTACTS_PENDING',
+    });
+    // TODO: implement google api
+  }
+);
+
 const notifyUI = data => (
   () => {
     const { title, message, imageUrl } = data.payload;
@@ -209,5 +219,6 @@ export default {
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
   AUTH_LOGOUT: authLogout,
   FETCH_CONTACTS: getContacts,
+  GOOGLE_CONTACTS: googleContacts,
   NOTIFY_MESSAGE: notifyUI,
 };
