@@ -65,7 +65,6 @@ function setIconApp(rawUrl, image, msg, color) {
   setIconText(msg, color);
   if (rawUrl) {
     var url = bglib_remove_hash_url(rawUrl);
-    console.trace('set icon for', url, msg, color, image);
     sessionObservable.icons.set(url, {
       image: image,
       text: msg,
@@ -319,7 +318,6 @@ function handle_cs_doc_event(data, sender) {
 
 function inject_cs(session, tab_id, skip_text) {
   console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
-  console.trace('inject_cs');
   //***
 
   //if (session.hasOwnProperty('injected_cs_timestamp')) {
@@ -391,16 +389,14 @@ function inject_cs(session, tab_id, skip_text) {
                       if (chrome.runtime.lastError) {
                         console.warn(chrome.runtime.lastError);
                       }
-                      console.info('inject file', cs, run_at, result);
+                      // console.info('inject file', cs, run_at, result);
                     });
                   } catch (err) {
                     console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                    console.trace();
                     console.warn(err);
                   }
                 });
                 console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
-                console.trace();
                 if (session != null)
                   session.injected_cs_timestamp = Date.now();
               } else {
@@ -451,11 +447,10 @@ function inject_cs(session, tab_id, skip_text) {
                         if (chrome.runtime.lastError) {
                           console.warn(chrome.runtime.lastError);
                         }
-                        console.info('inject file', cs, run_at, result);
+                        // console.info('inject file', cs, run_at, result);
                       });
                     } catch (err) {
                       console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                      console.trace();
                       console.warn(err);
                     }
                   });

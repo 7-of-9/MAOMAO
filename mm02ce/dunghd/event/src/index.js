@@ -54,7 +54,6 @@ wrapStore(store, { portName: 'maomao-extension' });
 chrome.contextMenus.removeAll();
 
 // NOTE: Handler all browser action events
-/* eslint-disable no-console */
 function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-share':
@@ -63,7 +62,6 @@ function onClickHandler(info) {
           active: true,
           currentWindow: true,
         }, (tabs) => {
-          console.log('tabs', tabs);
           if (tabs != null && tabs.length > 0) {
             let url = '';
             if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
@@ -148,7 +146,6 @@ function onClickHandler(info) {
       }
       break;
     default:
-      console.warn('No processing for this ctx menu event');
   }
 }
 
@@ -159,7 +156,6 @@ function syncImScore(forceSave) {
     active: true,
     currentWindow: true,
   }, (tabs) => {
-    console.log('tabs', tabs);
     if (tabs != null && tabs.length > 0) {
       let url = '';
       const now = new Date().toISOString();
@@ -235,6 +231,14 @@ function initFirebaseApp() {
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       console.warn('... firebase :', user);
+      if (user.providerData) {
+        store.dispatch({
+          type: 'ACCOUNT_CONNECT',
+          payload: {
+            accounts: user.providerData,
+          },
+        });
+      }
     }
   });
 }

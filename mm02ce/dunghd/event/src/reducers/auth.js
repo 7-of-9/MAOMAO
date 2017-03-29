@@ -1,4 +1,3 @@
-// read data from local storage for checking user has login or not
 import { ctxMenuLogin, ctxMenuLogout, md5hash } from './helpers';
 
 const initialState = {
@@ -14,10 +13,14 @@ const initialState = {
   googleUserId: '',
   facebookUserId: '',
   contacts: [],
+  accounts: [],
 };
 
 export default (state = initialState, action, nlp) => {
   switch (action.type) {
+    case 'ACCOUNT_CONNECT': {
+      return Object.assign({}, state, action.payload);
+    }
     case 'PHOTO_NO_IMAGE':
     case 'PHOTO_IMAGE': {
       const email = action.payload.email;
@@ -66,11 +69,19 @@ export default (state = initialState, action, nlp) => {
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
     case 'AUTH_REJECTED':
+      // force to logout out on bg
+      window.userId = -1;
+      window.isGuest = true;
       return Object.assign({}, state, {
         message: action.payload.error.message,
         googleToken: '',
+        googleUserId: '',
         facebookToken: '',
+        facebookUserId: '',
+        contacts: [],
         info: {},
+        userHash: '',
+        userId: -1,
         isPending: false,
         isLogin: false,
       });

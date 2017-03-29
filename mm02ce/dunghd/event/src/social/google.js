@@ -29,7 +29,8 @@ function buildUrlPath(params) {
   return path;
 }
 
-export function checkGoogleAuth(isLinked = false) {
+export function checkGoogleAuth(isLinked) {
+  console.warn('checkGoogleAuth', isLinked, firebase.auth().currentUser);
   const promise = new Promise((resolve, reject) => {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/plus.me');

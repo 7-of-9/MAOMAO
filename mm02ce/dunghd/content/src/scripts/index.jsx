@@ -19,11 +19,19 @@ const proxyStore = new Store({ portName: 'maomao-extension' });
 const anchor = document.createElement('div');
 anchor.id = 'maomao-extension-anchor';
 
+function isInjectAble(url) {
+  const disableUrls = [
+    'maomao-testing.firebaseapp.com', // firebase login
+    'www.facebook.com/sharer.php', // fb share
+    'www.facebook.com/dialog/send', // fb send msg
+    'accounts.google.com', // gg login
+  ];
+  return disableUrls.filter(item => url.indexOf(item) === -1).length === disableUrls.length;
+}
+
 // turn off for firebase auth
 const url = document.URL;
-/* eslint-disable no-console */
-console.log('inject maomao app on url', url);
-if (url.indexOf('maomao-testing.firebaseapp.com') === -1 && url.indexOf('accounts.google.com') === -1) {
+if (isInjectAble(url)) {
  document.body.insertBefore(anchor, document.body.childNodes[0]);
  injectTapEventPlugin();
  // wait for the store to connect to the background page

@@ -10,7 +10,7 @@ import ShareTopic from './ShareTopic';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
 // import FloatingShare from '../share';
-import createUser from '../utils/UserApi';
+import { linkAccount, createUser } from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
 import getCurrentTopic from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
@@ -119,7 +119,10 @@ class App extends Component {
       title: 'Connect with Google',
       message: 'Please wait in a minute!',
     });
-    this.props.dispatch(checkAuth('GOOGLE'), true)
+    this.props.dispatch(checkAuth('GOOGLE', true))
+    .then(() => linkAccount(`${this.props.apiUrl}/user/link?user_id=${this.props.auth.userId}&hash=${this.props.auth.userHash}`, {
+        google_user_id: this.props.auth.googleUserId,
+      }))
     .catch((err) => {
       this.notify({
         title: 'Oops!',
@@ -133,7 +136,10 @@ class App extends Component {
       title: 'Connect with Facebook',
       message: 'Please wait in a minute!',
     });
-    this.props.dispatch(checkAuth('FACEBOOK'), true)
+    this.props.dispatch(checkAuth('FACEBOOK', true))
+    .then(() => linkAccount(`${this.props.apiUrl}/user/link?user_id=${this.props.auth.userId}&hash=${this.props.auth.userHash}`, {
+        fb_user_id: this.props.auth.facebookUserId,
+    }))
     .catch((err) => {
       this.notify({
         title: 'Oops!',

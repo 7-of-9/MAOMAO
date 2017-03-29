@@ -8,7 +8,7 @@ function queryString(obj) {
   return str.join('&');
 }
 
-function createUser(url, user) {
+export function createUser(url, user) {
   return new Promise((resolve, reject) => {
     console.log('Register user with data', user);
     return axios({
@@ -23,4 +23,17 @@ function createUser(url, user) {
   });
 }
 
-export default createUser;
+export function linkAccount(url, account) {
+  return new Promise((resolve, reject) => {
+    console.log('Link user', account);
+    return axios({
+      method: 'post',
+      url,
+      data: queryString(account),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(response => resolve(response))
+      .catch(error => reject(error));
+  });
+}

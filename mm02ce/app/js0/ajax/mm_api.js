@@ -120,6 +120,26 @@ function ajax_put_UrlHistory(user_id, hash, history, errorFn, successFn) {
   });
 }
 
+/**
+ * api/url_link -- post
+ * Tracking im_score for each url by user
+ * @param  number user_id user id
+ * @param  string hash  md5hash for google id or facebook id
+ * @param { google_user_id: number, fb_user_id: number } account
+ * @param function callback_success
+ */
+function ajax_post_UrlLink(user_id, hash, account, errorFn, successFn) {
+  $.ajax(api_base + 'user/link?user_id=' + user_id + '&hash=' + hash, {
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(account),
+    processData: false,
+    dataType: 'json',
+    error: errorFn,
+    success: successFn,
+  });
+}
+
 function remove_hash_url(url) { // remove trailing page anchor # from URL
   var url_ex_hash = url;
   var hash_ndx = url_ex_hash.indexOf('#');

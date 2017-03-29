@@ -84,6 +84,7 @@ class WelcomeModal extends Component {
   }
 
   render() {
+    const networks = this.props.auth.accounts.map(item => item.providerId);
     return (
       <ToggleDisplay hide={this.props.isShareOpen || !this.props.isOpen}>
         <div style={customStyles.overlay}>
@@ -111,12 +112,12 @@ class WelcomeModal extends Component {
                 <CardTitle title="Welcome back!" />
                 <CardActions style={customStyles.cardAction}>
                   { this.props.auth &&
-                    this.props.auth.facebookUserId.length === 0 &&
+                    !networks.includes('facebook.com') &&
                     <RaisedButton
                       onTouchTap={this.props.onLinkedFacebook} label="Facebook Connect"
                     />}
                   { this.props.auth &&
-                    this.props.auth.googleUserId.length === 0 &&
+                    !networks.includes('google.com') &&
                     <RaisedButton onTouchTap={this.props.onLinkedGoogle} label="Google Connect" />}
                   <br />
                   <RaisedButton onTouchTap={this.props.onLogout} label="Logout" />

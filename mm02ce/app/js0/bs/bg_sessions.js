@@ -14,9 +14,9 @@ var userHash = '';
 var NotInjectCSUrls = [];
 
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  console.trace('extension.onMessage');
-  console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
-  console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
+  // console.trace('extension.onMessage');
+  // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
+  // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
     isGuest = false;
     userId = parseInt(message.payload.payload.userId);
@@ -79,12 +79,10 @@ function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 //
 function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
   console.info('%c >>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, session_style_hi);
-  console.trace('checking session for tab', tab);
+  // console.trace('checking session for tab', tab);
 
   var session = null;
   // turn off for guest
-  console.log('isGuest', isGuest);
-  console.log('userId', userId);
   if (isGuest) {
     return session;
   }

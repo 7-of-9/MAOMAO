@@ -1,5 +1,6 @@
 import axios from 'axios';
 import firebase from 'firebase';
+import { batchActions } from 'redux-batched-actions';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
 import { actionCreator, notifyMsg } from './utils';
@@ -8,16 +9,18 @@ const throttledQueue = require('throttled-queue');
 
 const throttle = throttledQueue(10, 1000); // at most make 10 request every second.
 
-/* eslint-disable no-console */
 function logout(auth) {
+  console.warn('logout', auth);
   const promise = new Promise((resolve, reject) => {
     // revoke token
-    if (auth.googleUserId) {
+    if (auth.googleUserId && auth.googleToken) {
       // revoke token for google
       axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${auth.googleToken}`)
         .then(response => console.log('revoke', response))
         .catch(error => console.log('revoke error', error));
-    } else {
+    }
+
+    if (auth.facebookUserId && auth.facebookToken) {
       // revoke token for fb
       axios.delete(`https://graph.facebook.com/${auth.facebookUserId}/permissions?access_token=${auth.facebookToken}`)
         .then(response => console.log('revoke', response))
@@ -36,7 +39,7 @@ function logout(auth) {
     window.userHash = '';
     window.enableTestYoutube = false;
     window.enableXp = false;
-    if (auth.googleUserId) {
+    if (auth.googleUserId && auth.googleToken) {
       chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
@@ -102,8 +105,10 @@ const authLogout = () => (
       });
       return logout(auth)
         .then((data) => {
-          dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }));
-          dispatch(actionCreator('USER_AFTER_LOGOUT'));
+          dispatch(batchActions([
+            actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }),
+            actionCreator('USER_AFTER_LOGOUT'),
+          ]));
         }).catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
     }
     return dispatch(
@@ -120,10 +125,13 @@ const authGoogleLogin = data => (
       dispatch({
         type: 'AUTH_PENDING',
       });
+      console.warn('isLinked', isLinked, data.payload);
       return checkGoogleAuth(isLinked)
         .then((result) => {
-          dispatch(actionCreator('USER_HASH', { userHash: result.googleUserId }));
           dispatch(actionCreator('AUTH_FULFILLED', result));
+          if (!isLinked) {
+            dispatch(actionCreator('USER_HASH', { userHash: result.googleUserId }));
+          }
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
@@ -132,10 +140,11 @@ const authGoogleLogin = data => (
           dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
-    dispatch(actionCreator('USER_HASH', { userHash: auth.googleUserId }));
-    return dispatch(
-      actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, googleToken: auth.googleToken, info: auth.info }),
-    );
+
+    return dispatch(batchActions([
+        actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, googleToken: auth.googleToken, info: auth.info }),
+        actionCreator('USER_HASH', { userHash: auth.googleUserId }),
+      ]));
   }
 );
 
@@ -147,10 +156,13 @@ const authFacebookLogin = data => (
       dispatch({
         type: 'AUTH_PENDING',
       });
+      console.warn('isLinked', isLinked, data.payload);
       return checkFacebookAuth(isLinked)
         .then((result) => {
-          dispatch(actionCreator('USER_HASH', { userHash: result.facebookUserId }));
           dispatch(actionCreator('AUTH_FULFILLED', result));
+          if (!isLinked) {
+            dispatch(actionCreator('USER_HASH', { userHash: result.facebookUserId }));
+          }
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
@@ -159,10 +171,10 @@ const authFacebookLogin = data => (
           dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
-    dispatch(actionCreator('USER_HASH', { userHash: auth.facebookUserId }));
-    return dispatch(
+    return dispatch(batchActions([
       actionCreator('AUTH_FULFILLED', { facebookUserId: auth.facebookUserId, facebookToken: auth.facebookToken, info: auth.info }),
-    );
+      actionCreator('USER_HASH', { userHash: auth.facebookUserId }),
+    ]));
   }
 );
 
