@@ -46,6 +46,11 @@ export default (state = initialState, action, nlp) => {
       return Object.assign({}, state, { isPending: true });
     case 'FETCH_CONTACTS_PENDING':
       return Object.assign({}, state, { isFetchContacts: true });
+    case 'GOOGLE_CONTACTS_FULFILLED' :
+    return Object.assign({}, state, {
+      googleToken: action.payload.googleToken || state.googleToken,
+      googleUserId: action.payload.googleUserId || state.googleUserId,
+    });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info, nlp.records);
       window.setIconApp(window.sessionObservable.activeUrl, 'black', '', window.BG_INACTIVE_COLOR);
@@ -89,6 +94,10 @@ export default (state = initialState, action, nlp) => {
       return Object.assign({}, state, {
          message: action.payload.error.message,
           isFetchContacts: false,
+         });
+    case 'GOOGLE_CONTACTS_REJECTED':
+      return Object.assign({}, state, {
+         message: action.payload.error.message,
          });
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();

@@ -85,7 +85,7 @@ const ShareTopic = enhance(({
        <ShareOptions tld={topic} />
        { type === 'Google' && contacts.length === 0 &&
        <div>
-          You have no google contacts. Click <a onClick={accessGoogleContacts}> here </a> to select goole contacts from your gmail.
+          You have no google contacts. Click <a onClick={accessGoogleContacts}> here </a> to grant permissions to access google contacts.
         </div>
         }
        {type === 'Google' && contacts.length > 0 &&

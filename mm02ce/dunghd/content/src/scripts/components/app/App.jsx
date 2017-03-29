@@ -255,7 +255,20 @@ class App extends Component {
       title: 'Google Connect',
       message: 'Please wait in a minute!',
     });
-    this.props.dispatch(googleContacts());
+    this.props.dispatch(googleContacts())
+      .then(() => {
+        this.notify({
+          title: 'Success',
+          message: 'Loading google data...',
+        });
+        return this.props.dispatch(fetchContacts());
+      })
+      .catch((err) => {
+        this.notify({
+          title: 'Oops!',
+          message: err.message,
+        });
+      });
   }
 
   notify(msg) {

@@ -83,7 +83,6 @@ function downloadPhoto(dispatch, contacts) {
               ...contact,
               image: '',
             }));
-            console.error(err);
           } else {
             dispatch(actionCreator('PHOTO_IMAGE', {
               ...contact,
@@ -198,13 +197,12 @@ const getContacts = () => (
 );
 
 const googleContacts = () => (
-  (dispatch) => {
-    // const { auth } = getState();
-    dispatch({
-      type: 'GOOGLE_CONTACTS_PENDING',
-    });
-    // TODO: implement google api
-  }
+  dispatch => checkGoogleAuth(false)
+      .then((result) => {
+        dispatch(actionCreator('GOOGLE_CONTACTS_FULFILLED', result));
+      }).catch((error) => {
+        dispatch(actionCreator('GOOGLE_CONTACTS_REJECTED', { error }));
+      })
 );
 
 const notifyUI = data => (
