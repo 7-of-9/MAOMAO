@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { compose, onlyUpdateForKeys, pure } from 'recompose';
+import { compose, pure } from 'recompose';
 import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
@@ -603,7 +603,6 @@ App.defaultProps = defaultProps;
 
 const enhance = compose(
   pure,
-  onlyUpdateForKeys(['isOpen', 'auth', 'terms', 'score', 'topic']),
 );
 
 const mapStateToProps = state => ({

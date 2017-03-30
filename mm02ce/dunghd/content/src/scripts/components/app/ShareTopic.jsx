@@ -1,8 +1,9 @@
 import React from 'react';
-import { pure, withState, withHandlers, compose } from 'recompose';
-import PopoutWindow from 'react-popout';
+import { pure, onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
+// import PopoutWindow from 'react-popout';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
+import openUrl from '../utils/popup';
 
 const SITE_URL = 'http://maomao.rocks';
 const FB_APP_ID = '386694335037120';
@@ -45,21 +46,21 @@ const style = {
 
 const selectTopics = terms => terms && terms[0] && terms[0].text;
 
-function closeSendMsgWindow() {
-  console.log('closeSendMsgWindow');
-}
-
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withState('shareOption', 'updateShareOption', 'site'),
   withHandlers({
     shareUrl: props => () => {
       const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
-      return `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
+      const src = `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
+      openUrl(src);
+      props.closeShare();
     },
     sendMsgUrl: props => () => {
       const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
-      return `http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(url)}`;
+      const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(url)}`;
+      openUrl(src);
+      props.closeShare();
     },
     handleChange: props => (emails) => {
       props.updateRecipients(emails);
@@ -84,13 +85,14 @@ const enhance = compose(
     },
   }),
   pure,
+  onlyUpdateForKeys(['contacts', 'code', 'type', 'shareOption']),
 );
 
 const ShareTopic = enhance(({
    enable, type, terms, topic, contacts, code, shareOption,
    handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
    sendEmails, closeShare, accessGoogleContacts }) =>
-     <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
+     <div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
        <button
          onClick={closeShare} className="close_button"
@@ -115,16 +117,18 @@ const ShareTopic = enhance(({
              Share Now!
            </button>
        </ToggleDisplay>
-       <ToggleDisplay if={type === 'Facebook'}>
-         <PopoutWindow url={shareUrl()} title="Post to Facebook">
+       {type === 'Facebook' && shareUrl()}
+       {type === 'FacebookMessenger' && sendMsgUrl()}
+       {/* <ToggleDisplay if={type === 'Facebook'}>
+         <PopoutWindow url={} title="Post to Facebook" containerID="fb-share-popout">
            <div>Loading...</div>
          </PopoutWindow>
-       </ToggleDisplay>
-       <ToggleDisplay if={type === 'FacebookMessenger'}>
-         <PopoutWindow url={sendMsgUrl()} title="Send a message">
-           <div>Loading...{closeSendMsgWindow()}</div>
+       </ToggleDisplay> */}
+       {/* <ToggleDisplay if={type === 'FacebookMessenger'}>
+         <PopoutWindow url={sendMsgUrl()} title="Send a Message" containerID="fb-msg-popout">
+           <div>Loading...</div>
          </PopoutWindow>
-       </ToggleDisplay>
+       </ToggleDisplay> */}
        <ToggleDisplay if={type === 'Link'}>
          <div>
            {SITE_URL}/?code={code[shareOption]}
