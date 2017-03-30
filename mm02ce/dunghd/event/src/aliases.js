@@ -213,22 +213,30 @@ const notifyUI = data => (
   }
 );
 
+/* eslint-disable camelcase */
 const generateShare = data => (
   (dispatch, getState) => {
-    const { auth: { userId, userHash } } = getState();
+    const { auth: { userId, userHash }, code: { sites, topics } } = getState();
     const { data: { url_id, tld_topic_id } } = data.payload;
-    shareTheTopic(userId, userHash, tld_topic_id)
-        .then((result) => {
-          dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, tld_topic_id }));
-        }).catch((error) => {
-          dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
-        });
+    const findUrlCode = sites.find(item => item && item.url_id === url_id);
+    const findTopicCode = topics.find(item => item && item.tld_topic_id === tld_topic_id);
+    if (!findTopicCode) {
+      shareTheTopic(userId, userHash, tld_topic_id)
+          .then((result) => {
+            dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, tld_topic_id }));
+          }).catch((error) => {
+            dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
+          });
+    }
+
+    if (!findUrlCode) {
     shareThisSite(userId, userHash, url_id)
         .then((result) => {
           dispatch(actionCreator('SHARE_URL_SUCCESS', { ...result.data, url_id }));
         }).catch((error) => {
           dispatch(actionCreator('SHARE_URL_ERROR', { error }));
         });
+      }
   }
 );
 

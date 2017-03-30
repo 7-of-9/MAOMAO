@@ -1,8 +1,10 @@
 import React from 'react';
 import { pure, withState, withHandlers, compose } from 'recompose';
 import PopoutWindow from 'react-popout';
+import ToggleDisplay from 'react-toggle-display';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 
+const SITE_URL = 'http://maomao.rocks';
 const FB_APP_ID = '386694335037120';
 const style = {
   container: {
@@ -43,22 +45,35 @@ const style = {
 
 const selectTopics = terms => terms && terms[0] && terms[0].text;
 
-function closeShareWindow() {
-  console.log('closeShareWindow');
+function closeSendMsgWindow() {
+  console.log('closeSendMsgWindow');
 }
 
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
+  withState('shareOption', 'updateShareOption', 'site'),
   withHandlers({
+    shareUrl: props => () => {
+      const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
+      return `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
+    },
+    sendMsgUrl: props => () => {
+      const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
+      return `http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(url)}`;
+    },
     handleChange: props => (emails) => {
       props.updateRecipients(emails);
+    },
+    changeShareOption: props => (val) => {
+      props.updateShareOption(val);
     },
     sendEmails: props => () => {
       if (props.recipients.length) {
         const topic = selectTopics(props.terms);
+        const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
         props.recipients.forEach((item) => {
           // TODO: validate email addr
-          props.sendEmail(item.name, item.email, topic);
+          props.sendEmail(item.name, item.email, topic, url);
         });
       } else {
         props.notify({
@@ -72,9 +87,9 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-   enable, type, terms, topic, contacts,
-   handleChange, changeShareType, sendEmails, closeShare,
-   accessGoogleContacts }) =>
+   enable, type, terms, topic, contacts, code, shareOption,
+   handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
+   sendEmails, closeShare, accessGoogleContacts }) =>
      <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
        <div className="maomao-logo" />
        <button
@@ -84,16 +99,13 @@ const ShareTopic = enhance(({
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
       </h3>
-       <ShareOptions tld={topic} />
-       { type === 'Google' && contacts.length === 0 &&
-       <div>
-          You have no google contacts. Click
-          <button onClick={accessGoogleContacts}> here </button>
-           to grant permissions to access google contacts.
-        </div>
-        }
-       {type === 'Google' && contacts.length > 0 &&
-       <div>
+       <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
+       <ToggleDisplay if={type === 'Google' && contacts.length === 0}>
+         You have no google contacts. Click
+         <button onClick={accessGoogleContacts}> here </button>
+          to grant permissions to access google contacts.
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
          <GoogleShare contacts={contacts} handleChange={handleChange} />
          <button
            style={style.button}
@@ -102,19 +114,22 @@ const ShareTopic = enhance(({
          >
              Share Now!
            </button>
-       </div>
-       }
-       {
-         type === 'Facebook' &&
-         <PopoutWindow url="https://www.facebook.com/sharer.php?u=http://maomao.rocks&hashtag=#maomao&quote=Are you ready to rocks?" title="Post to Facebook">
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'Facebook'}>
+         <PopoutWindow url={shareUrl()} title="Post to Facebook">
            <div>Loading...</div>
          </PopoutWindow>
-       }
-       { type === 'FacebookMessenger' &&
-       <PopoutWindow url={`http://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=http://maomao.rocks&redirect_uri=http://maomao.rocks/`} title="Send a message">
-         <div>Loading...{closeShareWindow()}</div>
-       </PopoutWindow>
-       }
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'FacebookMessenger'}>
+         <PopoutWindow url={sendMsgUrl()} title="Send a message">
+           <div>Loading...{closeSendMsgWindow()}</div>
+         </PopoutWindow>
+       </ToggleDisplay>
+       <ToggleDisplay if={type === 'Link'}>
+         <div>
+           {SITE_URL}/?code={code[shareOption]}
+         </div>
+       </ToggleDisplay>
      </div >,
 );
 export default ShareTopic;

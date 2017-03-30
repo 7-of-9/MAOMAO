@@ -1,5 +1,5 @@
 import React from 'react';
-import { pure, withState, withHandlers, compose } from 'recompose';
+import { pure, compose } from 'recompose';
 import styled from 'styled-components';
 
 /* eslint-disable no-confusing-arrow */
@@ -30,20 +30,14 @@ const style = {
 };
 
 const enhance = compose(
-  withState('active', 'setActive', 'site'),
-  withHandlers({
-    handleChange: props => (val) => {
-      props.setActive(val);
-    },
-  }),
   pure,
 );
 
-const ShareOptions = enhance(({ tld, active, handleChange }) =>
+const ShareOptions = enhance(({ topic, active, onChange }) =>
   <div style={style}>
-    <Option primary={active === 'site'} onClick={() => { handleChange('site'); }} >just this page</Option>
-    { tld && <Option primary={active === 'tld'} onClick={() => { handleChange('tld'); }}>{tld}</Option> }
-    <Option primary={active === 'all'} onClick={() => { handleChange('all'); }}> *.* <br />all my browsing!</Option>
+    <Option primary={active === 'site'} onClick={() => { onChange('site'); }} >just this page</Option>
+    { topic && <Option primary={active === 'topic'} onClick={() => { onChange('topic'); }}>{topic}</Option> }
+    <Option primary={active === 'all'} onClick={() => { onChange('all'); }}> *.* <br />all my browsing!</Option>
   </div>,
 );
 export default ShareOptions;

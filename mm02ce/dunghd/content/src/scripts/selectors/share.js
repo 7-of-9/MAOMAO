@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 
 const getShareUrls = state => state.share;
-const getActiveUrl = () => window.location.href;
+const getActiveUrl = state => state.score.url;
 
 const shareOnUrl = createSelector(
   [getActiveUrl, getShareUrls],
