@@ -220,7 +220,7 @@ const generateShare = data => (
     const { data: { url_id, tld_topic_id } } = data.payload;
     const findUrlCode = sites.find(item => item && item.url_id === url_id);
     const findTopicCode = topics.find(item => item && item.tld_topic_id === tld_topic_id);
-    if (!findTopicCode) {
+    if (!findTopicCode && tld_topic_id) {
       shareTheTopic(userId, userHash, tld_topic_id)
           .then((result) => {
             dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, tld_topic_id }));
@@ -229,7 +229,7 @@ const generateShare = data => (
           });
     }
 
-    if (!findUrlCode) {
+    if (!findUrlCode && url_id) {
     shareThisSite(userId, userHash, url_id)
         .then((result) => {
           dispatch(actionCreator('SHARE_URL_SUCCESS', { ...result.data, url_id }));
