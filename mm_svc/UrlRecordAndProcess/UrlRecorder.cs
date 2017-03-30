@@ -14,7 +14,7 @@ namespace mm_svc
         //
         // Initial call: records URL w/ single url title term
         //
-        public static UrlInfo.UrlParent RecordUrl(string href, string raw_text, out long? url_id)
+        public static UrlInfo.UrlParent RecordUrl(string href, string raw_text, out long? url_id, out long? tld_topic_id)
         {
             url_id = null;
 
@@ -55,7 +55,7 @@ namespace mm_svc
             List<UrlInfo.UrlParent> topics = null;
             List<UrlInfo.UrlParent> suggestions = null;
             UrlInfo.UrlParent url_title_term;
-            UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
+            UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term, out tld_topic_id);
 
             url_id = db_url.id;
             return url_title_term;

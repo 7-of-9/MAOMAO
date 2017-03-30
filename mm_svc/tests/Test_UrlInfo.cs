@@ -16,8 +16,9 @@ namespace tests
         {
             var topics = new List<UrlInfo.UrlParent>();
             var suggestions = new List<UrlInfo.UrlParent>();
+            long? tld_topic_id;
             UrlInfo.UrlParent url_title_term = null;
-            UrlInfo.GetFilteredTopicsAndSuggestions(7807, out topics, out suggestions, out url_title_term);
+            UrlInfo.GetFilteredTopicsAndSuggestions(7807, out topics, out suggestions, out url_title_term, out tld_topic_id);
         }
     }
 }

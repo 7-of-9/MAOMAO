@@ -42,12 +42,14 @@ namespace mmapi00.Controllers
             Stopwatch sw = new Stopwatch(); sw.Start();
 
             long? url_id;
-            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id);
+            long? tld_topic_id;
+            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id, out tld_topic_id);
 
             var history_id = mm_svc.User.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
 
             return Ok( new {
                     url_id = url_id,
+                    tld_topic_id = tld_topic_id,
                  tld_topic = tld_topic.term_name,
                         ms = sw.ElapsedMilliseconds,
             });

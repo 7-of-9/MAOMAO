@@ -37,7 +37,8 @@ namespace mm_svc
         public static void GetFilteredTopicsAndSuggestions(long url_id,
             out List<UrlInfo.UrlParent> ret_topics,
             out List<UrlInfo.UrlParent> ret_suggested,
-            out UrlInfo.UrlParent ret_tld_title_term
+            out UrlInfo.UrlParent ret_tld_title_term,
+            out long? tld_topic_id
             )
         {
             using (var db = mm02Entities.Create()) {
@@ -66,6 +67,7 @@ namespace mm_svc
                     dbg_info = $"{p2.term} -> S={p2.S?.ToString("0.00000")}"
                 }).ToList();
 
+                tld_topic_id = tld_title_term?.term.id;
                 ret_tld_title_term = new UrlInfo.UrlParent() {
                    term_name = tld_title_term?.term.name,
                     is_topic = false,

@@ -15,10 +15,11 @@ namespace tests
         public void RecordUrl_Test0()
         {
             long? url_id;
-            var tld_title0 = UrlRecorder.RecordUrl("blah", "blah", out url_id);
+            long? tld_topic_id;
+            var tld_title0 = UrlRecorder.RecordUrl("blah", "blah", out url_id, out tld_topic_id);
 
-            var tld_title2 = UrlRecorder.RecordUrl("www.blahblah.com.xyz", "test text", out url_id);
-            var tld_title1 = UrlRecorder.RecordUrl("www.youtube.com", "test text", out url_id);
+            var tld_title2 = UrlRecorder.RecordUrl("www.blahblah.com.xyz", "test text", out url_id, out tld_topic_id);
+            var tld_title1 = UrlRecorder.RecordUrl("www.youtube.com", "test text", out url_id, out tld_topic_id);
         }
     }
 }

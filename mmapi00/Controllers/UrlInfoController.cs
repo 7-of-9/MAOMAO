@@ -68,9 +68,10 @@ namespace mmapi00.Controllers
 
             var topics = new List<mm_svc.UrlInfo.UrlParent>();
             var suggestions = new List<mm_svc.UrlInfo.UrlParent>();
+            long? tld_topic_id;
             mm_svc.UrlInfo.UrlParent url_title_term = null;
             if (db_url != null)
-                mm_svc.UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term);
+                mm_svc.UrlInfo.GetFilteredTopicsAndSuggestions(db_url.id, out topics, out suggestions, out url_title_term, out tld_topic_id);
 
             return Ok( new { is_known = db_url != null,
                       has_calais_info = db_url != null && db_url.calais_as_of_utc != null,
