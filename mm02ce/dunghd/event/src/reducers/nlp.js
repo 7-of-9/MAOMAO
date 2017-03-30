@@ -12,6 +12,8 @@ const MIN_NSS = 10;
 
 export default (nlp = initialState, action, auth) => {
   switch (action.type) {
+    case 'LOGOUT_FULFILLED':
+      return initialState;
     case 'IM_SAVE_SUCCESS': {
       const url = action.payload.url;
       let score = 'N/A';

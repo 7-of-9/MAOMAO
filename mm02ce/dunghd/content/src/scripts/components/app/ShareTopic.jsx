@@ -72,7 +72,9 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-   enable, type, terms, topic, contacts, handleChange, changeShareType, sendEmails, closeShare, accessGoogleContacts }) =>
+   enable, type, terms, topic, contacts,
+   handleChange, changeShareType, sendEmails, closeShare,
+   accessGoogleContacts }) =>
      <div style={Object.assign({}, style.container, { display: enable ? '' : 'none' })}>
        <div className="maomao-logo" />
        <button
@@ -85,20 +87,22 @@ const ShareTopic = enhance(({
        <ShareOptions tld={topic} />
        { type === 'Google' && contacts.length === 0 &&
        <div>
-          You have no google contacts. Click <a onClick={accessGoogleContacts}> here </a> to grant permissions to access google contacts.
+          You have no google contacts. Click
+          <button onClick={accessGoogleContacts}> here </button>
+           to grant permissions to access google contacts.
         </div>
         }
        {type === 'Google' && contacts.length > 0 &&
-         <div>
-           <GoogleShare contacts={contacts} handleChange={handleChange} />
-           <button
-             style={style.button}
-             className="share-button"
-             onClick={sendEmails}
-           >
+       <div>
+         <GoogleShare contacts={contacts} handleChange={handleChange} />
+         <button
+           style={style.button}
+           className="share-button"
+           onClick={sendEmails}
+         >
              Share Now!
            </button>
-         </div>
+       </div>
        }
        {
          type === 'Facebook' &&
