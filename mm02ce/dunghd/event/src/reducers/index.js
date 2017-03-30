@@ -4,6 +4,7 @@ import share from './share';
 import score from './score';
 import nlp from './nlp';
 import icon from './icon';
+import code from './code';
 
 export default function reducer(state = {}, action) {
     return {
@@ -12,6 +13,7 @@ export default function reducer(state = {}, action) {
         modal: modal(state.modal, action),
         share: share(state.share, action),
         score: score(state.score, action),
+        code: code(state.code, action),
         icon: icon(state.icon, action, state.auth, state.nlp),
     };
 }

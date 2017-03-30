@@ -190,6 +190,12 @@ class App extends Component {
             userId,
           },
         });
+        this.props.dispatch({
+          type: 'PRELOAD_SHARE_ALL',
+          payload: {
+            userId,
+          },
+        });
       })
       .catch((err) => {
         this.notify({
@@ -227,6 +233,12 @@ class App extends Component {
       }
       this.props.dispatch({
         type: 'USER_AFTER_LOGIN',
+        payload: {
+          userId,
+        },
+      });
+      this.props.dispatch({
+        type: 'PRELOAD_SHARE_ALL',
         payload: {
           userId,
         },

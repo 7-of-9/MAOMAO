@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import { batchActions } from 'redux-batched-actions';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
+import { shareAll, shareThisSite, shareTheTopic } from './sharelink';
 import { actionCreator, notifyMsg } from './utils';
 
 const throttledQueue = require('throttled-queue');
@@ -212,11 +213,45 @@ const notifyUI = data => (
   }
 );
 
+const generateShare = data => (
+  (dispatch, getState) => {
+    const { auth: { userId, userHash } } = getState();
+    const { data: { url_id, tld_topic_id } } = data.payload;
+    shareTheTopic(userId, userHash, tld_topic_id)
+        .then((result) => {
+          dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, tld_topic_id }));
+        }).catch((error) => {
+          dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
+        });
+    shareThisSite(userId, userHash, url_id)
+        .then((result) => {
+          dispatch(actionCreator('SHARE_URL_SUCCESS', { ...result.data, url_id }));
+        }).catch((error) => {
+          dispatch(actionCreator('SHARE_URL_ERROR', { error }));
+        });
+  }
+);
+
+const generateShareAll = data => (
+  (dispatch, getState) => {
+    const { userId } = data.payload;
+    const { auth: { userHash } } = getState();
+    shareAll(userId, userHash)
+        .then((result) => {
+          dispatch(actionCreator('SHARE_ALL_SUCCESS', result.data));
+        }).catch((error) => {
+          dispatch(actionCreator('SHARE_ALL_ERROR', { error }));
+        });
+  }
+);
+
 export default {
   AUTH_LOGIN_GOOGLE: authGoogleLogin,
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
   AUTH_LOGOUT: authLogout,
   FETCH_CONTACTS: getContacts,
   GOOGLE_CONTACTS: googleContacts,
+  PRELOAD_SHARE: generateShare,
+  PRELOAD_SHARE_ALL: generateShareAll,
   NOTIFY_MESSAGE: notifyUI,
 };
