@@ -183,8 +183,8 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 // MESSAGE HANDLING :: master callback from content script
 //
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
-  // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
+  console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
+  console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   var session;
 
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {

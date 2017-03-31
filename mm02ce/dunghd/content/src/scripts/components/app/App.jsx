@@ -579,7 +579,7 @@ class App extends Component {
               && this.props.icon.isEnableIM
             }
           >
-            <Score imscoreByUrl={this.imscoreByUrl} score={this.props.score} />
+            <Score score={this.props.score} />
           </ToggleDisplay>
           <ToggleDisplay
             if={

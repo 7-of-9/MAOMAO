@@ -109,7 +109,7 @@ window.onload = function(e) { sendEvent("onload", "WINDOW", document.location); 
 // document events
 //
 function sendEvent(event, type, value) {
-    //console.log("sendEvent: " + event + "," + value);
+    // console.warn('sendEvent', event, type, value);
     //if (chrome.extension != null) chrome.extension.sendRequest({ eventName: event, eventValue: value });
 
     var msg = { "doc_event": true, "type": type, "eventName": event, "eventValue": value };
@@ -134,6 +134,7 @@ function handleEvent(event, type, validator) {
             return;
         }
     }
+    // console.warn('handleEvent', event, type);
     var timerId = timers[type];
     var eventInProgress = (timerId > 0);
     if (eventInProgress) {
@@ -146,6 +147,7 @@ function handleEvent(event, type, validator) {
 }
 
 function listenAndCoalesce(target, type, validator) {
+    // console.warn('listenAndCoalesce', target, type);
     target.addEventListener(type, function(event) {
         handleEvent(event, type, validator);
     }, true);
@@ -226,7 +228,7 @@ function cslib_errorStack(stackframes) {
     var stringifiedStack = stackframes.map(function(sf) {
         return sf.toString();
     }).join('\n');
-    console.log('error stack',stringifiedStack);
+    console.warn('error stack',stringifiedStack);
 }
 
 function cslib_errBack(err) {

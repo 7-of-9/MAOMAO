@@ -1,7 +1,6 @@
-// import React, { Component, PropTypes } from 'react';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import { pure } from 'recompose';
+import { pure, onlyUpdateForKeys, compose } from 'recompose';
 import moment from 'moment';
 
 const style = {
@@ -23,11 +22,24 @@ const style = {
   },
 };
 
-function lastSave(score) {
-  const url = score.url;
+const propTypes = {
+  score: PropTypes.object,
+};
+
+const defaultProps = {
+  score: {
+    url: '',
+    histories: [],
+    time_on_tab: 0,
+    audible_pings: 0,
+    im_score: 0,
+  },
+};
+
+function lastSave(url, histories) {
   let message = '';
-  if (score.histories.length) {
-    const hasSuccessRecord = Array.prototype.find.call(score.histories,
+  if (histories.length) {
+    const hasSuccessRecord = Array.prototype.find.call(histories,
       item => String(item.url) === String(url) && item.history && item.history.result);
     if (hasSuccessRecord) {
       message = `Last saved ${moment(hasSuccessRecord.saveAt).fromNow()}`;
@@ -36,19 +48,30 @@ function lastSave(score) {
   return message;
 }
 
-const Score = pure(({ score }) =>
-  <Card className="blur" style={style.card}>
-    <CardHeader
-      style={style.header}
-      title={score.im_score}
-      actAsExpander
-      showExpandableButton
-    />
-    <CardText style={style.text} expandable>
-      Time on tab: {moment.duration(score.time_on_tab).humanize()}<br />
-      Ping audible: {score.audible_pings}<br />
-      {lastSave(score)}
-    </CardText>
-  </Card>,
+/* eslint-disable camelcase */
+function Score({ score: { url, histories, im_score, time_on_tab, audible_pings } }) {
+  return (
+    <Card className="blur" style={style.card}>
+      <CardHeader
+        style={style.header}
+        title={im_score}
+        actAsExpander
+        showExpandableButton
+      />
+      <CardText style={style.text} expandable>
+      Time on tab: {moment.duration(time_on_tab).humanize()}<br />
+      Ping audible: {audible_pings}<br />
+        {lastSave(url, histories)}
+      </CardText>
+    </Card>);
+}
+
+Score.propTypes = propTypes;
+Score.defaultProps = defaultProps;
+
+const enhance = compose(
+  pure,
+  onlyUpdateForKeys(['score']),
 );
-export default Score;
+
+export default enhance(Score);
