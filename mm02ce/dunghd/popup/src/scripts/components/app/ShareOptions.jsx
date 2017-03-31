@@ -8,13 +8,11 @@ const Option = styled.button`
   background-color: ${props => props.primary ? '#0084ff' : '#9e9e9e'};
   color: ${props => props.primary ? '#fff' : '#000'} ;
   width: fit-content;
-  min-width: 100px;
-  height: 50px;
-  font-size: 14px;
+  height: 40px;
+  margin: 0 5px;
+  text-align: center;
   border: ${props => props.primary ? '1px solid #607d8b' : '0'};
   border-radius: 10px;
-  text-align: center;
-  margin: 0 10px !important;
   &:hover {
     cursor: pointer;
     background: #dedede;

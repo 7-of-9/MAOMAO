@@ -103,14 +103,7 @@ export default (state = initialState, action, nlp) => {
       ctxMenuLogout();
       // TODO: clear all sessions on bg and tracking tab
       window.setIconApp('', 'gray', '', window.BG_INACTIVE_COLOR);
-      return Object.assign({}, state, {
-        message: 'user has been logout',
-        googleToken: '',
-        facebookToken: '',
-        info: action.payload.info,
-        isPending: false,
-        isLogin: false,
-      });
+      return initialState;
     case 'LOGOUT_REJECTED':
       return Object.assign({}, state, {
         message: action.payload.error.message,
