@@ -249,6 +249,14 @@ window.onload = () => {
     store.dispatch({
       type: 'AUTO_LOGIN',
     });
+    store.dispatch({
+      type: 'RESET_SETTINGS',
+      payload: {
+        isEnableIM: window.enableImscore,
+        isEnableXp: window.enableXp,
+        isYoutubeTest: window.enableTestYoutube,
+      },
+    });
     syncImScore(false);
   }, 1000);
 };

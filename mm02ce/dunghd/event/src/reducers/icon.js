@@ -20,6 +20,9 @@ export default (state = initialState, action, auth, nlp) => {
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
 
+    case 'RESET_SETTINGS':
+      return Object.assign({}, state, action.payload);
+
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
