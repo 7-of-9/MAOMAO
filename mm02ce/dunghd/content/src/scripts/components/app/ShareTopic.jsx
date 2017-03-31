@@ -119,16 +119,6 @@ const ShareTopic = enhance(({
        </ToggleDisplay>
        {type === 'Facebook' && shareUrl()}
        {type === 'FacebookMessenger' && sendMsgUrl()}
-       {/* <ToggleDisplay if={type === 'Facebook'}>
-         <PopoutWindow url={} title="Post to Facebook" containerID="fb-share-popout">
-           <div>Loading...</div>
-         </PopoutWindow>
-       </ToggleDisplay> */}
-       {/* <ToggleDisplay if={type === 'FacebookMessenger'}>
-         <PopoutWindow url={sendMsgUrl()} title="Send a Message" containerID="fb-msg-popout">
-           <div>Loading...</div>
-         </PopoutWindow>
-       </ToggleDisplay> */}
        <ToggleDisplay if={type === 'Link'}>
          <div>
            {SITE_URL}/?code={code[shareOption]}

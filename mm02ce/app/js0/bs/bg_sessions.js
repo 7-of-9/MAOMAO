@@ -122,7 +122,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
-        console.error(error);
+        StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
         if(NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
           NotInjectCSUrls.push(url_ex_hash);
         }
@@ -163,7 +163,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
-        console.error(error);
+        StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
         if(NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
           NotInjectCSUrls.push(url_ex_hash);
         }

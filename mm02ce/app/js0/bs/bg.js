@@ -405,7 +405,7 @@ function inject_cs(session, tab_id, skip_text) {
             }
           });
         }, function (error) {
-          console.error(error);
+          StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
           if(NotInjectCSUrls.indexOf(tab.url) === -1) {
             NotInjectCSUrls.push(tab.url);
           }
@@ -463,7 +463,7 @@ function inject_cs(session, tab_id, skip_text) {
               }
             });
           }, function (error) {
-            console.error(error);
+            StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
             if(NotInjectCSUrls.indexOf(tab.url) === -1) {
               NotInjectCSUrls.push(tab.url);
             }
