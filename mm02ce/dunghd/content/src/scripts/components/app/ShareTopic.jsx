@@ -97,7 +97,12 @@ const ShareTopic = enhance(({
        <button
          onClick={closeShare} className="close_button"
        />
-       <Toolbar active={type} onChange={changeShareType} />
+       <Toolbar
+         active={type}
+         onChange={changeShareType}
+         onShare={shareUrl}
+         onSendMsg={sendMsgUrl}
+       />
        <h3 style={style.heading}>
         Share <span style={style.topic}>{selectTopics(terms)}</span> with:
       </h3>
@@ -117,8 +122,6 @@ const ShareTopic = enhance(({
              Share Now!
            </button>
        </ToggleDisplay>
-       {type === 'Facebook' && shareUrl()}
-       {type === 'FacebookMessenger' && sendMsgUrl()}
        <ToggleDisplay if={type === 'Link'}>
          <div>
            {SITE_URL}/{code[shareOption]}

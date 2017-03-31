@@ -35,11 +35,11 @@ const enhance = compose(
   pure,
 );
 
-const Toolbar = enhance(({ active, onChange }) =>
+const Toolbar = enhance(({ active, onChange, onShare, onSendMsg }) =>
   <div style={style.toolbar}>
     <GoogleButton primary={active === 'Google'} onClick={() => onChange('Google')} />
-    <FacebookButton primary={active === 'Facebook'} onClick={() => onChange('Facebook')} />
-    <FacebookMessengerButton primary={active === 'FacebookMessenger'} onClick={() => onChange('FacebookMessenger')} />
+    <FacebookButton primary={active === 'Facebook'} onClick={onShare} />
+    <FacebookMessengerButton primary={active === 'FacebookMessenger'} onClick={onSendMsg} />
     <LinkButton primary={active === 'Link'} onClick={() => onChange('Link')} />
   </div>,
 );
