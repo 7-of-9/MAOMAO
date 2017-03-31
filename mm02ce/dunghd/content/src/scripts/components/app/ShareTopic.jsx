@@ -51,13 +51,13 @@ const enhance = compose(
   withState('shareOption', 'updateShareOption', 'site'),
   withHandlers({
     shareUrl: props => () => {
-      const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
+      const url = `${SITE_URL}/${props.code[props.shareOption]}`;
       const src = `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
       openUrl(src);
       props.closeShare();
     },
     sendMsgUrl: props => () => {
-      const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
+      const url = `${SITE_URL}/${props.code[props.shareOption]}`;
       const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(url)}`;
       openUrl(src);
       props.closeShare();
@@ -71,7 +71,7 @@ const enhance = compose(
     sendEmails: props => () => {
       if (props.recipients.length) {
         const topic = selectTopics(props.terms);
-        const url = `${SITE_URL}?code=${props.code[props.shareOption]}`;
+        const url = `${SITE_URL}/${props.code[props.shareOption]}`;
         props.recipients.forEach((item) => {
           // TODO: validate email addr
           props.sendEmail(item.name, item.email, topic, url);
@@ -121,7 +121,7 @@ const ShareTopic = enhance(({
        {type === 'FacebookMessenger' && sendMsgUrl()}
        <ToggleDisplay if={type === 'Link'}>
          <div>
-           {SITE_URL}/?code={code[shareOption]}
+           {SITE_URL}/{code[shareOption]}
          </div>
        </ToggleDisplay>
      </div >,

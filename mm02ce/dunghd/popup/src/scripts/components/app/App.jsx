@@ -108,14 +108,14 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
               />
               <FacebookButton
                 onClick={() => {
-                  const shareUrl = `${SITE_URL}?code=${getLink()}`;
+                  const shareUrl = `${SITE_URL}/${getLink()}`;
                   const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
                   openUrl(src);
                 }}
               />
               <FacebookMessengerButton
                 onClick={() => {
-                  const shareUrl = `${SITE_URL}?code=${getLink()}`;
+                  const shareUrl = `${SITE_URL}/${getLink()}`;
                   const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
                   openUrl(src);
                 }}
