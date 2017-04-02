@@ -111,6 +111,12 @@ if (!window.Intl) {
   render(translationMessages);
 }
 
+if (process.env.NODE_ENV !== 'production') {
+  const { whyDidYouUpdate } = require('why-did-you-update'); // eslint-disable-line global-require
+  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ });
+}
+
+
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,
 // we do not want it installed

@@ -217,6 +217,7 @@
     "intl": "1.2.5",
     "invariant": "2.2.2",
     "ip": "1.1.4",
+    "localforage": "^1.5.0",
     "lodash": "^4.17.4",
     "masonry-layout": "^4.1.1",
     "minimist": "1.2.0",
@@ -241,7 +242,13 @@
     "redux-immutable": "3.0.8",
     "redux-infinite-scroll": "^1.0.9",
     "redux-observable": "^0.13.0",
+    "redux-persist": "^4.6.0",
+    "redux-persist-immutable": "^4.2.0",
+    "redux-persist-transform-immutable": "^4.2.0",
     "redux-saga": "^0.14.3",
+    "redux-storage": "^4.1.2",
+    "redux-storage-engine-localstorage": "^1.1.4",
+    "redux-storage-merger-immutablejs": "^1.0.5",
     "reselect": "2.5.4",
     "rxjs": "^5.1.1",
     "sanitize.css": "4.1.0",
@@ -299,6 +306,7 @@
     "url-loader": "0.5.7",
     "webpack": "2.2.0-rc.3",
     "webpack-dev-middleware": "1.9.0",
-    "webpack-hot-middleware": "2.15.0"
+    "webpack-hot-middleware": "2.15.0",
+    "why-did-you-update": "^0.0.8"
   }
 }

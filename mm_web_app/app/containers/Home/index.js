@@ -76,7 +76,10 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
       id = query.user_id;
       this.props.dispatch(switchUser(id));
     }
-    this.props.dispatch(userHistory(id));
+
+    if (id > 0) {
+      this.props.dispatch(userHistory(id));
+    }
   }
 
   onInstallSucess() {
@@ -141,7 +144,6 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
       navPath = currentTopic && currentTopic.term_name;
     }
     const currentUrls = selectUrls(currentTopic.url_ids, urls);
-    console.log('termId, currentTermId', termId, currentTermId);
     return (
       <div style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
@@ -195,11 +197,9 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     changeTerm: (termId) => {
-      console.log('changeTerm', termId);
       dispatch(changeTerm(termId));
     },
     changeSubTerm: (termId) => {
-      console.log('changeSubTerm', termId);
       dispatch(changeSubTerm(termId));
     },
     dispatch,

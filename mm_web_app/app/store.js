@@ -1,8 +1,11 @@
 /**
  * Create the store with asynchronously loaded reducers
  */
-
 import { createStore, applyMiddleware, compose } from 'redux';
+import { autoRehydrate, persistStore } from 'redux-persist';
+// import { persistStore } from 'redux-persist-immutable';
+// import immutableTransform from 'redux-persist-transform-immutable';
+import * as localForage from 'localforage';
 import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
@@ -21,6 +24,7 @@ export default function configureStore(initialState = {}, history) {
 
   const enhancers = [
     applyMiddleware(...middlewares),
+    autoRehydrate(),
   ];
 
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
@@ -37,6 +41,13 @@ export default function configureStore(initialState = {}, history) {
     fromJS(initialState),
     composeEnhancers(...enhancers)
   );
+  // begin periodically persisting the store
+  persistStore(store, {
+    storage: localForage,
+    // transforms: [immutableTransform()],
+  }, () => {
+    console.log('rehydration complete');
+  });
 
   // Extensions
   store.runSaga = sagaMiddleware.run;

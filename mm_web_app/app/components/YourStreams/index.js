@@ -48,15 +48,13 @@ function YourStreams({ breadcrumbs, topics, activeTermId, change }) {
     termName = breadcrumbs[breadcrumbs.length - 1].termName;
     termUrls = breadcrumbs[breadcrumbs.length - 1].termUrls;
   }
+
   let activeId = activeTermId;
   if (activeId === -1) {
       // set active to first term_id
     activeId = (topics && topics[0] && topics[0].term_id) || -1;
   }
-  console.log('parentId', parentId);
-  console.log('rootId', rootId);
-  console.log('activeId', activeId);
-  console.log('termName', termName);
+
   if (topics && topics.length) {
     const sortedTopicByUrls = _.reverse(_.sortBy(topics, [(topic) => topic.url_ids.length]));
     _.forEach(sortedTopicByUrls, (topic) => {
