@@ -8,7 +8,7 @@ import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
 import { processUrl, openUrl } from './utils';
 
-const SITE_URL = 'http://maomao.rocks';
+const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
 const propTypes = {

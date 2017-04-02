@@ -5,7 +5,7 @@ import ToggleDisplay from 'react-toggle-display';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 
-const SITE_URL = 'http://maomao.rocks';
+const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 const style = {
   container: {

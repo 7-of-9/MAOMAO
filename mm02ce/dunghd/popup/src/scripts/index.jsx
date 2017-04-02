@@ -5,6 +5,13 @@ import { Provider } from 'react-redux';
 import StackTrace from 'stacktrace-js';
 import App from './components/app/App';
 
+/* eslint-disable */
+if (process.env.NODE_ENV !== 'production') {
+  const {whyDidYouUpdate} = require('why-did-you-update')
+  whyDidYouUpdate(React)
+}
+/* eslint-enable */
+
 /* eslint-disable no-alert, no-console */
 // ERROR handler
 const errBack = (err) => { console.log(err.message); };
