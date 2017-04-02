@@ -16,7 +16,7 @@ function* googleConnect(info) {
     avatar: info.profileObj.imageUrl,
     google_user_id: info.googleId,
   };
-  const apiUrl = `${MAOMAO_API_URL}users/google`;
+  const apiUrl = `${MAOMAO_API_URL}user/google`;
   try {
     const { data } = yield call(axios, {
       method: 'post',
@@ -26,8 +26,9 @@ function* googleConnect(info) {
       },
       data: user,
     });
-    login(data.id, data.email);
-    const userData = Object.assign({}, data, { userHash: md5hash(info.googleId) });
+    const userHash = md5hash(info.googleId);
+    login(data.id, data.email, userHash);
+    const userData = Object.assign({}, data, { userHash });
     yield put(googleConnectLoaded(userData));
     yield put(userHistory(userData.id));
   } catch (err) {

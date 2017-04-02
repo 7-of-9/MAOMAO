@@ -11,7 +11,7 @@
  */
 
 import { fromJS } from 'immutable';
-import { userId, userEmail } from 'utils/simpleAuth';
+import { userId, userEmail, userHash } from 'utils/simpleAuth';
 import {
   SWITCH_USER,
   CLEAN_SEARCH_RESULT,
@@ -48,6 +48,7 @@ const initialGoogleConnectState = fromJS({
   user: {
     id: userId(),
     email: userEmail(),
+    userHash: userHash(),
   },
 });
 

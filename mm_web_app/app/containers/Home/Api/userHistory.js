@@ -6,7 +6,7 @@ import { userHistoryLoaded, userHistoryLoadingError } from 'containers/App/actio
 import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 function* getUserHistory(userId, userHash) {
-  const apiUrl = `${MAOMAO_API_URL}users/home?user_id=${userId}&hash=${userHash}`;
+  const apiUrl = `${MAOMAO_API_URL}user/home?user_id=${userId}&hash=${userHash}`;
   try {
     const { data } = yield call(axios, {
       method: 'get',
@@ -24,5 +24,6 @@ function* getUserHistory(userId, userHash) {
 export function* userHistory() {
   const data = yield select(makeSelectGoogleConnect());
   const { user } = data.toJS();
-  yield call(getUserHistory, user.id);
+  console.warn('user', user);
+  yield call(getUserHistory, user.id, user.userHash);
 }
