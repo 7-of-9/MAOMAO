@@ -3,14 +3,16 @@
  */
 import { createStore, applyMiddleware, compose } from 'redux';
 import * as storage from 'redux-storage';
-import createEngine from 'redux-storage-engine-localstorage';
+import createLocalStorageEngine from 'redux-storage-engine-localstorage';
+import debounce from 'redux-storage-decorator-debounce';
 import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
-const engine = createEngine('mm-save-key');
+const localStorageEngine = createLocalStorageEngine('mm-web-app');
+const engine = debounce(localStorageEngine, 1500);
 
 export default function configureStore(initialState = {}, history) {
   // Create the store with two middlewares
@@ -57,6 +59,11 @@ export default function configureStore(initialState = {}, history) {
       });
     });
   }
+
+  const load = storage.createLoader(engine);
+  load(store)
+      .then((newState) => console.log('Loaded state:', newState))
+      .catch(() => console.log('Failed to load previous state'));
 
   return store;
 }

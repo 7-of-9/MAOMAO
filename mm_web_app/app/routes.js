@@ -59,7 +59,15 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
-      path: '/',
+      path: '/hiring',
+      name: 'hiring',
+      getComponent(location, cb) {
+        import('containers/Hiring')
+          .then(loadModule(cb))
+          .catch(errorLoading);
+      },
+    }, {
+      path: '/*',
       name: 'home',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
@@ -77,14 +85,6 @@ export default function createRoutes(store) {
         });
 
         importModules.catch(errorLoading);
-      },
-    }, {
-      path: '/hiring',
-      name: 'hiring',
-      getComponent(location, cb) {
-        import('containers/Hiring')
-          .then(loadModule(cb))
-          .catch(errorLoading);
       },
     }, {
       path: '*',

@@ -54,8 +54,9 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
         }
           {isLogin() && <Logout
             onLogout={() => {
-              logout();
-              window.location.href = '/';
+              logout(() => {
+                window.location.href = '/';
+              });
             }}
           /> }
           <DiscoveryButton />

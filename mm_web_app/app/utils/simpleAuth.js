@@ -19,11 +19,15 @@ export function login(id, email, hash, cb) {
 
 /**
  * Logout and clear user information
+ * @param  function cb
  */
-export function logout() {
+export function logout(cb) {
   localStorage.setItem(USER_ID, -1);
   localStorage.setItem(USER_EMAIL, '');
   localStorage.setItem(USER_HASH, '');
+  if (cb) {
+    cb();
+  }
 }
 
 /**
