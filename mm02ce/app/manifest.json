@@ -1,6 +1,6 @@
 {
   "name": "mm02ce",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "maomao demo",
   "background": {
     "page": "bg.html"

@@ -2,6 +2,7 @@
  * Create the store with asynchronously loaded reducers
  */
 import { createStore, applyMiddleware, compose } from 'redux';
+import logger from 'redux-logger';
 import * as storage from 'redux-storage';
 import createLocalStorageEngine from 'redux-storage-engine-localstorage';
 import debounce from 'redux-storage-decorator-debounce';
@@ -22,6 +23,7 @@ export default function configureStore(initialState = {}, history) {
     sagaMiddleware,
     routerMiddleware(history),
     storage.createMiddleware(engine),
+    logger,
   ];
 
   const enhancers = [
