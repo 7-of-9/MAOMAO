@@ -5,6 +5,8 @@
  */
 
 import {
+  LOGOUT,
+  RESTORE,
   SWITCH_USER,
   CLEAN_SEARCH_RESULT,
   USER_HISTORY,
@@ -36,9 +38,22 @@ export function cleanSearchResult() {
   };
 }
 
+export function logoutUser() {
+  return {
+    type: LOGOUT,
+  };
+}
+
 export function switchUser(data) {
   return {
     type: SWITCH_USER,
+    data,
+  };
+}
+
+export function restore(data) {
+  return {
+    type: RESTORE,
     data,
   };
 }

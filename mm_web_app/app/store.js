@@ -9,17 +9,14 @@ import debounce from 'redux-storage-decorator-debounce';
 import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
+import { restore } from 'containers/App/actions';
 import createReducer from './reducers';
-import { hasInstalledExtension } from 'utils/chrome';
 
 const sagaMiddleware = createSagaMiddleware();
 const localStorageEngine = createLocalStorageEngine('mm-web-app');
-const engine = debounce(localStorageEngine, 1500);
+const engine = debounce(localStorageEngine, 1000);
 
 export default function configureStore(initialState = {}, history) {
-  // Create the store with two middlewares
-  // 1. sagaMiddleware: Makes redux-sagas work
-  // 2. routerMiddleware: Syncs the location/URL path to the state
   const middlewares = [
     sagaMiddleware,
     routerMiddleware(history),
@@ -72,13 +69,10 @@ export default function configureStore(initialState = {}, history) {
         console.log('Loaded state:', newState);
         // restore previous state
         if (newState.global) {
-          store.dispatch({
-            type: '@@RESTORE',
-            data: {
-              user: newState.global.data.googleConnect.user,
-              codes: (newState.home && newState.home.codes) || [],
-            },
-          });
+          store.dispatch(restore({
+            user: newState.global.data.googleConnect.user,
+            codes: (newState.home && newState.home.codes) || [],
+          }));
           // TODO: check that user has loged in, we will active the share
         }
       }).catch((err) => console.warn('Failed to load previous state', err));

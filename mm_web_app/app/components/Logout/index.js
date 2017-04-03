@@ -23,7 +23,7 @@ function Logout({ onLogout }) {
 }
 
 Logout.propTypes = {
-  onLogout: React.PropTypes.func,
+  onLogout: React.PropTypes.func.isRequired,
 };
 
 export default Logout;

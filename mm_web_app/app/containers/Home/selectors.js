@@ -16,7 +16,7 @@ const makeSelectHome = () => createSelector(
 
 const makeSelectInviteCodes = () => createSelector(
   selectHomeDomain(),
-  (substate) => substate.get('codes').toJS(),
+  (substate) => substate.get('invite').toJS(),
 );
 
 export default makeSelectHome;

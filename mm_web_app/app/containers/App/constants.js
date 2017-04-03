@@ -23,6 +23,8 @@ export const REDDIT_CLIENT_ID = 'CuFq5x8GtBDLuA';
 export const REDDIT_CLIENT_SECRET = '0KaZNPLLIzlGt3qckbgL77YZ-44';
 
 export const SWITCH_USER = 'app/App/SWITCH_USER';
+export const LOGOUT = 'app/App/LOGOUT';
+export const RESTORE = 'app/App/RESTORE';
 export const CLEAN_SEARCH_RESULT = 'app/App/CLEAN_SEARCH_RESULT';
 export const USER_HISTORY = 'app/App/USER_HISTORY';
 export const USER_HISTORY_SUCCESS = 'app/App/USER_HISTORY_SUCCESS';

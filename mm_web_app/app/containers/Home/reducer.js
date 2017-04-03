@@ -5,30 +5,38 @@
  */
 
 import { fromJS } from 'immutable';
+import { RESTORE } from 'containers/App/constants';
 import {
   CHANGE_TERM, CHANGE_SUB_TERM, ACCEPT_INVITE_CODE,
 } from './constants';
 
 const initialBreadcrumbState = fromJS([]);
-const initialCodesState = fromJS([]);
+const initialCodesState = fromJS({
+  codes: [],
+  result: [],
+});
 
 const initialState = fromJS({
   currentTermId: -1,
   breadcrumbs: initialBreadcrumbState,
-  codes: initialCodesState,
+  invite: initialCodesState,
 });
 
 function homeReducer(state = initialState, action) {
   switch (action.type) {
-    case '@@RESTORE': {
+    case RESTORE: {
       if (action.data.codes && action.data.codes.length) {
-        return state.update('codes', () => fromJS(action.data.codes));
+        return state.updateIn(['invite', 'codes'], () => fromJS(action.data.codes));
       }
       return state;
     }
 
-    case ACCEPT_INVITE_CODE:
-      return state.update('codes', (codes) => [].concat(codes, action.data));
+    case ACCEPT_INVITE_CODE: {
+      if (state.getIn(['invite', 'codes']).includes(action.data)) {
+        return state;
+      }
+      return state.updateIn(['invite', 'codes'], (codes) => [].concat(codes, action.data));
+    }
 
     case CHANGE_TERM:
       {

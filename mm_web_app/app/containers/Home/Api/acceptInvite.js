@@ -25,7 +25,7 @@ function* acceptInviteCode(userId, userHash, shareCode) {
  */
 export function* acceptInvite() {
   const data = yield select(makeSelectGoogleConnect());
-  const codes = yield select(makeSelectInviteCodes());
+  const { codes } = yield select(makeSelectInviteCodes());
   const { user } = data.toJS();
   console.warn('user', user);
   console.warn('codes', codes);

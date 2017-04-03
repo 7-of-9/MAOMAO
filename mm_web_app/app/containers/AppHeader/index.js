@@ -13,57 +13,44 @@ import LogoIcon from 'components/LogoIcon';
 import ShareWithFriends from 'components/ShareWithFriends';
 import Slogan from 'components/Slogan';
 import Logout from 'components/Logout';
+import { googleConnect, googleConnectLoadingError, logoutUser } from 'containers/App/actions';
 import GoogleLogin from 'react-google-login';
 import { hasInstalledExtension } from 'utils/chrome';
 import { isLogin, logout } from 'utils/simpleAuth';
+import { makeSelectCurrentUser } from 'containers/App/selectors';
 
-import {
-   googleConnect, googleConnectLoadingError,
-} from '../App/actions';
-import {
-   makeSelectCurrentUser,
-} from '../App/selectors';
-
-export class AppHeader extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  render() {
-    return (
-      <Header>
-        <LogoIcon />
-        <Slogan />
-        { this.props.breadcrumb && <h3>{this.props.breadcrumb}</h3>}
-        <div style={{ position: 'absolute', top: '65px', right: '40px' }}>
-          {this.props.friends && this.props.friends.length > 0 && <ShareWithFriends friends={this.props.friends} />}
-          {
-            !isLogin() &&
-            <GoogleLogin
-              style={{
-                width: '130px',
-                backgroundColor: '#0b9803',
-                color: '#fff',
-                paddingTop: '10px',
-                paddingBottom: '10px',
-                borderRadius: '2px',
-                border: '2px solid #000',
-                display: hasInstalledExtension() ? '' : 'none',
-              }}
-              clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
-              buttonText="Login..."
-              onSuccess={this.props.onGoogleSuccess}
-              onFailure={this.props.onGoogleFailure}
-            />
-        }
-          {isLogin() && hasInstalledExtension() && <Logout
-            onLogout={() => {
-              logout(() => {
-                window.location.href = '/';
-              });
+function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLogout }) {
+  return (
+    <Header>
+      <LogoIcon />
+      <Slogan />
+      { breadcrumb && <h3>{breadcrumb}</h3>}
+      <div style={{ position: 'absolute', top: '65px', right: '40px' }}>
+        {isLogin() && friends && friends.length > 0 && <ShareWithFriends friends={friends} />}
+        {
+          !isLogin() &&
+          <GoogleLogin
+            style={{
+              width: '130px',
+              backgroundColor: '#0b9803',
+              color: '#fff',
+              paddingTop: '10px',
+              paddingBottom: '10px',
+              borderRadius: '2px',
+              border: '2px solid #000',
+              display: hasInstalledExtension() ? '' : 'none',
             }}
-          /> }
-          <DiscoveryButton />
-        </div>
-      </Header>
-    );
-  }
+            clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
+            buttonText="Login..."
+            onSuccess={onGoogleSuccess}
+            onFailure={onGoogleFailure}
+          />
+      }
+        {isLogin() && hasInstalledExtension() && <Logout onLogout={onLogout} /> }
+        <DiscoveryButton />
+      </div>
+    </Header>
+  );
 }
 
 AppHeader.propTypes = {
@@ -71,6 +58,7 @@ AppHeader.propTypes = {
   friends: PropTypes.array.isRequired,
   onGoogleSuccess: PropTypes.func.isRequired,
   onGoogleFailure: PropTypes.func.isRequired,
+  onLogout: PropTypes.func,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -84,6 +72,10 @@ function mapDispatchToProps(dispatch) {
     },
     onGoogleFailure: (error) => {
       dispatch(googleConnectLoadingError(error));
+    },
+    onLogout: () => {
+      dispatch(logoutUser());
+      logout();
     },
     dispatch,
   };

@@ -11,8 +11,9 @@
  */
 
 import { fromJS } from 'immutable';
-import { userId, userEmail, userHash } from 'utils/simpleAuth';
+import { RESTORE } from 'containers/App/constants';
 import {
+  LOGOUT,
   SWITCH_USER,
   CLEAN_SEARCH_RESULT,
   GOOGLE_CONNECT,
@@ -95,9 +96,10 @@ const initialState = fromJS({
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
-    case '@@RESTORE':
+    case RESTORE:
       return state.updateIn(['data', 'googleConnect', 'user'], () => action.data.user);
-
+    case LOGOUT:
+      return initialState;
     case GOOGLE_SEARCH:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => true);
