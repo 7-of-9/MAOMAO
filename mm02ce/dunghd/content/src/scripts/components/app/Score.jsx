@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import { pure, onlyUpdateForKeys, compose } from 'recompose';
+import { onlyUpdateForKeys, compose } from 'recompose';
 import moment from 'moment';
 
 const style = {
@@ -70,7 +70,6 @@ Score.propTypes = propTypes;
 Score.defaultProps = defaultProps;
 
 const enhance = compose(
-  pure,
   onlyUpdateForKeys(['score']),
 );
 

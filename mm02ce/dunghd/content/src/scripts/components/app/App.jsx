@@ -361,19 +361,26 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
           onLogout={onLogout}
           isOpen={isOpen}
         />
-        <ShareTopic
-          enable={isShareOnUrl.enable}
-          type={isShareOnUrl.type}
-          terms={terms}
-          topic={topic}
-          code={code}
-          sendEmail={sendEmail}
-          changeShareType={changeShareType}
-          accessGoogleContacts={accessGoogleContacts}
-          contacts={auth && auth.contacts}
-          notify={notifyMsg}
-          closeShare={closeShare}
-        />
+        <ToggleDisplay
+          if={
+            auth.isLogin
+            && isShareOnUrl.enable
+          }
+        >
+          <ShareTopic
+            enable={isShareOnUrl.enable}
+            type={isShareOnUrl.type}
+            terms={terms}
+            topic={topic}
+            code={code}
+            sendEmail={sendEmail}
+            changeShareType={changeShareType}
+            accessGoogleContacts={accessGoogleContacts}
+            contacts={auth && auth.contacts}
+            notify={notifyMsg}
+            closeShare={closeShare}
+          />
+        </ToggleDisplay>
         <ToggleDisplay
           if={
             auth.isLogin

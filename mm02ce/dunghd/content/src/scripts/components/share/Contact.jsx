@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { compose, pure } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import styled from 'styled-components';
 import noImage from './images/no-image.png';
 import removeIcon from './images/minus.png';
@@ -84,7 +84,7 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
   };
 
 const enhance = compose(
-  pure,
+  onlyUpdateForKeys(['name', 'email', 'image']),
 );
 
 export default enhance(Contact);

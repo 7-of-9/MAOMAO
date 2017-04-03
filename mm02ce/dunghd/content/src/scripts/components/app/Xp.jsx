@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
-import { compose, onlyUpdateForKeys, pure } from 'recompose';
+import { compose, onlyUpdateForKeys } from 'recompose';
 import Radium from 'radium';
 import $ from 'jquery';
 
@@ -128,7 +128,6 @@ Xp.propTypes = {
 };
 
 const enhance = compose(
-  pure,
   onlyUpdateForKeys(['terms']),
 );
 

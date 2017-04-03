@@ -1,5 +1,5 @@
 import React from 'react';
-import { pure, compose } from 'recompose';
+import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 import Button from './Button';
 import ggIcon from './images/google.svg';
@@ -32,7 +32,7 @@ const style = {
 };
 
 const enhance = compose(
-  pure,
+  onlyUpdateForKeys(['active']),
 );
 
 const Toolbar = enhance(({ active, onChange, onShare, onSendMsg }) =>

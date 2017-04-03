@@ -1,5 +1,5 @@
 import React from 'react';
-import { pure, compose } from 'recompose';
+import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 
 /* eslint-disable no-confusing-arrow */
@@ -29,7 +29,7 @@ const style = {
 };
 
 const enhance = compose(
-  pure,
+  onlyUpdateForKeys(['topic', 'active']),
 );
 
 const ShareOptions = enhance(({ topic, active, onChange }) =>

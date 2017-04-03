@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { compose, withHandlers, withState, lifecycle, pure } from 'recompose';
+import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
@@ -198,7 +198,7 @@ const enhance = compose(
       this.props.onReady();
     },
   }),
-  pure,
+  onlyUpdateForKeys(['auth', 'nlp', 'code']),
 );
 
 const mapStateToProps = state => ({

@@ -3,7 +3,7 @@ import Fuse from 'fuse.js';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import { pure, onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
+import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import noImage from './images/no-image.png';
 import Contact from './Contact';
 import guid from '../utils/guid';
@@ -109,8 +109,8 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
 
 GoogleShare.propTypes = {
   value: PropTypes.string,
-  contacts: PropTypes.array,
-  mostRecentUses: PropTypes.array,
+  contacts: PropTypes.array.isRequired,
+  mostRecentUses: PropTypes.array.isRequired,
   selectedContacts: PropTypes.array,
   suggestions: PropTypes.array,
   addContact: PropTypes.func,
@@ -171,8 +171,7 @@ const enhance = compose(
       }
     },
   }),
-  pure,
-  onlyUpdateForKeys(['contacts']),
+  onlyUpdateForKeys(['mostRecentUses', 'contacts', 'value', 'suggestions']),
 );
 
 export default enhance(GoogleShare);
