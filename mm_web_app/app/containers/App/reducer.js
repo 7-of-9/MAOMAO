@@ -46,9 +46,9 @@ const initialUserHistoryState = fromJS({
 const initialGoogleConnectState = fromJS({
   googleResponse: {},
   user: {
-    id: userId(),
-    email: userEmail(),
-    userHash: userHash(),
+    id: -1,
+    email: '',
+    userHash: '',
   },
 });
 
@@ -95,6 +95,9 @@ const initialState = fromJS({
 
 function appReducer(state = initialState, action) {
   switch (action.type) {
+    case '@@RESTORE':
+      return state.updateIn(['data', 'googleConnect', 'user'], () => action.data.user);
+
     case GOOGLE_SEARCH:
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => true);

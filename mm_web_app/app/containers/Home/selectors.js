@@ -6,11 +6,6 @@ import { createSelector } from 'reselect';
 const selectHomeDomain = () => (state) => state.get('home');
 
 /**
- * Other specific selectors
- */
-
-
-/**
  * Default selector used by Home
  */
 
@@ -19,7 +14,13 @@ const makeSelectHome = () => createSelector(
   (substate) => substate.toJS()
 );
 
+const makeSelectInviteCodes = () => createSelector(
+  selectHomeDomain(),
+  (substate) => substate.get('codes').toJS(),
+);
+
 export default makeSelectHome;
 export {
   selectHomeDomain,
+  makeSelectInviteCodes,
 };

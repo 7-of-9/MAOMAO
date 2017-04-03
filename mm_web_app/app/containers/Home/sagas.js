@@ -2,8 +2,10 @@ import { take, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
 
 import { GOOGLE_CONNECT, USER_HISTORY } from 'containers/App/constants';
+import { ACCEPT_INVITE_CODE } from 'containers/Home/constants';
 import { loginWithGoogle } from 'containers/Home/Api/loginWithGoogle';
 import { userHistory } from 'containers/Home/Api/userHistory';
+import { acceptInvite } from 'containers/Home/Api/acceptInvite';
 
 /**
  * Root saga manages watcher lifecycle
@@ -27,8 +29,20 @@ export function* userHistoryData() {
   yield cancel(watcher);
 }
 
+/**
+ * Root saga manages watcher lifecycle
+ */
+export function* acceptInviteData() {
+  const watcher = yield takeLatest(ACCEPT_INVITE_CODE, acceptInvite);
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watcher);
+}
+
 // All sagas to be loaded
 export default [
   googleConnectData,
+  acceptInviteData,
   userHistoryData,
 ];

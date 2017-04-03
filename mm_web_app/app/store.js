@@ -10,6 +10,7 @@ import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import createReducer from './reducers';
+import { hasInstalledExtension } from 'utils/chrome';
 
 const sagaMiddleware = createSagaMiddleware();
 const localStorageEngine = createLocalStorageEngine('mm-web-app');
@@ -23,8 +24,11 @@ export default function configureStore(initialState = {}, history) {
     sagaMiddleware,
     routerMiddleware(history),
     storage.createMiddleware(engine),
-    logger,
   ];
+
+  if (process.env.NODE_ENV !== 'production') {
+    middlewares.push(logger);
+  }
 
   const enhancers = [
     applyMiddleware(...middlewares),
@@ -64,8 +68,20 @@ export default function configureStore(initialState = {}, history) {
 
   const load = storage.createLoader(engine);
   load(store)
-      .then((newState) => console.log('Loaded state:', newState))
-      .catch(() => console.log('Failed to load previous state'));
+      .then((newState) => {
+        console.log('Loaded state:', newState);
+        // restore previous state
+        if (newState.global) {
+          store.dispatch({
+            type: '@@RESTORE',
+            data: {
+              user: newState.global.data.googleConnect.user,
+              codes: (newState.home && newState.home.codes) || [],
+            },
+          });
+          // TODO: check that user has loged in, we will active the share
+        }
+      }).catch((err) => console.warn('Failed to load previous state', err));
 
   return store;
 }

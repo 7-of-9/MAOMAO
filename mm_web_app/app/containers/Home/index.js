@@ -23,7 +23,7 @@ import Loading from 'components/Loading';
 import { userHistory, switchUser } from '../App/actions';
 import { makeSelectUserHistory, makeSelectHomeLoading } from '../App/selectors';
 import makeSelectHome from './selectors';
-import { changeTerm, changeSubTerm } from './actions';
+import { changeTerm, changeSubTerm, acceptInviteCode } from './actions';
 
 function selectTopics(termId, topics) {
   if (termId > 0) {
@@ -71,7 +71,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 
   componentDidMount() {
     let id = userId();
-    const { query } = this.props.location;
+    const { query, pathname } = this.props.location;
     if (query && query.user_id) {
       id = query.user_id;
       this.props.dispatch(switchUser(id));
@@ -79,6 +79,9 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 
     if (id > 0) {
       this.props.dispatch(userHistory(id));
+      if (pathname && pathname.length > 1) {
+        this.props.dispatch(acceptInviteCode(pathname));
+      }
     }
   }
 

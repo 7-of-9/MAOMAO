@@ -52,7 +52,7 @@ export class AppHeader extends React.PureComponent { // eslint-disable-line reac
               onFailure={this.props.onGoogleFailure}
             />
         }
-          {isLogin() && <Logout
+          {isLogin() && hasInstalledExtension() && <Logout
             onLogout={() => {
               logout(() => {
                 window.location.href = '/';
