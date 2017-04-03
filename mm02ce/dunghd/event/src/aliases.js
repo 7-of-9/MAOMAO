@@ -125,19 +125,18 @@ const authGoogleLogin = data => (
       dispatch({
         type: 'AUTH_PENDING',
       });
-      console.warn('isLinked', isLinked, data.payload);
       return checkGoogleAuth(isLinked)
         .then((result) => {
-          dispatch(actionCreator('AUTH_FULFILLED', result));
           if (!isLinked) {
             dispatch(actionCreator('USER_HASH', { userHash: result.googleUserId }));
           }
+          return dispatch(actionCreator('AUTH_FULFILLED', result));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
             firebase.auth().signOut();
           }
-          dispatch(actionCreator('AUTH_REJECTED', { error }));
+          return dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
 
@@ -156,19 +155,18 @@ const authFacebookLogin = data => (
       dispatch({
         type: 'AUTH_PENDING',
       });
-      console.warn('isLinked', isLinked, data.payload);
       return checkFacebookAuth(isLinked)
         .then((result) => {
-          dispatch(actionCreator('AUTH_FULFILLED', result));
           if (!isLinked) {
             dispatch(actionCreator('USER_HASH', { userHash: result.facebookUserId }));
           }
+          return dispatch(actionCreator('AUTH_FULFILLED', result));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
             firebase.auth().signOut();
           }
-          dispatch(actionCreator('AUTH_REJECTED', { error }));
+          return dispatch(actionCreator('AUTH_REJECTED', { error }));
         });
     }
     return dispatch(batchActions([

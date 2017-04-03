@@ -48,7 +48,10 @@ const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
 ));
 
 persistStore(store);
-wrapStore(store, { portName: 'maomao-extension' });
+
+wrapStore(store, {
+  portName: 'maomao-extension',
+ });
 
 // ctx menu handler
 chrome.contextMenus.removeAll();

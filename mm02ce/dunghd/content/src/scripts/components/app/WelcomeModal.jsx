@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
 import RaisedButton from 'material-ui/RaisedButton';
-import { pure, onlyUpdateForKeys, lifecycle, compose } from 'recompose';
+import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
 import Paper from 'material-ui/Paper';
@@ -141,8 +141,7 @@ const enhance = compose(
       $('.tlt').fitText(0.5).textillate();
     },
   }),
-  pure,
-  onlyUpdateForKeys(['auth']),
+  onlyUpdateForKeys(['auth', 'isOpen']),
 );
 
 export default Radium(enhance(WelcomeModal));

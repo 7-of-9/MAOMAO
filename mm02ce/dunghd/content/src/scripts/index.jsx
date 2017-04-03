@@ -13,8 +13,8 @@ require('expose-loader?justext!justext');
 require('expose-loader?franc!franc');
 require('expose-loader?StackTrace!stacktrace-js');
 if (process.env.NODE_ENV !== 'production') {
-  const {whyDidYouUpdate} = require('why-did-you-update')
-  whyDidYouUpdate(React)
+  const { whyDidYouUpdate } = require('why-did-you-update');
+  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ });
 }
 /* eslint-enable */
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import { pure, onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
+import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
-// import PopoutWindow from 'react-popout';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 
@@ -84,7 +83,6 @@ const enhance = compose(
       }
     },
   }),
-  pure,
   onlyUpdateForKeys(['contacts', 'code', 'type', 'shareOption']),
 );
 
@@ -113,7 +111,11 @@ const ShareTopic = enhance(({
           to grant permissions to access google contacts.
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
-         <GoogleShare contacts={contacts} handleChange={handleChange} />
+         <GoogleShare
+           mostRecentUses={contacts.slice(0, 3)}
+           contacts={contacts}
+           handleChange={handleChange}
+         />
          <button
            style={style.button}
            className="share-button"

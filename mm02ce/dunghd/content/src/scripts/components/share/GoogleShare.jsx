@@ -68,11 +68,12 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeContact, onChange,
-   suggestions, onSuggestionsFetchRequested, onSuggestionsClearRequested }) => <div>
-     <div style={{ display: 'inline-block', width: '100%' }}>
-       {
-      contacts.slice(0, 3).map((contact) => {
+const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
+  removeContact, onChange, suggestions, onSuggestionsFetchRequested,
+  onSuggestionsClearRequested }) => <div>
+    <div style={{ display: 'inline-block', width: '100%' }}>
+      {
+      mostRecentUses.map((contact) => {
         if (!selectedContacts.map(item => item.email).includes(contact.email)) {
           return (
             <Contact
@@ -83,32 +84,33 @@ const GoogleShare = ({ value, contacts, selectedContacts, addContact, removeCont
         return '';
       })
     }
-     </div>
-     <Autosuggest
-       suggestions={suggestions}
-       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-       onSuggestionsClearRequested={onSuggestionsClearRequested}
-       getSuggestionValue={getSuggestionValue}
-       renderSuggestion={renderSuggestion}
-       highlightFirstSuggestion
-       inputProps={{
+    </div>
+    <Autosuggest
+      suggestions={suggestions}
+      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+      onSuggestionsClearRequested={onSuggestionsClearRequested}
+      getSuggestionValue={getSuggestionValue}
+      renderSuggestion={renderSuggestion}
+      highlightFirstSuggestion
+      inputProps={{
       placeholder: 'To: type name to search...',
       value,
       onChange,
     }}
-     />
-     <div style={{ display: 'inline-block', width: '100%' }}>
-       {
+    />
+    <div style={{ display: 'inline-block', width: '100%' }}>
+      {
       selectedContacts.map(contact => (
         <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
     }
-     </div>
-   </div>;
+    </div>
+  </div>;
 
 GoogleShare.propTypes = {
   value: PropTypes.string,
   contacts: PropTypes.array,
+  mostRecentUses: PropTypes.array,
   selectedContacts: PropTypes.array,
   suggestions: PropTypes.array,
   addContact: PropTypes.func,
@@ -116,12 +118,12 @@ GoogleShare.propTypes = {
   onChange: PropTypes.func,
   onSuggestionsFetchRequested: PropTypes.func,
   onSuggestionsClearRequested: PropTypes.func,
-  handleChange: PropTypes.func,
 };
 
 GoogleShare.defaultProps = {
   value: '',
   contacts: [],
+  mostRecentUses: [],
   selectedContacts: [],
   suggestions: [],
   addContact: () => {},
@@ -129,7 +131,6 @@ GoogleShare.defaultProps = {
   onChange: () => {},
   onSuggestionsFetchRequested: () => {},
   onSuggestionsClearRequested: () => {},
-  handleChange: () => {},
 };
 
 
@@ -171,7 +172,7 @@ const enhance = compose(
     },
   }),
   pure,
-  onlyUpdateForKeys(['value', 'selectedContacts']),
+  onlyUpdateForKeys(['contacts']),
 );
 
 export default enhance(GoogleShare);

@@ -7,8 +7,8 @@ import App from './components/app/App';
 
 /* eslint-disable */
 if (process.env.NODE_ENV !== 'production') {
-  const {whyDidYouUpdate} = require('why-did-you-update')
-  whyDidYouUpdate(React)
+  const { whyDidYouUpdate } = require('why-did-you-update');
+  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ });
 }
 /* eslint-enable */
 

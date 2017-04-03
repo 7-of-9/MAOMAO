@@ -143,7 +143,13 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
   }
   return (
     <div>
-      Please login to see the magic :)
+      Please click <button
+        onClick={() => {
+           dispatch({
+                  type: 'OPEN_MODAL',
+                });
+      }}
+      >here</button> to login :)
     </div>);
 };
 
