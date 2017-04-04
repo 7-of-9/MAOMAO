@@ -11,13 +11,14 @@ const customStyles = {
   title: {
     display: 'block',
     fontSize: '20px',
-    margin: '20px 0px',
+    margin: '20px 0px 5px',
     color: '#000',
   },
   animateText: {
     color: '#999',
     fontFamily: 'Rokkitt',
     fontSize: '75px',
+    lineHeight: '68px',
     textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
   },
   card: {
@@ -35,6 +36,7 @@ const customStyles = {
     right: '0px',
     bottom: '0px',
     backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    animation: 'vex-fadein 0.5s',
   },
   content: {
     position: 'absolute',
@@ -43,15 +45,17 @@ const customStyles = {
     left: '50%',
     right: 'auto',
     bottom: 'auto',
-    transform: 'translate(-50%, -50%)',
+    marginLeft: '-200px',
+    marginTop: '-200px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
     overflow: 'auto',
     WebkitOverflowScrolling: 'touch',
-    borderRadius: '4px',
+    borderRadius: '7px',
     outline: 'none',
     padding: '20px',
     textAlign: 'center',
+    animation: 'vex-flyin 0.5s',
   },
 };
 
@@ -65,7 +69,10 @@ const propTypes = {
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };
-
+const style = {
+  minWidth: '280px',
+  marginTop: '15px',
+};
 const defaultProps = {
   auth: {
     isLogin: false,
@@ -86,17 +93,17 @@ function WelcomeModal({
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <Paper style={customStyles.content} zDepth={3}>
-          <div className="maomao-logo" />
+          <div className="maomao-logo" />        
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
            </h1>
           <ToggleDisplay hide={auth.isLogin}>
             <h2 style={customStyles.title}>Join MaoMao!</h2>
-            <RaisedButton onTouchTap={onGoogleLogin} label="Google Connect" />
+            <RaisedButton onTouchTap={onGoogleLogin} label="Google Connect" secondary={true} style={style}/>
             <br />
-            <RaisedButton onTouchTap={onFacebookLogin} label="Facebook Connect" />
+            <RaisedButton onTouchTap={onFacebookLogin} label="Facebook Connect" primary={true} style={style} />
             <br />
-            <RaisedButton onTouchTap={onClose} label="Close" />
+            <RaisedButton onTouchTap={onClose} label="Close" style={style} />
           </ToggleDisplay>
           <ToggleDisplay show={auth.isLogin}>
             <Card style={customStyles.card}>
