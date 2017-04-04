@@ -198,7 +198,7 @@ const enhance = compose(
       this.props.onReady();
     },
   }),
-  onlyUpdateForKeys(['auth', 'nlp', 'code']),
+  onlyUpdateForKeys(['auth', 'nlp', 'code', 'url']),
 );
 
 const mapStateToProps = state => ({
