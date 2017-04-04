@@ -72,6 +72,11 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   componentDidMount() {
     let id = userId();
     const { query, pathname } = this.props.location;
+
+    if (query && query.close && query.close === 'popup') {
+      window.close();
+    }
+
     if (query && query.user_id && hasInstalledExtension()) {
       id = query.user_id;
       this.props.dispatch(switchUser(id));

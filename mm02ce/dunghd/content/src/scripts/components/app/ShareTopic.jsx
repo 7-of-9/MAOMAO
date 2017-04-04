@@ -57,7 +57,8 @@ const enhance = compose(
     },
     sendMsgUrl: props => () => {
       const url = `${SITE_URL}/${props.code[props.shareOption]}`;
-      const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(url)}`;
+      const closePopupUrl = `${SITE_URL}/${props.code[props.shareOption]}?close=popup`;
+      const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`;
       openUrl(src);
       props.closeShare();
     },
