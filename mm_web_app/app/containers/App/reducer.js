@@ -19,6 +19,9 @@ import {
   GOOGLE_CONNECT,
   GOOGLE_CONNECT_ERROR,
   GOOGLE_CONNECT_SUCCESS,
+  FACEBOOK_CONNECT,
+  FACEBOOK_CONNECT_ERROR,
+  FACEBOOK_CONNECT_SUCCESS,
   USER_HISTORY,
   USER_HISTORY_ERROR,
   USER_HISTORY_SUCCESS,
@@ -53,6 +56,15 @@ const initialGoogleConnectState = fromJS({
   },
 });
 
+const initialFacebookConnectState = fromJS({
+  facebookResponse: {},
+  user: {
+    id: -1,
+    email: '',
+    userHash: '',
+  },
+});
+
 const initialGoogleState = fromJS({
   googleSearchResult: [],
 });
@@ -75,6 +87,7 @@ const initialState = fromJS({
   loading: {
     isGoogleLoading: false,
     isGoogleConnectLoading: false,
+    isFacebookConnectLoading: false,
     isGoogleNewsLoading: false,
     isGoogleKnowledgeLoading: false,
     isUserHistoryLoading: false,
@@ -85,6 +98,7 @@ const initialState = fromJS({
   data: {
     google: initialGoogleState,
     googleConnect: initialGoogleConnectState,
+    facebookConnect: initialFacebookConnectState,
     news: initialGoogleNewsState,
     knowledge: initialGoogleKnowledgeState,
     youtube: initialYoutubeState,
@@ -136,6 +150,18 @@ function appReducer(state = initialState, action) {
     case GOOGLE_CONNECT_ERROR:
       return state
         .updateIn(['loading', 'isGoogleConnectLoading'], () => false)
+        .updateIn(['error'], (error) => error.push(action.error));
+    case FACEBOOK_CONNECT:
+      return state
+        .updateIn(['loading', 'isFacebookConnectLoading'], () => true)
+        .updateIn(['data', 'facebookConnect', 'facebookResponse'], () => fromJS(action.data));
+    case FACEBOOK_CONNECT_SUCCESS:
+      return state
+        .updateIn(['loading', 'isFacebookConnectLoading'], () => false)
+        .updateIn(['data', 'facebookConnect', 'user'], () => fromJS(action.data));
+    case FACEBOOK_CONNECT_ERROR:
+      return state
+        .updateIn(['loading', 'isFacebookConnectLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
     case GOOGLE_KNOWLEDGE_SEARCH:
       return state

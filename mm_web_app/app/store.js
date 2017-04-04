@@ -67,9 +67,10 @@ export default function configureStore(initialState = {}, history) {
   load(store)
       .then((newState) => {
         // restore previous state
-        if (newState.global) {
-          const codes = (newState.home && newState.home.invite && newState.home.invite.codes) || [];
-          const user = newState.global.data.googleConnect.user;
+        const codes = (newState.home && newState.home.invite && newState.home.invite.codes) || [];
+        const user = newState.global.data.googleConnect.user;
+
+        if (newState.global && codes.length) {
           store.dispatch(restore({
             user,
             codes,

@@ -6228,6 +6228,10 @@ react-dom@15.4.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
 
+react-facebook-login@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/react-facebook-login/-/react-facebook-login-3.5.0.tgz#6a3199e025bac814b2617fe3ae15f86799a402f8"
+
 react-google-login@^2.8.2:
   version "2.8.2"
   resolved "https://registry.yarnpkg.com/react-google-login/-/react-google-login-2.8.2.tgz#61ad71c3e65e07df2f818ffca1bfa156e072b972"
@@ -6264,6 +6268,10 @@ react-player@^0.14.3:
     fetch-jsonp "^1.0.2"
     load-script "^1.0.0"
     query-string "^4.2.3"
+
+react-popup@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-popup/-/react-popup-0.6.0.tgz#e19eed71f5872f05dd3838dc1a372ef9b3ab28cb"
 
 react-proxy@^1.1.7:
   version "1.1.8"

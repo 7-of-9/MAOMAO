@@ -15,6 +15,9 @@ import {
   GOOGLE_CONNECT,
   GOOGLE_CONNECT_SUCCESS,
   GOOGLE_CONNECT_ERROR,
+  FACEBOOK_CONNECT,
+  FACEBOOK_CONNECT_SUCCESS,
+  FACEBOOK_CONNECT_ERROR,
   GOOGLE_SEARCH,
   GOOGLE_SEARCH_SUCCESS,
   GOOGLE_SEARCH_ERROR,
@@ -75,6 +78,27 @@ export function googleConnectLoaded(data) {
 export function googleConnectLoadingError(error) {
   return {
     type: GOOGLE_CONNECT_ERROR,
+    error,
+  };
+}
+
+export function facebookConnect(data) {
+  return {
+    type: FACEBOOK_CONNECT,
+    data,
+  };
+}
+
+export function facebookConnectLoaded(data) {
+  return {
+    type: FACEBOOK_CONNECT_SUCCESS,
+    data,
+  };
+}
+
+export function facebookConnectLoadingError(error) {
+  return {
+    type: FACEBOOK_CONNECT_ERROR,
     error,
   };
 }

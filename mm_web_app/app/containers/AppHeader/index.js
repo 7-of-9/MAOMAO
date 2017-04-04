@@ -13,13 +13,15 @@ import LogoIcon from 'components/LogoIcon';
 import ShareWithFriends from 'components/ShareWithFriends';
 import Slogan from 'components/Slogan';
 import Logout from 'components/Logout';
-import { googleConnect, googleConnectLoadingError, logoutUser } from 'containers/App/actions';
+import { googleConnect, googleConnectLoadingError, facebookConnect, logoutUser } from 'containers/App/actions';
 import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 import { hasInstalledExtension } from 'utils/chrome';
 import { isLogin, logout } from 'utils/simpleAuth';
 import { makeSelectCurrentUser } from 'containers/App/selectors';
+import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from 'containers/App/constants';
 
-function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLogout }) {
+function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLogout, responseFacebook }) {
   return (
     <Header>
       <LogoIcon />
@@ -28,22 +30,22 @@ function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLo
       <div style={{ position: 'absolute', top: '65px', right: '40px' }}>
         {isLogin() && friends && friends.length > 0 && <ShareWithFriends friends={friends} />}
         {
-          !isLogin() &&
+          !isLogin() && hasInstalledExtension() &&
           <GoogleLogin
-            style={{
-              width: '130px',
-              backgroundColor: '#0b9803',
-              color: '#fff',
-              paddingTop: '10px',
-              paddingBottom: '10px',
-              borderRadius: '2px',
-              border: '2px solid #000',
-              display: hasInstalledExtension() ? '' : 'none',
-            }}
-            clientId="323116239222-b2n8iffvc5ljb71eoahs1k72ee8ulbd7.apps.googleusercontent.com"
-            buttonText="Login..."
+            clientId={GOOGLE_CLIENT_ID}
+            buttonText="LOGIN WITH GOOGLE"
             onSuccess={onGoogleSuccess}
             onFailure={onGoogleFailure}
+          />
+      }
+        {
+          !isLogin() && hasInstalledExtension() &&
+          <FacebookLogin
+            appId={FACEBOOK_APP_ID}
+            autoLoad={false}
+            size="medium"
+            fields="name,email,picture"
+            callback={responseFacebook}
           />
       }
         {isLogin() && hasInstalledExtension() && <Logout onLogout={onLogout} /> }
@@ -58,6 +60,7 @@ AppHeader.propTypes = {
   friends: PropTypes.array.isRequired,
   onGoogleSuccess: PropTypes.func.isRequired,
   onGoogleFailure: PropTypes.func.isRequired,
+  responseFacebook: PropTypes.func.isRequired,
   onLogout: PropTypes.func,
 };
 
@@ -65,8 +68,13 @@ const mapStateToProps = createStructuredSelector({
   currentUser: makeSelectCurrentUser(),
 });
 
+// TODO: Revoke token for fb/gg when user logout
+
 function mapDispatchToProps(dispatch) {
   return {
+    responseFacebook: (response) => {
+      dispatch(facebookConnect(response));
+    },
     onGoogleSuccess: (response) => {
       dispatch(googleConnect(response));
     },
@@ -75,7 +83,9 @@ function mapDispatchToProps(dispatch) {
     },
     onLogout: () => {
       dispatch(logoutUser());
-      logout();
+      logout(() => {
+        window.location.href = ''; // back to home
+      });
     },
     dispatch,
   };
