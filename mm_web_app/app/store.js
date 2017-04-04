@@ -66,14 +66,14 @@ export default function configureStore(initialState = {}, history) {
   const load = storage.createLoader(engine);
   load(store)
       .then((newState) => {
-        console.log('Loaded state:', newState);
         // restore previous state
         if (newState.global) {
+          const codes = (newState.home && newState.home.invite && newState.home.invite.codes) || [];
+          const user = newState.global.data.googleConnect.user;
           store.dispatch(restore({
-            user: newState.global.data.googleConnect.user,
-            codes: (newState.home && newState.home.codes) || [],
+            user,
+            codes,
           }));
-          // TODO: check that user has loged in, we will active the share
         }
       }).catch((err) => console.warn('Failed to load previous state', err));
 

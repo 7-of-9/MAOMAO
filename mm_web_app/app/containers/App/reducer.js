@@ -11,9 +11,9 @@
  */
 
 import { fromJS } from 'immutable';
-import { RESTORE } from 'containers/App/constants';
 import {
   LOGOUT,
+  RESTORE,
   SWITCH_USER,
   CLEAN_SEARCH_RESULT,
   GOOGLE_CONNECT,

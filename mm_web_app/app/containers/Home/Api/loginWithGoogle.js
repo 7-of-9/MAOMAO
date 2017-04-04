@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import { MAOMAO_API_URL } from 'containers/App/constants';
 import { googleConnectLoaded, googleConnectLoadingError, userHistory } from 'containers/App/actions';
+import { acceptInviteCodes } from 'containers/Home/actions';
 import { makeSelectGoogleConnect } from 'containers/App/selectors';
 
 import { login } from 'utils/simpleAuth';
@@ -31,6 +32,7 @@ function* googleConnect(info) {
     const userData = Object.assign({}, data, { userHash });
     yield put(googleConnectLoaded(userData));
     yield put(userHistory(userData.id));
+    yield put(acceptInviteCodes());
   } catch (err) {
     yield put(googleConnectLoadingError(err));
   }

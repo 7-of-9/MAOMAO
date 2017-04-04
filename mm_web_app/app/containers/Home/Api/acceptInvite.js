@@ -14,9 +14,9 @@ function* acceptInviteCode(userId, userHash, shareCode) {
       method: 'get',
       url: apiUrl,
     });
-    yield put(acceptShareLoaded(data));
-  } catch (err) {
-    yield put(acceptShareLoadingError(err));
+    yield put(acceptShareLoaded({ shareCode, ...data }));
+  } catch (error) {
+    yield put(acceptShareLoadingError({ shareCode, error }));
   }
 }
 
@@ -25,10 +25,9 @@ function* acceptInviteCode(userId, userHash, shareCode) {
  */
 export function* acceptInvite() {
   const data = yield select(makeSelectGoogleConnect());
-  const { codes } = yield select(makeSelectInviteCodes());
+  const invite = yield select(makeSelectInviteCodes());
   const { user } = data.toJS();
-  console.warn('user', user);
-  console.warn('codes', codes);
+  const { codes } = invite;
   yield [
     _.map(codes, (shareCode) => fork(acceptInviteCode, user.id, user.userHash, shareCode)),
     call(delay, 500),

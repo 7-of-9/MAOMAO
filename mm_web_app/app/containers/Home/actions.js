@@ -7,7 +7,8 @@
 import {
   CHANGE_TERM,
   CHANGE_SUB_TERM,
-  ACCEPT_INVITE_CODE,
+  NEW_INVITE_CODE,
+  ACCEPT_INVITE_CODES,
   ACCEPT_INVITE_SUCCESS,
   ACCEPT_INVITE_ERROR,
 } from './constants';
@@ -26,10 +27,16 @@ export function changeSubTerm(data) {
   };
 }
 
-export function acceptInviteCode(data) {
+export function newInviteCode(data) {
   return {
-    type: ACCEPT_INVITE_CODE,
+    type: NEW_INVITE_CODE,
     data,
+  };
+}
+
+export function acceptInviteCodes() {
+  return {
+    type: ACCEPT_INVITE_CODES,
   };
 }
 

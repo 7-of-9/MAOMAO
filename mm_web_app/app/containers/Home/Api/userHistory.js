@@ -24,6 +24,5 @@ function* getUserHistory(userId, userHash) {
 export function* userHistory() {
   const data = yield select(makeSelectGoogleConnect());
   const { user } = data.toJS();
-  console.warn('user', user);
   yield call(getUserHistory, user.id, user.userHash);
 }
