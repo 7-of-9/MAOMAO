@@ -88,9 +88,9 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   }
 
   onInstallSucess() {
-    this.addNotification('Yeah! You have been installed maomao extension successfully. You will be redirected to homepage.');
+    this.addNotification('Yeah! You have been installed maomao extension successfully.');
     setTimeout(() => {
-      window.location.href = '/';
+      window.location.reload();
     }, 1000);
   }
 

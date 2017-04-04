@@ -6,8 +6,8 @@ import { userHistoryLoaded, userHistoryLoadingError } from 'containers/App/actio
 import { userHash, userId } from 'utils/simpleAuth';
 
 /* eslint-disable camelcase */
-function* getUserHistory(user_id, hash) {
-  const apiUrl = `${MAOMAO_API_URL}user/home?user_id=${user_id}&hash=${hash}`;
+function* getUserHistory() {
+  const apiUrl = `${MAOMAO_API_URL}user/home?user_id=${userId()}&hash=${userHash()}`;
   try {
     const { data } = yield call(axios, {
       method: 'get',
@@ -23,5 +23,5 @@ function* getUserHistory(user_id, hash) {
  * user register/login with google account request/response handler
  */
 export function* userHistory() {
-  yield call(getUserHistory, userId(), userHash());
+  yield call(getUserHistory);
 }

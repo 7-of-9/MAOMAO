@@ -4,11 +4,11 @@ import axios from 'axios';
 import _ from 'lodash';
 import { MAOMAO_API_URL } from 'containers/App/constants';
 import { acceptShareLoaded, acceptShareLoadingError } from 'containers/Home/actions';
-import { makeSelectGoogleConnect } from 'containers/App/selectors';
+import { userHash, userId } from 'utils/simpleAuth';
 import { makeSelectInviteCodes } from 'containers/Home/selectors';
 
-function* acceptInviteCode(userId, userHash, shareCode) {
-  const apiUrl = `${MAOMAO_API_URL}share/accept?user_id=${userId}&hash=${userHash}&share_code=${shareCode}`;
+function* acceptInviteCode(shareCode) {
+  const apiUrl = `${MAOMAO_API_URL}share/accept?user_id=${userId()}&hash=${userHash()}&share_code=${shareCode}`;
   try {
     const { data } = yield call(axios, {
       method: 'get',
@@ -24,12 +24,10 @@ function* acceptInviteCode(userId, userHash, shareCode) {
  * user accept/share handler
  */
 export function* acceptInvite() {
-  const data = yield select(makeSelectGoogleConnect());
   const invite = yield select(makeSelectInviteCodes());
-  const { user } = data.toJS();
   const { codes } = invite;
   yield [
-    _.map(codes, (shareCode) => fork(acceptInviteCode, user.id, user.userHash, shareCode)),
+    _.map(codes, (shareCode) => fork(acceptInviteCode, shareCode)),
     call(delay, 500),
   ];
 }
