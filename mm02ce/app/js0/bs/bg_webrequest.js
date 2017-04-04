@@ -6,6 +6,12 @@ chrome.webRequest.onCompleted.addListener(
         NotInjectCSUrls.push(info.url);
       }
       setIconApp(info.url,'black', '!(200)', BG_INACTIVE_COLOR);
+    } else {
+      // TODO: clear !(200) text on success
+      var currentIcon = sessionObservable.icons.get(info.url);
+      if(currentIcon && currentIcon.text === '!(200)') {
+        setIconApp(info.url,currentIcon.image, '', currentIcon.color);
+      }
     }
   },
   {
