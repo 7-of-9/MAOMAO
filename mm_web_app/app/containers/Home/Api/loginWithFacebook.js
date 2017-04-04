@@ -35,7 +35,7 @@ function* facebookConnect(info) {
     login(data.id, data.email, userHash);
     const userData = Object.assign({}, data, { userHash });
     yield put(facebookConnectLoaded(userData));
-    yield put(userHistory(userId()));
+    yield put(userHistory({ userId: userId() }));
     yield put(acceptInviteCodes());
   } catch (err) {
     yield put(facebookConnectLoadingError(err));

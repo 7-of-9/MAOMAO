@@ -10,6 +10,7 @@ import { fromJS } from 'immutable';
 import { routerMiddleware } from 'react-router-redux';
 import createSagaMiddleware from 'redux-saga';
 import { restore } from 'containers/App/actions';
+import { acceptInviteCodes } from 'containers/Home/actions';
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -23,9 +24,9 @@ export default function configureStore(initialState = {}, history) {
     storage.createMiddleware(engine),
   ];
 
-  if (process.env.NODE_ENV !== 'production') {
-    middlewares.push(logger);
-  }
+  // if (process.env.NODE_ENV !== 'production') {
+  middlewares.push(logger);
+  // }
 
   const enhancers = [
     applyMiddleware(...middlewares),
@@ -75,6 +76,9 @@ export default function configureStore(initialState = {}, history) {
             user,
             codes,
           }));
+          if (user && user.id > 0) {
+            store.dispatch(acceptInviteCodes());
+          }
         }
       }).catch((err) => console.warn('Failed to load previous state', err));
 

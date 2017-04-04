@@ -42,7 +42,8 @@
     "test": "cross-env NODE_ENV=test jest --coverage",
     "test:watch": "cross-env NODE_ENV=test jest --watchAll",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "fake:api": "json-server https://mmapi00.azurewebsites.net/api/users/tmp_demo_history_calc?user_id=2 --port 3001"
+    "fake:api": "json-server https://mmapi00.azurewebsites.net/api/users/tmp_demo_history_calc?user_id=2 --port 3001",
+    "deploy:azure": "npm run build && cd build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master"
   },
   "babel": {
     "presets": [

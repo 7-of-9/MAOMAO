@@ -84,7 +84,7 @@ function mapDispatchToProps(dispatch) {
     onLogout: () => {
       dispatch(logoutUser());
       logout(() => {
-        window.location.href = ''; // back to home
+        window.location.href = '/'; // back to home
       });
     },
     dispatch,

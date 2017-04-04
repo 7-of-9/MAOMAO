@@ -31,7 +31,7 @@ function* googleConnect(info) {
     login(data.id, data.email, userHash);
     const userData = Object.assign({}, data, { userHash });
     yield put(googleConnectLoaded(userData));
-    yield put(userHistory(userId()));
+    yield put(userHistory({ userId: userId() }));
     yield put(acceptInviteCodes());
   } catch (err) {
     yield put(googleConnectLoadingError(err));
