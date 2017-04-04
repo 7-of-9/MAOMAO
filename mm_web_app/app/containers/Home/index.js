@@ -72,7 +72,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   componentDidMount() {
     let id = userId();
     const { query, pathname } = this.props.location;
-    if (query && query.user_id) {
+    if (query && query.user_id && hasInstalledExtension()) {
       id = query.user_id;
       this.props.dispatch(switchUser(id));
     }
@@ -81,7 +81,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
       this.props.dispatch(newInviteCode(pathname));
     }
 
-    if (id > 0) {
+    if (id > 0 && hasInstalledExtension()) {
       this.props.dispatch(userHistory(id));
       this.props.dispatch(acceptInviteCodes());
     }
