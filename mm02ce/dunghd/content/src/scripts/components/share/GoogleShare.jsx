@@ -171,7 +171,7 @@ const enhance = compose(
       }
     },
   }),
-  onlyUpdateForKeys(['mostRecentUses', 'contacts', 'value', 'suggestions']),
+  onlyUpdateForKeys(['value', 'contacts', 'mostRecentUses', 'suggestions']),
 );
 
 export default enhance(GoogleShare);

@@ -13,6 +13,7 @@ const initialState = {
   googleUserId: '',
   facebookUserId: '',
   contacts: [],
+  downloadPhotos: [],
   accounts: [],
 };
 
@@ -23,15 +24,11 @@ export default (state = initialState, action, nlp) => {
     }
     case 'PHOTO_NO_IMAGE':
     case 'PHOTO_IMAGE': {
-      const email = action.payload.email;
-      let contacts = [];
-      if (state.contacts.length) {
-        contacts = state.contacts.filter(item => item.email !== email);
-        // only downloadPhoto for exist  contacts
-        contacts = contacts.concat(action.payload);
-        return Object.assign({}, state, { contacts });
-      }
-      return state;
+      const downloadPhotos = state.downloadPhotos.concat(action.payload);
+      return Object.assign({}, state, { downloadPhotos });
+    }
+    case 'DOWNLOAD_PHOTO_DONE': {
+      return Object.assign({}, state, { downloadPhotos: [], contacts: state.downloadPhotos });
     }
     case 'AUTO_LOGIN': {
       window.userId = state.userId;

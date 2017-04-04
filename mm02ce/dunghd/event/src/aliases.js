@@ -94,6 +94,11 @@ function downloadPhoto(dispatch, contacts) {
       });
     }
   });
+  throttle(() => {
+        setTimeout(() => {
+          dispatch(actionCreator('DOWNLOAD_PHOTO_DONE', {}));
+        }, 1000);
+    });
 }
 
 const authLogout = () => (

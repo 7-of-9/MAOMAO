@@ -32,8 +32,10 @@ function showSounds() {
   sounds.innerText = "Discovered sounds: (uncheck to disable)";
   var keys = new Array();
   for (var key in localStorage) {
-    keys.push(key);
-    console.log(key);
+    if(key.indexOf('firebase') === -1 && key.indexOf('redux') === -1) {
+      keys.push(key);
+      console.log(key);
+    }
   }
   keys.sort();
   for (var index in keys) {
@@ -72,4 +74,3 @@ document.addEventListener('focus', showSounds);
 //    Don't believe it? Check out the final standings of the tournament, courtesy of Wikipedia.";
 
 //nlp_calais(test_data);
-
