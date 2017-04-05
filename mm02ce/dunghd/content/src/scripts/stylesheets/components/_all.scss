@@ -316,6 +316,10 @@ $close-btn-img: url('./images/close_button.png');
   color: #120000;
 }
 
+.card-header img {
+  vertical-align: middle;
+}
+
 
 /*animation logo*/
 
@@ -325,7 +329,6 @@ $close-btn-img: url('./images/close_button.png');
     -webkit-transform: scale3d(.3, .3, .3);
     transform: scale3d(.3, .3, .3);
   }
-
   50% {
     opacity: 1;
   }
@@ -337,11 +340,11 @@ $close-btn-img: url('./images/close_button.png');
     -webkit-transform: scale3d(.3, .3, .3);
     transform: scale3d(.3, .3, .3);
   }
-
   50% {
     opacity: 1;
   }
 }
+
 
 /*animation popup*/
 

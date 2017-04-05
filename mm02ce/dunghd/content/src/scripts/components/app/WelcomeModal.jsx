@@ -11,7 +11,6 @@ const customStyles = {
   title: {
     display: 'block',
     fontSize: '20px',
-    margin: '20px 0px 5px',
     color: '#000',
   },
   animateText: {
@@ -25,8 +24,23 @@ const customStyles = {
     backgroundColor: 'none',
     boxShadow: 'none',
   },
+  cardHeader: {
+    padding: '4px 5px',
+    margin: '15px auto 0',
+    border: '1px solid #fcfcfc',
+    borderRadius: '50px',
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    boxShadow: '0 1px 7px rgba(0, 0, 0, .175)'
+  },
   cardAction: {
     padding: 'none',
+  },
+  cardTitle: {
+    padding: '0',
+    marginTop: '10px',
+    fontSize: '20px',
+    color: '#000',
   },
   overlay: {
     zIndex: 9999,
@@ -46,7 +60,7 @@ const customStyles = {
     right: 'auto',
     bottom: 'auto',
     marginLeft: '-200px',
-    marginTop: '-200px',
+    marginTop: '-250px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
     overflow: 'auto',
@@ -99,7 +113,7 @@ function WelcomeModal({
             maomao
            </h1>
           <ToggleDisplay hide={auth.isLogin}>
-            <h2 style={customStyles.title}>Join MaoMao!</h2>
+            <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
             <RaisedButton
               onTouchTap={onGoogleLogin}
               label="Google Connect"
@@ -123,25 +137,28 @@ function WelcomeModal({
           <ToggleDisplay show={auth.isLogin}>
             <Card style={customStyles.card}>
               <CardHeader
-                style={customStyles.cardAction}
+                className="card-header"
+                style={customStyles.cardHeader}
                 title={auth.info.name}
                 subtitle={auth.info.email}
                 avatar={auth.info.picture}
               />
-              <CardTitle title="Welcome back!" />
+              <CardTitle title="Welcome back!" style={customStyles.cardTitle} />
               <CardActions style={customStyles.cardAction}>
                 { auth &&
                   !networks.includes('facebook.com') &&
                   <RaisedButton
-                    onTouchTap={onLinkedFacebook} label="Facebook Connect"
+                    onTouchTap={onLinkedFacebook} label="Facebook Connect" primary
+              style={customStyles.button}
                   />}
                 { auth &&
                   !networks.includes('google.com') &&
-                  <RaisedButton onTouchTap={onLinkedGoogle} label="Google Connect" />}
+                  <RaisedButton onTouchTap={onLinkedGoogle} label="Google Connect" secondary
+              style={customStyles.button} />}
                 <br />
-                <RaisedButton onTouchTap={onLogout} label="Logout" />
+                <RaisedButton onTouchTap={onLogout} label="Logout" style={customStyles.button} />
                 <br />
-                <RaisedButton onTouchTap={onClose} label="Close" />
+                <RaisedButton onTouchTap={onClose} label="Close" style={customStyles.button} />
               </CardActions>
             </Card>
           </ToggleDisplay>
