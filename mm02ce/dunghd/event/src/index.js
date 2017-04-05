@@ -14,6 +14,7 @@ import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
+import { guid } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -87,6 +88,7 @@ function onClickHandler(info) {
           type: 'AUTH_LOGOUT',
           payload: {},
         };
+        window.BG_APP_UUID = guid();
         store.dispatch(data);
       }
       break;

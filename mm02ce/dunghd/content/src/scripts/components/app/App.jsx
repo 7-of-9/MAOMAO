@@ -563,7 +563,11 @@ const enhance = compose(
      });
    },
    onLogout: props => () => {
-     props.dispatch(logout());
+     props.dispatch(logout()).then(() => {
+       props.dispatch({
+         type: 'USER_AFTER_LOGOUT',
+       });
+     });
    },
    onClose: props => () => {
      props.dispatch({

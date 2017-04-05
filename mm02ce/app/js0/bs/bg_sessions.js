@@ -12,21 +12,6 @@ var enableXp = true;
 var userId = -1;
 var userHash = '';
 var NotInjectCSUrls = [];
-
-chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  // console.trace('extension.onMessage');
-  // console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
-  // console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
-    isGuest = false;
-    userId = parseInt(message.payload.payload.userId);
-  }
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
-    isGuest = true;
-    userId = -1;
-  }
-});
-
 var session_style_hi = 'background: blue; color: white;';
 var session_style = 'background: white; color: blue;';
 var session_style_err = 'background: red; color: white;';

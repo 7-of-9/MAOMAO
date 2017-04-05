@@ -109,12 +109,8 @@ const authLogout = () => (
         type: 'AUTH_PENDING',
       });
       return logout(auth)
-        .then((data) => {
-          dispatch(batchActions([
-            actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info }),
-            actionCreator('USER_AFTER_LOGOUT'),
-          ]));
-        }).catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
+        .then(data => dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info })))
+        .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
     }
     return dispatch(
       actionCreator('LOGOUT_FULFILLED', { token: '', info: {} }),

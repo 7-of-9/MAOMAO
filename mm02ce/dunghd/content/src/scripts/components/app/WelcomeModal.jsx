@@ -57,6 +57,10 @@ const customStyles = {
     textAlign: 'center',
     animation: 'vex-flyin 0.5s',
   },
+  button: {
+    minWidth: '280px',
+    marginTop: '15px',
+  },
 };
 
 const propTypes = {
@@ -69,10 +73,7 @@ const propTypes = {
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };
-const style = {
-  minWidth: '280px',
-  marginTop: '15px',
-};
+
 const defaultProps = {
   auth: {
     isLogin: false,
@@ -93,17 +94,31 @@ function WelcomeModal({
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <Paper style={customStyles.content} zDepth={3}>
-          <div className="maomao-logo" />        
+          <div className="maomao-logo" />
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
            </h1>
           <ToggleDisplay hide={auth.isLogin}>
             <h2 style={customStyles.title}>Join MaoMao!</h2>
-            <RaisedButton onTouchTap={onGoogleLogin} label="Google Connect" secondary={true} style={style}/>
+            <RaisedButton
+              onTouchTap={onGoogleLogin}
+              label="Google Connect"
+              secondary
+              style={customStyles.button}
+            />
             <br />
-            <RaisedButton onTouchTap={onFacebookLogin} label="Facebook Connect" primary={true} style={style} />
+            <RaisedButton
+              onTouchTap={onFacebookLogin}
+              label="Facebook Connect"
+              primary
+              style={customStyles.button}
+            />
             <br />
-            <RaisedButton onTouchTap={onClose} label="Close" style={style} />
+            <RaisedButton
+              onTouchTap={onClose}
+              label="Close"
+              style={customStyles.button}
+            />
           </ToggleDisplay>
           <ToggleDisplay show={auth.isLogin}>
             <Card style={customStyles.card}>
