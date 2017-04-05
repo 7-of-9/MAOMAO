@@ -6,7 +6,7 @@ import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
-import { processUrl, openUrl } from './utils';
+import { processUrl, isInternalTab, openUrl } from './utils';
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
@@ -91,56 +91,64 @@ const getShareTopicCode = (url, codes, records) => {
 };
 
 const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLink) => {
-  if (auth.isLogin) {
-    const topic = getCurrentTopic(url, nlp.records);
-    if (url && processUrl(url)) {
-      if (isAllowToShare(url, nlp.records)) {
-        return (
-          <div>
-            <h3>Share this topic</h3>
-            <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
-            <div>
-              <GoogleButton
-                onClick={() => {
-                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
-              }}
-              />
-              <FacebookButton
-                onClick={() => {
-                  const shareUrl = `${SITE_URL}/${getLink()}`;
-                  const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-                  openUrl(src);
-                }}
-              />
-              <FacebookMessengerButton
-                onClick={() => {
-                  const shareUrl = `${SITE_URL}/${getLink()}`;
-                  const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
-                  openUrl(src);
-                }}
-              />
-              <LinkButton
-                onClick={() => {
-                  dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
-              }}
-              />
-            </div>
-          </div>
-        );
-      }
-      // TODO: check on site is allowable or not
-      return (
-        <div>
-          This site is not ready to sharing. Please wait in a few mins for processing this site!
-        </div>);
-    }
+  if (isInternalTab(url)) {
     return (
       <div>
-        Maomao sharing is off on this tab!
+        Maomao is off on internal tab!
       </div>);
   }
+
+  if (auth.isLogin) {
+    const topic = getCurrentTopic(url, nlp.records);
+    if (!processUrl(url)) {
+      return (
+        <div>
+          Maomao is off on this url!
+        </div>);
+    }
+    if (isAllowToShare(url, nlp.records)) {
+      return (
+        <div>
+          <h3>Share this topic</h3>
+          <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
+          <div>
+            <GoogleButton
+              onClick={() => {
+              dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
+            }}
+            />
+            <FacebookButton
+              onClick={() => {
+                const shareUrl = `${SITE_URL}/${getLink()}`;
+                const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
+                openUrl(src);
+              }}
+            />
+            <FacebookMessengerButton
+              onClick={() => {
+                const shareUrl = `${SITE_URL}/${getLink()}`;
+                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
+                openUrl(src);
+              }}
+            />
+            <LinkButton
+              onClick={() => {
+                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
+            }}
+            />
+          </div>
+        </div>
+      );
+    }
+    // TODO: check on site is allowable or not
+    return (
+      <div>
+        This site is not ready to sharing. Please wait in a few mins for processing this site!
+      </div>);
+  }
+
   return (
     <div>
       Please click <button
@@ -181,16 +189,14 @@ const enhance = compose(
       }
     },
     onReady: props => () => {
-      if (props.auth && props.auth.isLogin) {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (tabs != null && tabs.length > 0) {
-            const url = tabs[0].url;
-            if (url !== props.url) {
-              props.activeUrl(url);
-            }
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs != null && tabs.length > 0) {
+          const url = tabs[0].url;
+          if (url !== props.url) {
+            props.activeUrl(url);
           }
-        });
-      }
+        }
+      });
     },
   }),
   lifecycle({

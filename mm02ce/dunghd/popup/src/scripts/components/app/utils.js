@@ -41,9 +41,13 @@ export function openUrl(url) {
   window.open(url, 'Loading', createOptions());
 }
 
+export function isInternalTab(url) {
+  return url.indexOf('chrome://') !== -1;
+}
+
 export function processUrl(url) {
   // sanity
-  if (url == null) return false;
+  if (url === null || url === '') return false;
 
   if (url.indexOf('http:') !== 0 && url.indexOf('https://') !== 0) return false;
 
