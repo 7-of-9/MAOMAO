@@ -29,7 +29,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserGoogle([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.User.Register.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.google_user_id);
+            var db_user = mm_svc.Register.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.google_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id= user.google_user_id, fb_user_id= user.fb_user_id });
         }
@@ -43,7 +43,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserFb([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.User.Register.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.fb_user_id);
+            var db_user = mm_svc.Register.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id });
         }
@@ -65,7 +65,7 @@ namespace mmapi00.Controllers
             if (account == null) return BadRequest("bad linked account");
             if (account.google_user_id == null && account.fb_user_id == null) return BadRequest("missing google_user_id or fb_user_id");
 
-            var db_user = mm_svc.User.Register.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
+            var db_user = mm_svc.Register.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }
@@ -89,10 +89,26 @@ namespace mmapi00.Controllers
             //if (history.userId == null) return BadRequest("missing user id");
             //if (history.userId != user_id) throw new ArgumentException("user_id mismatch");
 
-            var history_id = mm_svc.User.UserHistory.TrackUrl(
+            var history_id = mm_svc.UserHistory.TrackUrl(
                 (string)history.url, user_id, (double)history.im_score, (int)history.time_on_tab, (int)history.audible_pings);
 
             return Ok(new { id = history_id });
+        }
+
+        /// <summary>
+        /// Returns user stream (topics)
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        [Route("user/streams")]
+        [HttpGet]
+        public IHttpActionResult GetUserStream(
+            long user_id, string hash)
+        {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            var data = mm_svc.UserStream.GetAllTopics(user_id);
+            return Ok( new { topics = data.topics, urls = data.urls });
         }
 
         /// <summary>

@@ -62,6 +62,11 @@
   <ItemGroup>
     <Compile Include="Shares\ShareAcceptor.cs" />
     <Compile Include="Shares\ShareCreator.cs" />
+    <Compile Include="UrlClassify\ClassifyReturn.cs" />
+    <Compile Include="UrlClassify\ClassifyUrlInput.cs" />
+    <Compile Include="UrlClassify\SuggestionInfo.cs" />
+    <Compile Include="UrlClassify\TopicInfo.cs" />
+    <Compile Include="UrlClassify\UserUrlInfo.cs" />
     <Compile Include="UrlRecordAndProcess\UrlAutoFlag.cs" />
     <Compile Include="UrlClassify\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="UrlRecordAndProcess\TssProducer.cs" />
     <Compile Include="UrlRecordAndProcess\UrlProcessor.cs" />
     <Compile Include="UrlRecordAndProcess\UrlRecorder.cs" />
+    <Compile Include="User\Stream.cs" />
     <Compile Include="Util\Hashing.cs" />
     <Compile Include="Util\Porter2_English.cs" />
     <Compile Include="Util\Utils\Words.cs" />

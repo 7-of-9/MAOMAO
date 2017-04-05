@@ -45,7 +45,7 @@ namespace mmapi00.Controllers
             long? tld_topic_id;
             var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id, out tld_topic_id);
 
-            var history_id = mm_svc.User.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
+            var history_id = mm_svc.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
 
             return Ok( new {
                     url_id = url_id,

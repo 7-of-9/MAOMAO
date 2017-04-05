@@ -7,7 +7,7 @@ using mmdb_model;
 using mm_global;
 using mm_aws;
 
-namespace mm_svc.User
+namespace mm_svc
 {
     public static class UserHistory
     {

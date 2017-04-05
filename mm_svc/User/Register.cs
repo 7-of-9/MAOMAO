@@ -2,7 +2,7 @@
 using mmdb_model;
 using System;
 
-namespace mm_svc.User
+namespace mm_svc
 {
     public static class Register
     {

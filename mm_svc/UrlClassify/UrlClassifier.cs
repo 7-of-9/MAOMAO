@@ -14,6 +14,19 @@ namespace mm_svc
 {
     public static class UrlClassifier
     {
+        public static ClassifyReturn TmpDemo_ClassifyAllUserHistory(long user_id) {
+            using (var db = mm02Entities.Create()) {
+                var user_urls = db.user_url.Include("url").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                return ClassifyUrlSet(user_urls.Select(p => new ClassifyUrlInput() {
+                    url_id = p.url_id,
+                    hit_utc = p.nav_utc,
+                    user_id = p.user_id,
+                    im_score = p.im_score ?? 0,
+                    time_on_tab = p.time_on_tab ?? 0
+                }).ToList());
+            }
+        }
+
         //
         // classifies a set of urls 
         //
@@ -30,53 +43,12 @@ namespace mm_svc
         //
         // for now (demo) -- just return the raw partial tree
         //
-        public class UserUrlInfo {
-            public url url;
-            public List<SuggestionInfo> suggestions;
-            public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
-            public DateTime hit_utc;
-            public double im_score, time_on_tab;
-        }
-        [DebuggerDisplay("{term_name} is_topic={is_topic} S={S}s")]
-        public class SuggestionInfo {
-            public string term_name;
-            public double S;
-            public bool is_topic;
-        }
-        [DebuggerDisplay("{term_name} ({child_topics.Count})")]
-        public class TopicInfo {
-            public string term_name;
-            public long term_id;
-            public bool url_title_topic;
-            public List<long> url_ids = new List<long>();
-            public List<TopicInfo> child_topics = new List<TopicInfo>();
-
-            public List<SuggestionInfo> suggestions = new List<SuggestionInfo>();
-            public void GetSuggestedTermsForTopicAndChildren() {
-                using (var db = mm02Entities.Create()) {
-                    var parent_terms = GoldenParents.GetStoredParents(this.term_id).Where(p => p.parent_term_id != this.term_id);
-                    var distinct = parent_terms.DistinctBy(p => p.parent_term.name);
-                    this.suggestions.AddRange(distinct.Select(p => new SuggestionInfo() {
-                        term_name = p.parent_term.name, S = p.S, is_topic = p.is_topic }));
-                    Parallel.ForEach(this.child_topics, p => p.GetSuggestedTermsForTopicAndChildren());
-                }
-            }
-        }
-
-        public class ClassifyReturn {
-            public List<TopicInfo> topics;
-            public List<UserUrlInfo> urls;
-        }
-        public class ClassifyUrlInput {
-            public long user_id, url_id;
-            public DateTime hit_utc;
-            public double im_score, time_on_tab;
-        }
 
         public static ClassifyReturn ClassifyUrlSet(List<ClassifyUrlInput> inputs)
         {
             var url_ids = inputs.Select(p => p.url_id).ToList();
-            using (var db = mm02Entities.Create()) {
+            using (var db = mm02Entities.Create())
+            {
 
                 // load - get url parent terms: found topics, & url title terms
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
@@ -86,23 +58,26 @@ namespace mm_svc
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
 
                 var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
-                var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList(); 
+                var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
 
                 var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
-                var url_infos = urls.Select(p => new UserUrlInfo() { url = p,
+                var url_infos = urls.Select(p => new UserUrlInfo()
+                {
+                    url = p,
                     suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                        hit_utc = inputs.Single(p2 => p2.url_id == p.id).hit_utc,
-                       im_score = inputs.Single(p2 => p2.url_id == p.id).im_score,
+                    hit_utc = inputs.Single(p2 => p2.url_id == p.id).hit_utc,
+                    im_score = inputs.Single(p2 => p2.url_id == p.id).im_score,
                     time_on_tab = inputs.Single(p2 => p2.url_id == p.id).time_on_tab,
                 }).ToList();
 
                 // get topic link chains - regular topics & url title topics
                 var topic_chains = new Dictionary<long, List<TopicInfo>>();
                 foreach (var topic in url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                .DistinctBy(p => p.term_id)) {
+                                                .DistinctBy(p => p.term_id))
+                {
                     var topic_term = topic.term;
-                    var topic_chain = topic.url_title_topic 
+                    var topic_chain = topic.url_title_topic
                                             ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
                                             : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
 
@@ -115,7 +90,8 @@ namespace mm_svc
 
                 // dedupe chains -- remove chain if the first topic in the chain is contained in any other chains
                 var topic_ids_to_remove = new List<long>();
-                foreach (var chain_id in topic_chains.Keys) {
+                foreach (var chain_id in topic_chains.Keys)
+                {
                     var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
                     if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
                         topic_ids_to_remove.Add(chain_id);
@@ -123,11 +99,14 @@ namespace mm_svc
                 topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
 
                 // urls --> topic chains
-                foreach (var url_info in url_infos) {
+                foreach (var url_info in url_infos)
+                {
                     var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
                                                    .Where(p => p.url_id == url_info.url.id).ToList();
-                    foreach (var topic in topics_for_url) {
-                        if (topic_chains.ContainsKey(topic.term_id)) {
+                    foreach (var topic in topics_for_url)
+                    {
+                        if (topic_chains.ContainsKey(topic.term_id))
+                        {
                             var topic_chain = topic_chains[topic.term_id];
                             url_info.topic_chains.Add(topic_chain);
                         }
@@ -136,15 +115,17 @@ namespace mm_svc
                 }
 
                 // walk topic chains; add urls that match each topic in chain
-                foreach (var topic_chain in topic_chains.Values) {
-                    foreach (var topic in topic_chain) {
+                foreach (var topic_chain in topic_chains.Values)
+                {
+                    foreach (var topic in topic_chain)
+                    {
                         var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url.id).ToList();
                         //.Select(p => new UserUrlInfo() { url = p.url,
                         //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
                         topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
                     }
                 }
-                
+
                 // dbg: order & print 
                 var chains = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
                 foreach (var topic_chain in chains)
@@ -162,14 +143,17 @@ namespace mm_svc
                         chain[i].child_topics.Add(chain[i + 1]);
 
                 // (2) combine TopicInfo children for identical topics
-                for (int i = 0; i < chains.Count; i++ ) {
+                for (int i = 0; i < chains.Count; i++)
+                {
                     var chain = chains[i];
 
-                    for (int j = chain.Count - 1; j >= 0; j--) {
+                    for (int j = chain.Count - 1; j >= 0; j--)
+                    {
                         var topic = chain[j];
 
                         var identical_topics = chains.SelectMany(p => p.Where(p2 => p2.term_id == topic.term_id)).Where(p => p != topic).ToList();
-                        foreach (var same_topic in identical_topics) {
+                        foreach (var same_topic in identical_topics)
+                        {
                             // add children to new master TopicInfo
                             topic.child_topics.AddRange(same_topic.child_topics.Where(p => !topic.child_topics.Select(p2 => p2.term_id).Contains(p.term_id)));
 
@@ -184,7 +168,8 @@ namespace mm_svc
                 chains.ForEach(p => { if (p.Count > 1) p.RemoveRange(1, p.Count - 1); });
                 var tree_roots = chains.Select(p => p.First()).ToList();
 
-                var ret = new ClassifyReturn() {
+                var ret = new ClassifyReturn()
+                {
                     topics = tree_roots,
                     urls = url_infos.OrderByDescending(p => p.im_score).ToList()
                 };
@@ -225,116 +210,103 @@ namespace mm_svc
                 //PrintSet(top_set);
             }
         }
-        
-        public static ClassifyReturn TmpDemo_ClassifyAllUserHistory(long user_id) {
-            using (var db = mm02Entities.Create()) {
-                var user_urls = db.user_url.Include("url").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
-                return ClassifyUrlSet(user_urls.Select(p => new ClassifyUrlInput() {
-                    url_id = p.url_id,
-                    hit_utc = p.nav_utc,
-                    user_id = p.user_id,
-                    im_score = p.im_score ?? 0,
-                    time_on_tab = p.time_on_tab ?? 0
-                }).ToList());
-            }
-        }
 
         //private static List<List<url_term>> RecurseUrlSet2(UrlSet parent_set, IEnumerable<url_term> url_terms)
         //{
 
-            //    var term_counts = url_terms.Where(p => !parent_set.parent_terms.Where(p2 => p2 != null).Select(p2 => p2.id).Contains(p.term_id))
-            //                               .GroupBy(p => p.term.id)
-            //                               .Select(p => new { term_id = p.Key, count = p.Count() })
-            //                               .OrderByDescending(p => p.count);
-            //    var top_terms = term_counts.Take(2).Select(p => url_terms.First(p2 => p2.term_id == p.term_id).term); // todo - use IDs for perf
+        //    var term_counts = url_terms.Where(p => !parent_set.parent_terms.Where(p2 => p2 != null).Select(p2 => p2.id).Contains(p.term_id))
+        //                               .GroupBy(p => p.term.id)
+        //                               .Select(p => new { term_id = p.Key, count = p.Count() })
+        //                               .OrderByDescending(p => p.count);
+        //    var top_terms = term_counts.Take(2).Select(p => url_terms.First(p2 => p2.term_id == p.term_id).term); // todo - use IDs for perf
 
-            //    // A/B sets -- urls matching top terms
-            //    foreach (var top_term in top_terms) {
-            //        var url_terms_matching = url_terms.Where(p => p.term_id == top_term.id).ToList();
+        //    // A/B sets -- urls matching top terms
+        //    foreach (var top_term in top_terms) {
+        //        var url_terms_matching = url_terms.Where(p => p.term_id == top_term.id).ToList();
 
-            //        // (?? url must only be in ONE of the top_term buckets; we need to pick the highest tss_norm url_term)
-            //        var urls_matching = url_terms_matching.Select(p => p.url).Distinct().ToList(); // todo - IDs for perf
+        //        // (?? url must only be in ONE of the top_term buckets; we need to pick the highest tss_norm url_term)
+        //        var urls_matching = url_terms_matching.Select(p => p.url).Distinct().ToList(); // todo - IDs for perf
 
-            //        var other_url_terms = url_terms.Where(p => urls_matching.Select(p2 => p2.id).Contains(p.url_id)).ToList();
+        //        var other_url_terms = url_terms.Where(p => urls_matching.Select(p2 => p2.id).Contains(p.url_id)).ToList();
 
-            //        var child_set = new UrlSet() {
-            //            parent = parent_set,
-            //            parent_terms = new List<term>(parent_set.parent_terms),
-            //            urls = new List<url>(urls_matching)
-            //        };
-            //        child_set.parent_terms.Add(top_term);
-            //        parent_set.child_sets.Add(child_set);
-            //        if (urls_matching.Count() > 20)
-            //            RecurseUrlSet(child_set, other_url_terms);
-            //    }
+        //        var child_set = new UrlSet() {
+        //            parent = parent_set,
+        //            parent_terms = new List<term>(parent_set.parent_terms),
+        //            urls = new List<url>(urls_matching)
+        //        };
+        //        child_set.parent_terms.Add(top_term);
+        //        parent_set.child_sets.Add(child_set);
+        //        if (urls_matching.Count() > 20)
+        //            RecurseUrlSet(child_set, other_url_terms);
+        //    }
 
-            //    return null;
-            //}
+        //    return null;
+        //}
 
-            //private static List<List<url_term>> RecurseUrlSet(UrlSet parent_set, IEnumerable<url_term> url_terms)
-            //{
-            //    // find top 2 most common terms in set - direct terms only for now
-            //    // todo: filter by S??
-            //    //  (todo: include suggested parents)
-            //    var term_counts = url_terms.Where(p => !parent_set.parent_terms.Where(p2 => p2 != null).Select(p2 => p2.id).Contains(p.term_id))
-            //                               .GroupBy(p => p.term.id)
-            //                               .Select(p => new { term_id = p.Key, count = p.Count() })
-            //                               .OrderByDescending(p => p.count);
-            //    var top_terms = term_counts.Take(2).Select(p => url_terms.First(p2 => p2.term_id == p.term_id).term); // todo - use IDs for perf
+        //private static List<List<url_term>> RecurseUrlSet(UrlSet parent_set, IEnumerable<url_term> url_terms)
+        //{
+        //    // find top 2 most common terms in set - direct terms only for now
+        //    // todo: filter by S??
+        //    //  (todo: include suggested parents)
+        //    var term_counts = url_terms.Where(p => !parent_set.parent_terms.Where(p2 => p2 != null).Select(p2 => p2.id).Contains(p.term_id))
+        //                               .GroupBy(p => p.term.id)
+        //                               .Select(p => new { term_id = p.Key, count = p.Count() })
+        //                               .OrderByDescending(p => p.count);
+        //    var top_terms = term_counts.Take(2).Select(p => url_terms.First(p2 => p2.term_id == p.term_id).term); // todo - use IDs for perf
 
-            //    // A/B sets -- urls matching top terms
-            //    foreach (var top_term in top_terms) {
-            //        var url_terms_matching = url_terms.Where(p => p.term_id == top_term.id).ToList();
+        //    // A/B sets -- urls matching top terms
+        //    foreach (var top_term in top_terms) {
+        //        var url_terms_matching = url_terms.Where(p => p.term_id == top_term.id).ToList();
 
-            //        // (?? url must only be in ONE of the top_term buckets; we need to pick the highest tss_norm url_term)
-            //        var urls_matching = url_terms_matching.Select(p => p.url).Distinct().ToList(); // todo - IDs for perf
+        //        // (?? url must only be in ONE of the top_term buckets; we need to pick the highest tss_norm url_term)
+        //        var urls_matching = url_terms_matching.Select(p => p.url).Distinct().ToList(); // todo - IDs for perf
 
-            //        var other_url_terms = url_terms.Where(p => urls_matching.Select(p2 => p2.id).Contains(p.url_id)).ToList();
+        //        var other_url_terms = url_terms.Where(p => urls_matching.Select(p2 => p2.id).Contains(p.url_id)).ToList();
 
-            //        var child_set = new UrlSet() {
-            //            parent = parent_set,
-            //            parent_terms = new List<term>(parent_set.parent_terms),
-            //            urls = new List<url>(urls_matching)
-            //        };
-            //        child_set.parent_terms.Add(top_term);
-            //        parent_set.child_sets.Add(child_set);
-            //        if (urls_matching.Count() > 20)
-            //            RecurseUrlSet(child_set, other_url_terms);
-            //    }
+        //        var child_set = new UrlSet() {
+        //            parent = parent_set,
+        //            parent_terms = new List<term>(parent_set.parent_terms),
+        //            urls = new List<url>(urls_matching)
+        //        };
+        //        child_set.parent_terms.Add(top_term);
+        //        parent_set.child_sets.Add(child_set);
+        //        if (urls_matching.Count() > 20)
+        //            RecurseUrlSet(child_set, other_url_terms);
+        //    }
 
-            //    // residual set -- urls not matching top terms
-            //    //var url_terms_not_matching = url_terms.Where(p => !top_terms.Select(p2 => p2.id).Contains(p.term_id));
-            //    //var urls_not_matching = url_terms_not_matching.Select(p => p.url).Distinct(); // todo - IDs for perf
+        //    // residual set -- urls not matching top terms
+        //    //var url_terms_not_matching = url_terms.Where(p => !top_terms.Select(p2 => p2.id).Contains(p.term_id));
+        //    //var urls_not_matching = url_terms_not_matching.Select(p => p.url).Distinct(); // todo - IDs for perf
 
-            //    //var not_matching_set = new UrlSet() { term = null, urls = new List<url>(urls_not_matching) };
-            //    //parent_set.sets.Add(not_matching_set);
-            //    //if (url_terms_not_matching.Count() > 3)
-            //    //    RecurseUrlSet(not_matching_set, url_terms_not_matching);
+        //    //var not_matching_set = new UrlSet() { term = null, urls = new List<url>(urls_not_matching) };
+        //    //parent_set.sets.Add(not_matching_set);
+        //    //if (url_terms_not_matching.Count() > 3)
+        //    //    RecurseUrlSet(not_matching_set, url_terms_not_matching);
 
-            //    return null;
-            //}
+        //    return null;
+        //}
 
-            //private static void PrintSet(UrlSet s)
-            //{
-            //    Trace.WriteLine($"{s.parent_terms.Last()?.name} ({s.urls.Count})");
-            //    s.urls.ForEach(p => Trace.WriteLine($"\t[{p.id}] {p.meta_title} {p.url1}"));
-            //    Trace.Indent();
-            //    s.child_sets.ForEach(p => PrintSet(p));
-            //    Trace.Unindent();
-            //}
+        //private static void PrintSet(UrlSet s)
+        //{
+        //    Trace.WriteLine($"{s.parent_terms.Last()?.name} ({s.urls.Count})");
+        //    s.urls.ForEach(p => Trace.WriteLine($"\t[{p.id}] {p.meta_title} {p.url1}"));
+        //    Trace.Indent();
+        //    s.child_sets.ForEach(p => PrintSet(p));
+        //    Trace.Unindent();
+        //}
 
-            //public class UrlSet {
-            //    public UrlSet parent;
-            //    public List<term> parent_terms;
-            //    public List<UrlSet> child_sets = new List<UrlSet>();
-            //    public List<url> urls = new List<url>();
-            //}
+        //public class UrlSet {
+        //    public UrlSet parent;
+        //    public List<term> parent_terms;
+        //    public List<UrlSet> child_sets = new List<UrlSet>();
+        //    public List<url> urls = new List<url>();
+        //}
 
 
-            //
-            // classifies a single url for a user *in relation to* the user's previously classified urls;
-            // tries also to reclassify previously classified 
-            //
+        //
+        // classifies a single url for a user *in relation to* the user's previously classified urls;
+        // tries also to reclassify previously classified 
+        //
         public static List<user_url_classification> ClassifySingleUrl(
             long url_id, long user_id, out int new_classifications, out int reused_classifications, 
             int call_level)
@@ -353,7 +325,7 @@ namespace mm_svc
                 //Trace.WriteLine(pretty_meta_all);
 
                 // create user_url, if not already
-                var user_url_id = mm_svc.User.UserHistory.TrackUrl(url.url1, user.id);
+                var user_url_id = mm_svc.UserHistory.TrackUrl(url.url1, user.id);
                 Trace.WriteLine($"{new string('\t', call_level)}>>> url_id={url_id} user_url_id={user_url_id} [{url.meta_title}] ({url.url1})");
 
                 // remove previous user_url classification(s)

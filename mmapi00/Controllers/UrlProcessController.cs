@@ -49,7 +49,7 @@ namespace mmapi00.Controllers
 
             // record user_url history
             var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
-            var history_id = mm_svc.User.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
+            var history_id = mm_svc.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
 
             var db_url = mm_svc.UrlInfo.GetUrl(url);
 
