@@ -365,6 +365,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
           if={
             auth.isLogin
             && isShareOnUrl.enable
+            && icon.isEnable
           }
         >
           <ShareTopic
@@ -387,6 +388,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
             && score.isOpen
             && score.im_score > 0
             && icon.isEnableIM
+            && icon.isEnable
           }
         >
           <Score score={score} />
@@ -395,6 +397,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
           if={
             auth.isLogin
             && icon.isEnableXp
+            && icon.isEnable
             && terms.length > 0
           }
         >

@@ -16,7 +16,7 @@ export default (nlp = initialState, action, auth) => {
       return initialState;
     case 'IM_SAVE_SUCCESS': {
       const url = action.payload.url;
-      let score = 'N/A';
+      let score = '';
       const hasExist = nlp.scores.find(item => item.url === url);
       if (hasExist) {
         score = hasExist.score;
@@ -26,7 +26,7 @@ export default (nlp = initialState, action, auth) => {
     }
     case 'NLP_RESULT': {
         const url = action.payload.url;
-        let score = 'N/A';
+        let score = '';
         const hasExist = nlp.scores.find(item => item.url === url);
         if (hasExist) {
           score = hasExist.score;
@@ -37,7 +37,7 @@ export default (nlp = initialState, action, auth) => {
     case 'NLP_TERMS':
     case 'NLP_INFO_KNOWN': {
         const url = action.payload.url;
-        let score = 'N/A';
+        let score = '';
         const hasExist = nlp.scores.find(item => item.url === url);
         if (hasExist) {
           score = hasExist.score;
@@ -56,7 +56,7 @@ export default (nlp = initialState, action, auth) => {
       }
     case 'NLP_INFO_UNKNOWN': {
         const url = action.payload.url;
-        let score = 'N/A';
+        let score = '';
         const hasExist = nlp.scores.find(item => item.url === url);
         if (hasExist) {
           score = hasExist.score;
@@ -114,7 +114,7 @@ export default (nlp = initialState, action, auth) => {
       }
     case 'TEXT_NOT_ENGLISH': {
         const url = action.payload.url;
-        let score = 'N/A';
+        let score = '';
         const hasExist = nlp.scores.find(item => item.url === url);
         if (hasExist) {
           score = hasExist.score;
@@ -130,7 +130,7 @@ export default (nlp = initialState, action, auth) => {
         }
 
         if (!action.payload.status) {
-          let score = 'N/A';
+          let score = '';
           const hasExist = nlp.scores.find(item => item.url === url);
           if (hasExist) {
             score = hasExist.score;
