@@ -43,8 +43,8 @@ import {
 } from './constants';
 
 const initialUserHistoryState = fromJS({
-  topics: [],
-  urls: [],
+  me: {},
+  shares: [],
 });
 
 const initialGoogleConnectState = fromJS({
@@ -126,8 +126,10 @@ function appReducer(state = initialState, action) {
         .updateIn(['loading', 'isGoogleLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
     case SWITCH_USER:
-      return state
-        .updateIn(['data', 'googleConnect', 'user', 'id'], () => action.data);
+      // TODO: saving on localstorage
+      return state;
+      // return state
+      //   .updateIn(['data', 'googleConnect', 'user', 'id'], () => action.data);
     case USER_HISTORY:
       return state
         .updateIn(['loading', 'isUserHistoryLoading'], () => true);

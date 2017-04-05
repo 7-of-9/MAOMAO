@@ -15,7 +15,7 @@ import noImage from './images/no-image.png';
 const Wrapper = styled.section`
   padding: 10px;
   margin: 10px;
-  width: 100%;
+  width: 30%;
   float: left;
   &:hover {
     box-shadow: 0px 2px 20px 2px rgba(153,150,153,0.72);

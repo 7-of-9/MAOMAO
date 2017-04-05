@@ -7,52 +7,20 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import _ from 'lodash';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
 import { createStructuredSelector } from 'reselect';
 import AppHeader from 'containers/AppHeader';
-import YourStreams from 'components/YourStreams';
 import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
 import { isLogin, userId } from 'utils/simpleAuth';
 import ChromeInstall from 'components/ChromeInstall';
 import Loading from 'components/Loading';
-
 import { userHistory, switchUser } from '../App/actions';
 import { makeSelectUserHistory, makeSelectHomeLoading } from '../App/selectors';
 import makeSelectHome from './selectors';
-import { changeTerm, changeSubTerm, newInviteCode, acceptInviteCodes } from './actions';
-
-function selectTopics(termId, topics) {
-  if (termId > 0) {
-    // find root
-    let topic = _.find(topics, { term_id: Number(termId) });
-    if (topic) {
-      return topic;
-    }
-    for (let counter = 0; counter < topics.length; counter += 1) {
-      const currentTopic = topics[counter];
-      if (currentTopic.child_topics && currentTopic.child_topics.length) {
-        topic = selectTopics(termId, currentTopic.child_topics);
-        if (topic) {
-          return topic;
-        }
-      }
-    }
-    return topic;
-  }
-  return {};
-}
-
-function selectUrls(ids, urls) {
-  if (ids && ids.length > 0) {
-    return _.filter(urls, (item) => ids.indexOf(item.id) !== -1);
-  }
-  return [];
-}
-
+import { newInviteCode, acceptInviteCodes } from './actions';
 
 export class Home extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -79,7 +47,9 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 
     if (query && query.user_id && hasInstalledExtension()) {
       id = query.user_id;
-      this.props.dispatch(switchUser(id));
+      const hash = query.hash;
+      this.props.dispatch(switchUser({ id, hash }));
+      // TODO: support switch user or remove this code
     }
 
     if (pathname && pathname.length > 1) {
@@ -134,26 +104,8 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 
   render() {
     const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
-    const { topics, urls } = this.props.history.toJS();
-    const { currentTermId, breadcrumbs } = this.props.home;
-    let termId;
-    if (breadcrumbs && breadcrumbs.length) {
-      termId = breadcrumbs[breadcrumbs.length - 1].termId;
-    }
-    const currentTopic = selectTopics(termId || currentTermId, topics);
-    let navPath = '';
-    // build breadcrumbs path
-    if (breadcrumbs && breadcrumbs.length) {
-      const navPaths = [];
-      _.forEach(breadcrumbs, (path) => {
-        navPaths.push(path.parentName);
-      });
-      navPaths.push(breadcrumbs[breadcrumbs.length - 1].termName);
-      navPath = navPaths.join(' > ');
-    } else {
-      navPath = currentTopic && currentTopic.term_name;
-    }
-    const currentUrls = selectUrls(currentTopic.url_ids, urls);
+    const { me: { urls } } = this.props.history.toJS();
+
     return (
       <div style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
@@ -170,15 +122,18 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               notifications: this.state.notifications.delete(notification),
             })}
           />
-          <AppHeader breadcrumb={navPath} friends={friends} />
+          <AppHeader friends={friends} />
           {
             !hasInstalledExtension() &&
             <div style={{ margin: '0 auto', padding: '5em' }}>
               <ChromeInstall title="Install Now!" install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
             </div>
           }
-          <YourStreams breadcrumbs={breadcrumbs} activeTermId={currentTermId} topics={topics} topic={currentTopic} change={this.props.changeTerm} />
-          <StreamList change={this.props.changeSubTerm} topic={currentTopic} urls={currentUrls} />
+          <div style={{ clear: 'both' }} />
+          <h1>Your stream (TOP 10 urls base on IM SCORE) </h1>
+          <StreamList urls={urls && urls.slice(0, 10)} />
+          <div style={{ clear: 'both' }} />
+          <h1>Your friends stream </h1>
         </div>
         <div style={{ clear: 'both' }} />
         <Loading isLoading={this.props.loading} />
@@ -191,10 +146,7 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
 Home.propTypes = {
   location: PropTypes.object,
   history: PropTypes.object,
-  home: PropTypes.object,
   loading: PropTypes.bool,
-  changeSubTerm: PropTypes.func,
-  changeTerm: PropTypes.func,
   dispatch: PropTypes.func,
 };
 
@@ -206,12 +158,6 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    changeTerm: (termId) => {
-      dispatch(changeTerm(termId));
-    },
-    changeSubTerm: (termId) => {
-      dispatch(changeSubTerm(termId));
-    },
     dispatch,
   };
 }

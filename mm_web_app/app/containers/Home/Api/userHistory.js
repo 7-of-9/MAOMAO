@@ -7,7 +7,7 @@ import { userHash, userId } from 'utils/simpleAuth';
 
 /* eslint-disable camelcase */
 function* getUserHistory() {
-  const apiUrl = `${MAOMAO_API_URL}user/home?user_id=${userId()}&hash=${userHash()}`;
+  const apiUrl = `${MAOMAO_API_URL}user/streams?user_id=${userId()}&hash=${userHash()}`;
   try {
     const { data } = yield call(axios, {
       method: 'get',
