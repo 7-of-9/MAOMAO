@@ -5,7 +5,7 @@
 */
 
 import React, { PropTypes } from 'react';
-import { compose, pure, withState, withHandlers, onlyUpdateForKeys } from 'recompose';
+import { compose, withState, withHandlers, onlyUpdateForKeys } from 'recompose';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { intlShape, injectIntl } from 'react-intl';
 import messages from './messages';
@@ -21,7 +21,6 @@ const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 
 
 function SearchBar(props) {
   const { formatMessage } = props.intl;
-  console.warn('SearchBar props', props);
   return (
     <Form onSubmit={props.onSearch}>
       <A onClick={() => { props.changeTags(TEST_SET_1); }} className="foo" > Test Set 1 </A> |
@@ -55,7 +54,6 @@ const enhance = compose(
   withState('tags', 'updateTags', []),
   withHandlers({
     changeTags: (props) => (newTags) => {
-      console.warn('changeTags props', props);
       props.updateTags(() => {
         const tags = [];
         for (let counter = 0; counter < newTags.length; counter += 1) {
@@ -71,7 +69,6 @@ const enhance = compose(
       });
     },
     handleDelete: (props) => (index) => {
-      console.warn('handleDelete props', props, index);
       props.updateTags(() => {
         const tags = props.terms;
         tags.splice(index, 1);
@@ -82,7 +79,6 @@ const enhance = compose(
       });
     },
     handleAddition: (props) => (tag) => {
-      console.warn('handleAddition props', props, tag);
       props.updateTags(() => {
         const tags = props.terms;
         tags.push({
@@ -96,12 +92,7 @@ const enhance = compose(
       });
     },
   }),
+  onlyUpdateForKeys(['terms']),
 );
 
-const OptimizedComponent = pure(enhance(SearchBar));
-const HyperOptimizedComponent = onlyUpdateForKeys([
-  'terms',
-])(OptimizedComponent);
-
-
-export default injectIntl(HyperOptimizedComponent);
+export default injectIntl(enhance(SearchBar));

@@ -36,18 +36,16 @@ const Link = styled.a`
   width: 100%;
 `;
 
-function YourStreams({ topics, friends, change, activeId }) {
+function YourStreams({ topics, friends, changeTerm, changeFriendStream, activeId }) {
   const items = [];
   const friendStreams = [];
-  console.warn('activeId', activeId);
-  console.warn('topics', topics);
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
       if (topic.id) {
         items.push(<TopicName
           onClick={(e) => {
             e.preventDefault();
-            change(topic.id);
+            changeTerm(topic.id);
           }} style={{ color: (activeId === topic.id) ? '#000' : '#fff' }} key={topic.id}
         >
           <Link>
@@ -57,14 +55,13 @@ function YourStreams({ topics, friends, change, activeId }) {
       }
     });
   }
-  console.warn('friends', friends);
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
       if (friend.id) {
         friendStreams.push(<TopicName
           onClick={(e) => {
             e.preventDefault();
-            change(friend.id);
+            changeFriendStream(friend.id);
           }} style={{ color: (activeId === friend.id) ? '#000' : '#fff' }} key={friend.id}
         >
           <Link>
@@ -93,7 +90,8 @@ YourStreams.propTypes = {
   topics: React.PropTypes.array,
   friends: React.PropTypes.array,
   activeId: React.PropTypes.number,
-  change: React.PropTypes.func,
+  changeTerm: React.PropTypes.func,
+  changeFriendStream: React.PropTypes.func,
 };
 
 export default YourStreams;
