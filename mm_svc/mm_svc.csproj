@@ -62,11 +62,6 @@
   <ItemGroup>
     <Compile Include="Shares\ShareAcceptor.cs" />
     <Compile Include="Shares\ShareCreator.cs" />
-    <Compile Include="UrlClassify\ClassifyReturn.cs" />
-    <Compile Include="UrlClassify\ClassifyUrlInput.cs" />
-    <Compile Include="UrlClassify\SuggestionInfo.cs" />
-    <Compile Include="UrlClassify\TopicInfo.cs" />
-    <Compile Include="UrlClassify\UserUrlInfo.cs" />
     <Compile Include="UrlRecordAndProcess\UrlAutoFlag.cs" />
     <Compile Include="UrlClassify\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />

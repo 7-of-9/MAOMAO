@@ -16,6 +16,7 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 // current user histories base on user_id
+                var me = db.users.Find(user_id);
                 var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
                 var urls_list = user_urls.Select(p => new ClassifyUrlInput()
                 {
@@ -33,11 +34,11 @@ namespace mm_svc
                     share_id = p.share_id,
                     user_id = p.user_id
                 }).ToList();
-                return ClassifyUrlSetForUser(urls_list, shares_list);
+                return ClassifyUrlSetForUser(me, urls_list, shares_list);
             }
         }
 
-        private static UserStreamReturn ClassifyUrlSetForUser(List<ClassifyUrlInput> urls_list, List<ShareActiveInput> shares_list)
+        private static UserStreamReturn ClassifyUrlSetForUser(user me, List<ClassifyUrlInput> urls_list, List<ShareActiveInput> shares_list)
         {
             // get all topics, urls for user 
             // json output
@@ -74,6 +75,9 @@ namespace mm_svc
                     shares = new List<UserStreamInfo>(),
                     me = new UserStreamInfo()
                     {
+                        id = me.id,
+                        email = me.email,
+                        user = me.firstname + " " + me.lastname,
                         urls = url_infos.OrderByDescending(p => p.im_score).ToList()
                     }
                 };
@@ -92,8 +96,9 @@ namespace mm_svc
 
         public class UserStreamInfo
         {
-            public string owner;
-            public long owner_id;
+            public string user;
+            public string email;
+            public long id;
             public List<UserStreamUrlInfo> urls;
             
         }

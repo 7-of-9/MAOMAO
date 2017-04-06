@@ -14,10 +14,13 @@ namespace mm_svc
 {
     public static class UrlClassifier
     {
-        public static ClassifyReturn TmpDemo_ClassifyAllUserHistory(long user_id) {
-            using (var db = mm02Entities.Create()) {
+        public static ClassifyReturn TmpDemo_ClassifyAllUserHistory(long user_id)
+        {
+            using (var db = mm02Entities.Create())
+            {
                 var user_urls = db.user_url.Include("url").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
-                return ClassifyUrlSet(user_urls.Select(p => new ClassifyUrlInput() {
+                return ClassifyUrlSet(user_urls.Select(p => new ClassifyUrlInput()
+                {
                     url_id = p.url_id,
                     hit_utc = p.nav_utc,
                     user_id = p.user_id,
@@ -308,7 +311,7 @@ namespace mm_svc
         // tries also to reclassify previously classified 
         //
         public static List<user_url_classification> ClassifySingleUrl(
-            long url_id, long user_id, out int new_classifications, out int reused_classifications, 
+            long url_id, long user_id, out int new_classifications, out int reused_classifications,
             int call_level)
         {
             new_classifications = 0;
@@ -381,8 +384,10 @@ namespace mm_svc
                 // record - URL classifications (no regard to prior classifications: positive ordinals)
                 short pri = 0;
                 var user_url_classifications_for_url_only = new List<user_url_classification>();
-                foreach (var term in classifications_for_url) {
-                    var user_url_classification = new user_url_classification() {
+                foreach (var term in classifications_for_url)
+                {
+                    var user_url_classification = new user_url_classification()
+                    {
                         term_id = term.id,
                         //term = term,
                         user_id = user_id,
@@ -397,8 +402,10 @@ namespace mm_svc
                 // record -- URL classifications (prior matching classifications, ordered by classification count, negative ordinals)
                 pri = 0;
                 var user_url_classifications_prior_classifications = new List<user_url_classification>();
-                foreach (var term in classifications_for_prior) {
-                    var user_url_classification = new user_url_classification() {
+                foreach (var term in classifications_for_prior)
+                {
+                    var user_url_classification = new user_url_classification()
+                    {
                         term_id = term.id,
                         //term = term,
                         user_id = user_id,
@@ -414,9 +421,10 @@ namespace mm_svc
 
                 // log
                 var url_all_classifications = user_url_classifications_for_url_only.Union(user_url_classifications_prior_classifications).ToList();
-                foreach (var classification in url_all_classifications) {
+                foreach (var classification in url_all_classifications)
+                {
                     var url_term = db.url_term.Include("term").Where(p => p.term_id == classification.term_id && p.url_id == url.id).Single();
-                    Trace.WriteLine($"{new string('\t', call_level+1)}pri={classification.pri} {url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S_CALC} reused={classification.reused}");
+                    Trace.WriteLine($"{new string('\t', call_level + 1)}pri={classification.pri} {url_term.term.name} tss_norm={url_term.tss_norm} S={url_term.S_CALC} reused={classification.reused}");
                 }
 
                 // rewrite common user_url_classification negative ordinals  [reclassification of common prior classified]
@@ -458,4 +466,63 @@ namespace mm_svc
             return classifications;
         }
     }
+
+    public class UserUrlInfo
+    {
+        public url url;
+        public List<SuggestionInfo> suggestions;
+        public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
+        public DateTime hit_utc;
+        public double im_score, time_on_tab;
+    }
+
+    [DebuggerDisplay("{term_name} ({child_topics.Count})")]
+    public class TopicInfo
+    {
+        public string term_name;
+        public long term_id;
+        public bool url_title_topic;
+        public List<long> url_ids = new List<long>();
+        public List<TopicInfo> child_topics = new List<TopicInfo>();
+
+        public List<SuggestionInfo> suggestions = new List<SuggestionInfo>();
+        public void GetSuggestedTermsForTopicAndChildren()
+        {
+            using (var db = mm02Entities.Create())
+            {
+                var parent_terms = GoldenParents.GetStoredParents(this.term_id).Where(p => p.parent_term_id != this.term_id);
+                var distinct = parent_terms.DistinctBy(p => p.parent_term.name);
+                this.suggestions.AddRange(distinct.Select(p => new SuggestionInfo()
+                {
+                    term_name = p.parent_term.name,
+                    S = p.S,
+                    is_topic = p.is_topic
+                }));
+                Parallel.ForEach(this.child_topics, p => p.GetSuggestedTermsForTopicAndChildren());
+            }
+        }
+    }
+
+    [DebuggerDisplay("{term_name} is_topic={is_topic} S={S}s")]
+    public class SuggestionInfo
+    {
+        public string term_name;
+        public double S;
+        public bool is_topic;
+    }
+
+    public class ClassifyUrlInput
+    {
+        public long user_id, url_id;
+        public DateTime hit_utc;
+        public double im_score, time_on_tab;
+    }
+
+    public class ClassifyReturn
+    {
+        public List<TopicInfo> topics;
+        public List<UserUrlInfo> urls;
+
+    }
+
 }
