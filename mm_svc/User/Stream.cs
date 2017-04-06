@@ -90,7 +90,7 @@ namespace mm_svc
         private static List<UserStreamUrlInfo> FindUserUrlInfosOfUrl(long? url_id) {
           using (var db = mm02Entities.Create())
           {
-              var user_urls = db.user_url.AsNoTracking().Where(p => p.id == url_id).Distinct().ToListNoLock();
+              var user_urls = db.user_url.AsNoTracking().Where(p => p.url_id == url_id).Distinct().ToListNoLock();
               var urls_list = user_urls.Select(p => new ClassifyUrlInput()
               {
                   url_id = p.url_id,
