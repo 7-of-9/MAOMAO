@@ -11,8 +11,7 @@ import StreamCategory from 'components/StreamCategory';
 import StreamItem from 'components/StreamItem';
 
 const Wrapper = styled.div`
-  float: right;
-  width: 80%;
+  width: 100%;
   padding: 1em;
 `;
 

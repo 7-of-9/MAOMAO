@@ -11,22 +11,26 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
+    margin: '-250px 0 0 -305px',
     zIndex: 1000,
-    minWidth: '600px',
-    backgroundColor: '#dedede',
-    border: '3px solid #3f51b5',
+    minWidth: '610px',
+    backgroundColor: '#fff',
+    border: '1px solid rgb(204, 204, 204)',
+    WebkitOverflowScrolling: 'touch',
+    borderRadius: '7px',
+    outline: 'none',
+    padding: '20px',
+    textAlign: 'center',
+    animation: 'vex-flyin 0.5s',
   },
   toolbar: {
-    float: 'right',
+    display: 'inline-block',
   },
   topic: {
     fontWeight: 'bolder',
   },
   heading: {
-    paddingLeft: '50px',
-    height: '40px',
-    width: 'fit-content',
+    padding: '0 50px',
     lineHeight: '40px',
     fontSize: '16px',
   },
@@ -97,15 +101,18 @@ const ShareTopic = enhance(({
        <button
          onClick={closeShare} className="close_button"
        />
+       <h3 style={style.heading}>
+        Share <span style={style.topic}>{selectTopics(terms)}</span> with
+      </h3>
+      <div className="toolbar-button">
        <Toolbar
          active={type}
          onChange={changeShareType}
          onShare={shareUrl}
          onSendMsg={sendMsgUrl}
+         style={style.toolbar}
        />
-       <h3 style={style.heading}>
-        Share <span style={style.topic}>{selectTopics(terms)}</span> with:
-      </h3>
+       </div>
        <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
        <ToggleDisplay if={type === 'Google' && contacts.length === 0}>
          You have no google contacts. Click
@@ -113,7 +120,7 @@ const ShareTopic = enhance(({
           to grant permissions to access google contacts.
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
-         <GoogleShare
+         <GoogleShare className="form-control"
            mostRecentUses={contacts.slice(0, 3)}
            contacts={contacts}
            handleChange={handleChange}

@@ -351,16 +351,18 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
     <StyleRoot>
       <div className="maomao-ext-component">
         {/* <FloatingShare /> */}
-        <WelcomeModal
-          auth={auth}
-          onGoogleLogin={onGoogleLogin}
-          onFacebookLogin={onFacebookLogin}
-          onLinkedFacebook={onLinkedFacebook}
-          onLinkedGoogle={onLinkedGoogle}
-          onClose={onClose}
-          onLogout={onLogout}
-          isOpen={isOpen}
-        />
+        <ToggleDisplay if={icon.isEnable}>
+          <WelcomeModal
+            auth={auth}
+            onGoogleLogin={onGoogleLogin}
+            onFacebookLogin={onFacebookLogin}
+            onLinkedFacebook={onLinkedFacebook}
+            onLinkedGoogle={onLinkedGoogle}
+            onClose={onClose}
+            onLogout={onLogout}
+            isOpen={isOpen}
+          />
+        </ToggleDisplay>
         <ToggleDisplay
           if={
             auth.isLogin
