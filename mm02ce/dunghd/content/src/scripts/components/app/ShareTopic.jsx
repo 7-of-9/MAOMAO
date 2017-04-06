@@ -11,11 +11,12 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    margin: '-250px 0 0 -305px',
+    margin: '-250px 0 0 -310px',
     zIndex: 1000,
-    minWidth: '610px',
+    width: '620px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
+    boxShadow: 'rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px',
     WebkitOverflowScrolling: 'touch',
     borderRadius: '7px',
     outline: 'none',
@@ -31,8 +32,10 @@ const style = {
   },
   heading: {
     padding: '0 50px',
-    lineHeight: '40px',
-    fontSize: '16px',
+    lineHeight: '30px',
+    fontSize: '25px',
+    margin: '20px 0 15px',
+    overflow: 'hidden',
   },
   button: {
     float: 'right',
@@ -102,7 +105,9 @@ const ShareTopic = enhance(({
          onClick={closeShare} className="close_button"
        />
        <h3 style={style.heading}>
-        Share <span style={style.topic}>{selectTopics(terms)}</span> with
+        <span className="fancy">
+          <span className="fancy-line">Share <em style={style.topic}>{selectTopics(terms)}</em> with</span>
+        </span>
       </h3>
       <div className="toolbar-button">
        <Toolbar
@@ -112,7 +117,7 @@ const ShareTopic = enhance(({
          onSendMsg={sendMsgUrl}
          style={style.toolbar}
        />
-       </div>
+      </div>
        <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
        <ToggleDisplay if={type === 'Google' && contacts.length === 0}>
          You have no google contacts. Click
@@ -120,7 +125,7 @@ const ShareTopic = enhance(({
           to grant permissions to access google contacts.
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
-         <GoogleShare className="form-control"
+         <GoogleShare
            mostRecentUses={contacts.slice(0, 3)}
            contacts={contacts}
            handleChange={handleChange}
@@ -130,13 +135,11 @@ const ShareTopic = enhance(({
            className="share-button"
            onClick={sendEmails}
          >
-             Share Now!
-           </button>
+          Share Now!
+         </button>
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Link'}>
-         <div>
-           {SITE_URL}/{code[shareOption]}
-         </div>
+          {SITE_URL}/{code[shareOption]}
        </ToggleDisplay>
      </div >,
 );

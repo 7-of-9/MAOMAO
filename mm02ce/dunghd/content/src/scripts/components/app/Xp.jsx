@@ -96,7 +96,7 @@ class Xp extends Component {
     );
     const xp = randomElement(this.props.terms);
     return (
-      <div className="blurred" style={{ display: this.state.show && this.props.terms.length > 0 ? 'block' : 'none', transform: 'scale(1.0) translate(-50%,-50%)' }}>
+      <div className="blurred" style={{ display: this.state.show && this.props.terms.length > 0 ? 'block' : 'none' }}>
         <div className="inner_bg">
           <button onClick={this.closePopup} className="close_button" />
           {dummies}

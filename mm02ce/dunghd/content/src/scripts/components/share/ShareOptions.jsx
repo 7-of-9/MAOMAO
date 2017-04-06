@@ -17,13 +17,9 @@ const Option = styled.button`
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  -ms-touch-action: manipulation;
-      touch-action: manipulation;
+  touch-action: manipulation;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   background-image: none;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -34,7 +30,7 @@ const Option = styled.button`
 `;
 
 const style = {
-  margin: '10px auto',
+  margin: '20px auto 10px',
   width: '100%',
   height: '100%',
   textAlign: 'center',
@@ -47,9 +43,9 @@ const enhance = compose(
 
 const ShareOptions = enhance(({ topic, active, onChange }) =>
   <div style={style} className="share-options">
-    <Option primary={active === 'site'} onClick={() => { onChange('site'); }} >just this page</Option>
-    { topic && <Option primary={active === 'topic'} onClick={() => { onChange('topic'); }}>{topic}</Option> }
-    <Option primary={active === 'all'} onClick={() => { onChange('all'); }}> *.* all my browsing!</Option>
+    <Option className="button-site" primary={active === 'site'} onClick={() => { onChange('site'); }} >just this page</Option>
+    { topic && <Option className="button-topic" primary={active === 'topic'} onClick={() => { onChange('topic'); }}>{topic}</Option> }
+    <Option className="button-all" primary={active === 'all'} onClick={() => { onChange('all'); }}> *.* all my browsing!</Option>
   </div>,
 );
 export default ShareOptions;

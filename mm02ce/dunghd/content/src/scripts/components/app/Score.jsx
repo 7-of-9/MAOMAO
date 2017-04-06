@@ -13,6 +13,8 @@ const style = {
     borderRadius: '6px',
     background: 'rgba(242,242,242,0.63)',
     boxShadow: 'rgba(0, 0, 0, 0.14902) 3px 3px 11px 3px',
+    WebkitOverflowScrolling: 'touch',
+    animation: 'vex-flyin 0.5s',
   },
   header: {
     padding: '8px',
@@ -53,15 +55,16 @@ function Score({ score: { url, histories, im_score, time_on_tab, audible_pings }
   return (
     <Card className="blur" style={style.card}>
       <CardHeader
+        className="score-title"
         style={style.header}
         title={im_score}
         actAsExpander
         showExpandableButton
       />
-      <CardText style={style.text} expandable>
-      Time on tab: {moment.duration(time_on_tab).humanize()}<br />
-      Ping audible: {audible_pings}<br />
-        {lastSave(url, histories)}
+      <CardText className="list-para" style={style.text} expandable>
+        <p>Time on tab: <span>{moment.duration(time_on_tab).humanize()}</span></p>
+        <p>Ping audible: <span>{audible_pings}</span></p>
+        <p>{lastSave(url, histories)}</p>
       </CardText>
     </Card>);
 }

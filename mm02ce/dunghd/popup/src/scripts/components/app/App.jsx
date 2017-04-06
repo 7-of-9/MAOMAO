@@ -109,9 +109,9 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
     if (isAllowToShare(url, nlp.records)) {
       return (
         <div>
-          <h3>Share this topic</h3>
+          <h3 className="share-heading">Share this topic</h3>
           <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
-          <div>
+          <div className="toolbar-button">
             <GoogleButton
               onClick={() => {
               dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });

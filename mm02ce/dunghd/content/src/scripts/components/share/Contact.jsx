@@ -44,8 +44,8 @@ const Remove = styled.a`
 
 /* eslint-disable no-param-reassign */
 const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
-  <Wrapper onClick={onClick}>
-    <Image>
+  <Wrapper onClick={onClick} className="share-contact">
+    <Image className="share-contact-img">
       <img
         onError={(ev) => { ev.target.src = noImage; }}
         src={image}
@@ -54,13 +54,13 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
         width="40"
       />
     </Image>
-    <Info>
+    <Info className="share-info">
       {name && name.length > 0 &&
       <Item>{name}</Item>
       }
       <Item>{email}</Item>
       {
-        isEdit && <Remove onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt="Remove" /></Remove>
+        isEdit && <Remove className="account-remove" onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt="Remove" /></Remove>
       }
     </Info>
   </Wrapper>;
