@@ -48,7 +48,7 @@ namespace mm_svc
           }
         }
 
-        private static List<UserStreamUrlInfo> FindUserUrlInfosOfTopic(long user_id, long term_id) {
+        private static List<UserStreamUrlInfo> FindUserUrlInfosOfTopic(long user_id, long? term_id) {
           using (var db = mm02Entities.Create())
           {
               var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
@@ -73,7 +73,7 @@ namespace mm_svc
               var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
-              return = urls.Select(p => new UserStreamUrlInfo()
+              return urls.Select(p => new UserStreamUrlInfo()
               {
                   id = p.id,
                   href = p.url1,
@@ -87,7 +87,7 @@ namespace mm_svc
             }
         }
 
-        private static List<UserStreamUrlInfo> FindUserUrlInfosOfUrl(long url_id) {
+        private static List<UserStreamUrlInfo> FindUserUrlInfosOfUrl(long? url_id) {
           using (var db = mm02Entities.Create())
           {
               var user_urls = db.user_url.AsNoTracking().Where(p => p.id == url_id).Distinct().ToListNoLock();
@@ -111,7 +111,7 @@ namespace mm_svc
               var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
-              return = urls.Select(p => new UserStreamUrlInfo()
+              return urls.Select(p => new UserStreamUrlInfo()
               {
                   id = p.id,
                   href = p.url1,
@@ -140,7 +140,7 @@ namespace mm_svc
               var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
-              return = urls.Select(p => new UserStreamUrlInfo()
+              return urls.Select(p => new UserStreamUrlInfo()
               {
                   id = p.id,
                   href = p.url1,
@@ -196,7 +196,7 @@ namespace mm_svc
                   });
                 } else {
                     // topic_id --> get all urls belongs
-                    if(share.topic_id) {
+                    if(share.topic_id != null) {
                       var url_infos = FindUserUrlInfosOfTopic(share.user_id,share.topic_id);
                       shares.Add(new UserStreamInfo() {
                         id = user.id,
