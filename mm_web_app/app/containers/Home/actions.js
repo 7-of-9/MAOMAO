@@ -6,7 +6,7 @@
 
 import {
   CHANGE_TERM,
-  CHANGE_SUB_TERM,
+  CHANGE_FRIEND_STREAM,
   NEW_INVITE_CODE,
   ACCEPT_INVITE_CODES,
   ACCEPT_INVITE_SUCCESS,
@@ -20,9 +20,9 @@ export function changeTerm(data) {
   };
 }
 
-export function changeSubTerm(data) {
+export function changeFriendStream(data) {
   return {
-    type: CHANGE_SUB_TERM,
+    type: CHANGE_FRIEND_STREAM,
     data,
   };
 }

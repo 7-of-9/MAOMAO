@@ -7,9 +7,9 @@
 import { fromJS } from 'immutable';
 import { RESTORE, LOGOUT } from 'containers/App/constants';
 import {
-  CHANGE_TERM, CHANGE_SUB_TERM, NEW_INVITE_CODE, ACCEPT_INVITE_SUCCESS, ACCEPT_INVITE_ERROR } from './constants';
+   NEW_INVITE_CODE, ACCEPT_INVITE_SUCCESS, ACCEPT_INVITE_ERROR, CHANGE_TERM, CHANGE_FRIEND_STREAM,
+ } from './constants';
 
-const initialBreadcrumbState = fromJS([]);
 const initialCodesState = fromJS({
   codes: [],
   result: [],
@@ -17,7 +17,7 @@ const initialCodesState = fromJS({
 
 const initialState = fromJS({
   currentTermId: -1,
-  breadcrumbs: initialBreadcrumbState,
+  friendStreamId: -1,
   invite: initialCodesState,
 });
 
@@ -47,18 +47,12 @@ function homeReducer(state = initialState, action) {
       .updateIn(['invite', 'result'], (result) => result.push(action.data));
 
     case CHANGE_TERM:
-      {
-        const currentTermId = action.data;
-        if (state.get('breadcrumbs').filter((item) => item.termId === currentTermId)) {
-          return state.set('currentTermId', currentTermId)
-            .update('breadcrumbs', (breadcrumbs) => breadcrumbs.pop());
-        }
-        return state.set('currentTermId', currentTermId)
-          .update('breadcrumbs', () => initialBreadcrumbState);
-      }
+      return state.set('currentTermId', action.data)
+              .set('friendStreamId', -1);
 
-    case CHANGE_SUB_TERM:
-      return state.update('breadcrumbs', (breadcrumbs) => breadcrumbs.push(action.data));
+    case CHANGE_FRIEND_STREAM:
+      return state.set('friendStreamId', action.data)
+              .set('currentTermId', -1);
 
     default:
       return state;
