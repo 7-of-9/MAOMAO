@@ -16,7 +16,7 @@ import { createStructuredSelector } from 'reselect';
 import _ from 'lodash';
 import InfiniteScroll from 'redux-infinite-scroll';
 import ReactPlayer from 'react-player';
-import { pure, onlyUpdateForKeys } from 'recompose';
+import { onlyUpdateForKeys } from 'recompose';
 import { List } from 'immutable';
 import { StickyContainer, Sticky } from 'react-sticky';
 
@@ -254,9 +254,8 @@ const mapStateToProps = createStructuredSelector({
   reddit: makeSelectReddit(),
 });
 
-const OptimizedComponent = pure(Discovery);
 const HyperOptimizedComponent = onlyUpdateForKeys([
   'loading', 'google', 'googleKnowledge', 'googleNews', 'youtube', 'reddit', 'terms',
-])(OptimizedComponent);
+])(Discovery);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HyperOptimizedComponent);
