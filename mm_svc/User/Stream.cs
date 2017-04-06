@@ -61,16 +61,12 @@ namespace mm_svc
                   time_on_tab = p.time_on_tab ?? 0
               }).ToList();
               var my_url_ids = urls_list.Select(p => p.url_id).ToList();
-              // load - get url parent terms: found topics, & url title terms
               var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                              .Include("term").Include("url")
                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                              .Where(p => p.term_id == term_id)
                              .Where(p => my_url_ids.Contains(p.url_id));
               var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
-              var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
-              var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
               return urls.Select(p => new UserStreamUrlInfo()
@@ -100,15 +96,11 @@ namespace mm_svc
                   time_on_tab = p.time_on_tab ?? 0
               }).ToList();
               var my_url_ids = urls_list.Select(p => p.url_id).ToList();
-              // load - get url parent terms: found topics, & url title terms
               var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                              .Include("term").Include("url")
                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                              .Where(p => my_url_ids.Contains(p.url_id));
               var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
-              var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
-              var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
               return urls.Select(p => new UserStreamUrlInfo()
@@ -129,15 +121,11 @@ namespace mm_svc
           var my_url_ids = urls_list.Select(p => p.url_id).ToList();
           using (var db = mm02Entities.Create())
           {
-              // load - get url parent terms: found topics, & url title terms
               var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                              .Include("term").Include("url")
                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                              .Where(p => my_url_ids.Contains(p.url_id));
               var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
-              var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
-              var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
               var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
               var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
               return urls.Select(p => new UserStreamUrlInfo()
@@ -151,6 +139,79 @@ namespace mm_svc
                   im_score = urls_list.Single(p2 => p2.url_id == p.id).im_score,
                   time_on_tab = urls_list.Single(p2 => p2.url_id == p.id).time_on_tab,
               }).ToList();
+            }
+        }
+
+        private static List<UserStreamTopicInfo> FindUserTopicInfos(List<ClassifyUrlInput> urls_list, List<UserStreamUrlInfo> url_infos) {
+          var my_url_ids = urls_list.Select(p => p.url_id).ToList();
+          using (var db = mm02Entities.Create())
+          {
+              // load - get url parent terms: found topics, & url title terms
+              var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
+                             .Include("term").Include("url")
+                             .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                             .Where(p => my_url_ids.Contains(p.url_id));
+              var url_parent_terms = url_parent_terms_qry.ToListNoLock();
+
+              var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
+              var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
+
+              // get topic link chains - regular topics & url title topics
+              var topic_chains = new Dictionary<long, List<UserStreamTopicInfo>>();
+              foreach (var topic in url_topics.Union(url_title_topics) // regular topics & url title topics
+                                              .DistinctBy(p => p.term_id))
+              {
+                  var topic_term = topic.term;
+                  var topic_chain = topic.url_title_topic
+                                          ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
+                                          : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
+
+                  var chain = topic_chain.Select(p => new UserStreamTopicInfo() { name = p.parent_term.name, id = p.parent_term_id }).ToList();
+                  chain.Reverse();
+
+                  chain.Add(new UserStreamTopicInfo() { name = topic_term.name, id = topic_term.id });
+                  topic_chains.Add(topic_term.id, chain);
+              }
+
+              // dedupe chains -- remove chain if the first topic in the chain is contained in any other chains
+              var topic_ids_to_remove = new List<long>();
+              foreach (var chain_id in topic_chains.Keys)
+              {
+                  var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
+                  if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
+                      topic_ids_to_remove.Add(chain_id);
+              }
+              topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
+
+              // urls --> topic chains
+              foreach (var url_info in url_infos)
+              {
+                  var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
+                                                 .Where(p => p.url_id == url_info.url.id).ToList();
+                  foreach (var topic in topics_for_url)
+                  {
+                      if (topic_chains.ContainsKey(topic.term_id))
+                      {
+                          var topic_chain = topic_chains[topic.term_id];
+                          url_info.topic_chains.Add(topic_chain);
+                      }
+                  }
+                  //url_info.topic_chains = url_info.topic_chains.OrderByDescending(p => p.Max(p2 => p2.topic_S_norm)).ToList();
+              }
+
+              // walk topic chains; add urls that match each topic in chain
+              foreach (var topic_chain in topic_chains.Values)
+              {
+                  foreach (var topic in topic_chain)
+                  {
+                      var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url.id).ToList();
+                      //.Select(p => new UserUrlInfo() { url = p.url,
+                      //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
+                      topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
+                  }
+              }
+
+              return topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
             }
         }
 
@@ -169,7 +230,8 @@ namespace mm_svc
                     id = me.id,
                     email = me.email,
                     user = me.firstname + " " + me.lastname,
-                    urls = url_infos.OrderByDescending(p => p.im_score).ToList()
+                    urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
+                    topcis = FindUserTopicInfos(urls_list, url_infos)
                 }
             };
 
@@ -234,6 +296,7 @@ namespace mm_svc
             public string email;
             public long id;
             public List<UserStreamUrlInfo> urls;
+            public List<UserStreamTopicInfo> topics;
 
         }
 
@@ -245,6 +308,13 @@ namespace mm_svc
             public bool share_all { get; set; }
             public Nullable<long> url_id { get; set; }
             public Nullable<long> topic_id { get; set; }
+        }
+
+        public class UserStreamTopicInfo
+        {
+            public string name;
+            public long id;
+            public List<long> url_ids = new List<long>();
         }
 
         public class UserStreamUrlInfo
