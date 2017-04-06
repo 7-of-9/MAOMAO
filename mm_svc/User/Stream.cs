@@ -178,7 +178,7 @@ namespace mm_svc
               foreach (var chain_id in topic_chains.Keys)
               {
                   var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
-                  if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
+                  if (other_chains.Any(p => p.Any(p2 => p2.id == chain_id)))
                       topic_ids_to_remove.Add(chain_id);
               }
               topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
@@ -186,8 +186,8 @@ namespace mm_svc
               // urls --> topic chains
               foreach (var url_info in url_infos)
               {
-                  var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                 .Where(p => p.url_id == url_info.url.id).ToList();
+                    var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
+                                                   .Where(p => p.url_id == url_info.id).ToList();
                   foreach (var topic in topics_for_url)
                   {
                       if (topic_chains.ContainsKey(topic.term_id))
@@ -204,14 +204,20 @@ namespace mm_svc
               {
                   foreach (var topic in topic_chain)
                   {
-                      var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url.id).ToList();
+                      var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.id == topic.id))).Select(p => p.id).ToList();
                       //.Select(p => new UserUrlInfo() { url = p.url,
                       //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
                       topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
                   }
               }
 
-              return topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
+              // clean topic_chain 
+            foreach (var url_info in url_infos)
+            {
+                    url_info.topic_chains.Clear();
+            }
+
+             return topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.name))).Select(p => p.First()).DistinctBy(p => p.id).ToList();
             }
         }
 
@@ -231,7 +237,7 @@ namespace mm_svc
                     email = me.email,
                     user = me.firstname + " " + me.lastname,
                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
-                    topcis = FindUserTopicInfos(urls_list, url_infos)
+                    topics = FindUserTopicInfos(urls_list, url_infos)
                 }
             };
 
@@ -328,6 +334,8 @@ namespace mm_svc
             public List<SuggestionInfo> suggestions_for_url { get; set; }
             public double time_on_tab { get; set; }
             public string title { get; set; }
+
+            public List<List<UserStreamTopicInfo>> topic_chains = new List<List<UserStreamTopicInfo>>();
         }
     }
 }
