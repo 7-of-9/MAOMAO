@@ -6,11 +6,13 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import Helmet from 'react-helmet';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
 import { createStructuredSelector } from 'reselect';
 import AppHeader from 'containers/AppHeader';
+import YourStreams from 'components/YourStreams';
 import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
@@ -103,9 +105,8 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
   }
 
   render() {
-    const friends = hasInstalledExtension() && isLogin() ? [{ name: 'Dung', userId: 2 }, { name: 'Dominic', userId: 5 }, { name: 'Winston', userId: 1 }] : [];
-    const { me: { urls } } = this.props.history.toJS();
-
+    const { me: { urls, topics }, shares: friends } = this.props.history.toJS();
+    const sortedTopicByUrls = _.reverse(_.sortBy(topics, [(topic) => topic.url_ids.length]));
     return (
       <div style={{ width: '100%', margin: '0 auto' }}>
         <Helmet
@@ -122,18 +123,25 @@ export class Home extends React.PureComponent { // eslint-disable-line react/pre
               notifications: this.state.notifications.delete(notification),
             })}
           />
-          <AppHeader friends={friends} />
+          <AppHeader />
           {
             !hasInstalledExtension() &&
             <div style={{ margin: '0 auto', padding: '5em' }}>
               <ChromeInstall title="Install Now!" install={this.inlineInstall} hasInstalled={hasInstalledExtension()} />
             </div>
           }
-          <div style={{ clear: 'both' }} />
-          <h1>Your stream (TOP 10 urls base on IM SCORE) </h1>
-          <StreamList urls={urls && urls.slice(0, 10)} />
-          <div style={{ clear: 'both' }} />
-          <h1>Your friends stream </h1>
+          {
+            isLogin() &&
+            <YourStreams
+              friends={friends}
+              topics={sortedTopicByUrls}
+              activeId={sortedTopicByUrls && sortedTopicByUrls[0] && sortedTopicByUrls[0].id}
+            />
+          }
+          {
+            isLogin() &&
+            <StreamList urls={urls && urls.slice(0, 10)} />
+          }
         </div>
         <div style={{ clear: 'both' }} />
         <Loading isLoading={this.props.loading} />

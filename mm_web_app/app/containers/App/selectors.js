@@ -13,7 +13,8 @@ const makeSelectLoading = () => createSelector(
 const makeSelectHomeLoading = () => createSelector(
   selectGlobal,
   (globalState) => globalState.getIn(['loading', 'isUserHistoryLoading']) ||
-    globalState.getIn(['loading', 'isGoogleConnectLoading'])
+    globalState.getIn(['loading', 'isGoogleConnectLoading']) ||
+    globalState.getIn(['loading', 'isFacebookConnectLoading'])
 );
 
 
@@ -49,7 +50,17 @@ const makeSelectFacebookConnect = () => createSelector(
 
 const makeSelectCurrentUser = () => createSelector(
   selectGlobal,
-  (globalState) => globalState.getIn(['data', 'googleConnect', 'user'])
+  (globalState) => {
+    const googleUser = globalState.getIn(['data', 'googleConnect', 'user']).toJS();
+    const facebookUser = globalState.getIn(['data', 'facebookConnect', 'user']).toJS();
+    if (googleUser.id > 0) {
+      return googleUser;
+    }
+    if (facebookUser.id > 0) {
+      return facebookUser;
+    }
+    return googleUser;
+  }
 );
 
 const makeSelectGoogleNews = () => createSelector(

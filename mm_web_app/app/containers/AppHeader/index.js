@@ -10,7 +10,6 @@ import { createStructuredSelector } from 'reselect';
 import Header from 'components/Header';
 import DiscoveryButton from 'components/DiscoveryButton';
 import LogoIcon from 'components/LogoIcon';
-import ShareWithFriends from 'components/ShareWithFriends';
 import Slogan from 'components/Slogan';
 import Logout from 'components/Logout';
 import { googleConnect, googleConnectLoadingError, facebookConnect, logoutUser } from 'containers/App/actions';
@@ -21,14 +20,13 @@ import { isLogin, logout } from 'utils/simpleAuth';
 import { makeSelectCurrentUser } from 'containers/App/selectors';
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from 'containers/App/constants';
 
-function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLogout, responseFacebook }) {
+function AppHeader({ breadcrumb, onGoogleSuccess, onGoogleFailure, onLogout, responseFacebook }) {
   return (
     <Header>
       <LogoIcon />
       <Slogan />
       { breadcrumb && <h3>{breadcrumb}</h3>}
       <div style={{ position: 'absolute', top: '65px', right: '40px' }}>
-        {isLogin() && friends && friends.length > 0 && <ShareWithFriends friends={friends} />}
         {
           !isLogin() && hasInstalledExtension() &&
           <GoogleLogin
@@ -57,10 +55,9 @@ function AppHeader({ breadcrumb, friends, onGoogleSuccess, onGoogleFailure, onLo
 
 AppHeader.propTypes = {
   breadcrumb: PropTypes.string,
-  friends: PropTypes.array.isRequired,
-  onGoogleSuccess: PropTypes.func.isRequired,
-  onGoogleFailure: PropTypes.func.isRequired,
-  responseFacebook: PropTypes.func.isRequired,
+  onGoogleSuccess: PropTypes.func,
+  onGoogleFailure: PropTypes.func,
+  responseFacebook: PropTypes.func,
   onLogout: PropTypes.func,
 };
 
@@ -83,11 +80,8 @@ function mapDispatchToProps(dispatch) {
     },
     onLogout: () => {
       dispatch(logoutUser());
-      logout(() => {
-        window.location.reload();
-      });
+      logout();
     },
-    dispatch,
   };
 }
 
