@@ -41,15 +41,15 @@ function YourStreams({ topics, friends, changeTerm, changeFriendStream, activeId
   const friendStreams = [];
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
-      if (topic.id) {
+      if (topic.term_id) {
         items.push(<TopicName
           onClick={(e) => {
             e.preventDefault();
-            changeTerm(topic.id);
-          }} style={{ color: (activeId === topic.id) ? '#000' : '#fff' }} key={topic.id}
+            changeTerm(topic.term_id);
+          }} style={{ color: (activeId === topic.term_id) ? '#000' : '#fff' }} key={topic.term_id}
         >
           <Link>
-            {topic.name} ({topic.url_ids.length})
+            {topic.term_name} ({topic.url_ids.length})
             </Link>
         </TopicName>);
       }
@@ -57,16 +57,16 @@ function YourStreams({ topics, friends, changeTerm, changeFriendStream, activeId
   }
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
-      if (friend.id) {
+      if (friend.user_id) {
         friendStreams.push(<TopicName
           onClick={(e) => {
             e.preventDefault();
-            changeFriendStream(friend.id);
-          }} style={{ color: (activeId === friend.id) ? '#000' : '#fff' }} key={friend.id}
+            changeFriendStream(friend.user_id);
+          }} style={{ color: (activeId === friend.user_id) ? '#000' : '#fff' }} key={friend.user_id}
         >
           <Link>
-            {friend.user} ({friend.urls.length})
-            </Link>
+            {friend.fullname}
+          </Link>
         </TopicName>);
       }
     });

@@ -5,6 +5,7 @@
  */
 
 import React, { PropTypes } from 'react';
+import { browserHistory } from 'react-router';
 import { compose, withState, withHandlers, lifecycle, onlyUpdateForKeys } from 'recompose';
 import { connect } from 'react-redux';
 import _ from 'lodash';
@@ -17,7 +18,7 @@ import YourStreams from 'components/YourStreams';
 import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
-import { isLogin, userId } from 'utils/simpleAuth';
+import { isLogin, userId, userHash, userEmail } from 'utils/simpleAuth';
 import { guid } from 'utils/hash';
 import ChromeInstall from 'components/ChromeInstall';
 import Loading from 'components/Loading';
@@ -31,25 +32,25 @@ function Home({ home, history, notifications, loading,
   let { currentTermId } = home;
   const { friendStreamId } = home;
   const { me: { urls, topics }, shares: friends } = history.toJS();
-  const sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.id > 0), [(topic) => topic.url_ids.length]));
+  const sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]));
   let selectedUrls = [];
   let urlIds = [];
   // set to first topic on first try
   if (friendStreamId === -1) {
     if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-      currentTermId = sortedTopicByUrls[0].id;
+      currentTermId = sortedTopicByUrls[0].term_id;
       urlIds = sortedTopicByUrls[0].url_ids;
     } else {
-      const currentTopic = sortedTopicByUrls.find((item) => item.id === currentTermId);
+      const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId);
       if (currentTopic) {
         urlIds = currentTopic.url_ids;
       }
     }
     selectedUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1);
   } else {
-    const currentStream = friends.find((item) => item.id === friendStreamId);
+    const currentStream = friends.find((item) => item.user_id === friendStreamId);
     if (currentStream) {
-      selectedUrls = currentStream.urls;
+      selectedUrls = _.uniq(_.flatten(currentStream.list.map((item) => item.urls)));
     }
   }
 
@@ -167,7 +168,7 @@ const enhance = compose(
   }),
   lifecycle({
     componentDidMount() {
-      let id = userId();
+      const id = userId();
       const { query, pathname } = this.props.location;
 
       if (query && query.close && query.close === 'popup') {
@@ -175,10 +176,25 @@ const enhance = compose(
       }
 
       if (query && query.user_id && hasInstalledExtension()) {
-        id = query.user_id;
-        const hash = query.hash;
-        this.props.dispatch(switchUser({ id, hash }));
-        this.props.addNotification(`TESTING MODE: switch to user ${id}`);
+        const { user_id, hash, email } = query;
+        const currentUserId = userId();
+        const currentUserHash = userHash();
+        const currentUserEmail = userEmail();
+        this.props.dispatch(switchUser({ userId: user_id, hash, email }));
+        const msg = 'TESTING MODE: switch user';
+        const uuid = guid();
+        this.props.changeNotifications((notifications) => notifications.add({
+          message: msg,
+          key: uuid,
+          action: 'Revert back',
+          dismissAfter: false,
+          onClick: (deactivate) => {
+            this.props.dispatch(switchUser({ userId: currentUserId, hash: currentUserHash, email: currentUserEmail }));
+            this.props.changeNotifications((allNotifications) => allNotifications.filter((item) => item.key !== deactivate.key));
+            this.props.addNotification('You are back to homepage!');
+            browserHistory.goBack('');
+          },
+        }));
       }
 
       if (pathname && pathname.length > 1) {
