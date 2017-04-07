@@ -11,6 +11,8 @@ import { processUrl, isInternalTab, openUrl } from './utils';
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
+require('../../stylesheets/main.scss');
+
 const propTypes = {
   url: PropTypes.string,
   shareOption: PropTypes.string,

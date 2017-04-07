@@ -6,6 +6,7 @@ const env = process.env.NODE_ENV || 'development';
 const isProduction = env !== 'development';
 let sourceMap = '';
 let plugins = [
+  new ExtractTextPlugin('popup.css'),
   new webpack.DefinePlugin({
     'process.env.NODE_ENV': JSON.stringify(env),
   }),
