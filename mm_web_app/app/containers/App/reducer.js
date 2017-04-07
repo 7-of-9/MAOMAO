@@ -11,6 +11,7 @@
  */
 
 import { fromJS } from 'immutable';
+import { login } from 'utils/simpleAuth';
 import {
   LOGOUT,
   RESTORE,
@@ -125,11 +126,12 @@ function appReducer(state = initialState, action) {
       return state
         .updateIn(['loading', 'isGoogleLoading'], () => false)
         .updateIn(['error'], (error) => error.push(action.error));
-    case SWITCH_USER:
-      // TODO: saving on localstorage
+    case SWITCH_USER: {
+      const { userId, hash, email } = action.data;
+      // save to localStorage
+      login(userId, email, hash);
       return state;
-      // return state
-      //   .updateIn(['data', 'googleConnect', 'user', 'id'], () => action.data);
+    }
     case USER_HISTORY:
       return state
         .updateIn(['loading', 'isUserHistoryLoading'], () => true);
