@@ -18,6 +18,7 @@ import StreamList from 'components/StreamList';
 import Footer from 'components/Footer';
 import { hasInstalledExtension } from 'utils/chrome';
 import { isLogin, userId } from 'utils/simpleAuth';
+import { guid } from 'utils/hash';
 import ChromeInstall from 'components/ChromeInstall';
 import Loading from 'components/Loading';
 import { userHistory, switchUser } from '../App/actions';
@@ -122,7 +123,7 @@ const enhance = compose(
       props.dispatch(changeFriendStream(termId));
     },
     addNotification: (props) => (msg) => {
-      const uuid = Date.now();
+      const uuid = guid();
       props.changeNotifications((notifications) => notifications.add({
         message: msg,
         key: uuid,
@@ -138,7 +139,7 @@ const enhance = compose(
           'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
           () => {
             const msg = 'Yeah! You have been installed maomao extension successfully.';
-            const uuid = Date.now();
+            const uuid = guid();
             props.changeNotifications((notifications) => notifications.add({
               message: msg,
               key: uuid,
@@ -152,7 +153,7 @@ const enhance = compose(
             }, 1000);
           },
           (msg) => {
-            const uuid = Date.now();
+            const uuid = guid();
             props.changeNotifications((notifications) => notifications.add({
               message: msg,
               key: uuid,
