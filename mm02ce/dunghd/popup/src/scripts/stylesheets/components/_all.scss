@@ -1,2 +1,193 @@
 $logo-img: url('./images/dog_blue.png');
 $close-btn-img: url('./images/close_button.png');
+
+/*popup browser*/
+
+.popup-browser {
+  width: 325px;
+  .maomao-logo {
+    margin-right: 3px;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background: $logo-img;
+    vertical-align: middle;
+    background-size: contain;
+    animation-name: zoomInLogo;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    transition: all 0.2s ease-in-out;
+  }
+  .share-heading {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #c5c5d0;
+    transition: transform 200ms ease-in;
+    a {
+      color: #4d4d4d;
+      text-decoration: none;
+      display: inline-block;
+      &:hover,
+      &:focus {
+        .maomao-logo {
+          transform: rotate(7deg);
+          transition: all 0.2s ease-in-out;
+        }
+      }
+    }
+  }
+}
+
+.circle-share {
+  margin: 20px auto;
+  width: 230px;
+  height: 230px;
+  display: table;
+  border-radius: 50%;
+  border: 2px solid #4fb6ec;
+  .circle-inner {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .share-options {
+    margin: 0 !important;
+    height: auto !important;
+    width: auto !important;
+    button {
+      margin: 5px 0 !important;
+      min-width: 150px;
+      color: #fff;
+      &,
+      &:hover,
+      &:active {
+        transition: all 0.2s ease-in-out;
+      }
+    }
+  }
+  &::after {
+    animation: rotate-circle 1s linear infinite;
+    content: '';
+    display: block;
+    width: 233px;
+    height: 233px;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    border: 5px solid transparent;
+    border-top-color: #4fb6ec;
+    border-radius: 50%;
+  }
+}
+
+.toolbar-button {
+  margin: 20px 0;
+  padding-top: 25px;
+  border-top: 1px solid #c5c5d0;
+  text-align: center;
+  button {
+    margin: 0 15px;
+    display: inline-block;
+    border: 0;
+    width: 50px;
+    height: 50px;
+    transition: transform 800ms;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0px 0px 8px 2px rgba(255, 255, 255, 1);
+    &,
+    &:hover,
+    &:active {
+      transition: all 0.2s ease-in-out;
+    }
+    &:nth-child(4) {
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      background-size: 58%;
+      background-position: center center;
+    }
+    &:before {
+      content: '';
+      transform: scale(0.7);
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 1;
+      z-index: -1;
+    }
+    &:nth-child(1) {
+      &:before {
+        box-shadow: 0px 0px 8px 2px rgba(255, 255, 255, 1);
+      }
+    }
+    &:nth-child(2) {
+      &:before {
+        box-shadow: 0px 0px 8px 2px rgba(60, 90, 154, 0.53);
+      }
+    }
+    &:nth-child(3) {
+      &:before {
+        box-shadow: 0px 0px 8px 2px rgba(0, 132, 255, 0.53);
+      }
+    }
+    &:nth-child(4) {
+      &:before {
+        box-shadow: 0px 0px 8px 2px rgba(255, 255, 255, 1);
+      }
+    }
+    &:after {
+      transition: opacity 600ms, transform 800ms;
+      content: '';
+      line-height: 50px;
+      transform: translate3d( 0, 0, 0);
+      opacity: 1;
+    }
+    &:hover {
+      transform: scale( 1.2);
+      transition: transform 800ms, background-color 800ms;
+      &:after {
+        transform: translate3d( 0, -25px, 0);
+        opacity: 0;
+      }
+      &:before {
+        transition: transform 800ms, opacity 1000ms;
+        transform: scale( 1.5);
+        opacity: 0;
+        z-index: 1;
+      }
+    }
+    &:hover {
+      &:nth-child(1) {
+        &:before {
+          box-shadow: 0px 0px 8px 2px rgba(255, 77, 37, 0.53);
+        }
+      }
+      &:nth-child(4) {
+        &:before {
+          box-shadow: 0px 0px 8px 2px rgba(181, 180, 180, 0.53);
+        }
+      }
+    }
+  }
+}
+
+
+/*animation rotate circle*/
+
+@keyframes rotate-circle {
+  70% {
+    -webkit-transform: rotate(250deg);
+    transform: rotate(250deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
