@@ -172,9 +172,8 @@ namespace mm_svc
                     var topic_chain = topic.url_title_topic
                                             ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
                                             : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
-                                                                                             // ignore TLD: (id = 0)
-                    var chain = topic_chain.Where(p => p.parent_term_id != 0)
-                          .Select(p => new UserStreamTopicInfo() { term_name = p.parent_term.name, term_id = p.parent_term_id }).ToList();
+                                                                                            
+                    var chain = topic_chain.Select(p => new UserStreamTopicInfo() { term_name = p.parent_term.name, term_id = p.parent_term_id }).ToList();
                     chain.Reverse();
 
                     chain.Add(new UserStreamTopicInfo() { term_name = topic_term.name, term_id = topic_term.id });
@@ -233,7 +232,7 @@ namespace mm_svc
         {
             // get all topics, urls for user
             // json output
-            // { me: { owner: 'me', urls: []} , { shares: [ { owner: 'demo',{ urls: []} }]}
+            // { me: { owner: 'me', urls: [], accept_shared: []} , { shares: [ { owner: 'demo',{ urls: []} }]}
             // borrow code from ClassifyUrlSet()
             var url_infos = FindUserUrlInfos(urls_list);
             var ret = new UserStreamReturn()
@@ -245,11 +244,30 @@ namespace mm_svc
                     email = me.email,
                     fullname = me.firstname + " " + me.lastname,
                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
-                    topics = FindUserTopicInfos(urls_list, url_infos)
+                    topics = FindUserTopicInfos(urls_list, url_infos),
+                    accept_shares = FindAcceptSharedFromUser(me)
                 }
             };
 
             return ret;
+        }
+
+        private static List<AcceptShareInfo> FindAcceptSharedFromUser(user me)
+        {
+            using (var db = mm02Entities.Create())
+            {
+                var shares = db.share_active.Include("share").Include("user").Where(p => p.share.source_user_id == me.id);
+                return shares.Select(p => new AcceptShareInfo()
+                {
+                    user_id = p.user_id,
+                    email = p.user.email,
+                    fullname = p.user.firstname + " " + p.user.lastname,
+                    share_code = p.share.share_code,
+                    url_id = p.share.url_id,
+                    share_all = p.share.share_all,
+                    topic_id = p.share.topic_id
+                }).ToList();
+            }
         }
 
         private static List<UserShareStreamInfo> ClassifyUrlSetShares(List<ShareActiveInput> shares_list)
@@ -351,7 +369,7 @@ namespace mm_svc
             public long user_id;
             public List<UserStreamUrlInfo> urls;
             public List<UserStreamTopicInfo> topics;
-
+            public List<AcceptShareInfo> accept_shares;
         }
 
         public class ShareActiveInput
@@ -401,5 +419,16 @@ namespace mm_svc
             public List<ShareListReturn> list { get; set; }
             public string fullname { get; set; }
         }
+    }
+
+    public class AcceptShareInfo
+    {
+        public long user_id { get; internal set; }
+        public bool share_all { get; internal set; }
+        public string share_code { get; internal set; }
+        public long? url_id { get; internal set; }
+        public long? topic_id { get; internal set; }
+        public string email { get; internal set; }
+        public string fullname { get; internal set; }
     }
 }
