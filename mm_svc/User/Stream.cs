@@ -165,8 +165,9 @@ namespace mm_svc
                   var topic_chain = topic.url_title_topic
                                           ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
                                           : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
-
-                  var chain = topic_chain.Select(p => new UserStreamTopicInfo() { name = p.parent_term.name, id = p.parent_term_id }).ToList();
+                  // ignore TLD: (id = 0)
+                  var chain = topic_chain.Where(p => p.parent_term_id != 0)
+                        .Select(p => new UserStreamTopicInfo() { name = p.parent_term.name, id = p.parent_term_id }).ToList();
                   chain.Reverse();
 
                   chain.Add(new UserStreamTopicInfo() { name = topic_term.name, id = topic_term.id });
