@@ -11,12 +11,12 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    margin: '-250px 0 0 -310px',
+    margin: '-250px 0 0 -321px',
     zIndex: 1000,
-    width: '620px',
+    width: '642px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
-    boxShadow: 'rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px',
+    boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 30px, rgba(0, 0, 0, 0.3) 0px 6px 10px',
     WebkitOverflowScrolling: 'touch',
     borderRadius: '7px',
     outline: 'none',
@@ -119,9 +119,9 @@ const ShareTopic = enhance(({
        />
       </div>
        <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
-       <ToggleDisplay if={type === 'Google' && contacts.length === 0}>
+       <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
          You have no google contacts. Click
-         <button onClick={accessGoogleContacts}> here </button>
+         <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
           to grant permissions to access google contacts.
        </ToggleDisplay>
        <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
@@ -138,7 +138,7 @@ const ShareTopic = enhance(({
           Share Now!
          </button>
        </ToggleDisplay>
-       <ToggleDisplay if={type === 'Link'}>
+       <ToggleDisplay className="link-share-option" if={type === 'Link'}>
           {SITE_URL}/{code[shareOption]}
        </ToggleDisplay>
      </div >,
