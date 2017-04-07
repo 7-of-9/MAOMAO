@@ -13,8 +13,6 @@ require('../../stylesheets/main.scss');
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
-
-
 const propTypes = {
   url: PropTypes.string,
   shareOption: PropTypes.string,
@@ -113,14 +111,14 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
     if (isAllowToShare(url, nlp.records)) {
       return (
         <div className="popup-browser">
-          <h3 className="share-heading"> 
-            <a href="#"><span className="maomao-logo"></span> Share this topic</a>
+          <h3 className="share-heading">
+            <a href="#"><span className="maomao-logo" /> Share this topic</a>
           </h3>
           <div className="circle-share">
             <div className="circle-inner">
               <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
             </div>
-          </div>          
+          </div>
           <div className="toolbar-button">
             <GoogleButton
               onClick={() => {

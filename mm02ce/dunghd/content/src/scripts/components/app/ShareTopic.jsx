@@ -1,6 +1,7 @@
 import React from 'react';
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 
@@ -105,19 +106,19 @@ const ShareTopic = enhance(({
          onClick={closeShare} className="close_button"
        />
        <h3 style={style.heading}>
-        <span className="fancy">
-          <span className="fancy-line">Share <em style={style.topic}>{selectTopics(terms)}</em> with</span>
-        </span>
-      </h3>
-      <div className="toolbar-button">
-       <Toolbar
-         active={type}
-         onChange={changeShareType}
-         onShare={shareUrl}
-         onSendMsg={sendMsgUrl}
-         style={style.toolbar}
-       />
-      </div>
+         <span className="fancy">
+           <span className="fancy-line">Share <em style={style.topic}>{selectTopics(terms)}</em> with</span>
+         </span>
+       </h3>
+       <div className="toolbar-button">
+         <Toolbar
+           active={type}
+           onChange={changeShareType}
+           onShare={shareUrl}
+           onSendMsg={sendMsgUrl}
+           style={style.toolbar}
+         />
+       </div>
        <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
        <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
          You have no google contacts. Click
@@ -139,7 +140,12 @@ const ShareTopic = enhance(({
          </button>
        </ToggleDisplay>
        <ToggleDisplay className="link-share-option" if={type === 'Link'}>
-          {SITE_URL}/{code[shareOption]}
+         <input value={`${SITE_URL}/${code[shareOption]}`} />
+         <CopyToClipboard
+           text={`${SITE_URL}/${code[shareOption]}`}
+         >
+           <button>Copy</button>
+         </CopyToClipboard>
        </ToggleDisplay>
      </div >,
 );

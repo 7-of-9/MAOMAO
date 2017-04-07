@@ -5,7 +5,7 @@ import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
 import Paper from 'material-ui/Paper';
-import { Card, CardActions, CardHeader, CardTitle } from 'material-ui/Card';
+import { Card, CardActions, CardHeader } from 'material-ui/Card';
 
 const customStyles = {
   title: {
@@ -31,7 +31,7 @@ const customStyles = {
     borderRadius: '50px',
     display: 'inline-block',
     verticalAlign: 'middle',
-    boxShadow: '0 1px 7px rgba(0, 0, 0, .175)'
+    boxShadow: '0 1px 7px rgba(0, 0, 0, .175)',
   },
   cardAction: {
     padding: 'none',
@@ -143,22 +143,35 @@ function WelcomeModal({
                 subtitle={auth.info.email}
                 avatar={auth.info.picture}
               />
-              <CardTitle title="Welcome back!" style={customStyles.cardTitle} />
               <CardActions style={customStyles.cardAction}>
                 { auth &&
                   !networks.includes('facebook.com') &&
                   <RaisedButton
-                    onTouchTap={onLinkedFacebook} label="Facebook Connect" primary
-              style={customStyles.button}
+                    onTouchTap={onLinkedFacebook}
+                    label="Facebook Connect"
+                    primary
+                    style={customStyles.button}
                   />}
                 { auth &&
                   !networks.includes('google.com') &&
-                  <RaisedButton onTouchTap={onLinkedGoogle} label="Google Connect" secondary
-              style={customStyles.button} />}
+                  <RaisedButton
+                    onTouchTap={onLinkedGoogle}
+                    label="Google Connect"
+                    secondary
+                    style={customStyles.button}
+                  />}
                 <br />
-                <RaisedButton onTouchTap={onLogout} label="Logout" style={customStyles.button} />
+                <RaisedButton
+                  onTouchTap={onLogout}
+                  label="Logout"
+                  style={customStyles.button}
+                />
                 <br />
-                <RaisedButton onTouchTap={onClose} label="Close" style={customStyles.button} />
+                <RaisedButton
+                  onTouchTap={onClose}
+                  label="Close"
+                  style={customStyles.button}
+                />
               </CardActions>
             </Card>
           </ToggleDisplay>
