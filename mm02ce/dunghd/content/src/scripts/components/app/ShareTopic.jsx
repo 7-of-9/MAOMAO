@@ -140,12 +140,14 @@ const ShareTopic = enhance(({
          </button>
        </ToggleDisplay>
        <ToggleDisplay className="link-share-option" if={type === 'Link'}>
-         <input value={`${SITE_URL}/${code[shareOption]}`} />
+        <div className="input-group">
+         <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} />
          <CopyToClipboard
            text={`${SITE_URL}/${code[shareOption]}`}
          >
-           <button>Copy</button>
+           <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
          </CopyToClipboard>
+        </div>
        </ToggleDisplay>
      </div >,
 );
