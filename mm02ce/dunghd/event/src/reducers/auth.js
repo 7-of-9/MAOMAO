@@ -50,7 +50,6 @@ export default (state = initialState, action, nlp) => {
     });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info, nlp.records);
-      window.setIconApp(window.sessionObservable.activeUrl, 'black', '', window.BG_INACTIVE_COLOR);
       return Object.assign({}, state, {
         message: 'authentication is done',
         googleToken: action.payload.googleToken || state.googleToken,
@@ -99,7 +98,6 @@ export default (state = initialState, action, nlp) => {
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();
       // TODO: clear all sessions on bg and tracking tab
-      window.setIconApp('', 'gray', '', window.BG_INACTIVE_COLOR);
       return initialState;
     case 'LOGOUT_REJECTED':
       return Object.assign({}, state, {

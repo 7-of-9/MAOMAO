@@ -1,5 +1,7 @@
 import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 
+const MIN_NSS = 10;
+
 const initialState = {
   isEnable: false,
   isEnableIM: window.enableImscore,
@@ -7,6 +9,23 @@ const initialState = {
   isYoutubeTest: window.enableTestYoutube,
   urls: [],
  };
+
+const changeIconUrl = (urls, url, color, text) => {
+  let result = [];
+  if (urls.length) {
+    result = urls.filter(item => item.url !== url);
+  }
+  return result.concat({ url, color, text });
+};
+
+const findScoreUrl = (nlp, url) => {
+  let score = '';
+  const hasExist = nlp.scores.find(item => item.url === url);
+  if (hasExist) {
+    score = hasExist.score;
+  }
+  return score;
+};
 
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
@@ -115,6 +134,150 @@ export default (state = initialState, action, auth, nlp) => {
           urls,
         });
       }
+
+    case 'LOGOUT_FULFILLED': {
+      const url = window.sessionObservable.activeUrl;
+      const urls = changeIconUrl(state.urls, url, 'gray', '');
+      window.setIconApp(url, 'gray', '', window.BG_INACTIVE_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'AUTH_FULFILLED': {
+      const url = window.sessionObservable.activeUrl;
+      const urls = changeIconUrl(state.urls, url, 'black', '');
+      window.setIconApp(url, 'black', '', window.BG_INACTIVE_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'NLP_INFO_UNKNOWN': {
+      const url = action.payload.url;
+      const score = findScoreUrl(nlp, url);
+      const urls = changeIconUrl(state.urls, url, 'black', `${score} *`);
+      window.setIconApp(url, 'black', `${score} *`, window.BG_SUCCESS_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'NNS_SCORE': {
+        const url = action.payload.url;
+        const score = action.payload.score;
+        if (Number(action.payload.score) <= MIN_NSS) {
+          const urls = changeIconUrl(state.urls, url, 'black', `!(${score})`);
+          window.setIconApp(url, 'black', `!(${Number(score)})`, window.BG_ERROR_COLOR);
+          return Object.assign({}, state, {
+            urls,
+          });
+        }
+        const urls = changeIconUrl(state.urls, url, 'black', `${score}`);
+        window.setIconApp(url, 'black', `${Number(score)}`, window.BG_SUCCESS_COLOR);
+        return Object.assign({}, state, {
+          urls,
+        });
+    }
+
+    case 'NLP_RESULT': {
+      const url = action.payload.url;
+      const score = findScoreUrl(nlp, url);
+      const urls = changeIconUrl(state.urls, url, 'blue', `${score} **`);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'NLP_TERMS':
+    case 'NLP_INFO_KNOWN': {
+      const url = action.payload.url;
+      const score = findScoreUrl(nlp, url);
+      const urls = changeIconUrl(state.urls, url, 'blue', `${score}`);
+      window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'IM_SAVE_SUCCESS': {
+      const url = action.payload.url;
+      const score = findScoreUrl(nlp, url);
+      const urls = changeIconUrl(state.urls, url, 'blue', `${score} /`);
+      window.setIconApp(url, 'blue', `${score} /`, window.BG_SUCCESS_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'IM_SAVE_ERROR': {
+      const url = action.payload.url;
+      const urls = changeIconUrl(state.urls, url, 'blue', '*EX5');
+      window.setIconApp(url, 'blue', '*EX5', window.BG_EXCEPTION_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'TEXT_NOT_ENGLISH': {
+      const url = action.payload.url;
+      const score = findScoreUrl(nlp, url);
+      const urls = changeIconUrl(state.urls, url, 'black', `${score} !EN`);
+      window.setIconApp(url, 'black', `${score} !EN`, window.BG_SUCCESS_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'PROCESS_TEXT_RESULT': {
+      const url = action.payload.url;
+      if (!action.payload.status) {
+        const score = findScoreUrl(nlp, url);
+        const urls = changeIconUrl(state.urls, url, 'black', `${score} !T`);
+        window.setIconApp(url, 'black', `${score} !T`, window.BG_SUCCESS_COLOR);
+        return Object.assign({}, state, {
+          urls,
+        });
+      }
+
+      return state;
+    }
+
+    case 'NLP_INFO_ERROR': {
+      const url = action.payload.url;
+      window.setIconApp(url, 'black', '*EX2', window.BG_EXCEPTION_COLOR);
+      const urls = changeIconUrl(state.urls, url, 'black', '*EX2');
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'API_CALAIS_ERROR': {
+      const url = action.payload.url;
+      window.setIconApp(action.payload.url, 'black', '*EX3', window.BG_EXCEPTION_COLOR);
+      const urls = changeIconUrl(state.urls, url, 'black', '*EX3');
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'NLP_CALAIS_ERROR': {
+      const url = action.payload.url;
+      window.setIconApp(action.payload.url, 'black', '*EX4', window.BG_EXCEPTION_COLOR);
+      const urls = changeIconUrl(state.urls, url, 'black', '*EX4');
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
+
+    case 'URL_RECORD_ERROR': {
+      const url = action.payload.url;
+      window.setIconApp(action.payload.url, 'black', '*EX3.1', window.BG_EXCEPTION_COLOR);
+      const urls = changeIconUrl(state.urls, url, 'black', '*EX3.1');
+      return Object.assign({}, state, {
+        urls,
+      });
+    }
 
     default:
       return state;

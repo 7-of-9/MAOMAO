@@ -23,7 +23,6 @@ export default (score = initialState, action) => {
           histories = score.histories.filter(item => item.url !== url);
         }
         histories = histories.concat(action.payload);
-        window.setIconApp(url, 'blue', '*EX5', window.BG_EXCEPTION_COLOR);
         return Object.assign({}, score, { histories });
       }
     case 'IM_SAVE_SUCCESS': {

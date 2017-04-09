@@ -235,7 +235,6 @@ function initFirebaseApp() {
   // Listen for auth state changes.
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
-      console.warn('... firebase :', user);
       if (user.providerData) {
         store.dispatch({
           type: 'ACCOUNT_CONNECT',
