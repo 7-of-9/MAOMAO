@@ -35,6 +35,7 @@ const style = {
   height: '100%',
   textAlign: 'center',
   overflow: 'hidden',
+  zIndex: 1000,
 };
 
 const enhance = compose(

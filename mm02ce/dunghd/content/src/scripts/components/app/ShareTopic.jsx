@@ -107,7 +107,11 @@ const ShareTopic = enhance(({
        />
        <h3 style={style.heading}>
          <span className="fancy">
-           <span className="fancy-line">Share <em style={style.topic}>{selectTopics(terms)}</em> with</span>
+           <span
+             className="fancy-line"
+           >Share
+             <em style={style.topic}>{selectTopics(terms)}</em> with
+           </span>
          </span>
        </h3>
        <div className="toolbar-button">
@@ -140,14 +144,14 @@ const ShareTopic = enhance(({
          </button>
        </ToggleDisplay>
        <ToggleDisplay className="link-share-option" if={type === 'Link'}>
-        <div className="input-group">
-         <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} />
-         <CopyToClipboard
-           text={`${SITE_URL}/${code[shareOption]}`}
-         >
-           <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
-         </CopyToClipboard>
-        </div>
+         <div className="input-group">
+           <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} />
+           <CopyToClipboard
+             text={`${SITE_URL}/${code[shareOption]}`}
+           >
+             <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
+           </CopyToClipboard>
+         </div>
        </ToggleDisplay>
      </div >,
 );

@@ -5,6 +5,7 @@ const initialState = {
   isEnableIM: window.enableImscore,
   isEnableXp: window.enableXp,
   isYoutubeTest: window.enableTestYoutube,
+  urls: [],
  };
 
 export default (state = initialState, action, auth, nlp) => {
@@ -31,6 +32,10 @@ export default (state = initialState, action, auth, nlp) => {
         id: 'mm-btn-version',
       });
       const url = action.payload.url;
+      let urls = [];
+      if (state.urls.length) {
+        urls = state.urls.filter(item => item.url !== url);
+      }
       if (auth.isLogin) {
         let isInternalTab = false;
         const startsWith = String.prototype.startsWith;
@@ -40,7 +45,7 @@ export default (state = initialState, action, auth, nlp) => {
         ) {
           isInternalTab = true;
         }
-
+        urls = urls.concat({ url, color: 'black', text: isInternalTab ? '!(int)' : '' });
         window.setIconApp(
           action.payload.url,
           'black',
@@ -48,6 +53,7 @@ export default (state = initialState, action, auth, nlp) => {
           window.BG_ERROR_COLOR,
         );
       } else {
+        urls = urls.concat({ url, color: 'gray', text: '' });
         window.setIconApp(
           action.payload.url,
           'gray',
@@ -57,12 +63,17 @@ export default (state = initialState, action, auth, nlp) => {
       }
       return Object.assign({}, state, {
         isEnable: false,
+        urls,
       });
     }
 
     case 'MAOMAO_ENABLE':
       {
         const url = action.payload.url;
+        let urls = [];
+        if (state.urls.length) {
+          urls = state.urls.filter(item => item.url !== url);
+        }
         if (auth.isLogin) {
           // TODO: Check share, xp is ready on url or not
           ctxMenuLogin(auth.info, nlp.records);
@@ -75,6 +86,7 @@ export default (state = initialState, action, auth, nlp) => {
                 activeTabUrl.text,
                 activeTabUrl.color,
               );
+              urls = urls.concat({ url, color: 'black', text: activeTabUrl.text });
             } else {
               window.setIconApp(
                 url,
@@ -82,9 +94,11 @@ export default (state = initialState, action, auth, nlp) => {
                 activeTabUrl.text,
                 activeTabUrl.color,
               );
+              urls = urls.concat({ url, color: activeTabUrl.image, text: activeTabUrl.text });
             }
           } else {
             window.setIconApp(url, 'black', '', window.BG_SUCCESS_COLOR);
+            urls = urls.concat({ url, color: 'black', text: '' });
           }
         } else {
           ctxMenuLogout();
@@ -94,9 +108,11 @@ export default (state = initialState, action, auth, nlp) => {
             '',
             window.BG_SUCCESS_COLOR,
           );
+          urls = urls.concat({ url, color: 'gray', text: '' });
         }
         return Object.assign({}, state, {
           isEnable: true,
+          urls,
         });
       }
 

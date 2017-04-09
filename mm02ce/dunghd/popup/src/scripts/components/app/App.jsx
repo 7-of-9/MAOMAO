@@ -6,7 +6,7 @@ import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
-import { processUrl, isInternalTab, openUrl } from './utils';
+import { isInternalTab, openUrl, removeHashFromUrl } from './utils';
 
 require('../../stylesheets/main.scss');
 
@@ -16,6 +16,7 @@ const FB_APP_ID = '386694335037120';
 const propTypes = {
   url: PropTypes.string,
   shareOption: PropTypes.string,
+  icon: PropTypes.object,
   auth: PropTypes.object,
   nlp: PropTypes.object,
   dispatch: PropTypes.func,
@@ -26,6 +27,9 @@ const propTypes = {
 const defaultProps = {
   url: '',
   shareOption: 'site',
+  icon: {
+    urls: [],
+  },
   auth: {
     isLogin: false,
     accessToken: '',
@@ -42,6 +46,15 @@ const defaultProps = {
   dispatch: () => {},
   getLink: () => {},
   changeShareOption: () => {},
+};
+
+const isRunable = (url, icon) => {
+  const curentIcon = icon.urls.find(item => item.url === url);
+  console.warn('isRunable', url, curentIcon);
+  if (curentIcon.text.length === 0 || curentIcon.text.indexOf('!') !== -1) {
+    return false;
+  }
+  return true;
 };
 
 const isAllowToShare = (url, records) => {
@@ -92,43 +105,28 @@ const getShareTopicCode = (url, codes, records) => {
   return '';
 };
 
-const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLink) => {
+const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
+  if (!url) {
+    return (
+      <div className="popup-browser">
+        <h3 className="share-heading">
+          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+        </h3>
+        <div className="circle-share">
+          <p className="paragraph-share">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#"><span className="maomao-logo" /> MAOMAO</a>
+          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
         </h3>
         <div className="circle-share">
-          <p className="paragraph-share">Maomao is off on<br /> internal tab!</p>
-        </div>
-        <div className="toolbar-button">
-          <GoogleButton
-            onClick={() => {
-            dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-            dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
-          }}
-          />
-          <FacebookButton
-            onClick={() => {
-              const shareUrl = `${SITE_URL}/${getLink()}`;
-              const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-              openUrl(src);
-            }}
-          />
-          <FacebookMessengerButton
-            onClick={() => {
-              const shareUrl = `${SITE_URL}/${getLink()}`;
-              const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
-              openUrl(src);
-            }}
-          />
-          <LinkButton
-            onClick={() => {
-              dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
-          }}
-          />
+          <p className="paragraph-share">Maomao is off on<br /> on internal tab!</p>
         </div>
       </div>
     );
@@ -136,42 +134,14 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
 
   if (auth.isLogin) {
     const topic = getCurrentTopic(url, nlp.records);
-    if (!processUrl(url)) {
+    if (!isRunable(url, icon)) {
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#"><span className="maomao-logo" /> MAOMAO</a>
+            <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
           </h3>
           <div className="circle-share">
             <p className="paragraph-share">Maomao is off<br /> on this url!</p>
-          </div>
-          <div className="toolbar-button">
-            <GoogleButton
-              onClick={() => {
-              dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
-            }}
-            />
-            <FacebookButton
-              onClick={() => {
-                const shareUrl = `${SITE_URL}/${getLink()}`;
-                const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-                openUrl(src);
-              }}
-            />
-            <FacebookMessengerButton
-              onClick={() => {
-                const shareUrl = `${SITE_URL}/${getLink()}`;
-                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
-                openUrl(src);
-              }}
-            />
-            <LinkButton
-              onClick={() => {
-                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
-            }}
-            />
           </div>
         </div>
       );
@@ -180,7 +150,7 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#"><span className="maomao-logo" /> Share this topic</a>
+            <a href="#home"><span className="maomao-logo" /> Share this topic</a>
           </h3>
           <div className="circle-share">
             <div className="circle-inner">
@@ -222,99 +192,57 @@ const render = (auth, nlp, url, dispatch, shareOption, changeShareOption, getLin
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#"><span className="maomao-logo" /> MAOMAO</a>
+          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
         </h3>
         <div className="circle-share">
-          <p className="paragraph-share">This site is <br />not ready to sharing. Please wait in a few<br /> mins for processing<br /> this site!</p>
-        </div>
-        <div className="toolbar-button">
-          <GoogleButton
-            onClick={() => {
-            dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-            dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
-          }}
-          />
-          <FacebookButton
-            onClick={() => {
-              const shareUrl = `${SITE_URL}/${getLink()}`;
-              const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-              openUrl(src);
-            }}
-          />
-          <FacebookMessengerButton
-            onClick={() => {
-              const shareUrl = `${SITE_URL}/${getLink()}`;
-              const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
-              openUrl(src);
-            }}
-          />
-          <LinkButton
-            onClick={() => {
-              dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
-          }}
-          />
+          <p
+            className="paragraph-share"
+          >
+            This site is <br />
+            not ready to sharing. Please wait in a few
+            <br />
+            mins for processing<br />
+            this site!
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-  <div className="popup-browser">
-    <h3 className="share-heading">
-      <a href="#"><span className="maomao-logo" /> MAOMAO</a>
-    </h3>
-    <div className="power-fixed">
-        <div className="power-group" onClick={() => {
+    <div className="popup-browser">
+      <h3 className="share-heading">
+        <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+      </h3>
+      <div className="power-fixed">
+        <div
+          className="power-group"
+          onClick={() => {
          dispatch({
           type: 'OPEN_MODAL',
          });
-        }}>
+        }}
+        >
           <div className="power-button">
             <div className="power-inner">
-              <span></span>
+              <span />
             </div>
           </div>
         </div>
         <p>Please click to turn it on !</p>
+      </div>
     </div>
-    <div className="toolbar-button">
-      <GoogleButton
-        onClick={() => {
-        dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-        dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
-      }}
-      />
-      <FacebookButton
-        onClick={() => {
-          const shareUrl = `${SITE_URL}/${getLink()}`;
-          const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-          openUrl(src);
-        }}
-      />
-      <FacebookMessengerButton
-        onClick={() => {
-          const shareUrl = `${SITE_URL}/${getLink()}`;
-          const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
-          openUrl(src);
-        }}
-      />
-      <LinkButton
-        onClick={() => {
-          dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-          dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
-      }}
-      />
-    </div>
-  </div>
   );
 };
 
-const App = ({ auth, nlp, url, dispatch, shareOption, changeShareOption, getLink }) => <div
+const App = ({ auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink }) => <div
   style={{ margin: '0 auto' }}
 >
   {
-    render(auth, nlp, url, dispatch, shareOption, changeShareOption, getLink)
+    render(
+      auth, nlp, removeHashFromUrl(url), icon,
+      dispatch, shareOption, changeShareOption, getLink,
+     )
   }
 </div>;
 
@@ -353,12 +281,13 @@ const enhance = compose(
       this.props.onReady();
     },
   }),
-  onlyUpdateForKeys(['auth', 'nlp', 'code', 'url']),
+  onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption']),
 );
 
 const mapStateToProps = state => ({
   auth: state.auth,
   nlp: state.nlp,
   code: state.code,
+  icon: state.icon,
 });
 export default connect(mapStateToProps)(enhance(App));
