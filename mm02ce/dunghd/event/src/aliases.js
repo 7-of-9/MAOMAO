@@ -11,7 +11,6 @@ const throttledQueue = require('throttled-queue');
 const throttle = throttledQueue(10, 1000); // at most make 10 request every second.
 
 function logout(auth) {
-  console.warn('logout', auth);
   const promise = new Promise((resolve, reject) => {
     // revoke token
     if (auth.googleUserId && auth.googleToken) {
@@ -30,7 +29,6 @@ function logout(auth) {
 
     // logout firebase
     if (firebase.auth().currentUser) {
-      console.log('firebase logout');
       firebase.auth().signOut();
     }
 
@@ -82,7 +80,7 @@ function downloadPhoto(dispatch, contacts) {
           if (err) {
             dispatch(actionCreator('PHOTO_NO_IMAGE', {
               ...contact,
-              image: '',
+              image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAAKlBMVEXMzMz////8/Pza2trQ0NDf39/29vbW1tbp6ens7Ozy8vL5+fni4uLm5uZ/0ezOAAAB3UlEQVRo3u2XvUoDURCFE4y6MRY5GzbEoMWCIAhCbAStRFAsk9Y0Bn2A4BNswAeI2FoYxT4g6bW01CeysNAku7Mz99jlfv0c7s+cuecWPB6PZ0FY/XgCsPvQd6w/jPFDeO9SXuril8mxXeALf9kz1x9gmitjfYBZEtsB9DBL3XQMN5hnx9IAMeYJ+6YFUEsoxUgjVJ/CCtK51AoMkE5DWb+ELFrqHXB7+EQWW4Y7IO5hGdm0NQIVQWCsEdgXBGoagTtBYEMjEAsCocaJkFA4ch0Sb/kCZUgM8wXWIPGYL1CERNULLIgA0UhEK7Nm4u3MDxR+pPFDlR/r/MPCP23848o/73zA4CMOH7L4mMcHTT7q8mGbj/v8h6NwOsI0r44/PsDp63eBFF709V2kMtHWHyGDZ139OTK5VZk5FqZ6S9FCAwg08rvpDCLXRhvZHdVBDpHiTZBpcwsAInIB8hI6UBCps4U9ZJxAxbY4x2Tk4RZASSJEExU15XtkjQkB1CTCDog9jKCmKbaxaztXYGAs+cDVDyMYaGqTlSFulWFiKDjR0ZEdmIhUvwTTxwFGxEtwuYYARhJlulUH9yKMVOVhYB8J7zCyKXwRVDRkL9r92IOROtmIgBfwAv8owLfyN0kjHr6c7ddbAAAAAElFTkSuQmCC',
             }));
           } else {
             dispatch(actionCreator('PHOTO_IMAGE', {
