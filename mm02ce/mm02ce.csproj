@@ -181,6 +181,8 @@
     <Content Include="dunghd\popup\src\scripts\components\app\TwitterButton.jsx" />
     <Content Include="dunghd\popup\src\scripts\components\app\utils.js" />
     <Content Include="dunghd\popup\src\scripts\index.jsx" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\images\close_button.png" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\images\dog_blue.png" />
     <Content Include="dunghd\popup\webpack.config.js" />
     <Content Include="gulpfile.babel.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
@@ -228,6 +230,15 @@
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Roboto\Roboto-Regular.ttf" />
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Roboto\Roboto-Regular.woff" />
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Roboto\Roboto-Regular.woff2" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\base\_all.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\base\_color.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\base\_reset.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\components\_all.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\main.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\themes\_all.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_all.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_clearfix.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_variables.scss" />
     <None Include="scripts\_references.js" />
     <None Include="scripts\chrome-api-vsdoc.js" />
     <Content Include="web.config" />

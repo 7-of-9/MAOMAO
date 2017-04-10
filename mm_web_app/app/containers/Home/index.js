@@ -76,18 +76,18 @@ function Home({ home, history, notifications, loading,
           </div>
         }
         {
-          isLogin() &&
-          <YourStreams
-            friends={friends}
-            topics={sortedTopicByUrls}
-            activeId={currentTermId}
-            changeTerm={onChangeTerm}
-            changeFriendStream={onChangeFriendStream}
-          />
+            hasInstalledExtension() && isLogin() &&
+            <YourStreams
+              friends={friends}
+              topics={sortedTopicByUrls}
+              activeId={currentTermId}
+              changeTerm={onChangeTerm}
+              changeFriendStream={onChangeFriendStream}
+            />
         }
         <Loading isLoading={loading} />
         {
-          isLogin() &&
+          hasInstalledExtension() && isLogin() &&
           <StreamList urls={selectedUrls} />
         }
       </div>

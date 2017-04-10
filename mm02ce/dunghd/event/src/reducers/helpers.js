@@ -35,7 +35,7 @@ function ctxMenu(records) {
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.9',
+    title: 'v0.5.10',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });
@@ -55,7 +55,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.9',
+    title: 'v0.5.10',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });

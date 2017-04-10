@@ -79,7 +79,7 @@ $close-btn-img: url('./images/close_button.png');
     border-top-color: #4fb6ec;
     border-radius: 50%;
   }
-  .paragraph-share{
+  .paragraph-share {
     text-align: center;
     font-size: 21px;
     font-weight: 400;
@@ -89,10 +89,14 @@ $close-btn-img: url('./images/close_button.png');
 }
 
 .power-fixed {
+  text-align: center;
   .power-group {
     margin: 30px auto 15px;
     min-height: 117px;
     max-width: 117px;
+    background: none;
+    border: 0;
+    padding: 0;
     transform-origin: center bottom 0px;
     transform: matrix(1, 0, 0, 1, 0, 0);
     transition: all 0.2s ease-in-out;

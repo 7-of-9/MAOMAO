@@ -4,7 +4,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
-import Paper from 'material-ui/Paper';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
 
 const customStyles = {
@@ -49,7 +48,6 @@ const customStyles = {
     left: '0px',
     right: '0px',
     bottom: '0px',
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
     animation: 'vex-fadein 0.5s',
   },
   content: {
@@ -106,7 +104,8 @@ function WelcomeModal({
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
-        <Paper style={customStyles.content} zDepth={3}>
+        <div style={customStyles.content}>
+          <a className="close_popup" onTouchTap={onClose}><i className="fa fa-close"></i></a>
           <div className="maomao-logo" />
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
@@ -119,7 +118,6 @@ function WelcomeModal({
             <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onGoogleLogin}>
               <i className="fa fa-google-plus"></i> Sign in with Google
             </a>
-            <a className="close_popup" onTouchTap={onClose}><i className="fa fa-close"></i></a>
           </ToggleDisplay>
           <ToggleDisplay show={auth.isLogin} className="position-normal">
             <Card style={customStyles.card}>
@@ -141,14 +139,13 @@ function WelcomeModal({
                   <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}>
                     <i className="fa fa-google-plus"></i> Sign in with Google
                   </a>}
-                <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
-                  <i className="fa fa-sign-out"></i> Logout
-                </a>
-                <a className="close_popup" onTouchTap={onClose}><i className="fa fa-close"></i></a>
+                  <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
+                    <i className="fa fa-sign-out"></i> Logout
+                  </a>             
               </CardActions>
             </Card>
           </ToggleDisplay>
-        </Paper>
+        </div>
       </div>
     </ToggleDisplay>
   );
