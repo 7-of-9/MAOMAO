@@ -15,7 +15,7 @@ const customStyles = {
   },
   animateText: {
     color: '#999',
-    fontFamily: 'Rokkitt',
+    fontFamily: 'rokkittsemibold',
     fontSize: '75px',
     lineHeight: '68px',
     textShadow: '0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8)',
@@ -63,7 +63,6 @@ const customStyles = {
     marginTop: '-250px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
-    overflow: 'auto',
     WebkitOverflowScrolling: 'touch',
     borderRadius: '7px',
     outline: 'none',
@@ -112,29 +111,17 @@ function WelcomeModal({
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
            </h1>
-          <ToggleDisplay hide={auth.isLogin}>
+          <ToggleDisplay hide={auth.isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
-            <RaisedButton
-              onTouchTap={onGoogleLogin}
-              label="Google Connect"
-              secondary
-              style={customStyles.button}
-            />
-            <br />
-            <RaisedButton
-              onTouchTap={onFacebookLogin}
-              label="Facebook Connect"
-              primary
-              style={customStyles.button}
-            />
-            <br />
-            <RaisedButton
-              onTouchTap={onClose}
-              label="Close"
-              style={customStyles.button}
-            />
+            <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>
+              <span className="fa fa-facebook"></span> Sign in with Facebook
+            </a>
+            <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onGoogleLogin}>
+              <i className="fa fa-google-plus"></i> Sign in with Google
+            </a>
+            <a className="close_popup" onTouchTap={onClose}><i className="fa fa-close"></i></a>
           </ToggleDisplay>
-          <ToggleDisplay show={auth.isLogin}>
+          <ToggleDisplay show={auth.isLogin} className="position-normal">
             <Card style={customStyles.card}>
               <CardHeader
                 className="card-header"
@@ -143,35 +130,21 @@ function WelcomeModal({
                 subtitle={auth.info.email}
                 avatar={auth.info.picture}
               />
-              <CardActions style={customStyles.cardAction}>
+              <CardActions style={customStyles.cardAction} className="position-normal">
                 { auth &&
                   !networks.includes('facebook.com') &&
-                  <RaisedButton
-                    onTouchTap={onLinkedFacebook}
-                    label="Facebook Connect"
-                    primary
-                    style={customStyles.button}
-                  />}
+                  <a className="btn btn-block btn-social btn-facebook" onTouchTap={onLinkedFacebook}>
+                    <span className="fa fa-facebook"></span> Sign in with Facebook
+                  </a>}
                 { auth &&
                   !networks.includes('google.com') &&
-                  <RaisedButton
-                    onTouchTap={onLinkedGoogle}
-                    label="Google Connect"
-                    secondary
-                    style={customStyles.button}
-                  />}
-                <br />
-                <RaisedButton
-                  onTouchTap={onLogout}
-                  label="Logout"
-                  style={customStyles.button}
-                />
-                <br />
-                <RaisedButton
-                  onTouchTap={onClose}
-                  label="Close"
-                  style={customStyles.button}
-                />
+                  <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}>
+                    <i className="fa fa-google-plus"></i> Sign in with Google
+                  </a>}
+                <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
+                  <i className="fa fa-sign-out"></i> Logout
+                </a>
+                <a className="close_popup" onTouchTap={onClose}><i className="fa fa-close"></i></a>
               </CardActions>
             </Card>
           </ToggleDisplay>

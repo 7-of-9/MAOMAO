@@ -284,10 +284,7 @@ $close-btn-img: url('./images/close_button.png');
   background-image: none;
   border: 1px solid #ccc;
   border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
-  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
-  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
@@ -727,6 +724,292 @@ fieldset[disabled] .react-autosuggest__input {
       background-color: #ec971f;
       border-color: #fb9504;
     }
+  }
+}
+
+
+/* button social*/
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  &:focus,
+  &:active:focus,
+  &.active:focus,
+  &.focus,
+  &:active.focus,
+  &.active.focus {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+  &:hover,
+  &:focus,
+  &.focus {
+    color: #333;
+    text-decoration: none;
+  }
+  &:active,
+  &.active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  }
+  &.disabled,
+  [disabled] {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+  }
+}
+
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+}
+
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+
+.btn-block {
+  display: block;
+  max-width: 280px;
+  margin: 15px auto 0 !important;
+}
+
+.btn-social {
+  position: relative;
+  padding-left: 44px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis
+}
+
+.btn-social >:first-child {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  line-height: 36px;
+  font-size: 1.6em;
+  text-align: center;
+  border-right: 1px solid rgba(0, 0, 0, 0.2)
+}
+
+.btn-facebook {
+  color: #fff;
+  background-color: #3b5998;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff;
+    background-color: #30487b;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  &.active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background-color: #3b5998;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
+
+.open .dropdown-toggle.btn-facebook {
+  color: #fff;
+  background-color: #30487b;
+  border-color: rgba(0, 0, 0, 0.2)
+}
+
+.open .dropdown-toggle.btn-facebook {
+  background-image: none
+}
+
+fieldset[disabled] .btn-facebook,
+fieldset[disabled] .btn-facebook:hover,
+fieldset[disabled] .btn-facebook:focus,
+fieldset[disabled] .btn-facebook:active,
+fieldset[disabled] .btn-facebook.active {
+  background-color: #3b5998;
+  border-color: rgba(0, 0, 0, 0.2)
+}
+
+.btn-google-plus {
+  color: #fff;
+  background-color: #dd4b39;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff;
+    background-color: #ca3523;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  .active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background-color: #dd4b39;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
+
+.open .dropdown-toggle.btn-google-plus {
+  color: #fff;
+  background-color: #ca3523;
+  border-color: rgba(0, 0, 0, 0.2)
+}
+
+.open .dropdown-toggle.btn-google-plus {
+  background-image: none
+}
+
+fieldset[disabled] .btn-google-plus,
+fieldset[disabled] .btn-google-plus:hover,
+fieldset[disabled] .btn-google-plus:focus,
+fieldset[disabled] .btn-google-plus:active,
+fieldset[disabled] .btn-google-plus.active {
+  background-color: #dd4b39;
+  border-color: rgba(0, 0, 0, 0.2)
+}
+
+.btn-facebook,
+.btn-google-plus,
+.btn-logout {
+  text-transform: uppercase;
+}
+
+.btn-logout {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+  &:focus,
+  &.focus {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #8c8c8c;
+  }
+  &:hover {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
+  &:active,
+  &.active {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
+  &:active:hover,
+  &.active:hover,
+  &:active:focus,
+  &.active:focus,
+  &:active.focus,
+  &.active.focus {
+    color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c;
+  }
+  &:active,
+  &.active {
+    background-image: none;
+  }
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled.focus,
+  &[disabled].focus {
+    background-color: #fff;
+    border-color: #ccc;
+  }
+}
+
+fieldset[disabled] .btn-logout:focus,
+fieldset[disabled] .btn-logout.focus {
+  background-color: #fff;
+  border-color: #ccc;
+}
+
+.position-normal,
+.position-normal > div,
+.position-normal > div > div {
+  display: block;
+  position: static !important;
+}
+
+.close_popup {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  font-size: 20px;
+  line-height: 30px;
+  text-align: center;
+  cursor: pointer;
+  color: #323232;
+  background: #fff;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  touch-action: manipulation;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .06), 0 2px 32px rgba(0, 0, 0, .16);
+  &:hover,&:focus{
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
   }
 }
 
