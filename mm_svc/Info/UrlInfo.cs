@@ -12,11 +12,12 @@ namespace mm_svc
 {
     /// <summary>
     /// Returns NLP info for a URL
-    /// </summary>  
+    /// </summary>
     public static class UrlInfo
     {
         public class UrlParent {
             public string term_name;
+            public long term_id;
             public bool is_topic;
             public string dbg_info;
             public double S;
@@ -55,12 +56,14 @@ namespace mm_svc
 
                 ret_topics = topics.Select(p2 => new UrlInfo.UrlParent() {
                    term_name = p2.term.name,
+                   term_id = p2.term.id,
                            S = p2.S ?? 0,
                     is_topic = p2.term.IS_TOPIC,
                     dbg_info = $"{p2.term} *TL={p2.mmtopic_level} avg_TSS_leaf={p2.avg_TSS_leaf} (min_d={p2.min_d_paths_to_root_url_terms} max_d={p2.max_d_paths_to_root_url_terms} perc_ptr_topics={(p2.perc_ptr_topics * 100).ToString("0.00")}%) --> S={p2.S?.ToString("0.00000")} S_norm={p2.S_norm?.ToString("0.00")} avg_S={p2.avg_S?.ToString("0.0000")}"
                 }).ToList();
 
                ret_suggested = suggested.ToList().Select(p2 => new UrlInfo.UrlParent() {
+                   term_id = p2.term.id,
                    term_name = p2.term.name,
                            S = p2.S ?? 0,
                     is_topic = p2.term.IS_TOPIC,
@@ -69,6 +72,7 @@ namespace mm_svc
 
                 tld_topic_id = tld_title_term?.term.id;
                 ret_tld_title_term = new UrlInfo.UrlParent() {
+                   term_id = tld_title_term?.term.id,
                    term_name = tld_title_term?.term.name,
                     is_topic = false,
                            S = 1.0,
