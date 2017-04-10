@@ -65,14 +65,22 @@ const isAllowToShare = (url, records) => {
   return false;
 };
 
-const getCurrentTopic = (url, records) => {
+const getCurrentTopics = (url, records, terms) => {
+  const topics = [];
   if (records.length) {
-    const existRecord = records.filter(item => item.url === url);
-    if (existRecord && existRecord[0]) {
-      return existRecord[0].data.tld_topic;
+    const existRecord = records.find(item => item.url === url);
+    if (existRecord) {
+      topics.push({ id: `${existRecord.data.tld_topic_id}-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
     }
   }
-  return '';
+  if (terms.length) {
+    const existRecord = terms.find(item => item.url === url);
+    if (existRecord) {
+      topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-${item.term_name}`, name: item.term_name })));
+    }
+  }
+  console.warn('topics', topics);
+  return topics;
 };
 
 
@@ -105,43 +113,26 @@ const getShareTopicCode = (url, codes, records) => {
 };
 
 const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
-  if (!url) {
-    return (
-      <div className="popup-browser">
-        <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
-        </h3>
-        <div className="circle-share">
-          <p className="paragraph-share">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
           <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
         </h3>
-        <div className="circle-share">
-          <p className="paragraph-share">Maomao is off on<br /> on internal tab!</p>
-        </div>
+        <p className="paragraph-share">Maomao is off on internal tab!</p>
       </div>
     );
   }
 
   if (auth.isLogin) {
-    const topic = getCurrentTopic(url, nlp.records);
+    const topics = getCurrentTopics(url, nlp.records, nlp.terms);
     if (!isRunable(url, icon)) {
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
             <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
           </h3>
-          <div className="circle-share">
-            <p className="paragraph-share">Maomao is off<br /> on this url!</p>
-          </div>
+          <p className="paragraph-share">Maomao is off on this url!</p>
         </div>
       );
     }
@@ -151,10 +142,8 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <h3 className="share-heading">
             <a href="#home"><span className="maomao-logo" /> Share this topic</a>
           </h3>
-          <div className="circle-share">
-            <div className="circle-inner">
-              <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
-            </div>
+          <div>
+            <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>
           <div className="toolbar-button">
             <GoogleButton
@@ -214,7 +203,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
         <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
       </h3>
       <div className="power-fixed">
-        <div
+        <button
           className="power-group"
           onClick={() => {
          dispatch({
@@ -227,7 +216,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
               <span />
             </div>
           </div>
-        </div>
+        </button>
         <p>Click to turn it on!</p>
       </div>
     </div>

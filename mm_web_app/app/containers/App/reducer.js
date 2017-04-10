@@ -112,7 +112,10 @@ const initialState = fromJS({
 function appReducer(state = initialState, action) {
   switch (action.type) {
     case RESTORE:
-      return state.updateIn(['data', 'googleConnect', 'user'], () => action.data.user);
+      return state
+        .updateIn(['data', 'googleConnect'], () => fromJS(action.data.googleConnect))
+        .updateIn(['data', 'facebookConnect'], () => fromJS(action.data.facebookConnect))
+        .updateIn(['data', 'userHistory'], () => fromJS(action.data.userHistory));
     case LOGOUT:
       return initialState;
     case GOOGLE_SEARCH:
