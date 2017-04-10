@@ -1,7 +1,8 @@
 import firebase from 'firebase';
+import * as logger from 'loglevel';
 
 export default function checkFacebookAuth(isLinked) {
-  console.warn('checkFacebookAuth', isLinked, firebase.auth().currentUser);
+  logger.warn('checkFacebookAuth', isLinked, firebase.auth().currentUser);
   const promise = new Promise((resolve, reject) => {
     const provider = new firebase.auth.FacebookAuthProvider();
     provider.addScope('email');

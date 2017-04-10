@@ -24,7 +24,7 @@ function cslib_test_NextYouTubeVid(selector) {
                 next[ndx].click();
             else {
                 //location.reload(true);
-                console.error("cslib_test_NextYouTubeVid -- RELOAD (null obj) -- nav back to trending, reseed...");
+                log.error("cslib_test_NextYouTubeVid -- RELOAD (null obj) -- nav back to trending, reseed...");
                 cslib_test_Reseed();
             }
         }, 2000);
@@ -37,9 +37,9 @@ function cslib_test_Reseed() {
 
 $(document).ready(function () {
     // insert html node for checking that is youtube player mode
-    console.info("TEST MODE: youtube ...");
+    log.info("TEST MODE: youtube ...");
     if (document.getElementById('maomao-extension-youtube-test')) {
-        console.info("youtube is ready :)");
+        log.info("youtube is ready :)");
     } else {
         var anchor = document.createElement('div');
         anchor.id = 'maomao-extension-youtube-test';
@@ -47,12 +47,12 @@ $(document).ready(function () {
     }
 
     if (cslib_isYouTubeTrending()) { // TEST MODE: -- use trending as the random-walk seed starting point
-        console.log("TEST MODE: YT TRENDING - reseeding ...");
+        log.info("TEST MODE: YT TRENDING - reseeding ...");
         cslib_test_NextYouTubeVid(".yt-uix-sessionlink.yt-uix-tile-link.yt-ui-ellipsis.yt-ui-ellipsis-2.spf-link");
         return;
     }
     if (cslib_isYouTubeSubscriptions()) { // TEST MODE: -- use subscriptions as the random-walk seed starting point
-        console.log("TEST MODE: YT SUBSCRIPTIONS - reseeding ...");
+        log.info("TEST MODE: YT SUBSCRIPTIONS - reseeding ...");
         cslib_test_NextYouTubeVid(".yt-uix-sessionlink.yt-ui-ellipsis.yt-ui-ellipsis-2.spf-link");
         return;
     }
@@ -64,37 +64,37 @@ $(document).ready(function () {
             sessionStorage["mm_YT_handlersInstalled"] = "true";
 
             $(".ytp-fullscreen-button").click(function (e) {
-                console.info("%c >> YT: FULLSCREEN - click", "font-weight:bold; color:green");
+                log.info("%c >> YT: FULLSCREEN - click", "font-weight:bold; color:green");
                 sendEvent("YT", "fullscreen_btn_click");
             });
             $(".ytp-settings-button").click(function (e) {
-                console.info("%c >> YT: SETTINGS - click", "font-weight:bold; color:green");
+                log.info("%c >> YT: SETTINGS - click", "font-weight:bold; color:green");
                 sendEvent("YT", "settings_btn_click");
             });
             $(".ytp-size-button").click(function (e) {
-                console.info("%c >> YT: SIZE - click", "font-weight:bold; color:green");
+                log.info("%c >> YT: SIZE - click", "font-weight:bold; color:green");
                 sendEvent("YT", "size_btn_click");
             });
             $(".ytp-play-button").click(function (e) {
-                console.info("%c >> YT: PLAY/PAUSE - click", "font-weight:bold; color:green");
+                log.info("%c >> YT: PLAY/PAUSE - click", "font-weight:bold; color:green");
                 sendEvent("YT", "play_btn_click");
             });
             $(".ytp-volume-hover-area").hover(function (e) {
-                console.info("%c >> YT: VOLUME -- hover", "font-weight:bold; color:green");
+                log.info("%c >> YT: VOLUME -- hover", "font-weight:bold; color:green");
                 sendEvent("YT", "volume_hover");
             });
             $(".ytp-volume-hover-area").click(function (e) {
-                console.info("%c >> YT: VOLUME -- click", "font-weight:bold; color:green");
+                log.info("%c >> YT: VOLUME -- click", "font-weight:bold; color:green");
                 sendEvent("YT", "volume_click");
             });
 
             // player
             $("#player-api").dblclick(function (e) {
-                console.info("%c >> YT: PLAYER -- dblclick", "font-weight:bold; color:green");
+                log.info("%c >> YT: PLAYER -- dblclick", "font-weight:bold; color:green");
                 sendEvent("YT", "player_dblclick");
             });
             $("#player-api").click(function (e) {
-                console.info("%c >> YT: PLAYER -- click", "font-weight:bold; color:green");
+                log.info("%c >> YT: PLAYER -- click", "font-weight:bold; color:green");
                 sendEvent("YT", "player_click");
             });
         }

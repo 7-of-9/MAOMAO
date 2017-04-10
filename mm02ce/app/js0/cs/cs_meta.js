@@ -18,7 +18,7 @@ function get_page_metadata(fast_refresh, callback) {
         if (cslib_isYouTubeWatch()) {
             ms_wait = 500;
         } else {
-            console.info("Disable youtube test");
+            log.info("Disable youtube test");
         }
     }
 
@@ -313,8 +313,8 @@ function get_page_metadata(fast_refresh, callback) {
 
         if (!fast_refresh) {
             sendEvent("got_page_meta", "OTHER", page_meta);
-            //console.log(JSON.stringify(page_meta, null, 4));
-            //console.trace();
+            //log.info(JSON.stringify(page_meta, null, 4));
+            //log.trace();
         }
         chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NNS_SCORE', payload: { url: remove_hash_url(document.location.href), score: page_meta.nlp_suitability_score, } } });
 

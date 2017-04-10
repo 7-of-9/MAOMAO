@@ -63,8 +63,8 @@ function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 ///   (*) does allowable lookup -- then does CS injection if url is allowable
 //
 function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
-  console.info('%c >>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, session_style_hi);
-  // console.trace('checking session for tab', tab);
+  log.info('%c >>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, session_style_hi);
+  // log.trace('checking session for tab', tab);
 
   var session = null;
   // turn off for guest
@@ -77,7 +77,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
   // this does happen! can only assume that it's because this called from multiple threads somehow;
   if (existing_session.length > 1) {
-    console.warn('%c ### get_session_by_tab - GOT >1 URL MATCH! shouldn\'t happen.' + mm.all_sessions.length, session_style_err);
+    log.warn('%c ### get_session_by_tab - GOT >1 URL MATCH! shouldn\'t happen.' + mm.all_sessions.length, session_style_err);
     // so, just warn and move on -- the code below will always return the *first* session in the filtered list, so might not be the end of the world
   }
 
@@ -86,7 +86,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
   //
   if (existing_session.length >= 1) {
 
-    console.info('%c (get_session - existing: ' + tab.url + ') reinject_cs_handlers_on_existing_session=' + reinject_cs_handlers_on_existing_session, 'color: gray; ');
+    log.info('%c (get_session - existing: ' + tab.url + ') reinject_cs_handlers_on_existing_session=' + reinject_cs_handlers_on_existing_session, 'color: gray; ');
     session = existing_session[0];
 
     // inject CS into known session, if not already done
@@ -95,15 +95,15 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
       // only inject CS if the TLD is allowable
       ajax_isTldAllowable(url_ex_hash, function (data) {
-        console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
+        log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
         if (data.allowable) {
 
-          console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
+          log.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
           inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
         } else {
-          console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
+          log.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
@@ -127,7 +127,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
     if (process_url(tab.url)) {
       // call info/allowable for the new session URL
-      console.info('%c >>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...', session_style);
+      log.info('%c >>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...', session_style);
 
       // record session
       session = new_session(url_ex_hash);
@@ -136,15 +136,15 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
       // inject CS only if TLD is allowable
       ajax_isTldAllowable(url_ex_hash, function (data) {
-        console.log('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
+        log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
         if (data.allowable) {
 
-          console.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
+          log.info('%c >>> get_session_by_tab - existing - never injected & allowable [' + url_ex_hash + '] >> injecting (again) ...', session_style);
           inject_cs(session, tab.id, !reinject_cs_handlers_on_existing_session);
 
         } else {
-          console.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
+          log.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
         }
       }, function (error) {
@@ -156,7 +156,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
       });
 
     } else {
-      console.info('%c (get_session_by_tab - rejecting non-process URL [' + url_ex_hash + '])', session_style);
+      log.info('%c (get_session_by_tab - rejecting non-process URL [' + url_ex_hash + '])', session_style);
     }
   }
 
@@ -168,19 +168,19 @@ function session_get_by_url(url) {
   var url_ex_hash = bglib_remove_hash_url(url);
   var existing_session = _.filter(mm.all_sessions, function (a) { return a.url == url_ex_hash });
   if (existing_session.length == 1) {
-    console.info('%c (get_session_by_url - existing: ' + url + ')', session_style);
+    log.info('%c (get_session_by_url - existing: ' + url + ')', session_style);
     return existing_session[0];
   } else if (existing_session.length == 0)
-    console.error('%c ### get_session_by_url - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
+    log.error('%c ### get_session_by_url - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
   else
-    console.error('%c ### get_session_by_url - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
+    log.error('%c ### get_session_by_url - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
   return null;
 }
 
 function session_update_exist_NLP(session, page_meta) {
   if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
   session.page_meta = page_meta;
-  console.info('%c >> session[' + session.url + ']', session_style_hi);
+  log.info('%c >> session[' + session.url + ']', session_style_hi);
   mm_update(session, true);
 }
 
@@ -189,9 +189,9 @@ function session_update_NLP(session, nlp, page_meta) {
   session.page_meta = page_meta;
   if (!session.hasOwnProperty('track_im')) session.track_im = { start: Date.now(), };
   if (nlp.topic_specific == '?') {
-    console.info('%c >> session[' + session.url + ']', session_style_hi);
-    console.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
-    console.error('%c    FAILED TO GET A TOPIC_SPECIFIC; skipping NLP save.', session_style_err);
+    log.info('%c >> session[' + session.url + ']', session_style_hi);
+    log.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
+    log.error('%c    FAILED TO GET A TOPIC_SPECIFIC; skipping NLP save.', session_style_err);
     return;
   }
   if (!session.hasOwnProperty('nlps')) session.nlps = [];
@@ -210,12 +210,12 @@ function session_update_NLP(session, nlp, page_meta) {
     session.tags.push({ 'tag': a.name, 'score': 0 });
   });
 
-  console.info('%c >> session[' + session.url + ']', session_style_hi);
-  console.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
-  console.info('%c ..... session.nlps.length = ' + session.nlps.length, session_style);
+  log.info('%c >> session[' + session.url + ']', session_style_hi);
+  log.info('%c    session.topic_specific = ' + session.topic_specific, session_style);
+  log.info('%c ..... session.nlps.length = ' + session.nlps.length, session_style);
 
   _.each(session.tags, function (a) {
-    console.info('%c ..... tag [' + a.tag + '] / score=' + a.score, session_style);
+    log.info('%c ..... tag [' + a.tag + '] / score=' + a.score, session_style);
   });
 
   mm_update(session, true);
@@ -304,12 +304,12 @@ function session_add_IM(session, data, tab) {
     // update score
     session.im_score += score_mod * audible_weighting;
     if (score_mod != 0) {
-      console.info('%c >> session[' + session.url + ']', session_style);
-      console.info('%c ..... session_event = ' + JSON.stringify(session_event), session_style);
-      console.info('%c ..... score_mod = ' + score_mod + ' (+ audible_weighting: x' + audible_weighting + ')', session_style);
-      console.info('%c ..... session.events.length = ' + session.events.length, session_style);
-      console.info('%c ..... session.session_millis = ' + session.session_millis, session_style);
-      console.info('%c ..... session.im_score = ' + session.im_score, session_style);
+      log.info('%c >> session[' + session.url + ']', session_style);
+      log.info('%c ..... session_event = ' + JSON.stringify(session_event), session_style);
+      log.info('%c ..... score_mod = ' + score_mod + ' (+ audible_weighting: x' + audible_weighting + ')', session_style);
+      log.info('%c ..... session.events.length = ' + session.events.length, session_style);
+      log.info('%c ..... session.session_millis = ' + session.session_millis, session_style);
+      log.info('%c ..... session.im_score = ' + session.im_score, session_style);
       sessionObservable.lastUpdate = Date.now();
     }
 
@@ -322,7 +322,7 @@ function session_add_view_instance(session) {
     if (!session.hasOwnProperty('view_timestamps')) session.view_timestamps = [];
 
     session.view_timestamps.push(Date.now());
-    console.info('%c > NEW SESSION VIEW [' + session.url + '] (view count=' + session.view_timestamps.length + ')', session_style);
+    log.info('%c > NEW SESSION VIEW [' + session.url + '] (view count=' + session.view_timestamps.length + ')', session_style);
     mm_update(session);
   }
 }
@@ -333,23 +333,23 @@ function session_stop_TOT(session) {
 
     session.TOT_cur_stop_at = Date.now();
     if (session.TOT_cur_start_at != 0) {
-      console.warn('session_stop_TOT! session.TOT_cur_start_at=' + session.TOT_cur_start_at);
+      log.warn('session_stop_TOT! session.TOT_cur_start_at=' + session.TOT_cur_start_at);
 
       if (isNaN(session.TOT_cur_stop_at))
-        console.error('%c > TOT.stop: TOT_cur_stop_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
+        log.error('%c > TOT.stop: TOT_cur_stop_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
       if (isNaN(session.TOT_cur_start_at))
-        console.error('%c > TOT.stop: TOT_cur_start_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
+        log.error('%c > TOT.stop: TOT_cur_start_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
 
       var tot_delta_millis = session.TOT_cur_stop_at - session.TOT_cur_start_at;
       if (!isNaN(tot_delta_millis)) {
         session.TOT_total_millis += tot_delta_millis;
         session.TOT_cur_start_at = 0;
         session.TOT_cur_stop_at = 0;
-        console.info('%c > TOT.stop: delta=' + tot_delta_millis + ' (new: ' + session.TOT_total_millis / 1000 + ' s)' + '[' + session.url + '] sid=' + session.sid, session_style);
+        log.info('%c > TOT.stop: delta=' + tot_delta_millis + ' (new: ' + session.TOT_total_millis / 1000 + ' s)' + '[' + session.url + '] sid=' + session.sid, session_style);
       } else
-        console.error('%c > TOT.stop: tot_delta_millis NaN' + '[' + session.url + ']', session_style_err);
+        log.error('%c > TOT.stop: tot_delta_millis NaN' + '[' + session.url + ']', session_style_err);
     } else
-      console.log('%c > TOT.stop: nop - not started [' + session.url + '] sid=' + session.sid, session_style);
+      log.info('%c > TOT.stop: nop - not started [' + session.url + '] sid=' + session.sid, session_style);
 
     mm_update(session);
   }
@@ -364,10 +364,10 @@ function session_start_TOT(session) {
     if (session.TOT_cur_start_at == 0 || typeof session.TOT_cur_start_at == 'undefined')
       session.TOT_cur_start_at = Date.now();
     else
-      console.log('%c > TOT.start: nop - already started [' + session.url + '] sid=' + session.sid, session_style);
+      log.info('%c > TOT.start: nop - already started [' + session.url + '] sid=' + session.sid, session_style);
 
     session.TOT_cur_stop_at = 0;
-    console.info('%c > TOT.start... [' + session.url + '] sid=' + session.sid, session_style);
+    log.info('%c > TOT.start... [' + session.url + '] sid=' + session.sid, session_style);
 
     // stop any previously started sessions
     var other_previously_started_sessions = _.filter(mm.all_sessions, function (a) {
@@ -392,7 +392,7 @@ function session_update_page_meta(session, page_meta) {
   set_meta_accessors(page_meta);
 
   session.page_meta = page_meta;
-  console.info('%c > PAGE_META ' + JSON.stringify(page_meta, null, 2) + ' [' + session.url + '] sid=' + session.sid, session_style_hi);
+  log.info('%c > PAGE_META ' + JSON.stringify(page_meta, null, 2) + ' [' + session.url + '] sid=' + session.sid, session_style_hi);
 
   mm_update(session);
 }

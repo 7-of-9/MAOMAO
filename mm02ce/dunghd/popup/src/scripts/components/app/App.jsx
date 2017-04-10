@@ -79,7 +79,6 @@ const getCurrentTopics = (url, records, terms) => {
       topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-${item.term_name}`, name: item.term_name })));
     }
   }
-  console.warn('topics', topics);
   return topics;
 };
 

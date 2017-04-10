@@ -1,6 +1,5 @@
 import firebase from 'firebase';
 import mobx from 'mobx';
-// import faker from 'faker';
 import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
@@ -9,7 +8,7 @@ import createMigration from 'redux-persist-migrate';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import { createLogger } from 'redux-logger';
 import { batchActions, enableBatching } from 'redux-batched-actions';
-
+import * as log from 'loglevel';
 import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
@@ -24,7 +23,15 @@ require('expose-loader?StackTrace!stacktrace-js');
 require('expose-loader?moment!moment');
 require('expose-loader?firebase!firebase');
 require('expose-loader?mobx!mobx');
+require('expose-loader?log!loglevel');
 /* eslint-enable */
+
+if (process.env.NODE_ENV === 'production') {
+  // This disables all logging below the given level
+  log.setLevel('warn');
+} else {
+  log.setLevel('debug');
+}
 
 const logger = createLogger();
 const config = new Config();

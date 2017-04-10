@@ -6,7 +6,7 @@ var cs_log_style_info = "color: blue; baclground: white;"
 var cs_log_style = "background: blue; color: white;"
 var cs_log_style_hi = "background: blue; color: white; font-weight:bold;";
 
-console.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
+log.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
 
 // TODO: Handling of 'mousewheel' input event was delayed for 2834 ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
 
@@ -66,7 +66,7 @@ $(document).ready(function() { // fires more than once! observed; proven. lol.
 
     //    document.body.appendChild(div);
     //    //document.body.insertBefore(div, document.body.childNodes[0]);
-    //    console.log("appended to body: " + JSON.stringify(div));
+    //    log.info("appended to body: " + JSON.stringify(div));
     //    //*[@id="mmDiv01"]
     //}
 
@@ -93,7 +93,7 @@ $(window).on('resize', function(event) {
 
 
 //window.onpopstate = function (e) {
-//    console.error($('meta[property="og:title"]').attr('content'));
+//    log.error($('meta[property="og:title"]').attr('content'));
 //};
 
 
@@ -109,11 +109,11 @@ window.onload = function(e) { sendEvent("onload", "WINDOW", document.location); 
 // document events
 //
 function sendEvent(event, type, value) {
-    // console.warn('sendEvent', event, type, value);
+    // log.warn('sendEvent', event, type, value);
     //if (chrome.extension != null) chrome.extension.sendRequest({ eventName: event, eventValue: value });
 
     var msg = { "doc_event": true, "type": type, "eventName": event, "eventValue": value };
-    //console.dir(msg);
+    //log.warn(msg);
     chrome.extension.sendMessage(msg);
 }
 
@@ -134,7 +134,7 @@ function handleEvent(event, type, validator) {
             return;
         }
     }
-    // console.warn('handleEvent', event, type);
+    // log.warn('handleEvent', event, type);
     var timerId = timers[type];
     var eventInProgress = (timerId > 0);
     if (eventInProgress) {
@@ -147,7 +147,7 @@ function handleEvent(event, type, validator) {
 }
 
 function listenAndCoalesce(target, type, validator) {
-    // console.warn('listenAndCoalesce', target, type);
+    // log.warn('listenAndCoalesce', target, type);
     target.addEventListener(type, function(event) {
         handleEvent(event, type, validator);
     }, true);
@@ -189,25 +189,25 @@ function cslib_words_in_common(a, b) {
     return words_in_common;
 }
 
-// log CS and echo to BG console
+// log CS and echo to BG log
 function cslib_log(msg, format) {
-    console.log(msg, format);
-    chrome.extension.sendMessage({ "console_log": true, "console_msg": msg, "console_format": format });
+    log.info(msg, format);
+    chrome.extension.sendMessage({ "log_log": true, "log_msg": msg, "log_format": format });
 }
 
 function cslib_info(msg, format) {
-    console.info(msg, format);
-    chrome.extension.sendMessage({ "console_info": true, "console_msg": msg, "console_format": format });
+    log.info(msg, format);
+    chrome.extension.sendMessage({ "log_info": true, "log_msg": msg, "log_format": format });
 }
 
 function cslib_warn(msg, format) {
-    console.warn(msg, format);
-    chrome.extension.sendMessage({ "console_warn": true, "console_msg": msg, "console_format": format });
+    log.warn(msg, format);
+    chrome.extension.sendMessage({ "log_warn": true, "log_msg": msg, "log_format": format });
 }
 
 function cslib_error(msg, format) {
-    console.error(msg, format);
-    chrome.extension.sendMessage({ "console_error": true, "console_msg": msg, "console_format": format });
+    log.error(msg, format);
+    chrome.extension.sendMessage({ "log_error": true, "log_msg": msg, "log_format": format });
 }
 
 function cslib_isYouTubeWatch() {
@@ -228,9 +228,9 @@ function cslib_errorStack(stackframes) {
     var stringifiedStack = stackframes.map(function(sf) {
         return sf.toString();
     }).join('\n');
-    console.warn('error stack',stringifiedStack);
+    log.warn('error stack',stringifiedStack);
 }
 
 function cslib_errBack(err) {
-  console.log(err.message);
+  log.info(err.message);
 }

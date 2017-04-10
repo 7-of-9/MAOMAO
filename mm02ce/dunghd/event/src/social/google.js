@@ -1,5 +1,6 @@
 import axios from 'axios';
 import firebase from 'firebase';
+import * as logger from 'loglevel';
 import { guid, queryString } from '../utils';
 
 function buildUrlPath(params) {
@@ -30,7 +31,7 @@ function buildUrlPath(params) {
 }
 
 export function checkGoogleAuth(isLinked) {
-  console.warn('checkGoogleAuth', isLinked, firebase.auth().currentUser);
+  logger.warn('checkGoogleAuth', isLinked, firebase.auth().currentUser);
   const promise = new Promise((resolve, reject) => {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/plus.me');

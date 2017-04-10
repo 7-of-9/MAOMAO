@@ -17,14 +17,14 @@ var mm_last_save_at = 0;
 //
 function mm_load() {
     mm = { all_sessions: [], last_save_at: 0 };
-    console.info("%c mm_load - NOP", mm_logstyle, mm);
+    log.info("%c mm_load - NOP", mm_logstyle, mm);
 }
 
 //
 // add/update to chrome.storage.local
 //
 function mm_update(session, force) {
-    console.info("%c mm_update - NOP", mm_logstyle, session, force);
+    log.info("%c mm_update - NOP", mm_logstyle, session, force);
     if (session && session.url) {
         var data = Object.assign({}, {
             sid: session.sid,
@@ -63,7 +63,7 @@ function mm_update(session, force) {
  */
 function mm_session_clean() {
     if (mm.all_sessions && mm.all_sessions.length > MAX_SESSION_ITEMS) {
-        console.warn('It reachs to max items on session', MAX_SESSION_ITEMS);
+        log.warn('It reachs to max items on session', MAX_SESSION_ITEMS);
         var exist_urls = _.map(tabmap, function(tab) { return tab.url; });
         var existing_sessions = _.filter(mm.all_sessions, function(session) { return _.contains(exist_urls, session.url); });
         mm = Object.assign({}, mm, { all_sessions: existing_sessions });

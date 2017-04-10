@@ -51,7 +51,13 @@ const style = {
   },
 };
 
-const selectTopics = terms => terms && terms[0] && terms[0].text;
+const selectTopics = (topics, type) => {
+  if (type === 'site') {
+   return 'just this site';
+  }
+  const currentTopic = topics.find(item => item.id === type);
+  return currentTopic.name;
+};
 
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
@@ -97,7 +103,7 @@ const enhance = compose(
 );
 
 const ShareTopic = enhance(({
-   enable, type, terms, topic, contacts, code, shareOption,
+   enable, type, topics, contacts, code, shareOption,
    handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
    sendEmails, closeShare, accessGoogleContacts }) =>
      <div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
@@ -110,7 +116,7 @@ const ShareTopic = enhance(({
            <span
              className="fancy-line"
            >Share
-             <em style={style.topic}>{selectTopics(terms)}</em> with
+             <em style={style.topic}>{selectTopics(topics, shareOption)}</em> with
            </span>
          </span>
        </h3>
@@ -123,7 +129,7 @@ const ShareTopic = enhance(({
            style={style.toolbar}
          />
        </div>
-       <ShareOptions active={shareOption} topic={topic} onChange={changeShareOption} />
+       <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
        <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
          You have no google contacts. Click
          <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>

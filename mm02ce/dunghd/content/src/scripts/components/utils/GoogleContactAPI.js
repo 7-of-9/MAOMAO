@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as logger from 'loglevel';
 import guid from './guid';
 
 function queryString(obj) {
@@ -54,7 +55,7 @@ function fetchContacts(token, opts) {
         if (response.status > 300 || response.status < 200) {
           return reject(new Error(`Status code: ${response.statusCode}`));
         }
-        console.log('contacts data', response.data);
+        logger.info('contacts data', response.data);
         const data = response.data;
         const contacts = [];
         let total = 0;

@@ -12291,7 +12291,7 @@ function $LocationProvider() {
          <p>Reload this page with open console, enter text and hit the log button...</p>
          <label>Message:
          <input type="text" ng-model="message" /></label>
-         <button ng-click="$log.log(message)">log</button>
+         <button ng-click="$log.info(message)">log</button>
          <button ng-click="$log.warn(message)">warn</button>
          <button ng-click="$log.info(message)">info</button>
          <button ng-click="$log.error(message)">error</button>

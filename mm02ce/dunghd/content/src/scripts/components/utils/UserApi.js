@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as logger from 'loglevel';
 
 function queryString(obj) {
   const str = [];
@@ -10,7 +11,7 @@ function queryString(obj) {
 
 export function createUser(url, user) {
   return new Promise((resolve, reject) => {
-    console.log('Register user with data', user);
+    logger.info('Register user with data', user);
     return axios({
       method: 'post',
       url,
@@ -25,7 +26,7 @@ export function createUser(url, user) {
 
 export function linkAccount(url, account) {
   return new Promise((resolve, reject) => {
-    console.log('Link user', account);
+    logger.info('Link user', account);
     return axios({
       method: 'post',
       url,

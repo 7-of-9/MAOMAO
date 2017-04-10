@@ -1,6 +1,7 @@
 import axios from 'axios';
 import firebase from 'firebase';
 import { batchActions } from 'redux-batched-actions';
+import * as logger from 'loglevel';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
 import { shareAll, shareThisSite, shareTheTopic } from './sharelink';
@@ -16,15 +17,15 @@ function logout(auth) {
     if (auth.googleUserId && auth.googleToken) {
       // revoke token for google
       axios.get(`https://accounts.google.com/o/oauth2/revoke?token=${auth.googleToken}`)
-        .then(response => console.log('revoke', response))
-        .catch(error => console.log('revoke error', error));
+        .then(response => logger.info('revoke', response))
+        .catch(error => logger.error('revoke error', error));
     }
 
     if (auth.facebookUserId && auth.facebookToken) {
       // revoke token for fb
       axios.delete(`https://graph.facebook.com/${auth.facebookUserId}/permissions?access_token=${auth.facebookToken}`)
-        .then(response => console.log('revoke', response))
-        .catch(error => console.log('revoke error', error));
+        .then(response => logger.info('revoke', response))
+        .catch(error => logger.error('revoke error', error));
     }
 
     // logout firebase
@@ -214,13 +215,13 @@ const notifyUI = data => (
 const generateShare = data => (
   (dispatch, getState) => {
     const { auth: { userId, userHash }, code: { sites, topics } } = getState();
-    const { data: { url_id, tld_topic_id } } = data.payload;
+    const { data: { url_id, tld_topic_id, tld_topic } } = data.payload;
     const findUrlCode = sites.find(item => item && item.url_id === url_id);
-    const findTopicCode = topics.find(item => item && item.tld_topic_id === tld_topic_id);
+    const findTopicCode = topics.find(item => item && item.id === tld_topic_id);
     if (!findTopicCode && tld_topic_id) {
       shareTheTopic(userId, userHash, tld_topic_id)
           .then((result) => {
-            dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, tld_topic_id }));
+            dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: tld_topic_id, name: tld_topic }));
           }).catch((error) => {
             dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
           });

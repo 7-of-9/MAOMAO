@@ -1,11 +1,12 @@
 import axios from 'axios';
 import firebase from 'firebase';
+import * as logger from 'loglevel';
 import { queryString, actionCreator } from './utils';
 import { checkGoogleAuth } from './social/google';
 import checkFacebookAuth from './social/facebook';
 
 export function googleAutoLogin(store, syncImScore, config, googleUserId, user) {
-  console.warn('googleAutoLogin');
+  logger.warn('googleAutoLogin');
   checkGoogleAuth()
     .then((data) => {
       store.dispatch(actionCreator('USER_HASH', { userHash: googleUserId }));
@@ -43,7 +44,7 @@ export function googleAutoLogin(store, syncImScore, config, googleUserId, user) 
         });
         window.userId = userId;
         window.isGuest = false;
-    }).catch(error => console.warn(error));
+    }).catch(error => logger.warn(error));
     }).catch((error) => {
       // Try to logout and remove cache token
       if (firebase.auth().currentUser) {
@@ -54,7 +55,7 @@ export function googleAutoLogin(store, syncImScore, config, googleUserId, user) 
 }
 
 export function facebookAutoLogin(store, syncImScore, config, facebookUserId, email, user) {
-  console.warn('facebookAutoLogin');
+  logger.warn('facebookAutoLogin');
   checkFacebookAuth()
     .then((data) => {
       store.dispatch(actionCreator('USER_HASH', { userHash: facebookUserId }));
@@ -89,7 +90,7 @@ export function facebookAutoLogin(store, syncImScore, config, facebookUserId, em
         });
         window.userId = userId;
         window.isGuest = false;
-      }).catch(error => console.warn(error));
+      }).catch(error => logger.warn(error));
     }).catch((error) => {
       // Try to logout and remove cache token
       if (firebase.auth().currentUser) {

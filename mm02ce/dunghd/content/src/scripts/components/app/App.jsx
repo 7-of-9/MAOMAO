@@ -12,9 +12,9 @@ import WelcomeModal from './WelcomeModal';
 // import FloatingShare from '../share';
 import { linkAccount, createUser } from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
-import getCurrentTopic from '../../selectors/topic';
+import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
-import { getShareAllCode, getShareUrlCode, getShareTopicCode } from '../../selectors/code';
+import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
 
 window.jQuery = $;
 
@@ -33,7 +33,7 @@ const propTypes = {
   code: PropTypes.object,
   icon: PropTypes.object,
   terms: PropTypes.array,
-  topic: PropTypes.string,
+  topics: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
   isShareOnUrl: PropTypes.object,
   onGoogleLogin: PropTypes.func,
@@ -74,7 +74,7 @@ const defaultProps = {
     isEnableIM: true,
     isEnableXp: true,
   },
-  topic: '',
+  topics: [],
   terms: [],
   isShareOnUrl: {
     url: '',
@@ -342,7 +342,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
     });
 }
 
-function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
+function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
   closeXp, sendEmail, onClose, notifyMsg,
@@ -374,7 +374,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topic, code, score, icon,
             enable={isShareOnUrl.enable}
             type={isShareOnUrl.type}
             terms={terms}
-            topic={topic}
+            topics={topics}
             code={code}
             sendEmail={sendEmail}
             changeShareType={changeShareType}
@@ -627,11 +627,11 @@ const mapStateToProps = state => ({
   isShareOnUrl: shareOnUrl(state),
   score: state.score,
   terms: getCurrentTerms(state),
-  topic: getCurrentTopic(state),
+  topics: getCurrentTopics(state),
   code: {
     all: getShareAllCode(state),
     site: getShareUrlCode(state),
-    topic: getShareTopicCode(state),
+    topics: getShareTopicCodes(state),
   },
   icon: state.icon,
 });

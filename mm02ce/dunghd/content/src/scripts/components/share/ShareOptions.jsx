@@ -41,11 +41,20 @@ const enhance = compose(
   onlyUpdateForKeys(['topic', 'active']),
 );
 
-const ShareOptions = enhance(({ topic, active, onChange }) =>
+const ShareOptions = enhance(({ topics, active, onChange }) =>
   <div style={style} className="share-options">
     <Option className="button-site" primary={active === 'site'} onClick={() => { onChange('site'); }} >just this page</Option>
-    { topic && <Option className="button-topic" primary={active === 'topic'} onClick={() => { onChange('topic'); }}>{topic}</Option> }
-    <Option className="button-all" primary={active === 'all'} onClick={() => { onChange('all'); }}> *.* all my browsing!</Option>
+    {
+      topics.map(topic =>
+        <Option
+          key={topic.id}
+          primary={active === topic.id}
+          onClick={() => { onChange(topic.id); }}
+        >
+          {topic.name}
+        </Option>,
+      )
+    }
   </div>,
 );
 export default ShareOptions;

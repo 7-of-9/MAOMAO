@@ -8,13 +8,13 @@ var BG_EXCEPTION_COLOR = '#990000';
 var BG_APP_UUID = new_guid();
 
 // ERROR handler
-var errBack = function(err) { console.log(err.message); };
+var errBack = function(err) { log.info(err.message); };
 
 var errorStackTracking = function(stackframes) {
     var stringifiedStack = stackframes.map(function(sf) {
         return sf.toString();
     }).join('\n');
-    console.warn('error stack', stringifiedStack);
+    log.warn('error stack', stringifiedStack);
     chrome.tabs.query({
       active: true,
       currentWindow: true,
@@ -91,11 +91,11 @@ function setIconText(s, c) {
 // SHUTDOWN ??
 //
 //window.onbeforeunload = function (e) {
-//    console.error('onbeforeunload');
+//    log.error('onbeforeunload');
 //}
 
 //window.onunload = function (e) {
-//    console.error('onunload');
+//    log.error('onunload');
 //}
 
 
@@ -107,14 +107,14 @@ function registerExtensionEventListeners(event, name) {
     var validator = eventValidator[name];
     if (validator) {
       event.addListener(function () {
-        //console.log('extension event: ' + name);
+        //log.info('extension event: ' + name);
 
         // Check this first since the validator may bump the count for future
         // events.
         var canPlay = (eventsToEat == 0);
         if (validator.apply(this, arguments)) {
           if (!canPlay) {
-            //console.log('ate event: ' + name);
+            //log.info('ate event: ' + name);
             eventsToEat--;
             return;
           }
@@ -123,7 +123,7 @@ function registerExtensionEventListeners(event, name) {
       });
     } else {
       event.addListener(function () {
-        //console.log('handling event: ' + name);
+        //log.info('handling event: ' + name);
         if (eatEvent(name)) {
           return;
         }
@@ -131,7 +131,7 @@ function registerExtensionEventListeners(event, name) {
       });
     }
   } else {
-    console.log('no event for ' + name);
+    log.info('no event for ' + name);
   }
 }
 
@@ -141,7 +141,7 @@ var eventsToEat = 0;
 
 function eatEvent(name) {
   if (eventsToEat > 0) {
-    console.log('ate event: ' + name);
+    log.info('ate event: ' + name);
     eventsToEat--;
     return true;
   }
@@ -163,11 +163,11 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
   var tab = get_tab(details.tabId);
   if (tab != null)
     if (tab.url != details.url && process_url(tab.url)) {
-      console.info('onHistoryStateUpdated - ' + JSON.stringify(details));
-      console.info('onHistoryStateUpdated - tabId=' + details.tabId + ' frameId=' + details.frameId + ' transitionType=' + details.transitionType + ' [' + details.url + ']');
-      console.info('known URL=' + tab.url);
-      console.info('details.url=' + details.url);
-      console.info('%c >> onHistoryStateUpdated << ', 'background: #222; color: #bada55');
+      log.info('onHistoryStateUpdated - ' + JSON.stringify(details));
+      log.info('onHistoryStateUpdated - tabId=' + details.tabId + ' frameId=' + details.frameId + ' transitionType=' + details.transitionType + ' [' + details.url + ']');
+      log.info('known URL=' + tab.url);
+      log.info('details.url=' + details.url);
+      log.info('%c >> onHistoryStateUpdated << ', 'background: #222; color: #bada55');
 
       //var session_new = session_get_by_tab(details, true);
       //session_start_TOT(session_new);
@@ -175,7 +175,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 
       update_tabmap();
     } else
-      console.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
+      log.info('%c onHistoryStateUpdated - ignorning as URL is not changed from last known.', 'color: gray');
 });
 
 
@@ -183,8 +183,8 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 // MESSAGE HANDLING :: master callback from content script
 //
 chrome.extension.onMessage.addListener(function (message, sender, callback) {
-  console.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
-  console.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
+  log.info('%c *** GOT MESSAGE > message=' + JSON.stringify(message) + ' ***', 'background: #222; color: #bada55');
+  log.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   var session;
 
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
@@ -209,7 +209,7 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   // vk.com -- history.pushState() navigation
   // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
   if (message == 'Rerun script') {
-    console.trace('Rerun script');
+    log.trace('Rerun script');
     session = session_get_by_url(sender.tab.url);
     if (session != null)
       inject_cs(session, null, false);
@@ -218,12 +218,12 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   // session: CS process_text started callback
   //if (message.process_text_start == true) {
   //    if (sender != null) {
-  //        //console.info('%c >>> process_text_start', 'background: blue; color: white');
+  //        //log.info('%c >>> process_text_start', 'background: blue; color: white');
   //        session = get_session_by_url(sender.tab.url);
   //        if (session != null) {
-  //            console.info('%c >>> process_text_start [' + session.url + ']', 'background: blue; color: white');
+  //            log.info('%c >>> process_text_start [' + session.url + ']', 'background: blue; color: white');
   //            session.process_text_start_timestamp = message.timestamp;
-  //        } else console.info('%c ### process_text_start: NO KNOWN SESION!', 'background: red; color: white');
+  //        } else log.info('%c ### process_text_start: NO KNOWN SESION!', 'background: red; color: white');
   //    }
   //}
 
@@ -232,10 +232,10 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   //
   if (message && message.payload && message.payload.type && message.payload.type === 'NLP_INFO_KNOWN') {
     if (sender != null) {
-      console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
+      log.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
       session = session_get_by_url(sender.tab.url);
       if (session != null) {
-        console.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
+        log.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
         // post result to server
         session_update_exist_NLP(session, message.payload.payload.page_meta);
       }
@@ -244,26 +244,26 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
 
   if (message && message.payload && message.payload.type && message.payload.type === 'NLP_RESULT') {
     if (sender != null) {
-      console.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
+      log.info('%c message.session_nlp_result sender.url=' + sender.tab.url, events_style);
       session = session_get_by_url(sender.tab.url);
       if (session != null) {
 
-        console.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
+        log.info('%c message.nlp = ' + JSON.stringify(message.payload.payload.nlp, null, 2), events_style_hi);
         // post result to server
         session_update_NLP(session, message.payload.payload.nlp, message.payload.payload.page_meta);
       }
     }
   }
 
-  // CS console echoing
-  if (message.console_log == true)
-    console.log('\t\t' + message.console_msg, message.console_format);
-  if (message.console_info == true)
-    console.info('\t\t' + message.console_msg, message.console_format);
-  if (message.console_warn == true)
-    console.warn('\t\t' + message.console_msg, message.console_format);
-  if (message.console_error == true)
-    console.error('\t\t' + message.console_msg, message.console_format);
+  // CS log echoing
+  if (message.log_log == true)
+    log.info('\t\t' + message.log_msg, message.log_format);
+  if (message.log_info == true)
+    log.info('\t\t' + message.log_msg, message.log_format);
+  if (message.log_warn == true)
+    log.warn('\t\t' + message.log_msg, message.log_format);
+  if (message.log_error == true)
+    log.error('\t\t' + message.log_msg, message.log_format);
 });
 
 function handle_cs_doc_event(data, sender) {
@@ -279,7 +279,7 @@ function handle_cs_doc_event(data, sender) {
   // handle event
   if (sender.tab != null) {
     var tab = sender.tab;
-    console.log('tab ' + tab.id + ' (audible=' + tab.audible + ') REQ ' + JSON.stringify(data) + ' [' + tab.url + ']');
+    log.info('tab ' + tab.id + ' (audible=' + tab.audible + ') REQ ' + JSON.stringify(data) + ' [' + tab.url + ']');
     var session = session_get_by_tab(tab, false);
 
     // maintain session IMs
@@ -290,11 +290,11 @@ function handle_cs_doc_event(data, sender) {
       if (data.type == 'WINDOW') {
 
         if (data.eventName == 'onbeforeunload') {
-          console.warn('onbeforeunload!');
+          log.warn('onbeforeunload!');
           session_stop_TOT(session);
         }
         if (data.eventName == 'onload') {
-          console.warn('onload!');
+          log.warn('onload!');
           session_start_TOT(session);
 
           // update TOT active tab
@@ -317,11 +317,11 @@ function handle_cs_doc_event(data, sender) {
 }
 
 function inject_cs(session, tab_id, skip_text) {
-  console.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
+  log.info('%c inject_cs tab_id=' + tab_id + ' (skip_text=' + skip_text + ')', log_style);
   //***
 
   //if (session.hasOwnProperty('injected_cs_timestamp')) {
-  //    console.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
+  //    log.info('%c (injected_cs_timestamp -- inject_cs -- already injected session @ ' + session.injected_cs_timestamp +
   //        ' [' + session.url + '])', 'background: #111; color: #bada55;');
   //    return;
   //}
@@ -361,7 +361,7 @@ function inject_cs(session, tab_id, skip_text) {
       currentWindow: true
     }, function (tabs) {
       if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError);
+        log.warn(chrome.runtime.lastError);
       }
       if (tabs != null && tabs.length > 0)
         var current_tab = tabs[0];
@@ -370,10 +370,10 @@ function inject_cs(session, tab_id, skip_text) {
       if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(tab.url, function (data) {
-          console.log('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
+          log.info('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
           chrome.tabs.get(tab_id, function (existTab) {
             if (chrome.runtime.lastError) {
-              console.warn(chrome.runtime.lastError);
+              log.warn(chrome.runtime.lastError);
             }
             if (existTab && existTab.url === tab.url) {
               if (data.allowable) {
@@ -387,16 +387,16 @@ function inject_cs(session, tab_id, skip_text) {
                       runAt: run_at
                     }, function (result) {
                       if (chrome.runtime.lastError) {
-                        console.warn(chrome.runtime.lastError);
+                        log.warn(chrome.runtime.lastError);
                       }
-                      // console.info('inject file', cs, run_at, result);
+                      // log.info('inject file', cs, run_at, result);
                     });
                   } catch (err) {
-                    console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                    console.warn(err);
+                    log.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                    log.warn(err);
                   }
                 });
-                console.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
+                log.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
                 if (session != null)
                   session.injected_cs_timestamp = Date.now();
               } else {
@@ -412,7 +412,7 @@ function inject_cs(session, tab_id, skip_text) {
           setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
         });
       } else {
-        console.warn('Do not inject cs on url #1', tab.url);
+        log.warn('Do not inject cs on url #1', tab.url);
       }
     });
   } else {
@@ -421,17 +421,17 @@ function inject_cs(session, tab_id, skip_text) {
     //
     chrome.tabs.get(tab_id, function (tab) {
       if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError);
+        log.warn(chrome.runtime.lastError);
       }
       if (tab != null) {
         var process = process_url(tab.url);
         if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
           // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
           ajax_isTldAllowable(tab.url, function (data) {
-            console.log('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
+            log.info('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
             chrome.tabs.get(tab_id, function (existTab) {
               if (chrome.runtime.lastError) {
-                console.warn(chrome.runtime.lastError);
+                log.warn(chrome.runtime.lastError);
               }
               if (existTab && existTab.url === tab.url) {
                 if (data.allowable) {
@@ -445,16 +445,16 @@ function inject_cs(session, tab_id, skip_text) {
                         runAt: run_at
                       }, function (result) {
                         if (chrome.runtime.lastError) {
-                          console.warn(chrome.runtime.lastError);
+                          log.warn(chrome.runtime.lastError);
                         }
-                        // console.info('inject file', cs, run_at, result);
+                        // log.info('inject file', cs, run_at, result);
                       });
                     } catch (err) {
-                      console.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                      console.warn(err);
+                      log.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                      log.warn(err);
                     }
                   });
-                  console.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                  log.info('%c (re)injection OK tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
                   if (session != null)
                     session.injected_cs_timestamp = Date.now();
                 } else {
@@ -514,11 +514,11 @@ function playSound(id, loop) {
     return;
 
   var sound = sounds[id];
-  //console.log('playsound: ' + id);
+  //log.info('playsound: ' + id);
   if (sound && sound.src) {
     if (!sound.paused) {
       //if (sound.currentTime < 0.2) {
-      //  console.log('ignoring fast replay: ' + id + '/' + sound.currentTime);
+      //  log.info('ignoring fast replay: ' + id + '/' + sound.currentTime);
       //  return;
       //}
       sound.pause();
@@ -529,20 +529,20 @@ function playSound(id, loop) {
 
     // Sometimes, when playing multiple times, readyState is HAVE_METADATA.
     if (sound.readyState == 0) { // HAVE_NOTHING
-      console.log('bad ready state: ' + sound.readyState);
+      log.info('bad ready state: ' + sound.readyState);
     } else if (sound.error) {
-      console.log('media error: ' + sound.error);
+      log.info('media error: ' + sound.error);
     } else {
       didPlay(id);
       sound.play();
     }
   } else {
-    console.log('bad playSound: ' + id);
+    log.info('bad playSound: ' + id);
   }
 }
 
 function stopSound(id) {
-  //console.log('stopSound: ' + id);
+  //log.info('stopSound: ' + id);
   var sound = sounds[id];
   if (sound && sound.src && !sound.paused) {
     sound.pause();
@@ -553,14 +553,14 @@ function stopSound(id) {
 var base_url = 'http://dl.google.com/dl/chrome/extensions/audio/';
 
 function soundLoadError(audio, id) {
-  console.error('failed to load sound: ' + id + '-' + audio.src);
+  log.error('failed to load sound: ' + id + '-' + audio.src);
   audio.src = '';
   if (id == 'startup')
     started = true;
 }
 
 function soundLoaded(audio, id) {
-  //console.log('loaded sound: ' + id);
+  //log.info('loaded sound: ' + id);
   sounds[id] = audio;
   if (id == 'startup')
     playSound(id);
@@ -571,7 +571,7 @@ var notYetLoaded = {};
 
 function loadSound(file, id) {
   if (!file.length) {
-    console.log('no sound for ' + id);
+    log.info('no sound for ' + id);
     return;
   }
   var audio = new Audio();
@@ -661,7 +661,7 @@ var events_style_err = 'background: red; color: white;';
 
 function tabNavigated(tabId, changeInfo, tab) {
 
-  console.log('%c >tabNavigated tabId=' + tabId +
+  log.info('%c >tabNavigated tabId=' + tabId +
     ' ci.status=' + changeInfo.status +
     ' ci.url=' + changeInfo.url +
     ' ci.pinned=' + changeInfo.pinned +
@@ -675,7 +675,7 @@ function tabNavigated(tabId, changeInfo, tab) {
   }, function (tabs) {
     var tab = tabs[0];
     if (tab != null) {
-      console.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
+      log.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
       if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
         var session = session_get_by_tab(tab, true);
@@ -705,7 +705,7 @@ function tabSelectionChanged(tabId) {
 
   update_tabmap();
 
-  console.info('%c >tabSelectionChanged: [' + tabId + ']', 'color: gray;');
+  log.info('%c >tabSelectionChanged: [' + tabId + ']', 'color: gray;');
 
   selectedTabId = tabId;
 
@@ -715,7 +715,7 @@ function tabSelectionChanged(tabId) {
   }, function (tabs) {
     var tab = tabs[0];
     if (tab != null && process_url(tab.url)) {
-      console.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
+      log.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
       var session = session_get_by_tab(tab, true);
       session_add_view_instance(session);
     }
@@ -740,12 +740,12 @@ var TOT_active_window_id = 0;
 function tabActivated(o) { // why getting object here?!
 
   var tabId = o.tabId;
-  console.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
+  log.info('%c >tabActivated: [' + tabId + ']', 'color: gray;');
   chrome.tabs.get(tabId, function (new_tab) {
     if (chrome.runtime.lastError)
-      console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+      log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
     else if (new_tab != null) {
-      console.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
+      log.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
       // set current tab session
       sessionObservable.activeUrl = new_tab.url;
 
@@ -775,13 +775,13 @@ function windowFocusChanged(windowId) {
   if (windowId == selectedWindowId) return false;
   selectedWindowId = windowId;
 
-  console.info('%c >windowFocusChanged: [' + selectedWindowId + ']', 'color: gray;');
+  log.info('%c >windowFocusChanged: [' + selectedWindowId + ']', 'color: gray;');
 
   if (TOT_active_tab != null) {
 
     var prev_session = session_get_by_tab(TOT_active_tab, false);
     if (prev_session != null)
-      console.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
+      log.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
 
     // stop TOT for previously focused
     session_stop_TOT(prev_session);
@@ -799,7 +799,7 @@ function TOT_start_current_focused() {
     currentWindow: true
   }, function (tabs) {
     if (chrome.runtime.lastError)
-      console.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+      log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
     else {
       if (tabs.length > 0) {
         TOT_active_tab = tabs[0];
@@ -807,7 +807,7 @@ function TOT_start_current_focused() {
         // start TOT for newly focused
         var new_session = session_get_by_tab(TOT_active_tab, true); //***
         if (new_session != null) {
-          console.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
+          log.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
           session_start_TOT(new_session);
         }
       }
@@ -850,10 +850,10 @@ function new_guid() {
 //for (var i = 0; i < 100000; i++) {
 //    var id = new_guid();
 //    if (_.any(test_ids, function (a) { return a == id })) {
-//        console.error('COLLISION!');
+//        log.error('COLLISION!');
 //    }
 
 //    test_ids.push(id);
 //}
-//console.info('test_ids.len=' + test_ids.length);
-//console.dir(test_ids);
+//log.info('test_ids.len=' + test_ids.length);
+//log.warn(test_ids);

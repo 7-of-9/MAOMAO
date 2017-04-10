@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Store } from 'react-chrome-redux';
+import * as log from 'loglevel';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './components/app';
@@ -12,11 +13,20 @@ import Config from './config';
 require('expose-loader?justext!justext');
 require('expose-loader?franc!franc');
 require('expose-loader?StackTrace!stacktrace-js');
+require('expose-loader?log!loglevel');
+
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
   whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ });
 }
 /* eslint-enable */
+
+if (process.env.NODE_ENV === 'production') {
+  // This disables all logging below the given level
+  log.setLevel('warn');
+} else {
+  log.setLevel('debug');
+}
 
 const config = new Config();
 const proxyStore = new Store({ portName: 'maomao-extension' });

@@ -19,7 +19,7 @@ function ajax_isTldAllowable(tld, successFn, errorFn) {
   var domain = null;
   try {
     domain = new URL(tld).hostname;
-  } catch (err) { console.log('%c /allowable, BAD TLD: [' + tld + '] - ' + err, ajax_style_err); }
+  } catch (err) { log.info('%c /allowable, BAD TLD: [' + tld + '] - ' + err, ajax_style_err); }
 
   if (domain != null) {
     $.ajax({
@@ -42,7 +42,7 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
   var parsed_url = null;
   try {
     parsed_url = new URL(url);
-  } catch (err) { console.log('%c /info/get?url, BAD URL: [' + url + '] - ' + err, ajax_style_err); }
+  } catch (err) { log.info('%c /info/get?url, BAD URL: [' + url + '] - ' + err, ajax_style_err); }
   url = remove_hash_url(url);
   if (parsed_url != null) {
     $.ajax({
@@ -63,7 +63,7 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
  * @param  function errorFn   [description]
  */
 function ajax_put_UrlRecord(user_id, hash, url_info, successFn, errorFn) {
-  console.warn('ajax_put_UrlRecord', url_info);
+  log.warn('ajax_put_UrlRecord', url_info);
   $.ajax(api_base + 'url/record?user_id=' + user_id + '&hash=' + hash, {
     type: 'PUT',
     contentType: 'application/json',

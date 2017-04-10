@@ -3,7 +3,15 @@ import { render } from 'react-dom';
 import { Store } from 'react-chrome-redux';
 import { Provider } from 'react-redux';
 import StackTrace from 'stacktrace-js';
+import * as logger from 'loglevel';
 import App from './components/app/App';
+
+if (process.env.NODE_ENV === 'production') {
+  // This disables all logging below the given level
+  logger.setLevel('warn');
+} else {
+  logger.setLevel('debug');
+}
 
 /* eslint-disable */
 if (process.env.NODE_ENV !== 'production') {
@@ -12,13 +20,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 /* eslint-enable */
 
-/* eslint-disable no-alert, no-console */
 // ERROR handler
-const errBack = (err) => { console.log(err.message); };
+const errBack = (err) => { logger.error(err.message); };
 
 const errorStackTracking = (stackframes) => {
     const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-    console.warn('error stack', stringifiedStack);
+    logger.warn('error stack', stringifiedStack);
 };
 
 window.onerror = (msg, file, line, col, error) => {

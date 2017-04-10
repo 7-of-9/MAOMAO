@@ -11,7 +11,6 @@ const FloatingShare = () =>
   <Menu effect={effect} method={method} position={pos}>
     <MainButton iconResting="ion-plus-round" iconActive="ion-close-round" />
     <ChildButton
-     // onClick={function(e){ console.log(e); e.preventDefault(); }}
       icon="ion-social-github"
       label="View on Github"
       href="https://github.com/nobitagit/react-material-floating-button/"

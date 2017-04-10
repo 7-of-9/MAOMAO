@@ -25,7 +25,7 @@ function update_tabmap(callback) {
             if (!_.any(tabmap, function (a) { return a.id == tab.id; }))
                 tabmap.push(tab);
         }
-        console.info('TABMAP: ' + tabmap.length + ' tab(s) known.');
+        log.info('TABMAP: ' + tabmap.length + ' tab(s) known.');
         if (callback)
             callback();
     });

@@ -1,6 +1,6 @@
 chrome.webRequest.onCompleted.addListener(
   function(info) {
-    console.log('onCompleted request: ', info);
+    log.info('onCompleted request: ', info);
     if(info.statusCode !== 200) {
       if(NotInjectCSUrls.indexOf(info.url) === -1) {
         NotInjectCSUrls.push(info.url);
@@ -22,7 +22,7 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.webRequest.onErrorOccurred.addListener(
   function(info) {
-    console.log('onErrorOccurred request: ', info);
+    log.info('onErrorOccurred request: ', info);
     setIconApp(info.url,'black', '!(200)', BG_INACTIVE_COLOR);
   },
   {
