@@ -50,7 +50,6 @@ const defaultProps = {
 
 const isRunable = (url, icon) => {
   const curentIcon = icon.urls.find(item => item.url === url);
-  console.warn('isRunable', url, curentIcon);
   if (curentIcon.text.length === 0 || curentIcon.text.indexOf('!') !== -1) {
     return false;
   }
@@ -229,7 +228,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             </div>
           </div>
         </div>
-        <p>Please click to turn it on !</p>
+        <p>Click to turn it on!</p>
       </div>
     </div>
   );

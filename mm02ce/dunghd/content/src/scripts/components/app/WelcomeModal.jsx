@@ -4,7 +4,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
-import Paper from 'material-ui/Paper';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
 
 const customStyles = {
@@ -49,7 +48,6 @@ const customStyles = {
     left: '0px',
     right: '0px',
     bottom: '0px',
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
     animation: 'vex-fadein 0.5s',
   },
   content: {
@@ -107,12 +105,13 @@ function WelcomeModal({
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
-        <Paper style={customStyles.content} zDepth={3}>
+        <div style={customStyles.content}>
+          <button onClick={onClose} className="close_button" />
           <div className="maomao-logo" />
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
            </h1>
-          <ToggleDisplay hide={auth.isLogin}>
+          <ToggleDisplay if={!auth.isLogin}>
             <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
             <RaisedButton
               onTouchTap={onGoogleLogin}
@@ -127,14 +126,8 @@ function WelcomeModal({
               primary
               style={customStyles.button}
             />
-            <br />
-            <RaisedButton
-              onTouchTap={onClose}
-              label="Close"
-              style={customStyles.button}
-            />
           </ToggleDisplay>
-          <ToggleDisplay show={auth.isLogin}>
+          <ToggleDisplay if={auth.isLogin}>
             <Card style={customStyles.card}>
               <CardHeader
                 className="card-header"
@@ -166,16 +159,10 @@ function WelcomeModal({
                   label="Logout"
                   style={customStyles.button}
                 />
-                <br />
-                <RaisedButton
-                  onTouchTap={onClose}
-                  label="Close"
-                  style={customStyles.button}
-                />
               </CardActions>
             </Card>
           </ToggleDisplay>
-        </Paper>
+        </div>
       </div>
     </ToggleDisplay>
   );
