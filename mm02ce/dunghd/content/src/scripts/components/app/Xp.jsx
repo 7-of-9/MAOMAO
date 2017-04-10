@@ -77,8 +77,8 @@ const Xp = enhance(({
   show, text, score, textAnimate, scoreAnimate,
   closePopup, openShare }) => (
     <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
+      <a className="close_popup" onTouchTap={closePopup}><i className="fa fa-close"></i></a>
       <div className="inner_bg">
-        <button onClick={closePopup} className="close_button" />
         {dummies}
         <div style={textAnimate} className="nlp_topic">{text}</div>
         <div

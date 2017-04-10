@@ -6,7 +6,7 @@ import moment from 'moment';
 const style = {
   card: {
     top: '50px',
-    right: '10px',
+    right: '25px',
     zIndex: 1000,
     position: 'fixed',
     color: '#FFF',

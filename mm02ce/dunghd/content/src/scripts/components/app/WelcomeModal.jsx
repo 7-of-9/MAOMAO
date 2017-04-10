@@ -42,7 +42,7 @@ const customStyles = {
     color: '#000',
   },
   overlay: {
-    zIndex: 9999,
+    zIndex: 999999999,
     position: 'fixed',
     top: '0px',
     left: '0px',
@@ -116,7 +116,7 @@ function WelcomeModal({
               <span className="fa fa-facebook"></span> Sign in with Facebook
             </a>
             <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onGoogleLogin}>
-              <i className="fa fa-google-plus"></i> Sign in with Google
+              <span className="fa fa-google-plus"></span> Sign in with Google
             </a>
           </ToggleDisplay>
           <ToggleDisplay show={auth.isLogin} className="position-normal">
@@ -137,10 +137,10 @@ function WelcomeModal({
                 { auth &&
                   !networks.includes('google.com') &&
                   <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}>
-                    <i className="fa fa-google-plus"></i> Sign in with Google
+                    <span className="fa fa-google-plus"></span> Sign in with Google
                   </a>}
                   <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
-                    <i className="fa fa-sign-out"></i> Logout
+                    <span className="fa fa-sign-out"></span> Logout
                   </a>             
               </CardActions>
             </Card>

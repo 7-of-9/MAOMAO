@@ -12,8 +12,8 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    margin: '-250px 0 0 -321px',
-    zIndex: 1000,
+    margin: '-265px 0 0 -321px',
+    zIndex: 9999999999,
     width: '642px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
@@ -108,9 +108,7 @@ const ShareTopic = enhance(({
    sendEmails, closeShare, accessGoogleContacts }) =>
      <div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
-       <button
-         onClick={closeShare} className="close_button"
-       />
+       <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close"></i></a>
        <h3 style={style.heading}>
          <span className="fancy">
            <span
@@ -151,7 +149,7 @@ const ShareTopic = enhance(({
        </ToggleDisplay>
        <ToggleDisplay className="link-share-option" if={type === 'Link'}>
          <div className="input-group">
-           <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} />
+           <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} readonly/>
            <CopyToClipboard
              text={`${SITE_URL}/${code[shareOption]}`}
            >

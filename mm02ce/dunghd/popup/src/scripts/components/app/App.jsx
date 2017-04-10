@@ -116,9 +116,11 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+          <a href="#home"><span className="maomao-logo" /> maomao</a>
         </h3>
-        <p className="paragraph-share">Maomao is off on internal tab!</p>
+        <div className="popup-content">
+          <p className="paragraph-share">Maomao is off on internal tab!</p>
+        </div>
       </div>
     );
   }
@@ -129,9 +131,11 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+            <a href="#home"><span className="maomao-logo" /> maomao</a>
           </h3>
-          <p className="paragraph-share">Maomao is off on this url!</p>
+          <div className="popup-content">
+            <p className="paragraph-share">Maomao is off on this url!</p>
+          </div>
         </div>
       );
     }
@@ -141,7 +145,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <h3 className="share-heading">
             <a href="#home"><span className="maomao-logo" /> Share this topic</a>
           </h3>
-          <div>
+          <div className="popup-content">
             <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>
           <div className="toolbar-button">
@@ -179,18 +183,20 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+          <a href="#home"><span className="maomao-logo" /> maomao</a>
         </h3>
-        <div className="circle-share">
-          <p
-            className="paragraph-share"
-          >
-            This site is <br />
-            not ready to sharing. Please wait in a few
-            <br />
-            mins for processing<br />
-            this site!
-          </p>
+        <div className="popup-content">
+          <div className="circle-share">
+            <p
+              className="paragraph-share"
+            >
+              This site is <br />
+              not ready to sharing. Please wait in a few
+              <br />
+              mins for processing<br />
+              this site!
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -199,9 +205,9 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
   return (
     <div className="popup-browser">
       <h3 className="share-heading">
-        <a href="#home"><span className="maomao-logo" /> MAOMAO</a>
+        <a href="#home"><span className="maomao-logo" /> maomao</a>
       </h3>
-      <div className="power-fixed">
+      <div className="popup-content">
         <button
           className="power-group"
           onClick={() => {

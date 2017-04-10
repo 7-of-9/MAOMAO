@@ -1,5 +1,18 @@
 $logo-img: url('./images/dog_blue.png');
 $close-btn-img: url('./images/close_button.png');
+.fa {
+  font-family: FontAwesome !important;
+}
+
+.fa-facebook,
+.fa-google-plus {
+  font-size: 16px !important;
+}
+
+.fa-close {
+  font-size: 20px !important;
+}
+
 .react-blur-canvas {
   position: absolute;
   top: 0;
@@ -22,16 +35,16 @@ $close-btn-img: url('./images/close_button.png');
 .blurred {
   position: fixed;
   overflow: inherit;
-  bottom: 30px;
+  bottom: 20px;
   left: 50%;
   right: 50%;
-  width: 700px;
-  margin-left: -350px;
+  width: 600px;
+  margin-left: -300px;
   padding: 20px;
   border-radius: 7px;
-  padding: 10px 10px 10px 50px;
+  padding: 15px 15px 15px 50px;
   background-position: 14px center;
-  z-index: 10000;
+  z-index: 9999;
   background-color: #fff;
   background-image: $logo-img;
   background-repeat: no-repeat;
@@ -61,6 +74,7 @@ $close-btn-img: url('./images/close_button.png');
   padding: 6px 12px;
   margin-bottom: 0;
   font-size: 14px;
+  max-width: 74px;
   font-weight: normal;
   line-height: 1.42857143;
   text-align: center;
@@ -123,6 +137,7 @@ $close-btn-img: url('./images/close_button.png');
   text-shadow: 1px 1px 2px gray;
   float: left;
   z-index: 1;
+  color: #000;
 }
 
 .nlp_score {
@@ -376,8 +391,13 @@ fieldset[disabled] .react-autosuggest__input {
   color: #120000;
 }
 
-.card-header img {
-  vertical-align: middle;
+.card-header {
+  img {
+    vertical-align: middle;
+  }
+  div {
+    line-height: normal;
+  }
 }
 
 
@@ -750,6 +770,7 @@ fieldset[disabled] .react-autosuggest__input {
   background-image: none;
   border: 1px solid transparent;
   border-radius: 4px;
+  transition: all 0.2s ease-in-out;
   &:focus,
   &:active:focus,
   &.active:focus,
@@ -764,6 +785,7 @@ fieldset[disabled] .react-autosuggest__input {
   &.focus {
     color: #333;
     text-decoration: none;
+    transition: all 0.2s ease-in-out;
   }
   &:active,
   &.active {
@@ -804,6 +826,7 @@ fieldset[disabled] a.btn {
 .btn-social {
   position: relative;
   padding-left: 44px;
+  min-height: 35px;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -935,6 +958,9 @@ fieldset[disabled] .btn-google-plus.active {
   color: #333;
   background-color: #fff;
   border-color: #ccc;
+  .fa-sign-out {
+    color: #000;
+  }
   &:focus,
   &.focus {
     color: #333;
@@ -1008,7 +1034,8 @@ fieldset[disabled] .btn-logout.focus {
   border-radius: 50%;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 1px 6px rgba(0, 0, 0, .06), 0 2px 32px rgba(0, 0, 0, .16);
-  &:hover,&:focus{
+  &:hover,
+  &:focus {
     transform: scale(1.1);
     transition: all 0.2s ease-in-out;
   }

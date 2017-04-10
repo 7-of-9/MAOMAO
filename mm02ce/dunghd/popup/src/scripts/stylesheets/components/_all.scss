@@ -11,7 +11,7 @@ $close-btn-img: url('./images/close_button.png');
     height: 30px;
     display: inline-block;
     background: $logo-img;
-    vertical-align: middle;
+    vertical-align: top;
     background-size: contain;
     animation-name: zoomInLogo;
     animation-duration: 1s;
@@ -21,14 +21,20 @@ $close-btn-img: url('./images/close_button.png');
   .share-heading {
     text-align: center;
     font-weight: bold;
-    font-size: 20px;
-    padding-bottom: 10px;
+    font-size: 32px;
+    line-height: 27px;
+    padding-bottom: 13px;
+    text-transform: none;
     border-bottom: 1px solid #c5c5d0;
     transition: transform 200ms ease-in;
     a {
-      color: #4d4d4d;
+      color: #999;
       text-decoration: none;
       display: inline-block;
+      font-size: 32px;
+      line-height: 28px;
+      font-family: 'rokkittsemibold';
+      text-shadow: 0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8);
       &:hover,
       &:focus {
         .maomao-logo {
@@ -88,10 +94,14 @@ $close-btn-img: url('./images/close_button.png');
   }
 }
 
-.power-fixed {
+.popup-content {
+  padding: 20px 15px;
+  min-width: 340px;
+  max-height: 300px;
+  overflow-y: auto;
   text-align: center;
   .power-group {
-    margin: 30px auto 15px;
+    margin: 0 auto 10px;
     min-height: 117px;
     max-width: 117px;
     background: none;
@@ -205,8 +215,7 @@ $close-btn-img: url('./images/close_button.png');
 }
 
 .toolbar-button {
-  margin: 20px 0;
-  padding-top: 25px;
+  padding: 20px 0 10px;
   border-top: 1px solid #c5c5d0;
   text-align: center;
   button {

@@ -29,7 +29,6 @@ const Option = styled.button`
 `;
 
 const style = {
-  margin: '20px auto 10px',
   width: '100%',
   height: '100%',
   textAlign: 'center',
