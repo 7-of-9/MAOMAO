@@ -72,7 +72,7 @@ namespace mm_svc
 
                 tld_topic_id = tld_title_term?.term.id;
                 ret_tld_title_term = new UrlInfo.UrlParent() {
-                   term_id = tld_title_term?.term.id,
+                   term_id = tld_title_term?.term.id ?? 0,
                    term_name = tld_title_term?.term.name,
                     is_topic = false,
                            S = 1.0,
