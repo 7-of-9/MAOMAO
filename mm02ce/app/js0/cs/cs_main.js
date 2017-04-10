@@ -6,14 +6,13 @@ var cs_log_style_info = "color: blue; baclground: white;"
 var cs_log_style = "background: blue; color: white;"
 var cs_log_style_hi = "background: blue; color: white; font-weight:bold;";
 
-log.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
-
 // TODO: Handling of 'mousewheel' input event was delayed for 2834 ms due to main thread being busy. Consider marking event handler as 'passive' to make the page more responsive.
 
 //
 // doc.ready
 //
 $(document).ready(function() { // fires more than once! observed; proven. lol.
+    log.info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
 
     // setup up IM events
     listenAndCoalesce(document, "scroll");

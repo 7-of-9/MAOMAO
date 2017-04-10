@@ -23,7 +23,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 if (process.env.NODE_ENV === 'production') {
   // This disables all logging below the given level
-  log.setLevel('warn');
+  log.setLevel('error');
 } else {
   log.setLevel('debug');
 }

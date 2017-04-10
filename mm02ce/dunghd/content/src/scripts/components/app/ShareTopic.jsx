@@ -53,7 +53,7 @@ const style = {
 
 const selectTopics = (topics, type) => {
   if (type === 'site') {
-   return 'just this site';
+   return 'just this page';
   }
   const currentTopic = topics.find(item => item.id === type);
   return currentTopic.name;
@@ -116,7 +116,7 @@ const ShareTopic = enhance(({
            <span
              className="fancy-line"
            >Share
-             <em style={style.topic}>{selectTopics(topics, shareOption)}</em> with
+             <em style={style.topic}> {selectTopics(topics, shareOption)} </em> with
            </span>
          </span>
        </h3>
