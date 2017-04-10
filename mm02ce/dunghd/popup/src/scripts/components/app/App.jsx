@@ -50,7 +50,7 @@ const defaultProps = {
 
 const isRunable = (url, icon) => {
   const curentIcon = icon.urls.find(item => item.url === url);
-  if (curentIcon.text.length === 0 || curentIcon.text.indexOf('!') !== -1) {
+  if ((curentIcon && curentIcon.text.length === 0) || (curentIcon && curentIcon.text.indexOf('!') !== -1)) {
     return false;
   }
   return true;

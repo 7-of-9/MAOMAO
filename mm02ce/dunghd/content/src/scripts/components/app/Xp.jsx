@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
+import { onlyUpdateForKeys, withState, withHandlers, lifecycle, compose } from 'recompose';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
-import { compose, onlyUpdateForKeys } from 'recompose';
 import Radium from 'radium';
-import $ from 'jquery';
+import * as logger from 'loglevel';
 
 const styles = {
   bounceInUp: {
@@ -23,112 +23,84 @@ const styles = {
   },
 };
 
-const resetFontSize = () => {
-  $('.blurred').find('.nlp_score').css('font-size', '100%');
-};
+const dummies = Object.keys(styles).map(
+  key => <span key={key} style={styles[key]} />,
+);
 
-const randomElement = items => items[Math.floor(Math.random() * Math.min(items.length, 3))];
-
-class Xp extends Component {
-
-  constructor(props) {
-    super(props);
-    this.closePopup = this.closePopup.bind(this);
-    this.openShare = this.openShare.bind(this);
-    this.state = {
-      show: true,
-      textAnimate: {},
-      scoreAnimate: {},
-    };
-
-    this.timer = setInterval(() => {
-      if (this.props.terms.length > 1) {
-        if (this.state.show) {
-          this.setState({
-            textAnimate: styles.bounceOutUp,
-            scoreAnimate: styles.bounceOutUp,
-          }, () => {
-            setTimeout(() => {
-              this.setState({
-                textAnimate: styles.bounceInUp,
-                scoreAnimate: styles.zoomInUp,
-              });
-            }, 1000);
-          });
-        } else {
-          this.state = {
-            scoreAnimate: styles.zoomInUp,
-            textAnimate: styles.bounceInUp,
-            show: true,
-          };
-        }
-        $('.blurred').find('.nlp_score').css('font-size', '120%');
-        // $('body').children().not('#maomao-extension-anchor').css('opacity', '0.6');
+const enhance = compose(
+  withState('show', 'changeShow', true),
+  withState('text', 'changeText', ''),
+  withState('score', 'changeScore', 0),
+  withState('counter', 'changeCounter', -1),
+  withState('textAnimate', 'changeTextAnimate', {}),
+  withState('scoreAnimate', 'changeScoreAnimate', {}),
+  withHandlers({
+    closePopup: props => () => {
+      props.changeShow(false);
+      props.closeXp();
+    },
+    openShare: props => () => {
+      props.changeShow(false);
+      props.shareTopics();
+    },
+    playNextItem: props => () => {
+      logger.warn('playNextItem', props);
+      if (props.counter < props.terms.length) {
+        props.changeTextAnimate(() => styles.zoomInUp);
+        props.changeScoreAnimate(() => styles.bounceOutUp);
+        const counter = props.counter + 1;
+        const xp = props.terms[counter];
+        props.changeText(() => xp.text);
+        props.changeScore(() => xp.score);
+        props.changeTextAnimate(() => styles.bounceOutUp);
+        props.changeScoreAnimate(() => styles.bounceOutUp);
+        setTimeout(() => {
+          props.changeCounter(() => counter);
+          props.playNextItem();
+        }, 2000);
+      } else {
+        logger.warn('close xp popup');
+        props.closeXp();
       }
-    }, 10000);
-  }
+    },
+  }),
+  lifecycle({
+    componentDidMount() {
+      logger.warn('componentDidMount', this.props);
+      this.props.playNextItem();
+    },
+  }),
+  onlyUpdateForKeys(['terms', 'text', 'score', 'counter']),
+);
 
-  componentWillUnmount() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-
-  closePopup() {
-    this.setState({ show: false });
-    this.props.closeXp();
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-
-  openShare() {
-    this.setState({ show: false });
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-    this.props.shareTopics();
-  }
-
-  render() {
-    const dummies = Object.keys(styles).map(
-      key => <span key={key} style={styles[key]} />,
-    );
-    const xp = randomElement(this.props.terms);
-    return (
-      <div className="blurred" style={{ display: this.state.show && this.props.terms.length > 0 ? 'block' : 'none' }}>
-        <div className="inner_bg">
-          <button onClick={this.closePopup} className="close_button" />
-          {dummies}
-          <div style={this.state.textAnimate} className="nlp_topic">{xp && xp.text}</div>
-          <div
-            style={this.state.scoreAnimate}
-            className="nlp_score"
-          >
-            <CountUp
-              start={0}
-              end={xp && xp.score}
-              useEasing
-              prefix="+"
-              suffix=" XP"
-              callback={resetFontSize}
-            />
-          </div>
-          <button className="share-button" onClick={this.openShare}>Share...</button>
+const Xp = enhance(({
+  show, text, score, textAnimate, scoreAnimate,
+  closePopup, openShare }) => (
+    <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
+      <div className="inner_bg">
+        <button onClick={closePopup} className="close_button" />
+        {dummies}
+        <div style={textAnimate} className="nlp_topic">{text}</div>
+        <div
+          style={scoreAnimate}
+          className="nlp_score"
+        >
+          <CountUp
+            start={0}
+            end={score}
+            useEasing
+            prefix="+"
+            suffix=" XP"
+          />
         </div>
+        <button className="share-button" onClick={openShare}>Share...</button>
       </div>
-    );
-  }
-}
+    </div>
+));
 
 Xp.propTypes = {
-  terms: PropTypes.array,
   shareTopics: PropTypes.func.isRequired,
   closeXp: PropTypes.func.isRequired,
 };
 
-const enhance = compose(
-  onlyUpdateForKeys(['terms']),
-);
-
-export default Radium(enhance(Xp));
+export default Radium(Xp);
