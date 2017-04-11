@@ -32,6 +32,7 @@
     "moment": "^2.18.1",
     "qs": "^6.4.0",
     "radium": "^0.18.2",
+    "rc-steps": "^2.5.0",
     "react": "^15.4.2",
     "react-addons-shallow-compare": "^15.4.2",
     "react-animations": "^0.1.0",

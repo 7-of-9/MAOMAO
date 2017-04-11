@@ -19,7 +19,6 @@ import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../sele
 
 window.jQuery = $;
 
-require('../../stylesheets/animate.min.css');
 require('../../stylesheets/main.scss');
 require('../../vendors/jquery.fittext');
 require('../../vendors/jquery.lettering');

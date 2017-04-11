@@ -1,6 +1,7 @@
 import React from 'react';
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
+import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import * as logger from 'loglevel';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
@@ -60,10 +61,7 @@ const selectTopics = (topics, type) => {
   return currentTopic.name;
 };
 
-const selectUrl = (code, shareOption) => {
-  logger.warn('selectUrl', shareOption, code);
-  return code[shareOption];
-};
+const selectUrl = (code, shareOption) => code[shareOption];
 
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
@@ -108,11 +106,81 @@ const enhance = compose(
   onlyUpdateForKeys(['contacts', 'code', 'type', 'shareOption']),
 );
 
+const ShareTopicStepOne = compose(({ shareOption, topics, changeShareOption }) => (
+  <div>
+    <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
+  </div>
+));
+
+const ShareTopicStepTwo = compose(({ type, changeShareType, shareUrl, sendMsgUrl }) => (
+  <div className="toolbar-button">
+    <Toolbar
+      active={type}
+      onChange={changeShareType}
+      onShare={shareUrl}
+      onSendMsg={sendMsgUrl}
+      style={style.toolbar}
+    />
+  </div>
+));
+
+const ShareTopicStepThree = compose(({
+  type, contacts, accessGoogleContacts, handleChange, sendEmails,
+  code, shareOption }) => (
+    <div>
+      <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
+    You have no google contacts. Click
+    <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
+     to grant permissions to access google contacts.
+  </ToggleDisplay>
+      <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
+        <GoogleShare
+          mostRecentUses={contacts.slice(0, 3)}
+          contacts={contacts}
+          handleChange={handleChange}
+        />
+        <button
+          style={style.button}
+          className="share-button"
+          onClick={sendEmails}
+        >
+     Share Now!
+    </button>
+      </ToggleDisplay>
+      <ToggleDisplay className="link-share-option" if={type === 'Link'}>
+        <div className="input-group">
+          <input
+            className="form-control"
+            value={`${SITE_URL}/${selectUrl(code, shareOption)}`}
+            readOnly
+          />
+          <CopyToClipboard
+            text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
+          >
+            <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
+          </CopyToClipboard>
+        </div>
+      </ToggleDisplay>
+    </div>
+));
+
 const ShareTopic = enhance(({
    enable, type, topics, contacts, code, shareOption,
    handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
    sendEmails, closeShare, accessGoogleContacts }) => {
      logger.info('ShareTopic');
+     const steps = [
+       { status: 'StepOne', title: '1', description: 'description' },
+       { status: 'StepOne', title: '2', description: 'description' },
+       { status: 'StepOne', title: '3', description: 'description' },
+     ].map(item => (
+       <Step
+         key={item.title}
+         status={item.status}
+         title={item.title}
+         description={item.description}
+       />
+     ));
      return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
        <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close" /></a>
@@ -125,49 +193,27 @@ const ShareTopic = enhance(({
            </span>
          </span>
        </h3>
-       <div className="toolbar-button">
-         <Toolbar
-           active={type}
-           onChange={changeShareType}
-           onShare={shareUrl}
-           onSendMsg={sendMsgUrl}
-           style={style.toolbar}
-         />
-       </div>
-       <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
-       <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
-         You have no google contacts. Click
-         <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
-          to grant permissions to access google contacts.
-       </ToggleDisplay>
-       <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
-         <GoogleShare
-           mostRecentUses={contacts.slice(0, 3)}
-           contacts={contacts}
-           handleChange={handleChange}
-         />
-         <button
-           style={style.button}
-           className="share-button"
-           onClick={sendEmails}
-         >
-          Share Now!
-         </button>
-       </ToggleDisplay>
-       <ToggleDisplay className="link-share-option" if={type === 'Link'}>
-         <div className="input-group">
-           <input
-             className="form-control"
-             value={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-             readOnly
-           />
-           <CopyToClipboard
-             text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-           >
-             <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
-           </CopyToClipboard>
-         </div>
-       </ToggleDisplay>
+       <Steps direction="vertical" size="small">
+         {steps}
+       </Steps>
+       <ShareTopicStepOne
+         shareOption={shareOption}
+         topics={topics}
+         changeShareOption={changeShareOption}
+       />
+       <ShareTopicStepTwo
+         type={type}
+         changeShareType={changeShareType}
+         shareUrl={shareUrl}
+         sendMsgUrl={sendMsgUrl}
+       />
+       <ShareTopicStepThree
+         contacts={contacts}
+         code={code}
+         handleChange={handleChange}
+         sendEmails={sendEmails}
+         accessGoogleContacts={accessGoogleContacts}
+       />
      </div >);
    },
 );
