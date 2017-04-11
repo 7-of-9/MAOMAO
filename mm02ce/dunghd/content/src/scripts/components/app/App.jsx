@@ -633,7 +633,7 @@ const mapStateToProps = state => ({
   code: {
     all: getShareAllCode(state),
     site: getShareUrlCode(state),
-    topics: getShareTopicCodes(state),
+    ...getShareTopicCodes(state),
   },
   icon: state.icon,
 });

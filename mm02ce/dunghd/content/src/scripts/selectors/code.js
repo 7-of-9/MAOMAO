@@ -30,22 +30,27 @@ const getShareUrlCode = createSelector(
 const getShareTopicCodes = createSelector(
   [getActiveUrl, getCodes, getRecords, getTerms],
   (url, codes, records, terms) => {
-    const topics = [];
+    const topics = {};
     if (records.length) {
       const exist = records.find(item => item && item.url === url);
       if (exist) {
         const { data: { tld_topic_id, tld_topic } } = exist;
-        const findCode = codes.topics.find(item => item && item.tld_topic_id === tld_topic_id);
-        topics.push({ id: `${tld_topic_id}-${tld_topic}`, code: (findCode && findCode.share_code) || '' });
+        const findCode = codes.topics.find(item => item && item.id === tld_topic_id);
+        if (findCode) {
+          topics[`${tld_topic_id}-${tld_topic}`] = findCode.share_code;
+        }
       }
     }
-
     if (terms.length) {
       const existRecord = terms.find(item => item.url === url);
       if (existRecord) {
-        const termIds = [];
+        const termIds = existRecord.topics.map(item => item.term_id);
         const findCodes = codes.topics.filter(item => item && termIds.indexOf(item.id) !== -1);
-        topics.push(...findCodes.map(item => ({ id: `${item.term_id}-${item.term_name}`, name: item.term_name })));
+        if (findCodes.length) {
+          findCodes.forEach(({ id, name, share_code }) => {
+            topics[`${id}-${name}`] = share_code;
+          });
+        }
       }
     }
     return topics;

@@ -238,6 +238,27 @@ const generateShare = data => (
   }
 );
 
+const generateShareTopics = data => (
+  (dispatch, getState) => {
+    const { auth: { userId, userHash }, code: { topics } } = getState();
+    const { topics: topicsInput } = data.payload;
+    logger.warn('topicsInput', topicsInput);
+    if (topicsInput && topicsInput.length) {
+      topicsInput.forEach(({ term_id, term_name }) => {
+        const findTopicCode = topics.find(item => item && item.id === term_id);
+        if (!findTopicCode) {
+          shareTheTopic(userId, userHash, term_id)
+              .then((result) => {
+                dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: term_id, name: term_name }));
+              }).catch((error) => {
+                dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
+              });
+        }
+      });
+    }
+  }
+);
+
 const generateShareAll = data => (
   (dispatch, getState) => {
     const { userId } = data.payload;
@@ -259,5 +280,6 @@ export default {
   GOOGLE_CONTACTS: googleContacts,
   PRELOAD_SHARE: generateShare,
   PRELOAD_SHARE_ALL: generateShareAll,
+  GENERATE_SHARE_TOPICS: generateShareTopics,
   NOTIFY_MESSAGE: notifyUI,
 };

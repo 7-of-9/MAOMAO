@@ -2,6 +2,7 @@ import React from 'react';
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import * as logger from 'loglevel';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 
@@ -59,19 +60,24 @@ const selectTopics = (topics, type) => {
   return currentTopic.name;
 };
 
+const selectUrl = (code, shareOption) => {
+  logger.warn('selectUrl', shareOption, code);
+  return code[shareOption];
+};
+
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withState('shareOption', 'updateShareOption', 'site'),
   withHandlers({
     shareUrl: props => () => {
-      const url = `${SITE_URL}/${props.code[props.shareOption]}`;
+      const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
       const src = `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
       openUrl(src);
       props.closeShare();
     },
     sendMsgUrl: props => () => {
-      const url = `${SITE_URL}/${props.code[props.shareOption]}`;
-      const closePopupUrl = `${SITE_URL}/${props.code[props.shareOption]}?close=popup`;
+      const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
+      const closePopupUrl = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}?close=popup`;
       const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`;
       openUrl(src);
       props.closeShare();
@@ -85,7 +91,7 @@ const enhance = compose(
     sendEmails: props => () => {
       if (props.recipients.length) {
         const topic = selectTopics(props.terms);
-        const url = `${SITE_URL}/${props.code[props.shareOption]}`;
+        const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
         props.recipients.forEach((item) => {
           // TODO: validate email addr
           props.sendEmail(item.name, item.email, topic, url);
@@ -105,8 +111,9 @@ const enhance = compose(
 const ShareTopic = enhance(({
    enable, type, topics, contacts, code, shareOption,
    handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
-   sendEmails, closeShare, accessGoogleContacts }) =>
-     <div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
+   sendEmails, closeShare, accessGoogleContacts }) => {
+     logger.info('ShareTopic');
+     return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
        <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close" /></a>
        <h3 style={style.heading}>
@@ -151,16 +158,17 @@ const ShareTopic = enhance(({
          <div className="input-group">
            <input
              className="form-control"
-             value={`${SITE_URL}/${code[shareOption]}`}
+             value={`${SITE_URL}/${selectUrl(code, shareOption)}`}
              readOnly
            />
            <CopyToClipboard
-             text={`${SITE_URL}/${code[shareOption]}`}
+             text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
            >
              <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
            </CopyToClipboard>
          </div>
        </ToggleDisplay>
-     </div >,
+     </div >);
+   },
 );
 export default ShareTopic;

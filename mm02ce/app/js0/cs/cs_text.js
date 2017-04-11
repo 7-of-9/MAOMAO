@@ -288,6 +288,7 @@ function process_text(page_meta) {
         if (data.is_known == true && data.has_calais_info == true) {
           // no need to text process, no need for calais
           chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } } });
+          chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'GENERATE_SHARE_TOPICS', payload: { lang: detectLang, url: remove_hash_url(document.location.href), topics: data.topics } } });
           ajax_put_UrlRecord(mm_user_id(),mm_user_hash(), { href: remove_hash_url(document.location.href), text: t }, function(data) {
             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } } });
             chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'PRELOAD_SHARE', payload: { data: data, url: remove_hash_url(document.location.href) } } });

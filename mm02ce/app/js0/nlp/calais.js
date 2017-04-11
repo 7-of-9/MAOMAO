@@ -402,6 +402,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
 
         cslib_info("%c ]] ajax_put_UrlNlpInfoCalais: " + JSON.stringify(data), "color:green; font-weight:bold;");
         chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_TERMS', payload: { url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } } });
+        chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'GENERATE_SHARE_TOPICS', payload: { url: remove_hash_url(document.location.href), topics: data.topics } } });
         // TEST MODE: hit next button - or reseed if not english
         if (document.getElementById('maomao-extension-youtube-test')) {
           if (content_lang != "http://d.opencalais.com/lid/DefaultLangId/English") {

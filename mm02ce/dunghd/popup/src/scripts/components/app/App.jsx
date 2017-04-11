@@ -112,6 +112,19 @@ const getShareTopicCode = (url, codes, records) => {
 };
 
 const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
+  if (!url) {
+    return (
+      <div className="popup-browser">
+        <h3 className="share-heading">
+          <a href="#home"><span className="maomao-logo" /> maomao</a>
+        </h3>
+        <div className="popup-content">
+          <p className="paragraph-share">Loading...!</p>
+        </div>
+      </div>
+    );
+  }
+
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
