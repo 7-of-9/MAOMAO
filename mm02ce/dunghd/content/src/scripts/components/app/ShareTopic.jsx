@@ -66,6 +66,7 @@ const selectUrl = (code, shareOption) => code[shareOption];
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withState('shareOption', 'updateShareOption', 'site'),
+  withState('currentStep', 'changeStep', 1),
   withHandlers({
     shareUrl: props => () => {
       const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
@@ -103,16 +104,23 @@ const enhance = compose(
       }
     },
   }),
-  onlyUpdateForKeys(['contacts', 'code', 'type', 'shareOption']),
+  onlyUpdateForKeys(['contacts', 'currentStep', 'code', 'type', 'shareOption']),
 );
 
-const ShareTopicStepOne = compose(({ shareOption, topics, changeShareOption }) => (
+const ShareTopicStepOne = compose(({ shareOption, topics, changeShareOption, changeStep }) => (
   <div>
     <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
+    <div className="toolbar-button">
+      <button
+        onClick={() => changeStep(2)}
+      >
+      Next
+    </button>
+    </div>
   </div>
 ));
 
-const ShareTopicStepTwo = compose(({ type, changeShareType, shareUrl, sendMsgUrl }) => (
+const ShareTopicStepTwo = compose(({ type, changeShareType, shareUrl, sendMsgUrl, changeStep }) => (
   <div className="toolbar-button">
     <Toolbar
       active={type}
@@ -121,6 +129,11 @@ const ShareTopicStepTwo = compose(({ type, changeShareType, shareUrl, sendMsgUrl
       onSendMsg={sendMsgUrl}
       style={style.toolbar}
     />
+    <button
+      onClick={() => changeStep(1)}
+    >
+      Previous
+    </button>
   </div>
 ));
 
@@ -129,10 +142,10 @@ const ShareTopicStepThree = compose(({
   code, shareOption }) => (
     <div>
       <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
-    You have no google contacts. Click
-    <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
-     to grant permissions to access google contacts.
-  </ToggleDisplay>
+        You have no google contacts. Click
+        <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
+         to grant permissions to access google contacts.
+      </ToggleDisplay>
       <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
         <GoogleShare
           mostRecentUses={contacts.slice(0, 3)}
@@ -144,8 +157,8 @@ const ShareTopicStepThree = compose(({
           className="share-button"
           onClick={sendEmails}
         >
-     Share Now!
-    </button>
+       Share Now!
+      </button>
       </ToggleDisplay>
       <ToggleDisplay className="link-share-option" if={type === 'Link'}>
         <div className="input-group">
@@ -165,14 +178,13 @@ const ShareTopicStepThree = compose(({
 ));
 
 const ShareTopic = enhance(({
-   enable, type, topics, contacts, code, shareOption,
+   enable, type, topics, contacts, code, shareOption, currentStep,
    handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
-   sendEmails, closeShare, accessGoogleContacts }) => {
+   sendEmails, closeShare, accessGoogleContacts, changeStep }) => {
      logger.info('ShareTopic');
      const steps = [
-       { status: 'StepOne', title: '1', description: 'description' },
-       { status: 'StepOne', title: '2', description: 'description' },
-       { status: 'StepOne', title: '3', description: 'description' },
+       { status: 'Step One', title: 'Share options', description: 'Select which url or topics to sharing with your friends.' },
+       { status: 'Step Two', title: 'By', description: 'Use Facebook, Gmail or get direct link.' },
      ].map(item => (
        <Step
          key={item.title}
@@ -193,28 +205,37 @@ const ShareTopic = enhance(({
            </span>
          </span>
        </h3>
-       <Steps direction="vertical" size="small">
+       <Steps current={currentStep}>
          {steps}
        </Steps>
-       <ShareTopicStepOne
-         shareOption={shareOption}
-         topics={topics}
-         changeShareOption={changeShareOption}
-       />
-       <ShareTopicStepTwo
-         type={type}
-         changeShareType={changeShareType}
-         shareUrl={shareUrl}
-         sendMsgUrl={sendMsgUrl}
-       />
-       <ShareTopicStepThree
-         contacts={contacts}
-         code={code}
-         handleChange={handleChange}
-         sendEmails={sendEmails}
-         accessGoogleContacts={accessGoogleContacts}
-       />
-     </div >);
+       { currentStep && currentStep === 1 &&
+         <ShareTopicStepOne
+           changeStep={changeStep}
+           shareOption={shareOption}
+           topics={topics}
+           changeShareOption={changeShareOption}
+         />
+       }
+       { currentStep && currentStep === 2 &&
+         <ShareTopicStepTwo
+           changeStep={changeStep}
+           type={type}
+           changeShareType={changeShareType}
+           shareUrl={shareUrl}
+           sendMsgUrl={sendMsgUrl}
+         />
+       }
+       { currentStep && currentStep === 3 &&
+         <ShareTopicStepThree
+           changeStep={changeStep}
+           contacts={contacts}
+           code={code}
+           handleChange={handleChange}
+           sendEmails={sendEmails}
+           accessGoogleContacts={accessGoogleContacts}
+         />
+       }
+     </div>);
    },
 );
 export default ShareTopic;
