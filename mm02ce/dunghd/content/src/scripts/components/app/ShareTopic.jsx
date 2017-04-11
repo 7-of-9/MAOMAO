@@ -65,8 +65,6 @@ const selectUrl = (code, shareOption) => code[shareOption];
 
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
-  withState('shareOption', 'updateShareOption', 'site'),
-  withState('currentStep', 'changeStep', 1),
   withHandlers({
     shareUrl: props => () => {
       const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
@@ -84,12 +82,9 @@ const enhance = compose(
     handleChange: props => (emails) => {
       props.updateRecipients(emails);
     },
-    changeShareOption: props => (val) => {
-      props.updateShareOption(val);
-    },
     sendEmails: props => () => {
       if (props.recipients.length) {
-        const topic = selectTopics(props.terms);
+        const topic = selectTopics(props.topics, props.shareOption);
         const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
         props.recipients.forEach((item) => {
           // TODO: validate email addr
@@ -107,39 +102,48 @@ const enhance = compose(
   onlyUpdateForKeys(['contacts', 'currentStep', 'code', 'type', 'shareOption']),
 );
 
-const ShareTopicStepOne = compose(({ shareOption, topics, changeShareOption, changeStep }) => (
-  <div>
-    <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
-    <div className="toolbar-button">
-      <button
-        onClick={() => changeStep(2)}
-      >
+const ShareTopicStepOne = compose(({
+   type, shareOption, currentStep, topics, changeShareType,
+  }) => (
+    <div>
+      <ShareOptions
+        active={shareOption}
+        topics={topics}
+        onChange={(value) => { changeShareType(type, value, currentStep); }}
+      />
+      <div className="toolbar-button">
+        <button
+          onClick={() => changeShareType(type, shareOption, 2)}
+        >
       Next
     </button>
+      </div>
     </div>
-  </div>
 ));
 
-const ShareTopicStepTwo = compose(({ type, changeShareType, shareUrl, sendMsgUrl, changeStep }) => (
-  <div className="toolbar-button">
-    <Toolbar
-      active={type}
-      onChange={changeShareType}
-      onShare={shareUrl}
-      onSendMsg={sendMsgUrl}
-      style={style.toolbar}
-    />
-    <button
-      onClick={() => changeStep(1)}
-    >
+const ShareTopicStepTwo = compose(({
+  type, shareOption, shareUrl, sendMsgUrl, changeShareType,
+ }) => (
+   <div className="toolbar-button">
+     <h3>Click on button below to select.</h3>
+     <Toolbar
+       active={type}
+       onChange={(value) => { changeShareType(value, shareOption, 3); }}
+       onShare={shareUrl}
+       onSendMsg={sendMsgUrl}
+       style={style.toolbar}
+     />
+     <button
+       onClick={() => changeShareType(type, shareOption, 1)}
+     >
       Previous
     </button>
-  </div>
+   </div>
 ));
 
 const ShareTopicStepThree = compose(({
-  type, contacts, accessGoogleContacts, handleChange, sendEmails,
-  code, shareOption }) => (
+  type, contacts, code, shareOption,
+  accessGoogleContacts, handleChange, sendEmails, changeShareType }) => (
     <div>
       <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
@@ -174,17 +178,28 @@ const ShareTopicStepThree = compose(({
           </CopyToClipboard>
         </div>
       </ToggleDisplay>
+      <button
+        onClick={() => changeShareType(type, shareOption, 1)}
+      >
+       First
+     </button>
+      <button
+        onClick={() => changeShareType(type, shareOption, 2)}
+      >
+       Previous
+     </button>
     </div>
 ));
 
 const ShareTopic = enhance(({
    enable, type, topics, contacts, code, shareOption, currentStep,
-   handleChange, changeShareType, changeShareOption, shareUrl, sendMsgUrl,
-   sendEmails, closeShare, accessGoogleContacts, changeStep }) => {
+   handleChange, shareUrl, sendMsgUrl, changeShareType,
+   sendEmails, closeShare, accessGoogleContacts }) => {
      logger.info('ShareTopic');
      const steps = [
-       { status: 'Step One', title: 'Share options', description: 'Select which url or topics to sharing with your friends.' },
-       { status: 'Step Two', title: 'By', description: 'Use Facebook, Gmail or get direct link.' },
+       { title: 'Select your content', description: 'Share this page or topics with your friends.' },
+       { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
+       { title: 'Finish', description: 'Ready to share' },
      ].map(item => (
        <Step
          key={item.title}
@@ -196,29 +211,31 @@ const ShareTopic = enhance(({
      return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
        <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close" /></a>
+       <Steps current={currentStep - 1} direction="vertical" size="small">
+         {steps}
+       </Steps>
        <h3 style={style.heading}>
          <span className="fancy">
            <span
              className="fancy-line"
            >Share
-             <em style={style.topic}> {selectTopics(topics, shareOption)} </em> with
+             <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
+             {type && type > 0 && `with friends by ${type}`}
            </span>
          </span>
        </h3>
-       <Steps current={currentStep}>
-         {steps}
-       </Steps>
        { currentStep && currentStep === 1 &&
          <ShareTopicStepOne
-           changeStep={changeStep}
            shareOption={shareOption}
+           type={type}
+           currentStep={currentStep}
+           changeShareType={changeShareType}
            topics={topics}
-           changeShareOption={changeShareOption}
          />
        }
        { currentStep && currentStep === 2 &&
          <ShareTopicStepTwo
-           changeStep={changeStep}
+           shareOption={shareOption}
            type={type}
            changeShareType={changeShareType}
            shareUrl={shareUrl}
@@ -227,8 +244,10 @@ const ShareTopic = enhance(({
        }
        { currentStep && currentStep === 3 &&
          <ShareTopicStepThree
-           changeStep={changeStep}
+           shareOption={shareOption}
+           type={type}
            contacts={contacts}
+           changeShareType={changeShareType}
            code={code}
            handleChange={handleChange}
            sendEmails={sendEmails}

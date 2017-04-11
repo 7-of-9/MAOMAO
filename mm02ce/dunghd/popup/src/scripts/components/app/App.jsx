@@ -155,7 +155,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <h3 className="share-heading">
             <a href="#home"><span className="maomao-logo" /> maomao</a>
           </h3>
-          <p>Share with your friends:</p>
+          <p>Select your content:</p>
           <div className="popup-content">
             <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>
@@ -163,7 +163,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             <GoogleButton
               onClick={() => {
               dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, type: 'Google' } });
+              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
             }}
             />
             <FacebookButton
@@ -183,7 +183,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             <LinkButton
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, type: 'Link' } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
             }}
             />
           </div>
