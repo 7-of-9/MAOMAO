@@ -1,18 +1,9 @@
 $logo-img: url('./images/dog_blue.png');
 $close-btn-img: url('./images/close_button.png');
-.fa {
-  font-family: FontAwesome !important;
-}
-
-.fa-facebook,
-.fa-google-plus {
-  font-size: 16px !important;
-}
-
-.fa-close {
-  font-size: 20px !important;
-}
-
+$facebook-icons: url('./images/facebook_solid.svg');
+$google-icons: url('./images/close_button.png');
+$signout-icons: url('./images/close_button.png');
+$close-icons: url('./images/close_button.png');
 .react-blur-canvas {
   position: absolute;
   top: 0;
@@ -59,6 +50,7 @@ $close-btn-img: url('./images/close_button.png');
   }
   .share-button {
     float: right;
+    max-width: 74px;
   }
 }
 
@@ -74,7 +66,6 @@ $close-btn-img: url('./images/close_button.png');
   padding: 6px 12px;
   margin-bottom: 0;
   font-size: 14px;
-  max-width: 74px;
   font-weight: normal;
   line-height: 1.42857143;
   text-align: center;
@@ -844,6 +835,28 @@ fieldset[disabled] a.btn {
   text-align: center;
   border-right: 1px solid rgba(0, 0, 0, 0.2)
 }
+
+
+/*Icons*/
+
+.icons-facebook,
+.icons-googleplus,
+.icons_signout,
+.icons-close {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icons-facebook {
+  background-color: #fff;
+  mask: url(./images/facebook_solid.svg) no-repeat;
+}
+
+.icons-googleplus {}
+
+.icons_signout {}
+
+.icons-close {}
 
 .btn-facebook {
   color: #fff;

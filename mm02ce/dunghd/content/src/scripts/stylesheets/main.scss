@@ -16,17 +16,8 @@
     font-style: normal;
   }
   font-family: 'Roboto';
-  .fa {
-    font-family: FontAwesome !important;
-  }
-  .fa-facebook,
-  .fa-google-plus {
-    font-size: 16px !important;
-  }
-  .fa-close {
-    font-size: 20px !important;
-  }
-  @import 'font-awesome/font-awesome';
+  position: relative;
+  z-index: 9999;
   @import 'utils/all';
   @import 'base/all';
   @import 'components/all';
