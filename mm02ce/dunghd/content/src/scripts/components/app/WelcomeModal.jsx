@@ -60,7 +60,7 @@ const customStyles = {
     marginLeft: '-200px',
     marginTop: '-250px',
     backgroundColor: '#fff',
-    border: '1px solid rgb(204, 204, 204)',
+    boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 30px, rgba(0, 0, 0, 0.3) 0px 6px 10px',
     WebkitOverflowScrolling: 'touch',
     borderRadius: '7px',
     outline: 'none',

@@ -1,6 +1,10 @@
 @import 'fonts/Roboto/font';
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
+#maomao-extension-anchor{
+  position: relative;
+  z-index: 9999999999;
+}
 .maomao-ext-component {
   @font-face {
     font-family: 'Roboto';
@@ -17,7 +21,7 @@
   }
   font-family: 'Roboto';
   position: relative;
-  z-index: 999999999;
+  z-index: 9999999999;
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
