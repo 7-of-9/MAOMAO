@@ -1,7 +1,6 @@
 @import 'fonts/Roboto/font';
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
-
 .maomao-ext-component {
   @font-face {
     font-family: 'Roboto';
@@ -17,20 +16,12 @@
     font-style: normal;
   }
   font-family: 'Roboto';
-  .fa {
-    font-family: FontAwesome !important;
-  }
-  .fa-facebook,
-  .fa-google-plus {
-    font-size: 16px !important;
-  }
-  .fa-close {
-    font-size: 20px !important;
-  }
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
   @import 'font-awesome/font-awesome';
+  position: relative;
+  z-index: 9999;
   @import 'utils/all';
   @import 'base/all';
   @import 'components/all';
