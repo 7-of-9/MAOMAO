@@ -16,12 +16,11 @@
     font-style: normal;
   }
   font-family: 'Roboto';
+  position: relative;
+  z-index: 9999;
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
-  @import 'font-awesome/font-awesome';
-  position: relative;
-  z-index: 9999;
   @import 'utils/all';
   @import 'base/all';
   @import 'components/all';
