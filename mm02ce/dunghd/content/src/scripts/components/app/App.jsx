@@ -138,6 +138,12 @@ const notify = msg => ({
 
 function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
   const title = `Join Maomao! ${fullName} want to share with you...`;
+  // const description = '';
+  // if (topic === 'site') {
+  //
+  // } else {
+  //
+  // }
   const emailTemplate = `
     <!doctype html>
     <html>
@@ -374,6 +380,8 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           <ShareTopic
             enable={isShareOnUrl.enable}
             type={isShareOnUrl.type}
+            currentStep={isShareOnUrl.currentStep}
+            shareOption={isShareOnUrl.shareOption}
             terms={terms}
             topics={topics}
             code={code}
@@ -609,12 +617,14 @@ const enhance = compose(
        },
      });
    },
-   changeShareType: props => (type) => {
+   changeShareType: props => (type, shareOption, currentStep) => {
      props.dispatch({
        type: 'OPEN_SHARE_MODAL',
        payload: {
          url: window.location.href,
          type,
+         shareOption,
+         currentStep,
        },
      });
    },
