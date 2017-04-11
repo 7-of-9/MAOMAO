@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import moment from 'moment';
+import * as logger from 'loglevel';
 
 const style = {
   card: {
@@ -52,6 +53,7 @@ function lastSave(url, histories) {
 
 /* eslint-disable camelcase */
 function Score({ score: { url, histories, im_score, time_on_tab, audible_pings } }) {
+  logger.info('Score');
   return (
     <Card className="blur" style={style.card}>
       <CardHeader

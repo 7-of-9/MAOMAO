@@ -108,7 +108,7 @@ const ShareTopic = enhance(({
    sendEmails, closeShare, accessGoogleContacts }) =>
      <div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
-       <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close"></i></a>
+       <a className="close_popup" onTouchTap={closeShare}><i className="fa fa-close" /></a>
        <h3 style={style.heading}>
          <span className="fancy">
            <span
@@ -149,7 +149,11 @@ const ShareTopic = enhance(({
        </ToggleDisplay>
        <ToggleDisplay className="link-share-option" if={type === 'Link'}>
          <div className="input-group">
-           <input className="form-control" value={`${SITE_URL}/${code[shareOption]}`} readonly/>
+           <input
+             className="form-control"
+             value={`${SITE_URL}/${code[shareOption]}`}
+             readOnly
+           />
            <CopyToClipboard
              text={`${SITE_URL}/${code[shareOption]}`}
            >

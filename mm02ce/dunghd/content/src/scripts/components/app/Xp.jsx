@@ -27,16 +27,17 @@ const dummies = Object.keys(styles).map(
   key => <span key={key} style={styles[key]} />,
 );
 
+let timer;
+
 const enhance = compose(
   withState('show', 'changeShow', true),
   withState('text', 'changeText', ''),
   withState('score', 'changeScore', 0),
-  withState('counter', 'changeCounter', -1),
-  withState('textAnimate', 'changeTextAnimate', {}),
-  withState('scoreAnimate', 'changeScoreAnimate', {}),
+  withState('counter', 'changeCounter', 0),
   withHandlers({
     closePopup: props => () => {
       props.changeShow(false);
+      clearInterval(timer);
       props.closeXp();
     },
     openShare: props => () => {
@@ -44,45 +45,60 @@ const enhance = compose(
       props.shareTopics();
     },
     playNextItem: props => () => {
-      logger.warn('playNextItem', props);
-      if (props.counter < props.terms.length) {
-        props.changeTextAnimate(() => styles.zoomInUp);
-        props.changeScoreAnimate(() => styles.bounceOutUp);
-        const counter = props.counter + 1;
-        const xp = props.terms[counter];
-        props.changeText(() => xp.text);
-        props.changeScore(() => xp.score);
-        props.changeTextAnimate(() => styles.bounceOutUp);
-        props.changeScoreAnimate(() => styles.bounceOutUp);
-        setTimeout(() => {
-          props.changeCounter(() => counter);
-          props.playNextItem();
-        }, 2000);
+      logger.info('playNextItem', props);
+      if (props.show) {
+        if (props.counter < props.terms.length) {
+          const counter = props.counter + 1;
+          props.changeCounter(counter);
+          const xp = props.terms[counter];
+          if (xp) {
+            props.changeText(xp.text);
+            props.changeScore(xp.score);
+          } else {
+            props.closeXp();
+          }
+        } else {
+          logger.info('close xp popup');
+          props.closeXp();
+        }
       } else {
-        logger.warn('close xp popup');
-        props.closeXp();
+        clearInterval(timer);
       }
     },
   }),
   lifecycle({
     componentDidMount() {
-      logger.warn('componentDidMount', this.props);
-      this.props.playNextItem();
+      logger.info('XP');
+      const xp = this.props.terms[this.props.counter];
+      if (xp) {
+        this.props.changeText(xp.text);
+        this.props.changeScore(xp.score);
+      }
+      timer = setInterval(() => {
+        this.props.playNextItem();
+      }, 5000);
+    },
+    componentWillUnmount() {
+      clearInterval(timer);
     },
   }),
-  onlyUpdateForKeys(['terms', 'text', 'score', 'counter']),
+  onlyUpdateForKeys(['terms']),
 );
 
 const Xp = enhance(({
-  show, text, score, textAnimate, scoreAnimate,
+  show, text, score, counter,
   closePopup, openShare }) => (
     <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
-      <a className="close_popup" onTouchTap={closePopup}><i className="fa fa-close"></i></a>
+      <a className="close_popup" onTouchTap={closePopup}><i className="fa fa-close" /></a>
       <div className="inner_bg">
         {dummies}
-        <div style={textAnimate} className="nlp_topic">{text}</div>
         <div
-          style={scoreAnimate}
+          style={counter === 0 ? styles.bounceInUp : styles.bounceOutUp}
+          className="nlp_topic"
+        >{text}
+        </div>
+        <div
+          style={counter === 0 ? styles.bounceInUp : styles.bounceOutUp}
           className="nlp_score"
         >
           <CountUp

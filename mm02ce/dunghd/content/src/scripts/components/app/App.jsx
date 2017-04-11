@@ -4,6 +4,7 @@ import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import Mailgun from 'mailgun';
+import * as logger from 'loglevel';
 import $ from 'jquery';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
@@ -347,6 +348,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   changeShareType, accessGoogleContacts, openShare, closeShare,
   closeXp, sendEmail, onClose, notifyMsg,
   }) {
+  logger.info('App render');
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
