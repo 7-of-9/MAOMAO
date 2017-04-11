@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
+import * as logger from 'loglevel';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
@@ -99,14 +100,10 @@ const getShareUrlCode = (url, codes, records) => {
   return '';
 };
 
-const getShareTopicCode = (url, codes, records) => {
-  if (records.length) {
-    const exist = records.find(item => item && item.url === url);
-    if (exist) {
-      const { data: { tld_topic_id } } = exist;
-      const findCode = codes.topics.find(item => item && item.tld_topic_id === tld_topic_id);
-      return (findCode && findCode.share_code) || '';
-    }
+const getShareTopicCode = (code, key) => {
+  if (code && code.topics && code.topics.length) {
+    const findCode = code.topics.find(item => `${item.id}-${item.name}` === key);
+    return (findCode && findCode.share_code) || '';
   }
   return '';
 };
@@ -132,7 +129,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <a href="#home"><span className="maomao-logo" /> maomao</a>
         </h3>
         <div className="popup-content">
-          <p className="paragraph-share">Maomao is off on internal tab!</p>
+          <p className="paragraph-share">Maomao is off on Google Chrome page!</p>
         </div>
       </div>
     );
@@ -165,7 +162,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             <GoogleButton
               onClick={() => {
               dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Google' } });
+              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, type: 'Google' } });
             }}
             />
             <FacebookButton
@@ -185,7 +182,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             <LinkButton
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, type: 'Link' } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, type: 'Link' } });
             }}
             />
           </div>
@@ -263,12 +260,12 @@ const enhance = compose(
       props.updateShareOption(val);
     },
     getLink: props => () => {
+      logger.warn('shareOption', props.shareOption);
       switch (props.shareOption) {
         case 'all': return getShareAllCode(props.code);
         case 'site': return getShareUrlCode(props.url, props.code, props.nlp.records);
-        case 'topic': return getShareTopicCode(props.url, props.code, props.nlp.records);
         default:
-          return '';
+          return getShareTopicCode(props.code, props.shareOption);
       }
     },
     onReady: props => () => {
@@ -284,6 +281,7 @@ const enhance = compose(
   }),
   lifecycle({
     componentDidMount() {
+      logger.info('App');
       this.props.onReady();
     },
   }),
