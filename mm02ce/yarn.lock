@@ -4391,6 +4391,10 @@ pbkdf2@^3.0.3:
   dependencies:
     create-hmac "^1.1.2"
 
+performance-now@^0.2.0, performance-now@~0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
+
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/pify/-/pify-2.3.0.tgz#ed141a6ac043a849ea588498e7dca8b15330e90c"
@@ -4765,6 +4769,12 @@ radium@^0.18.2:
     inline-style-prefixer "^2.0.5"
     rimraf "^2.6.1"
 
+raf@^3.1.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/raf/-/raf-3.3.0.tgz#93845eeffc773f8129039f677f80a36044eee2c3"
+  dependencies:
+    performance-now "~0.2.0"
+
 railroad-diagrams@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/railroad-diagrams/-/railroad-diagrams-1.0.0.tgz#eb7e6267548ddedfb899c1b90e57374559cddb7e"
@@ -4897,6 +4907,13 @@ react-mfb@^0.4.1:
     classnames "^1.2.0"
     react-dom "^15.3.1"
 
+react-motion@^0.4.4:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/react-motion/-/react-motion-0.4.7.tgz#f77331ec7920bdb0d0cfc37eb6ffa10571bf42c7"
+  dependencies:
+    performance-now "^0.2.0"
+    raf "^3.1.0"
+
 react-popout@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/react-popout/-/react-popout-0.6.0.tgz#f5947cb857151e2ba680129769844762aea7a1fe"
@@ -4922,6 +4939,12 @@ react-themeable@^1.1.0:
   resolved "https://registry.yarnpkg.com/react-themeable/-/react-themeable-1.1.0.tgz#7d4466dd9b2b5fa75058727825e9f152ba379a0e"
   dependencies:
     object-assign "^3.0.0"
+
+react-toggle-button@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/react-toggle-button/-/react-toggle-button-2.1.0.tgz#fb174ccc335feb8d21d6929f3b26a14fb0b00901"
+  dependencies:
+    react-motion "^0.4.4"
 
 react-toggle-display@^2.1.1:
   version "2.1.1"

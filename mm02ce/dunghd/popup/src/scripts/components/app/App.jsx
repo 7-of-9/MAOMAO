@@ -153,8 +153,9 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#home"><span className="maomao-logo" /> Share this topic</a>
+            <a href="#home"><span className="maomao-logo" /> maomao</a>
           </h3>
+          <p>Share with your friends:</p>
           <div className="popup-content">
             <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>

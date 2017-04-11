@@ -1,27 +1,10 @@
 import React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
+import ToggleButton from 'react-toggle-button'; // https://gdowens.github.io/react-toggle-button/
+
 /* eslint-disable no-confusing-arrow */
-const Option = styled.button`
-  background-color: ${props => props.primary ? '#0084ff' : '#9e9e9e'};
-  color: ${props => props.primary ? '#fff' : '#000'} ;
-  font-size: 14px;
-  border: ${props => props.primary ? '1px solid #607d8b' : '0'};
-  border-radius: 10px;
-  text-align: center;
-  margin: 0 10px !important;
-  display: inline-block;
-  padding: 6px 12px;
-  line-height: 1.42857143;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  touch-action: manipulation;
-  cursor: pointer;
-  user-select: none;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
+const Option = styled(ToggleButton)`
   &:hover {
     cursor: pointer;
     background: #dedede;
@@ -42,16 +25,24 @@ const enhance = compose(
 
 const ShareOptions = enhance(({ topics, active, onChange }) =>
   <div style={style} className="share-options">
-    <Option primary={active === 'site'} onClick={() => { onChange('site'); }} >just this page</Option>
+    <p> Single URL: </p>
+    <div>
+      <Option value={active === 'site'} onToggle={() => { onChange('site'); }} />
+      <span>just this page</span>
+    </div>
+    <p> Topics (Multiple URLs):</p>
     {
       topics.map(topic =>
-        <Option
-          key={topic.id}
-          primary={active === topic.id}
-          onClick={() => { onChange(topic.id); }}
-        >
-          {topic.name}
-        </Option>,
+        <div>
+          <Option
+            key={topic.id}
+            value={active === topic.id}
+            onToggle={() => {
+            onChange(topic.id);
+          }}
+          />
+          <span>{topic.name}</span>
+        </div>,
       )
     }
   </div>,
