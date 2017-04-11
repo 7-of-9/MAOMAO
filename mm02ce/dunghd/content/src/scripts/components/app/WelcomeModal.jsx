@@ -105,7 +105,7 @@ function WelcomeModal({
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
-          <a className="close_popup" onTouchTap={onClose}><i className="icons-close"></i></a>
+          <a className="close_popup" onTouchTap={onClose}><i className="icons-close" /></a>
           <div className="maomao-logo" />
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
@@ -113,10 +113,10 @@ function WelcomeModal({
           <ToggleDisplay hide={auth.isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
             <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>
-              <span><i className="icons-facebook"></i></span> Sign in with Facebook
+              <span><i className="icons-facebook" /></span> Sign in with Facebook
             </a>
             <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onGoogleLogin}>
-              <span><i className="icons-googleplus"></i></span> Sign in with Google
+              <span><i className="icons-googleplus" /></span> Sign in with Google
             </a>
           </ToggleDisplay>
           <ToggleDisplay show={auth.isLogin} className="position-normal">
@@ -132,15 +132,15 @@ function WelcomeModal({
                 { auth &&
                   !networks.includes('facebook.com') &&
                   <a className="btn btn-block btn-social btn-facebook" onTouchTap={onLinkedFacebook}>
-                    <span><i className="icons-facebook"></i></span> Sign in with Facebook
+                    <span><i className="icons-facebook" /></span> Sign in with Facebook
                   </a>}
                 { auth &&
                   !networks.includes('google.com') &&
                   <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}>
-                    <span><i className="icons-googleplus"></i></span> Sign in with Google
+                    <span><i className="icons-googleplus" /></span> Sign in with Google
                   </a>}
                   <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
-                    <span><i className="icons_signout"></i></span> Logout
+                    <span><i className="icons_signout" /></span> Logout
                   </a>             
               </CardActions>
             </Card>

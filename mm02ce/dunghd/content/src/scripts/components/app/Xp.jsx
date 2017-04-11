@@ -78,7 +78,7 @@ const Xp = enhance(({
   logger.info('XP');
   return (
     <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
-      <a className="close_popup" onTouchTap={closePopup}><i className="icons-close"></i></a>
+      <a className="close_popup" onTouchTap={closePopup}><i className="icons-close" /></a>
       <div className="inner_bg">
         {dummies}
         <div
