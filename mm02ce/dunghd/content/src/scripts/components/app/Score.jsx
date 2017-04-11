@@ -53,7 +53,7 @@ function lastSave(url, histories) {
 
 /* eslint-disable camelcase */
 function Score({ score: { url, histories, im_score, time_on_tab, audible_pings } }) {
-  logger.info('Score');
+  logger.info('Score render');
   return (
     <Card className="blur" style={style.card}>
       <CardHeader

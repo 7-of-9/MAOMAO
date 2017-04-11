@@ -27,8 +27,6 @@ const dummies = Object.keys(styles).map(
   key => <span key={key} style={styles[key]} />,
 );
 
-let timer;
-
 const enhance = compose(
   withState('show', 'changeShow', true),
   withState('text', 'changeText', ''),
@@ -37,7 +35,6 @@ const enhance = compose(
   withHandlers({
     closePopup: props => () => {
       props.changeShow(false);
-      clearInterval(timer);
       props.closeXp();
     },
     openShare: props => () => {
@@ -54,32 +51,22 @@ const enhance = compose(
           if (xp) {
             props.changeText(xp.text);
             props.changeScore(xp.score);
-          } else {
-            props.closeXp();
           }
         } else {
           logger.info('close xp popup');
           props.closeXp();
         }
-      } else {
-        clearInterval(timer);
       }
     },
   }),
   lifecycle({
     componentDidMount() {
-      logger.info('XP');
+      logger.info('XP componentDidMount');
       const xp = this.props.terms[this.props.counter];
       if (xp) {
         this.props.changeText(xp.text);
         this.props.changeScore(xp.score);
       }
-      timer = setInterval(() => {
-        this.props.playNextItem();
-      }, 5000);
-    },
-    componentWillUnmount() {
-      clearInterval(timer);
     },
   }),
   onlyUpdateForKeys(['terms']),
@@ -87,7 +74,9 @@ const enhance = compose(
 
 const Xp = enhance(({
   show, text, score, counter,
-  closePopup, openShare }) => (
+  closePopup, openShare, playNextItem }) => {
+  logger.info('XP');
+  return (
     <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
       <a className="close_popup" onTouchTap={closePopup}><i className="fa fa-close" /></a>
       <div className="inner_bg">
@@ -107,12 +96,14 @@ const Xp = enhance(({
             useEasing
             prefix="+"
             suffix=" XP"
+            onComplete={playNextItem}
           />
         </div>
         <button className="share-button" onClick={openShare}>Share...</button>
       </div>
     </div>
-));
+);
+});
 
 Xp.propTypes = {
   shareTopics: PropTypes.func.isRequired,

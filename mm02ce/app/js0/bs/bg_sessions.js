@@ -7,7 +7,7 @@
 // handle authentication
 var isGuest = true;
 var enableTestYoutube = false;
-var enableImscore = true;
+var enableImscore = false;
 var enableXp = true;
 var userId = -1;
 var userHash = '';
