@@ -105,7 +105,7 @@ function WelcomeModal({
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
-          <a className="close_popup" onTouchTap={onClose}><span className="icons-close"></span></a>
+          <a className="close_popup" onTouchTap={onClose}><i className="icons-close"></i></a>
           <div className="maomao-logo" />
           <h1 className="tlt glow in" style={customStyles.animateText}>
             maomao
