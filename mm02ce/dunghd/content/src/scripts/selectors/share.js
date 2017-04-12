@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect';
-import * as logger from 'loglevel';
 
 const getShareUrls = state => state.share;
 const getActiveUrl = state => state.score.url;
@@ -14,7 +13,6 @@ const shareOnUrl = createSelector(
         share = Object.assign({}, share, exist, { enable: true });
       }
     }
-    logger.warn('share', share);
     return share;
   },
 );

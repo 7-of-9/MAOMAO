@@ -220,7 +220,7 @@ const ShareTopic = enhance(({
              className="fancy-line"
            >Share
              <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-             {type && type > 0 && `with friends by ${type}`}
+             {type && type.length > 0 && `with friends by ${type}`}
            </span>
          </span>
        </h3>

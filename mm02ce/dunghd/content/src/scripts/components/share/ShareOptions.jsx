@@ -2,6 +2,8 @@ import React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 import ToggleButton from 'react-toggle-button';
+import guid from '../utils/guid';
+
 /* eslint-disable no-confusing-arrow */
 const Option = styled(ToggleButton)`
   &:hover {
@@ -32,9 +34,9 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
     <p> Topics (Multiple URLs):</p>
     {
     topics.map(topic =>
-      <div>
+      <div key={guid()}>
         <Option
-          key={topic.id}
+          key={guid()}
           value={active === topic.id}
           onToggle={() => {
           onChange(topic.id);
