@@ -124,9 +124,6 @@
     <Content Include="dunghd\content\src\scripts\components\utils\popup.js" />
     <Content Include="dunghd\content\src\scripts\components\utils\UserApi.js" />
     <Content Include="dunghd\content\src\scripts\config.js" />
-    <Content Include="dunghd\content\src\scripts\lib\gauth.js" />
-    <Content Include="dunghd\content\src\scripts\lib\gauth2.js" />
-    <Content Include="dunghd\content\src\scripts\lib\gclient.js" />
     <Content Include="dunghd\content\src\scripts\selectors\code.js" />
     <Content Include="dunghd\content\src\scripts\selectors\share.js" />
     <Content Include="dunghd\content\src\scripts\selectors\term.js" />
@@ -135,8 +132,15 @@
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Courier New\CourierNewPSMT.svg" />
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Orbitron\Orbitron-Light.svg" />
     <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Roboto\Roboto-Regular.svg" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Rokkitt\stylesheet.css" />
     <Content Include="dunghd\content\src\scripts\stylesheets\images\close_button.png" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\images\close_icon.svg" />
     <Content Include="dunghd\content\src\scripts\stylesheets\images\dog_blue.png" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\images\facebook_icon.svg" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\images\googleplus_icon.svg" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\images\signout_icon.svg" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\rc-steps\iconfont.css" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\rc-steps\index.css" />
     <Content Include="dunghd\content\src\scripts\test\App-test.js" />
     <Content Include="dunghd\content\src\scripts\test\setup-jsdom.js" />
     <Content Include="dunghd\content\src\scripts\vendors\jquery.fittext.js" />
@@ -181,6 +185,7 @@
     <Content Include="dunghd\popup\src\scripts\components\app\TwitterButton.jsx" />
     <Content Include="dunghd\popup\src\scripts\components\app\utils.js" />
     <Content Include="dunghd\popup\src\scripts\index.jsx" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\fontawesome-webfont.svg" />
     <Content Include="dunghd\popup\src\scripts\stylesheets\images\close_button.png" />
     <Content Include="dunghd\popup\src\scripts\stylesheets\images\dog_blue.png" />
     <Content Include="dunghd\popup\webpack.config.js" />
@@ -239,6 +244,27 @@
     <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_all.scss" />
     <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_clearfix.scss" />
     <Content Include="dunghd\popup\src\scripts\stylesheets\utils\_variables.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Rokkitt\rokkitt-semibold.woff" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\fonts\Rokkitt\rokkitt-semibold.woff2" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\font-awesome.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_animated.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_bordered-pulled.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_core.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_fixed-width.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_icons.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_larger.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_list.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_mixins.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_path.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_rotated-flipped.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_screen-reader.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_stacked.scss" />
+    <Content Include="dunghd\content\src\scripts\stylesheets\themes\fontawesome\_variables.scss" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\fontawesome-webfont.eot" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\fontawesome-webfont.ttf" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\fontawesome-webfont.woff" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\fontawesome-webfont.woff2" />
+    <Content Include="dunghd\popup\src\scripts\stylesheets\fonts\FontAwesome\FontAwesome.otf" />
     <None Include="scripts\_references.js" />
     <None Include="scripts\chrome-api-vsdoc.js" />
     <Content Include="web.config" />
@@ -272,9 +298,7 @@
     <AppFolderItem Include="$(AppFolder)" />
     <ScriptsFolderItem Include="$(ScriptsFolder)" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="app\lib\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <LigerSharkChromeTargetsPath>$(BuildFolder)\ligershark.chrome.targets</LigerSharkChromeTargetsPath>
   </PropertyGroup>
