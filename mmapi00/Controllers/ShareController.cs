@@ -26,7 +26,7 @@ namespace mmapi00.Controllers
         /// <returns>Share code to pass to share/accept</returns>
         [HttpPut] [Route("share/create")]
         public IHttpActionResult Create(
-            long user_id, string hash, 
+            long user_id, string hash,
             long? url_id = null, long? topic_id = null, bool share_all = false)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
@@ -56,6 +56,25 @@ namespace mmapi00.Controllers
 
             return Ok(new {
                 share_accepted = share_accepted
+            });
+        }
+
+        /// <summary>
+        /// Get a MM share info
+        /// </summary>
+        /// <param name="share_code">Share code to accept</param>
+        /// <returns>share info object</returns>
+        [HttpGet] [Route("share/info")]
+        public IHttpActionResult Info(
+            string share_code)
+        {
+            var data = mm_svc.ShareInfo.GetShareData(share_code);
+
+            return Ok(new {
+                fullname = data.fullname,
+                url_title = data.url_title,
+                topic_title = data.topic_title,
+                share_all = data.share_all,
             });
         }
     }
