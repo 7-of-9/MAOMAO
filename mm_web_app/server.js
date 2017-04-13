@@ -1,35 +1,33 @@
-/* eslint consistent-return:0 */
+const { createServer } = require('http')
+const { parse } = require('url')
+const mobxReact = require('mobx-react')
+const next = require('next')
+const log = require('loglevel')
+const dev = process.env.NODE_ENV !== 'production'
+const app = next({ dev })
+const handle = app.getRequestHandler()
+const argv = require('minimist')(process.argv.slice(2))
+const port = argv.port || process.env.PORT || 3000
 
-const express = require('express');
-const logger = require('./server/logger');
+log.setLevel(dev ? 'info' : 'error')
+mobxReact.useStaticRendering(true)
 
-const argv = require('minimist')(process.argv.slice(2));
-const setup = require('./server/middlewares/frontendMiddleware');
-const resolve = require('path').resolve;
-const app = express();
-
-// If you need a backend, e.g. an API, add your custom backend-specific middleware here
-// app.use('/api', myApi);
-
-// In production we need to pass these values in instead of relying on webpack
-setup(app, {
-  outputPath: resolve(process.cwd(), 'build'),
-  publicPath: '/',
-});
-
-// get the intended host and port number, use localhost and port 3000 if not provided
-const customHost = argv.host || process.env.HOST;
-const host = customHost || null; // Let http.Server use its default IPv6/4 host
-const prettyHost = customHost || 'localhost';
-
-const port = argv.port || process.env.PORT || 3000;
-
-// Start your app.
-app.listen(port, host, (err) => {
-  if (err) {
-    return logger.error(err.message);
-  }
-
-  // Connect to ngrok in dev mode
-  logger.appStarted(port, prettyHost);
-});
+app.prepare().then(() => {
+  createServer((req, res) => {
+    const parsedUrl = parse(req.url, true)
+    const { pathname, query } = parsedUrl
+    if (pathname === '/' || pathname === '/hiring' || pathname === '/discovery' || pathname.indexOf('_next') !== -1) {
+      handle(req, res, parsedUrl)
+    } else {
+      // TODO: Need to handle 404 page
+      app.render(req, res, '/invite', Object.assign(query, { code: pathname.substr(1) }))
+    }
+  })
+    .listen(port, (err) => {
+      if (err) {
+        log.error(err)
+        throw err
+      }
+      log.warn('> Ready on http://localhost:3000')
+    })
+})
