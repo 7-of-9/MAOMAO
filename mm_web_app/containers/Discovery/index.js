@@ -1,14 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { StickyContainer, Sticky } from 'react-sticky'
-import Block from '../../components/Block'
+import NoSSR from 'react-no-ssr'
+import InfiniteScroll from 'react-infinite-scroller'
+// import Block from '../../components/Block'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import SearchBar from '../../components/SearchBar'
 import LogoIcon from '../../components/LogoIcon'
 
-const DataContainer = Block()
-
+const SRRLoading = () => (<div>Loading...</div>)
 export class Discovery extends React.Component {
   render () {
     let elements = []
@@ -22,14 +23,15 @@ export class Discovery extends React.Component {
         </Sticky>
         {
         elements.length > 0 &&
-          <DataContainer
-            items={elements}
+        <NoSSR onSSR={<SRRLoading />}>
+          <InfiniteScroll
             loadMore={this.props.loadMore}
-            loadingMore={this.props.loading}
-            showLoader={false}
-            elementIsScrollable={false}
+            hasMore={this.props.loading}
             threshold={200}
-          />
+          >
+            {elements}
+          </InfiniteScroll>
+        </NoSSR>
         }
         <Loading isLoading={this.props.loading} />
       </StickyContainer>

@@ -9,6 +9,10 @@ var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
 var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -56,11 +60,13 @@ var Invite = function (_React$Component) {
     key: 'getInitialProps',
     value: function getInitialProps(_ref) {
       var req = _ref.req,
-          code = _ref.query.code;
+          _ref$query = _ref.query,
+          code = _ref$query.code,
+          shareInfo = _ref$query.shareInfo;
 
       var isServer = !!req;
-      var store = (0, _invite.initStore)(isServer, code, false, false);
-      return { isServer: isServer, code: code, isLogin: store.isLogin, isInstall: store.isInstall };
+      var store = (0, _invite.initStore)(isServer, code, shareInfo, false, false);
+      return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
 
@@ -70,7 +76,7 @@ var Invite = function (_React$Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (Invite.__proto__ || (0, _getPrototypeOf2.default)(Invite)).call(this, props));
 
     log.warn('Invite props', props);
-    _this.store = (0, _invite.initStore)(props.isServer, props.code, props.isLogin, props.isInstall);
+    _this.store = (0, _invite.initStore)(props.isServer, props.shareCode, props.shareInfo, props.isLogin, props.isInstall);
     return _this;
   }
 

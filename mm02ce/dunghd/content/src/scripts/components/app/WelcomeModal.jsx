@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import ToggleDisplay from 'react-toggle-display';
-import RaisedButton from 'material-ui/RaisedButton';
 import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
@@ -49,6 +48,7 @@ const customStyles = {
     right: '0px',
     bottom: '0px',
     animation: 'vex-fadein 0.5s',
+    backgroundColor: 'rgba(255, 255, 255, 0.75)',
   },
   content: {
     position: 'absolute',
@@ -98,8 +98,8 @@ const defaultProps = {
 
 function WelcomeModal({
    auth, isOpen,
-   onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle,
-   onClose, onLogout }) {
+  onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle,
+  onClose, onLogout }) {
   const networks = auth.accounts.map(item => item.providerId);
   return (
     <ToggleDisplay if={isOpen}>
@@ -129,19 +129,24 @@ function WelcomeModal({
                 avatar={auth.info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
-                { auth &&
+                {auth &&
                   !networks.includes('facebook.com') &&
-                  <a className="btn btn-block btn-social btn-facebook" onTouchTap={onLinkedFacebook}>
+                  <a
+                    className="btn btn-block btn-social btn-facebook"
+                    onTouchTap={onLinkedFacebook}
+                  >
                     <span><i className="icons-facebook" /></span> Sign in with Facebook
                   </a>}
-                { auth &&
+                {auth &&
                   !networks.includes('google.com') &&
-                  <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}>
+                  <a
+                    className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}
+                  >
                     <span><i className="icons-googleplus" /></span> Sign in with Google
                   </a>}
-                  <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
-                    <span><i className="icons_signout" /></span> Logout
-                  </a>             
+                <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
+                  <span><i className="icons_signout" /></span> Logout
+                  </a>
               </CardActions>
             </Card>
           </ToggleDisplay>
