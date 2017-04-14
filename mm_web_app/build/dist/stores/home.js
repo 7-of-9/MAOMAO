@@ -3,21 +3,40 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.HomeStore = undefined;
 exports.initStore = initStore;
 
 var _defineProperty = require('babel-runtime/core-js/object/define-property');
 
 var _defineProperty2 = _interopRequireDefault(_defineProperty);
 
+var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-property-descriptor');
+
+var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
 var _mobx = require('mobx');
+
+var _loglevel = require('loglevel');
+
+var logger = _interopRequireWildcard(_loglevel);
+
+var _simpleAuth = require('../utils/simpleAuth');
+
+var _chrome = require('../utils/chrome');
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3;
+var _desc, _value, _class, _descriptor, _descriptor2;
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -63,50 +82,69 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-// import { getShareInfo } from './services/share'
-
 var store = null;
 
-var HomeStore = (_class = function HomeStore(isServer, isLogin) {
-  (0, _classCallCheck3.default)(this, HomeStore);
+var HomeStore = exports.HomeStore = (_class = function () {
+  function HomeStore(isServer, isLogin, isInstall) {
+    (0, _classCallCheck3.default)(this, HomeStore);
 
-  _initDefineProp(this, 'isLogin', _descriptor, this);
+    _initDefineProp(this, 'isLogin', _descriptor, this);
 
-  _initDefineProp(this, 'shareCode', _descriptor2, this);
+    _initDefineProp(this, 'isInstall', _descriptor2, this);
 
-  _initDefineProp(this, 'shareInfo', _descriptor3, this);
+    this.isLogin = isLogin;
+    this.isInstall = isInstall;
+  }
 
-  this.isLogin = isLogin;
-}, (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'isLogin', [_mobx.observable], {
+  (0, _createClass3.default)(HomeStore, [{
+    key: 'checkAuth',
+    value: function checkAuth() {
+      var _this = this;
+
+      (0, _simpleAuth.userId)().then(function (id) {
+        if (id > 0) {
+          _this.isLogin = true;
+        } else {
+          _this.isLogin = false;
+        }
+      });
+    }
+  }, {
+    key: 'checkInstall',
+    value: function checkInstall() {
+      this.isInstall = (0, _chrome.hasInstalledExtension)();
+    }
+  }]);
+
+  return HomeStore;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'isLogin', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return false;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'shareCode', [_mobx.observable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'isInstall', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
-    return '';
+    return false;
   }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, 'shareInfo', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return {
-      fullName: '',
-      urlTitle: '',
-      topicTitle: '',
-      isShareAll: false
-    };
+}), _applyDecoratedDescriptor(_class.prototype, 'checkAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype)), _class);
+
+(0, _mobx.autorun)(function () {
+  if (store) {
+    logger.warn('check isInstall', store.isInstall);
+    logger.warn('check isLogin', store.isLogin);
   }
-})), _class);
+});
 
 function initStore(isServer) {
   var isLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var isInstall = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, isLogin);
+    return new HomeStore(isServer, isLogin, isInstall);
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, isLogin);
+      store = new HomeStore(isServer, isLogin, isInstall);
     }
     return store;
   }

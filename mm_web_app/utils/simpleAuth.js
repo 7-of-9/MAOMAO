@@ -1,9 +1,4 @@
-import localforage from 'localforage'
-
-localforage.config({
-  name: 'maomaoApp',
-  description: 'Local db'
-})
+import * as localStorage from 'localforage'
 
 const USER_ID = 'userId'
 const USER_EMAIL = 'email'
@@ -16,9 +11,9 @@ const USER_HASH = 'hash'
  * @param  function cb
  */
 export function login (id, email, hash, cb) {
-  localforage.setItem(USER_ID, id)
-  localforage.setItem(USER_EMAIL, email)
-  localforage.setItem(USER_HASH, hash)
+  localStorage.setItem(USER_ID, id)
+  localStorage.setItem(USER_EMAIL, email)
+  localStorage.setItem(USER_HASH, hash)
   if (cb) {
     cb()
   }
@@ -29,9 +24,9 @@ export function login (id, email, hash, cb) {
  * @param  function cb
  */
 export function logout (cb) {
-  localforage.setItem(USER_ID, -1)
-  localforage.setItem(USER_EMAIL, '')
-  localforage.setItem(USER_HASH, '')
+  localStorage.setItem(USER_ID, -1)
+  localStorage.setItem(USER_EMAIL, '')
+  localStorage.setItem(USER_HASH, '')
   if (cb) {
     cb()
   }
@@ -42,9 +37,7 @@ export function logout (cb) {
  * @return number
  */
 export function userId () {
-  return localforage.getItem(USER_ID)
-    .then(userId => userId || -1)
-    .catch(() => -1)
+  return localStorage.getItem(USER_ID)
 }
 
 /**
@@ -52,8 +45,7 @@ export function userId () {
  * @return string
  */
 export function userEmail () {
-  return localforage.getItem(USER_EMAIL)
-    .then(email => email || '').catch(() => '')
+  return localStorage.getItem(USER_EMAIL)
 }
 
 /**
@@ -61,14 +53,5 @@ export function userEmail () {
  * @return string
  */
 export function userHash () {
-  return localforage.getItem(USER_HASH)
-    .then(hash => hash || '').catch(() => '')
-}
-
-/**
- * Check user has login or not
- * @return Boolean
- */
-export function isLogin () {
-  return userId() > 0
+  return localStorage.getItem(USER_HASH) || ''
 }

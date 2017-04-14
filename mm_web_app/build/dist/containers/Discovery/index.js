@@ -35,9 +35,13 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactSticky = require('react-sticky');
 
-var _Block = require('../../components/Block');
+var _reactNoSsr = require('react-no-ssr');
 
-var _Block2 = _interopRequireDefault(_Block);
+var _reactNoSsr2 = _interopRequireDefault(_reactNoSsr);
+
+var _reactInfiniteScroller = require('react-infinite-scroller');
+
+var _reactInfiniteScroller2 = _interopRequireDefault(_reactInfiniteScroller);
 
 var _Loading = require('../../components/Loading');
 
@@ -57,8 +61,10 @@ var _LogoIcon2 = _interopRequireDefault(_LogoIcon);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var DataContainer = (0, _Block2.default)();
-
+// import Block from '../../components/Block'
+var SRRLoading = function SRRLoading() {
+  return _react2.default.createElement('div', null, 'Loading...');
+};
 var Discovery = exports.Discovery = function (_React$Component) {
   (0, _inherits3.default)(Discovery, _React$Component);
 
@@ -72,14 +78,11 @@ var Discovery = exports.Discovery = function (_React$Component) {
     key: 'render',
     value: function render() {
       var elements = [];
-      return _react2.default.createElement(_reactSticky.StickyContainer, null, _react2.default.createElement(_reactSticky.Sticky, { style: { zIndex: 100, backgroundColor: '#fff' } }, _react2.default.createElement(_Header2.default, null, _react2.default.createElement(_LogoIcon2.default, null), _react2.default.createElement(_SearchBar2.default, null))), elements.length > 0 && _react2.default.createElement(DataContainer, {
-        items: elements,
+      return _react2.default.createElement(_reactSticky.StickyContainer, null, _react2.default.createElement(_reactSticky.Sticky, { style: { zIndex: 100, backgroundColor: '#fff' } }, _react2.default.createElement(_Header2.default, null, _react2.default.createElement(_LogoIcon2.default, null), _react2.default.createElement(_SearchBar2.default, null))), elements.length > 0 && _react2.default.createElement(_reactNoSsr2.default, { onSSR: _react2.default.createElement(SRRLoading, null) }, _react2.default.createElement(_reactInfiniteScroller2.default, {
         loadMore: this.props.loadMore,
-        loadingMore: this.props.loading,
-        showLoader: false,
-        elementIsScrollable: false,
+        hasMore: this.props.loading,
         threshold: 200
-      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.loading }));
+      }, elements)), _react2.default.createElement(_Loading2.default, { isLoading: this.props.loading }));
     }
   }]);
 
