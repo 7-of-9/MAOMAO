@@ -14,9 +14,9 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    margin: '-265px 0 0 -321px',
+    margin: '-265px 0 0 -400px',
     zIndex: 9999999999,
-    width: '642px',
+    width: '800px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
     boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 30px, rgba(0, 0, 0, 0.3) 0px 6px 10px',
@@ -111,8 +111,8 @@ const ShareTopicStepOne = compose(({
         topics={topics}
         onChange={(value) => { changeShareType(type, value, currentStep); }}
       />
-      <div className="toolbar-button">
-        <button
+      <div className="share-footer">
+        <button className="btn btn-slide-next"
           onClick={() => changeShareType(type, shareOption, 2)}
         >
       Next
@@ -211,18 +211,13 @@ const ShareTopic = enhance(({
      return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
        <div className="maomao-logo" />
        <a className="close_popup" onTouchTap={closeShare}><i className="icons-close" /></a>
-       <Steps current={currentStep - 1} direction="vertical" size="small">
+       <Steps className="share-steps" current={currentStep - 1} direction="vertical" size="small">
          {steps}
        </Steps>
-       <h3 style={style.heading}>
-         <span className="fancy">
-           <span
-             className="fancy-line"
-           >Share
-             <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-             {type && type.length > 0 && `with friends by ${type}`}
-           </span>
-         </span>
+       <h3 className="share-title">
+          Share
+          <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
+          {type && type.length > 0 && `with friends by ${type}`}
        </h3>
        { currentStep && currentStep === 1 &&
          <ShareTopicStepOne

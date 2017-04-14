@@ -4,6 +4,9 @@ $facebook-icons: './images/facebook_icon.svg';
 $google-icons: './images/googleplus_icon.svg';
 $signout-icons: './images/signout_icon.svg';
 $close-icons: './images/close_icon.svg';
+$content-icons: './images/icons-content.png';
+$share-icons: './images/icons-share.png';
+$success-icons: './images/icons-success.png';
 .react-blur-canvas {
   position: absolute;
   top: 0;
@@ -577,7 +580,8 @@ fieldset[disabled] .react-autosuggest__input {
   line-height: 36px;
 }
 
-.fancy {
+
+/* .fancy {
   line-height: 0.5;
   text-align: center;
   overflow: hidden;
@@ -607,7 +611,7 @@ fieldset[disabled] .react-autosuggest__input {
 .fancy .fancy-line:after {
   left: 100%;
   margin-left: 15px;
-}
+} */
 
 .link-share-option {
   padding-top: 10px;
@@ -1077,6 +1081,166 @@ fieldset[disabled] .btn-logout.focus {
   &:focus {
     transform: scale(1.1);
     transition: all 0.2s ease-in-out;
+  }
+}
+
+
+/*share step*/
+
+.share-steps {
+  @include clearfix();
+  margin-top: 20px;
+  .rc-steps-item {
+    width: 33.33%;
+    float: left;
+    .rc-steps-tail {
+      left: 0;
+      top: 26px;
+      height: 5px;
+      width: 100%;
+      padding: 0;
+      i {
+        width: 100%;
+        height: 5px;
+      }
+    }
+    .rc-steps-step {
+      .rc-steps-head {
+        float: none;
+        .rc-steps-head-inner {
+          position: relative;
+          z-index: 999;
+          width: 48px;
+          height: 48px;
+          line-height: 48px;
+          display: block;
+          font-size: 15px;
+          font-weight: bold;
+          color: #333;
+          background-color: #ddd;
+          border-radius: 50%;
+          margin: 5px auto 10px;
+          text-align: center;
+          line-height: normal;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+          .rcicon-check::before {
+            content: "";
+          }
+          .rc-steps-icon {
+            position: static;
+            font-size: 0;
+            text-indent: -1987em;
+            width: 24px;
+            height: 24px;
+            display: inline-block;
+          }
+        }
+      }
+      .rc-steps-main {
+        text-transform: uppercase;
+        .rc-steps-title {
+          margin: 0 0 5px;
+          font-size: 11px;
+        }
+        .rc-steps-description {
+          font-size: 10px;
+        }
+      }
+    }
+    &:nth-child(1) .rc-steps-head-inner .rc-steps-icon {
+      background: url($content-icons) no-repeat center center;
+    }
+    &:nth-child(2) .rc-steps-head-inner .rc-steps-icon {
+      background: url($share-icons) no-repeat center center;
+    }
+    &:nth-child(3) .rc-steps-head-inner .rc-steps-icon {
+      background: url($success-icons) no-repeat center center;
+    }
+    &.rc-steps-status-process .rc-steps-head-inner {
+      background-color: rgb(45, 183, 245);
+      border-color: rgb(45, 183, 245);
+    }
+    &.rc-steps-status-process .rc-steps-head .rc-steps-head-inner,
+    &.rc-steps-status-finish .rc-steps-head .rc-steps-head-inner,
+    &.rc-steps-status-process .rc-steps-tail > i,
+    &.rc-steps-status-finish .rc-steps-tail > i {
+      background: #2db7f5;
+    }
+    &.rc-steps-status-process,
+    &.rc-steps-status-finish {
+      .rc-steps-main {
+        text-transform: uppercase;
+        .rc-steps-title {
+          color: #2db7f5;
+        }
+      }
+    }
+    &:last-child {
+      .rc-steps-tail {
+        display: block;
+      }
+    }
+  }
+}
+
+.share-title {
+  margin: 10px 0 20px;
+  color: #2db7f5;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.share-topic {
+  text-align: center;
+  .share-topic-title {
+    margin: 0 0 12px;
+    font-size: 17px;
+    color: #e9201a;
+  }
+  .switch-list {
+    @include clearfix();
+    margin: 10px 0 15px;
+    .switch-select {
+      > div {
+        margin: 0 auto;
+      }
+      padding: 0 20px;
+      &,
+      .type-name {
+        display: inline-block;
+      }
+      .type-name {
+        margin-top: 5px;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+.share-footer {
+  @include clearfix();
+  padding-top: 10px;
+  .btn-slide-next {
+    padding: 8px 12px;
+    float: right;
+    min-width: 100px;
+    background-color: #6753d8;
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: #8570fd;
+    }
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+      color: #fff;
+    }
   }
 }
 
