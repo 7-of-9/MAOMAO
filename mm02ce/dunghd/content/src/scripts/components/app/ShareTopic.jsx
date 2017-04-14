@@ -112,11 +112,9 @@ const ShareTopicStepOne = compose(({
         onChange={(value) => { changeShareType(type, value, currentStep); }}
       />
       <div className="share-footer">
-        <button className="btn btn-slide-next"
-          onClick={() => changeShareType(type, shareOption, 2)}
-        >
-      Next
-    </button>
+        <button className="btn btn-slide-next" onClick={() => changeShareType(type, shareOption, 2)}>
+        Next
+        </button>
       </div>
     </div>
 ));
@@ -124,20 +122,22 @@ const ShareTopicStepOne = compose(({
 const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
-   <div className="toolbar-button">
-     <h3>Click on button below to select.</h3>
-     <Toolbar
-       active={type}
-       onChange={(value) => { changeShareType(value, shareOption, 3); }}
-       onShare={shareUrl}
-       onSendMsg={sendMsgUrl}
-       style={style.toolbar}
-     />
-     <button
-       onClick={() => changeShareType(type, shareOption, 1)}
-     >
-      Previous
-    </button>
+   <div className="share-social">
+     <h3 className="share-social-title">Click on button below to select.</h3>
+     <div className="toolbar-button">
+       <Toolbar
+         active={type}
+         onChange={(value) => { changeShareType(value, shareOption, 3); }}
+         onShare={shareUrl}
+         onSendMsg={sendMsgUrl}
+         style={style.toolbar}
+       />
+     </div>
+     <div className="share-footer">
+      <button className="btn btn-slide-prev" onClick={() => changeShareType(type, shareOption, 1)}>
+        Previous
+      </button>
+     </div>
    </div>
 ));
 
@@ -151,18 +151,22 @@ const ShareTopicStepThree = compose(({
          to grant permissions to access google contacts.
       </ToggleDisplay>
       <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
-        <GoogleShare
-          mostRecentUses={contacts.slice(0, 3)}
-          contacts={contacts}
-          handleChange={handleChange}
-        />
-        <button
-          style={style.button}
-          className="share-button"
-          onClick={sendEmails}
-        >
-       Share Now!
-      </button>
+        <div className="panel-account">
+          <GoogleShare
+            mostRecentUses={contacts.slice(0, 3)}
+            contacts={contacts}
+            handleChange={handleChange}
+          />
+        </div>
+        <div className="share-now">
+          <button
+            style={style.button}
+            className="share-button"
+            onClick={sendEmails}
+          >
+           Share Now!
+          </button>
+        </div>
       </ToggleDisplay>
       <ToggleDisplay className="link-share-option" if={type === 'Link'}>
         <div className="input-group">
@@ -178,16 +182,10 @@ const ShareTopicStepThree = compose(({
           </CopyToClipboard>
         </div>
       </ToggleDisplay>
-      <button
-        onClick={() => changeShareType(type, shareOption, 1)}
-      >
-       First
-     </button>
-      <button
-        onClick={() => changeShareType(type, shareOption, 2)}
-      >
-       Previous
-     </button>
+      <div className="share-footer">
+        <button className="btn btn-slide-prev" onClick={() => changeShareType(type, shareOption, 1)}>First</button>
+        <button className="btn btn-slide-next" onClick={() => changeShareType(type, shareOption, 2)}>Previous</button>
+      </div>
     </div>
 ));
 

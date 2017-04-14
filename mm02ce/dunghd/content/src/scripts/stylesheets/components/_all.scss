@@ -107,6 +107,14 @@ $success-icons: './images/icons-success.png';
   }
 }
 
+.share-now {
+  @include clearfix();
+  text-align: center;
+  .share-button {
+    float: none !important;
+  }
+}
+
 .close_button {
   z-index: 1000;
   position: absolute;
@@ -541,6 +549,15 @@ fieldset[disabled] .react-autosuggest__input {
   }
 }
 
+.panel-account {
+  > div > div:nth-child(1),
+  > div > div:nth-child(3) {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 .share-contact {
   position: relative;
   border-radius: 0;
@@ -580,42 +597,10 @@ fieldset[disabled] .react-autosuggest__input {
   line-height: 36px;
 }
 
-
-/* .fancy {
-  line-height: 0.5;
-  text-align: center;
-  overflow: hidden;
-}
-
-.fancy .fancy-line {
-  display: inline-block;
-  position: relative;
-}
-
-.fancy .fancy-line:before,
-.fancy .fancy-line:after {
-  content: "";
-  position: absolute;
-  height: 5px;
-  border-bottom: 1px solid #000;
-  border-top: 1px solid #000;
-  top: 5px;
-  width: 100%;
-}
-
-.fancy .fancy-line:before {
-  right: 100%;
-  margin-right: 15px;
-}
-
-.fancy .fancy-line:after {
-  left: 100%;
-  margin-left: 15px;
-} */
-
 .link-share-option {
-  padding-top: 10px;
+  padding: 10px 0 15px;
   display: block;
+  font-size: 14px;
   color: #1565EB;
 }
 
@@ -890,14 +875,14 @@ fieldset[disabled] a.btn {
 
 .btn-facebook {
   color: #fff;
-  background-color: #3b5998;
+  background: #3b5998;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
   &:focus,
   &:active,
   &.active {
     color: #fff;
-    background-color: #30487b;
+    background: #30487b;
     border-color: rgba(0, 0, 0, 0.2)
   }
   &:active,
@@ -915,14 +900,14 @@ fieldset[disabled] a.btn {
   &.disabled.active,
   [disabled].active,
   {
-    background-color: #3b5998;
+    background: #3b5998;
     border-color: rgba(0, 0, 0, 0.2)
   }
 }
 
 .open .dropdown-toggle.btn-facebook {
   color: #fff;
-  background-color: #30487b;
+  background: #30487b;
   border-color: rgba(0, 0, 0, 0.2)
 }
 
@@ -935,20 +920,20 @@ fieldset[disabled] .btn-facebook:hover,
 fieldset[disabled] .btn-facebook:focus,
 fieldset[disabled] .btn-facebook:active,
 fieldset[disabled] .btn-facebook.active {
-  background-color: #3b5998;
+  background: #3b5998;
   border-color: rgba(0, 0, 0, 0.2)
 }
 
 .btn-google-plus {
   color: #fff;
-  background-color: #dd4b39;
+  background: #dd4b39;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
   &:focus,
   &:active,
   &.active {
     color: #fff;
-    background-color: #ca3523;
+    background: #ca3523;
     border-color: rgba(0, 0, 0, 0.2)
   }
   &:active,
@@ -966,14 +951,14 @@ fieldset[disabled] .btn-facebook.active {
   &.disabled.active,
   [disabled].active,
   {
-    background-color: #dd4b39;
+    background: #dd4b39;
     border-color: rgba(0, 0, 0, 0.2)
   }
 }
 
 .open .dropdown-toggle.btn-google-plus {
   color: #fff;
-  background-color: #ca3523;
+  background: #ca3523;
   border-color: rgba(0, 0, 0, 0.2)
 }
 
@@ -986,7 +971,7 @@ fieldset[disabled] .btn-google-plus:hover,
 fieldset[disabled] .btn-google-plus:focus,
 fieldset[disabled] .btn-google-plus:active,
 fieldset[disabled] .btn-google-plus.active {
-  background-color: #dd4b39;
+  background: #dd4b39;
   border-color: rgba(0, 0, 0, 0.2)
 }
 
@@ -999,7 +984,7 @@ fieldset[disabled] .btn-google-plus.active {
 
 .btn-logout {
   color: #333;
-  background-color: #fff;
+  background: #fff;
   border-color: #ccc;
   .fa-sign-out {
     color: #000;
@@ -1007,18 +992,18 @@ fieldset[disabled] .btn-google-plus.active {
   &:focus,
   &.focus {
     color: #333;
-    background-color: #e6e6e6;
+    background: #e6e6e6;
     border-color: #8c8c8c;
   }
   &:hover {
     color: #333;
-    background-color: #e6e6e6;
+    background: #e6e6e6;
     border-color: #adadad;
   }
   &:active,
   &.active {
     color: #333;
-    background-color: #e6e6e6;
+    background: #e6e6e6;
     border-color: #adadad;
   }
   &:active:hover,
@@ -1028,7 +1013,7 @@ fieldset[disabled] .btn-google-plus.active {
   &:active.focus,
   &.active.focus {
     color: #333;
-    background-color: #d4d4d4;
+    background: #d4d4d4;
     border-color: #8c8c8c;
   }
   &:active,
@@ -1041,14 +1026,14 @@ fieldset[disabled] .btn-google-plus.active {
   [disabled]:focus,
   &.disabled.focus,
   &[disabled].focus {
-    background-color: #fff;
+    background: #fff;
     border-color: #ccc;
   }
 }
 
 fieldset[disabled] .btn-logout:focus,
 fieldset[disabled] .btn-logout.focus {
-  background-color: #fff;
+  background: #fff;
   border-color: #ccc;
 }
 
@@ -1226,8 +1211,14 @@ fieldset[disabled] .btn-logout.focus {
   @include clearfix();
   padding-top: 10px;
   .btn-slide-next {
-    padding: 8px 12px;
     float: right;
+  }
+  .btn-slide-prev {
+    float: left;
+  }
+  .btn-slide-next,
+  .btn-slide-prev {
+    padding: 8px 12px;
     min-width: 100px;
     background-color: #6753d8;
     &:hover,
@@ -1241,6 +1232,14 @@ fieldset[disabled] .btn-logout.focus {
     &:active {
       color: #fff;
     }
+  }
+}
+
+.share-social {
+  .share-social-title {
+    margin: 0 0 20px;
+    font-size: 17px;
+    color: #e9201a;
   }
 }
 
