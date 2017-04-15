@@ -10,7 +10,7 @@ import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
-import NoSSR from 'react-no-ssr'
+// import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { OrderedSet } from 'immutable'
 import * as logger from 'loglevel'
@@ -59,11 +59,7 @@ class Home extends React.Component {
   onInstallSucess () {
     this.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
-      if (this.props.store.shareCode) {
-        Router.push(`/${this.props.store.shareCode}`)
-      } else {
-        Router.push('/')
-      }
+      window.location.reload()
     }, 1000)
   }
 
@@ -108,8 +104,10 @@ class Home extends React.Component {
       logger.warn('Close popup')
       window.close()
     }
-    this.props.store.checkAuth()
-    this.props.store.checkInstall()
+    setTimeout(() => {
+      this.props.store.checkAuth()
+      this.props.store.checkInstall()
+    }, 500)
   }
   render () {
     const title = 'MaoMao - Home page'
@@ -146,10 +144,8 @@ class Home extends React.Component {
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <AppHeader notify={this.addNotification} />
         </Navbar>
-        <NoSSR>
-          {this.props.store.isInstall && <AppHeader isLogin={this.props.store.isLogin} /> }
-        </NoSSR>
         <NotificationStack
           notifications={this.state.notifications.toArray()}
           dismissAfter={5000}
@@ -157,9 +153,7 @@ class Home extends React.Component {
             notifications: this.state.notifications.delete(notification)
           })}
         />
-        <NoSSR>
-          <ChromeInstall title='Unlock Now' install={this.inlineInstall} />
-        </NoSSR>
+        <ChromeInstall description={description} title='Unlock Now' install={this.inlineInstall} isLogin={this.props.store.isLogin} isInstall={this.props.store.isInstall} />
         <Footer brandName={brandName}
           facebookUrl='http://www.facebook.com'
           twitterUrl='http://www.twitter.com/'

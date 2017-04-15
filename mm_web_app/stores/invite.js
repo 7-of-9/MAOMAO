@@ -4,25 +4,23 @@ import { HomeStore } from './home'
 let store = null
 
 class InviteStore extends HomeStore {
-  @observable isLogin = false
-  @observable isInstall = false
   @observable shareCode = ''
   @observable shareInfo = {}
 
-  constructor (isServer, shareCode, shareInfo, isLogin, isInstall) {
-    super(isServer, isLogin, isInstall)
+  constructor (isServer, shareCode, shareInfo, isLogin) {
+    super(isServer, isLogin)
     this.shareCode = shareCode
     this.shareInfo = shareInfo
   }
 }
 
-export function initStore (isServer, shareCode = '', shareInfo = {}, isLogin = false, isInstall = false) {
+export function initStore (isServer, shareCode = '', shareInfo = {}, isLogin = false) {
   logger.warn('init InviteStore')
   if (isServer && typeof window === 'undefined') {
-    return new InviteStore(isServer, shareCode, shareInfo, isLogin, isInstall)
+    return new InviteStore(isServer, shareCode, shareInfo, isLogin)
   } else {
     if (store === null) {
-      store = new InviteStore(isServer, shareCode, shareInfo, isLogin, isInstall)
+      store = new InviteStore(isServer, shareCode, shareInfo, isLogin)
     }
     return store
   }

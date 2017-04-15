@@ -53,5 +53,5 @@ export function userEmail () {
  * @return string
  */
 export function userHash () {
-  return localStorage.getItem(USER_HASH) || ''
+  return localStorage.getItem(USER_HASH)
 }

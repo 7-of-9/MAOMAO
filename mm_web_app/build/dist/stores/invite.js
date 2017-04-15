@@ -37,7 +37,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+var _desc, _value, _class, _descriptor, _descriptor2;
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -88,18 +88,14 @@ var store = null;
 var InviteStore = (_class = function (_HomeStore) {
   (0, _inherits3.default)(InviteStore, _HomeStore);
 
-  function InviteStore(isServer, shareCode, shareInfo, isLogin, isInstall) {
+  function InviteStore(isServer, shareCode, shareInfo, isLogin) {
     (0, _classCallCheck3.default)(this, InviteStore);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, isLogin, isInstall));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, isLogin));
 
-    _initDefineProp(_this, 'isLogin', _descriptor, _this);
+    _initDefineProp(_this, 'shareCode', _descriptor, _this);
 
-    _initDefineProp(_this, 'isInstall', _descriptor2, _this);
-
-    _initDefineProp(_this, 'shareCode', _descriptor3, _this);
-
-    _initDefineProp(_this, 'shareInfo', _descriptor4, _this);
+    _initDefineProp(_this, 'shareInfo', _descriptor2, _this);
 
     _this.shareCode = shareCode;
     _this.shareInfo = shareInfo;
@@ -107,22 +103,12 @@ var InviteStore = (_class = function (_HomeStore) {
   }
 
   return InviteStore;
-}(_home.HomeStore), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'isLogin', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return false;
-  }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'isInstall', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return false;
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, 'shareCode', [_mobx.observable], {
+}(_home.HomeStore), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'shareCode', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return '';
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'shareInfo', [_mobx.observable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, 'shareInfo', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {};
@@ -133,14 +119,13 @@ function initStore(isServer) {
   var shareCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
   var shareInfo = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var isLogin = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-  var isInstall = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
 
   logger.warn('init InviteStore');
   if (isServer && typeof window === 'undefined') {
-    return new InviteStore(isServer, shareCode, shareInfo, isLogin, isInstall);
+    return new InviteStore(isServer, shareCode, shareInfo, isLogin);
   } else {
     if (store === null) {
-      store = new InviteStore(isServer, shareCode, shareInfo, isLogin, isInstall);
+      store = new InviteStore(isServer, shareCode, shareInfo, isLogin);
     }
     return store;
   }

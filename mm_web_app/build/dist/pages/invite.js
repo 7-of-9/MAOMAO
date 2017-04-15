@@ -65,8 +65,7 @@ var Invite = function (_React$Component) {
           shareInfo = _ref$query.shareInfo;
 
       var isServer = !!req;
-      log.warn('req', req);
-      var store = (0, _invite.initStore)(isServer, code, shareInfo, false, false);
+      var store = (0, _invite.initStore)(isServer, code, shareInfo, false);
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
@@ -76,7 +75,7 @@ var Invite = function (_React$Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (Invite.__proto__ || (0, _getPrototypeOf2.default)(Invite)).call(this, props));
 
-    log.warn('Invite props', props);
+    log.warn('Invite', props);
     var _props$url$query = props.url.query,
         close = _props$url$query.close,
         success = _props$url$query.success;
@@ -86,7 +85,7 @@ var Invite = function (_React$Component) {
     } else {
       _this.isClosePopup = false;
     }
-    _this.store = (0, _invite.initStore)(props.isServer, props.shareCode, props.shareInfo, props.isLogin, props.isInstall);
+    _this.store = (0, _invite.initStore)(props.isServer, props.shareCode, props.shareInfo, props.isLogin);
     return _this;
   }
 

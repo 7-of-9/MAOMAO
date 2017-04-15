@@ -56,7 +56,7 @@ var HomePage = function (_React$Component) {
       var req = _ref.req;
 
       var isServer = !!req;
-      var store = (0, _home.initStore)(isServer, false, false);
+      var store = (0, _home.initStore)(isServer, false);
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
@@ -75,7 +75,7 @@ var HomePage = function (_React$Component) {
     } else {
       _this.isClosePopup = false;
     }
-    _this.store = (0, _home.initStore)(props.isServer, props.isLogin, props.isInstall);
+    _this.store = (0, _home.initStore)(props.isServer, props.isLogin);
     return _this;
   }
 

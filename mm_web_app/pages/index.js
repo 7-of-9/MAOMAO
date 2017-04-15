@@ -7,7 +7,7 @@ import stylesheet from '../styles/index.scss'
 export default class HomePage extends React.Component {
   static getInitialProps ({ req }) {
     const isServer = !!req
-    const store = initStore(isServer, false, false)
+    const store = initStore(isServer, false)
     return { isServer, ...store }
   }
 
@@ -19,7 +19,7 @@ export default class HomePage extends React.Component {
     } else {
       this.isClosePopup = false
     }
-    this.store = initStore(props.isServer, props.isLogin, props.isInstall)
+    this.store = initStore(props.isServer, props.isLogin)
   }
 
   render () {

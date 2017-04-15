@@ -30,10 +30,9 @@ var Button = _styledComponents2.default.button(_templateObject);
 
 function UnlockNow(_ref) {
   var title = _ref.title,
-      install = _ref.install,
-      hasInstalled = _ref.hasInstalled;
+      install = _ref.install;
 
-  return _react2.default.createElement(Button, { style: { display: hasInstalled ? 'none' : '' }, onClick: install }, title, ' ');
+  return _react2.default.createElement(Button, { onClick: install }, title, ' ');
 }
 
 exports.default = UnlockNow;

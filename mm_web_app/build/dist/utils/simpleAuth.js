@@ -68,5 +68,5 @@ function userEmail() {
  * @return string
  */
 function userHash() {
-  return localStorage.getItem(USER_HASH) || '';
+  return localStorage.getItem(USER_HASH);
 }

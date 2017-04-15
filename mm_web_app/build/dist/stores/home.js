@@ -14,6 +14,10 @@ var _getOwnPropertyDescriptor = require('babel-runtime/core-js/object/get-own-pr
 
 var _getOwnPropertyDescriptor2 = _interopRequireDefault(_getOwnPropertyDescriptor);
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -28,15 +32,19 @@ var _loglevel = require('loglevel');
 
 var logger = _interopRequireWildcard(_loglevel);
 
+var _user = require('../services/user');
+
 var _simpleAuth = require('../utils/simpleAuth');
 
 var _chrome = require('../utils/chrome');
+
+var _hash = require('../utils/hash');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _desc, _value, _class, _descriptor, _descriptor2;
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -92,6 +100,13 @@ var HomeStore = exports.HomeStore = (_class = function () {
 
     _initDefineProp(this, 'isInstall', _descriptor2, this);
 
+    _initDefineProp(this, 'googleConnectResult', _descriptor3, this);
+
+    _initDefineProp(this, 'facebookConnectResult', _descriptor4, this);
+
+    this.googleUser = {};
+    this.facebookUser = {};
+
     this.isLogin = isLogin;
     this.isInstall = isInstall;
   }
@@ -102,6 +117,7 @@ var HomeStore = exports.HomeStore = (_class = function () {
       var _this = this;
 
       (0, _simpleAuth.userId)().then(function (id) {
+        logger.warn('checkAuth', id);
         if (id > 0) {
           _this.isLogin = true;
         } else {
@@ -112,7 +128,55 @@ var HomeStore = exports.HomeStore = (_class = function () {
   }, {
     key: 'checkInstall',
     value: function checkInstall() {
+      logger.warn('checkInstall', (0, _chrome.hasInstalledExtension)());
       this.isInstall = (0, _chrome.hasInstalledExtension)();
+    }
+  }, {
+    key: 'googleConnect',
+    value: function googleConnect(info) {
+      var _this2 = this;
+
+      this.googleConnectResult = (0, _user.loginWithGoogle)(info);
+      (0, _mobx.when)(function () {
+        return _this2.googleConnectResult.state !== 'pending';
+      }, function () {
+        var data = _this2.googleConnectResult.value.data;
+
+        var userHash = (0, _hash.md5hash)(info.googleId);
+        (0, _simpleAuth.login)(data.id, data.email, userHash);
+        _this2.isLogin = true;
+        _this2.googleUser = (0, _assign2.default)({}, data, { userHash: userHash });
+        _this2.userHistory(data.id, userHash);
+      });
+    }
+  }, {
+    key: 'facebookConnect',
+    value: function facebookConnect(info) {
+      var _this3 = this;
+
+      this.facebookConnectResult = (0, _user.loginWithFacebook)(info);
+      (0, _mobx.when)(function () {
+        return _this3.facebookConnectResult.state !== 'pending';
+      }, function () {
+        var data = _this3.facebookConnectResult.value.data;
+
+        var userHash = (0, _hash.md5hash)(info.userID);
+        (0, _simpleAuth.login)(data.id, data.email, userHash);
+        _this3.isLogin = true;
+        _this3.facebookUser = (0, _assign2.default)({}, data, { userHash: userHash });
+        _this3.userHistory(data.id, userHash);
+      });
+    }
+  }, {
+    key: 'userHistory',
+    value: function userHistory(id, hash) {
+      logger.warn('userHistory', id, hash);
+    }
+  }, {
+    key: 'logoutUser',
+    value: function logoutUser() {
+      (0, _simpleAuth.logout)();
+      this.isLogin = false;
     }
   }]);
 
@@ -127,24 +191,40 @@ var HomeStore = exports.HomeStore = (_class = function () {
   initializer: function initializer() {
     return false;
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'checkAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype)), _class);
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, 'googleConnectResult', [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {};
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'facebookConnectResult', [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {};
+  }
+}), _applyDecoratedDescriptor(_class.prototype, 'checkAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'userHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'userHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
 
 (0, _mobx.autorun)(function () {
-  if (store) {
-    logger.warn('check isInstall', store.isInstall);
-    logger.warn('check isLogin', store.isLogin);
+  if (store && store.isInstall) {
+    logger.warn('User is ready');
+  }
+
+  if (store && store.isLogin) {
+    logger.warn('User has logged in');
+  }
+
+  if (store && store.googleConnectResult) {
+    logger.warn('googleConnectResult', store.googleConnectResult);
   }
 });
 
 function initStore(isServer) {
   var isLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var isInstall = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, isLogin, isInstall);
+    return new HomeStore(isServer, isLogin, false);
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, isLogin, isInstall);
+      store = new HomeStore(isServer, isLogin, (0, _chrome.hasInstalledExtension)());
     }
     return store;
   }

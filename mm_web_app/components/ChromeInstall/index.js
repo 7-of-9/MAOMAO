@@ -6,11 +6,9 @@
 
 import React from 'react'
 import styled from 'styled-components'
-import {
-   Hero, HorizontalSplit, Section
-} from 'neal-react'
+import { Hero, HorizontalSplit, Section } from 'neal-react'
+import * as logger from 'loglevel'
 import UnlockNow from '../../components/UnlockNow'
-import { hasInstalledExtension } from '../../utils/chrome'
 
 const Wrapper = styled.div`
   text-align: center;
@@ -30,32 +28,41 @@ const Share = styled.button`
  color: #fff;
 `
 
-function ChromeInstall ({ title, install }) {
+function ChromeInstall ({ title, description, install, isInstall, isLogin }) {
+  logger.warn('ChromeInstall isInstall, isLogin', isInstall, isLogin)
   return (
-    <Wrapper style={{ display: hasInstalledExtension() ? 'none' : '' }}>
+    <Wrapper>
       <Hero className='text-xs-center'>
-        <UnlockNow install={install} title={title} hasInstalled={hasInstalledExtension()} />
-        <AddToChrome onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome>
-        <Share><i className='fa fa-share-alt' aria-hidden='true' /></Share>
+        <h1>{description}</h1>
+        {!isInstall && <UnlockNow install={install} title={title} /> }
+        {!isInstall && <AddToChrome onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+        {!isInstall && <Share><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
       </Hero>
       <Section>
         <HorizontalSplit padding='md'>
           <div>
-            <p className='lead'>Batteries Included</p>
-            <p>Neal is based on <a href='http://v4-alpha.getbootstrap.com/' target='_blank'>Bootstrap 4</a> and ships with navbar, hero, footer, sections, horizontal split, pricing tables, customer quotes and other components you need for a landing page. No more repetitive coding! Oh, and it's easy to extend.</p>
+            <p className='lead'>What is Maomao?</p>
+            <p>Maomao is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
+            <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the Maomao social graph.</p>
+            <p>Maomao overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
+            <p>It’s a radical reimagining of what sharing can be, always in the complete control of users: it’s safe, automatic and intelligent, highlighting only the best and most relevant content to friends.</p>
+            <p>Because Maomao learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
           </div>
           <div>
-            <p className='lead'>Third-Party Integrations</p>
-            <p>External integrations like &nbsp
-              <a href='http://www.google.com/analytics/'>Google Analytics</a>,&nbsp
-              <a href='https://segment.com/'>Segment</a>,&nbsp
-              <a href='https://stripe.com/'>Stripe</a> and&nbsp
-              <a href='http://typeform.com'>Typeform</a> are included.
-              No more copying & pasting integration code, all you need is your API keys. We automatically track events when visitors navigate to different parts of your page.</p>
+            <p className='lead'>How does it work?</p>
+            <p>We use natural language processing, correlation analysis and a real time learning engine to categorise web content as it is browsed. We suggest and then setup real time topic sharing between users on the platform, so users can view each others topic streams - both past and future content is automatically shared once both users accept the shared stream.</p>
+          </div>
+        </HorizontalSplit>
+      </Section>
+      <Section>
+        <HorizontalSplit padding='md'>
+          <div>
+            <p className='lead'>What stage are we at?</p>
+            <p>We are in stealth mode, and developing towards private alpha testing phase. We have and end-to-end technical proof of concept in place, working on desktop web.</p>
           </div>
           <div>
-            <p className='lead'>Serverless Deployment</p>
-            <p>Because you are relying on react.js and third-party integration you don't need a server to host your landing page. Simply upload it to an Amazon S3 bucket, enable website hosting, and it's ready to go!</p>
+            <p className='lead'>Who are we??</p>
+            <p>Maomao is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
           </div>
         </HorizontalSplit>
       </Section>
@@ -65,7 +72,10 @@ function ChromeInstall ({ title, install }) {
 
 ChromeInstall.propTypes = {
   install: React.PropTypes.func,
-  title: React.PropTypes.string.isRequired
+  title: React.PropTypes.string.isRequired,
+  description: React.PropTypes.string.isRequired,
+  isInstall: React.PropTypes.bool.isRequired,
+  isLogin: React.PropTypes.bool.isRequired
 }
 
 export default ChromeInstall

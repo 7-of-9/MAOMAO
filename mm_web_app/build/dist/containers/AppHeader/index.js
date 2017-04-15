@@ -1,14 +1,28 @@
 'use strict';
 
-/*
- *
- * AppHeader
- *
- */
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
 
 var _react = require('react');
 
@@ -17,6 +31,8 @@ var _react2 = _interopRequireDefault(_react);
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _mobxReact = require('mobx-react');
 
 var _reactGoogleLogin = require('react-google-login');
 
@@ -28,31 +44,127 @@ var _reactFacebookLogin2 = _interopRequireDefault(_reactFacebookLogin);
 
 var _nealReact = require('neal-react');
 
+var _reactModal = require('react-modal');
+
+var _reactModal2 = _interopRequireDefault(_reactModal);
+
+var _loglevel = require('loglevel');
+
+var logger = _interopRequireWildcard(_loglevel);
+
 var _Logout = require('../../components/Logout');
 
 var _Logout2 = _interopRequireDefault(_Logout);
 
 var _constants = require('../../containers/App/constants');
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function AppHeader(_ref) {
-  var isLogin = _ref.isLogin,
-      onGoogleSuccess = _ref.onGoogleSuccess,
-      onGoogleFailure = _ref.onGoogleFailure,
-      onLogout = _ref.onLogout,
-      responseFacebook = _ref.responseFacebook;
+var _dec, _class;
 
-  return _react2.default.createElement(_nealReact.NavItem, null, !isLogin && _react2.default.createElement(_reactGoogleLogin2.default, {
-    clientId: _constants.GOOGLE_CLIENT_ID,
-    buttonText: 'LOGIN WITH GOOGLE',
-    onSuccess: onGoogleSuccess,
-    onFailure: onGoogleFailure
-  }), !isLogin && _react2.default.createElement(_reactFacebookLogin2.default, {
-    appId: _constants.FACEBOOK_APP_ID,
-    autoLoad: false,
-    size: 'medium',
-    fields: 'name,email,picture',
-    callback: responseFacebook
-  }), isLogin && _react2.default.createElement(_Logout2.default, { onLogout: onLogout }));
-}exports.default = AppHeader;
+/*
+ *
+ * AppHeader
+ *
+ */
+
+var customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)'
+  }
+};
+
+var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
+  (0, _inherits3.default)(AppHeader, _React$Component);
+
+  function AppHeader(props) {
+    (0, _classCallCheck3.default)(this, AppHeader);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (AppHeader.__proto__ || (0, _getPrototypeOf2.default)(AppHeader)).call(this, props));
+
+    _this.state = {
+      showModal: false
+    };
+    _this.onGoogleSuccess = _this.onGoogleSuccess.bind(_this);
+    _this.onGoogleFailure = _this.onGoogleFailure.bind(_this);
+    _this.responseFacebook = _this.responseFacebook.bind(_this);
+    _this.onLogout = _this.onLogout.bind(_this);
+    _this.onClose = _this.onClose.bind(_this);
+    _this.onOpen = _this.onOpen.bind(_this);
+    return _this;
+  }
+
+  (0, _createClass3.default)(AppHeader, [{
+    key: 'onOpen',
+    value: function onOpen() {
+      logger.warn('onOpen');
+      this.setState({ showModal: true });
+    }
+  }, {
+    key: 'onClose',
+    value: function onClose() {
+      this.setState({ showModal: false });
+    }
+  }, {
+    key: 'onGoogleSuccess',
+    value: function onGoogleSuccess(response) {
+      logger.warn('onGoogleSuccess', response);
+      this.onClose();
+      this.props.notify('Login with google account...');
+      this.props.store.googleConnect(response);
+    }
+  }, {
+    key: 'onGoogleFailure',
+    value: function onGoogleFailure(error) {
+      logger.warn('onGoogleSuccess', error);
+      this.props.notify(error.message);
+    }
+  }, {
+    key: 'responseFacebook',
+    value: function responseFacebook(response) {
+      logger.warn('responseFacebook', response);
+      this.onClose();
+      this.props.notify('Login with facebook account...');
+      this.props.store.facebookConnect(response);
+    }
+  }, {
+    key: 'onLogout',
+    value: function onLogout() {
+      logger.warn('onLogout');
+      this.props.store.logoutUser();
+      this.props.notify('Logout.');
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      logger.warn('AppHeader', this.props, this.state);
+      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement(_Logout2.default, { onLogout: this.onLogout }), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
+        isOpen: this.state.showModal,
+        onRequestClose: this.onClose,
+        style: customStyles,
+        contentLabel: 'Sign In' }, _react2.default.createElement('h1', null, 'Sign In'), _react2.default.createElement(_reactGoogleLogin2.default, {
+        clientId: _constants.GOOGLE_CLIENT_ID,
+        buttonText: 'LOGIN WITH GOOGLE',
+        onSuccess: this.onGoogleSuccess,
+        onFailure: this.onGoogleFailure
+      }), _react2.default.createElement('br', null), _react2.default.createElement(_reactFacebookLogin2.default, {
+        appId: _constants.FACEBOOK_APP_ID,
+        autoLoad: false,
+        size: 'medium',
+        fields: 'name,email,picture',
+        callback: this.responseFacebook
+      }), _react2.default.createElement('br', null), _react2.default.createElement('button', { onClick: this.onClose }, 'close')));
+    }
+  }]);
+
+  return AppHeader;
+}(_react2.default.Component)) || _class) || _class);
+
+exports.default = AppHeader;
