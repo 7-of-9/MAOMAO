@@ -150,7 +150,7 @@ const ShareTopicStepThree = compose(({
     <div>
       <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
-        <button className="btn-global btn-here" onClick={accessGoogleContacts}> here </button>
+        <button className="btn-copy" onClick={accessGoogleContacts}> here </button>
         to grant permissions to access google contacts.
       </ToggleDisplay>
       <ToggleDisplay if={type === 'Google' && contacts.length > 0}>

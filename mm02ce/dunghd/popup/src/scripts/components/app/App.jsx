@@ -155,8 +155,8 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <h3 className="share-heading">
             <a href="#home"><span className="maomao-logo" /> maomao</a>
           </h3>
-          <p>Select your content:</p>
-          <div className="popup-content">
+          <p className="select-cn-title">Select your content:</p>
+          <div className="popup-content pt0">
             <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>
           <div className="toolbar-button">
