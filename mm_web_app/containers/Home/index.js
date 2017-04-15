@@ -10,9 +10,10 @@ import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
-// import NoSSR from 'react-no-ssr'
+import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { OrderedSet } from 'immutable'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import * as logger from 'loglevel'
 import {
   Footer, Navbar, NavItem, Page
@@ -20,10 +21,11 @@ import {
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
+import ChromeInstall from '../../containers/ChromeInstall'
+import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
-import ChromeInstall from '../../components/ChromeInstall'
 
 Router.onRouteChangeStart = (url) => {
   logger.info(`Loading: ${url}`)
@@ -54,6 +56,11 @@ class Home extends React.Component {
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
+  }
+
+  handleSelect (index, last) {
+    logger.warn('Selected tab: ' + index + ', Last tab: ' + last)
   }
 
   onInstallSucess () {
@@ -96,7 +103,7 @@ class Home extends React.Component {
     })
   }
   componentWillReact () {
-    logger.warn('I will re-render, since the data has changed!')
+    logger.warn('Home Component will re-render, since the data has changed!')
   }
   componentDidMount () {
     logger.warn('componentDidMount', this.props)
@@ -105,8 +112,7 @@ class Home extends React.Component {
       window.close()
     }
     setTimeout(() => {
-      this.props.store.checkAuth()
-      this.props.store.checkInstall()
+      this.props.store.checkInstallAndAuth()
     }, 500)
   }
   render () {
@@ -144,7 +150,7 @@ class Home extends React.Component {
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
-          <AppHeader notify={this.addNotification} />
+          { this.props.store.isInstall && <AppHeader notify={this.addNotification} /> }
         </Navbar>
         <NotificationStack
           notifications={this.state.notifications.toArray()}
@@ -153,7 +159,32 @@ class Home extends React.Component {
             notifications: this.state.notifications.delete(notification)
           })}
         />
-        <ChromeInstall description={description} title='Unlock Now' install={this.inlineInstall} isLogin={this.props.store.isLogin} isInstall={this.props.store.isInstall} />
+        <NoSSR onSSR={<Loading isLoading />}>
+          { (!this.props.store.isInstall || !this.props.store.isLogin) &&
+            <ChromeInstall
+              description={description}
+              title='Unlock Now'
+              install={this.inlineInstall}
+              />
+            }
+        </NoSSR>
+        { this.props.store.isInstall && this.props.store.isLogin &&
+          <Tabs
+            onSelect={this.handleSelect}
+            selectedIndex={0}
+            >
+            <TabList>
+              <Tab>Your Streams</Tab>
+              <Tab>Friend's Stream</Tab>
+            </TabList>
+            <TabPanel>
+              <h2>Hello from Foo</h2>
+            </TabPanel>
+            <TabPanel>
+              <h2>Hello from Bar</h2>
+            </TabPanel>
+          </Tabs>
+        }
         <Footer brandName={brandName}
           facebookUrl='http://www.facebook.com'
           twitterUrl='http://www.twitter.com/'

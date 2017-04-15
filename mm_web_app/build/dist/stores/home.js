@@ -112,23 +112,19 @@ var HomeStore = exports.HomeStore = (_class = function () {
   }
 
   (0, _createClass3.default)(HomeStore, [{
-    key: 'checkAuth',
-    value: function checkAuth() {
+    key: 'checkInstallAndAuth',
+    value: function checkInstallAndAuth() {
       var _this = this;
 
       (0, _simpleAuth.userId)().then(function (id) {
-        logger.warn('checkAuth', id);
+        logger.warn('userId', id);
         if (id > 0) {
           _this.isLogin = true;
         } else {
           _this.isLogin = false;
         }
       });
-    }
-  }, {
-    key: 'checkInstall',
-    value: function checkInstall() {
-      logger.warn('checkInstall', (0, _chrome.hasInstalledExtension)());
+      logger.warn('hasInstalledExtension', (0, _chrome.hasInstalledExtension)());
       this.isInstall = (0, _chrome.hasInstalledExtension)();
     }
   }, {
@@ -201,7 +197,7 @@ var HomeStore = exports.HomeStore = (_class = function () {
   initializer: function initializer() {
     return {};
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'checkAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'userHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'userHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, 'checkInstallAndAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstallAndAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'userHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'userHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
 
 (0, _mobx.autorun)(function () {
   if (store && store.isInstall) {

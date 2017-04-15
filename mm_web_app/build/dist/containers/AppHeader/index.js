@@ -147,7 +147,6 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
       logger.warn('AppHeader', this.props, this.state);
       return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement(_Logout2.default, { onLogout: this.onLogout }), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
         isOpen: this.state.showModal,
-        onRequestClose: this.onClose,
         style: customStyles,
         contentLabel: 'Sign In' }, _react2.default.createElement('h1', null, 'Sign In'), _react2.default.createElement(_reactGoogleLogin2.default, {
         clientId: _constants.GOOGLE_CLIENT_ID,

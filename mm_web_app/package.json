@@ -42,6 +42,7 @@
     "react-notification": "^6.6.0",
     "react-stars": "^2.1.0",
     "react-sticky": "^5.0.5",
+    "react-tabs": "^0.8.2",
     "react-tag-input": "^4.6.2",
     "recompose": "^0.23.1",
     "request": "^2.81.0",

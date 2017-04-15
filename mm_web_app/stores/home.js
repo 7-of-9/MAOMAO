@@ -20,20 +20,17 @@ export class HomeStore {
     this.isInstall = isInstall
   }
 
-  @action checkAuth () {
+  @action checkInstallAndAuth () {
     userId()
       .then(id => {
-        logger.warn('checkAuth', id)
+        logger.warn('userId', id)
         if (id > 0) {
           this.isLogin = true
         } else {
           this.isLogin = false
         }
       })
-  }
-
-  @action checkInstall () {
-    logger.warn('checkInstall', hasInstalledExtension())
+    logger.warn('hasInstalledExtension', hasInstalledExtension())
     this.isInstall = hasInstalledExtension()
   }
 

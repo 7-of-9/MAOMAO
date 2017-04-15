@@ -83,7 +83,6 @@ class AppHeader extends React.Component {
         { !this.props.store.isLogin && <button onClick={this.onOpen}>Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
-          onRequestClose={this.onClose}
           style={customStyles}
           contentLabel='Sign In'>
           <h1>Sign In</h1>
@@ -92,7 +91,7 @@ class AppHeader extends React.Component {
             buttonText='LOGIN WITH GOOGLE'
             onSuccess={this.onGoogleSuccess}
             onFailure={this.onGoogleFailure}
-          />
+        />
           <br />
           <FacebookLogin
             appId={FACEBOOK_APP_ID}
@@ -100,7 +99,7 @@ class AppHeader extends React.Component {
             size='medium'
             fields='name,email,picture'
             callback={this.responseFacebook}
-          />
+        />
           <br />
           <button onClick={this.onClose}>close</button>
         </Modal>

@@ -91,7 +91,7 @@ var InviteStore = (_class = function (_HomeStore) {
   function InviteStore(isServer, shareCode, shareInfo, isLogin) {
     (0, _classCallCheck3.default)(this, InviteStore);
 
-    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, isLogin));
+    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, isLogin, false));
 
     _initDefineProp(_this, 'shareCode', _descriptor, _this);
 

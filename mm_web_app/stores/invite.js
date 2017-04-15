@@ -8,7 +8,7 @@ class InviteStore extends HomeStore {
   @observable shareInfo = {}
 
   constructor (isServer, shareCode, shareInfo, isLogin) {
-    super(isServer, isLogin)
+    super(isServer, isLogin, false)
     this.shareCode = shareCode
     this.shareInfo = shareInfo
   }
