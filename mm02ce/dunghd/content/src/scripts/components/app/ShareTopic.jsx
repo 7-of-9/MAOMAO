@@ -167,7 +167,7 @@ const ShareTopicStepThree = compose(({
             className="share-button"
             onClick={sendEmails}
           >
-            Share Now!
+            Share Now !
           </button>
         </div>
       </ToggleDisplay>
@@ -187,7 +187,7 @@ const ShareTopicStepThree = compose(({
       </ToggleDisplay>
       <div className="share-footer">
         <button className="btn btn-slide-prev" onClick={() => changeShareType(type, shareOption, 1)}>First</button>
-        <button className="btn btn-slide-next" onClick={() => changeShareType(type, shareOption, 2)}>Previous</button>
+        <button className="btn btn-distance btn-slide-prev" onClick={() => changeShareType(type, shareOption, 2)}>Previous</button>
       </div>
     </div>
   ));

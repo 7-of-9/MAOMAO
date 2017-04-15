@@ -616,7 +616,7 @@ fieldset[disabled] .react-autosuggest__input {
   touch-action: manipulation;
   cursor: pointer;
   user-select: none;
-  background-color: #ededed;
+  background: #ededed;
   color: #fff;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -630,7 +630,7 @@ fieldset[disabled] .react-autosuggest__input {
   &:focus {
     color: #333;
     text-decoration: none;
-    background-color: #ededed;
+    background: #ededed;
   }
   &:active {
     outline: 0;
@@ -646,11 +646,11 @@ fieldset[disabled] .react-autosuggest__input {
 .btn-here {
   margin: 0 7px;
   color: #333;
-  background-color: #f1f1f1;
+  background: #f1f1f1;
   &:hover,
   &:focus {
     text-decoration: none;
-    background-color: #efefef;
+    background: #efefef;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 }
@@ -675,7 +675,7 @@ fieldset[disabled] .react-autosuggest__input {
     font-size: 14px;
     line-height: 1.42857143;
     color: #555;
-    background-color: #fff;
+    background: #fff;
     background-image: none;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -713,16 +713,20 @@ fieldset[disabled] .react-autosuggest__input {
     cursor: pointer;
     user-select: none;
     background-image: none;
-    border: 1px solid transparent;
     border-radius: 4px;
-    color: #fff;
-    background-color: #f0ad4e;
-    border-color: #eea236;
+    color: #333;
+    background: #fff;
+    border: 1px solid #ccc;
     &:hover,
     &:focus {
-      color: #fff;
-      background-color: #ec971f;
-      border-color: #fb9504;
+      color: #333;
+      background: #e6e6e6;
+      border: 1px solid #bdbdbd;
+    }
+    &,
+    &:hover,
+    &:focus {
+      transition: all 0.2s ease-in-out;
     }
   }
 }
@@ -1216,15 +1220,18 @@ fieldset[disabled] .btn-logout.focus {
   .btn-slide-prev {
     float: left;
   }
+  .btn-distance {
+    margin-left: 12px;
+  }
   .btn-slide-next,
   .btn-slide-prev {
     padding: 8px 12px;
     min-width: 100px;
-    background-color: #6753d8;
+    background: #4fc3f7;
     &:hover,
     &:focus,
     &:active {
-      background-color: #8570fd;
+      background: #039be5;
     }
     &,
     &:hover,
@@ -1240,6 +1247,34 @@ fieldset[disabled] .btn-logout.focus {
     margin: 0 0 20px;
     font-size: 17px;
     color: #e9201a;
+  }
+}
+
+
+/*autocomplete*/
+
+.panel-autocomplete {
+  .react-autosuggest__container--open .react-autosuggest__input {
+    border-radius: 4px;
+  }
+  .react-autosuggest__suggestions-container {
+    top: auto;
+    bottom: 100%;
+    z-index: 99999999999;
+    width: 100%;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, .175);
+    .suggestion-content {
+      font-size: 14px;
+      .photo {
+        width: 50px;
+        text-align: left;
+        img {
+          vertical-align: top;
+        }
+      }
+    }
   }
 }
 

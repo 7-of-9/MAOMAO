@@ -85,19 +85,21 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
       })
     }
     </div>
-    <Autosuggest
-      suggestions={suggestions}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-      onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={getSuggestionValue}
-      renderSuggestion={renderSuggestion}
-      highlightFirstSuggestion
-      inputProps={{
-      placeholder: 'To: type name to search...',
-      value,
-      onChange,
-    }}
-    />
+    <div className="panel-autocomplete">
+      <Autosuggest
+        suggestions={suggestions}
+        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={onSuggestionsClearRequested}
+        getSuggestionValue={getSuggestionValue}
+        renderSuggestion={renderSuggestion}
+        highlightFirstSuggestion
+        inputProps={{
+        placeholder: 'To: type name to search...',
+        value,
+        onChange,
+      }}
+      />
+    </div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
       selectedContacts.map(contact => (
