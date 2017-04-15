@@ -35,10 +35,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _mobxReact = require('mobx-react');
 
-var _loglevel = require('loglevel');
-
-var logger = _interopRequireWildcard(_loglevel);
-
 var _home = require('../stores/home');
 
 var _Home = require('../containers/Home');
@@ -48,8 +44,6 @@ var _Home2 = _interopRequireDefault(_Home);
 var _index = require('../styles/index.scss');
 
 var _index2 = _interopRequireDefault(_index);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63,7 +57,6 @@ var HomePage = function (_React$Component) {
 
       var isServer = !!req;
       var store = (0, _home.initStore)(isServer, false, false);
-      logger.warn('HomePage getInitialProps');
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
@@ -73,6 +66,15 @@ var HomePage = function (_React$Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (HomePage.__proto__ || (0, _getPrototypeOf2.default)(HomePage)).call(this, props));
 
+    var _props$url$query = props.url.query,
+        close = _props$url$query.close,
+        success = _props$url$query.success;
+
+    if (close && close === 'popup' || success && Number(success) === 1) {
+      _this.isClosePopup = true;
+    } else {
+      _this.isClosePopup = false;
+    }
     _this.store = (0, _home.initStore)(props.isServer, props.isLogin, props.isInstall);
     return _this;
   }
@@ -80,7 +82,7 @@ var HomePage = function (_React$Component) {
   (0, _createClass3.default)(HomePage, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(_mobxReact.Provider, { store: this.store }, _react2.default.createElement('div', null, _react2.default.createElement('style', { dangerouslySetInnerHTML: { __html: _index2.default } }), _react2.default.createElement(_Home2.default, null)));
+      return _react2.default.createElement(_mobxReact.Provider, { store: this.store }, _react2.default.createElement('div', null, _react2.default.createElement('style', { dangerouslySetInnerHTML: { __html: _index2.default } }), _react2.default.createElement(_Home2.default, { isClosePopup: this.isClosePopup })));
     }
   }]);
 

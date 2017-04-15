@@ -104,11 +104,14 @@ class Home extends React.Component {
   }
   componentDidMount () {
     logger.warn('componentDidMount', this.props)
+    if (this.props.isClosePopup) {
+      logger.warn('Close popup')
+      window.close()
+    }
     this.props.store.checkAuth()
     this.props.store.checkInstall()
   }
   render () {
-    logger.warn('Home', this.props.store.isLogin, this.props.store.isInstall, this.props.store.shareInfo)
     const title = 'MaoMao - Home page'
     let description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
@@ -122,7 +125,7 @@ class Home extends React.Component {
       }
     }
     return (
-      <Page>
+      <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
@@ -171,6 +174,7 @@ Home.propTypes = {
   history: PropTypes.object,
   home: PropTypes.object,
   loading: PropTypes.bool,
+  isClosePopup: PropTypes.bool,
   notifications: PropTypes.object,
   changeNotifications: PropTypes.func,
   inlineInstall: PropTypes.func,

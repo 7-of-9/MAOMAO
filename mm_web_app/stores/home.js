@@ -16,13 +16,13 @@ export class HomeStore {
 
   @action checkAuth () {
     userId()
-    .then(id => {
-      if (id > 0) {
-        this.isLogin = true
-      } else {
-        this.isLogin = false
-      }
-    })
+      .then(id => {
+        if (id > 0) {
+          this.isLogin = true
+        } else {
+          this.isLogin = false
+        }
+      })
   }
 
   @action checkInstall () {

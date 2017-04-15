@@ -218,7 +218,7 @@ const ShareTopic = enhance(({
     <h3 className="share-title">
       Share
           <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-      {type && type.length > 0 && `with friends by ${type}`}
+      {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
     </h3>
     {currentStep && currentStep === 1 &&
       <ShareTopicStepOne

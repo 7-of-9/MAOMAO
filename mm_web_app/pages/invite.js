@@ -8,6 +8,7 @@ import * as log from 'loglevel'
 export default class Invite extends React.Component {
   static getInitialProps ({ req, query: { code, shareInfo } }) {
     const isServer = !!req
+    log.warn('req', req)
     const store = initStore(isServer, code, shareInfo, false, false)
     return { isServer, ...store }
   }
@@ -15,6 +16,12 @@ export default class Invite extends React.Component {
   constructor (props) {
     super(props)
     log.warn('Invite props', props)
+    const { query: { close, success } } = props.url
+    if ((close && close === 'popup') || (success && Number(success) === 1)) {
+      this.isClosePopup = true
+    } else {
+      this.isClosePopup = false
+    }
     this.store = initStore(props.isServer, props.shareCode, props.shareInfo, props.isLogin, props.isInstall)
   }
 
@@ -23,7 +30,7 @@ export default class Invite extends React.Component {
       <Provider store={this.store}>
         <div>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home />
+          <Home isClosePopup={this.isClosePopup} />
         </div>
       </Provider>
     )

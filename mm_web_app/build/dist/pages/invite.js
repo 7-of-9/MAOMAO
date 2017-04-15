@@ -65,6 +65,7 @@ var Invite = function (_React$Component) {
           shareInfo = _ref$query.shareInfo;
 
       var isServer = !!req;
+      log.warn('req', req);
       var store = (0, _invite.initStore)(isServer, code, shareInfo, false, false);
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
@@ -76,6 +77,15 @@ var Invite = function (_React$Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (Invite.__proto__ || (0, _getPrototypeOf2.default)(Invite)).call(this, props));
 
     log.warn('Invite props', props);
+    var _props$url$query = props.url.query,
+        close = _props$url$query.close,
+        success = _props$url$query.success;
+
+    if (close && close === 'popup' || success && Number(success) === 1) {
+      _this.isClosePopup = true;
+    } else {
+      _this.isClosePopup = false;
+    }
     _this.store = (0, _invite.initStore)(props.isServer, props.shareCode, props.shareInfo, props.isLogin, props.isInstall);
     return _this;
   }
@@ -83,7 +93,7 @@ var Invite = function (_React$Component) {
   (0, _createClass3.default)(Invite, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(_mobxReact.Provider, { store: this.store }, _react2.default.createElement('div', null, _react2.default.createElement('style', { dangerouslySetInnerHTML: { __html: _index2.default } }), _react2.default.createElement(_Home2.default, null)));
+      return _react2.default.createElement(_mobxReact.Provider, { store: this.store }, _react2.default.createElement('div', null, _react2.default.createElement('style', { dangerouslySetInnerHTML: { __html: _index2.default } }), _react2.default.createElement(_Home2.default, { isClosePopup: this.isClosePopup })));
     }
   }]);
 
