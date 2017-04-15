@@ -32,8 +32,9 @@ $success-icons: './images/icons-success.png';
   bottom: 20px;
   left: 50%;
   right: 50%;
-  width: 600px;
-  margin-left: -300px;
+  min-width: 400px;
+  width: fit-content;
+  transform: translate(-50%, -50%);
   padding: 20px;
   border-radius: 7px;
   padding: 15px 15px 15px 50px;
@@ -45,20 +46,37 @@ $success-icons: './images/icons-success.png';
   background-position: 20px center;
   background-size: 32px;
   animation: vex-flyin 0.5s;
-  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
   box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;
+  animation-name: fadeIn;
+  animation-duration: 1s;
+  animation-fill-mode: both;
   .close_button {
     right: -32px;
     top: -32px;
+  }
+  .inner_bg {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nlp_topic,
+  .nlp_score {
+    padding-top: 0 !important;
+  }
+  .nlp_topic {
+    max-width: 590px;
+    overflow: hidden;
+    text-align: justify;
+  }
+  .nlp_score {
+    min-width: 120px;
   }
   .share-button {
     float: right;
     max-width: 74px;
   }
-}
-
-.blurred .inner_bg {
-  text-align: center;
 }
 
 .share-button {
@@ -1177,11 +1195,14 @@ fieldset[disabled] .btn-logout.focus {
 
 .share-title {
   margin: 10px 0 20px;
-  color: #2db7f5;
+  color: #606162;
   font-size: 20px;
   font-weight: normal;
   text-align: center;
   text-transform: uppercase;
+  em {
+    color: #2db7f5;
+  }
 }
 
 .share-topic {
