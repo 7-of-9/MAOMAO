@@ -1,37 +1,67 @@
 import { action, autorun, when, observable } from 'mobx'
 import * as logger from 'loglevel'
-import { loginWithGoogle, loginWithFacebook } from '../services/user'
-import { userId, login, logout } from '../utils/simpleAuth'
+import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
+import { userId, userHash, login, logout } from '../utils/simpleAuth'
 import { hasInstalledExtension } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 
 let store = null
 
 export class HomeStore {
-  @observable isLogin = false
-  @observable isInstall = false
   @observable googleConnectResult = {}
   @observable facebookConnectResult = {}
-  googleUser = {}
-  facebookUser = {}
+  @observable userHistoryResult = {}
+  @observable userId = -1
+  @observable currentTermId = -1
+  @observable friendStreamId = -1
+  @observable isLogin = false
+  @observable isInstall = false
+  @observable userHash = ''
+  @observable googleUser = {}
+  @observable facebookUser = {}
+  @observable userHistory = null
 
   constructor (isServer, isLogin, isInstall) {
     this.isLogin = isLogin
     this.isInstall = isInstall
+    autorun(() => {
+      if (this.isInstall) {
+        logger.warn('User is ready')
+      }
+      if (this.isLogin) {
+        logger.warn('User has logged in')
+      }
+    })
+    when(() => this.userId > 0 && this.userHash.length > 0,
+     () => {
+       logger.warn('yeah...')
+       this.getUserHistory()
+       this.acceptInviteCode()
+     })
   }
 
   @action checkInstallAndAuth () {
     userId()
       .then(id => {
-        logger.warn('userId', id)
+        this.userId = id
+        logger.warn('userId', this.userId)
         if (id > 0) {
           this.isLogin = true
         } else {
           this.isLogin = false
         }
       })
+    userHash()
+      .then(hash => {
+        this.userHash = hash
+        logger.warn('userHash', this.userHash)
+      })
     logger.warn('hasInstalledExtension', hasInstalledExtension())
     this.isInstall = hasInstalledExtension()
+  }
+
+  @action acceptInviteCode () {
+    logger.warn('acceptInviteCode')
   }
 
   @action googleConnect (info) {
@@ -42,9 +72,10 @@ export class HomeStore {
         const { data } = this.googleConnectResult.value
         const userHash = md5hash(info.googleId)
         login(data.id, data.email, userHash)
+        this.userId = data.id
+        this.userHash = userHash
         this.isLogin = true
         this.googleUser = Object.assign({}, data, { userHash })
-        this.userHistory(data.id, userHash)
       }
     )
   }
@@ -57,36 +88,46 @@ export class HomeStore {
         const { data } = this.facebookConnectResult.value
         const userHash = md5hash(info.userID)
         login(data.id, data.email, userHash)
+        this.userId = data.id
+        this.userHash = userHash
         this.isLogin = true
         this.facebookUser = Object.assign({}, data, { userHash })
-        this.userHistory(data.id, userHash)
       }
     )
   }
 
-  @action userHistory (id, hash) {
-    logger.warn('userHistory', id, hash)
+  @action getUserHistory () {
+    logger.warn('getUserHistory', this.userId, this.userHash)
+    this.userHistoryResult = getUserHistory(this.userId, this.userHash)
+    when(
+      () => this.userHistoryResult.state !== 'pending',
+      () => {
+        this.userHistory = this.userHistoryResult.value.data
+        logger.warn('userHistory', this.userHistory)
+      }
+    )
+  }
+
+  @action changeTerm (termId) {
+    logger.warn('changeTerm', termId)
+    this.currentTermId = termId
+    this.friendStreamId = -1
+  }
+
+  @action changeFriendStream (userId) {
+    logger.warn('changeFriendStream', userId)
+    this.currentTermId = -1
+    this.friendStreamId = userId
   }
 
   @action logoutUser () {
     logout()
     this.isLogin = false
+    this.userId = -1
+    this.userHash = ''
+    this.userHistory = null
   }
 }
-
-autorun(() => {
-  if (store && store.isInstall) {
-    logger.warn('User is ready')
-  }
-
-  if (store && store.isLogin) {
-    logger.warn('User has logged in')
-  }
-
-  if (store && store.googleConnectResult) {
-    logger.warn('googleConnectResult', store.googleConnectResult)
-  }
-})
 
 export function initStore (isServer, isLogin = false) {
   if (isServer && typeof window === 'undefined') {

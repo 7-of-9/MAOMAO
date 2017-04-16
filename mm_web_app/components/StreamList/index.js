@@ -5,15 +5,8 @@
 */
 
 import React from 'react'
-import styled from 'styled-components'
 import _ from 'lodash'
 import StreamItem from '../../components/StreamItem'
-
-const Wrapper = styled.div`
-  width: 75%;
-  float: right;
-  padding: 1em;
-`
 
 function StreamList ({ urls }) {
   const items = []
@@ -26,9 +19,9 @@ function StreamList ({ urls }) {
     })
   }
   return (
-    <Wrapper>
+    <div>
       {items}
-    </Wrapper>
+    </div>
   )
 }
 

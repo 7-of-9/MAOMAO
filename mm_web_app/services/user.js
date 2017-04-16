@@ -47,8 +47,5 @@ export function loginWithFacebook (info) {
 
 export function getUserHistory (id, hash) {
   const apiUrl = `${MAOMAO_API_URL}user/streams?user_id=${id}&hash=${hash}`
-  return fromPromise(axios({
-    method: 'get',
-    url: apiUrl
-  }))
+  return fromPromise(axios.get(apiUrl))
 }

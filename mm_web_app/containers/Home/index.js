@@ -14,6 +14,7 @@ import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { OrderedSet } from 'immutable'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
+import _ from 'lodash'
 import * as logger from 'loglevel'
 import {
   Footer, Navbar, NavItem, Page
@@ -26,6 +27,8 @@ import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
+import YourStreams from '../../components/YourStreams'
+import StreamList from '../../components/StreamList'
 
 Router.onRouteChangeStart = (url) => {
   logger.info(`Loading: ${url}`)
@@ -103,7 +106,7 @@ class Home extends React.Component {
     })
   }
   componentWillReact () {
-    logger.warn('Home Component will re-render, since the data has changed!')
+    logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
   }
   componentDidMount () {
     logger.warn('componentDidMount', this.props)
@@ -128,6 +131,34 @@ class Home extends React.Component {
         description = `${fullname} would like to share the MaoMao stream with you: "${topicTitle}"`
       }
     }
+    let selectedUrls = []
+    let urlIds = []
+    let sortedTopicByUrls = []
+    let currentTermId = this.props.store.currentTermId
+    let friendStreamId = this.props.store.friendStreamId
+    if (this.props.store.userHistory) {
+      const { me: { urls, topics }, shares: friends } = this.props.store.userHistory
+      sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
+    // set to first topic on first try
+      if (friendStreamId === -1) {
+        if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
+          currentTermId = sortedTopicByUrls[0].term_id
+          urlIds = sortedTopicByUrls[0].url_ids
+        } else {
+          const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
+          if (currentTopic) {
+            urlIds = currentTopic.url_ids
+          }
+        }
+        selectedUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
+      } else {
+        const currentStream = friends.find((item) => item.user_id === friendStreamId)
+        if (currentStream) {
+          selectedUrls = _.uniq(_.flatten(currentStream.list.map((item) => item.urls)))
+        }
+      }
+    }
+    logger.warn('selectedUrls', selectedUrls)
     return (
       <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
         <Head>
@@ -138,7 +169,7 @@ class Home extends React.Component {
           <meta name='og:description' content={description} />
           <meta name='og:image' content={`${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
-          <meta name='viewport' content='width=device-width, initial-scale=1' />
+          <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
@@ -175,10 +206,17 @@ class Home extends React.Component {
             >
             <TabList>
               <Tab>Your Streams</Tab>
-              <Tab>Friend's Stream</Tab>
+              <Tab>Friend Streams</Tab>
             </TabList>
             <TabPanel>
-              <h2>Hello from Foo</h2>
+              <YourStreams
+                topics={sortedTopicByUrls}
+                activeId={currentTermId}
+                changeTerm={this.props.store.changeTerm}
+                changeFriendStream={this.props.store.changeFriendStream}
+              />
+              <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+              <StreamList urls={selectedUrls} />
             </TabPanel>
             <TabPanel>
               <h2>Hello from Bar</h2>

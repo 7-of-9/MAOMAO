@@ -62,8 +62,5 @@ function loginWithFacebook(info) {
 
 function getUserHistory(id, hash) {
   var apiUrl = _constants.MAOMAO_API_URL + 'user/streams?user_id=' + id + '&hash=' + hash;
-  return (0, _mobxUtils.fromPromise)((0, _axios2.default)({
-    method: 'get',
-    url: apiUrl
-  }));
+  return (0, _mobxUtils.fromPromise)(_axios2.default.get(apiUrl));
 }

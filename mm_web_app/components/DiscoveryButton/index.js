@@ -5,18 +5,7 @@
 */
 
 import React from 'react'
-import styled from 'styled-components'
 import Link from 'next/link'
-
-const Wrapper = styled.div`
-  margin: 0 10px;
-  float: right;
-`
-
-const Image = styled.img`
-  width: 40px;
-  height: 40px;
-`
 
 function DiscoveryButton ({ keys }) {
   let link = '/discovery'
@@ -24,11 +13,11 @@ function DiscoveryButton ({ keys }) {
     link = `/discovery?search=${keys}`
   }
   return (
-    <Wrapper>
+    <div>
       <Link to={link}>
-        <Image src='/static/images/discovery-icon.png' alt='Discovery' />
+        <img width='40' height='40' src='/static/images/discovery-icon.png' alt='Discovery' />
       </Link>
-    </Wrapper>
+    </div>
   )
 }
 

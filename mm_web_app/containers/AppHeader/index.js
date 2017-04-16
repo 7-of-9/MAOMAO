@@ -12,7 +12,6 @@ import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
 import * as logger from 'loglevel'
-import Logout from '../../components/Logout'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 
 const customStyles = {
