@@ -79,7 +79,7 @@ class AppHeader extends React.Component {
     logger.warn('AppHeader', this.props, this.state)
     return (
       <NavItem>
-        { this.props.store.isLogin && <Logout onLogout={this.onLogout} /> }
+        { this.props.store.isLogin && <button onClick={this.onLogout}>Logout</button> }
         { !this.props.store.isLogin && <button onClick={this.onOpen}>Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
