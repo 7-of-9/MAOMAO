@@ -19,7 +19,7 @@ function StreamList ({ urls }) {
     })
   }
   return (
-    <div>
+    <div className='row'>
       {items}
     </div>
   )

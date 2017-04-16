@@ -38,5 +38,5 @@ function StreamList(_ref) {
       items.push(_react2.default.createElement(_StreamItem2.default, { key: item.id, url: item, maxScore: maxScore.im_score }));
     });
   }
-  return _react2.default.createElement('div', null, items);
+  return _react2.default.createElement('div', { className: 'row' }, items);
 }exports.default = StreamList;

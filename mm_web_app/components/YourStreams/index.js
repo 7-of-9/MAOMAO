@@ -5,20 +5,21 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 
-function YourStreams ({ topics, friends, changeTerm, changeFriendStream, activeId }) {
+function YourStreams ({ topics, changeTerm, activeId }) {
   const items = []
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
-      if (topic.term_id) {
+      if (topic && topic.term_id) {
         items.push(<a
           onClick={(e) => {
             e.preventDefault()
             changeTerm(topic.term_id)
-          }} style={{ color: (activeId === topic.term_id) ? '#000' : '#fff' }} key={topic.term_id}
+          }} key={topic.term_id}
         >
-          <button>
+          <button className={`${activeId === topic.term_id ? 'btn-primary' : ''}`} >
             {topic.term_name} ({topic.url_ids.length})
             </button>
         </a>)
@@ -34,9 +35,9 @@ function YourStreams ({ topics, friends, changeTerm, changeFriendStream, activeI
 }
 
 YourStreams.propTypes = {
-  topics: React.PropTypes.array,
-  activeId: React.PropTypes.number,
-  changeTerm: React.PropTypes.func
+  topics: PropTypes.array.isRequired,
+  activeId: PropTypes.number.isRequired,
+  changeTerm: PropTypes.func.isRequired
 }
 
 export default YourStreams

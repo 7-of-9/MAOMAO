@@ -28,6 +28,7 @@ import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import YourStreams from '../../components/YourStreams'
+import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
 
 Router.onRouteChangeStart = (url) => {
@@ -116,7 +117,7 @@ class Home extends React.Component {
     }
     setTimeout(() => {
       this.props.store.checkInstallAndAuth()
-    }, 500)
+    }, 100)
   }
   render () {
     const title = 'MaoMao - Home page'
@@ -131,34 +132,46 @@ class Home extends React.Component {
         description = `${fullname} would like to share the MaoMao stream with you: "${topicTitle}"`
       }
     }
-    let selectedUrls = []
-    let urlIds = []
+    let selectedMyStreamUrls = []
+    let selectedFriendStreamUrls = []
     let sortedTopicByUrls = []
+    let friends = []
     let currentTermId = this.props.store.currentTermId
     let friendStreamId = this.props.store.friendStreamId
     if (this.props.store.userHistory) {
-      const { me: { urls, topics }, shares: friends } = this.props.store.userHistory
+      const { me: { urls, topics }, shares } = this.props.store.userHistory
+      friends = shares.slice()
+      logger.warn('friends', friends)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
-    // set to first topic on first try
-      if (friendStreamId === -1) {
-        if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-          currentTermId = sortedTopicByUrls[0].term_id
-          urlIds = sortedTopicByUrls[0].url_ids
-        } else {
-          const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
-          if (currentTopic) {
-            urlIds = currentTopic.url_ids
-          }
-        }
-        selectedUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
+      let urlIds = []
+      // first for my stream
+      if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
+        urlIds = sortedTopicByUrls[0].url_ids
+        currentTermId = sortedTopicByUrls[0].term_id
       } else {
-        const currentStream = friends.find((item) => item.user_id === friendStreamId)
-        if (currentStream) {
-          selectedUrls = _.uniq(_.flatten(currentStream.list.map((item) => item.urls)))
+        const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
+        if (currentTopic) {
+          urlIds = currentTopic.url_ids
         }
+        logger.warn('currentTopic', currentTopic)
+      }
+
+      selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
+      if (friendStreamId === -1 && friends.length) {
+        friendStreamId = friends[0].user_id
+        logger.warn('found friendStreamId', friendStreamId)
+      }
+      const currentStream = friends.find((item) => item && item.user_id === friendStreamId)
+      logger.warn('currentStream', currentStream)
+      if (currentStream) {
+        const list = currentStream.list.slice()
+        logger.warn('list', list)
+        selectedFriendStreamUrls = _.uniq(list.map((item) => item && item.urls))
+        logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls)
+        selectedFriendStreamUrls = selectedFriendStreamUrls[0].slice()
       }
     }
-    logger.warn('selectedUrls', selectedUrls)
+    logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
     return (
       <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
         <Head>
@@ -190,7 +203,7 @@ class Home extends React.Component {
             notifications: this.state.notifications.delete(notification)
           })}
         />
-        <NoSSR onSSR={<Loading isLoading />}>
+        <NoSSR>
           { (!this.props.store.isInstall || !this.props.store.isLogin) &&
             <ChromeInstall
               description={description}
@@ -200,28 +213,37 @@ class Home extends React.Component {
             }
         </NoSSR>
         { this.props.store.isInstall && this.props.store.isLogin &&
-          <Tabs
-            onSelect={this.handleSelect}
-            selectedIndex={0}
-            >
-            <TabList>
-              <Tab>Your Streams</Tab>
-              <Tab>Friend Streams</Tab>
-            </TabList>
-            <TabPanel>
-              <YourStreams
-                topics={sortedTopicByUrls}
-                activeId={currentTermId}
-                changeTerm={this.props.store.changeTerm}
-                changeFriendStream={this.props.store.changeFriendStream}
+          <div className='container'>
+            <Tabs
+              onSelect={this.handleSelect}
+              selectedIndex={0}
+              >
+              <TabList>
+                <Tab>Your Streams</Tab>
+                <Tab>Friend Streams</Tab>
+              </TabList>
+              <TabPanel>
+                <YourStreams
+                  topics={sortedTopicByUrls}
+                  activeId={currentTermId}
+                  changeTerm={(termId) => { this.props.store.currentTermId = termId }}
               />
-              <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-              <StreamList urls={selectedUrls} />
-            </TabPanel>
-            <TabPanel>
-              <h2>Hello from Bar</h2>
-            </TabPanel>
-          </Tabs>
+                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+                <br />
+                <StreamList urls={selectedMyStreamUrls} />
+              </TabPanel>
+              <TabPanel>
+                <FriendStreams
+                  friends={friends}
+                  activeId={friendStreamId}
+                  changeFriendStream={(userId) => { this.props.store.friendStreamId = userId }}
+              />
+                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+                <br />
+                <StreamList urls={selectedFriendStreamUrls} />
+              </TabPanel>
+            </Tabs>
+          </div>
         }
         <Footer brandName={brandName}
           facebookUrl='http://www.facebook.com'

@@ -32,7 +32,7 @@ export class HomeStore {
         logger.warn('User has logged in')
       }
     })
-    when(() => this.userId > 0 && this.userHash.length > 0,
+    when(() => this.isInstall && this.userId > 0 && this.userHash.length > 0,
      () => {
        logger.warn('yeah...')
        this.getUserHistory()
@@ -106,18 +106,6 @@ export class HomeStore {
         logger.warn('userHistory', this.userHistory)
       }
     )
-  }
-
-  @action changeTerm (termId) {
-    logger.warn('changeTerm', termId)
-    this.currentTermId = termId
-    this.friendStreamId = -1
-  }
-
-  @action changeFriendStream (userId) {
-    logger.warn('changeFriendStream', userId)
-    this.currentTermId = -1
-    this.friendStreamId = userId
   }
 
   @action logoutUser () {

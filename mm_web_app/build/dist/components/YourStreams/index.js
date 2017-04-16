@@ -14,6 +14,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -22,25 +26,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function YourStreams(_ref) {
   var topics = _ref.topics,
-      friends = _ref.friends,
       changeTerm = _ref.changeTerm,
-      changeFriendStream = _ref.changeFriendStream,
       activeId = _ref.activeId;
 
   var items = [];
   if (topics && topics.length) {
     _lodash2.default.forEach(topics, function (topic) {
-      if (topic.term_id) {
+      if (topic && topic.term_id) {
         items.push(_react2.default.createElement('a', {
           onClick: function onClick(e) {
             e.preventDefault();
             changeTerm(topic.term_id);
-          }, style: { color: activeId === topic.term_id ? '#000' : '#fff' }, key: topic.term_id
-        }, _react2.default.createElement('button', null, topic.term_name, ' (', topic.url_ids.length, ')')));
+          }, key: topic.term_id
+        }, _react2.default.createElement('button', { className: '' + (activeId === topic.term_id ? 'btn-primary' : '') }, topic.term_name, ' (', topic.url_ids.length, ')')));
       }
     });
   }
   return _react2.default.createElement('div', { className: 'container-fluid' }, _react2.default.createElement('h1', null, 'Your Streams'), items);
-}
-
-exports.default = YourStreams;
+}exports.default = YourStreams;

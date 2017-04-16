@@ -9,7 +9,7 @@ import Header from '../../components/Header'
 import SearchBar from '../../components/SearchBar'
 import LogoIcon from '../../components/LogoIcon'
 
-const SRRLoading = () => (<div>Loading...</div>)
+const SRRLoading = () => (<div className='container-fluid'>Loading...</div>)
 export class Discovery extends React.Component {
   render () {
     let elements = []

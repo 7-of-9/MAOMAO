@@ -63,7 +63,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // import Block from '../../components/Block'
 var SRRLoading = function SRRLoading() {
-  return _react2.default.createElement('div', null, 'Loading...');
+  return _react2.default.createElement('div', { className: 'container-fluid' }, 'Loading...');
 };
 var Discovery = exports.Discovery = function (_React$Component) {
   (0, _inherits3.default)(Discovery, _React$Component);

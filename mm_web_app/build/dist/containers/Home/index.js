@@ -100,6 +100,10 @@ var _YourStreams = require('../../components/YourStreams');
 
 var _YourStreams2 = _interopRequireDefault(_YourStreams);
 
+var _FriendStreams = require('../../components/FriendStreams');
+
+var _FriendStreams2 = _interopRequireDefault(_FriendStreams);
+
 var _StreamList = require('../../components/StreamList');
 
 var _StreamList2 = _interopRequireDefault(_StreamList);
@@ -220,7 +224,7 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
       }
       setTimeout(function () {
         _this3.props.store.checkInstallAndAuth();
-      }, 500);
+      }, 100);
     }
   }, {
     key: 'render',
@@ -244,9 +248,10 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
           description = fullname + ' would like to share the MaoMao stream with you: "' + topicTitle + '"';
         }
       }
-      var selectedUrls = [];
-      var urlIds = [];
+      var selectedMyStreamUrls = [];
+      var selectedFriendStreamUrls = [];
       var sortedTopicByUrls = [];
+      var friends = [];
       var currentTermId = this.props.store.currentTermId;
       var friendStreamId = this.props.store.friendStreamId;
       if (this.props.store.userHistory) {
@@ -254,41 +259,52 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
             _props$store$userHist2 = _props$store$userHist.me,
             urls = _props$store$userHist2.urls,
             topics = _props$store$userHist2.topics,
-            friends = _props$store$userHist.shares;
+            shares = _props$store$userHist.shares;
 
+        friends = shares.slice();
+        logger.warn('friends', friends);
         sortedTopicByUrls = _lodash2.default.reverse(_lodash2.default.sortBy(_lodash2.default.filter(topics, function (topic) {
           return topic && topic.term_id > 0;
         }), [function (topic) {
           return topic.url_ids.length;
         }]));
-        // set to first topic on first try
-        if (friendStreamId === -1) {
-          if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-            currentTermId = sortedTopicByUrls[0].term_id;
-            urlIds = sortedTopicByUrls[0].url_ids;
-          } else {
-            var currentTopic = sortedTopicByUrls.find(function (item) {
-              return item.term_id === currentTermId;
-            });
-            if (currentTopic) {
-              urlIds = currentTopic.url_ids;
-            }
-          }
-          selectedUrls = _lodash2.default.filter(urls, function (item) {
-            return item.id && urlIds.indexOf(item.id) !== -1;
-          });
+        var urlIds = [];
+        // first for my stream
+        if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
+          urlIds = sortedTopicByUrls[0].url_ids;
+          currentTermId = sortedTopicByUrls[0].term_id;
         } else {
-          var currentStream = friends.find(function (item) {
-            return item.user_id === friendStreamId;
+          var currentTopic = sortedTopicByUrls.find(function (item) {
+            return item.term_id === currentTermId;
           });
-          if (currentStream) {
-            selectedUrls = _lodash2.default.uniq(_lodash2.default.flatten(currentStream.list.map(function (item) {
-              return item.urls;
-            })));
+          if (currentTopic) {
+            urlIds = currentTopic.url_ids;
           }
+          logger.warn('currentTopic', currentTopic);
+        }
+
+        selectedMyStreamUrls = _lodash2.default.filter(urls, function (item) {
+          return item.id && urlIds.indexOf(item.id) !== -1;
+        });
+        if (friendStreamId === -1 && friends.length) {
+          friendStreamId = friends[0].user_id;
+          logger.warn('found friendStreamId', friendStreamId);
+        }
+        var currentStream = friends.find(function (item) {
+          return item && item.user_id === friendStreamId;
+        });
+        logger.warn('currentStream', currentStream);
+        if (currentStream) {
+          var list = currentStream.list.slice();
+          logger.warn('list', list);
+          selectedFriendStreamUrls = _lodash2.default.uniq(list.map(function (item) {
+            return item && item.urls;
+          }));
+          logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls);
+          selectedFriendStreamUrls = selectedFriendStreamUrls[0].slice();
         }
       }
-      logger.warn('selectedUrls', selectedUrls);
+      logger.warn('selectedMyStreamUrls', selectedMyStreamUrls);
       return _react2.default.createElement(_nealReact.Page, { style: { display: this.props.isClosePopup ? 'none' : '' } }, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring')), this.props.store.isInstall && _react2.default.createElement(_AppHeader2.default, { notify: this.addNotification })), _react2.default.createElement(_reactNotification.NotificationStack, {
         notifications: this.state.notifications.toArray(),
         dismissAfter: 5000,
@@ -297,19 +313,26 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
             notifications: _this4.state.notifications.delete(notification)
           });
         }
-      }), _react2.default.createElement(_reactNoSsr2.default, { onSSR: _react2.default.createElement(_Loading2.default, { isLoading: true }) }, (!this.props.store.isInstall || !this.props.store.isLogin) && _react2.default.createElement(_ChromeInstall2.default, {
+      }), _react2.default.createElement(_reactNoSsr2.default, null, (!this.props.store.isInstall || !this.props.store.isLogin) && _react2.default.createElement(_ChromeInstall2.default, {
         description: description,
         title: 'Unlock Now',
         install: this.inlineInstall
-      })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement(_reactTabs.Tabs, {
+      })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_reactTabs.Tabs, {
         onSelect: this.handleSelect,
         selectedIndex: 0
       }, _react2.default.createElement(_reactTabs.TabList, null, _react2.default.createElement(_reactTabs.Tab, null, 'Your Streams'), _react2.default.createElement(_reactTabs.Tab, null, 'Friend Streams')), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_YourStreams2.default, {
         topics: sortedTopicByUrls,
         activeId: currentTermId,
-        changeTerm: this.props.store.changeTerm,
-        changeFriendStream: this.props.store.changeFriendStream
-      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending' }), _react2.default.createElement(_StreamList2.default, { urls: selectedUrls })), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement('h2', null, 'Hello from Bar'))), _react2.default.createElement(_nealReact.Footer, { brandName: brandName,
+        changeTerm: function changeTerm(termId) {
+          _this4.props.store.currentTermId = termId;
+        }
+      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending' }), _react2.default.createElement('br', null), _react2.default.createElement(_StreamList2.default, { urls: selectedMyStreamUrls })), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_FriendStreams2.default, {
+        friends: friends,
+        activeId: friendStreamId,
+        changeFriendStream: function changeFriendStream(userId) {
+          _this4.props.store.friendStreamId = userId;
+        }
+      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending' }), _react2.default.createElement('br', null), _react2.default.createElement(_StreamList2.default, { urls: selectedFriendStreamUrls })))), _react2.default.createElement(_nealReact.Footer, { brandName: brandName,
         facebookUrl: 'http://www.facebook.com',
         twitterUrl: 'http://www.twitter.com/',
         address: businessAddress
