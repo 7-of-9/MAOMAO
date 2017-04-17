@@ -116,6 +116,14 @@ function sendEvent(event, type, value) {
     chrome.extension.sendMessage(msg);
 }
 
+/**
+ * Send data from CS to BG
+ * @param object payload
+ */
+function dispatchDataToBg(payload) {
+  chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: payload });
+}
+
 // Timers to trigger "stopEvent" for coalescing events.
 var timers = {};
 

@@ -316,7 +316,7 @@ function get_page_metadata(fast_refresh, callback) {
             //log.info(JSON.stringify(page_meta, null, 4));
             //log.trace();
         }
-        chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'NNS_SCORE', payload: { url: remove_hash_url(document.location.href), score: page_meta.nlp_suitability_score, } } });
+        dispatchDataToBg({ type: 'NNS_SCORE', payload: { url: remove_hash_url(document.location.href), score: page_meta.nlp_suitability_score, } });
 
         if (page_meta.nlp_suitability_score <= MIN_NSS) {
             return callback && callback(new Error('Too low NSS!'), page_meta);

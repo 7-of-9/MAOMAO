@@ -46,7 +46,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.5.11',
+        title: 'v0.5.12',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });
