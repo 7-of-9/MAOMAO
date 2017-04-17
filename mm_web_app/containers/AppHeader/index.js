@@ -83,24 +83,30 @@ class AppHeader extends React.Component {
         <Modal
           isOpen={this.state.showModal}
           style={customStyles}
+          onRequestClose={this.onClose}
           contentLabel='Sign In'>
-          <h1>Sign In</h1>
-          <GoogleLogin
-            clientId={GOOGLE_CLIENT_ID}
-            buttonText='LOGIN WITH GOOGLE'
-            onSuccess={this.onGoogleSuccess}
-            onFailure={this.onGoogleFailure}
-        />
-          <br />
-          <FacebookLogin
-            appId={FACEBOOK_APP_ID}
-            autoLoad={false}
-            size='medium'
-            fields='name,email,picture'
-            callback={this.responseFacebook}
-        />
-          <br />
-          <button onClick={this.onClose}>close</button>
+          <div className='container'>
+            <div className='row justify-content-md-center'>
+              <h1 className='display-4'>Join MaoMao Now!</h1>
+            </div>
+            <div className='row justify-content-md-center'>
+              <GoogleLogin
+                clientId={GOOGLE_CLIENT_ID}
+                buttonText='LOGIN WITH GOOGLE'
+                onSuccess={this.onGoogleSuccess}
+                onFailure={this.onGoogleFailure}
+            />
+            </div>
+            <div className='row justify-content-md-center'>
+              <FacebookLogin
+                appId={FACEBOOK_APP_ID}
+                autoLoad={false}
+                size='medium'
+                fields='name,email,picture'
+                callback={this.responseFacebook}
+              />
+            </div>
+          </div>
         </Modal>
       </NavItem>
     )

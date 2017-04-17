@@ -144,18 +144,19 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
       return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
         isOpen: this.state.showModal,
         style: customStyles,
-        contentLabel: 'Sign In' }, _react2.default.createElement('h1', null, 'Sign In'), _react2.default.createElement(_reactGoogleLogin2.default, {
+        onRequestClose: this.onClose,
+        contentLabel: 'Sign In' }, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement('h1', { className: 'display-4' }, 'Join MaoMao Now!')), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
         clientId: _constants.GOOGLE_CLIENT_ID,
         buttonText: 'LOGIN WITH GOOGLE',
         onSuccess: this.onGoogleSuccess,
         onFailure: this.onGoogleFailure
-      }), _react2.default.createElement('br', null), _react2.default.createElement(_reactFacebookLogin2.default, {
+      })), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactFacebookLogin2.default, {
         appId: _constants.FACEBOOK_APP_ID,
         autoLoad: false,
         size: 'medium',
         fields: 'name,email,picture',
         callback: this.responseFacebook
-      }), _react2.default.createElement('br', null), _react2.default.createElement('button', { onClick: this.onClose }, 'close')));
+      })))));
     }
   }]);
 

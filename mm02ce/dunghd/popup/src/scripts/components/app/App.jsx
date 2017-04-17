@@ -70,7 +70,7 @@ const getCurrentTopics = (url, records, terms) => {
   const topics = [];
   if (records.length) {
     const existRecord = records.find(item => item.url === url);
-    if (existRecord) {
+    if (existRecord && existRecord.data.tld_topic_id) {
       topics.push({ id: `${existRecord.data.tld_topic_id}-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
     }
   }

@@ -33,6 +33,8 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _mobxReact = require('mobx-react');
+
 var _reactSticky = require('react-sticky');
 
 var _reactNoSsr = require('react-no-ssr');
@@ -61,11 +63,15 @@ var _LogoIcon2 = _interopRequireDefault(_LogoIcon);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var _dec, _class;
 // import Block from '../../components/Block'
+
+
 var SRRLoading = function SRRLoading() {
-  return _react2.default.createElement('div', { className: 'container-fluid' }, 'Loading...');
+  return _react2.default.createElement('div', null, 'Loading...');
 };
-var Discovery = exports.Discovery = function (_React$Component) {
+
+var Discovery = exports.Discovery = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
   (0, _inherits3.default)(Discovery, _React$Component);
 
   function Discovery() {
@@ -87,6 +93,6 @@ var Discovery = exports.Discovery = function (_React$Component) {
   }]);
 
   return Discovery;
-}(_react2.default.Component);
+}(_react2.default.Component)) || _class) || _class);
 
 exports.default = Discovery;

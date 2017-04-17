@@ -57,6 +57,9 @@ const selectTopics = (topics, type) => {
   if (type === 'site') {
     return 'just this page';
   }
+  if (type === 'all') {
+    return 'My browsing history';
+  }
   const currentTopic = topics.find(item => item.id === type);
   return currentTopic.name;
 };
@@ -115,7 +118,10 @@ const ShareTopicStepOne = compose(({
         onChange={(value) => { changeShareType(type, value, currentStep); }}
       />
       <div className="share-footer">
-        <button className="btn btn-slide-next" onClick={() => changeShareType(type, shareOption, 2)}>
+        <button
+          className="btn btn-slide-next"
+          onClick={() => changeShareType(type, shareOption, 2)}
+        >
           Next
         </button>
       </div>
@@ -137,9 +143,12 @@ const ShareTopicStepTwo = compose(({
         />
       </div>
       <div className="share-footer">
-        <button className="btn btn-slide-prev" onClick={() => changeShareType(type, shareOption, 1)}>
+        <button
+          className="btn btn-slide-prev"
+          onClick={() => changeShareType(type, shareOption, 1)}
+        >
           Previous
-      </button>
+</button>
       </div>
     </div>
   ));
@@ -186,8 +195,12 @@ const ShareTopicStepThree = compose(({
         </div>
       </ToggleDisplay>
       <div className="share-footer">
-        <button className="btn btn-slide-prev" onClick={() => changeShareType(type, shareOption, 1)}>First</button>
-        <button className="btn btn-distance btn-slide-prev" onClick={() => changeShareType(type, shareOption, 2)}>Previous</button>
+        <button
+          className="btn btn-distance btn-slide-prev"
+          onClick={() => changeShareType(type, shareOption, 2)}
+        >
+          Previous
+        </button>
       </div>
     </div>
   ));

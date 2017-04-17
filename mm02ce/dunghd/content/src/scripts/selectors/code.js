@@ -36,7 +36,7 @@ const getShareTopicCodes = createSelector(
       if (exist) {
         const { data: { tld_topic_id, tld_topic } } = exist;
         const findCode = codes.topics.find(item => item && item.id === tld_topic_id);
-        if (findCode) {
+        if (findCode && tld_topic_id) {
           topics[`${tld_topic_id}-${tld_topic}`] = findCode.share_code;
         }
       }

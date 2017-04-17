@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { inject, observer } from 'mobx-react'
 import { StickyContainer, Sticky } from 'react-sticky'
 import NoSSR from 'react-no-ssr'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -9,7 +10,9 @@ import Header from '../../components/Header'
 import SearchBar from '../../components/SearchBar'
 import LogoIcon from '../../components/LogoIcon'
 
-const SRRLoading = () => (<div className='container-fluid'>Loading...</div>)
+const SRRLoading = () => (<div>Loading...</div>)
+
+@inject('store') @observer
 export class Discovery extends React.Component {
   render () {
     let elements = []

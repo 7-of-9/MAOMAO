@@ -29,14 +29,15 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
     <p className="share-topic-title"> Single URL: </p>
     <div className="switch-list">
       <div className="switch-select">
-        <Option value={active === 'site'} onToggle={() => { onChange('site'); }} />
+        <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
         <span className="type-name">just this page</span>
       </div>
     </div>
     <p className="share-topic-title"> Topics (Multiple URLs):</p>
     <div className="switch-list">
       {
-        topics.map(topic =>      
+        topics.map(topic =>
+          topic.id &&
           <div className="switch-select" key={guid()}>
             <Option
               key={guid()}
@@ -49,6 +50,13 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
           </div>,
         )
       }
+    </div>
+    <p className="share-topic-title"> All URLs: </p>
+    <div className="switch-list">
+      <div className="switch-select">
+        <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+        <span className="type-name">My browsing history</span>
+      </div>
     </div>
   </div>,
 );

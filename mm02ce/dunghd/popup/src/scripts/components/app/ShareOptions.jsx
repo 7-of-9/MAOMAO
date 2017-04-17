@@ -2,6 +2,7 @@ import React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 import ToggleButton from 'react-toggle-button'; // https://gdowens.github.io/react-toggle-button/
+import { guid } from './utils';
 
 /* eslint-disable no-confusing-arrow */
 const Option = styled(ToggleButton)`
@@ -28,17 +29,18 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
     <p className="share-topic-title"> Single URL: </p>
     <div className="switch-list">
       <div className="switch-select">
-        <Option value={active === 'site'} onToggle={() => { onChange('site'); }} />
-      <span>just this page</span>
+        <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
+        <span>just this page</span>
       </div>
     </div>
     <p className="share-topic-title"> Topics (Multiple URLs):</p>
     <div className="switch-list mb0">
       {
         topics.map(topic =>
-          <div className="switch-select">
+          topic.id &&
+          <div key={guid()} className="switch-select">
             <Option
-              key={topic.id}
+              key={guid()}
               value={active === topic.id}
               onToggle={() => {
               onChange(topic.id);
@@ -48,6 +50,13 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
           </div>,
         )
       }
+    </div>
+    <p className="share-topic-title"> All URLs: </p>
+    <div className="switch-list">
+      <div className="switch-select">
+        <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+        <span>My browsing history</span>
+      </div>
     </div>
   </div>,
 );
