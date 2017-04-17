@@ -170,15 +170,6 @@ const ShareTopicStepThree = compose(({
             handleChange={handleChange}
           />
         </div>
-        <div className="share-now">
-          <button
-            style={style.button}
-            className="share-button"
-            onClick={sendEmails}
-          >
-            Share Now !
-          </button>
-        </div>
       </ToggleDisplay>
       <ToggleDisplay className="link-share-option" show={type === 'Link'}>
         <div className="input-group">
@@ -196,11 +187,20 @@ const ShareTopicStepThree = compose(({
       </ToggleDisplay>
       <div className="share-footer">
         <button
-          className="btn btn-distance btn-slide-prev"
+          className="btn btn-slide-prev"
           onClick={() => changeShareType(type, shareOption, 2)}
         >
           Previous
         </button>
+        <div className="share-now">
+          <button
+            style={style.button}
+            className="share-button"
+            onClick={sendEmails}
+          >
+            Share Now !
+          </button>
+        </div>
       </div>
     </div>
   ));

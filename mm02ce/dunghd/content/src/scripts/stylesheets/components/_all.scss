@@ -1250,14 +1250,20 @@ fieldset[disabled] .btn-logout.focus {
 .share-footer {
   @include clearfix();
   padding-top: 10px;
+  .share-now{
+    float: right;
+    .share-button{
+      padding: 8px 12px;
+      margin-top: 0;
+      min-width: 100px;
+      text-align: center;
+    }
+  }
   .btn-slide-next {
     float: right;
   }
   .btn-slide-prev {
     float: left;
-  }
-  .btn-distance {
-    margin-left: 12px;
   }
   .btn-slide-next,
   .btn-slide-prev {
@@ -1294,8 +1300,6 @@ fieldset[disabled] .btn-logout.focus {
     border-radius: 4px;
   }
   .react-autosuggest__suggestions-container {
-    top: auto;
-    bottom: 100%;
     z-index: 99999999999;
     max-height: 248px;
     overflow-y: auto;
