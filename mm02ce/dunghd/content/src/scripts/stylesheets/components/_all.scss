@@ -938,7 +938,7 @@ fieldset[disabled] a.btn {
   &:focus,
   &:active,
   &.active {
-    color: #fff;
+    color: #fff !important;
     background: #30487b;
     border-color: rgba(0, 0, 0, 0.2)
   }
@@ -962,16 +962,6 @@ fieldset[disabled] a.btn {
   }
 }
 
-.open .dropdown-toggle.btn-facebook {
-  color: #fff;
-  background: #30487b;
-  border-color: rgba(0, 0, 0, 0.2)
-}
-
-.open .dropdown-toggle.btn-facebook {
-  background-image: none
-}
-
 fieldset[disabled] .btn-facebook,
 fieldset[disabled] .btn-facebook:hover,
 fieldset[disabled] .btn-facebook:focus,
@@ -982,14 +972,14 @@ fieldset[disabled] .btn-facebook.active {
 }
 
 .btn-google-plus {
-  color: #fff;
+  color: #fff !important;
   background: #dd4b39;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
   &:focus,
   &:active,
   &.active {
-    color: #fff;
+    color: #fff !important;
     background: #ca3523;
     border-color: rgba(0, 0, 0, 0.2)
   }
@@ -1011,16 +1001,6 @@ fieldset[disabled] .btn-facebook.active {
     background: #dd4b39;
     border-color: rgba(0, 0, 0, 0.2)
   }
-}
-
-.open .dropdown-toggle.btn-google-plus {
-  color: #fff;
-  background: #ca3523;
-  border-color: rgba(0, 0, 0, 0.2)
-}
-
-.open .dropdown-toggle.btn-google-plus {
-  background-image: none
 }
 
 fieldset[disabled] .btn-google-plus,
