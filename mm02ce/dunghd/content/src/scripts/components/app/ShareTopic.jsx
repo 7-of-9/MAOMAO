@@ -1,5 +1,5 @@
 import React from 'react';
-import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
+import { onlyUpdateForKeys, withState, withHandlers, compose, pure } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -108,7 +108,7 @@ const enhance = compose(
   onlyUpdateForKeys(['contacts', 'currentStep', 'code', 'type', 'shareOption']),
 );
 
-const ShareTopicStepOne = compose(({
+const ShareTopicStepOne = compose(pure(({
    type, shareOption, currentStep, topics, changeShareType,
   }) => (
     <div>
@@ -126,9 +126,9 @@ const ShareTopicStepOne = compose(({
         </button>
       </div>
     </div>
-  ));
+  )));
 
-const ShareTopicStepTwo = compose(({
+const ShareTopicStepTwo = compose(pure(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
     <div className="share-social">
@@ -151,18 +151,18 @@ const ShareTopicStepTwo = compose(({
 </button>
       </div>
     </div>
-  ));
+  )));
 
-const ShareTopicStepThree = compose(({
+const ShareTopicStepThree = compose(pure(({
   type, contacts, code, shareOption,
   accessGoogleContacts, handleChange, sendEmails, changeShareType }) => (
     <div>
-      <ToggleDisplay className="link-share-option" if={type === 'Google' && contacts.length === 0}>
+      <ToggleDisplay className="link-share-option" show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
         <button className="btn-copy" onClick={accessGoogleContacts}> here </button>
         to grant permissions to access google contacts.
       </ToggleDisplay>
-      <ToggleDisplay if={type === 'Google' && contacts.length > 0}>
+      <ToggleDisplay show={type === 'Google' && contacts.length > 0}>
         <div className="panel-account">
           <GoogleShare
             mostRecentUses={contacts.slice(0, 3)}
@@ -180,7 +180,7 @@ const ShareTopicStepThree = compose(({
           </button>
         </div>
       </ToggleDisplay>
-      <ToggleDisplay className="link-share-option" if={type === 'Link'}>
+      <ToggleDisplay className="link-share-option" show={type === 'Link'}>
         <div className="input-group">
           <input
             className="form-control"
@@ -203,7 +203,7 @@ const ShareTopicStepThree = compose(({
         </button>
       </div>
     </div>
-  ));
+  )));
 
 const ShareTopic = enhance(({
    enable, type, topics, contacts, code, shareOption, currentStep,

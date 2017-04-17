@@ -166,9 +166,9 @@ class Home extends React.Component {
       if (currentStream) {
         const list = currentStream.list.slice()
         logger.warn('list', list)
-        selectedFriendStreamUrls = _.uniq(list.map((item) => item && item.urls))
+        const friendUrls = list.map((item) => item && item.urls)
+        selectedFriendStreamUrls = _.uniq(_.flatten(friendUrls.map(item => item.slice())))
         logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls)
-        selectedFriendStreamUrls = selectedFriendStreamUrls[0].slice()
       }
     }
     logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
@@ -216,7 +216,7 @@ class Home extends React.Component {
           <div className='container'>
             <Tabs
               onSelect={this.handleSelect}
-              selectedIndex={0}
+              selectedIndex={this.props.store.shareInfo ? 1: 0}
               >
               <TabList>
                 <Tab>Your Streams</Tab>

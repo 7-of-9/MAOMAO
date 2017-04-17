@@ -297,11 +297,13 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
         if (currentStream) {
           var list = currentStream.list.slice();
           logger.warn('list', list);
-          selectedFriendStreamUrls = _lodash2.default.uniq(list.map(function (item) {
+          var friendUrls = list.map(function (item) {
             return item && item.urls;
-          }));
+          });
+          selectedFriendStreamUrls = _lodash2.default.uniq(_lodash2.default.flatten(friendUrls.map(function (item) {
+            return item.slice();
+          })));
           logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls);
-          selectedFriendStreamUrls = selectedFriendStreamUrls[0].slice();
         }
       }
       logger.warn('selectedMyStreamUrls', selectedMyStreamUrls);
@@ -319,7 +321,7 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
         install: this.inlineInstall
       })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_reactTabs.Tabs, {
         onSelect: this.handleSelect,
-        selectedIndex: 0
+        selectedIndex: this.props.store.shareInfo ? 1 : 0
       }, _react2.default.createElement(_reactTabs.TabList, null, _react2.default.createElement(_reactTabs.Tab, null, 'Your Streams'), _react2.default.createElement(_reactTabs.Tab, null, 'Friend Streams')), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_YourStreams2.default, {
         topics: sortedTopicByUrls,
         activeId: currentTermId,

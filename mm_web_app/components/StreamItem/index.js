@@ -23,7 +23,7 @@ function StreamItem ({ url, maxScore }) {
       <a href={href} target='_blank'>
         <img style={{ maxWidth: '400px', maxHeight: '400px' }} src={img || '/static/images/no-image.png'} alt={title} />
       </a>
-      <div class='media-body'>
+      <div className='media-body'>
         <a href={href} target='_blank'>
           <h4 className='mt-0'>{title} ({id})</h4>
         </a>

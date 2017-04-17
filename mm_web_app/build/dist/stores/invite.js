@@ -109,6 +109,7 @@ var InviteStore = (_class = function (_HomeStore) {
         return _this2.acceptInviteResult.state !== 'pending';
       }, function () {
         _this2.inviteResult = _this2.acceptInviteResult.value;
+        _this2.getUserHistory();
         logger.warn('inviteResult', _this2.inviteResult);
       });
     }

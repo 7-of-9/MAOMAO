@@ -18,6 +18,7 @@ class InviteStore extends HomeStore {
       () => this.acceptInviteResult.state !== 'pending',
       () => {
         this.inviteResult = this.acceptInviteResult.value
+        this.getUserHistory()
         logger.warn('inviteResult', this.inviteResult)
       }
     )
