@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-import { compose, onlyUpdateForKeys, withHandlers } from 'recompose';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { compose, withHandlers } from 'recompose';
 import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
@@ -629,7 +630,6 @@ const enhance = compose(
      });
    },
  }),
-  onlyUpdateForKeys(['auth', 'isOpen']),
 );
 
 const mapStateToProps = state => ({

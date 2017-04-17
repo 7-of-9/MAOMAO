@@ -11,7 +11,7 @@ const initialState = {
 export default (nlp = initialState, action, auth) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
-      return initialState;
+      return Object.assign({}, initialState);
     case 'NLP_TERMS':
     case 'NLP_INFO_KNOWN': {
         const url = action.payload.url;

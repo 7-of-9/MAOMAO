@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
 import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
 import $ from 'jquery';

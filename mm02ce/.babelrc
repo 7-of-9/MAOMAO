@@ -7,7 +7,8 @@
   "plugins": [
     "transform-react-jsx-source",
     "transform-inline-environment-variables",
-    "transform-decorators-legacy"
+    "transform-decorators-legacy",
+    ["lodash", { "id": ["lodash", "recompose"] }]
   ],
   "env": {
     "development": {

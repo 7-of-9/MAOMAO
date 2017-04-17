@@ -1,5 +1,5 @@
 import React from 'react';
-import { onlyUpdateForKeys, withState, withHandlers, compose, pure } from 'recompose';
+import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -108,7 +108,7 @@ const enhance = compose(
   onlyUpdateForKeys(['contacts', 'currentStep', 'code', 'type', 'shareOption']),
 );
 
-const ShareTopicStepOne = compose(pure(({
+const ShareTopicStepOne = compose(({
    type, shareOption, currentStep, topics, changeShareType,
   }) => (
     <div>
@@ -126,9 +126,9 @@ const ShareTopicStepOne = compose(pure(({
         </button>
       </div>
     </div>
-  )));
+  ));
 
-const ShareTopicStepTwo = compose(pure(({
+const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
     <div className="share-social">
@@ -151,9 +151,9 @@ const ShareTopicStepTwo = compose(pure(({
 </button>
       </div>
     </div>
-  )));
+  ));
 
-const ShareTopicStepThree = compose(pure(({
+const ShareTopicStepThree = compose(({
   type, contacts, code, shareOption,
   accessGoogleContacts, handleChange, sendEmails, changeShareType }) => (
     <div>
@@ -203,7 +203,7 @@ const ShareTopicStepThree = compose(pure(({
         </button>
       </div>
     </div>
-  )));
+  ));
 
 const ShareTopic = enhance(({
    enable, type, topics, contacts, code, shareOption, currentStep,

@@ -310,7 +310,7 @@ function calais_process(nlp) {
   //}
 
   // send NLP result to background
-  chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_RESULT', payload: { url: remove_hash_url(nlp.url.href), nlp: nlp, page_meta: page_meta, } } });
+  chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'NLP_RESULT', payload: { url: remove_hash_url(nlp.url.href), nlp: nlp, page_meta: page_meta, } } });
   return nlp;
 }
 
@@ -401,8 +401,8 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
       ajax_put_UrlNlpInfoCalais(user_id, hash, nlp, function (data) {
 
         cslib_info("%c ]] ajax_put_UrlNlpInfoCalais: " + JSON.stringify(data), "color:green; font-weight:bold;");
-        chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_TERMS', payload: { url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } } });
-        chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'GENERATE_SHARE_TOPICS', payload: { url: remove_hash_url(document.location.href), topics: data.topics } } });
+        chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'NLP_TERMS', payload: { url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } } });
+        chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'GENERATE_SHARE_TOPICS', payload: { url: remove_hash_url(document.location.href), topics: data.topics } } });
         // TEST MODE: hit next button - or reseed if not english
         if (document.getElementById('maomao-extension-youtube-test')) {
           if (content_lang != "http://d.opencalais.com/lid/DefaultLangId/English") {
@@ -414,7 +414,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
           log.info("Disable youtube test");
         }
       }, function (error) {
-        chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'NLP_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } } });
+        chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'NLP_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } } });
       });
 
       // post-process nlp data -- // this then becomes the reference output for the server
@@ -422,7 +422,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
     },
     error: function (jqXHR, status) {
       StackTrace.fromError(jqXHR).then(cslib_errorStack).catch(cslib_errBack);
-      chrome.extension.sendMessage({ type: 'chromex.dispatch', payload: { type: 'API_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), jqXHR: jqXHR, status: status } } });
+      chrome.extension.sendMessage({ type: 'chromex.dispatch', portName: 'maomao-extension', payload: { type: 'API_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), jqXHR: jqXHR, status: status } } });
       if (jqXHR.status == 429) {
         // TODO: handle
         //Object {readyState: 4, responseText: "You exceeded the concurrent request limit for your…later or contact support to upgrade your license.", status: 429, statusText: "Too Many Requests"}

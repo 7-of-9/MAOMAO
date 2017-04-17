@@ -13,7 +13,7 @@ const initialState = {
 export default (score = initialState, action) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
-      return initialState;
+      return Object.assign({}, initialState);
     case 'IM_ALLOWABLE':
       return Object.assign({}, score, action.payload);
     case 'IM_SAVE_ERROR': {

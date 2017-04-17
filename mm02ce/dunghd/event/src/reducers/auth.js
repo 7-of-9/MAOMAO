@@ -13,7 +13,6 @@ const initialState = {
   googleUserId: '',
   facebookUserId: '',
   contacts: [],
-  downloadPhotos: [],
   accounts: [],
 };
 
@@ -22,13 +21,12 @@ export default (state = initialState, action, nlp) => {
     case 'ACCOUNT_CONNECT': {
       return Object.assign({}, state, action.payload);
     }
-    case 'PHOTO_NO_IMAGE':
-    case 'PHOTO_IMAGE': {
-      const downloadPhotos = state.downloadPhotos.concat(action.payload);
-      return Object.assign({}, state, { downloadPhotos });
-    }
     case 'DOWNLOAD_PHOTO_DONE': {
-      return Object.assign({}, state, { downloadPhotos: [], contacts: state.downloadPhotos });
+      const contacts = [];
+      state.contacts.forEach((contact) => {
+        contacts.push(action.payload.photos.find(item => item.email === contact.email));
+      });
+      return Object.assign({}, state, { contacts });
     }
     case 'AUTO_LOGIN': {
       window.userId = state.userId;
@@ -98,7 +96,7 @@ export default (state = initialState, action, nlp) => {
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();
       // TODO: clear all sessions on bg and tracking tab
-      return initialState;
+      return Object.assign({}, initialState);
     case 'LOGOUT_REJECTED':
       return Object.assign({}, state, {
         message: action.payload.error.message,

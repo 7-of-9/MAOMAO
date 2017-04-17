@@ -137,11 +137,8 @@ export default (state = initialState, action, auth, nlp) => {
 
     case 'LOGOUT_FULFILLED': {
       const url = window.sessionObservable.activeUrl;
-      const urls = changeIconUrl(state.urls, url, 'gray', '');
       window.setIconApp(url, 'gray', '', window.BG_INACTIVE_COLOR);
-      return Object.assign({}, state, {
-        urls,
-      });
+      return Object.assign({}, initialState);
     }
 
     case 'AUTH_FULFILLED': {

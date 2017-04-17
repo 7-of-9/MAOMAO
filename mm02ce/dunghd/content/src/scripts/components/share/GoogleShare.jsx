@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Fuse from 'fuse.js';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
@@ -173,7 +174,7 @@ const enhance = compose(
       }
     },
   }),
-  onlyUpdateForKeys(['value', 'contacts', 'mostRecentUses', 'suggestions']),
+  onlyUpdateForKeys(['value', 'contacts', 'suggestions']),
 );
 
 export default enhance(GoogleShare);

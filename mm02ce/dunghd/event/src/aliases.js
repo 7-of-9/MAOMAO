@@ -74,20 +74,21 @@ function base64ImageFromUrl(url, callback) {
 }
 
 function downloadPhoto(dispatch, contacts) {
+  const photos = [];
   contacts.forEach((contact) => {
     if (contact.image && contact.image.indexOf('http') !== -1) {
       throttle(() => {
         base64ImageFromUrl(contact.image, (err, base64Image) => {
           if (err) {
-            dispatch(actionCreator('PHOTO_NO_IMAGE', {
+            photos.push({
               ...contact,
               image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAAKlBMVEXMzMz////8/Pza2trQ0NDf39/29vbW1tbp6ens7Ozy8vL5+fni4uLm5uZ/0ezOAAAB3UlEQVRo3u2XvUoDURCFE4y6MRY5GzbEoMWCIAhCbAStRFAsk9Y0Bn2A4BNswAeI2FoYxT4g6bW01CeysNAku7Mz99jlfv0c7s+cuecWPB6PZ0FY/XgCsPvQd6w/jPFDeO9SXuril8mxXeALf9kz1x9gmitjfYBZEtsB9DBL3XQMN5hnx9IAMeYJ+6YFUEsoxUgjVJ/CCtK51AoMkE5DWb+ELFrqHXB7+EQWW4Y7IO5hGdm0NQIVQWCsEdgXBGoagTtBYEMjEAsCocaJkFA4ch0Sb/kCZUgM8wXWIPGYL1CERNULLIgA0UhEK7Nm4u3MDxR+pPFDlR/r/MPCP23848o/73zA4CMOH7L4mMcHTT7q8mGbj/v8h6NwOsI0r44/PsDp63eBFF709V2kMtHWHyGDZ139OTK5VZk5FqZ6S9FCAwg08rvpDCLXRhvZHdVBDpHiTZBpcwsAInIB8hI6UBCps4U9ZJxAxbY4x2Tk4RZASSJEExU15XtkjQkB1CTCDog9jKCmKbaxaztXYGAs+cDVDyMYaGqTlSFulWFiKDjR0ZEdmIhUvwTTxwFGxEtwuYYARhJlulUH9yKMVOVhYB8J7zCyKXwRVDRkL9r92IOROtmIgBfwAv8owLfyN0kjHr6c7ddbAAAAAElFTkSuQmCC',
-            }));
+            });
           } else {
-            dispatch(actionCreator('PHOTO_IMAGE', {
+            photos.push({
               ...contact,
               image: base64Image,
-            }));
+            });
           }
         });
       });
@@ -95,7 +96,8 @@ function downloadPhoto(dispatch, contacts) {
   });
   throttle(() => {
         setTimeout(() => {
-          dispatch(actionCreator('DOWNLOAD_PHOTO_DONE', {}));
+          // TODO: Update store
+          dispatch(actionCreator('DOWNLOAD_PHOTO_DONE', { photos }));
         }, 1000);
     });
 }

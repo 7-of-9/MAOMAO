@@ -47,6 +47,14 @@
       "run_at": "document_end"
     }
   ],
+  "externally_connectable": {
+    "ids": [
+      "*"
+    ],
+    "matches": [
+      "https://maomaoweb.azurewebsites.net/*"
+    ]
+  },
   "browser_action": {
     "default_title": "Maomao - Share this",
     "default_icon": "img/icon.png",

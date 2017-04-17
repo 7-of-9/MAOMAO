@@ -3,7 +3,7 @@ const initialState = [];
 export default (shareOnUrls = initialState, action) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
-      return initialState;
+      return Object.assign({}, initialState);
     case 'OPEN_SHARE_MODAL': {
       const url = action.payload.url;
       let urls = [];

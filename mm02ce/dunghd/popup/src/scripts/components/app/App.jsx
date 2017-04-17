@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
 import * as logger from 'loglevel';
@@ -50,6 +51,7 @@ const defaultProps = {
 };
 
 const isRunable = (url, icon) => {
+  logger.warn('isRunable url, icon', url, icon);
   const curentIcon = icon.urls.find(item => item.url === url);
   if ((curentIcon && curentIcon.text.length === 0) || (curentIcon && curentIcon.text.indexOf('!') !== -1)) {
     return false;
@@ -58,6 +60,7 @@ const isRunable = (url, icon) => {
 };
 
 const isAllowToShare = (url, records) => {
+  logger.warn('isAllowToShare url, records', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -67,6 +70,7 @@ const isAllowToShare = (url, records) => {
 };
 
 const getCurrentTopics = (url, records, terms) => {
+  logger.warn('getCurrentTopics url, records, terms', url, records, terms);
   const topics = [];
   if (records.length) {
     const existRecord = records.find(item => item.url === url);
@@ -109,6 +113,7 @@ const getShareTopicCode = (code, key) => {
 };
 
 const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
+  logger.warn('render auth, nlp, url, icon, shareOption', auth, nlp, url, icon, shareOption);
   if (!url) {
     return (
       <div className="popup-browser">

@@ -8,7 +8,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'LOGOUT_FULFILLED':
-      return initialState;
+      return Object.assign({}, initialState);
     case 'SHARE_ALL_SUCCESS': {
       return Object.assign({}, state, { all: action.payload });
     }
