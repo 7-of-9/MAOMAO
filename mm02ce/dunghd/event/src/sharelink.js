@@ -23,3 +23,11 @@ export function shareTheTopic(userId, userHash, topicId) {
     url: `${config.apiUrl}/share/create?user_id=${userId}&hash=${userHash}&topic_id=${topicId}`,
   });
 }
+
+export function fbScrapeShareUrl(code) {
+  // https://graph.facebook.com?scrape=true&id=http://www.maomao.rocks/
+  return axios({
+    method: 'post',
+    url: `https://graph.facebook.com?scrape=true&id=${config.siteUrl}/${code}`,
+  });
+}

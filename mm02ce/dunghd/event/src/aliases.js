@@ -4,7 +4,7 @@ import { batchActions } from 'redux-batched-actions';
 import * as logger from 'loglevel';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
-import { shareAll, shareThisSite, shareTheTopic } from './sharelink';
+import { shareAll, shareThisSite, shareTheTopic, fbScrapeShareUrl } from './sharelink';
 import { actionCreator, notifyMsg } from './utils';
 
 const throttledQueue = require('throttled-queue');
@@ -221,6 +221,8 @@ const generateShare = data => (
     if (!findTopicCode && tld_topic_id) {
       shareTheTopic(userId, userHash, tld_topic_id)
           .then((result) => {
+            const { share_code } = result.data;
+            fbScrapeShareUrl(share_code);
             dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: tld_topic_id, name: tld_topic }));
           }).catch((error) => {
             dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
@@ -230,6 +232,8 @@ const generateShare = data => (
     if (!findUrlCode && url_id) {
     shareThisSite(userId, userHash, url_id)
         .then((result) => {
+          const { share_code } = result.data;
+          fbScrapeShareUrl(share_code);
           dispatch(actionCreator('SHARE_URL_SUCCESS', { ...result.data, url_id }));
         }).catch((error) => {
           dispatch(actionCreator('SHARE_URL_ERROR', { error }));
@@ -249,6 +253,8 @@ const generateShareTopics = data => (
         if (!findTopicCode) {
           shareTheTopic(userId, userHash, term_id)
               .then((result) => {
+                const { share_code } = result.data;
+                fbScrapeShareUrl(share_code);
                 dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: term_id, name: term_name }));
               }).catch((error) => {
                 dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
@@ -265,6 +271,8 @@ const generateShareAll = data => (
     const { auth: { userHash } } = getState();
     shareAll(userId, userHash)
         .then((result) => {
+          const { share_code } = result.data;
+          fbScrapeShareUrl(share_code);
           dispatch(actionCreator('SHARE_ALL_SUCCESS', result.data));
         }).catch((error) => {
           dispatch(actionCreator('SHARE_ALL_ERROR', { error }));

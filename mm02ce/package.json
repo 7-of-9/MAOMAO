@@ -16,6 +16,7 @@
     "bluebird": "^3.5.0",
     "blueimp-md5": "^2.7.0",
     "core-decorators": "^0.15.0",
+    "create-react-class": "^15.5.2",
     "dotenv": "^4.0.0",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.10.1",
