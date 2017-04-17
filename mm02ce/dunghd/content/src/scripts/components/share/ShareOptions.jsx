@@ -32,7 +32,12 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
         <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
         <span className="type-name">just this page</span>
       </div>
+      <div className="checkbox__styled">
+        <input className="checkbox__styled__input" id="checkbox-list-1" type="checkbox" name="checkbox" value="1" />
+        <label className="checkbox__styled__label" for="checkbox-list-1">just this page</label>
+      </div>
     </div>
+
     <p className="share-topic-title"> Topics (Multiple URLs):</p>
     <div className="switch-list">
       {
