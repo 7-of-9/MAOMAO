@@ -149,7 +149,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             <a href="#home"><span className="maomao-logo" /> maomao</a>
           </h3>
           <div className="popup-content">
-            <p className="paragraph-share">Maomao is off on this url!</p>
+            <p className="paragraph-share">Maomao is off on this url !</p>
           </div>
         </div>
       );
@@ -210,7 +210,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
               not ready to sharing. Please wait in a few
               <br />
               mins for processing<br />
-              this site!
+              this site !
             </p>
           </div>
         </div>
