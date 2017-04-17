@@ -10,6 +10,7 @@ namespace mm_svc
 {
     public static class ShareCreator
     {
+        const int MAX_RETRY = 5;
         //
         // todo -- add "url_channel_id" (nvarchar) to [share]
         //  >> to allow sharing of ONE specific YT channel (gets put into share.url_channel_id and into url.channel_id by RecordUrl) <<
@@ -39,7 +40,7 @@ again:
                 var share_code = NewShareCode();
                 if (db.shares.Any(p => p.share_code == share_code)) {
                     g.LogLine("### share_code already used! what are the odds?!");
-                    if (++trycount < 3)
+                    if (++trycount < MAX_RETRY)
                         goto again;
                     else throw new ApplicationException("buy lottery tickets...");
                 }
@@ -62,14 +63,16 @@ again:
 
         public static string NewShareCode()
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[10];
-            var rnd = new Random();
-            for (int i = 0; i < stringChars.Length; i++) {
-                stringChars[i] = chars[rnd.Next(chars.Length)];
-            }
-            var finalString = new String(stringChars);
-            return finalString;
+            // var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            // var stringChars = new char[10];
+            // var rnd = new Random();
+            // for (int i = 0; i < stringChars.Length; i++) {
+            //     stringChars[i] = chars[rnd.Next(chars.Length)];
+            // }
+            // var finalString = new String(stringChars);
+            // return finalString;
+            // Reference: https://www.codeproject.com/Articles/14403/Generating-Unique-Keys-in-Net
+           return Guid.NewGuid().ToString().GetHashCode().ToString("x");
         }
     }
 }

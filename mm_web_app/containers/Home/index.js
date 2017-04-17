@@ -216,7 +216,7 @@ class Home extends React.Component {
           <div className='container'>
             <Tabs
               onSelect={this.handleSelect}
-              selectedIndex={this.props.store.shareInfo ? 1: 0}
+              selectedIndex={this.props.store.shareInfo ? 1 : 0}
               >
               <TabList>
                 <Tab>Your Streams</Tab>
