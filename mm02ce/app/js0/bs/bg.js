@@ -188,8 +188,6 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   var session;
 
   if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
-    isGuest = false;
-    userId = parseInt(message.payload.payload.userId);
     session = session_get_by_tab(sender.tab, true);
     session_add_view_instance(session);
   }

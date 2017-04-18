@@ -59,6 +59,8 @@ export default (state = initialState, action, nlp) => {
         isLogin: true,
       });
     case 'USER_AFTER_LOGIN':
+        window.userId = action.payload.userId;
+        window.isGuest = false;
       return Object.assign({}, state, action.payload);
     case 'USER_HASH':
       window.userHash = md5hash(action.payload.userHash);

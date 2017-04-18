@@ -116,7 +116,7 @@ class Home extends React.Component {
       window.close()
     }
     setTimeout(() => {
-      this.props.store.checkInstallAndAuth()
+      this.props.store.checkInstall()
     }, 100)
   }
   render () {

@@ -223,7 +223,7 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
         window.close();
       }
       setTimeout(function () {
-        _this3.props.store.checkInstallAndAuth();
+        _this3.props.store.checkInstall();
       }, 100);
     }
   }, {

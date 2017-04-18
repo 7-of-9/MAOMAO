@@ -105,7 +105,7 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
       var _this2 = this;
 
       logger.warn('componentDidMount - Sending data to extension');
-      (0, _chrome.sendMsgToChromeExtension)({ type: 'WEB_CHECK_AUTH' }, function (error, data) {
+      (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('WEB_CHECK_AUTH', {}), function (error, data) {
         if (error) {
           logger.warn(error);
         } else {
@@ -163,6 +163,7 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
         onRequestClose: this.onClose,
         contentLabel: 'Sign In' }, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement('h1', { className: 'display-4' }, 'Join MaoMao Now!')), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
         clientId: _constants.GOOGLE_CLIENT_ID,
+        scope: 'profile email https://www.googleapis.com/auth/contacts.readonly',
         buttonText: 'LOGIN WITH GOOGLE',
         onSuccess: this.onGoogleSuccess,
         onFailure: this.onGoogleFailure

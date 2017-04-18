@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.hasInstalledExtension = hasInstalledExtension;
 exports.sendMsgToChromeExtension = sendMsgToChromeExtension;
+exports.actionCreator = actionCreator;
 
 var _loglevel = require('loglevel');
 
@@ -19,11 +20,20 @@ function hasInstalledExtension() {
   return document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
 }
 
-function sendMsgToChromeExtension(payload, callback) {
+function sendMsgToChromeExtension(payload) {
+  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+
   chrome.runtime.sendMessage(_constants.EXTENSION_ID, { type: 'chromex.dispatch', portName: 'maomao-extension', payload: payload }, function (response) {
-    logger.warn('response from extension', response);
+    logger.warn('response from extension', payload, response);
     if (callback) {
       callback(response.error, response.value);
     }
   });
+}
+
+function actionCreator(type, payload) {
+  return {
+    type: type,
+    payload: payload
+  };
 }

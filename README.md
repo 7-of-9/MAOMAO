@@ -27,8 +27,11 @@
 * [NextJs](https://github.com/zeit/next.js): Framework for server-rendered React apps
 * [Mobx](https://mobx.js.org/): MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP)
 * [Bootstrap v4 beta](https://v4-alpha.getbootstrap.com/)
-## API
-* DotNet Server
+## API & Core
+* [EntityFramework](https://docs.microsoft.com/ef/): Entity Framework is an object-relational mapper (O/RM) that enables .NET developers to work with a database using .NET objects. It eliminates the need for most of the data-access code that developers usually need to write.
+* [SQL Server](https://www.microsoft.com/en-us/sql-server/)
+* [WebAPI](https://www.asp.net/web-api): ASP.NET Web API is a framework that makes it easy to build HTTP services that reach a broad range of clients, including browsers and mobile devices. ASP.NET Web API is an ideal platform for building RESTful applications on the .NET Framework.
+* WinForms, C#
 * [Stdlib](http://stdlib.com): StdLib is the easiest way to create, distribute and discover web services. Ship products and build your API business faster than ever before using cutting edge "server-less" technology.
 
 # Troubleshooting

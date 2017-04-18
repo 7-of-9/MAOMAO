@@ -34,8 +34,6 @@ var logger = _interopRequireWildcard(_loglevel);
 
 var _user = require('../services/user');
 
-var _simpleAuth = require('../utils/simpleAuth');
-
 var _chrome = require('../utils/chrome');
 
 var _hash = require('../utils/hash');
@@ -124,41 +122,20 @@ var HomeStore = exports.HomeStore = (_class = function () {
 
     this.isLogin = isLogin;
     this.isInstall = isInstall;
-    (0, _mobx.autorun)(function () {
-      if (_this.isInstall) {
-        logger.warn('User is ready');
+    (0, _mobx.reaction)(function () {
+      return _this.userHash.length;
+    }, function (userHash) {
+      if (userHash > 0) {
+        logger.warn('yeah...');
+        _this.getUserHistory();
+        _this.acceptInviteCode();
       }
-      if (_this.isLogin) {
-        logger.warn('User has logged in');
-      }
-    });
-    (0, _mobx.when)(function () {
-      return _this.isInstall && _this.userId > 0 && _this.userHash.length > 0;
-    }, function () {
-      logger.warn('yeah...');
-      _this.getUserHistory();
-      _this.acceptInviteCode();
     });
   }
 
   (0, _createClass3.default)(HomeStore, [{
-    key: 'checkInstallAndAuth',
-    value: function checkInstallAndAuth() {
-      var _this2 = this;
-
-      (0, _simpleAuth.userId)().then(function (id) {
-        _this2.userId = id;
-        logger.warn('userId', _this2.userId);
-        if (id > 0) {
-          _this2.isLogin = true;
-        } else {
-          _this2.isLogin = false;
-        }
-      });
-      (0, _simpleAuth.userHash)().then(function (hash) {
-        _this2.userHash = hash;
-        logger.warn('userHash', _this2.userHash);
-      });
+    key: 'checkInstall',
+    value: function checkInstall() {
       logger.warn('hasInstalledExtension', (0, _chrome.hasInstalledExtension)());
       this.isInstall = (0, _chrome.hasInstalledExtension)();
     }
@@ -170,53 +147,86 @@ var HomeStore = exports.HomeStore = (_class = function () {
   }, {
     key: 'googleConnect',
     value: function googleConnect(info) {
-      var _this3 = this;
+      var _this2 = this;
 
       this.googleConnectResult = (0, _user.loginWithGoogle)(info);
       (0, _mobx.when)(function () {
-        return _this3.googleConnectResult.state !== 'pending';
+        return _this2.googleConnectResult.state !== 'pending';
       }, function () {
-        var data = _this3.googleConnectResult.value.data;
+        var data = _this2.googleConnectResult.value.data;
 
         var userHash = (0, _hash.md5hash)(info.googleId);
-        (0, _simpleAuth.login)(data.id, data.email, userHash);
-        _this3.userId = data.id;
-        _this3.userHash = userHash;
-        _this3.isLogin = true;
-        _this3.googleUser = (0, _assign2.default)({}, data, { userHash: userHash });
+        _this2.isLogin = true;
+        _this2.userId = data.id;
+        _this2.userHash = userHash;
+        _this2.googleUser = (0, _assign2.default)({}, data, { userHash: userHash }, {
+          name: info.profileObj.name,
+          email: info.profileObj.email || data.email,
+          picture: info.profileObj.imageUrl
+        });
+        // send data to chrome extension
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.googleId }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
+          googleUserId: info.googleId,
+          googleToken: info.accessToken,
+          info: {
+            name: info.profileObj.name,
+            email: info.profileObj.email || data.email,
+            picture: info.profileObj.imageUrl
+          }
+        }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('FETCH_CONTACTS', {}));
       });
     }
   }, {
     key: 'facebookConnect',
     value: function facebookConnect(info) {
-      var _this4 = this;
+      var _this3 = this;
 
       this.facebookConnectResult = (0, _user.loginWithFacebook)(info);
       (0, _mobx.when)(function () {
-        return _this4.facebookConnectResult.state !== 'pending';
+        return _this3.facebookConnectResult.state !== 'pending';
       }, function () {
-        var data = _this4.facebookConnectResult.value.data;
+        var data = _this3.facebookConnectResult.value.data;
 
         var userHash = (0, _hash.md5hash)(info.userID);
-        (0, _simpleAuth.login)(data.id, data.email, userHash);
-        _this4.userId = data.id;
-        _this4.userHash = userHash;
-        _this4.isLogin = true;
-        _this4.facebookUser = (0, _assign2.default)({}, data, { userHash: userHash });
+        _this3.userId = data.id;
+        _this3.userHash = userHash;
+        _this3.isLogin = true;
+        _this3.facebookUser = (0, _assign2.default)({}, data, { userHash: userHash }, {
+          name: info.name,
+          email: info.email || data.email,
+          picture: info.picture.data.url
+        });
+        // send data to chrome extension
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.userID }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
+          facebookUserId: info.userID,
+          facebookToken: info.accessToken,
+          info: {
+            name: info.name,
+            email: info.email || data.email,
+            picture: info.picture.data.url
+          }
+        }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
       });
     }
   }, {
     key: 'getUserHistory',
     value: function getUserHistory() {
-      var _this5 = this;
+      var _this4 = this;
 
       logger.warn('getUserHistory', this.userId, this.userHash);
       this.userHistoryResult = (0, _user.getUserHistory)(this.userId, this.userHash);
       (0, _mobx.when)(function () {
-        return _this5.userHistoryResult.state !== 'pending';
+        return _this4.userHistoryResult.state !== 'pending';
       }, function () {
-        _this5.userHistory = _this5.userHistoryResult.value.data;
-        logger.warn('userHistory', _this5.userHistory);
+        _this4.userHistory = _this4.userHistoryResult.value.data;
+        logger.warn('userHistory', _this4.userHistory);
       });
     }
   }, {
@@ -225,20 +235,18 @@ var HomeStore = exports.HomeStore = (_class = function () {
       logger.warn('autoLogin', auth);
       var isLogin = auth.isLogin,
           userId = auth.userId,
-          userHash = auth.userHash,
-          email = auth.info.email;
+          userHash = auth.userHash;
 
-      (0, _simpleAuth.login)(userId, email, userHash);
-      this.isLogin = isLogin;
-      this.userId = userId;
-      this.userHash = userHash;
-      this.getUserHistory();
+      if (userId > 0) {
+        this.isLogin = isLogin;
+        this.userId = userId;
+        this.userHash = userHash;
+      }
     }
   }, {
     key: 'logoutUser',
     value: function logoutUser() {
-      (0, _simpleAuth.logout)();
-      (0, _chrome.sendMsgToChromeExtension)({ type: 'AUTH_LOGOUT' });
+      (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_LOGOUT', {}));
       this.isLogin = false;
       this.userId = -1;
       this.userHash = '';
@@ -307,7 +315,7 @@ var HomeStore = exports.HomeStore = (_class = function () {
   initializer: function initializer() {
     return null;
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'checkInstallAndAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstallAndAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'autoLogin', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'autoLogin'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'autoLogin', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'autoLogin'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
 
 function initStore(isServer) {
   var isLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;

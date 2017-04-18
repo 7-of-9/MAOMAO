@@ -42,8 +42,6 @@ export function googleAutoLogin(store, syncImScore, config, googleUserId, user) 
             userId,
           },
         });
-        window.userId = userId;
-        window.isGuest = false;
     }).catch(error => logger.warn(error));
     }).catch((error) => {
       // Try to logout and remove cache token
@@ -88,8 +86,6 @@ export function facebookAutoLogin(store, syncImScore, config, facebookUserId, em
             userId,
           },
         });
-        window.userId = userId;
-        window.isGuest = false;
       }).catch(error => logger.warn(error));
     }).catch((error) => {
       // Try to logout and remove cache token

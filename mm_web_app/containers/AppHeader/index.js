@@ -13,7 +13,7 @@ import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
-import { sendMsgToChromeExtension } from '../../utils/chrome'
+import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
 const customStyles = {
   content: {
@@ -43,7 +43,7 @@ class AppHeader extends React.Component {
 
   componentDidMount () {
     logger.warn('componentDidMount - Sending data to extension')
-    sendMsgToChromeExtension({type: 'WEB_CHECK_AUTH'}, (error, data) => {
+    sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
       if (error) {
         logger.warn(error)
       } else {
@@ -104,6 +104,7 @@ class AppHeader extends React.Component {
             <div className='row justify-content-md-center'>
               <GoogleLogin
                 clientId={GOOGLE_CLIENT_ID}
+                scope='profile email https://www.googleapis.com/auth/contacts.readonly'
                 buttonText='LOGIN WITH GOOGLE'
                 onSuccess={this.onGoogleSuccess}
                 onFailure={this.onGoogleFailure}
