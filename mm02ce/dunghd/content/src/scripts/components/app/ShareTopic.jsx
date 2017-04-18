@@ -143,12 +143,11 @@ const ShareTopicStepTwo = compose(({
         />
       </div>
       <div className="share-footer">
-        <button
-          className="btn btn-slide-prev"
+        <button className="btn btn-slide-prev"
           onClick={() => changeShareType(type, shareOption, 1)}
-        >
+          >
           Previous
-</button>
+        </button>
       </div>
     </div>
   ));

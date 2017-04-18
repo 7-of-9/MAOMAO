@@ -519,6 +519,7 @@ fieldset[disabled] .react-autosuggest__input {
     float: none !important;
   }
   button {
+    padding: 0;
     width: 50px;
     height: 50px;
     transition: transform 800ms;
@@ -1224,13 +1225,25 @@ fieldset[disabled] .btn-logout.focus {
 .share-topic {
   text-align: center;
   .share-topic-title {
-    margin: 0 0 12px;
+    padding-right: 5px;
     font-size: 17px;
+    line-height: 31px;
     color: #e9201a;
+    min-width: 189px;
+    float: left;
+    text-align: right;
   }
   .switch-list {
     @include clearfix();
     margin: 10px 0 15px;
+    text-align: left;
+    .checkbox__content {
+      overflow: hidden;
+      .checkbox__styled {
+        padding: 0 7px 5px;
+        display: inline-block;
+      }
+    }
     .switch-select {
       > div {
         margin: 0 auto;
@@ -1325,23 +1338,21 @@ fieldset[disabled] .btn-logout.focus {
 /* Regular checkbox*/
 
 .checkbox__styled {
-  position: relative;
-  display: inline-block;
   .checkbox__styled__input {
     display: none;
     opacity: 0;
     &:checked {
       + .checkbox__styled__label {
         &::after {
-          @include abs-pos ($top: 5px, $right: auto, $bottom: auto, $left: 8px);
+          @include abs-pos ($top: 7px, $right: auto, $bottom: auto, $left: 11px);
           transition: all .3s ease;
+          transform: rotate(45deg) scale(1);
           content: " ";
           display: block;
           width: 9px;
-          height: 14px;
+          height: 15px;
           border: solid #fff;
-          border-width: 0 2px 2px 0;
-          transform: rotate(45deg) scale(1);
+          border-width: 0 .2rem .2rem 0;
         }
         &::before {
           background: #fa943e;
@@ -1351,23 +1362,25 @@ fieldset[disabled] .btn-logout.focus {
   }
   .checkbox__styled__label {
     position: relative;
-    padding-left: 35px;
+    padding-left: 40px;
     margin-bottom: 0;
     font-weight: normal;
     display: block;
     cursor: pointer;
     font-size: 15px;
-    line-height: 25px;
+    line-height: 30px;
+    min-height: 33px;
     &::after {
-      @include abs-pos ($top: 7px, $right: auto, $bottom: auto, $left: 9px);
+      @include abs-pos ($top: 7px, $right: auto, $bottom: auto, $left: 11px);
       transition: all .3s ease;
       transform: rotate(45deg) scale(1.5);
       content: " ";
       display: block;
-      width: 6px;
-      height: 10px;
+      width: 9px;
+      height: 15px;
+      font-size: 19px;
       border: solid #ccc;
-      border-width: 0 2px 2px 0;
+      border-width: 0 .2rem .2rem 0;
     }
     &::before {
       @include abs-pos ($top: 0.1rem, $right: auto, $bottom: auto, $left: 0);
@@ -1375,9 +1388,8 @@ fieldset[disabled] .btn-logout.focus {
       content: " ";
       display: inline-block;
       vertical-align: middle;
-      width: 25px;
-      height: 25px;
-      margin-right: 10px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       background: #ccc;
     }
