@@ -13,6 +13,7 @@ import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
+import { sendMsgToChromeExtension } from '../../utils/chrome'
 
 const customStyles = {
   content: {
@@ -38,6 +39,17 @@ class AppHeader extends React.Component {
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onOpen = this.onOpen.bind(this)
+  }
+
+  componentDidMount () {
+    logger.warn('componentDidMount - Sending data to extension')
+    sendMsgToChromeExtension({type: 'WEB_CHECK_AUTH'}, (error, data) => {
+      if (error) {
+        logger.warn(error)
+      } else {
+        this.props.store.autoLogin(data.payload)
+      }
+    })
   }
 
   onOpen () {

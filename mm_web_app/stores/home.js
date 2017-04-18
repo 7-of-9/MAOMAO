@@ -2,7 +2,7 @@ import { action, autorun, when, observable } from 'mobx'
 import * as logger from 'loglevel'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { userId, userHash, login, logout } from '../utils/simpleAuth'
-import { hasInstalledExtension } from '../utils/chrome'
+import { hasInstalledExtension, sendMsgToChromeExtension } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 
 let store = null
@@ -108,8 +108,19 @@ export class HomeStore {
     )
   }
 
+  @action autoLogin (auth) {
+    logger.warn('autoLogin', auth)
+    const { isLogin, userId, userHash, info: { email } } = auth
+    login(userId, email, userHash)
+    this.isLogin = isLogin
+    this.userId = userId
+    this.userHash = userHash
+    this.getUserHistory()
+  }
+
   @action logoutUser () {
     logout()
+    sendMsgToChromeExtension({type: 'AUTH_LOGOUT'})
     this.isLogin = false
     this.userId = -1
     this.userHash = ''

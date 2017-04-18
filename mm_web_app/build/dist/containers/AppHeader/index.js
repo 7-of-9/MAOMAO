@@ -54,6 +54,8 @@ var logger = _interopRequireWildcard(_loglevel);
 
 var _constants = require('../../containers/App/constants');
 
+var _chrome = require('../../utils/chrome');
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -98,6 +100,20 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
   }
 
   (0, _createClass3.default)(AppHeader, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      logger.warn('componentDidMount - Sending data to extension');
+      (0, _chrome.sendMsgToChromeExtension)({ type: 'WEB_CHECK_AUTH' }, function (error, data) {
+        if (error) {
+          logger.warn(error);
+        } else {
+          _this2.props.store.autoLogin(data.payload);
+        }
+      });
+    }
+  }, {
     key: 'onOpen',
     value: function onOpen() {
       logger.warn('onOpen');

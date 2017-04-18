@@ -9,6 +9,7 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 export const LIMIT = 10
+export const EXTENSION_ID = 'onkinoggpeamajngpakinabahkomjcmk'
 export const CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/'
 export const MAOMAO_API_URL = 'https://mmapi00.azurewebsites.net/'
 export const MAOMAO_SITE_URL = 'https://maomaoweb.azurewebsites.net/'

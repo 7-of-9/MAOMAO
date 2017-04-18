@@ -282,7 +282,15 @@ const generateShareAll = data => (
   }
 );
 
+const webCheckAuth = () => (
+  (dispatch, getState) => {
+    const { auth } = getState();
+    return dispatch(actionCreator('WEB_CHECK_AUTH_RESULT', auth));
+  }
+);
+
 export default {
+  WEB_CHECK_AUTH: webCheckAuth,
   AUTH_LOGIN_GOOGLE: authGoogleLogin,
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
   AUTH_LOGOUT: authLogout,

@@ -220,9 +220,25 @@ var HomeStore = exports.HomeStore = (_class = function () {
       });
     }
   }, {
+    key: 'autoLogin',
+    value: function autoLogin(auth) {
+      logger.warn('autoLogin', auth);
+      var isLogin = auth.isLogin,
+          userId = auth.userId,
+          userHash = auth.userHash,
+          email = auth.info.email;
+
+      (0, _simpleAuth.login)(userId, email, userHash);
+      this.isLogin = isLogin;
+      this.userId = userId;
+      this.userHash = userHash;
+      this.getUserHistory();
+    }
+  }, {
     key: 'logoutUser',
     value: function logoutUser() {
       (0, _simpleAuth.logout)();
+      (0, _chrome.sendMsgToChromeExtension)({ type: 'AUTH_LOGOUT' });
       this.isLogin = false;
       this.userId = -1;
       this.userHash = '';
@@ -291,7 +307,7 @@ var HomeStore = exports.HomeStore = (_class = function () {
   initializer: function initializer() {
     return null;
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'checkInstallAndAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstallAndAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, 'checkInstallAndAuth', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstallAndAuth'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'autoLogin', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'autoLogin'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
 
 function initStore(isServer) {
   var isLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;

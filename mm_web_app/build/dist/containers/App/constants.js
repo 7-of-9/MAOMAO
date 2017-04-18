@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var LIMIT = exports.LIMIT = 10;
+var EXTENSION_ID = exports.EXTENSION_ID = 'onkinoggpeamajngpakinabahkomjcmk';
 var CRALWER_API_URL = exports.CRALWER_API_URL = 'https://dunghd.stdlib.com/crawler@dev/';
 var MAOMAO_API_URL = exports.MAOMAO_API_URL = 'https://mmapi00.azurewebsites.net/';
 var MAOMAO_SITE_URL = exports.MAOMAO_SITE_URL = 'https://maomaoweb.azurewebsites.net/';

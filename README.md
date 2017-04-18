@@ -15,13 +15,21 @@
 *  Install [DotNet Core CLI](https://www.microsoft.com/net/core#windows)
 
 # Architecture
+## Chrome Extension:
+* [React](https://facebook.github.io/react/): A JAVASCRIPT LIBRARY FOR BUILDING USER INTERFACES
 * [Redux](https://github.com/reactjs/redux): Predictable state container for JavaScript apps
+* [Mobx](https://mobx.js.org/): MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP)
 * [react-chrome-redux](https://github.com/tshaddix/react-chrome-redux/wiki/Introduction): How to use redux, react with chrome extension
-* [Chrome Identify](http://stackoverflow.com/questions/25044936/chrome-identity-user-authentication-in-a-chrome-extension) in a chrome extension
-
-# UI package for chrome extension
-
+* [Firebase - Google Login](https://firebase.google.com/docs/auth/web/google-signin) and [Firebase - Facebook Login](https://firebase.google.com/docs/auth/web/facebook-login)
 * [React Components that Implement Google's Material Design](http://www.material-ui.com)
+* [Webpack v2](https://webpack.js.org/): bundle files
+## Web App:
+* [NextJs](https://github.com/zeit/next.js): Framework for server-rendered React apps
+* [Mobx](https://mobx.js.org/): MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP)
+* [Bootstrap v4 beta](https://v4-alpha.getbootstrap.com/)
+## API
+* DotNet Server
+* [Stdlib](http://stdlib.com): StdLib is the easiest way to create, distribute and discover web services. Ship products and build your API business faster than ever before using cutting edge "server-less" technology.
 
 # Troubleshooting
 
