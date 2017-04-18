@@ -10,15 +10,14 @@ import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
+import { toJS } from 'mobx'
 import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { OrderedSet } from 'immutable'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
 import * as logger from 'loglevel'
-import {
-  Footer, Navbar, NavItem, Page
-} from 'neal-react'
+import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
@@ -139,8 +138,8 @@ class Home extends React.Component {
     let currentTermId = this.props.store.currentTermId
     let friendStreamId = this.props.store.friendStreamId
     if (this.props.store.userHistory) {
-      const { me: { urls, topics }, shares } = this.props.store.userHistory
-      friends = shares.slice()
+      const { me: { urls, topics }, shares } = toJS(this.props.store.userHistory)
+      friends = shares
       logger.warn('friends', friends)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       let urlIds = []
@@ -166,8 +165,7 @@ class Home extends React.Component {
       if (currentStream) {
         const list = currentStream.list.slice()
         logger.warn('list', list)
-        const friendUrls = list.map((item) => item && item.urls)
-        selectedFriendStreamUrls = _.uniq(_.flatten(friendUrls.map(item => item.slice())))
+        selectedFriendStreamUrls = _.uniq(_.flatten(list.map((item) => item && item.urls)))
         logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls)
       }
     }

@@ -46,6 +46,8 @@ var _link2 = _interopRequireDefault(_link);
 
 var _mobxReact = require('mobx-react');
 
+var _mobx = require('mobx');
+
 var _reactNoSsr = require('react-no-ssr');
 
 var _reactNoSsr2 = _interopRequireDefault(_reactNoSsr);
@@ -112,9 +114,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _jsxFileName = '/Volumes/Data/Projects/MAOMAO/mm_web_app/containers/Home/index.js',
-    _dec,
-    _class;
+var _dec, _class;
 
 /*
  *
@@ -134,43 +134,8 @@ _index2.default.onRouteChangeError = function () {
 };
 
 var brandName = 'MaoMao';
-var brand = _react2.default.createElement(_Header2.default, {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 42
-  }
-}, _react2.default.createElement(_LogoIcon2.default, {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 42
-  }
-}), _react2.default.createElement(_Slogan2.default, {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 42
-  }
-}));
-var businessAddress = _react2.default.createElement('address', {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 44
-  }
-}, _react2.default.createElement('strong', {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 45
-  }
-}, brandName), _react2.default.createElement('br', {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 45
-  }
-}), 'Singapore', _react2.default.createElement('br', {
-  __source: {
-    fileName: _jsxFileName,
-    lineNumber: 46
-  }
-}));
+var brand = _react2.default.createElement(_Header2.default, null, _react2.default.createElement(_LogoIcon2.default, null), _react2.default.createElement(_Slogan2.default, null));
+var businessAddress = _react2.default.createElement('address', null, _react2.default.createElement('strong', null, brandName), _react2.default.createElement('br', null), 'Singapore', _react2.default.createElement('br', null));
 
 var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
   (0, _inherits3.default)(Home, _React$Component);
@@ -292,13 +257,13 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
       var currentTermId = this.props.store.currentTermId;
       var friendStreamId = this.props.store.friendStreamId;
       if (this.props.store.userHistory) {
-        var _props$store$userHist = this.props.store.userHistory,
-            _props$store$userHist2 = _props$store$userHist.me,
-            urls = _props$store$userHist2.urls,
-            topics = _props$store$userHist2.topics,
-            shares = _props$store$userHist.shares;
+        var _toJS = (0, _mobx.toJS)(this.props.store.userHistory),
+            _toJS$me = _toJS.me,
+            urls = _toJS$me.urls,
+            topics = _toJS$me.topics,
+            shares = _toJS.shares;
 
-        friends = shares.slice();
+        friends = shares;
         logger.warn('friends', friends);
         sortedTopicByUrls = _lodash2.default.reverse(_lodash2.default.sortBy(_lodash2.default.filter(topics, function (topic) {
           return topic && topic.term_id > 0;
@@ -334,249 +299,49 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
         if (currentStream) {
           var list = currentStream.list.slice();
           logger.warn('list', list);
-          var friendUrls = list.map(function (item) {
+          selectedFriendStreamUrls = _lodash2.default.uniq(_lodash2.default.flatten(list.map(function (item) {
             return item && item.urls;
-          });
-          selectedFriendStreamUrls = _lodash2.default.uniq(_lodash2.default.flatten(friendUrls.map(function (item) {
-            return item.slice();
           })));
           logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls);
         }
       }
       logger.warn('selectedMyStreamUrls', selectedMyStreamUrls);
-      return _react2.default.createElement(_nealReact.Page, { style: { display: this.props.isClosePopup ? 'none' : '' }, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 176
-        }
-      }, _react2.default.createElement(_head2.default, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 177
-        }
-      }, _react2.default.createElement('meta', { charSet: 'utf-8', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 178
-        }
-      }), _react2.default.createElement('title', {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 179
-        }
-      }, title), _react2.default.createElement('meta', { name: 'description', content: description, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 180
-        }
-      }), _react2.default.createElement('meta', { name: 'og:title', content: title, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 181
-        }
-      }), _react2.default.createElement('meta', { name: 'og:description', content: description, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 182
-        }
-      }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 183
-        }
-      }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 184
-        }
-      }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 185
-        }
-      }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 186
-        }
-      }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 187
-        }
-      }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 188
-        }
-      }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 189
-        }
-      }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 190
-        }
-      }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 191
-        }
-      })), _react2.default.createElement(_nealReact.Navbar, { brand: brand, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 193
-        }
-      }, _react2.default.createElement(_nealReact.NavItem, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 194
-        }
-      }, _react2.default.createElement(_link2.default, { href: '/', className: 'nav-link', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 194
-        }
-      }, 'Home')), _react2.default.createElement(_nealReact.NavItem, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 195
-        }
-      }, _react2.default.createElement(_link2.default, { prefetch: true, href: '/discovery', className: 'nav-link', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 195
-        }
-      }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 196
-        }
-      }, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 196
-        }
-      }, 'Hiring')), this.props.store.isInstall && _react2.default.createElement(_AppHeader2.default, { notify: this.addNotification, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 197
-        }
-      })), _react2.default.createElement(_reactNotification.NotificationStack, {
+      return _react2.default.createElement(_nealReact.Page, { style: { display: this.props.isClosePopup ? 'none' : '' } }, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring')), this.props.store.isInstall && _react2.default.createElement(_AppHeader2.default, { notify: this.addNotification })), _react2.default.createElement(_reactNotification.NotificationStack, {
         notifications: this.state.notifications.toArray(),
         dismissAfter: 5000,
         onDismiss: function onDismiss(notification) {
           return _this4.setState({
             notifications: _this4.state.notifications.delete(notification)
           });
-        },
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 199
         }
-      }), _react2.default.createElement(_reactNoSsr2.default, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 206
-        }
-      }, (!this.props.store.isInstall || !this.props.store.isLogin) && _react2.default.createElement(_ChromeInstall2.default, {
+      }), _react2.default.createElement(_reactNoSsr2.default, null, (!this.props.store.isInstall || !this.props.store.isLogin) && _react2.default.createElement(_ChromeInstall2.default, {
         description: description,
         title: 'Unlock Now',
-        install: this.inlineInstall,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 208
-        }
-      })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 216
-        }
-      }, _react2.default.createElement(_reactTabs.Tabs, {
+        install: this.inlineInstall
+      })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_reactTabs.Tabs, {
         onSelect: this.handleSelect,
-        selectedIndex: this.props.store.shareInfo ? 1 : 0,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 217
-        }
-      }, _react2.default.createElement(_reactTabs.TabList, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 221
-        }
-      }, _react2.default.createElement(_reactTabs.Tab, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 222
-        }
-      }, 'Your Streams'), _react2.default.createElement(_reactTabs.Tab, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 223
-        }
-      }, 'Friend Streams')), _react2.default.createElement(_reactTabs.TabPanel, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 225
-        }
-      }, _react2.default.createElement(_YourStreams2.default, {
+        selectedIndex: this.props.store.shareInfo ? 1 : 0
+      }, _react2.default.createElement(_reactTabs.TabList, null, _react2.default.createElement(_reactTabs.Tab, null, 'Your Streams'), _react2.default.createElement(_reactTabs.Tab, null, 'Friend Streams')), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_YourStreams2.default, {
         topics: sortedTopicByUrls,
         activeId: currentTermId,
         changeTerm: function changeTerm(termId) {
           _this4.props.store.currentTermId = termId;
-        },
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 226
         }
-      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 231
-        }
-      }), _react2.default.createElement('br', {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 232
-        }
-      }), _react2.default.createElement(_StreamList2.default, { urls: selectedMyStreamUrls, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 233
-        }
-      })), _react2.default.createElement(_reactTabs.TabPanel, {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 235
-        }
-      }, _react2.default.createElement(_FriendStreams2.default, {
+      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending' }), _react2.default.createElement('br', null), _react2.default.createElement(_StreamList2.default, { urls: selectedMyStreamUrls })), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_FriendStreams2.default, {
         friends: friends,
         activeId: friendStreamId,
         changeFriendStream: function changeFriendStream(userId) {
           _this4.props.store.friendStreamId = userId;
-        },
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 236
         }
-      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending', __source: {
-          fileName: _jsxFileName,
-          lineNumber: 241
-        }
-      }), _react2.default.createElement('br', {
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 242
-        }
-      }), _react2.default.createElement(_StreamList2.default, { urls: selectedFriendStreamUrls, __source: {
-          fileName: _jsxFileName,
-          lineNumber: 243
-        }
-      })))), _react2.default.createElement(_nealReact.Footer, { brandName: brandName,
+      }), _react2.default.createElement(_Loading2.default, { isLoading: this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending' }), _react2.default.createElement('br', null), _react2.default.createElement(_StreamList2.default, { urls: selectedFriendStreamUrls })))), _react2.default.createElement(_nealReact.Footer, { brandName: brandName,
         facebookUrl: 'http://www.facebook.com',
         twitterUrl: 'http://www.twitter.com/',
-        address: businessAddress,
-        __source: {
-          fileName: _jsxFileName,
-          lineNumber: 248
-        }
+        address: businessAddress
       }));
     }
   }]);
 
   return Home;
 }(_react2.default.Component)) || _class) || _class);
-
-Home.propTypes = {
-  history: _propTypes2.default.object,
-  home: _propTypes2.default.object,
-  loading: _propTypes2.default.bool,
-  isClosePopup: _propTypes2.default.bool,
-  notifications: _propTypes2.default.object,
-  changeNotifications: _propTypes2.default.func,
-  inlineInstall: _propTypes2.default.func,
-  onChangeTerm: _propTypes2.default.func,
-  onChangeFriendStream: _propTypes2.default.func
-};
 
 exports.default = Home;

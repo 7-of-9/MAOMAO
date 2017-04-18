@@ -40,7 +40,7 @@ function SearchBar (props) {
 
 SearchBar.propTypes = {
   onSearch: PropTypes.func.isRequired,
-  terms: PropTypes.array,
+  terms: PropTypes.array.isRequired,
   handleDelete: PropTypes.func,
   handleAddition: PropTypes.func,
   changeTags: PropTypes.func

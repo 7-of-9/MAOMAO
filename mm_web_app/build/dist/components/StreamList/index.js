@@ -39,10 +39,4 @@ function StreamList(_ref) {
     });
   }
   return _react2.default.createElement('div', { className: 'row' }, items);
-}
-
-StreamList.propTypes = {
-  urls: _react2.default.PropTypes.array
-};
-
-exports.default = StreamList;
+}exports.default = StreamList;

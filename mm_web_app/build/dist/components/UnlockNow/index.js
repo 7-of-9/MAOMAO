@@ -35,9 +35,4 @@ function UnlockNow(_ref) {
   return _react2.default.createElement(Button, { onClick: install }, title, ' ');
 }
 
-UnlockNow.propTypes = {
-  title: _react2.default.PropTypes.string.isRequired,
-  install: _react2.default.PropTypes.func.isRequired
-};
-
 exports.default = UnlockNow;

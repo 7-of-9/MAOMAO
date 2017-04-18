@@ -43,12 +43,4 @@ function YourStreams(_ref) {
     });
   }
   return _react2.default.createElement('div', { className: 'container-fluid' }, _react2.default.createElement('h1', null, 'Your Streams'), items);
-}
-
-YourStreams.propTypes = {
-  topics: _propTypes2.default.array.isRequired,
-  activeId: _propTypes2.default.number.isRequired,
-  changeTerm: _propTypes2.default.func.isRequired
-};
-
-exports.default = YourStreams;
+}exports.default = YourStreams;

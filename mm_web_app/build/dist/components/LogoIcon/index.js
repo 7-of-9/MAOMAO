@@ -32,6 +32,4 @@ function LogoIcon() {
   return _react2.default.createElement(Wrapper, null);
 }
 
-LogoIcon.propTypes = {};
-
 exports.default = LogoIcon;

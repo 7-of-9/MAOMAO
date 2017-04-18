@@ -30,7 +30,7 @@
     "normalize.css": "^6.0.0",
     "nprogress": "^0.2.0",
     "prop-types": "^15.5.7",
-    "query-string": "^4.3.2",
+    "query-string": "^4.3.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-facebook-login": "^3.5.0",
@@ -51,7 +51,8 @@
     "parser": "babel-eslint",
     "ignore": [
       "/static/vendors",
-      "/build"
+      "/build",
+      "/node_modules"
     ]
   },
   "scripts": {

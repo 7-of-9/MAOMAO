@@ -50,11 +50,4 @@ function StreamItem(_ref) {
     discoveryKeys = _lodash2.default.map(url.suggestions_for_url, 'term_name');
   }
   return _react2.default.createElement('div', { className: 'col' }, _react2.default.createElement('a', { href: href, target: '_blank' }, _react2.default.createElement('img', { style: { maxWidth: '400px', maxHeight: '400px' }, src: img || '/static/images/no-image.png', alt: title })), _react2.default.createElement('div', { className: 'media-body' }, _react2.default.createElement('a', { href: href, target: '_blank' }, _react2.default.createElement('h4', { className: 'mt-0' }, title, ' (', id, ')')), _react2.default.createElement('p', null, ' Earned XP ', href.length, ' ', _moment2.default.duration(time_on_tab).humanize(), ' '), _react2.default.createElement(_reactStars2.default, { edit: false, size: 22, count: 5, value: rate }), _react2.default.createElement('span', null, (0, _moment2.default)(hit_utc).fromNow()), discoveryKeys && discoveryKeys.length > 0 && _react2.default.createElement(_DiscoveryButton2.default, { keys: discoveryKeys.join(',') })));
-}
-
-StreamItem.propTypes = {
-  url: _react2.default.PropTypes.object,
-  maxScore: _react2.default.PropTypes.number
-};
-
-exports.default = StreamItem;
+}exports.default = StreamItem;
