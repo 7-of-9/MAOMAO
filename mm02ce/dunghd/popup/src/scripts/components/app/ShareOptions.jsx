@@ -26,65 +26,61 @@ const enhance = compose(
 
 const ShareOptions = enhance(({ topics, active, onChange }) =>
   <div style={style} className="share-topic">
-    <p className="share-topic-title"> Single URL: </p>
     <div className="switch-list">
-      {/*<div className="switch-select">
-        <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
-        <span>just this page</span>
-      </div>*/}
+      <span className="share-topic-title"> Single URL: </span> 
       <div className="checkbox__content">
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-1" type="checkbox" name="checkbox" value="1" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-1">just this page</label>
+        <div className="switch-select">
+          <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
+          <span className="type-name">just this page</span>
         </div>
       </div>
     </div>
-    <p className="share-topic-title"> Topics (Multiple URLs):</p>
     <div className="switch-list">
       {
         /*topics.map(topic =>
           topic.id &&
           <div key={guid()} className="switch-select">
-            <Option
-              key={guid()}
-              value={active === topic.id}
-              onToggle={() => {
-              onChange(topic.id);
-            }}
-            />
+            <Option key={guid()} value={active === topic.id} onToggle={() => { onChange(topic.id); }} />
             <span className="type-name">{topic.name}</span>
           </div>,
         )*/
       }
       <div className="checkbox__content">
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-2" type="checkbox" name="checkbox" value="2" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-2">Smashingmagazine.com</label>
-        </div>
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-3" type="checkbox" name="checkbox" value="3" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-3">JavaScript</label>
-        </div>
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-4" type="checkbox" name="checkbox" value="4" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-4">Computing</label>
-        </div>
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-5" type="checkbox" name="checkbox" value="5" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-5">Technology</label>
+        <span className="share-topic-title"> Topics (Multiple URLs):</span>
+        <div key={guid()} className="switch-select">
+          <Option key={guid()} value={active === 'topic'} onToggle={() => { onChange('topic'); }} />
+          <span className="type-name">Topics name</span>
         </div>
       </div>
+      <div className="radio__row">
+        <div className="radio__regular">
+          <input type="radio" className="radio__regular__input" id="radio_1" name="radio" />
+          <label className="radio__regular__label" tabindex="1" htmlFor="radio_1">Smashingmagazine.com</label>
+        </div>
+      </div>
+      <div className="radio__row">
+        <div className="radio__regular">
+          <input type="radio" className="radio__regular__input" id="radio_2" name="radio" />
+          <label className="radio__regular__label" tabindex="2" htmlFor="radio_2">JavaScript</label>
+        </div>
+        <div className="radio__regular">
+          <input type="radio" className="radio__regular__input" id="radio_3" name="radio" />
+          <label className="radio__regular__label" tabindex="3" htmlFor="radio_3">Computing</label>
+        </div>
+        <div className="radio__regular">
+          <input type="radio" className="radio__regular__input" id="radio_4" name="radio" />
+          <label className="radio__regular__label" tabindex="4" htmlFor="radio_4">Technology</label>
+        </div>
+      </div>
+      
     </div>
-    <p className="share-topic-title"> All URLs: </p>
+    
     <div className="switch-list mb0">
-      {/*<div className="switch-select">
-        <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
-        <span>My browsing history</span>
-      </div>*/}
+      <span className="share-topic-title"> All URLs: </span>
       <div className="checkbox__content">
-        <div className="checkbox__styled">
-          <input className="checkbox__styled__input" id="checkbox-list-6" type="checkbox" name="checkbox" value="6" />
-          <label className="checkbox__styled__label" htmlFor="checkbox-list-6">My browsing history</label>
+        <div className="switch-select">
+          <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+          <span className="type-name">My browsing history</span>
         </div>
       </div>
     </div>
