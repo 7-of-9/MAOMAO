@@ -134,4 +134,10 @@ var ChromeInstall = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _
   return ChromeInstall;
 }(_react2.default.Component)) || _class) || _class);
 
+ChromeInstall.propTypes = {
+  install: _react2.default.PropTypes.func.isRequired,
+  title: _react2.default.PropTypes.string.isRequired,
+  description: _react2.default.PropTypes.string.isRequired
+};
+
 exports.default = ChromeInstall;

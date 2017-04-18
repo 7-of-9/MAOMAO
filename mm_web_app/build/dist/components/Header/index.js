@@ -32,4 +32,8 @@ function Header(props) {
   return _react2.default.createElement(Wrapper, null, ' ', props.children);
 }
 
+Header.propTypes = {
+  children: _react.PropTypes.node.isRequired
+};
+
 exports.default = Header;

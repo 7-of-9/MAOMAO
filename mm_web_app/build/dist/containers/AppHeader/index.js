@@ -60,7 +60,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _dec, _class;
+var _dec,
+    _class,
+    _jsxFileName = '/Volumes/Data/Projects/MAOMAO/mm_web_app/containers/AppHeader/index.js';
 
 /*
  *
@@ -157,27 +159,80 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
     key: 'render',
     value: function render() {
       logger.warn('AppHeader', this.props, this.state);
-      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
+      return _react2.default.createElement(_nealReact.NavItem, {
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 92
+        }
+      }, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout, __source: {
+          fileName: _jsxFileName,
+          lineNumber: 93
+        }
+      }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen, __source: {
+          fileName: _jsxFileName,
+          lineNumber: 94
+        }
+      }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
         isOpen: this.state.showModal,
         style: customStyles,
         onRequestClose: this.onClose,
-        contentLabel: 'Sign In' }, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement('h1', { className: 'display-4' }, 'Join MaoMao Now!')), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
+        contentLabel: 'Sign In', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 95
+        }
+      }, _react2.default.createElement('div', { className: 'container', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 100
+        }
+      }, _react2.default.createElement('div', { className: 'row justify-content-md-center', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 101
+        }
+      }, _react2.default.createElement('h1', { className: 'display-4', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 102
+        }
+      }, 'Join MaoMao Now!')), _react2.default.createElement('div', { className: 'row justify-content-md-center', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 104
+        }
+      }, _react2.default.createElement(_reactGoogleLogin2.default, {
         clientId: _constants.GOOGLE_CLIENT_ID,
         scope: 'profile email https://www.googleapis.com/auth/contacts.readonly',
         buttonText: 'LOGIN WITH GOOGLE',
         onSuccess: this.onGoogleSuccess,
-        onFailure: this.onGoogleFailure
-      })), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactFacebookLogin2.default, {
+        onFailure: this.onGoogleFailure,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 105
+        }
+      })), _react2.default.createElement('div', { className: 'row justify-content-md-center', __source: {
+          fileName: _jsxFileName,
+          lineNumber: 113
+        }
+      }, _react2.default.createElement(_reactFacebookLogin2.default, {
         appId: _constants.FACEBOOK_APP_ID,
         autoLoad: false,
         size: 'medium',
         fields: 'name,email,picture',
-        callback: this.responseFacebook
+        callback: this.responseFacebook,
+        __source: {
+          fileName: _jsxFileName,
+          lineNumber: 114
+        }
       })))));
     }
   }]);
 
   return AppHeader;
 }(_react2.default.Component)) || _class) || _class);
+
+AppHeader.propTypes = {
+  onGoogleSuccess: _propTypes2.default.func,
+  onGoogleFailure: _propTypes2.default.func,
+  responseFacebook: _propTypes2.default.func,
+  notify: _propTypes2.default.func,
+  onLogout: _propTypes2.default.func
+};
 
 exports.default = AppHeader;

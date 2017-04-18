@@ -1,7 +1,9 @@
 const cheerio = require('cheerio');
 const queryString = require('query-string');
+const log = require('loglevel');
 
 module.exports = (params, callback) => {
+  log.warn('params.kwargs.bodyHtml', params.kwargs.bodyHtml);
   const $ = cheerio.load(params.kwargs.bodyHtml);
   const result = [];
   $('#res').find('.g').each((index, item) => {

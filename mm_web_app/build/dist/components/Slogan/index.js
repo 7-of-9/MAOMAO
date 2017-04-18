@@ -42,4 +42,6 @@ function Slogan() {
   }), _react2.default.createElement(Description, null, ' get smarter '));
 }
 
+Slogan.propTypes = {};
+
 exports.default = Slogan;

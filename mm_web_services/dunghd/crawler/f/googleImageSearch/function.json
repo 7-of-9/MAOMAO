@@ -1,0 +1,13 @@
+{
+  "name": "googleImageSearch",
+  "description": "Function",
+  "args": [
+    "bodyHtml"
+  ],
+  "kwargs": {
+    "bodyHtml": "Body HTML response from cralwer"
+  },
+  "http": {
+    "headers": {}
+  }
+}
