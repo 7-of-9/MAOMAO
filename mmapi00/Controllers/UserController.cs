@@ -107,7 +107,7 @@ namespace mmapi00.Controllers
             long user_id, string hash)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
-            var data = mm_svc.UserStream.GetAllTopics(user_id);
+            var data = mm_svc.UserStream.GetAllStreams(user_id);
             return Ok( new { me = data.me, shares = data.shares });
         }
 

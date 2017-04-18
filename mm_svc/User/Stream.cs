@@ -12,7 +12,7 @@ namespace mm_svc
 {
     public static class UserStream
     {
-        public static UserStreamReturn GetAllTopics(long user_id)
+        public static UserStreamReturn GetAllStreams(long user_id)
         {
             using (var db = mm02Entities.Create())
             {
@@ -80,14 +80,14 @@ namespace mm_svc
                     img = p.img_url,
                     title = p.meta_title,
                     suggestions_for_url = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                    hit_utc = urls_list.Single(p2 => p2.url_id == p.id).hit_utc,
-                    im_score = urls_list.Single(p2 => p2.url_id == p.id).im_score,
-                    time_on_tab = urls_list.Single(p2 => p2.url_id == p.id).time_on_tab,
+                    hit_utc = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).hit_utc,
+                    im_score = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).im_score,
+                    time_on_tab = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab,
                 }).ToList();
             }
         }
 
-        private static List<UserStreamUrlInfo> FindUserUrlInfosOfUrl(long? url_id)
+        private static List<UserStreamUrlInfo> FindUserUrlInfosFromUrlId(long? url_id)
         {
             using (var db = mm02Entities.Create())
             {
@@ -115,9 +115,9 @@ namespace mm_svc
                     img = p.img_url,
                     title = p.meta_title,
                     suggestions_for_url = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                    hit_utc = urls_list.Single(p2 => p2.url_id == p.id).hit_utc,
-                    im_score = urls_list.Single(p2 => p2.url_id == p.id).im_score,
-                    time_on_tab = urls_list.Single(p2 => p2.url_id == p.id).time_on_tab,
+                    hit_utc = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).hit_utc,
+                    im_score = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).im_score,
+                    time_on_tab = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab,
                 }).ToList();
             }
         }
@@ -141,9 +141,9 @@ namespace mm_svc
                     img = p.img_url,
                     title = p.meta_title,
                     suggestions_for_url = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                    hit_utc = urls_list.Single(p2 => p2.url_id == p.id).hit_utc,
-                    im_score = urls_list.Single(p2 => p2.url_id == p.id).im_score,
-                    time_on_tab = urls_list.Single(p2 => p2.url_id == p.id).time_on_tab,
+                    hit_utc = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).hit_utc,
+                    im_score = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).im_score,
+                    time_on_tab = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab,
                 }).ToList();
             }
         }
@@ -320,7 +320,7 @@ namespace mm_svc
                             else
                             {
                                 // url_id --> check exist url or not, and insert last one
-                                var url_infos = FindUserUrlInfosOfUrl(share.url_id);
+                                var url_infos = FindUserUrlInfosFromUrlId(share.url_id);
                                 var urls_share_list = user_share_lists[share.user_id] as List<ShareListReturn>;
                                 urls_share_list.Add(new ShareListReturn()
                                 {
