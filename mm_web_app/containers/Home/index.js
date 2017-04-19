@@ -107,12 +107,12 @@ class Home extends React.Component {
 
   componentDidMount () {
     logger.warn('Home - componentDidMount', this.props)
+    this.props.store.checkEnvironment()
     if (this.props.isClosePopup) {
       logger.warn('Close popup')
       window.close()
     }
     setTimeout(() => {
-      this.props.store.checkEnvironment()
       if (this.props.store.shareInfo) {
         this.props.store.checkInstall()
       }
@@ -190,8 +190,8 @@ class Home extends React.Component {
         </Head>
         <Navbar brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
-          <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
+          <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack

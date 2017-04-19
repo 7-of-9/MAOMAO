@@ -7,8 +7,8 @@ let store = null
 
 export class CoreStore {
   isMobile = false
-  isChrome = false
   userAgent = {}
+  @observable isChrome = true
   @observable userHash = ''
   @observable userId = -1
   @observable isInstall = false
@@ -16,10 +16,6 @@ export class CoreStore {
   constructor (isServer, userAgent) {
     this.userAgent = userAgent
     this.isMobile = isMobileBrowser(userAgent)
-    if (!isServer) {
-      this.isChrome = isChromeBrowser()
-      this.isInstall = hasInstalledExtension()
-    }
   }
 
   @computed get isInstalledOnChromeDesktop () {

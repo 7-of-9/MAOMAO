@@ -11,13 +11,17 @@ export default class DiscoveryPage extends React.Component {
     if (search) {
       terms = search.split(',')
     }
-    const store = initStore(isServer, terms)
-    return { isServer, store, terms }
+    let userAgent = ''
+    if (req && req.headers && req.headers['user-agent']) {
+      userAgent = req.headers['user-agent']
+    }
+    const store = initStore(isServer, userAgent, terms)
+    return { isServer, ...store }
   }
 
   constructor (props) {
     super(props)
-    this.store = initStore(props.isServer, props.terms)
+    this.store = initStore(props.isServer, props.userAgent, props.terms)
   }
 
   render () {

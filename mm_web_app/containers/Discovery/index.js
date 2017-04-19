@@ -90,9 +90,9 @@ export class Discovery extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar brand={brand}>
-          <NavItem><Link prefetch href='/' className='nav-link'>Home</Link></NavItem>
+          <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
         </Navbar>
         <StickyContainer className='container-fluid'>
           <Sticky>
