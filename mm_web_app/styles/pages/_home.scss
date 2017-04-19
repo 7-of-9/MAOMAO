@@ -1,0 +1,40 @@
+/*************************************
+**************************************
+These are the styles for
+the home page
+**************************************
+**************************************/
+
+.wrap-main {
+  min-height: 350px;
+}
+
+.neal-hero {
+  &.banner-hero {
+    margin-bottom: 0;
+    background: url('/static/images/bg_hero.jpg') no-repeat fixed;
+    background-size: cover;
+    h1 {
+      line-height: 50px;
+    }
+  }
+}
+
+.section-list {
+  padding-bottom: 1rem;
+  text-align: left;
+  .section-item {
+    margin-bottom: 2rem;
+    .lead {
+      margin-bottom: 1rem;
+      font-size: 30px;
+      line-height: 39px;
+      color: #1c232e;
+      font-weight: 600;
+      word-break: break-word;
+    }
+    p {
+      text-align: justify;
+    }
+  }
+}

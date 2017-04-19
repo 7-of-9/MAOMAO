@@ -29,7 +29,11 @@ var _templateObject = (0, _taggedTemplateLiteral3.default)(['\n  align-items: ce
 var Wrapper = _styledComponents2.default.div(_templateObject);
 
 function Header(props) {
-  return _react2.default.createElement(Wrapper, null, ' ', props.children);
+  return _react2.default.createElement(Wrapper, { className: 'logo' }, ' ', props.children);
 }
+
+Header.propTypes = {
+  children: _react.PropTypes.node.isRequired
+};
 
 exports.default = Header;

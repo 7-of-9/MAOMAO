@@ -1,5 +1,9 @@
 @import 'normalize.css';
 @import 'neal-react/css/base';
+@import 'plugins';
+@import 'mixins';
+@import 'partials';
+@import 'pages';
 
 /* center container with CSS */
 .grid {

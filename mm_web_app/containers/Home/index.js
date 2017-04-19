@@ -41,7 +41,7 @@ const brandName = 'MaoMao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <strong>{brandName}</strong><br />
+    <strong>{brandName} </strong>
     Singapore<br />
   </address>
 )
@@ -100,11 +100,9 @@ class Home extends React.Component {
       notifications
     })
   }
-
   componentWillReact () {
     logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
   }
-
   componentDidMount () {
     logger.warn('Home - componentDidMount', this.props)
     this.props.store.checkEnvironment()
@@ -188,11 +186,11 @@ class Home extends React.Component {
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
-        <Navbar brand={brand}>
+        <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
           <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
-          <AppHeader notify={this.addNotification} />
+          { this.props.store.isInstall && <AppHeader notify={this.addNotification} /> }
         </Navbar>
         <NotificationStack
           notifications={this.state.notifications.toArray()}

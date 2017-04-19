@@ -82,7 +82,7 @@ class AppHeader extends React.Component {
     return (
       <NavItem>
         { this.props.store.isLogin && <button onClick={this.onLogout}>Logout</button> }
-        { !this.props.store.isLogin && <button onClick={this.onOpen}>Sign In</button> }
+        { !this.props.store.isLogin && <button className="btn btn-login" onClick={this.onOpen}>Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
           onRequestHide={this.onClose}

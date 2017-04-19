@@ -31,4 +31,8 @@ function Loading(props) {
   return _react2.default.createElement(Wrapper, { style: { display: props.isLoading ? '' : 'none' } }, _react2.default.createElement('img', { alt: 'Loading', src: '/static/images/loading.svg' }));
 }
 
+Loading.propTypes = {
+  isLoading: _react.PropTypes.bool.isRequired
+};
+
 exports.default = Loading;

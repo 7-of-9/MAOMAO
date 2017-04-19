@@ -1,0 +1,24 @@
+/*************************************
+**************************************
+These are the styles for
+the footer section
+**************************************
+**************************************/
+
+footer.neal-footer {
+  margin-top: 1rem;
+  padding: 0.625rem 0;
+  .neal-footer-copyright,
+  address {
+    margin-bottom: 0;
+  }
+  .neal-footer-copyright {
+    margin-top: 5px;
+  }
+  .neal-footer-social {
+    flex-direction: row;
+    .neal-footer-social-icon {
+      margin-left: 0.625rem;
+    }
+  }
+}

@@ -1,0 +1,75 @@
+/*************************************
+**************************************
+These are the styles for
+the header section
+**************************************
+**************************************/
+
+.neal-navbar-wrapper {
+  .header-nav {
+    height: 72px;
+    overflow: hidden;
+    background-color: #fff;
+    border-bottom: 1px solid #e1e5eb;
+    .navbar-brand {
+      padding: 0;
+      float: left;
+      .logo {
+        padding: 0;
+      }
+    }
+    .navbar-toggleable-sm {
+      padding: 0.6rem 0;
+      float: right;
+      .nav {
+        .nav-item {
+          a {
+            margin: 0.7rem 0 0.6rem;
+            color: #222;
+            font-weight: 700;
+            font-size: 0.875rem;
+            line-height: 1rem;
+            display: block;
+            text-transform: uppercase;
+            &:hover,
+            &:focus {
+              color: #2db7f5;
+              text-decoration: none;
+            }
+            &,
+            &:hover,
+            &:focus {
+              @include transition(all 0.2s ease-out 0s);
+            }
+          }
+        }
+      }
+    }
+    .btn-login {
+      padding: 7px 20px;
+      border-radius: 4px;
+      font-size: 1rem;
+      color: #fff;
+      background: #1b8ff2;
+      border: 1px solid #1b8ff2;
+      &:hover,
+      &:focus {
+        background: #3aa4ff;
+        border: 1px solid #3aa4ff;
+        color: #fff;
+      }
+    }
+    .logo {
+      .fSBjqc,
+      .dbtaox {
+        margin-left: 0;
+      }
+      .fnsJiL {
+        margin-top: 24px;
+      }
+      .hReOhH {
+        margin-top: 21px;
+      }
+    }
+  }
+}

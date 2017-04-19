@@ -146,7 +146,7 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
     key: 'render',
     value: function render() {
       logger.warn('AppHeader', this.props, this.state);
-      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModalBootstrap.Modal, {
+      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { className: 'btn btn-login', onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModalBootstrap.Modal, {
         isOpen: this.state.showModal,
         onRequestHide: this.onClose
       }, _react2.default.createElement(_reactModalBootstrap.ModalHeader, null, _react2.default.createElement(_reactModalBootstrap.ModalClose, { onClick: this.onClose }), _react2.default.createElement(_reactModalBootstrap.ModalTitle, null, 'Join MaoMao Now!')), _react2.default.createElement(_reactModalBootstrap.ModalBody, null, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
@@ -167,5 +167,13 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
 
   return AppHeader;
 }(_react2.default.Component)) || _class) || _class);
+
+AppHeader.propTypes = {
+  onGoogleSuccess: _propTypes2.default.func,
+  onGoogleFailure: _propTypes2.default.func,
+  responseFacebook: _propTypes2.default.func,
+  notify: _propTypes2.default.func,
+  onLogout: _propTypes2.default.func
+};
 
 exports.default = AppHeader;
