@@ -154,16 +154,10 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
     _this.inlineInstall = _this.inlineInstall.bind(_this);
     _this.addNotification = _this.addNotification.bind(_this);
     _this.removeNotification = _this.removeNotification.bind(_this);
-    _this.handleSelect = _this.handleSelect.bind(_this);
     return _this;
   }
 
   (0, _createClass3.default)(Home, [{
-    key: 'handleSelect',
-    value: function handleSelect(index, last) {
-      logger.warn('Selected tab: ' + index + ', Last tab: ' + last);
-    }
-  }, {
     key: 'onInstallSucess',
     value: function onInstallSucess() {
       this.addNotification('Yeah! You have been installed maomao extension successfully.');
@@ -219,13 +213,16 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
     value: function componentDidMount() {
       var _this3 = this;
 
-      logger.warn('componentDidMount', this.props);
+      logger.warn('Home - componentDidMount', this.props);
       if (this.props.isClosePopup) {
         logger.warn('Close popup');
         window.close();
       }
       setTimeout(function () {
-        _this3.props.store.checkInstall();
+        _this3.props.store.checkEnvironment();
+        if (_this3.props.store.shareInfo) {
+          _this3.props.store.checkInstall();
+        }
       }, 100);
     }
   }, {
@@ -306,7 +303,7 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
         }
       }
       logger.warn('selectedMyStreamUrls', selectedMyStreamUrls);
-      return _react2.default.createElement(_nealReact.Page, { style: { display: this.props.isClosePopup ? 'none' : '' } }, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring')), this.props.store.isInstall && _react2.default.createElement(_AppHeader2.default, { notify: this.addNotification })), _react2.default.createElement(_reactNotification.NotificationStack, {
+      return _react2.default.createElement(_nealReact.Page, { style: { display: this.props.isClosePopup ? 'none' : '' } }, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring')), _react2.default.createElement(_AppHeader2.default, { notify: this.addNotification })), _react2.default.createElement(_reactNotification.NotificationStack, {
         notifications: this.state.notifications.toArray(),
         dismissAfter: 5000,
         onDismiss: function onDismiss(notification) {
@@ -314,12 +311,11 @@ var Home = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact
             notifications: _this4.state.notifications.delete(notification)
           });
         }
-      }), _react2.default.createElement(_reactNoSsr2.default, null, (!this.props.store.isInstall || !this.props.store.isLogin) && _react2.default.createElement(_ChromeInstall2.default, {
+      }), _react2.default.createElement(_reactNoSsr2.default, null, (!this.props.store.isInstall || !this.props.store.isLogin) && this.props.store.isChrome && _react2.default.createElement(_ChromeInstall2.default, {
         description: description,
         title: 'Unlock Now',
         install: this.inlineInstall
-      })), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_reactTabs.Tabs, {
-        onSelect: this.handleSelect,
+      })), _react2.default.createElement(_reactNoSsr2.default, null, !this.props.store.isChrome && _react2.default.createElement('div', { className: 'neal-hero jumbotron jumbotron-fluid text-xs-center' }, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('h1', null, description), _react2.default.createElement('p', null, 'MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get Chrome ', _react2.default.createElement('a', { href: 'https://www.google.com/chrome/' }, 'here'))))), this.props.store.isInstall && this.props.store.isLogin && _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_reactTabs.Tabs, {
         selectedIndex: this.props.store.shareInfo ? 1 : 0
       }, _react2.default.createElement(_reactTabs.TabList, null, _react2.default.createElement(_reactTabs.Tab, null, 'Your Streams'), _react2.default.createElement(_reactTabs.Tab, null, 'Friend Streams')), _react2.default.createElement(_reactTabs.TabPanel, null, _react2.default.createElement(_YourStreams2.default, {
         topics: sortedTopicByUrls,

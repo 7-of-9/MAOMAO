@@ -49,11 +49,16 @@ var DiscoveryPage = function (_React$Component) {
   (0, _createClass3.default)(DiscoveryPage, null, [{
     key: 'getInitialProps',
     value: function getInitialProps(_ref) {
-      var req = _ref.req;
+      var req = _ref.req,
+          search = _ref.query.search;
 
       var isServer = !!req;
-      var store = (0, _discovery.initStore)(isServer);
-      return { isServer: isServer, store: store };
+      var terms = [];
+      if (search) {
+        terms = search.split(',');
+      }
+      var store = (0, _discovery.initStore)(isServer, terms);
+      return { isServer: isServer, store: store, terms: terms };
     }
   }]);
 
@@ -62,7 +67,7 @@ var DiscoveryPage = function (_React$Component) {
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (DiscoveryPage.__proto__ || (0, _getPrototypeOf2.default)(DiscoveryPage)).call(this, props));
 
-    _this.store = (0, _discovery.initStore)(props.isServer);
+    _this.store = (0, _discovery.initStore)(props.isServer, props.terms);
     return _this;
   }
 

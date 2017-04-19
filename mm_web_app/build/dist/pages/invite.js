@@ -65,7 +65,11 @@ var Invite = function (_React$Component) {
           shareInfo = _ref$query.shareInfo;
 
       var isServer = !!req;
-      var store = (0, _invite.initStore)(isServer, code, shareInfo, false);
+      var userAgent = '';
+      if (req && req.headers && req.headers['user-agent']) {
+        userAgent = req.headers['user-agent'];
+      }
+      var store = (0, _invite.initStore)(isServer, userAgent, code, shareInfo);
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
@@ -85,7 +89,7 @@ var Invite = function (_React$Component) {
     } else {
       _this.isClosePopup = false;
     }
-    _this.store = (0, _invite.initStore)(props.isServer, props.shareCode, props.shareInfo, props.isLogin);
+    _this.store = (0, _invite.initStore)(props.isServer, props.userAgent, props.shareCode, props.shareInfo);
     return _this;
   }
 

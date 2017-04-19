@@ -17,18 +17,22 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 /* global chrome */
 function hasInstalledExtension() {
-  return document.getElementById('maomao-extension-anchor') !== null || chrome.app.isInstalled;
+  return document.getElementById('maomao-extension-anchor') !== null || chrome && chrome.app && chrome.app.isInstalled;
 }
 
 function sendMsgToChromeExtension(payload) {
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
 
-  chrome.runtime.sendMessage(_constants.EXTENSION_ID, { type: 'chromex.dispatch', portName: 'maomao-extension', payload: payload }, function (response) {
-    logger.warn('response from extension', payload, response);
-    if (callback) {
-      callback(response.error, response.value);
-    }
-  });
+  if (chrome) {
+    chrome.runtime.sendMessage(_constants.EXTENSION_ID, { type: 'chromex.dispatch', portName: 'maomao-extension', payload: payload }, function (response) {
+      logger.warn('response from extension', payload, response);
+      if (callback) {
+        callback(response.error, response.value);
+      }
+    });
+  } else {
+    logger.warn('ONLY SUPPORT CHROME');
+  }
 }
 
 function actionCreator(type, payload) {

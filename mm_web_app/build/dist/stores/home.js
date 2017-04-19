@@ -18,6 +18,10 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -26,11 +30,21 @@ var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
 var _mobx = require('mobx');
 
 var _loglevel = require('loglevel');
 
 var logger = _interopRequireWildcard(_loglevel);
+
+var _core = require('./core');
 
 var _user = require('../services/user');
 
@@ -42,7 +56,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12;
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -90,61 +104,42 @@ function _initializerWarningHelper(descriptor, context) {
 
 var store = null;
 
-var HomeStore = exports.HomeStore = (_class = function () {
-  function HomeStore(isServer, isLogin, isInstall) {
-    var _this = this;
+var HomeStore = exports.HomeStore = (_class = function (_CoreStore) {
+  (0, _inherits3.default)(HomeStore, _CoreStore);
 
+  function HomeStore(isServer, userAgent) {
     (0, _classCallCheck3.default)(this, HomeStore);
 
-    _initDefineProp(this, 'googleConnectResult', _descriptor, this);
+    var _this = (0, _possibleConstructorReturn3.default)(this, (HomeStore.__proto__ || (0, _getPrototypeOf2.default)(HomeStore)).call(this, isServer, userAgent));
 
-    _initDefineProp(this, 'facebookConnectResult', _descriptor2, this);
+    _initDefineProp(_this, 'googleConnectResult', _descriptor, _this);
 
-    _initDefineProp(this, 'userHistoryResult', _descriptor3, this);
+    _initDefineProp(_this, 'facebookConnectResult', _descriptor2, _this);
 
-    _initDefineProp(this, 'userId', _descriptor4, this);
+    _initDefineProp(_this, 'userHistoryResult', _descriptor3, _this);
 
-    _initDefineProp(this, 'currentTermId', _descriptor5, this);
+    _initDefineProp(_this, 'currentTermId', _descriptor4, _this);
 
-    _initDefineProp(this, 'friendStreamId', _descriptor6, this);
+    _initDefineProp(_this, 'friendStreamId', _descriptor5, _this);
 
-    _initDefineProp(this, 'isLogin', _descriptor7, this);
+    _initDefineProp(_this, 'googleUser', _descriptor6, _this);
 
-    _initDefineProp(this, 'isInstall', _descriptor8, this);
+    _initDefineProp(_this, 'facebookUser', _descriptor7, _this);
 
-    _initDefineProp(this, 'userHash', _descriptor9, this);
+    _initDefineProp(_this, 'userHistory', _descriptor8, _this);
 
-    _initDefineProp(this, 'googleUser', _descriptor10, this);
-
-    _initDefineProp(this, 'facebookUser', _descriptor11, this);
-
-    _initDefineProp(this, 'userHistory', _descriptor12, this);
-
-    this.isLogin = isLogin;
-    this.isInstall = isInstall;
     (0, _mobx.reaction)(function () {
       return _this.userHash.length;
     }, function (userHash) {
       if (userHash > 0) {
-        logger.warn('yeah...');
+        logger.warn('yeah... getUserHistory');
         _this.getUserHistory();
-        _this.acceptInviteCode();
       }
     });
+    return _this;
   }
 
   (0, _createClass3.default)(HomeStore, [{
-    key: 'checkInstall',
-    value: function checkInstall() {
-      logger.warn('hasInstalledExtension', (0, _chrome.hasInstalledExtension)());
-      this.isInstall = (0, _chrome.hasInstalledExtension)();
-    }
-  }, {
-    key: 'acceptInviteCode',
-    value: function acceptInviteCode() {
-      logger.warn('acceptInviteCode');
-    }
-  }, {
     key: 'googleConnect',
     value: function googleConnect(info) {
       var _this2 = this;
@@ -165,19 +160,21 @@ var HomeStore = exports.HomeStore = (_class = function () {
           picture: info.profileObj.imageUrl
         });
         // send data to chrome extension
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.googleId }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
-          googleUserId: info.googleId,
-          googleToken: info.accessToken,
-          info: {
-            name: info.profileObj.name,
-            email: info.profileObj.email || data.email,
-            picture: info.profileObj.imageUrl
-          }
-        }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('FETCH_CONTACTS', {}));
+        if (_this2.isInstalledOnChromeDesktop) {
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.googleId }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
+            googleUserId: info.googleId,
+            googleToken: info.accessToken,
+            info: {
+              name: info.profileObj.name,
+              email: info.profileObj.email || data.email,
+              picture: info.profileObj.imageUrl
+            }
+          }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('FETCH_CONTACTS', {}));
+        }
       });
     }
   }, {
@@ -201,18 +198,20 @@ var HomeStore = exports.HomeStore = (_class = function () {
           picture: info.picture.data.url
         });
         // send data to chrome extension
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.userID }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
-          facebookUserId: info.userID,
-          facebookToken: info.accessToken,
-          info: {
-            name: info.name,
-            email: info.email || data.email,
-            picture: info.picture.data.url
-          }
-        }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
-        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
+        if (_this3.isInstalledOnChromeDesktop) {
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_HASH', { userHash: info.userID }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_FULFILLED', {
+            facebookUserId: info.userID,
+            facebookToken: info.accessToken,
+            info: {
+              name: info.name,
+              email: info.email || data.email,
+              picture: info.picture.data.url
+            }
+          }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('USER_AFTER_LOGIN', { userId: data.id }));
+          (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('PRELOAD_SHARE_ALL', { userId: data.id }));
+        }
       });
     }
   }, {
@@ -229,33 +228,10 @@ var HomeStore = exports.HomeStore = (_class = function () {
         logger.warn('userHistory', _this4.userHistory);
       });
     }
-  }, {
-    key: 'autoLogin',
-    value: function autoLogin(auth) {
-      logger.warn('autoLogin', auth);
-      var isLogin = auth.isLogin,
-          userId = auth.userId,
-          userHash = auth.userHash;
-
-      if (userId > 0) {
-        this.isLogin = isLogin;
-        this.userId = userId;
-        this.userHash = userHash;
-      }
-    }
-  }, {
-    key: 'logoutUser',
-    value: function logoutUser() {
-      (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('AUTH_LOGOUT', {}));
-      this.isLogin = false;
-      this.userId = -1;
-      this.userHash = '';
-      this.userHistory = null;
-    }
   }]);
 
   return HomeStore;
-}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'googleConnectResult', [_mobx.observable], {
+}(_core.CoreStore), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'googleConnectResult', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {};
@@ -270,61 +246,39 @@ var HomeStore = exports.HomeStore = (_class = function () {
   initializer: function initializer() {
     return {};
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'userId', [_mobx.observable], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, 'currentTermId', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return -1;
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, 'currentTermId', [_mobx.observable], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, 'friendStreamId', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return -1;
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, 'friendStreamId', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return -1;
-  }
-}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, 'isLogin', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return false;
-  }
-}), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, 'isInstall', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return false;
-  }
-}), _descriptor9 = _applyDecoratedDescriptor(_class.prototype, 'userHash', [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return '';
-  }
-}), _descriptor10 = _applyDecoratedDescriptor(_class.prototype, 'googleUser', [_mobx.observable], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, 'googleUser', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {};
   }
-}), _descriptor11 = _applyDecoratedDescriptor(_class.prototype, 'facebookUser', [_mobx.observable], {
+}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, 'facebookUser', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {};
   }
-}), _descriptor12 = _applyDecoratedDescriptor(_class.prototype, 'userHistory', [_mobx.observable], {
+}), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, 'userHistory', [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return null;
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'autoLogin', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'autoLogin'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'logoutUser', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'logoutUser'), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, 'googleConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'googleConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'facebookConnect', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'facebookConnect'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'getUserHistory', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'getUserHistory'), _class.prototype)), _class);
 
-function initStore(isServer) {
-  var isLogin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
+function initStore(isServer, userAgent) {
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, isLogin, false);
+    return new HomeStore(isServer, userAgent);
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, isLogin, (0, _chrome.hasInstalledExtension)());
+      store = new HomeStore(isServer, userAgent);
     }
     return store;
   }

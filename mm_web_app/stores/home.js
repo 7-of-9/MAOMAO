@@ -1,45 +1,31 @@
 import { action, reaction, when, observable } from 'mobx'
 import * as logger from 'loglevel'
+import { CoreStore } from './core'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
-import { hasInstalledExtension, sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
+import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 
 let store = null
 
-export class HomeStore {
+export class HomeStore extends CoreStore {
   @observable googleConnectResult = {}
   @observable facebookConnectResult = {}
   @observable userHistoryResult = {}
-  @observable userId = -1
   @observable currentTermId = -1
   @observable friendStreamId = -1
-  @observable isLogin = false
-  @observable isInstall = false
-  @observable userHash = ''
   @observable googleUser = {}
   @observable facebookUser = {}
   @observable userHistory = null
 
-  constructor (isServer, isLogin, isInstall) {
-    this.isLogin = isLogin
-    this.isInstall = isInstall
+  constructor (isServer, userAgent) {
+    super(isServer, userAgent)
     reaction(() => this.userHash.length,
      (userHash) => {
        if (userHash > 0) {
-         logger.warn('yeah...')
+         logger.warn('yeah... getUserHistory')
          this.getUserHistory()
-         this.acceptInviteCode()
        }
      })
-  }
-
-  @action checkInstall () {
-    logger.warn('hasInstalledExtension', hasInstalledExtension())
-    this.isInstall = hasInstalledExtension()
-  }
-
-  @action acceptInviteCode () {
-    logger.warn('acceptInviteCode')
   }
 
   @action googleConnect (info) {
@@ -58,19 +44,21 @@ export class HomeStore {
           picture: info.profileObj.imageUrl
         })
         // send data to chrome extension
-        sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.googleId }))
-        sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
-          googleUserId: info.googleId,
-          googleToken: info.accessToken,
-          info: {
-            name: info.profileObj.name,
-            email: info.profileObj.email || data.email,
-            picture: info.profileObj.imageUrl
-          }
-        }))
-        sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
-        sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
-        sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', { }))
+        if (this.isInstalledOnChromeDesktop) {
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.googleId }))
+          sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+            googleUserId: info.googleId,
+            googleToken: info.accessToken,
+            info: {
+              name: info.profileObj.name,
+              email: info.profileObj.email || data.email,
+              picture: info.profileObj.imageUrl
+            }
+          }))
+          sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
+          sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+          sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', { }))
+        }
       }
     )
   }
@@ -91,18 +79,20 @@ export class HomeStore {
           picture: info.picture.data.url
         })
         // send data to chrome extension
-        sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.userID }))
-        sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
-          facebookUserId: info.userID,
-          facebookToken: info.accessToken,
-          info: {
-            name: info.name,
-            email: info.email || data.email,
-            picture: info.picture.data.url
-          }
-        }))
-        sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
-        sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+        if (this.isInstalledOnChromeDesktop) {
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.userID }))
+          sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+            facebookUserId: info.userID,
+            facebookToken: info.accessToken,
+            info: {
+              name: info.name,
+              email: info.email || data.email,
+              picture: info.picture.data.url
+            }
+          }))
+          sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
+          sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+        }
       }
     )
   }
@@ -118,32 +108,14 @@ export class HomeStore {
       }
     )
   }
-
-  @action autoLogin (auth) {
-    logger.warn('autoLogin', auth)
-    const { isLogin, userId, userHash } = auth
-    if (userId > 0) {
-      this.isLogin = isLogin
-      this.userId = userId
-      this.userHash = userHash
-    }
-  }
-
-  @action logoutUser () {
-    sendMsgToChromeExtension(actionCreator('AUTH_LOGOUT', {}))
-    this.isLogin = false
-    this.userId = -1
-    this.userHash = ''
-    this.userHistory = null
-  }
 }
 
-export function initStore (isServer, isLogin = false) {
+export function initStore (isServer, userAgent) {
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, isLogin, false)
+    return new HomeStore(isServer, userAgent)
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, isLogin, hasInstalledExtension())
+      store = new HomeStore(isServer, userAgent)
     }
     return store
   }

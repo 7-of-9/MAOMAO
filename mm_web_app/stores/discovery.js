@@ -1,4 +1,4 @@
-import { action, reaction, when, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import { googleKnowlegeSearchByTerm, youtubeSearchByKeyword } from '../services/google'
 import * as logger from 'loglevel'
 
@@ -7,9 +7,18 @@ let store = null
 class DiscoveryStore {
   @observable terms = []
   @observable page = 1
+  @observable youtubePageToken = ''
+  @observable googleKnowledgeResult = {}
+  @observable youtubeResult = {}
 
   @action changeTerms (terms) {
     this.terms = terms
+  }
+
+  @action search (page) {
+    this.page = page
+    this.googleKnowledgeResult = googleKnowlegeSearchByTerm(this.terms.join(' '), this.page)
+    this.youtubeResult = youtubeSearchByKeyword(this.terms.join(' '), this.youtubePageToken)
   }
 
   constructor (isServer, terms) {

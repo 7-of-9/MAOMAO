@@ -21,13 +21,13 @@ var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
-
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
-
 var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
 var _inherits2 = require('babel-runtime/helpers/inherits');
 
@@ -42,6 +42,8 @@ var logger = _interopRequireWildcard(_loglevel);
 var _home = require('./home');
 
 var _share = require('../services/share');
+
+var _chrome = require('../utils/chrome');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -98,7 +100,41 @@ var store = null;
 var InviteStore = (_class = function (_HomeStore) {
   (0, _inherits3.default)(InviteStore, _HomeStore);
 
+  function InviteStore(isServer, userAgent, shareCode, shareInfo) {
+    (0, _classCallCheck3.default)(this, InviteStore);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, userAgent));
+
+    _initDefineProp(_this, 'shareCode', _descriptor, _this);
+
+    _initDefineProp(_this, 'acceptInviteResult', _descriptor2, _this);
+
+    _initDefineProp(_this, 'inviteResult', _descriptor3, _this);
+
+    _initDefineProp(_this, 'shareInfo', _descriptor4, _this);
+
+    _this.shareCode = shareCode;
+    _this.shareInfo = shareInfo;
+    (0, _mobx.reaction)(function () {
+      return _this.userHash.length;
+    }, function (userHash) {
+      if (userHash > 0) {
+        logger.warn('yeah... acceptInviteCode');
+        _this.acceptInviteCode();
+      }
+    });
+    return _this;
+  }
+
   (0, _createClass3.default)(InviteStore, [{
+    key: 'checkInstall',
+    value: function checkInstall() {
+      logger.warn('hasInstalledExtension', (0, _chrome.hasInstalledExtension)());
+      if (this.isChrome && !this.isMobile) {
+        this.isInstall = (0, _chrome.hasInstalledExtension)();
+      }
+    }
+  }, {
     key: 'acceptInviteCode',
     value: function acceptInviteCode() {
       var _this2 = this;
@@ -114,24 +150,6 @@ var InviteStore = (_class = function (_HomeStore) {
       });
     }
   }]);
-
-  function InviteStore(isServer, shareCode, shareInfo, isLogin) {
-    (0, _classCallCheck3.default)(this, InviteStore);
-
-    var _this = (0, _possibleConstructorReturn3.default)(this, (InviteStore.__proto__ || (0, _getPrototypeOf2.default)(InviteStore)).call(this, isServer, isLogin, false));
-
-    _initDefineProp(_this, 'shareCode', _descriptor, _this);
-
-    _initDefineProp(_this, 'acceptInviteResult', _descriptor2, _this);
-
-    _initDefineProp(_this, 'inviteResult', _descriptor3, _this);
-
-    _initDefineProp(_this, 'shareInfo', _descriptor4, _this);
-
-    _this.shareCode = shareCode;
-    _this.shareInfo = shareInfo;
-    return _this;
-  }
 
   return InviteStore;
 }(_home.HomeStore), (_descriptor = _applyDecoratedDescriptor(_class.prototype, 'shareCode', [_mobx.observable], {
@@ -154,19 +172,19 @@ var InviteStore = (_class = function (_HomeStore) {
   initializer: function initializer() {
     return {};
   }
-}), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, 'checkInstall', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'checkInstall'), _class.prototype), _applyDecoratedDescriptor(_class.prototype, 'acceptInviteCode', [_mobx.action], (0, _getOwnPropertyDescriptor2.default)(_class.prototype, 'acceptInviteCode'), _class.prototype)), _class);
 
 function initStore(isServer) {
-  var shareCode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-  var shareInfo = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var isLogin = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var userAgent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var shareCode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var shareInfo = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   logger.warn('init InviteStore');
   if (isServer && typeof window === 'undefined') {
-    return new InviteStore(isServer, shareCode, shareInfo, isLogin);
+    return new InviteStore(isServer, userAgent, shareCode, shareInfo);
   } else {
     if (store === null) {
-      store = new InviteStore(isServer, shareCode, shareInfo, isLogin);
+      store = new InviteStore(isServer, userAgent, shareCode, shareInfo);
     }
     return store;
   }

@@ -44,9 +44,7 @@ var _reactFacebookLogin2 = _interopRequireDefault(_reactFacebookLogin);
 
 var _nealReact = require('neal-react');
 
-var _reactModal = require('react-modal');
-
-var _reactModal2 = _interopRequireDefault(_reactModal);
+var _reactModalBootstrap = require('react-modal-bootstrap');
 
 var _loglevel = require('loglevel');
 
@@ -67,17 +65,6 @@ var _dec, _class;
  * AppHeader
  *
  */
-
-var customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
-  }
-};
 
 var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobxReact.observer)(_class = function (_React$Component) {
   (0, _inherits3.default)(AppHeader, _React$Component);
@@ -104,14 +91,16 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
     value: function componentDidMount() {
       var _this2 = this;
 
-      logger.warn('componentDidMount - Sending data to extension');
-      (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('WEB_CHECK_AUTH', {}), function (error, data) {
-        if (error) {
-          logger.warn(error);
-        } else {
-          _this2.props.store.autoLogin(data.payload);
-        }
-      });
+      if (this.props.store.isInstalledOnChromeDesktop) {
+        logger.warn('componentDidMount - Sending data to extension');
+        (0, _chrome.sendMsgToChromeExtension)((0, _chrome.actionCreator)('WEB_CHECK_AUTH', {}), function (error, data) {
+          if (error) {
+            logger.warn(error);
+          } else {
+            _this2.props.store.autoLogin(data.payload);
+          }
+        });
+      }
     }
   }, {
     key: 'onOpen',
@@ -157,11 +146,10 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
     key: 'render',
     value: function render() {
       logger.warn('AppHeader', this.props, this.state);
-      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModal2.default, {
+      return _react2.default.createElement(_nealReact.NavItem, null, this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onLogout }, 'Logout'), !this.props.store.isLogin && _react2.default.createElement('button', { onClick: this.onOpen }, 'Sign In'), _react2.default.createElement(_reactModalBootstrap.Modal, {
         isOpen: this.state.showModal,
-        style: customStyles,
-        onRequestClose: this.onClose,
-        contentLabel: 'Sign In' }, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement('h1', { className: 'display-4' }, 'Join MaoMao Now!')), _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
+        onRequestHide: this.onClose
+      }, _react2.default.createElement(_reactModalBootstrap.ModalHeader, null, _react2.default.createElement(_reactModalBootstrap.ModalClose, { onClick: this.onClose }), _react2.default.createElement(_reactModalBootstrap.ModalTitle, null, 'Join MaoMao Now!')), _react2.default.createElement(_reactModalBootstrap.ModalBody, null, _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('div', { className: 'row justify-content-md-center' }, _react2.default.createElement(_reactGoogleLogin2.default, {
         clientId: _constants.GOOGLE_CLIENT_ID,
         scope: 'profile email https://www.googleapis.com/auth/contacts.readonly',
         buttonText: 'LOGIN WITH GOOGLE',
@@ -173,7 +161,7 @@ var AppHeader = (_dec = (0, _mobxReact.inject)('store'), _dec(_class = (0, _mobx
         size: 'medium',
         fields: 'name,email,picture',
         callback: this.responseFacebook
-      })))));
+      }))))));
     }
   }]);
 

@@ -8,7 +8,11 @@ import * as log from 'loglevel'
 export default class Invite extends React.Component {
   static getInitialProps ({ req, query: { code, shareInfo } }) {
     const isServer = !!req
-    const store = initStore(isServer, code, shareInfo, false)
+    let userAgent = ''
+    if (req && req.headers && req.headers['user-agent']) {
+      userAgent = req.headers['user-agent']
+    }
+    const store = initStore(isServer, userAgent, code, shareInfo)
     return { isServer, ...store }
   }
 
@@ -21,7 +25,7 @@ export default class Invite extends React.Component {
     } else {
       this.isClosePopup = false
     }
-    this.store = initStore(props.isServer, props.shareCode, props.shareInfo, props.isLogin)
+    this.store = initStore(props.isServer, props.userAgent, props.shareCode, props.shareInfo)
   }
 
   render () {

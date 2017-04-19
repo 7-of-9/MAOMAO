@@ -10,21 +10,10 @@ import { inject, observer } from 'mobx-react'
 import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
-import Modal from 'react-modal'
+import { Modal, ModalHeader, ModalTitle, ModalClose, ModalBody } from 'react-modal-bootstrap'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
-  }
-}
 
 @inject('store') @observer
 class AppHeader extends React.Component {
@@ -42,14 +31,16 @@ class AppHeader extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('componentDidMount - Sending data to extension')
-    sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
-      if (error) {
-        logger.warn(error)
-      } else {
-        this.props.store.autoLogin(data.payload)
-      }
-    })
+    if (this.props.store.isInstalledOnChromeDesktop) {
+      logger.warn('componentDidMount - Sending data to extension')
+      sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
+        if (error) {
+          logger.warn(error)
+        } else {
+          this.props.store.autoLogin(data.payload)
+        }
+      })
+    }
   }
 
   onOpen () {
@@ -94,32 +85,34 @@ class AppHeader extends React.Component {
         { !this.props.store.isLogin && <button onClick={this.onOpen}>Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
-          style={customStyles}
-          onRequestClose={this.onClose}
-          contentLabel='Sign In'>
-          <div className='container'>
-            <div className='row justify-content-md-center'>
-              <h1 className='display-4'>Join MaoMao Now!</h1>
+          onRequestHide={this.onClose}
+          >
+          <ModalHeader>
+            <ModalClose onClick={this.onClose} />
+            <ModalTitle>Join MaoMao Now!</ModalTitle>
+          </ModalHeader>
+          <ModalBody>
+            <div className='container'>
+              <div className='row justify-content-md-center'>
+                <GoogleLogin
+                  clientId={GOOGLE_CLIENT_ID}
+                  scope='profile email https://www.googleapis.com/auth/contacts.readonly'
+                  buttonText='LOGIN WITH GOOGLE'
+                  onSuccess={this.onGoogleSuccess}
+                  onFailure={this.onGoogleFailure}
+                />
+              </div>
+              <div className='row justify-content-md-center'>
+                <FacebookLogin
+                  appId={FACEBOOK_APP_ID}
+                  autoLoad={false}
+                  size='medium'
+                  fields='name,email,picture'
+                  callback={this.responseFacebook}
+               />
+              </div>
             </div>
-            <div className='row justify-content-md-center'>
-              <GoogleLogin
-                clientId={GOOGLE_CLIENT_ID}
-                scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-                buttonText='LOGIN WITH GOOGLE'
-                onSuccess={this.onGoogleSuccess}
-                onFailure={this.onGoogleFailure}
-            />
-            </div>
-            <div className='row justify-content-md-center'>
-              <FacebookLogin
-                appId={FACEBOOK_APP_ID}
-                autoLoad={false}
-                size='medium'
-                fields='name,email,picture'
-                callback={this.responseFacebook}
-              />
-            </div>
-          </div>
+          </ModalBody>
         </Modal>
       </NavItem>
     )

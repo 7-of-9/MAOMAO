@@ -5,7 +5,7 @@
 */
 
 import React, { PropTypes } from 'react'
-import { compose, withState, withHandlers, onlyUpdateForKeys } from 'recompose'
+import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
 import { WithContext as ReactTags } from 'react-tag-input'
 import * as logger from 'loglevel'
 import Form from './Form'
@@ -85,7 +85,15 @@ const enhance = compose(
       })
     }
   }),
-  onlyUpdateForKeys(['terms'])
+  lifecycle({
+    componentDidMount () {
+      logger.warn('componentDidMount', this.props)
+      if (this.props.terms.length > 0 && this.props.tags.length === 0) {
+        this.props.changeTags(this.props.terms)
+      }
+    }
+  }),
+  onlyUpdateForKeys(['terms', 'tags'])
 )
 
 export default enhance(SearchBar)

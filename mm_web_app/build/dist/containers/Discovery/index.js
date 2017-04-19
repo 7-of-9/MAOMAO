@@ -131,7 +131,7 @@ var Discovery = exports.Discovery = (_dec = (0, _mobxReact.inject)('store'), _de
     };
     _this.loadMore = _this.loadMore.bind(_this);
     _this.onChange = _this.onChange.bind(_this);
-    _this.doSearch = _this.doSearch.bind(_this);
+    _this.onSearch = _this.onSearch.bind(_this);
     logger.warn('Discovery', _this.props);
     return _this;
   }
@@ -141,10 +141,17 @@ var Discovery = exports.Discovery = (_dec = (0, _mobxReact.inject)('store'), _de
     value: function loadMore() {}
   }, {
     key: 'onChange',
-    value: function onChange() {}
+    value: function onChange(terms) {
+      this.props.store.changeTerms(terms);
+    }
   }, {
-    key: 'doSearch',
-    value: function doSearch() {}
+    key: 'onSearch',
+    value: function onSearch(evt) {
+      if (evt !== undefined && evt.preventDefault) {
+        evt.preventDefault();
+      }
+      this.props.store.search(1);
+    }
   }, {
     key: 'render',
     value: function render() {
@@ -153,7 +160,7 @@ var Discovery = exports.Discovery = (_dec = (0, _mobxReact.inject)('store'), _de
       var elements = [];
       var terms = (0, _mobx.toJS)(this.props.store.terms);
       logger.warn('terms', terms);
-      return _react2.default.createElement(_nealReact.Page, null, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring'))), _react2.default.createElement(_reactSticky.StickyContainer, { className: 'container-fluid' }, _react2.default.createElement(_reactSticky.Sticky, null, _react2.default.createElement(_SearchBar2.default, { terms: terms })), elements.length > 0 && _react2.default.createElement(_reactNoSsr2.default, { onSSR: _react2.default.createElement(SRRLoading, null) }, _react2.default.createElement(_reactInfiniteScroller2.default, {
+      return _react2.default.createElement(_nealReact.Page, null, _react2.default.createElement(_head2.default, null, _react2.default.createElement('meta', { charSet: 'utf-8' }), _react2.default.createElement('title', null, title), _react2.default.createElement('meta', { name: 'description', content: description }), _react2.default.createElement('meta', { name: 'og:title', content: title }), _react2.default.createElement('meta', { name: 'og:description', content: description }), _react2.default.createElement('meta', { name: 'og:image', content: _constants.MAOMAO_SITE_URL + 'static/images/logo.png' }), _react2.default.createElement('meta', { name: 'fb:app_id', content: _constants.FACEBOOK_APP_ID }), _react2.default.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }), _react2.default.createElement('link', { rel: 'chrome-webstore-item', href: 'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' }), _react2.default.createElement('script', { src: 'https://code.jquery.com/jquery-3.1.1.slim.min.js' }), _react2.default.createElement('script', { src: 'https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' }), _react2.default.createElement('script', { src: 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' }), _react2.default.createElement('link', { rel: 'stylesheet', href: 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' }), _react2.default.createElement('link', { rel: 'stylesheet', href: '/static/vendors/css/nprogress.css' })), _react2.default.createElement(_nealReact.Navbar, { brand: brand }, _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/', className: 'nav-link' }, 'Home')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { href: '/discovery', className: 'nav-link' }, 'Discovery')), _react2.default.createElement(_nealReact.NavItem, null, _react2.default.createElement(_link2.default, { prefetch: true, href: '/hiring', className: 'nav-link' }, 'Hiring'))), _react2.default.createElement(_reactSticky.StickyContainer, { className: 'container-fluid' }, _react2.default.createElement(_reactSticky.Sticky, null, _react2.default.createElement(_SearchBar2.default, { terms: terms, onChange: this.onChange, onSearch: this.onSearch })), elements.length > 0 && _react2.default.createElement(_reactNoSsr2.default, { onSSR: _react2.default.createElement(SRRLoading, null) }, _react2.default.createElement(_reactInfiniteScroller2.default, {
         loadMore: this.loadMore,
         hasMore: this.state.loading,
         threshold: 200

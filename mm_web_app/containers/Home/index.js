@@ -59,11 +59,6 @@ class Home extends React.Component {
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-  }
-
-  handleSelect (index, last) {
-    logger.warn('Selected tab: ' + index + ', Last tab: ' + last)
   }
 
   onInstallSucess () {
@@ -105,17 +100,22 @@ class Home extends React.Component {
       notifications
     })
   }
+
   componentWillReact () {
     logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
   }
+
   componentDidMount () {
-    logger.warn('componentDidMount', this.props)
+    logger.warn('Home - componentDidMount', this.props)
     if (this.props.isClosePopup) {
       logger.warn('Close popup')
       window.close()
     }
     setTimeout(() => {
-      this.props.store.checkInstall()
+      this.props.store.checkEnvironment()
+      if (this.props.store.shareInfo) {
+        this.props.store.checkInstall()
+      }
     }, 100)
   }
   render () {
@@ -192,7 +192,7 @@ class Home extends React.Component {
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
-          { this.props.store.isInstall && <AppHeader notify={this.addNotification} /> }
+          <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack
           notifications={this.state.notifications.toArray()}
@@ -202,7 +202,7 @@ class Home extends React.Component {
           })}
         />
         <NoSSR>
-          { (!this.props.store.isInstall || !this.props.store.isLogin) &&
+          { (!this.props.store.isInstall || !this.props.store.isLogin) && this.props.store.isChrome &&
             <ChromeInstall
               description={description}
               title='Unlock Now'
@@ -210,10 +210,19 @@ class Home extends React.Component {
               />
             }
         </NoSSR>
+        <NoSSR>
+          { !this.props.store.isChrome &&
+            <div className='neal-hero jumbotron jumbotron-fluid text-xs-center'>
+              <div className='container'>
+                <h1>{description}</h1>
+                <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get Chrome <a href='https://www.google.com/chrome/'>here</a></p>
+              </div>
+            </div>
+          }
+        </NoSSR>
         { this.props.store.isInstall && this.props.store.isLogin &&
           <div className='container'>
             <Tabs
-              onSelect={this.handleSelect}
               selectedIndex={this.props.store.shareInfo ? 1 : 0}
               >
               <TabList>

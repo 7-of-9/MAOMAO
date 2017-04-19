@@ -56,7 +56,11 @@ var HomePage = function (_React$Component) {
       var req = _ref.req;
 
       var isServer = !!req;
-      var store = (0, _home.initStore)(isServer, false);
+      var userAgent = '';
+      if (req && req.headers && req.headers['user-agent']) {
+        userAgent = req.headers['user-agent'];
+      }
+      var store = (0, _home.initStore)(isServer, userAgent);
       return (0, _extends3.default)({ isServer: isServer }, store);
     }
   }]);
@@ -75,7 +79,7 @@ var HomePage = function (_React$Component) {
     } else {
       _this.isClosePopup = false;
     }
-    _this.store = (0, _home.initStore)(props.isServer, props.isLogin);
+    _this.store = (0, _home.initStore)(props.isServer, props.userAgent);
     return _this;
   }
 

@@ -62,6 +62,7 @@ export class Discovery extends React.Component {
     if (evt !== undefined && evt.preventDefault) {
       evt.preventDefault()
     }
+    this.props.store.search(1)
   }
 
   render () {
