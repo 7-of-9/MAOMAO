@@ -54,6 +54,7 @@ const style = {
 };
 
 const selectTopics = (topics, type) => {
+  logger.info('topics', topics, type);
   if (type === 'site') {
     return 'just this page';
   }
@@ -61,7 +62,8 @@ const selectTopics = (topics, type) => {
     return 'My browsing history';
   }
   const currentTopic = topics.find(item => item.id === type);
-  return currentTopic.name;
+  logger.info('currentTopic', currentTopic);
+  return currentTopic && currentTopic.name;
 };
 
 const selectUrl = (code, shareOption) => code[shareOption];
@@ -131,25 +133,26 @@ const ShareTopicStepOne = compose(({
 const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
-    <div className="share-social">
-      <h3 className="share-social-title">Click on button below to select.</h3>
-      <div className="toolbar-button">
-        <Toolbar
-          active={type}
-          onChange={(value) => { changeShareType(value, shareOption, 3); }}
-          onShare={shareUrl}
-          onSendMsg={sendMsgUrl}
-          style={style.toolbar}
-        />
-      </div>
-      <div className="share-footer">
-        <button className="btn btn-slide-prev"
-          onClick={() => changeShareType(type, shareOption, 1)}
-          >
-          Previous
-        </button>
-      </div>
-    </div>
+   <div className="share-social">
+     <h3 className="share-social-title">Click on button below to select.</h3>
+     <div className="toolbar-button">
+       <Toolbar
+         active={type}
+         onChange={(value) => { changeShareType(value, shareOption, 3); }}
+         onShare={shareUrl}
+         onSendMsg={sendMsgUrl}
+         style={style.toolbar}
+       />
+     </div>
+     <div className="share-footer">
+       <button
+         className="btn btn-slide-prev"
+         onClick={() => changeShareType(type, shareOption, 1)}
+       >
+      Previous
+      </button>
+     </div>
+   </div>
   ));
 
 const ShareTopicStepThree = compose(({

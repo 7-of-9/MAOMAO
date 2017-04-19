@@ -24,10 +24,13 @@ const enhance = compose(
   onlyUpdateForKeys(['topic', 'active']),
 );
 
-const ShareOptions = enhance(({ topics, active, onChange }) =>
-  <div style={style} className="share-topic">
+const ShareOptions = enhance(({ topics, active, onChange }) => {
+  const tld = topics.find(item => item.id.indexOf('tld') !== -1);
+  const experimentalTopics = topics.filter(item => item.id.indexOf('beta') !== -1);
+  const isToggleTopic = !!topics.find(item => item.id === active);
+  return (<div style={style} className="share-topic">
     <div className="switch-list">
-      <span className="share-topic-title"> Single URL: </span>    
+      <span className="share-topic-title"> Single URL: </span>
       <div className="checkbox__content">
         <div className="switch-select">
           <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
@@ -36,42 +39,58 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
       </div>
     </div>
     <div className="switch-list">
-      {
-        /*topics.map(topic =>
-          topic.id &&
-          <div className="switch-select" key={guid()}>
-            <Option key={guid()} value={active === topic.id} onToggle={() => { onChange(topic.id); }} />
-            <span className="type-name">{topic.name}</span>
-          </div>,
-        )*/
-      }
-      <span className="share-topic-title"> Topics (Multiple URLs):</span>
       <div className="checkbox__content">
-        <div className="switch-select">
-          <Option key={guid()} value={active === 'topic'} onToggle={() => { onChange('topic'); }} />
-          <span className="type-name">Topics name</span>
-        </div>
-        <div className="radio__row">
-          <div className="radio__regular">
-            <input type="radio" className="radio__regular__input" id="radio_1" name="radio" />
-            <label className="radio__regular__label" tabindex="1" htmlFor="radio_1">Smashingmagazine.com</label>
-          </div>
-        </div>
-        <div className="radio__row">
-          <div className="radio__regular">
-            <input type="radio" className="radio__regular__input" id="radio_2" name="radio" />
-            <label className="radio__regular__label" tabindex="2" htmlFor="radio_2">JavaScript</label>
-          </div>
-          <div className="radio__regular">
-            <input type="radio" className="radio__regular__input" id="radio_3" name="radio" />
-            <label className="radio__regular__label" tabindex="3" htmlFor="radio_3">Computing</label>
-          </div>
-          <div className="radio__regular">
-            <input type="radio" className="radio__regular__input" id="radio_4" name="radio" />
-            <label className="radio__regular__label" tabindex="4" htmlFor="radio_4">Technology</label>
-          </div>
+        <span className="share-topic-title"> Topics (Multiple URLs):</span>
+        <div key={guid()} className="switch-select">
+          <Option
+            key={guid()}
+            value={isToggleTopic}
+            onToggle={() => { onChange(tld.id || experimentalTopics[0].id); }}
+          />
         </div>
       </div>
+      {isToggleTopic && tld &&
+      <div className="radio__row">
+        <div className="radio__regular">
+          <input
+            id={tld.id}
+            type="radio"
+            onChange={() => { onChange(tld.id); }}
+            value={tld.id}
+            checked={active === tld.id}
+            className="radio__regular__input"
+            name="topics"
+          />
+          <label className="radio__regular__label" htmlFor={tld.id} >
+            {tld.name}
+          </label>
+        </div>
+      </div>
+      }
+      {isToggleTopic && experimentalTopics &&
+        <div>
+          <p>Experimental:</p>
+          <div className="radio__row">
+              {experimentalTopics.map(topic =>
+                <div key={guid()} className="radio__regular">
+                  <input
+                    type="radio"
+                    onChange={() => { onChange(topic.id); }}
+                    value={topic.id}
+                    id={topic.id}
+                    checked={active === topic.id}
+                    className="radio__regular__input"
+                    name="topics"
+                  />
+                  <label className="radio__regular__label" htmlFor={topic.id}>
+                    {topic.name}
+                  </label>
+                </div>,
+              )
+            }
+          </div>
+        </div>
+    }
     </div>
     <div className="switch-list mb0">
       <span className="share-topic-title"> All URLs: </span>
@@ -80,6 +99,6 @@ const ShareOptions = enhance(({ topics, active, onChange }) =>
         <span className="type-name">My browsing history</span>
       </div>
     </div>
-  </div>,
-);
+  </div>);
+ });
 export default ShareOptions;

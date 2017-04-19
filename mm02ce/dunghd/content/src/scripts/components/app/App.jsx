@@ -139,12 +139,6 @@ const notify = msg => ({
 
 function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
   const title = `Join Maomao! ${fullName} want to share with you...`;
-  // const description = '';
-  // if (topic === 'site') {
-  //
-  // } else {
-  //
-  // }
   const emailTemplate = `
     <!doctype html>
     <html>

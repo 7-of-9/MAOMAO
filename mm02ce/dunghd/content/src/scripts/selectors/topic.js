@@ -11,13 +11,13 @@ const getCurrentTopics = createSelector(
     if (records.length) {
       const existRecord = records.find(item => item.url === url);
       if (existRecord && existRecord.data.tld_topic_id) {
-        topics.push({ id: `${existRecord.data.tld_topic_id}-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
+        topics.push({ id: `${existRecord.data.tld_topic_id}-tld-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
       }
     }
     if (terms.length) {
       const existRecord = terms.find(item => item.url === url);
       if (existRecord) {
-        topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-${item.term_name}`, name: item.term_name })));
+        topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-beta-${item.term_name}`, name: item.term_name })));
       }
     }
     return topics;

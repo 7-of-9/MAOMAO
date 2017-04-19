@@ -51,7 +51,7 @@ const defaultProps = {
 };
 
 const isRunable = (url, icon) => {
-  logger.warn('isRunable url, icon', url, icon);
+  logger.info('isRunable url, icon', url, icon);
   const curentIcon = icon.urls.find(item => item.url === url);
   if ((curentIcon && curentIcon.text.length === 0) || (curentIcon && curentIcon.text.indexOf('!') !== -1)) {
     return false;
@@ -60,7 +60,7 @@ const isRunable = (url, icon) => {
 };
 
 const isAllowToShare = (url, records) => {
-  logger.warn('isAllowToShare url, records', url, records);
+  logger.info('isAllowToShare url, records', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -70,18 +70,18 @@ const isAllowToShare = (url, records) => {
 };
 
 const getCurrentTopics = (url, records, terms) => {
-  logger.warn('getCurrentTopics url, records, terms', url, records, terms);
+  logger.info('getCurrentTopics url, records, terms', url, records, terms);
   const topics = [];
   if (records.length) {
     const existRecord = records.find(item => item.url === url);
     if (existRecord && existRecord.data.tld_topic_id) {
-      topics.push({ id: `${existRecord.data.tld_topic_id}-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
+      topics.push({ id: `${existRecord.data.tld_topic_id}-tld-${existRecord.data.tld_topic}`, name: existRecord.data.tld_topic });
     }
   }
   if (terms.length) {
     const existRecord = terms.find(item => item.url === url);
     if (existRecord) {
-      topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-${item.term_name}`, name: item.term_name })));
+      topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-beta-${item.term_name}`, name: item.term_name })));
     }
   }
   return topics;
@@ -113,7 +113,7 @@ const getShareTopicCode = (code, key) => {
 };
 
 const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
-  logger.warn('render auth, nlp, url, icon, shareOption', auth, nlp, url, icon, shareOption);
+  logger.info('render auth, nlp, url, icon, shareOption', auth, nlp, url, icon, shareOption);
   if (!url) {
     return (
       <div className="popup-browser">
@@ -266,7 +266,7 @@ const enhance = compose(
       props.updateShareOption(val);
     },
     getLink: props => () => {
-      logger.warn('shareOption', props.shareOption);
+      logger.info('shareOption', props.shareOption);
       switch (props.shareOption) {
         case 'all': return getShareAllCode(props.code);
         case 'site': return getShareUrlCode(props.url, props.code, props.nlp.records);

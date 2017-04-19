@@ -37,7 +37,7 @@ const getShareTopicCodes = createSelector(
         const { data: { tld_topic_id, tld_topic } } = exist;
         const findCode = codes.topics.find(item => item && item.id === tld_topic_id);
         if (findCode && tld_topic_id) {
-          topics[`${tld_topic_id}-${tld_topic}`] = findCode.share_code;
+          topics[`${tld_topic_id}-tld-${tld_topic}`] = findCode.share_code;
         }
       }
     }
@@ -48,7 +48,7 @@ const getShareTopicCodes = createSelector(
         const findCodes = codes.topics.filter(item => item && termIds.indexOf(item.id) !== -1);
         if (findCodes.length) {
           findCodes.forEach(({ id, name, share_code }) => {
-            topics[`${id}-${name}`] = share_code;
+            topics[`${id}-beta-${name}`] = share_code;
           });
         }
       }
