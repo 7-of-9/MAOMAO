@@ -1,6 +1,6 @@
 # Don't check auto-generated stuff into git
 coverage
-# build -- deploy build file to azure
+build -- deploy build file to azure
 node_modules
 stats.json
 
