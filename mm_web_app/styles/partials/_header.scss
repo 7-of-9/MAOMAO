@@ -8,14 +8,33 @@ the header section
 .neal-navbar-wrapper {
   .header-nav {
     height: 72px;
-    overflow: hidden;
     background-color: #fff;
     border-bottom: 1px solid #e1e5eb;
+    .container {
+      @media (max-width: 767px) {
+        width: 100%;
+      }
+    }
     .navbar-brand {
       padding: 0;
       float: left;
       .logo {
         padding: 0;
+      }
+      &.hidden-sm-down {
+        @media (max-width: 767px) {
+          display: block !important;
+        }
+      }
+    }
+    .navbar-toggler {
+      cursor: pointer;
+      @media (max-width: 767px) {
+        @include border-radius(3px);
+        margin-top: 9px;
+        float: right;
+        border: 1px solid #ccc;
+        padding: 0.5rem 0.75rem;
       }
     }
     .navbar-toggleable-sm {
@@ -41,6 +60,12 @@ the header section
             &:focus {
               @include transition(all 0.2s ease-out 0s);
             }
+            @media (max-width: 768px) {
+              margin: 0.4375rem 0;
+            }
+          }
+          @media (max-width: 768px) {
+            padding: 0 1rem;
           }
         }
       }
@@ -55,6 +80,52 @@ the header section
       }
       .hReOhH {
         margin-top: 21px;
+      }
+      .paragraph-smarter {
+        @media (max-width: 970px) {
+          display: none;
+        }
+      }
+    }
+    .neal-mobile-nav {
+      position: absolute;
+      top: 54px;
+      left: auto;
+      right: 15px;
+      z-index: 1000;
+      padding: 0.4375rem 0;
+      margin: 0;
+      float: left;
+      min-width: 150px;
+      font-size: 14px;
+      text-align: left;
+      list-style: none;
+      background-color: #fff;
+      -webkit-background-clip: padding-box;
+      background-clip: padding-box;
+      border: 1px solid #ccc;
+      border: 1px solid rgba(0, 0, 0, .15);
+      -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+      .btn-login {
+        color: #222;
+        &,
+        &:hover,
+        &:focus {
+          @include box-shadow(none);
+          background: none;
+          padding: 0;
+          margin: 0.4375rem 0;
+          font-weight: 700;
+          font-size: 0.875rem;
+          line-height: 1rem;
+          border: 0;
+          text-transform: uppercase;
+        }
+        &:hover,
+        &:focus {
+          color: #2db7f5;
+        }
       }
     }
   }

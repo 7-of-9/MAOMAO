@@ -15,10 +15,24 @@ footer.neal-footer {
   .neal-footer-copyright {
     margin-top: 5px;
   }
+  .neal-footer-copyright,
+  address {
+    @media (max-width: 350px) {
+      text-align: center;
+    }
+  }
   .neal-footer-social {
     flex-direction: row;
     .neal-footer-social-icon {
       margin-left: 0.625rem;
+      @media (max-width: 350px) {
+        margin-left: 0;
+      }
+    }
+    @media (max-width: 350px) {
+      margin-top: 5px;
+      float: none !important;
+      justify-content: center;
     }
   }
 }

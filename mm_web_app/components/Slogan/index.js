@@ -37,7 +37,7 @@ function Slogan () {
       <MaomaoImage
         onClick={() => { window.location.href = '/' }} src='/static/images/maomao.png'
       />
-      <Description> get smarter </Description>
+      <Description className='paragraph-smarter'> get smarter </Description>
     </Wrapper>
   )
 }
