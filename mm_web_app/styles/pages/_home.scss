@@ -17,6 +17,9 @@ the home page
     h1 {
       line-height: 50px;
     }
+    @media (min-width: 576px){
+      padding: 14rem 10rem;
+    }
   }
 }
 
