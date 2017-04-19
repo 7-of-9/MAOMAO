@@ -88,3 +88,43 @@ the button section
     opacity: .65;
   }
 }
+
+.btn-login {
+  @include border-radius(2px);
+  padding: 9px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background: #1b8ff2;
+  border: 1px solid #1b8ff2;
+  &:hover,
+  &:focus {
+    background: #3aa4ff;
+    border: 1px solid #3aa4ff;
+    color: #fff;
+  }
+}
+
+.btn-unlock,
+.btn-addto,
+.btn-share {
+  @include border-radius(3px);
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #51c04e;
+  border: 1px solid #51c04e;
+  color: #fff;
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: #5ddb5a;
+    border: 1px solid #5ddb5a;
+  }
+}
+
+.btn-addto {
+  margin-left: 20px;
+}
+
+.btn-share {
+  margin-left: 7px;
+}
