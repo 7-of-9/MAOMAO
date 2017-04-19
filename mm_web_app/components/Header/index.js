@@ -23,7 +23,7 @@ const Wrapper = styled.div`
 
 function Header (props) {
   return (
-    <Wrapper> {props.children}</Wrapper>
+    <Wrapper className="logo"> {props.children}</Wrapper>
   )
 }
 

@@ -52,4 +52,10 @@ function FriendStreams(_ref) {
   return _react2.default.createElement('div', { className: 'container-fluid' }, _react2.default.createElement('h1', null, 'Friend Streams'), items);
 }
 
+FriendStreams.propTypes = {
+  friends: _propTypes2.default.array.isRequired,
+  activeId: _propTypes2.default.number.isRequired,
+  changeFriendStream: _propTypes2.default.func.isRequired
+};
+
 exports.default = FriendStreams;
