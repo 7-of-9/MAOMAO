@@ -201,20 +201,13 @@ class Home extends React.Component {
         />
         <NoSSR onSSR={<Loading isLoading />}>
           <div>
-            { !this.props.store.isLogin && this.props.store.isChrome &&
+            { !this.props.store.isLogin &&
               <ChromeInstall
                 description={description}
                 title='Unlock Now'
                 install={this.inlineInstall}
+                isChrome={this.props.store.isChrome}
                 />
-            }
-            { !this.props.store.isChrome &&
-              <div className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'>
-                <div className='container'>
-                  <h1 className='animated fadeInUp'>{description}</h1>
-                  <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome/'>Chrome here</a></p>
-                </div>
-              </div>
             }
           </div>
         </NoSSR>

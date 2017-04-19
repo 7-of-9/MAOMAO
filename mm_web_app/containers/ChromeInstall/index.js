@@ -60,7 +60,7 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, store: { isInstall, isLogin, shareInfo } } = this.props
+    const { title, description, install, isChrome, store: { isInstall, isLogin, shareInfo } } = this.props
     logger.warn('ChromeInstall isInstall, isLogin, shareInfo', isInstall, isLogin, shareInfo)
     const isShow = !isLogin && isInstall && !!shareInfo
     return (
@@ -74,9 +74,10 @@ class ChromeInstall extends React.Component {
             <p>Yeah! One more step to viewing your friend sharing. Please sigin in.</p>
             <button onClick={this.onClose}>Close</button>
           </Modal>
-          {!isInstall && <UnlockNow install={install} title={title} /> }
-          {!isInstall && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
-          {!isInstall && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
+          {!isChrome && <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome'>Chrome here</a></p>}
+          {!isInstall && isChrome && <UnlockNow install={install} title={title} /> }
+          {!isInstall && isChrome && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+          {!isInstall && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
         </Hero>
         <Section className='section-list'>
           <div className='section-item'>
@@ -106,6 +107,7 @@ class ChromeInstall extends React.Component {
 }
 
 ChromeInstall.propTypes = {
+  isChrome: React.PropTypes.func.isRequired,
   install: React.PropTypes.func.isRequired,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string.isRequired
