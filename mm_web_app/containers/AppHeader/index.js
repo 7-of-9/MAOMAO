@@ -64,10 +64,10 @@ class AppHeader extends React.Component {
 
   onGoogleSuccess (response) {
     logger.info('onGoogleSuccess', response)
-    this.onClose()
     if (response.error) {
       this.props.notify(response.error)
     } else {
+      this.onClose()
       this.props.notify('Login with google account...')
       this.props.store.googleConnect(response)
     }
@@ -80,8 +80,8 @@ class AppHeader extends React.Component {
 
   responseFacebook (response) {
     logger.info('responseFacebook', response)
-    this.onClose()
-    if (response && response.info) {
+    if (response && response.id) {
+      this.onClose()
       this.props.notify('Login with facebook account...')
       this.props.store.facebookConnect(response)
     }

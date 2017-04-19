@@ -61,6 +61,7 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', { }))
         } else {
           this.login(this.userId, this.userHash)
+          this.getUserHistory()
         }
       }
     )
@@ -98,6 +99,7 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
         } else {
           this.login(this.userId, this.userHash)
+          this.getUserHistory()
         }
       }
     )
