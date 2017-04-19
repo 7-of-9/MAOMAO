@@ -75,8 +75,8 @@ class ChromeInstall extends React.Component {
             <button onClick={this.onClose}>Close</button>
           </Modal>
           {!isInstall && <UnlockNow install={install} title={title} /> }
-          {!isInstall && <AddToChrome className="btn btn-addto" onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
-          {!isInstall && <Share className="btn btn-share"><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
+          {!isInstall && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+          {!isInstall && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
         </Hero>
         <Section className='section-list'>
           <div className='section-item'>

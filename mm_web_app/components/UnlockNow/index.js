@@ -16,7 +16,7 @@ const Button = styled.button`
 
 function UnlockNow ({ title, install }) {
   return (
-    <Button className="btn btn-unlock" onClick={install}>{title} </Button>
+    <Button className='btn btn-unlock' onClick={install}>{title} </Button>
   )
 }
 

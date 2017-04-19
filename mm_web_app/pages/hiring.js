@@ -5,6 +5,7 @@ export default () => (
     <Head>
       <title>Maomao is coming, and we're hiring...</title>
       <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+      <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
       <script src='/static/vendors/js/close_pixelate.js' />
       <script src='/static/vendors/js/logo.js' />
     </Head>

@@ -44,6 +44,7 @@ export class HomeStore extends CoreStore {
           picture: info.profileObj.imageUrl
         })
         // send data to chrome extension
+        logger.warn('isInstalledOnChromeDesktop', this.isInstalledOnChromeDesktop)
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.googleId }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
@@ -58,6 +59,8 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', { }))
+        } else {
+          this.login(this.userId, this.userHash)
         }
       }
     )
@@ -79,6 +82,7 @@ export class HomeStore extends CoreStore {
           picture: info.picture.data.url
         })
         // send data to chrome extension
+        logger.warn('isInstalledOnChromeDesktop', this.isInstalledOnChromeDesktop)
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.userID }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
@@ -92,6 +96,8 @@ export class HomeStore extends CoreStore {
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+        } else {
+          this.login(this.userId, this.userHash)
         }
       }
     )

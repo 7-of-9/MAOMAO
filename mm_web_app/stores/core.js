@@ -1,9 +1,12 @@
 import { observable, computed, action } from 'mobx'
+import localforage from 'localforage'
 import * as logger from 'loglevel'
 import { isMobileBrowser, isChromeBrowser } from '../utils/detector'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 
 let store = null
+const USER_ID = 'MM_USER_ID'
+const USER_HASH = 'MM_USER_HASH'
 
 export class CoreStore {
   isMobile = false
@@ -16,6 +19,17 @@ export class CoreStore {
   constructor (isServer, userAgent) {
     this.userAgent = userAgent
     this.isMobile = isMobileBrowser(userAgent)
+    localforage.getItem(USER_ID).then((userId) => {
+      if (userId && userId > 0) {
+        this.userId = userId
+        this.isLogin = true
+      }
+    })
+    localforage.getItem(USER_HASH).then((userHash) => {
+      if (userHash && userHash.length > 0) {
+        this.userHash = userHash
+      }
+    })
   }
 
   @computed get isInstalledOnChromeDesktop () {
@@ -30,6 +44,11 @@ export class CoreStore {
     }
   }
 
+  @action login (userId, userHash) {
+    localforage.setItem(USER_ID, this.userId)
+    localforage.setItem(USER_HASH, this.userHash)
+  }
+
   @action autoLogin (auth) {
     logger.warn('autoLogin', auth)
     const { isLogin, userId, userHash } = auth
@@ -37,6 +56,7 @@ export class CoreStore {
       this.isLogin = isLogin
       this.userId = userId
       this.userHash = userHash
+      this.login(userId, userHash)
     }
   }
 
@@ -48,6 +68,8 @@ export class CoreStore {
     this.userId = -1
     this.userHash = ''
     this.userHistory = null
+    localforage.setItem(USER_ID, this.userId)
+    localforage.setItem(USER_HASH, this.userHash)
   }
 }
 

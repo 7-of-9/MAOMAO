@@ -1,4 +1,5 @@
 function initLogoAnimation () {
+  console.info('initLogoAnimation')
   let i = 1
   let d = 0.01
   let l = 10
@@ -20,4 +21,6 @@ function initLogoAnimation () {
   requestAnimationFrame(draw)
 }
 
-window.addEventListener('load', initLogoAnimation, false)
+$(function () {
+  window.addEventListener('load', initLogoAnimation, false)
+})

@@ -190,7 +190,7 @@ class Home extends React.Component {
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
           <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
           <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
-          { this.props.store.isInstall && <AppHeader notify={this.addNotification} /> }
+          <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack
           notifications={this.state.notifications.toArray()}
@@ -199,26 +199,26 @@ class Home extends React.Component {
             notifications: this.state.notifications.delete(notification)
           })}
         />
-        <NoSSR>
-          { (!this.props.store.isInstall || !this.props.store.isLogin) && this.props.store.isChrome &&
-            <ChromeInstall
-              description={description}
-              title='Unlock Now'
-              install={this.inlineInstall}
-              />
+        <NoSSR onSSR={<Loading isLoading />}>
+          <div>
+            { !this.props.store.isLogin && this.props.store.isChrome &&
+              <ChromeInstall
+                description={description}
+                title='Unlock Now'
+                install={this.inlineInstall}
+                />
             }
-        </NoSSR>
-        <NoSSR>
-          { !this.props.store.isChrome &&
-            <div className='neal-hero jumbotron jumbotron-fluid text-xs-center'>
-              <div className='container'>
-                <h1>{description}</h1>
-                <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get Chrome <a href='https://www.google.com/chrome/'>here</a></p>
+            { !this.props.store.isChrome &&
+              <div className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'>
+                <div className='container'>
+                  <h1 className='animated fadeInUp'>{description}</h1>
+                  <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome/'>Chrome here</a></p>
+                </div>
               </div>
-            </div>
-          }
+            }
+          </div>
         </NoSSR>
-        { this.props.store.isInstall && this.props.store.isLogin &&
+        { this.props.store.isLogin &&
           <div className='container'>
             <Tabs
               selectedIndex={this.props.store.shareInfo ? 1 : 0}

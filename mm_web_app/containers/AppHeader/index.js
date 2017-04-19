@@ -10,10 +10,21 @@ import { inject, observer } from 'mobx-react'
 import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
-import { Modal, ModalHeader, ModalTitle, ModalClose, ModalBody } from 'react-modal-bootstrap'
+import Modal from 'react-modal'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)'
+  }
+}
 
 @inject('store') @observer
 class AppHeader extends React.Component {
@@ -82,37 +93,34 @@ class AppHeader extends React.Component {
     return (
       <NavItem>
         { this.props.store.isLogin && <button onClick={this.onLogout}>Logout</button> }
-        { !this.props.store.isLogin && <button className="btn btn-login" onClick={this.onOpen}>Sign In</button> }
+        { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onOpen}>Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
-          onRequestHide={this.onClose}
-          >
-          <ModalHeader>
-            <ModalClose onClick={this.onClose} />
-            <ModalTitle>Join MaoMao Now!</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <div className='container'>
-              <div className='row justify-content-md-center'>
-                <GoogleLogin
-                  clientId={GOOGLE_CLIENT_ID}
-                  scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-                  buttonText='LOGIN WITH GOOGLE'
-                  onSuccess={this.onGoogleSuccess}
-                  onFailure={this.onGoogleFailure}
+          onRequestClose={this.onClose}
+          style={customStyles}
+          contentLabel='Sign In Modal'
+        >
+          <h2 ref='subtitle'>Sign In</h2>
+          <div className='container'>
+            <div className='row justify-content-md-center'>
+              <GoogleLogin
+                clientId={GOOGLE_CLIENT_ID}
+                scope='profile email https://www.googleapis.com/auth/contacts.readonly'
+                buttonText='LOGIN WITH GOOGLE'
+                onSuccess={this.onGoogleSuccess}
+                onFailure={this.onGoogleFailure}
                 />
-              </div>
-              <div className='row justify-content-md-center'>
-                <FacebookLogin
-                  appId={FACEBOOK_APP_ID}
-                  autoLoad={false}
-                  size='medium'
-                  fields='name,email,picture'
-                  callback={this.responseFacebook}
-               />
-              </div>
             </div>
-          </ModalBody>
+            <div className='row justify-content-md-center'>
+              <FacebookLogin
+                appId={FACEBOOK_APP_ID}
+                autoLoad={false}
+                size='medium'
+                fields='name,email,picture'
+                callback={this.responseFacebook}
+               />
+            </div>
+          </div>
         </Modal>
       </NavItem>
     )
