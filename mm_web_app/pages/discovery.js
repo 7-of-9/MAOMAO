@@ -7,13 +7,13 @@ import stylesheet from '../styles/index.scss'
 export default class DiscoveryPage extends React.Component {
   static getInitialProps ({ req }) {
     const isServer = !!req
-    const store = initStore(isServer)
+    const store = initStore(isServer, [])
     return { isServer, store }
   }
 
   constructor (props) {
     super(props)
-    this.store = initStore(props.isServer)
+    this.store = initStore(props.isServer, [])
   }
 
   render () {

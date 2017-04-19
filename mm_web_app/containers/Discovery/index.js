@@ -46,7 +46,7 @@ export class Discovery extends React.Component {
     }
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
-    this.doSearch = this.doSearch.bind(this)
+    this.onSearch = this.onSearch.bind(this)
     logger.warn('Discovery', this.props)
   }
 
@@ -54,12 +54,14 @@ export class Discovery extends React.Component {
 
   }
 
-  onChange () {
-
+  onChange (terms) {
+    this.props.store.changeTerms(terms)
   }
 
-  doSearch () {
-
+  onSearch (evt) {
+    if (evt !== undefined && evt.preventDefault) {
+      evt.preventDefault()
+    }
   }
 
   render () {
@@ -93,7 +95,7 @@ export class Discovery extends React.Component {
         </Navbar>
         <StickyContainer className='container-fluid'>
           <Sticky>
-            <SearchBar terms={terms} />
+            <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
           </Sticky>
           {
           elements.length > 0 &&
