@@ -11,7 +11,7 @@ const USER_HASH = 'MM_USER_HASH'
 export class CoreStore {
   isMobile = false
   userAgent = {}
-  @observable isChrome = true
+  @observable isChrome = false
   @observable userHash = ''
   @observable userId = -1
   @observable isInstall = false
@@ -20,12 +20,14 @@ export class CoreStore {
     this.userAgent = userAgent
     this.isMobile = isMobileBrowser(userAgent)
     localforage.getItem(USER_ID).then((userId) => {
+      logger.warn('userId', userId)
       if (userId && userId > 0) {
         this.userId = userId
         this.isLogin = true
       }
     })
     localforage.getItem(USER_HASH).then((userHash) => {
+      logger.warn('userHash', userHash)
       if (userHash && userHash.length > 0) {
         this.userHash = userHash
       }
@@ -37,10 +39,11 @@ export class CoreStore {
   }
 
   @action checkEnvironment () {
-    logger.warn('checkEnvironment')
-    this.isChrome = isChromeBrowser()
+    logger.info('checkEnvironment')
+    this.isChrome = !!isChromeBrowser()
     if (this.isChrome) {
-      this.isInstall = hasInstalledExtension()
+      logger.info('hasInstalledExtension', hasInstalledExtension())
+      this.isInstall = !!hasInstalledExtension()
     }
   }
 
@@ -74,7 +77,7 @@ export class CoreStore {
 }
 
 export function initStore (isServer, userAgent = '') {
-  logger.warn('init CoreStore')
+  logger.info('init CoreStore')
   if (isServer && typeof window === 'undefined') {
     return new CoreStore(isServer, userAgent)
   } else {

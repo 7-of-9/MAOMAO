@@ -42,11 +42,11 @@ class AppHeader extends React.Component {
   }
 
   componentDidMount () {
+    logger.info('componentDidMount - AppHeader', this.props.store)
     if (this.props.store.isInstalledOnChromeDesktop) {
-      logger.warn('componentDidMount - Sending data to extension')
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
-          logger.warn(error)
+          logger.error(error)
         } else {
           this.props.store.autoLogin(data.payload)
         }
@@ -55,7 +55,6 @@ class AppHeader extends React.Component {
   }
 
   onOpen () {
-    logger.warn('onOpen')
     this.setState({ showModal: true })
   }
 
@@ -64,32 +63,37 @@ class AppHeader extends React.Component {
   }
 
   onGoogleSuccess (response) {
-    logger.warn('onGoogleSuccess', response)
+    logger.info('onGoogleSuccess', response)
     this.onClose()
-    this.props.notify('Login with google account...')
-    this.props.store.googleConnect(response)
+    if (response.error) {
+      this.props.notify(response.error)
+    } else {
+      this.props.notify('Login with google account...')
+      this.props.store.googleConnect(response)
+    }
   }
 
   onGoogleFailure (error) {
-    logger.warn('onGoogleSuccess', error)
+    logger.info('onGoogleSuccess', error)
     this.props.notify(error.message)
   }
 
   responseFacebook (response) {
-    logger.warn('responseFacebook', response)
+    logger.info('responseFacebook', response)
     this.onClose()
-    this.props.notify('Login with facebook account...')
-    this.props.store.facebookConnect(response)
+    if (response && response.info) {
+      this.props.notify('Login with facebook account...')
+      this.props.store.facebookConnect(response)
+    }
   }
 
   onLogout () {
-    logger.warn('onLogout')
     this.props.store.logoutUser()
     this.props.notify('Logout.')
   }
 
   render () {
-    logger.warn('AppHeader', this.props, this.state)
+    logger.info('AppHeader', this.props, this.state)
     return (
       <NavItem>
         { this.props.store.isLogin && <button onClick={this.onLogout}>Logout</button> }

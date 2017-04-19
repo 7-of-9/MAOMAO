@@ -87,7 +87,7 @@ const enhance = compose(
   }),
   lifecycle({
     componentDidMount () {
-      logger.warn('componentDidMount', this.props)
+      logger.info('componentDidMount', this.props)
       if (this.props.terms.length > 0 && this.props.tags.length === 0) {
         this.props.changeTags(this.props.terms)
       }

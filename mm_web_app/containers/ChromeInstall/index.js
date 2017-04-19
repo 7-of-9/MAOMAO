@@ -11,6 +11,7 @@ import { Hero, Section } from 'neal-react'
 import Modal from 'react-modal'
 import * as logger from 'loglevel'
 import UnlockNow from '../../components/UnlockNow'
+import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
 const customStyles = {
   content: {
@@ -51,6 +52,19 @@ class ChromeInstall extends React.Component {
     this.onClose = this.onClose.bind(this)
   }
 
+  componentDidMount () {
+    logger.info('ChromeInstall - componentDidMount', this.props.store)
+    if (this.props.store.isInstalledOnChromeDesktop) {
+      sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
+        if (error) {
+          logger.error(error)
+        } else {
+          this.props.store.autoLogin(data.payload)
+        }
+      })
+    }
+  }
+
   componentWillReact () {
     logger.warn('ChromeInstall will re-render, since the data has changed!')
   }
@@ -60,8 +74,8 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, isChrome, store: { isInstall, isLogin, shareInfo } } = this.props
-    logger.warn('ChromeInstall isInstall, isLogin, shareInfo', isInstall, isLogin, shareInfo)
+    const { title, description, install, store: { isChrome, isInstall, isLogin, shareInfo } } = this.props
+    logger.info('ChromeInstall isChrome, isInstall, isLogin, shareInfo ', isChrome, isInstall, isLogin, shareInfo)
     const isShow = !isLogin && isInstall && !!shareInfo
     return (
       <Wrapper className='wrap-main'>
@@ -107,7 +121,6 @@ class ChromeInstall extends React.Component {
 }
 
 ChromeInstall.propTypes = {
-  isChrome: React.PropTypes.func.isRequired,
   install: React.PropTypes.func.isRequired,
   title: React.PropTypes.string.isRequired,
   description: React.PropTypes.string.isRequired

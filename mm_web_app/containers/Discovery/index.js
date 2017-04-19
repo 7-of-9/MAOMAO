@@ -47,7 +47,7 @@ export class Discovery extends React.Component {
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
     this.onSearch = this.onSearch.bind(this)
-    logger.warn('Discovery', this.props)
+    logger.info('Discovery', this.props)
   }
 
   loadMore () {
@@ -70,7 +70,6 @@ export class Discovery extends React.Component {
     const description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     let elements = []
     const terms = toJS(this.props.store.terms)
-    logger.warn('terms', terms)
     return (
       <Page>
         <Head>

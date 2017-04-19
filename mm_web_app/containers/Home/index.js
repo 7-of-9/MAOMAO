@@ -104,7 +104,7 @@ class Home extends React.Component {
     logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
   }
   componentDidMount () {
-    logger.warn('Home - componentDidMount', this.props)
+    logger.info('Home - componentDidMount', this.props)
     this.props.store.checkEnvironment()
     if (this.props.isClosePopup) {
       logger.warn('Close popup')
@@ -138,7 +138,7 @@ class Home extends React.Component {
     if (this.props.store.userHistory) {
       const { me: { urls, topics }, shares } = toJS(this.props.store.userHistory)
       friends = shares
-      logger.warn('friends', friends)
+      logger.info('friends', friends)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       let urlIds = []
       // first for my stream
@@ -150,24 +150,24 @@ class Home extends React.Component {
         if (currentTopic) {
           urlIds = currentTopic.url_ids
         }
-        logger.warn('currentTopic', currentTopic)
+        logger.info('currentTopic', currentTopic)
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
       if (friendStreamId === -1 && friends.length) {
         friendStreamId = friends[0].user_id
-        logger.warn('found friendStreamId', friendStreamId)
+        logger.info('found friendStreamId', friendStreamId)
       }
       const currentStream = friends.find((item) => item && item.user_id === friendStreamId)
-      logger.warn('currentStream', currentStream)
+      logger.info('currentStream', currentStream)
       if (currentStream) {
         const list = currentStream.list.slice()
-        logger.warn('list', list)
+        logger.info('list', list)
         selectedFriendStreamUrls = _.uniq(_.flatten(list.map((item) => item && item.urls)))
-        logger.warn('selectedFriendStreamUrls', selectedFriendStreamUrls)
+        logger.info('selectedFriendStreamUrls', selectedFriendStreamUrls)
       }
     }
-    logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
+    logger.info('selectedMyStreamUrls', selectedMyStreamUrls)
     return (
       <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
         <Head>
@@ -206,7 +206,6 @@ class Home extends React.Component {
                 description={description}
                 title='Unlock Now'
                 install={this.inlineInstall}
-                isChrome={this.props.store.isChrome}
                 />
             }
           </div>

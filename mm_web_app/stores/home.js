@@ -104,13 +104,13 @@ export class HomeStore extends CoreStore {
   }
 
   @action getUserHistory () {
-    logger.warn('getUserHistory', this.userId, this.userHash)
+    logger.info('getUserHistory', this.userId, this.userHash)
     this.userHistoryResult = getUserHistory(this.userId, this.userHash)
     when(
       () => this.userHistoryResult.state !== 'pending',
       () => {
         this.userHistory = this.userHistoryResult.value.data
-        logger.warn('userHistory', this.userHistory)
+        logger.info('userHistory', this.userHistory)
       }
     )
   }

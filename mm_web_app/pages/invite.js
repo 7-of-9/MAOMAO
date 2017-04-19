@@ -18,7 +18,7 @@ export default class Invite extends React.Component {
 
   constructor (props) {
     super(props)
-    log.warn('Invite', props)
+    log.info('Invite', props)
     const { query: { close, success } } = props.url
     if ((close && close === 'popup') || (success && Number(success) === 1)) {
       this.isClosePopup = true

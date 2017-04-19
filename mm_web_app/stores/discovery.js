@@ -29,7 +29,7 @@ class DiscoveryStore extends CoreStore {
 }
 
 export function initStore (isServer, userAgent = '', terms = []) {
-  logger.warn('DiscoveryStore')
+  logger.info('DiscoveryStore')
   if (isServer && typeof window === 'undefined') {
     return new DiscoveryStore(isServer, userAgent, terms)
   } else {

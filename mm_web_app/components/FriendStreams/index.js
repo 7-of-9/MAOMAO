@@ -11,7 +11,7 @@ import * as logger from 'loglevel'
 
 function FriendStreams ({ friends, changeFriendStream, activeId }) {
   const items = []
-  logger.warn('friends', friends)
+  logger.info('friends', friends)
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
       if (friend && friend.user_id) {

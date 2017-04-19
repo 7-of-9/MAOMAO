@@ -26,14 +26,14 @@ class InviteStore extends HomeStore {
   }
 
   @action checkInstall () {
-    logger.warn('hasInstalledExtension', hasInstalledExtension())
+    logger.info('hasInstalledExtension', hasInstalledExtension())
     if (this.isChrome && !this.isMobile) {
-      this.isInstall = hasInstalledExtension()
+      this.isInstall = !!hasInstalledExtension()
     }
   }
 
   @action acceptInviteCode () {
-    logger.warn('acceptInviteCode', this.shareCode)
+    logger.info('acceptInviteCode', this.shareCode)
     this.acceptInviteResult = acceptInvite(this.userId, this.userHash, this.shareCode)
     when(
       () => this.acceptInviteResult.state !== 'pending',
@@ -47,7 +47,7 @@ class InviteStore extends HomeStore {
 }
 
 export function initStore (isServer, userAgent = '', shareCode = '', shareInfo = {}) {
-  logger.warn('init InviteStore')
+  logger.info('init InviteStore')
   if (isServer && typeof window === 'undefined') {
     return new InviteStore(isServer, userAgent, shareCode, shareInfo)
   } else {
