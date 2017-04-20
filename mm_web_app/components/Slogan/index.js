@@ -8,9 +8,6 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
-  background-image: url('/static/images/demo.png');
-  background-repeat: no-repeat;
-  background-size: 40px 40px;
   margin-left: 16px;
   margin-right: 16px;
 `
@@ -37,6 +34,7 @@ function Slogan () {
       <MaomaoImage
         onClick={() => { window.location.href = '/' }} src='/static/images/maomao.png'
       />
+      <div className="stamp-logo"></div>
       <Description className='paragraph-smarter'> get smarter </Description>
     </Wrapper>
   )

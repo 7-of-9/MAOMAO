@@ -78,6 +78,16 @@ the header section
       }
     }
     .logo {
+      .iSrAXa{
+        position: relative;
+      }
+      .stamp-logo{
+        @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: -25px);
+        background: url('/static/images/demo.png') no-repeat;
+        background-size: contain;
+        width: 40px;
+        height: 40px;
+      }
       .fSBjqc,
       .dbtaox {
         margin-left: 0;
@@ -143,7 +153,8 @@ the header section
         border-width: 8px;
         margin-left: -8px;
       }
-      .btn-login {
+      .btn-login,
+      .btn-logout {
         color: #222;
         &,
         &:hover,

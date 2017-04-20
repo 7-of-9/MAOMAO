@@ -41,24 +41,34 @@ the home page
           font-size: 0.9375rem;
         }
       }
+      @media (max-width: 590px) {
+        margin-bottom: 0.833;
+        font-size: 0.825rem;
+      }
     }
     @media (max-width: 850px) {
-      padding-top: 7rem;
-      padding-bottom: 7rem;
-    }
-    @media (max-width: 590px) {
       padding-top: 4rem;
       padding-bottom: 4rem;
     }
+    @media (max-width: 590px) {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
     @media (min-width: 850px) {
-      padding-top: 11rem;
-      padding-bottom: 11rem;
+      padding-top: 5rem;
+      padding-bottom: 5rem;
     }
     @media (min-width: 1400px) {
-      padding-top: 19rem;
-      padding-bottom: 19rem;
+      padding-top: 10rem;
+      padding-bottom: 10rem;
     }
-    
+  }
+}
+
+.panel-extention {
+  p {
+    margin-bottom: 0.5rem;
+    line-height: 1.125rem;
   }
 }
 

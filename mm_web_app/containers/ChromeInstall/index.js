@@ -95,7 +95,7 @@ class ChromeInstall extends React.Component {
             <button onClick={this.onClose}>Close</button>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome && <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome'>Chrome here</a></p>}
+            {!isChrome && <div className="panel-extention"><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here</a></p></div>}
             {!isInstall && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
             {!isInstall && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
             {!isInstall && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
