@@ -42,14 +42,16 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
         </div>
       </div>
     </div>
-    <div className="switch-list">
+    <div className="switch-list" style={{ display: topics.length > 0 ? '' : 'none' }}>
       <div className="checkbox__content">
         <span className="share-topic-title"> Topics (Multiple URLs):</span>
         <div key={guid()} className="switch-select">
           <Option
             key={guid()}
             value={isToggleTopic}
-            onToggle={() => { onChange(tld.id || experimentalTopics[0].id); }}
+            onToggle={() => {
+              onChange((tld && tld.id) || (experimentalTopics[0] && experimentalTopics[0].id));
+            }}
           />
         </div>
       </div>
@@ -71,9 +73,9 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
         </div>
       </div>
       }
-      {isToggleTopic && experimentalTopics &&
+      {isToggleTopic && experimentalTopics.length > 0 &&
         <div>
-          <p>Experimental:</p>
+          <span>Experimental topics:</span>
           <div className="radio__row">
             {experimentalTopics.map(topic =>
               <div key={guid()} className="radio__regular">

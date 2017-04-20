@@ -155,9 +155,10 @@ const ShareTopicStepTwo = compose(({
    </div>
   ));
 
-const ShareTopicStepThree = compose(({
-  type, contacts, code, shareOption,
-  accessGoogleContacts, handleChange, sendEmails, changeShareType }) => (
+const enhance2 = withState('copied', 'setCopied', false);
+const ShareTopicStepThree = enhance2(({
+  type, contacts, code, shareOption, copied,
+  accessGoogleContacts, handleChange, sendEmails, changeShareType, setCopied }) => (
     <div>
       <ToggleDisplay className="link-share-option" show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
@@ -182,8 +183,12 @@ const ShareTopicStepThree = compose(({
           />
           <CopyToClipboard
             text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
+            onCopy={() => setCopied(true)}
           >
-            <div className="input-group-btn"><button className="btn-copy">Copy</button></div>
+            <div className="input-group-btn">
+              <button className="btn-copy">Copy</button>
+              {copied ? <span style={{ color: 'red' }}>Copied.</span> : null}
+            </div>
           </CopyToClipboard>
         </div>
       </ToggleDisplay>
@@ -194,6 +199,7 @@ const ShareTopicStepThree = compose(({
         >
           Previous
         </button>
+        {type === 'Google' && contacts.length > 0 &&
         <div className="share-now">
           <button
             style={style.button}
@@ -203,6 +209,7 @@ const ShareTopicStepThree = compose(({
             Share Now !
           </button>
         </div>
+        }
       </div>
     </div>
   ));

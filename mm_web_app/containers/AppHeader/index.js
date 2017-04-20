@@ -97,7 +97,7 @@ class AppHeader extends React.Component {
     return (
       <NavItem>
         { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
-{ !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
+        { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
           onRequestClose={this.onClose}

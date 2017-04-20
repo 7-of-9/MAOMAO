@@ -1,7 +1,7 @@
 {
   "name": "mm02ce",
-  "version": "0.5.12",
-  "description": "maomao demo",
+  "version": "0.5.14",
+  "description": "Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"
   },
@@ -63,7 +63,6 @@
     "scopes": [
       "https://www.googleapis.com/auth/plus.me",
       "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.google.com/m8/feeds/",
       "https://www.googleapis.com/auth/contacts.readonly"
     ]
   },

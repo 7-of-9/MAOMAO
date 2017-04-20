@@ -36,7 +36,6 @@ export function checkGoogleAuth(isLinked) {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('https://www.googleapis.com/auth/plus.me');
     provider.addScope('https://www.googleapis.com/auth/userinfo.email');
-    provider.addScope('https://www.google.com/m8/feeds/');
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
     if (firebase.auth().currentUser && isLinked) {
       firebase.auth().currentUser.linkWithPopup(provider).then((result) => {
