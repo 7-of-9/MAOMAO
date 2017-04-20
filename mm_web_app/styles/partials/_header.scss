@@ -66,6 +66,11 @@ the header section
               margin: 0.4375rem 0;
             }
           }
+          &.active {
+            a {
+              color: #2db7f5;
+            }
+          }
           @media (max-width: 768px) {
             padding: 0 1rem;
           }

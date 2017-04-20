@@ -17,12 +17,10 @@ import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
 const customStyles = {
   content: {
-    top: '50%',
+    top: '90px',
     left: '50%',
     right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
+    bottom: 'auto'
   }
 }
 

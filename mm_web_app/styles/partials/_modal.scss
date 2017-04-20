@@ -7,9 +7,31 @@ the modal section
 
 .ReactModal__Body--open {}
 
-.ReactModal__Overlay {}
+.ReactModal__Overlay {
+  z-index: 99999;
+  animation: vex-fadein 0.5s;
+  -webkit-animation: vex-fadein 0.5s;
+  -moz-animation: vex-fadein 0.5s;
+  -ms-animation: vex-fadein 0.5s;
+  -o-animation: vex-fadein 0.5s;
+  -webkit-backface-visibility: hidden;
+  background: rgba(0, 0, 0, 0.5) !important;
+  -webkit-overflow-scrolling: touch;
+}
 
 .ReactModal__Overlay--after-open {}
+
+.ReactModal__Content {
+  width: 460px;
+  left: 50%;
+  margin-left: -230px;
+  animation: vex-flyin 0.5s;
+  -webkit-animation: vex-flyin 0.5s;
+  -moz-animation: vex-flyin 0.5s;
+  -ms-animation: vex-flyin 0.5s;
+  -o-animation: vex-flyin 0.5s;
+  -webkit-backface-visibility: hidden;
+}
 
 .SignInModal .ReactModal__Content {
   @include border-radius(6px);
@@ -25,6 +47,7 @@ the modal section
 }
 
 .ReactModal__Content--after-open {}
+
 
 /*modal bootstrap*/
 
