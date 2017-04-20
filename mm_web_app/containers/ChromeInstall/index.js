@@ -76,7 +76,13 @@ class ChromeInstall extends React.Component {
   render () {
     const { title, description, install, store: { isChrome, isInstall, isLogin, shareInfo } } = this.props
     logger.info('ChromeInstall isChrome, isInstall, isLogin, shareInfo ', isChrome, isInstall, isLogin, shareInfo)
-    const isShow = !isLogin && isInstall && !!shareInfo
+    const isShow = isInstall && !!shareInfo
+    let msg = ''
+    if (!isLogin) {
+      msg = `Yeah! One more step to viewing your friend sharing. Please sigin in.`
+    } else {
+      msg = `Yeah! It's ready to unlock your friemd stream.`
+    }
     return (
       <Wrapper className='wrap-main'>
         <Hero className='text-xs-center banner-hero'>
@@ -85,7 +91,7 @@ class ChromeInstall extends React.Component {
             isOpen={isShow && this.state.showModal}
             style={customStyles}
             contentLabel='Unlock stream'>
-            <p>Yeah! One more step to viewing your friend sharing. Please sigin in.</p>
+            <p>{msg}</p>
             <button onClick={this.onClose}>Close</button>
           </Modal>
           {!isChrome && <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome'>Chrome here</a></p>}

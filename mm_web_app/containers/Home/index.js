@@ -212,9 +212,7 @@ class Home extends React.Component {
         </NoSSR>
         { this.props.store.isLogin &&
           <div className='container'>
-            <Tabs
-              selectedIndex={this.props.store.shareInfo ? 1 : 0}
-              >
+            <Tabs>
               <TabList>
                 <Tab>Your Streams</Tab>
                 <Tab>Friend Streams</Tab>
