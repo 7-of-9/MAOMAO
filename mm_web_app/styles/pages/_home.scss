@@ -11,15 +11,54 @@ the home page
 
 .neal-hero {
   &.banner-hero {
+    @include transition(all 0.2s ease-out 0s);
     margin-bottom: 0;
     background: url('/static/images/bg_hero.jpg') no-repeat fixed;
     background-size: cover;
     h1 {
       line-height: 50px;
+      @media (max-width: 1050px) {
+        font-size: 2.375rem;
+      }
+      @media (max-width: 850px) {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+      }
+      @media (max-width: 650px) {
+        font-size: 1.875rem;
+      }
+      @media (max-width: 590px) {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+      }
+      @media (max-width: 390px) {
+        font-size: 1rem;
+      }
     }
-    @media (min-width: 576px){
-      padding: 14rem 10rem;
+    .hero-caption {
+      p {
+        @media (max-width: 850px) {
+          font-size: 0.9375rem;
+        }
+      }
     }
+    @media (max-width: 850px) {
+      padding-top: 7rem;
+      padding-bottom: 7rem;
+    }
+    @media (max-width: 590px) {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+    @media (min-width: 850px) {
+      padding-top: 11rem;
+      padding-bottom: 11rem;
+    }
+    @media (min-width: 1400px) {
+      padding-top: 19rem;
+      padding-bottom: 19rem;
+    }
+    
   }
 }
 
@@ -30,14 +69,24 @@ the home page
     margin-bottom: 2rem;
     .lead {
       margin-bottom: 1rem;
-      font-size: 30px;
-      line-height: 39px;
+      font-size: 1.875rem;
+      line-height: 2.4375rem;
       color: #1c232e;
       font-weight: 600;
       word-break: break-word;
+      @media (max-width: 850px) {
+        font-size: 1.625rem;
+        line-height: 2rem;
+      }
     }
     p {
       text-align: justify;
+      @media (max-width: 590px) {
+        margin-bottom: 1rem;
+      }
     }
+  }
+  @media (max-width: 590px) {
+    padding-top: 3rem;
   }
 }

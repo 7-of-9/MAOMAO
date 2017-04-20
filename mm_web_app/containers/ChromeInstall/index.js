@@ -94,10 +94,12 @@ class ChromeInstall extends React.Component {
             <p>{msg}</p>
             <button onClick={this.onClose}>Close</button>
           </Modal>
-          {!isChrome && <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome'>Chrome here</a></p>}
-          {!isInstall && isChrome && <UnlockNow install={install} title={title} /> }
-          {!isInstall && isChrome && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
-          {!isInstall && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
+          <div className='hero-caption animated fadeInUp'>
+            {!isChrome && <p>MaoMao is in proof of concept mode: it works on desktop Chrome browser. Get <a href='https://www.google.com/chrome'>Chrome here</a></p>}
+            {!isInstall && isChrome && <UnlockNow install={install} title={title} /> }
+            {!isInstall && isChrome && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+            {!isInstall && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
+          </div>
         </Hero>
         <Section className='section-list'>
           <div className='section-item'>

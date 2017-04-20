@@ -89,10 +89,20 @@ the button section
   }
 }
 
-.btn-login {
+,
+.btn-login,
+.btn-logout {
   @include border-radius(2px);
+  @include box-shadow(none);
   padding: 9px 20px;
   font-size: 1rem;
+  &:hover,
+  &:focus {
+    @include box-shadow(none);
+  }
+}
+
+.btn-login {
   color: #fff;
   background: #1b8ff2;
   border: 1px solid #1b8ff2;
@@ -101,6 +111,18 @@ the button section
     background: #3aa4ff;
     border: 1px solid #3aa4ff;
     color: #fff;
+  }
+}
+
+.btn-logout {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+  &:hover,
+  &:focus {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #d9d7d7;
   }
 }
 
