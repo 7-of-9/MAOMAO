@@ -5,6 +5,29 @@ the modal section
 **************************************
 **************************************/
 
+.ReactModal__Body--open {}
+
+.ReactModal__Overlay {}
+
+.ReactModal__Overlay--after-open {}
+
+.SignInModal .ReactModal__Content {
+  @include border-radius(6px);
+  @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  padding: 30px 40px !important;
+  border: 0 none;
+  max-width: 100%;
+  width: 460px;
+  h2 {
+    margin-bottom: 1.7rem;
+    text-align: center;
+  }
+}
+
+.ReactModal__Content--after-open {}
+
+/*modal bootstrap*/
+
 .modal.in .modal-dialog,
 .modal.fade .modal-dialog {
   @include transform(none);

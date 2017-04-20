@@ -94,42 +94,47 @@ class AppHeader extends React.Component {
 
   render () {
     logger.info('AppHeader', this.props, this.state)
-    const { isLogin, isChrome, isInstall, isMobile } = this.props.store
-    let isShow = true
-    if (isChrome && !isMobile && !isInstall) {
-      isShow = false
-    }
     return (
       <NavItem>
-        { isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
-        { !isLogin && isShow && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
+        { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
+        { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
           onRequestClose={this.onClose}
           style={customStyles}
+          portalClassName="SignInModal"
           contentLabel='Sign In Modal'
         >
           <h2 ref='subtitle'>Sign In</h2>
-          <div className='container'>
-            <div className='row justify-content-md-center'>
-              <GoogleLogin
-                clientId={GOOGLE_CLIENT_ID}
-                scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-                buttonText='LOGIN WITH GOOGLE'
-                onSuccess={this.onGoogleSuccess}
-                onFailure={this.onGoogleFailure}
-                />
+          <form className='form-signup'>
+            <div className='form-group'>
+              <input className='form-control' type='email' placeholder='Email' />
             </div>
-            <div className='row justify-content-md-center'>
-              <FacebookLogin
-                appId={FACEBOOK_APP_ID}
-                autoLoad={false}
-                size='medium'
-                fields='name,email,picture'
-                callback={this.responseFacebook}
-               />
+            <div className='form-group'>
+              <input className='form-control' type='password' placeholder='Password' />
             </div>
+            <button className='btn btn-signin' type='submit'>Sign In</button>
+            <div className='wrap-label'> <span className='title'>Or sign in with</span> </div>
+          </form>
+          <div className='justify-content-md-center social-action'>
+            <GoogleLogin
+              clientId={GOOGLE_CLIENT_ID}
+              scope='profile email https://www.googleapis.com/auth/contacts.readonly'
+              buttonText='LOGIN WITH GOOGLE'
+              className='btn btn-google'
+              onSuccess={this.onGoogleSuccess}
+              onFailure={this.onGoogleFailure}
+              />
+            <FacebookLogin
+              appId={FACEBOOK_APP_ID}
+              autoLoad={false}
+              size='small'
+              fields='name,email,picture'
+              cssClass='btn btn-facebook'
+              callback={this.responseFacebook}
+             />
           </div>
+          <p className="paragraph-question"> Don't have an account? <a href="#">Sign Up</a> </p>
         </Modal>
       </NavItem>
     )

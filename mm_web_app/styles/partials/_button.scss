@@ -150,3 +150,82 @@ the button section
 .btn-share {
   margin-left: 7px;
 }
+
+.btn-google,
+.btn-facebook {
+  padding: 0.6875rem 0.75rem 0.625rem;
+  min-width: 180px;
+  text-align: center;
+}
+
+.btn-facebook {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  background: #3b5998;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff;
+    background: #30487b;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  &.active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background: #3b5998;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
+
+.btn-google {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+  background: #dd4b39;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff;
+    background: #ca3523;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  .active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background: #dd4b39;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
