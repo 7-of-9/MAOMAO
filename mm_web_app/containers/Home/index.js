@@ -242,11 +242,13 @@ class Home extends React.Component {
             </Tabs>
           </div>
         }
-        <Footer brandName={brandName}
-          facebookUrl='http://www.facebook.com'
-          twitterUrl='http://www.twitter.com/'
-          address={businessAddress}
-        />
+        <div className='footer-area'>
+          <Footer brandName={brandName}
+            facebookUrl='http://www.facebook.com'
+            twitterUrl='http://www.twitter.com/'
+            address={businessAddress}
+          />
+        </div>
       </Page>
     )
   }
