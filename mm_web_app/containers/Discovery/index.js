@@ -10,16 +10,17 @@ import Router from 'next/router'
 import Link from 'next/link'
 import InfiniteScroll from 'react-infinite-scroller'
 import NProgress from 'nprogress'
+import { List } from 'immutable'
+import _ from 'lodash'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
-// import Block from '../../components/Block'
+import Block from '../../components/Block'
+import BlockElement from '../../components/BlockElement'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import SearchBar from '../../components/SearchBar'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
-
-const SRRLoading = () => (<div>Loading...</div>)
 
 Router.onRouteChangeStart = (url) => {
   logger.info(`Loading: ${url}`)
@@ -37,6 +38,113 @@ const businessAddress = (
   </address>
 )
 
+function mashUp (store) {
+  // Parse data
+  logger.warn('mashup', store)
+  if (store.terms.length === 0) {
+    return []
+  }
+  let urls = List([])
+  const graphKnowledges = []
+  const search = []
+  const news = []
+  const videos = []
+  const reddits = []
+  const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult } = store
+  if (googleKnowledgeResult.length || youtubeResult.length || googleNewsResult.length || googleResult.length || redditResult.length) {
+    _.forEach(googleKnowledgeResult, (item) => {
+      const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url
+      if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
+        urls = urls.insert(urls.size, moreDetailUrl)
+        graphKnowledges.push(
+          <div className='grid-item' key={`GK-${moreDetailUrl}`}>
+            <BlockElement
+              name={item.result.name}
+              description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
+              image={item.result.image && item.result.image.contentUrl}
+              url={moreDetailUrl}
+              type={'Google Knowledge'}
+            />
+          </div>)
+      }
+    })
+    _.forEach(googleNewsResult, (item) => {
+      if (item.img && item.url && !urls.includes(item.url)) {
+        urls = urls.insert(urls.size, item.url)
+        news.push(
+          <div className='grid-item' key={`GN-${item.url}`}>
+            <BlockElement
+              name={item.title}
+              description={item.description}
+              url={item.url}
+              image={item.img}
+              type={'Google News'}
+            />
+          </div>)
+      }
+    })
+    _.forEach(googleResult, (item) => {
+      if (item.img && item.url && !urls.includes(item.url)) {
+        urls = urls.insert(urls.size, item.url)
+        search.push(
+          <div className='grid-item' key={`GS-${item.url}`}>
+            <BlockElement
+              name={item.title}
+              description={item.description}
+              url={item.url}
+              image={item.img}
+              type={'Google Search'}
+            />
+          </div>)
+      }
+    })
+    _.forEach(youtubeResult, (item) => {
+      const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`
+      if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
+        urls = urls.insert(urls.size, youtubeUrl)
+        videos.push(
+          <div className='grid-item' key={`YT-${youtubeUrl}`}>
+            <BlockElement
+              name={item.snippet.title}
+              description={item.snippet.description}
+              image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
+              url={youtubeUrl}
+              type={'Youtube'}
+            />
+          </div>)
+      }
+    })
+    _.forEach(redditResult, (item) => {
+      if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
+        urls = urls.insert(urls.size, item.url)
+        reddits.push(
+          <div className='grid-item' key={`RD-${item.url}`}>
+            <BlockElement
+              name={item.title}
+              description={item.selftext || item.title}
+              image={item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url}
+              url={item.url}
+              type={'Reddit'}
+            />
+          </div>)
+      }
+    })
+  }
+  // Mashup records
+  const result = [graphKnowledges, news, search, reddits, videos]
+  const elements = []
+  const numberItems = _.map(result, (item) => item.length)
+  const maxItems = _.max(numberItems)
+  for (let index = 0; index < maxItems; index += 1) {
+    for (let count = 0; count < result.length; count += 1) {
+      if (result[count] && result[count][index]) {
+        elements.push(result[count][index])
+      }
+    }
+  }
+  return elements
+}
+
 @inject('store') @observer
 export class Discovery extends React.Component {
   constructor (props) {
@@ -50,8 +158,11 @@ export class Discovery extends React.Component {
     logger.info('Discovery', this.props)
   }
 
-  loadMore () {
+  componentWillReact () {
+    logger.warn('Discovery Component will re-render, since the data has changed!', this.props.store)
+  }
 
+  loadMore () {
   }
 
   onChange (terms) {
@@ -68,7 +179,6 @@ export class Discovery extends React.Component {
   render () {
     const title = 'MaoMao - Discovery page'
     const description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    let elements = []
     const terms = toJS(this.props.store.terms)
     return (
       <Page>
@@ -85,6 +195,7 @@ export class Discovery extends React.Component {
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
+          <script src='https://unpkg.com/masonry-layout@4.1/dist/masonry.pkgd.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
@@ -97,19 +208,19 @@ export class Discovery extends React.Component {
           <Sticky>
             <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
           </Sticky>
-          {
-          elements.length > 0 &&
-          <NoSSR onSSR={<SRRLoading />}>
-            <InfiniteScroll
-              loadMore={this.loadMore}
-              hasMore={this.state.loading}
-              threshold={200}
-            >
-              {elements}
-            </InfiniteScroll>
+          <NoSSR onSSR={<Loading isLoading />}>
+            <Block>
+              <InfiniteScroll
+                pageStart={this.props.store.page - 1}
+                loadMore={this.loadMore}
+                loader={<Loading isLoading />}
+                threshold={200}
+                className='container-fluid'
+              >
+                {mashUp(toJS(this.props.store))}
+              </InfiniteScroll>
+            </Block>
           </NoSSR>
-          }
-          <Loading isLoading={this.state.loading} />
         </StickyContainer>
         <Footer brandName={brandName}
           facebookUrl='http://www.facebook.com'
