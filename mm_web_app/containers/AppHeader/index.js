@@ -94,10 +94,15 @@ class AppHeader extends React.Component {
 
   render () {
     logger.info('AppHeader', this.props, this.state)
+    const { isLogin, isChrome, isInstall, isMobile } = this.props.store
+    let isShow = true
+    if (isChrome && !isMobile && !isInstall) {
+      isShow = false
+    }
     return (
       <NavItem>
-        { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
-        { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
+        { isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
+        { !isLogin && isShow && <button className='btn btn-login' onClick={this.onOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
         <Modal
           isOpen={this.state.showModal}
           onRequestClose={this.onClose}

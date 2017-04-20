@@ -52,6 +52,11 @@ export class CoreStore {
     localforage.setItem(USER_HASH, this.userHash)
   }
 
+  @action logout () {
+    localforage.setItem(USER_ID, -1)
+    localforage.setItem(USER_HASH, '')
+  }
+
   @action autoLogin (auth) {
     logger.warn('autoLogin', auth)
     const { isLogin, userId, userHash } = auth
@@ -71,8 +76,7 @@ export class CoreStore {
     this.userId = -1
     this.userHash = ''
     this.userHistory = null
-    localforage.setItem(USER_ID, this.userId)
-    localforage.setItem(USER_HASH, this.userHash)
+    this.logout()
   }
 }
 

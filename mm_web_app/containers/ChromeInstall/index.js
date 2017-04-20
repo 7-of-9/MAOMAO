@@ -76,7 +76,7 @@ class ChromeInstall extends React.Component {
   render () {
     const { title, description, install, store: { isChrome, isInstall, isLogin, shareInfo } } = this.props
     logger.info('ChromeInstall isChrome, isInstall, isLogin, shareInfo ', isChrome, isInstall, isLogin, shareInfo)
-    const isShow = isInstall && !!shareInfo
+    const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
     if (!isLogin) {
       msg = `Yeah! One more step to viewing your friend sharing. Please sigin in.`

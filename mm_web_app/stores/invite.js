@@ -26,8 +26,8 @@ class InviteStore extends HomeStore {
   }
 
   @action checkInstall () {
-    logger.info('hasInstalledExtension', hasInstalledExtension())
     if (this.isChrome && !this.isMobile) {
+      logger.info('hasInstalledExtension', hasInstalledExtension())
       this.isInstall = !!hasInstalledExtension()
     }
   }
