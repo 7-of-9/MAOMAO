@@ -47,6 +47,7 @@ $close-btn-img: url('./images/close_button.png');
 /*popup browser*/
 
 .popup-browser {
+  animation: vex-flyin 0.5s;
   .maomao-logo {
     margin-right: 3px;
     width: 30px;
@@ -62,21 +63,19 @@ $close-btn-img: url('./images/close_button.png');
   }
   .share-heading {
     text-align: center;
-    font-weight: bold;
     font-size: 32px;
     line-height: 27px;
     padding-bottom: 13px;
     text-transform: none;
     border-bottom: 1px solid #c5c5d0;
     transition: transform 200ms ease-in;
+    color: #999;
+    font-family: 'rokkittsemibold';
+    text-shadow: 0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8);
     a {
       color: #999;
       text-decoration: none;
       display: inline-block;
-      font-size: 32px;
-      line-height: 28px;
-      font-family: 'rokkittsemibold';
-      text-shadow: 0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8);
       &:hover,
       &:focus {
         .maomao-logo {
@@ -534,5 +533,25 @@ $close-btn-img: url('./images/close_button.png');
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
+  }
+}
+
+@keyframes vex-flyin {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vex-fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

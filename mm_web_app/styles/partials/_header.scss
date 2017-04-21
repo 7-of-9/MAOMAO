@@ -72,7 +72,7 @@ the header section
             }
           }
           @media (max-width: 990px) {
-              padding: 0 1rem;
+            padding: 0 1rem;
           }
         }
       }
@@ -87,6 +87,23 @@ the header section
         background-size: contain;
         width: 40px;
         height: 40px;
+        @media (max-width: 690px) {
+          display: none;
+        }
+      }
+      .text-logo {
+        @include transition(transform 200ms ease-in);
+        margin: 0;
+        display: inline-block;
+        color: #999;
+        font-size: 3rem;
+        line-height: 2.625rem;
+        font-family: 'rokkittsemibold';
+        font-weight: normal;
+        text-shadow: 0.025em 0.025em 0.025em rgba(0, 0, 0, 0.8);
+        @media (max-width: 690px) {
+          display: none;
+        }
       }
       .fSBjqc,
       .dbtaox {
@@ -103,6 +120,9 @@ the header section
       }
       .hReOhH {
         margin-top: 21px;
+        float: none;
+        color: #222;
+        display: inline-block;
       }
       .paragraph-smarter {
         @media (max-width: 990px) {
