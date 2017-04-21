@@ -14,7 +14,6 @@ import { List } from 'immutable'
 import _ from 'lodash'
 import * as logger from 'loglevel'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
-import Block from '../../components/Block'
 import BlockElement from '../../components/BlockElement'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
@@ -40,7 +39,7 @@ const businessAddress = (
 
 function mashUp (store) {
   // Parse data
-  logger.warn('mashup', store)
+  logger.info('mashup', store)
   if (store.terms.length === 0) {
     return []
   }
@@ -146,12 +145,9 @@ function mashUp (store) {
 }
 
 @inject('store') @observer
-export class Discovery extends React.Component {
+class Discovery extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      loading: false
-    }
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
     this.onSearch = this.onSearch.bind(this)
@@ -163,6 +159,7 @@ export class Discovery extends React.Component {
   }
 
   loadMore () {
+    this.props.store.loadMore()
   }
 
   onChange (terms) {
@@ -173,7 +170,7 @@ export class Discovery extends React.Component {
     if (evt !== undefined && evt.preventDefault) {
       evt.preventDefault()
     }
-    this.props.store.search(1)
+    this.props.store.loadMore()
   }
 
   render () {
@@ -185,6 +182,7 @@ export class Discovery extends React.Component {
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
+          <link rel='shortcut icon' type='image/x-icon' href='/static/assets/favicon.ico' />
           <meta name='description' content={description} />
           <meta name='og:title' content={title} />
           <meta name='og:description' content={description} />
@@ -195,9 +193,11 @@ export class Discovery extends React.Component {
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-          <script src='https://unpkg.com/masonry-layout@4.1/dist/masonry.pkgd.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
+          <link rel='stylesheet' href='/static/vendors/css/layout.css' />
+          <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.css' />
+          <script src='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.js' />
         </Head>
         <Navbar brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
@@ -209,17 +209,17 @@ export class Discovery extends React.Component {
             <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
           </Sticky>
           <NoSSR onSSR={<Loading isLoading />}>
-            <Block>
-              <InfiniteScroll
-                pageStart={this.props.store.page - 1}
-                loadMore={this.loadMore}
-                loader={<Loading isLoading />}
-                threshold={200}
-                className='container-fluid'
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={this.loadMore}
+              hasMore={this.props.store.hasMore}
+              className='container-fluid'
               >
+              <div className='bricklayer'>
                 {mashUp(toJS(this.props.store))}
-              </InfiniteScroll>
-            </Block>
+              </div>
+              <Loading isLoading={this.props.store.pendings.length > 0} />
+            </InfiniteScroll>
           </NoSSR>
         </StickyContainer>
         <Footer brandName={brandName}
@@ -227,6 +227,7 @@ export class Discovery extends React.Component {
           twitterUrl='http://www.twitter.com/'
           address={businessAddress}
         />
+        <script src='/static/vendors/js/layout.js' />
       </Page>
     )
   }

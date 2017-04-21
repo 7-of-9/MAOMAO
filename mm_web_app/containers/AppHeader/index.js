@@ -100,7 +100,7 @@ class AppHeader extends React.Component {
           isOpen={this.state.showModal}
           onRequestClose={this.onClose}
           style={customStyles}
-          portalClassName="SignInModal"
+          portalClassName='SignInModal'
           contentLabel='Sign In Modal'
         >
           <h2 ref='subtitle'>Sign In</h2>
@@ -132,7 +132,7 @@ class AppHeader extends React.Component {
               callback={this.responseFacebook}
              />
           </div>
-          <p className="paragraph-question"> Don't have an account? <a href="#">Sign Up</a> </p>
+          <p className='paragraph-question'> Don't have an account? <a href='#'>Sign Up</a> </p>
         </Modal>
       </NavItem>
     )

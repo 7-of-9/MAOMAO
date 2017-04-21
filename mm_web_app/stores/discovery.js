@@ -1,4 +1,4 @@
-import { action, reaction, when, observable } from 'mobx'
+import { action, when, computed, observable } from 'mobx'
 import { CoreStore } from './core'
 import { googleKnowlegeSearchByTerm, youtubeSearchByKeyword } from '../services/google'
 import { googleNewsSearchByTerm, googleSearchByTerm } from '../services/crawler'
@@ -9,56 +9,57 @@ import * as logger from 'loglevel'
 let store = null
 
 class DiscoveryStore extends CoreStore {
+  youtubePageToken = ''
+  page = 0
+  youtubeResult = []
+  redditResult = []
+  googleResult = []
+  googleNewsResult = []
+  googleKnowledgeResult = []
+  @observable pendings = []
   @observable terms = []
-  @observable page = 1
-  @observable youtubePageToken = ''
-  @observable redditResult = []
-  @observable googleResult = []
-  @observable googleNewsResult = []
-  @observable googleKnowledgeResult = []
-  @observable youtubeResult = []
+
+  @computed get hasMore () {
+    return this.pendings.length === 0 && this.terms.length > 0
+  }
 
   constructor (isServer, userAgent, terms) {
     super(isServer, userAgent)
     this.terms = terms
-    reaction(() => this.terms.length,
-     (terms) => {
-       this.page = 1
-       this.youtubePageToken = ''
-       this.redditResult = []
-       this.googleResult = []
-       this.googleNewsResult = []
-       this.googleKnowledgeResult = []
-       this.youtubeResult = []
-       if (terms > 0) {
-         logger.warn('yeah... search')
-         this.search()
-       }
-     })
-    reaction(() => this.page,
-     (page) => {
-       logger.warn('yeah... load page', page)
-       if (page > 1 && this.terms.length() > 0) {
-         this.search()
-       }
-     })
   }
 
   @action changeTerms (terms) {
     this.terms = terms
+    if (this.terms.length === 0) {
+      this.page = 0
+      this.youtubePageToken = ''
+    }
+    this.redditResult = []
+    this.googleResult = []
+    this.googleNewsResult = []
+    this.googleKnowledgeResult = []
+    this.youtubeResult = []
   }
 
   @action loadMore () {
     this.page += 1
+    logger.warn('yeah... load page', this.page)
+    this.search()
   }
 
   @action search () {
+    logger.warn('yeah... search')
     _.forEach(this.terms, (term) => {
       const googleSearch = googleSearchByTerm(term, this.page)
+      this.pendings.push('google')
       const googleNewsSearch = googleNewsSearchByTerm(term, this.page)
+      this.pendings.push('news')
       const googleKnowldge = googleKnowlegeSearchByTerm(term, this.page)
+      this.pendings.push('knowledge')
       const youtubeVideo = youtubeSearchByKeyword(term, this.youtubePageToken)
+      this.pendings.push('youtube')
       const reddit = redditListing(term, this.page)
+      this.pendings.push('reddit')
 
       when(
         () => googleSearch.state !== 'pending',
@@ -66,6 +67,7 @@ class DiscoveryStore extends CoreStore {
           logger.info('Got googleSearchs', term, googleSearch.value)
           const { result } = googleSearch.value.data
           this.googleResult.push(...result || [])
+          this.pendings.splice(0, 1)
         }
       )
 
@@ -75,6 +77,7 @@ class DiscoveryStore extends CoreStore {
           logger.info('Got googleNewsSearchs', term, googleNewsSearch.value)
           const { result } = googleNewsSearch.value.data
           this.googleNewsResult.push(...result || [])
+          this.pendings.splice(0, 1)
         }
       )
 
@@ -84,6 +87,7 @@ class DiscoveryStore extends CoreStore {
           logger.info('Got googleKnowldges', term, googleKnowldge.value)
           const { itemListElement } = googleKnowldge.value.data
           this.googleKnowledgeResult.push(...itemListElement || [])
+          this.pendings.splice(0, 1)
         }
       )
 
@@ -94,6 +98,7 @@ class DiscoveryStore extends CoreStore {
           const { items, nextPageToken } = youtubeVideo.value.data
           this.youtubeResult.push(...items || [])
           this.youtubePageToken = nextPageToken
+          this.pendings.splice(0, 1)
         }
       )
 
@@ -102,6 +107,7 @@ class DiscoveryStore extends CoreStore {
         () => {
           logger.info('Got reddit', term, reddit.value)
           this.redditResult.push(...reddit.value || [])
+          this.pendings.splice(0, 1)
         }
       )
     })
