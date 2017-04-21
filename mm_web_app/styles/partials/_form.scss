@@ -71,13 +71,3 @@ the form section
     color: #1b8ff2;
   }
 }
-
-.social-action {
-  @include clearfix();
-  .btn-google {
-    float: left;
-  }
-  .btn-facebook {
-    float: right;
-  }
-}

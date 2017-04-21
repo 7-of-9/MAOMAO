@@ -230,3 +230,23 @@ the button section
     border-color: rgba(0, 0, 0, 0.2)
   }
 }
+/*social*/
+.social-action {
+  @include clearfix();
+  .btn-google {
+    float: left;
+  }
+  .btn-facebook {
+    float: right;
+  }
+  @media (max-width: 590px) {
+    .btn-google {
+      margin-bottom: 20px;
+    }
+    .btn-google,
+    .btn-facebook {
+      float: none;
+      width: 100%;
+    }
+  }
+}
