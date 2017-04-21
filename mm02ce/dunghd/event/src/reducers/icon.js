@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 
 const MIN_NSS = 10;
@@ -6,9 +7,11 @@ const initialState = {
   isEnable: false,
   isEnableIM: window.enableImscore,
   isEnableXp: window.enableXp,
+  isEnableTLD: window.enableTLD,
   isYoutubeTest: window.enableTestYoutube,
   urls: [],
- };
+  tldTimers: [],
+};
 
 const changeIconUrl = (urls, url, color, text) => {
   let result = [];
@@ -27,10 +30,43 @@ const findScoreUrl = (nlp, url) => {
   return score;
 };
 
+const findTLD = (nlp, url) => {
+  let tld = '';
+  const hasExist = nlp.records.find(item => item.url === url);
+  if (hasExist) {
+    tld = hasExist.data && hasExist.data.tld_topic;
+  }
+  return tld;
+};
+
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
+    case 'RESET_TIMER_TLD': {
+      // find TLD base on url
+      const url = action.payload.url;
+      const tld = findTLD(nlp, url);
+      if (!tld) {
+        return state;
+      }
+      let tldTimers = [];
+      if (state.tldTimers.length) {
+        tldTimers = state.tldTimers.filter(item => item.tld !== tld);
+      }
+      tldTimers = tldTimers.concat({
+        tld,
+        timer: moment().add(1, 'hours'),
+      });
+      return Object.assign({}, state, { tldTimers });
+    }
+
     case 'SWITCH_XP': {
       window.enableXp = action.payload.isEnableXp;
+      ctxMenuLogin(auth.info, nlp.records);
+      return Object.assign({}, state, action.payload);
+    }
+
+    case 'SWITCH_TLD': {
+      window.enableTLD = action.payload.isEnableTLD;
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
     }
@@ -161,20 +197,20 @@ export default (state = initialState, action, auth, nlp) => {
     }
 
     case 'NNS_SCORE': {
-        const url = action.payload.url;
-        const score = action.payload.score;
-        if (Number(action.payload.score) <= MIN_NSS) {
-          const urls = changeIconUrl(state.urls, url, 'black', `!(${score})`);
-          window.setIconApp(url, 'black', `!(${Number(score)})`, window.BG_ERROR_COLOR);
-          return Object.assign({}, state, {
-            urls,
-          });
-        }
-        const urls = changeIconUrl(state.urls, url, 'black', `${score}`);
-        window.setIconApp(url, 'black', `${Number(score)}`, window.BG_SUCCESS_COLOR);
+      const url = action.payload.url;
+      const score = action.payload.score;
+      if (Number(action.payload.score) <= MIN_NSS) {
+        const urls = changeIconUrl(state.urls, url, 'black', `!(${score})`);
+        window.setIconApp(url, 'black', `!(${Number(score)})`, window.BG_ERROR_COLOR);
         return Object.assign({}, state, {
           urls,
         });
+      }
+      const urls = changeIconUrl(state.urls, url, 'black', `${score}`);
+      window.setIconApp(url, 'black', `${Number(score)}`, window.BG_SUCCESS_COLOR);
+      return Object.assign({}, state, {
+        urls,
+      });
     }
 
     case 'NLP_RESULT': {

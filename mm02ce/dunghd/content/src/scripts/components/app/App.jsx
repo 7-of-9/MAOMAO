@@ -14,6 +14,7 @@ import WelcomeModal from './WelcomeModal';
 // import FloatingShare from '../share';
 import { linkAccount, createUser } from '../utils/UserApi';
 import getCurrentTerms from '../../selectors/term';
+import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
 import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
@@ -74,6 +75,7 @@ const defaultProps = {
     isYoutubeTest: false,
     isEnableIM: true,
     isEnableXp: true,
+    isEnableTLD: true,
   },
   topics: [],
   terms: [],
@@ -592,7 +594,7 @@ const enhance = compose(
      props.dispatch({
        type: 'SWITCH_XP',
        payload: {
-        isEnableXp: !props.icon.isEnableXp,
+        isEnableXp: false,
        },
      });
    },
@@ -632,6 +634,7 @@ const mapStateToProps = state => ({
   isShareOnUrl: shareOnUrl(state),
   score: state.score,
   terms: getCurrentTerms(state),
+  tld: getCurrentTLD(state),
   topics: getCurrentTopics(state),
   code: {
     all: getShareAllCode(state),

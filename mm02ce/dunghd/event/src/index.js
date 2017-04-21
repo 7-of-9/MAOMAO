@@ -67,6 +67,27 @@ chrome.contextMenus.removeAll();
 // NOTE: Handler all browser action events
 function onClickHandler(info) {
   switch (info.menuItemId) {
+    case 'mm-btn-reset-tld':
+      {
+        chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        }, (tabs) => {
+          if (tabs != null && tabs.length > 0) {
+            let url = '';
+            if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
+              url = tabs[0].url;
+              store.dispatch({
+                type: 'RESET_TIMER_TLD',
+                payload: {
+                  url,
+                },
+              });
+            }
+          }
+        });
+      }
+      break;
     case 'mm-btn-share':
       {
         chrome.tabs.query({
@@ -126,6 +147,22 @@ function onClickHandler(info) {
           type: 'SWITCH_XP',
           payload: {
             isEnableXp: window.enableXp,
+          },
+        };
+        store.dispatch(data);
+      }
+      break;
+    case 'mm-btn-switch-experimental-topics':
+      {
+        if (window.enableTLD) {
+          window.enableTLD = false;
+        } else {
+          window.enableTLD = true;
+        }
+        const data = {
+          type: 'SWITCH_TLD',
+          payload: {
+            isEnableTLD: window.enableTLD,
           },
         };
         store.dispatch(data);
@@ -265,6 +302,7 @@ window.onload = () => {
       payload: {
         isEnableIM: window.enableImscore,
         isEnableXp: window.enableXp,
+        isEnableTLD: window.enableTLD,
         isYoutubeTest: window.enableTestYoutube,
       },
     });
