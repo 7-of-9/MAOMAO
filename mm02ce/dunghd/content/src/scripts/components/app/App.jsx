@@ -35,6 +35,7 @@ const propTypes = {
   code: PropTypes.object,
   icon: PropTypes.object,
   terms: PropTypes.array,
+  tld: PropTypes.array,
   topics: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
   isShareOnUrl: PropTypes.object,
@@ -50,6 +51,7 @@ const propTypes = {
   sendEmail: PropTypes.func,
   onClose: PropTypes.func,
   closeXp: PropTypes.func,
+  closeTLD: PropTypes.func,
   notifyMsg: PropTypes.func,
 };
 
@@ -74,30 +76,31 @@ const defaultProps = {
     isEnable: false,
     isYoutubeTest: false,
     isEnableIM: true,
-    isEnableXp: true,
-    isEnableTLD: true,
+    isEnableExperimentalTopics: true,
   },
   topics: [],
   terms: [],
+  tld: [],
   isShareOnUrl: {
     url: '',
     type: '',
     enable: false,
   },
   isOpen: false,
-  onGoogleLogin: () => {},
-  onFacebookLogin: () => {},
-  onLinkedFacebook: () => {},
-  onLinkedGoogle: () => {},
-  onLogout: () => {},
-  changeShareType: () => {},
-  accessGoogleContacts: () => {},
-  openShare: () => {},
-  closeShare: () => {},
-  sendEmail: () => {},
-  onClose: () => {},
-  closeXp: () => {},
-  notifyMsg: () => {},
+  onGoogleLogin: () => { },
+  onFacebookLogin: () => { },
+  onLinkedFacebook: () => { },
+  onLinkedGoogle: () => { },
+  onLogout: () => { },
+  changeShareType: () => { },
+  accessGoogleContacts: () => { },
+  openShare: () => { },
+  closeShare: () => { },
+  sendEmail: () => { },
+  onClose: () => { },
+  closeXp: () => { },
+  closeTLD: () => { },
+  notifyMsg: () => { },
 };
 
 const checkAuth = (type, isLinked = false) => {
@@ -348,7 +351,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
 function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
-  closeXp, sendEmail, onClose, notifyMsg,
+  closeXp, sendEmail, onClose, notifyMsg, tld, closeTLD,
   }) {
   logger.info('App render');
   return (
@@ -404,7 +407,18 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
         <ToggleDisplay
           if={
             auth.isLogin
-            && icon.isEnableXp
+            && icon.isEnable
+            && tld.length > 0
+          }
+        >
+          <Xp
+            terms={tld} shareTopics={openShare} closeXp={closeTLD}
+          />
+        </ToggleDisplay>
+        <ToggleDisplay
+          if={
+            auth.isLogin
+            && icon.isEnableExperimentalTopics
             && icon.isEnable
             && terms.length > 0
           }
@@ -426,206 +440,214 @@ const enhance = compose(
     notifyMsg: props => (msg) => {
       props.dispatch(notify(msg));
     },
-   accessGoogleContacts: props => () => {
-     props.dispatch(notify({
-       title: 'Google Connect',
-       message: 'Please wait in a minute!',
-     }));
-     props.dispatch(googleContacts())
-       .then(() => {
-         props.dispatch(notify({
-           title: 'Success',
-           message: 'Loading google data...',
-         }));
-         return props.dispatch(fetchContacts());
-       })
-       .catch((err) => {
-         props.dispatch(notify({
-           title: 'Oops!',
-           message: err.message,
-         }));
-       });
-   },
-   onFacebookLogin: props => () => {
-     props.dispatch(notify({
-       title: 'Facebook Login',
-       message: 'Please wait in a minute!',
-     }));
-     props.dispatch(checkAuth('FACEBOOK'))
-     .then((data) => {
-       const { info, facebookUserId, error } = data;
-       if (error) {
-         return Promise.reject(error);
-       }
-       const names = info.name.split(' ');
-       const firstName = names[0];
-       const lastName = names.slice(1, names.length).join(' ');
-       return createUser(`${props.apiUrl}/user/fb`, {
-         firstName,
-         lastName,
-         email: info.email,
-         avatar: info.picture,
-         fb_user_id: facebookUserId,
-       });
-     })
-     .then((user) => {
-       let userId = -1;
-       if (user.data && user.data.id) {
-         userId = user.data.id;
-       }
-       props.dispatch({
-         type: 'USER_AFTER_LOGIN',
-         payload: {
-           userId,
-         },
-       });
-       props.dispatch({
-         type: 'PRELOAD_SHARE_ALL',
-         payload: {
-           userId,
-         },
-       });
-     })
-     .catch((err) => {
-       props.dispatch(notify({
-         title: 'Oops!',
-         message: err.message,
-       }));
-     });
-   },
-   onGoogleLogin: props => () => {
-     props.dispatch(notify({
-       title: 'Google Login',
-       message: 'Please wait in a minute!',
-     }));
-     props.dispatch(checkAuth('GOOGLE'))
-       .then((data) => {
-         const { error, info, googleUserId } = data;
-         if (error) {
-           return Promise.reject(error);
-         }
-         props.dispatch(fetchContacts());
-         const names = info.name.split(' ');
-         const firstName = names[0];
-         const lastName = names.slice(1, names.length).join(' ');
-         return createUser(`${props.apiUrl}/user/google`, {
-           firstName,
-           lastName,
-           email: info.email,
-           avatar: info.picture,
-           google_user_id: googleUserId,
-         });
-       })
-       .then((user) => {
-         let userId = -1;
-         if (user.data && user.data.id) {
-           userId = user.data.id;
-         }
-         props.dispatch({
-           type: 'USER_AFTER_LOGIN',
-           payload: {
-             userId,
-           },
-         });
-         props.dispatch({
-           type: 'PRELOAD_SHARE_ALL',
-           payload: {
-             userId,
-           },
-         });
-       })
-       .catch((err) => {
-         props.dispatch(notify({
-           title: 'Oops!',
-           message: err.message,
-         }));
-       });
-   },
-   onLinkedFacebook: props => () => {
-     props.dispatch(notify({
-       title: 'Connect with Facebook',
-       message: 'Please wait in a minute!',
-     }));
-     props.dispatch(checkAuth('FACEBOOK', true))
-     .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
-         fb_user_id: props.auth.facebookUserId,
-     }))
-     .catch((err) => {
-       props.dispatch(notify({
-         title: 'Oops!',
-         message: err.message,
-       }));
-     });
-   },
-   onLinkedGoogle: props => () => {
-     props.dispatch(notify({
-       title: 'Connect with Google',
-       message: 'Please wait in a minute!',
-     }));
-     props.props.dispatch(checkAuth('GOOGLE', true))
-     .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
-         google_user_id: props.auth.googleUserId,
-       }))
-     .catch((err) => {
-       props.dispatch(notify({
-         title: 'Oops!',
-         message: err.message,
-       }));
-     });
-   },
-   onLogout: props => () => {
-     props.dispatch(logout()).then(() => {
-       props.dispatch({
-         type: 'USER_AFTER_LOGOUT',
-       });
-     });
-   },
-   onClose: props => () => {
-     props.dispatch({
-       type: 'CLOSE_MODAL',
-     });
-   },
-   sendEmail: props => (name, email, topic, url) => {
-     const fromEmail = props.auth.info.email;
-     const fullName = props.auth.info.name;
-     sendHTMLEmail(fromEmail, fullName, name, email, topic, url, props.dispatch);
-   },
-   closeXp: props => () => {
-     props.dispatch({
-       type: 'SWITCH_XP',
-       payload: {
-        isEnableXp: false,
-       },
-     });
-   },
-   openShare: props => () => {
-     props.dispatch({
-       type: 'OPEN_SHARE_MODAL',
-       payload: {
-         url: window.location.href,
-       },
-     });
-   },
-   closeShare: props => () => {
-     props.dispatch({
-       type: 'CLOSE_SHARE_MODAL',
-       payload: {
-         url: window.location.href,
-       },
-     });
-   },
-   changeShareType: props => (type, shareOption, currentStep) => {
-     props.dispatch({
-       type: 'OPEN_SHARE_MODAL',
-       payload: {
-         url: window.location.href,
-         type,
-         shareOption,
-         currentStep,
-       },
-     });
-   },
- }),
+    accessGoogleContacts: props => () => {
+      props.dispatch(notify({
+        title: 'Google Connect',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(googleContacts())
+        .then(() => {
+          props.dispatch(notify({
+            title: 'Success',
+            message: 'Loading google data...',
+          }));
+          return props.dispatch(fetchContacts());
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onFacebookLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Facebook Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('FACEBOOK'))
+        .then((data) => {
+          const { info, facebookUserId, error } = data;
+          if (error) {
+            return Promise.reject(error);
+          }
+          const names = info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
+          return createUser(`${props.apiUrl}/user/fb`, {
+            firstName,
+            lastName,
+            email: info.email,
+            avatar: info.picture,
+            fb_user_id: facebookUserId,
+          });
+        })
+        .then((user) => {
+          let userId = -1;
+          if (user.data && user.data.id) {
+            userId = user.data.id;
+          }
+          props.dispatch({
+            type: 'USER_AFTER_LOGIN',
+            payload: {
+              userId,
+            },
+          });
+          props.dispatch({
+            type: 'PRELOAD_SHARE_ALL',
+            payload: {
+              userId,
+            },
+          });
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onGoogleLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Google Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('GOOGLE'))
+        .then((data) => {
+          const { error, info, googleUserId } = data;
+          if (error) {
+            return Promise.reject(error);
+          }
+          props.dispatch(fetchContacts());
+          const names = info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
+          return createUser(`${props.apiUrl}/user/google`, {
+            firstName,
+            lastName,
+            email: info.email,
+            avatar: info.picture,
+            google_user_id: googleUserId,
+          });
+        })
+        .then((user) => {
+          let userId = -1;
+          if (user.data && user.data.id) {
+            userId = user.data.id;
+          }
+          props.dispatch({
+            type: 'USER_AFTER_LOGIN',
+            payload: {
+              userId,
+            },
+          });
+          props.dispatch({
+            type: 'PRELOAD_SHARE_ALL',
+            payload: {
+              userId,
+            },
+          });
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onLinkedFacebook: props => () => {
+      props.dispatch(notify({
+        title: 'Connect with Facebook',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('FACEBOOK', true))
+        .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
+          fb_user_id: props.auth.facebookUserId,
+        }))
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onLinkedGoogle: props => () => {
+      props.dispatch(notify({
+        title: 'Connect with Google',
+        message: 'Please wait in a minute!',
+      }));
+      props.props.dispatch(checkAuth('GOOGLE', true))
+        .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
+          google_user_id: props.auth.googleUserId,
+        }))
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onLogout: props => () => {
+      props.dispatch(logout()).then(() => {
+        props.dispatch({
+          type: 'USER_AFTER_LOGOUT',
+        });
+      });
+    },
+    onClose: props => () => {
+      props.dispatch({
+        type: 'CLOSE_MODAL',
+      });
+    },
+    sendEmail: props => (name, email, topic, url) => {
+      const fromEmail = props.auth.info.email;
+      const fullName = props.auth.info.name;
+      sendHTMLEmail(fromEmail, fullName, name, email, topic, url, props.dispatch);
+    },
+    closeXp: props => () => {
+      props.dispatch({
+        type: 'SWITCH_EXPERIMENTAL_TOPICS',
+        payload: {
+          isEnableExperimentalTopics: false,
+        },
+      });
+    },
+    closeTLD: props => () => {
+      props.dispatch({
+        type: 'TIMER_TLD',
+        payload: {
+          url: window.location.href,
+        },
+      });
+    },
+    openShare: props => () => {
+      props.dispatch({
+        type: 'OPEN_SHARE_MODAL',
+        payload: {
+          url: window.location.href,
+        },
+      });
+    },
+    closeShare: props => () => {
+      props.dispatch({
+        type: 'CLOSE_SHARE_MODAL',
+        payload: {
+          url: window.location.href,
+        },
+      });
+    },
+    changeShareType: props => (type, shareOption, currentStep) => {
+      props.dispatch({
+        type: 'OPEN_SHARE_MODAL',
+        payload: {
+          url: window.location.href,
+          type,
+          shareOption,
+          currentStep,
+        },
+      });
+    },
+  }),
 );
 
 const mapStateToProps = state => ({

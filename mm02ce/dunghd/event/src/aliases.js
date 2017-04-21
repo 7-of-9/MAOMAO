@@ -38,8 +38,7 @@ function logout(auth) {
     window.userId = -1;
     window.userHash = '';
     window.enableTestYoutube = false;
-    window.enableTLD = true;
-    window.enableXp = true;
+    window.enableExperimentalTopics = true;
     window.enableImscore = true;
     if (auth.googleUserId && auth.googleToken) {
       chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
@@ -97,11 +96,11 @@ function downloadPhoto(dispatch, contacts) {
     }
   });
   throttle(() => {
-        setTimeout(() => {
-          // TODO: Update store
-          dispatch(actionCreator('DOWNLOAD_PHOTO_DONE', { photos }));
-        }, 1000);
-    });
+    setTimeout(() => {
+      // TODO: Update store
+      dispatch(actionCreator('DOWNLOAD_PHOTO_DONE', { photos }));
+    }, 1000);
+  });
 }
 
 const authLogout = () => (
@@ -145,9 +144,9 @@ const authGoogleLogin = data => (
     }
 
     return dispatch(batchActions([
-        actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, googleToken: auth.googleToken, info: auth.info }),
-        actionCreator('USER_HASH', { userHash: auth.googleUserId }),
-      ]));
+      actionCreator('AUTH_FULFILLED', { googleUserId: auth.googleUserId, googleToken: auth.googleToken, info: auth.info }),
+      actionCreator('USER_HASH', { userHash: auth.googleUserId }),
+    ]));
   }
 );
 
@@ -189,10 +188,10 @@ const getContacts = () => (
     });
     return fetchContacts(auth.googleToken, 1, 1000)
       .then((data) => {
-          // Download images
-          downloadPhoto(dispatch, data.data);
-          dispatch(actionCreator('FETCH_CONTACTS_FULFILLED', data));
-        },
+        // Download images
+        downloadPhoto(dispatch, data.data);
+        dispatch(actionCreator('FETCH_CONTACTS_FULFILLED', data));
+      },
     ).catch((error) => {
       dispatch(actionCreator('FETCH_CONTACTS_REJECTED', { error }));
     });
@@ -201,11 +200,11 @@ const getContacts = () => (
 
 const googleContacts = () => (
   dispatch => checkGoogleAuth(false)
-      .then((result) => {
-        dispatch(actionCreator('GOOGLE_CONTACTS_FULFILLED', result));
-      }).catch((error) => {
-        dispatch(actionCreator('GOOGLE_CONTACTS_REJECTED', { error }));
-      })
+    .then((result) => {
+      dispatch(actionCreator('GOOGLE_CONTACTS_FULFILLED', result));
+    }).catch((error) => {
+      dispatch(actionCreator('GOOGLE_CONTACTS_REJECTED', { error }));
+    })
 );
 
 const notifyUI = data => (
@@ -224,17 +223,17 @@ const generateShare = data => (
     const findTopicCode = topics.find(item => item && item.id === tld_topic_id);
     if (!findTopicCode && tld_topic_id) {
       shareTheTopic(userId, userHash, tld_topic_id)
-          .then((result) => {
-            const { share_code } = result.data;
-            fbScrapeShareUrl(share_code);
-            dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: tld_topic_id, name: tld_topic }));
-          }).catch((error) => {
-            dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
-          });
+        .then((result) => {
+          const { share_code } = result.data;
+          fbScrapeShareUrl(share_code);
+          dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: tld_topic_id, name: tld_topic }));
+        }).catch((error) => {
+          dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
+        });
     }
 
     if (!findUrlCode && url_id) {
-    shareThisSite(userId, userHash, url_id)
+      shareThisSite(userId, userHash, url_id)
         .then((result) => {
           const { share_code } = result.data;
           fbScrapeShareUrl(share_code);
@@ -242,7 +241,7 @@ const generateShare = data => (
         }).catch((error) => {
           dispatch(actionCreator('SHARE_URL_ERROR', { error }));
         });
-      }
+    }
   }
 );
 
@@ -256,13 +255,13 @@ const generateShareTopics = data => (
         const findTopicCode = topics.find(item => item && item.id === term_id);
         if (!findTopicCode) {
           shareTheTopic(userId, userHash, term_id)
-              .then((result) => {
-                const { share_code } = result.data;
-                fbScrapeShareUrl(share_code);
-                dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: term_id, name: term_name }));
-              }).catch((error) => {
-                dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
-              });
+            .then((result) => {
+              const { share_code } = result.data;
+              fbScrapeShareUrl(share_code);
+              dispatch(actionCreator('SHARE_TOPIC_SUCCESS', { ...result.data, id: term_id, name: term_name }));
+            }).catch((error) => {
+              dispatch(actionCreator('SHARE_TOPIC_ERROR', { error }));
+            });
         }
       });
     }
@@ -274,13 +273,13 @@ const generateShareAll = data => (
     const { userId } = data.payload;
     const { auth: { userHash } } = getState();
     shareAll(userId, userHash)
-        .then((result) => {
-          const { share_code } = result.data;
-          fbScrapeShareUrl(share_code);
-          dispatch(actionCreator('SHARE_ALL_SUCCESS', result.data));
-        }).catch((error) => {
-          dispatch(actionCreator('SHARE_ALL_ERROR', { error }));
-        });
+      .then((result) => {
+        const { share_code } = result.data;
+        fbScrapeShareUrl(share_code);
+        dispatch(actionCreator('SHARE_ALL_SUCCESS', result.data));
+      }).catch((error) => {
+        dispatch(actionCreator('SHARE_ALL_ERROR', { error }));
+      });
   }
 );
 

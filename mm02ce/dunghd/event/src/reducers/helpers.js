@@ -26,9 +26,8 @@ function createShareCtxMenu(records) {
 function ctxMenu(records) {
   chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  chrome.contextMenus.create({ id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXp });
+  chrome.contextMenus.create({ id: 'mm-btn-switch-experimental-topics', title: 'Experimental Topics', type: 'checkbox', checked: window.enableExperimentalTopics });
   chrome.contextMenus.create({ id: 'mm-btn-reset-tld', title: 'Reset TLD XP timer' });
-  chrome.contextMenus.create({ id: 'mm-btn-switch-experimental-topics', title: 'Experimental Topics', type: 'checkbox', checked: window.enableTLD });
   if (records && records.length) {
     createShareCtxMenu(records);
   }

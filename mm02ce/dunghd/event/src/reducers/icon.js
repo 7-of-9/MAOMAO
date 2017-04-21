@@ -6,8 +6,7 @@ const MIN_NSS = 10;
 const initialState = {
   isEnable: false,
   isEnableIM: window.enableImscore,
-  isEnableXp: window.enableXp,
-  isEnableTLD: window.enableTLD,
+  isEnableExperimentalTopics: window.enableExperimentalTopics,
   isYoutubeTest: window.enableTestYoutube,
   urls: [],
   tldTimers: [],
@@ -41,6 +40,23 @@ const findTLD = (nlp, url) => {
 
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
+    case 'TIMER_TLD': {
+      // find TLD base on url
+      const url = action.payload.url;
+      const tld = findTLD(nlp, url);
+      if (!tld) {
+        return state;
+      }
+      let tldTimers = [];
+      if (state.tldTimers.length) {
+        tldTimers = state.tldTimers.filter(item => item.tld !== tld);
+      }
+      tldTimers = tldTimers.concat({
+        tld,
+        timer: moment().add(1, 'hours').format(),
+      });
+      return Object.assign({}, state, { tldTimers });
+    }
     case 'RESET_TIMER_TLD': {
       // find TLD base on url
       const url = action.payload.url;
@@ -54,19 +70,13 @@ export default (state = initialState, action, auth, nlp) => {
       }
       tldTimers = tldTimers.concat({
         tld,
-        timer: moment().add(1, 'hours'),
+        timer: moment().format(),
       });
       return Object.assign({}, state, { tldTimers });
     }
 
-    case 'SWITCH_XP': {
-      window.enableXp = action.payload.isEnableXp;
-      ctxMenuLogin(auth.info, nlp.records);
-      return Object.assign({}, state, action.payload);
-    }
-
-    case 'SWITCH_TLD': {
-      window.enableTLD = action.payload.isEnableTLD;
+    case 'SWITCH_EXPERIMENTAL_TOPICS': {
+      window.enableExperimentalTopics = action.payload.isEnableExperimentalTopics;
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
     }

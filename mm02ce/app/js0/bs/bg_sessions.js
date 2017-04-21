@@ -8,8 +8,7 @@
 var isGuest = true;
 var enableTestYoutube = false;
 var enableImscore = true;
-var enableXp = true;
-var enableTLD = true;
+var enableExperimentalTopics = true;
 var userId = -1;
 var userHash = '';
 var NotInjectCSUrls = [];
@@ -109,7 +108,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         }
       }, function (error) {
         StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-        if(NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
+        if (NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
           NotInjectCSUrls.push(url_ex_hash);
         }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
@@ -150,7 +149,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         }
       }, function (error) {
         StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-        if(NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
+        if (NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
           NotInjectCSUrls.push(url_ex_hash);
         }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);

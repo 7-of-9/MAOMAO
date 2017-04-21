@@ -42,8 +42,8 @@ const middleware = [
 ];
 
 const manifest = {
- 1: state => ({ ...state, staleReducer: undefined }),
- 2: state => ({ ...state, app: { ...state.app, staleKey: undefined } }),
+  1: state => ({ ...state, staleReducer: undefined }),
+  2: state => ({ ...state, app: { ...state.app, staleKey: undefined } }),
 };
 const reducerKey = 'app';
 const migration = createMigration(manifest, reducerKey);
@@ -59,7 +59,7 @@ persistStore(store);
 
 wrapStore(store, {
   portName: 'maomao-extension',
- });
+});
 
 // ctx menu handler
 chrome.contextMenus.removeAll();
@@ -69,44 +69,22 @@ function onClickHandler(info) {
   switch (info.menuItemId) {
     case 'mm-btn-reset-tld':
       {
-        chrome.tabs.query({
-          active: true,
-          currentWindow: true,
-        }, (tabs) => {
-          if (tabs != null && tabs.length > 0) {
-            let url = '';
-            if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
-              url = tabs[0].url;
-              store.dispatch({
-                type: 'RESET_TIMER_TLD',
-                payload: {
-                  url,
-                },
-              });
-            }
-          }
+        store.dispatch({
+          type: 'RESET_TIMER_TLD',
+          payload: {
+            url: window.sessionObservable.activeUrl,
+          },
         });
       }
       break;
     case 'mm-btn-share':
       {
-        chrome.tabs.query({
-          active: true,
-          currentWindow: true,
-        }, (tabs) => {
-          if (tabs != null && tabs.length > 0) {
-            let url = '';
-            if (tabs[0] && tabs[0].url && url !== tabs[0].url) {
-              url = tabs[0].url;
-              store.dispatch({
-                type: 'OPEN_SHARE_MODAL',
-                payload: {
-                  url,
-                  type: 'Google',
-                },
-              });
-            }
-          }
+        store.dispatch({
+          type: 'OPEN_SHARE_MODAL',
+          payload: {
+            url: window.sessionObservable.activeUrl,
+            type: 'Google',
+          },
         });
       }
       break;
@@ -136,33 +114,17 @@ function onClickHandler(info) {
         store.dispatch(data);
       }
       break;
-    case 'mm-btn-switch-xp':
-      {
-        if (window.enableXp) {
-          window.enableXp = false;
-        } else {
-          window.enableXp = true;
-        }
-        const data = {
-          type: 'SWITCH_XP',
-          payload: {
-            isEnableXp: window.enableXp,
-          },
-        };
-        store.dispatch(data);
-      }
-      break;
     case 'mm-btn-switch-experimental-topics':
       {
-        if (window.enableTLD) {
-          window.enableTLD = false;
+        if (window.enableExperimentalTopics) {
+          window.enableExperimentalTopics = false;
         } else {
-          window.enableTLD = true;
+          window.enableExperimentalTopics = true;
         }
         const data = {
-          type: 'SWITCH_TLD',
+          type: 'SWITCH_EXPERIMENTAL_TOPICS',
           payload: {
-            isEnableTLD: window.enableTLD,
+            isEnableExperimentalTopics: window.enableExperimentalTopics,
           },
         };
         store.dispatch(data);
@@ -253,8 +215,9 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
   syncImScore(false);
 });
 
-mobx.reaction(() => window.sessionObservable.activeUrl, () => {
+mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   // save db when user change url
+  logger.arguments('active url', url);
   syncImScore(true);
 });
 
@@ -301,8 +264,7 @@ window.onload = () => {
       type: 'RESET_SETTINGS',
       payload: {
         isEnableIM: window.enableImscore,
-        isEnableXp: window.enableXp,
-        isEnableTLD: window.enableTLD,
+        isEnableExperimentalTopics: window.enableExperimentalTopics,
         isYoutubeTest: window.enableTestYoutube,
       },
     });

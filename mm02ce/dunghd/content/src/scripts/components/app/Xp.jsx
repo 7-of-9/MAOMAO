@@ -67,10 +67,11 @@ const enhance = compose(
       if (xp) {
         this.props.changeText(xp.text);
         this.props.changeScore(xp.score);
+        this.props.changeShow(true);
       }
     },
   }),
-  onlyUpdateForKeys(['terms']),
+  onlyUpdateForKeys(['terms', 'show', 'counter']),
 );
 
 const Xp = enhance(({
@@ -103,7 +104,7 @@ const Xp = enhance(({
         <button className="share-button" onClick={openShare}>Share...</button>
       </div>
     </div>
-);
+  );
 });
 
 Xp.propTypes = {
