@@ -215,9 +215,9 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
   syncImScore(false);
 });
 
-mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
+mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   // save db when user change url
-  log.info('active url', url);
+  log.info('active url', window.sessionObservable.activeUrl);
   syncImScore(true);
 });
 

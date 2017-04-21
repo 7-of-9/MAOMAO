@@ -5,9 +5,9 @@ const MIN_NSS = 10;
 
 const initialState = {
   isEnable: false,
-  isEnableIM: window.enableImscore,
-  isEnableExperimentalTopics: window.enableExperimentalTopics,
-  isYoutubeTest: window.enableTestYoutube,
+  isEnableIM: true,
+  isEnableExperimentalTopics: true,
+  isYoutubeTest: false,
   urls: [],
   tldTimers: [],
 };

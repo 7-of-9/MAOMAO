@@ -769,7 +769,13 @@ var selectedWindowId = -1;
 
 function windowFocusChanged(windowId) {
   // Fix for edge case: user change google chrome window
-  sessionObservable.activeUrl = '';
+  // check active url on current window
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs != null && tabs.length > 0) {
+      const url = tabs[0].url;
+      sessionObservable.activeUrl = url;
+    }
+  });
   if (windowId == selectedWindowId) return false;
   selectedWindowId = windowId;
 

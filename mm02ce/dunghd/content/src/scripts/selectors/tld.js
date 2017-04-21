@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { createSelector } from 'reselect';
+import * as logger from 'loglevel';
 
 const getRecords = state => state.nlp.records;
 const getTimers = state => state.icon.tldTimers;
@@ -14,11 +15,13 @@ const getCurrentTLD = createSelector(
       if (term && term.data && term.data.tld_topic) {
         // check timer
         const foundTimer = timers.find(item => item.tld === term.data.tld_topic);
-        if (foundTimer && moment().isAfter(foundTimer.timer)) {
-          xp.push({
-            text: foundTimer.tld,
-            score: foundTimer.tld.length,
-          });
+        if (foundTimer) {
+          if (moment().isAfter(foundTimer.timer)) {
+            xp.push({
+              text: foundTimer.tld,
+              score: foundTimer.tld.length,
+            });
+          }
         } else {
           xp.push({
             text: term.data.tld_topic,
@@ -27,6 +30,7 @@ const getCurrentTLD = createSelector(
         }
       }
     }
+    logger.warn('getCurrentTLD', url, xp);
     return xp;
   },
 );

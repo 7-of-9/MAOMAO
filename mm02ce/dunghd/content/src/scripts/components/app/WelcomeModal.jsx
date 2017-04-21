@@ -79,8 +79,8 @@ const propTypes = {
   auth: PropTypes.object,
   onGoogleLogin: PropTypes.func.isRequired,
   onFacebookLogin: PropTypes.func.isRequired,
-  onLinkedFacebook: PropTypes.func.isRequired,
-  onLinkedGoogle: PropTypes.func.isRequired,
+  // onLinkedFacebook: PropTypes.func.isRequired,
+  // onLinkedGoogle: PropTypes.func.isRequired,
   onLogout: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
@@ -98,10 +98,11 @@ const defaultProps = {
 };
 
 function WelcomeModal({
+  /* onLinkedFacebook, onLinkedGoogle, */
    auth, isOpen,
-  onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle,
+  onGoogleLogin, onFacebookLogin,
   onClose, onLogout }) {
-  const networks = auth.accounts.map(item => item.providerId);
+  // const networks = auth.accounts.map(item => item.providerId);
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
@@ -130,21 +131,21 @@ function WelcomeModal({
                 avatar={auth.info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
-                {auth &&
+                {/* auth &&
                   !networks.includes('facebook.com') &&
                   <a
                     className="btn btn-block btn-social btn-facebook"
                     onTouchTap={onLinkedFacebook}
                   >
-                    <span><i className="icons-facebook" /></span> Sign in with Facebook
-                  </a>}
-                {auth &&
+                    <span><i className="icons-facebook" /></span> Link your account with Facebook
+                  </a> */}
+                {/* auth &&
                   !networks.includes('google.com') &&
                   <a
                     className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}
                   >
-                    <span><i className="icons-googleplus" /></span> Sign in with Google
-                  </a>}
+                    <span><i className="icons-googleplus" /></span> Link your account with Google
+                  </a> */}
                 <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
                   <span><i className="icons_signout" /></span> Logout
                   </a>

@@ -412,7 +412,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           }
         >
           <Xp
-            terms={tld} shareTopics={openShare} closeXp={closeTLD}
+            terms={tld} shareTopics={openShare} closeXp={closeTLD} closeTimeout={2000}
           />
         </ToggleDisplay>
         <ToggleDisplay

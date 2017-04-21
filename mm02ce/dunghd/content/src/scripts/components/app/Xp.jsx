@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { onlyUpdateForKeys, withState, withHandlers, lifecycle, compose } from 'recompose';
+import { withState, withHandlers, lifecycle, compose } from 'recompose';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
 import Radium from 'radium';
@@ -69,9 +69,16 @@ const enhance = compose(
         this.props.changeScore(xp.score);
         this.props.changeShow(true);
       }
+
+      if (Number(this.props.closeTimeout) > 0) {
+        logger.info('XP closeTimeout', this.props.closeTimeout);
+        setTimeout(() => {
+          this.props.changeShow(false);
+          this.props.closeXp();
+        }, this.props.closeTimeout);
+      }
     },
   }),
-  onlyUpdateForKeys(['terms', 'show', 'counter']),
 );
 
 const Xp = enhance(({
@@ -110,6 +117,7 @@ const Xp = enhance(({
 Xp.propTypes = {
   shareTopics: PropTypes.func.isRequired,
   closeXp: PropTypes.func.isRequired,
+  closeTimeout: PropTypes.number,
 };
 
 export default Radium(Xp);
