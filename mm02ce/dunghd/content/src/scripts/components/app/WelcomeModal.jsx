@@ -109,9 +109,9 @@ function WelcomeModal({
         <div style={customStyles.content}>
           <a className="close_popup" onTouchTap={onClose}><i className="icons-close" /></a>
           <div className="maomao-logo" />
-          <h1 className="tlt glow in" style={customStyles.animateText}>
-            maomao
-           </h1>
+          <h1 className="welcome-heading">
+            <span className="logo-bg" />
+          </h1>
           <ToggleDisplay hide={auth.isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
             <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>

@@ -22,9 +22,8 @@ const Description = styled.p`
 function Slogan () {
   return (
     <Wrapper>
-      <p className='text-logo'>maomao</p>
-      <div className='stamp-logo' />
-      <Description className='paragraph-smarter'> get smarter </Description>
+      <img className="logo-image" onClick={() => { window.location.href = '/' }} src='/static/images/maomao.png' alt='maomao' width='165' height='24' />
+      <span className='paragraph-smarter'> get smarter </span>
     </Wrapper>
   )
 }

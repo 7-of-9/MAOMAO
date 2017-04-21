@@ -1,5 +1,7 @@
 $logo-img: url('./images/dog_blue.png');
 $close-btn-img: url('./images/close_button.png');
+$logo-mao: './images/maomao.png';
+$lab-icons: url('./images/icons-lab.png');
 
 /*distance box*/
 
@@ -50,15 +52,13 @@ $close-btn-img: url('./images/close_button.png');
   animation: vex-flyin 0.5s;
   .maomao-logo {
     margin-right: 3px;
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     display: inline-block;
     background: $logo-img;
-    vertical-align: top;
+    vertical-align: middle;
     background-size: contain;
-    animation-name: zoomInLogo;
-    animation-duration: 1s;
-    animation-fill-mode: both;
+    animation: zoomInLogo 1.5s both;
     transition: all 0.2s ease-in-out;
   }
   .share-heading {
@@ -76,6 +76,14 @@ $close-btn-img: url('./images/close_button.png');
       color: #999;
       text-decoration: none;
       display: inline-block;
+      .maomao-text {
+        display: inline-block;
+        width: 165px;
+        height: 24px;
+        vertical-align: middle;
+        margin-left: 7px;
+        background: url($logo-mao) no-repeat;
+      }
       &:hover,
       &:focus {
         .maomao-logo {
@@ -136,7 +144,7 @@ $close-btn-img: url('./images/close_button.png');
 }
 
 .popup-content {
-  padding: 20px 10px;
+  padding: 20px 7px;
   min-width: 340px;
   text-align: center;
   .power-group {
@@ -363,11 +371,17 @@ $close-btn-img: url('./images/close_button.png');
 .share-topic {
   text-align: center;
   .share-topic-title {
+    float: left;
+  }
+  .share-experiment-title{
+    display: inline-block;
+  }
+  .share-topic-title,
+  .share-experiment-title {
     padding-right: 5px;
     font-size: 17px;
     line-height: 19px;
-    color: #e9201a;
-    float: left;
+    color: #2db7f5;
     text-align: right;
   }
   .switch-list {
@@ -481,7 +495,7 @@ $close-btn-img: url('./images/close_button.png');
     position: absolute;
     + .radio__regular__label {
       position: relative;
-      padding-left: 40px;
+      padding: 0 20px 0 40px;
       margin-bottom: 0;
       font-weight: normal;
       display: block;
@@ -490,6 +504,9 @@ $close-btn-img: url('./images/close_button.png');
       line-height: 30px;
       cursor: pointer;
       outline: 0;
+      &:hover {
+        background: $lab-icons no-repeat right center;
+      }
       &::before {
         @include abs-pos ($top: 0.1rem, $right: auto, $bottom: auto, $left: 0);
         transition: all .3s ease;
@@ -552,6 +569,31 @@ $close-btn-img: url('./images/close_button.png');
     opacity: 0;
   }
   100% {
+    opacity: 1;
+  }
+}
+
+
+/*animation logo*/
+
+@-webkit-keyframes zoomInLogo {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomInLogo {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+  50% {
     opacity: 1;
   }
 }

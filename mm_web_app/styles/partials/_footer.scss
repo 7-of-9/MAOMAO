@@ -27,7 +27,7 @@ the footer section
       @media (max-width: 390px) {
         margin-top: 5px;
         float: none !important;
-        justify-content: end;
+        justify-content: flex-end;
       }
     }
     .container {

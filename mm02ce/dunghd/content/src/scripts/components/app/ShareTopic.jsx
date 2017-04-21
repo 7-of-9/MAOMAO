@@ -14,7 +14,7 @@ const style = {
     position: 'fixed',
     top: '50%',
     left: '50%',
-    margin: '-265px 0 0 -400px',
+    margin: '-290px 0 0 -400px',
     zIndex: 9999999999,
     width: '800px',
     backgroundColor: '#fff',
@@ -187,7 +187,7 @@ const ShareTopicStepThree = enhance2(({
           >
             <div className="input-group-btn">
               <button className="btn-copy">Copy</button>
-              {copied ? <span style={{ color: 'red' }}>Copied.</span> : null}
+              {copied ? <span style={{ color: '#014cd6' }}>Copied.</span> : null}
             </div>
           </CopyToClipboard>
         </div>

@@ -118,7 +118,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> maomao</a>
+          <a href="#home">
+            <span className="maomao-logo" />
+            <span className="maomao-text" />
+          </a>
         </h3>
         <div className="popup-content">
           <p className="paragraph-share">Loading...!</p>
@@ -131,7 +134,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> maomao</a>
+          <a href="#home">
+            <span className="maomao-logo" />
+            <span className="maomao-text" />
+          </a>
         </h3>
         <div className="popup-content">
           <p className="paragraph-share">Maomao is off on Google Chrome page!</p>
@@ -146,7 +152,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#home"><span className="maomao-logo" /> maomao</a>
+            <a href="#home">
+              <span className="maomao-logo" />
+              <span className="maomao-text" />
+            </a>
           </h3>
           <div className="popup-content">
             <p className="paragraph-share">Maomao is off on this url !</p>
@@ -158,7 +167,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
-            <a href="#home"><span className="maomao-logo" /> maomao</a>
+            <a href="#home">
+              <span className="maomao-logo" />
+              <span className="maomao-text" />
+            </a>
           </h3>
           <p className="select-cn-title">Share:</p>
           <div className="popup-content pt0">
@@ -199,7 +211,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home"><span className="maomao-logo" /> maomao</a>
+          <a href="#home">
+            <span className="maomao-logo" />
+            <span className="maomao-text" />
+          </a>
         </h3>
         <div className="popup-content">
           <div className="circle-share">
@@ -221,7 +236,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
   return (
     <div className="popup-browser">
       <h3 className="share-heading">
-        <a href="#home"><span className="maomao-logo" /> maomao</a>
+        <a href="#home">
+          <span className="maomao-logo" />
+          <span className="maomao-text" />
+        </a>
       </h3>
       <div className="popup-content">
         <button

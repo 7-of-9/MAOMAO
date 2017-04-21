@@ -133,7 +133,7 @@ class AppHeader extends React.Component {
               callback={this.responseFacebook}
              />
           </div>
-          <p className='paragraph-question'> Don't have an account? <a onClick={this.onSignUpOpen}>Sign Up</a> </p>
+          <p className='paragraph-question'> Don't have an account? <a href='' onClick={this.onSignUpOpen}>Sign Up</a> </p>
         </Modal>
         <Modal
           isOpen={this.state.showSignUpModal}
@@ -174,7 +174,7 @@ class AppHeader extends React.Component {
               callback={this.responseFacebook}
              />
           </div>
-          <p className='paragraph-question'> Do have an account? <a onClick={this.onSignInOpen}>Sign In</a> </p>
+          <p className='paragraph-question'> Do have an account? <a href='#' onClick={this.onSignInOpen}>Sign In</a> </p>
         </Modal>
       </NavItem>
     )

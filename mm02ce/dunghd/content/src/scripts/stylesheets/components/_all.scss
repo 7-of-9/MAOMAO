@@ -7,6 +7,8 @@ $close-icons: './images/close_icon.svg';
 $content-icons: './images/icons-content.png';
 $share-icons: './images/icons-share.png';
 $success-icons: './images/icons-success.png';
+$logo-mao: './images/maomao.png';
+$lab-icons: url('./images/icons-lab.png');
 
 /*distance box*/
 
@@ -16,6 +18,10 @@ $success-icons: './images/icons-success.png';
 
 .mt0 {
   margin-top: 0 !important;
+}
+
+.mt10 {
+  margin-top: 10px !important;
 }
 
 .mb0 {
@@ -118,6 +124,16 @@ $success-icons: './images/icons-success.png';
   .share-button {
     float: right;
     max-width: 74px;
+  }
+}
+
+.welcome-heading {
+  margin: 15px 0 5px;
+  .logo-bg {
+    display: inline-block;
+    width: 165px;
+    height: 24px;
+    background: url($logo-mao) no-repeat;
   }
 }
 
@@ -303,42 +319,6 @@ $success-icons: './images/icons-success.png';
 .mfb-component--bl {
   animation: fromBottom 1.9s 1;
   -webkit-animation: fromBottom 1.9s 1;
-}
-
-@keyframes fromBottom {
-  0% {
-    transform: translateY(250px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@keyframes fromTop {
-  0% {
-    transform: translateY(-250px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@-webkit-keyframes fromBottom {
-  0% {
-    transform: translateY(250px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-@-webkit-keyframes fromTop {
-  0% {
-    transform: translateY(-250px);
-  }
-  100% {
-    transform: translateY(0);
-  }
 }
 
 .react-autosuggest__container {
@@ -932,7 +912,7 @@ fieldset[disabled] a.btn {
 }
 
 .btn-facebook {
-  color: #fff;
+  color: #fff !important;
   background: #3b5998;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
@@ -1223,49 +1203,58 @@ fieldset[disabled] .btn-logout.focus {
 
 .share-topic {
   text-align: center;
+  max-height: 225px;
+  overflow-y: auto;
   .share-topic-title {
+    float: left;
+  }
+  .share-experiment-title {
+    display: inline-block;
+  }
+  .share-topic-title,
+  .share-experiment-title {
     padding-right: 5px;
     font-size: 17px;
     line-height: 19px;
-    color: #e9201a;
+    color: #2db7f5;
     min-width: 189px;
-    float: left;
     text-align: right;
   }
-  .switch-list {
-    @include clearfix();
-    margin: 10px 0 15px;
-    text-align: left;
-    .checkbox__content {
-      overflow: hidden;
-      .checkbox__row {
-        margin-top: 10px;
-        .checkbox__styled {
-          padding: 0 7px;
-          display: inline-block;
-        }
-      }
-      .radio__row {
-        margin-top: 10px;
-        .radio__regular {
-          padding: 0 7px;
-          display: inline-block;
-        }
+}
+
+.switch-list {
+  @include clearfix();
+  margin: 10px 0 15px;
+  text-align: left;
+  .checkbox__content {
+    overflow: hidden;
+    .checkbox__row {
+      margin-top: 10px;
+      .checkbox__styled {
+        padding: 0 7px;
+        display: inline-block;
       }
     }
-    .switch-select {
-      padding: 0 0 0 7px;
-      overflow: hidden;
-      > div {
-        margin-right: 10px;
-        display: inline-block !important;
-        width: auto !important;
-      }
-      .type-name {
+    .radio__row {
+      margin-top: 10px;
+      .radio__regular {
+        padding: 0 7px;
         display: inline-block;
-        vertical-align: middle;
-        font-size: 15px;
       }
+    }
+  }
+  .switch-select {
+    padding: 0 0 0 7px;
+    overflow: hidden;
+    > div {
+      margin-right: 10px;
+      display: inline-block !important;
+      width: auto !important;
+    }
+    .type-name {
+      display: inline-block;
+      vertical-align: middle;
+      font-size: 15px;
     }
   }
 }
@@ -1311,7 +1300,7 @@ fieldset[disabled] .btn-logout.focus {
   .share-social-title {
     margin: 0 0 20px;
     font-size: 17px;
-    color: #e9201a;
+    color: #014cd6;
   }
 }
 
@@ -1410,6 +1399,7 @@ fieldset[disabled] .btn-logout.focus {
   }
 }
 
+
 /* Regular radio*/
 
 .radio__regular {
@@ -1418,7 +1408,7 @@ fieldset[disabled] .btn-logout.focus {
     position: absolute;
     + .radio__regular__label {
       position: relative;
-      padding-left: 40px;
+      padding: 0 20px 0 40px;
       margin-bottom: 0;
       font-weight: normal;
       display: block;
@@ -1427,6 +1417,9 @@ fieldset[disabled] .btn-logout.focus {
       line-height: 30px;
       cursor: pointer;
       outline: 0;
+      &:hover {
+        background: $lab-icons no-repeat right center;
+      }
       &::before {
         @include abs-pos ($top: 0.1rem, $right: auto, $bottom: auto, $left: 0);
         transition: all .3s ease;
@@ -1516,5 +1509,41 @@ fieldset[disabled] .btn-logout.focus {
   to {
     -webkit-transform: translate3d(0, 0, 0);
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fromBottom {
+  0% {
+    transform: translateY(250px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fromTop {
+  0% {
+    transform: translateY(-250px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes fromBottom {
+  0% {
+    transform: translateY(250px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes fromTop {
+  0% {
+    transform: translateY(-250px);
+  }
+  100% {
+    transform: translateY(0);
   }
 }
