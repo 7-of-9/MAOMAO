@@ -19,9 +19,9 @@ function StreamItem ({ url, maxScore }) {
     discoveryKeys = _.map(url.suggestions_for_url, 'term_name')
   }
   return (
-    <div className='col'>
+    <div>
       <a href={href} target='_blank'>
-        <img style={{ maxWidth: '400px', maxHeight: '400px' }} src={img || '/static/images/no-image.png'} alt={title} />
+        <img style={{ maxWidth: '200px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
       </a>
       <div className='media-body'>
         <a href={href} target='_blank'>

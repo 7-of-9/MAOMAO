@@ -186,11 +186,14 @@ class Home extends React.Component {
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
+          <link rel='stylesheet' href='/static/vendors/css/layout.css' />
+          <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.css' />
+          <script src='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.js' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
-          <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
+          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack

@@ -12,15 +12,6 @@ const Wrapper = styled.div`
   margin-right: 16px;
 `
 
-const MaomaoImage = styled.img`
-  margin-left: 0px;
-  margin-top: 30px;
-  float: left;
-  &:hover {
-    cursor: pointer;
-  }
-`
-
 const Description = styled.p`
   margin-left: 10px;
   margin-top: 30px;

@@ -74,7 +74,7 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, store: { isChrome, isInstall, isLogin, shareInfo } } = this.props
+    const { title, description, install, store: { isChrome, isMobile, isInstall, isLogin, shareInfo } } = this.props
     logger.info('ChromeInstall isChrome, isInstall, isLogin, shareInfo ', isChrome, isInstall, isLogin, shareInfo)
     const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
@@ -95,10 +95,10 @@ class ChromeInstall extends React.Component {
             <button onClick={this.onClose}>Close</button>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here</a></p></div>}
-            {!isInstall && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
-            {!isInstall && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
-            {!isInstall && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
+            {!isChrome && !isMobile && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here</a></p></div>}
+            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
+            {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}><i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+            {!isInstall && !isMobile && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
           </div>
         </Hero>
         <Section className='section-list'>
