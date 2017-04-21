@@ -8,21 +8,21 @@ var BG_EXCEPTION_COLOR = '#990000';
 var BG_APP_UUID = new_guid();
 
 // ERROR handler
-var errBack = function(err) { log.info(err.message); };
+var errBack = function (err) { log.info(err.message); };
 
-var errorStackTracking = function(stackframes) {
-    var stringifiedStack = stackframes.map(function(sf) {
-        return sf.toString();
-    }).join('\n');
-    log.warn('error stack', stringifiedStack);
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    }, function (tabs) {
-      if (tabs != null && tabs.length > 0) {
-        setIconApp(tabs[0].url, 'black', '*EXBG', BG_EXCEPTION_COLOR);
-      }
-    });
+var errorStackTracking = function (stackframes) {
+  var stringifiedStack = stackframes.map(function (sf) {
+    return sf.toString();
+  }).join('\n');
+  log.warn('error stack', stringifiedStack);
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  }, function (tabs) {
+    if (tabs != null && tabs.length > 0) {
+      setIconApp(tabs[0].url, 'black', '*EXBG', BG_EXCEPTION_COLOR);
+    }
+  });
 };
 
 window.onerror = function (msg, file, line, col, error) {
@@ -107,7 +107,7 @@ function registerExtensionEventListeners(event, name) {
     var validator = eventValidator[name];
     if (validator) {
       event.addListener(function () {
-        //log.info('extension event: ' + name);
+        log.info('extension event: ' + name);
 
         // Check this first since the validator may bump the count for future
         // events.
@@ -404,7 +404,7 @@ function inject_cs(session, tab_id, skip_text) {
           });
         }, function (error) {
           StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-          if(NotInjectCSUrls.indexOf(tab.url) === -1) {
+          if (NotInjectCSUrls.indexOf(tab.url) === -1) {
             NotInjectCSUrls.push(tab.url);
           }
           setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
@@ -462,7 +462,7 @@ function inject_cs(session, tab_id, skip_text) {
             });
           }, function (error) {
             StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-            if(NotInjectCSUrls.indexOf(tab.url) === -1) {
+            if (NotInjectCSUrls.indexOf(tab.url) === -1) {
               NotInjectCSUrls.push(tab.url);
             }
             setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);

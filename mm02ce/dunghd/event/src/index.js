@@ -217,7 +217,7 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
 
 mobx.reaction(() => window.sessionObservable.activeUrl, (url) => {
   // save db when user change url
-  logger.arguments('active url', url);
+  log.info('active url', url);
   syncImScore(true);
 });
 
