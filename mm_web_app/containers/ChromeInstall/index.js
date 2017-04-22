@@ -89,7 +89,7 @@ class ChromeInstall extends React.Component {
       <Wrapper className='wrap-main'>
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed;' }}
+          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed' }}
           >
           <h1 className='animated fadeInUp'>{description}</h1>
           <Modal
