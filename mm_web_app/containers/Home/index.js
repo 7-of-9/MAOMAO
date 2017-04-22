@@ -10,6 +10,7 @@ import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
+import { toJS } from 'mobx'
 import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { OrderedSet } from 'immutable'
@@ -137,8 +138,8 @@ class Home extends React.Component {
     let currentTermId = this.props.store.currentTermId
     let friendStreamId = this.props.store.friendStreamId
     if (this.props.store.userHistory) {
-      const { urls, topics } = this.props.store.myStream
-      friends = this.props.store.friendsStream
+      const { urls, topics } = toJS(this.props.store.myStream)
+      friends = toJS(this.props.store.friendsStream)
       logger.info('friends', friends)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       let urlIds = []

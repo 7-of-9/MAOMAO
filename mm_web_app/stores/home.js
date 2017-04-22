@@ -1,6 +1,6 @@
-import { action, reaction, when, whyRun, computed, intercept, observable } from 'mobx'
+import { action, reaction, when, whyRun, computed, intercept, observable, toJS } from 'mobx'
 import * as logger from 'loglevel'
-import { fromJS } from 'immutable'
+// import { fromJS } from 'immutable'
 import { CoreStore } from './core'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
@@ -18,7 +18,7 @@ export class HomeStore extends CoreStore {
   @observable friendStreamId = -1
   @observable googleUser = {}
   @observable facebookUser = {}
-  @observable userHistory = fromJS({me: {}, shares: []})
+  @observable userHistory = {me: {}, shares: []}
   counter = 0
 
   constructor (isServer, userAgent) {
@@ -40,12 +40,14 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get myStream () {
-    const { me } = this.userHistory.toJS()
+    const { me } = this.userHistory
+    logger.warn('myStream', me)
     return me
   }
 
   @computed get friendsStream () {
-    const { shares } = this.userHistory.toJS()
+    const { shares } = this.userHistory
+    logger.warn('friendsStream', shares)
     return shares
   }
 
@@ -147,7 +149,7 @@ export class HomeStore extends CoreStore {
     when(
       () => this.userHistoryResult.state !== 'pending',
       () => {
-        this.userHistory = fromJS(this.userHistoryResult.value.data)
+        this.userHistory = this.userHistoryResult.value.data
         logger.info('userHistory', this.userHistory)
         this.counter += 1
         disposer()

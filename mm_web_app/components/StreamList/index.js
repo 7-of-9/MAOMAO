@@ -17,6 +17,7 @@ class StreamList extends React.Component {
     this.state = {
       isUpdating: false
     }
+    logger.warn('StreamList', props)
   }
 
   componentDidMount () {

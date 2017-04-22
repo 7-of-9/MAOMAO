@@ -8,10 +8,12 @@ import React from 'react'
 import ReactStars from 'react-stars'
 import moment from 'moment'
 import _ from 'lodash'
+import * as logger from 'loglevel'
 import DiscoveryButton from '../../components/DiscoveryButton'
 
 /* eslint-disable camelcase */
 function StreamItem ({ url, maxScore }) {
+  logger.warn('StreamItem', url, maxScore)
   const { id, href, img, title, im_score, time_on_tab, hit_utc } = url
   const rate = Math.ceil((im_score / maxScore) * 5)
   let discoveryKeys = []
