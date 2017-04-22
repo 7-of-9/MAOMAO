@@ -34,18 +34,17 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
   logger.warn('experimentalTopics', experimentalTopics);
   return (
     <div style={style} className="share-topic">
-      <div className="switch-list">
-        <span className="share-topic-title"> Single URL: </span>
+      <div className="switch-list">        
         <div className="checkbox__content">
           <div className="switch-select">
             <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
+            <span className="share-topic-title"> Single URL: </span>
             <span className="type-name">just this page</span>
           </div>
         </div>
       </div>
       <div className="switch-list" style={{ display: topics.length > 0 ? '' : 'none' }}>
-        <div className="checkbox__content">
-          <span className="share-topic-title"> Topics (Multiple URLs):</span>
+        <div className="checkbox__content">        
           <div key={guid()} className="switch-select">
             <Option
               key={guid()}
@@ -54,6 +53,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 onChange((tld && tld.id) || (experimentalTopics[0] && experimentalTopics[0].id));
               }}
             />
+            <span className="share-topic-title"> Topics (Multiple URLs):</span>
           </div>
           <div className="radio__row">
             {isToggleTopic && tld &&
@@ -93,11 +93,11 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
           </div>
         </div>
       </div>
-      <div className="switch-list mb0">
-        <span className="share-topic-title"> All URLs: </span>
+      <div className="switch-list mb0">        
         <div className="checkbox__content">
           <div className="switch-select">
             <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+            <span className="share-topic-title"> All URLs: </span>
             <span className="type-name">My browsing history</span>
           </div>
         </div>

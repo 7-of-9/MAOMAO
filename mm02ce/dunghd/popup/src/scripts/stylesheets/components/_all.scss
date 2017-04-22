@@ -370,9 +370,6 @@ $lab-icons: url('./images/icons-lab.png');
 
 .share-topic {
   text-align: center;
-  .share-topic-title {
-    float: left;
-  }
   .share-experiment-title{
     display: inline-block;
   }
@@ -382,6 +379,8 @@ $lab-icons: url('./images/icons-lab.png');
     font-size: 17px;
     line-height: 19px;
     color: #2db7f5;
+    display: inline-block;
+    vertical-align: middle;
     text-align: right;
   }
   .switch-list {
@@ -417,6 +416,7 @@ $lab-icons: url('./images/icons-lab.png');
         display: inline-block;
         vertical-align: middle;
         font-size: 15px;
+        line-height: 19px;
       }
     }
   }

@@ -1206,19 +1206,14 @@ fieldset[disabled] .btn-logout.focus {
   text-align: center;
   max-height: 225px;
   overflow-y: auto;
-  .share-topic-title {
-    float: left;
-  }
-  .share-experiment-title {
-    display: inline-block;
-  }
   .share-topic-title,
   .share-experiment-title {
     padding-right: 5px;
     font-size: 17px;
     line-height: 19px;
     color: #2db7f5;
-    min-width: 189px;
+    display: inline-block;
+    vertical-align: middle;
     text-align: right;
   }
 }
@@ -1255,6 +1250,7 @@ fieldset[disabled] .btn-logout.focus {
     .type-name {
       display: inline-block;
       vertical-align: middle;
+      line-height: 19px;
       font-size: 15px;
     }
   }
