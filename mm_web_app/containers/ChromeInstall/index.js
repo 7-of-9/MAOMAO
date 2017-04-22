@@ -19,8 +19,6 @@ const customStyles = {
     left: '50%',
     right: 'auto',
     bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
   }
 }
 
@@ -95,9 +93,10 @@ class ChromeInstall extends React.Component {
           <Modal
             isOpen={isShow && this.state.showModal}
             style={customStyles}
+            portalClassName='QuestionModal'
             contentLabel='Unlock stream'>
             <p>{msg}</p>
-            <button onClick={this.onClose}>Close</button>
+            <div className='text-right'><button className='btn btn-close' onClick={this.onClose}>Close</button></div>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
             {!isChrome && !isMobile && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
