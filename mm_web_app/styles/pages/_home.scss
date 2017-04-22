@@ -7,7 +7,11 @@ the home page
 
 .neal-hero {
   &.banner-hero {
-    @include transition(all 0.2s ease-out 0s);
+    position: relative;
+    min-height: 280px;
+    -moz-animation: fadeIn 1s both;
+    -webkit-animation: fadeIn 1s both;
+    animation: fadeIn 1s both;
     margin-bottom: 0;
     background: url('/static/images/bg_hero.jpg') no-repeat fixed;
     background-size: cover;
@@ -41,6 +45,11 @@ the home page
         margin-bottom: 0.833;
         font-size: 0.825rem;
       }
+    }
+    &:before {
+      @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+      content: "";
+      background-color: rgba(0, 0, 0, 0.5);
     }
     @media (max-width: 850px) {
       padding-top: 4rem;
@@ -180,5 +189,23 @@ the home page
   }
   to {
     color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

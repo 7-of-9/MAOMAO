@@ -89,7 +89,22 @@ the button section
   }
 }
 
-,
+.btn-close {
+  @include border-radius(2px);
+  @include box-shadow(none);
+  font-size: 0.875rem;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+  &:hover,
+  &:focus {
+    @include box-shadow(none);
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #8c8c8c;
+  }
+}
+
 .btn-login,
 .btn-logout {
   @include border-radius(2px);
@@ -230,7 +245,10 @@ the button section
     border-color: rgba(0, 0, 0, 0.2)
   }
 }
+
+
 /*social*/
+
 .social-action {
   @include clearfix();
   .btn-google {

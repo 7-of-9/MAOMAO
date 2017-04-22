@@ -23,8 +23,6 @@ the modal section
 
 .ReactModal__Content {
   width: 500px;
-  left: 50% !important;
-  margin-left: -250px;
   animation: vex-flyin 0.5s;
   -webkit-animation: vex-flyin 0.5s;
   -moz-animation: vex-flyin 0.5s;
@@ -33,7 +31,19 @@ the modal section
   -webkit-backface-visibility: hidden;
 }
 
+.QuestionModal {
+  .ReactModal__Content {
+    @include border-radius(6px);
+    @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+    width: 300px;
+    left: 50% !important;
+    margin: -70px 0 0 -150px;
+  }
+}
+
 .SignInModal .ReactModal__Content {
+  left: 50% !important;
+  margin-left: -250px;
   @include border-radius(6px);
   @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
   padding: 30px 40px !important;
