@@ -30,7 +30,6 @@ const getCurrentTLD = createSelector(
         }
       }
     }
-    logger.warn('getCurrentTLD', url, xp);
     return xp;
   },
 );

@@ -15,15 +15,11 @@ const Wrapper = styled.div`
 function Slogan () {
   return (
     <Wrapper>
-      <span className='stamp-logo'></span>
+      <span className='stamp-logo' />
       <img className='logo-image' onClick={() => { window.location.href = '/' }} src='/static/images/maomao.png' alt='maomao' width='165' height='24' />
       <span className='paragraph-smarter'> get smarter </span>
     </Wrapper>
   )
-}
-
-Slogan.propTypes = {
-
 }
 
 export default Slogan

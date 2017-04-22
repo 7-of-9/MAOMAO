@@ -1417,8 +1417,10 @@ fieldset[disabled] .btn-logout.focus {
       line-height: 30px;
       cursor: pointer;
       outline: 0;
-      &:hover {
-        background: $lab-icons no-repeat right center;
+      .labs {
+        &:hover{
+          background: $lab-icons no-repeat bottom center;
+        }
       }
       &::before {
         @include abs-pos ($top: 0.1rem, $right: auto, $bottom: auto, $left: 0);
