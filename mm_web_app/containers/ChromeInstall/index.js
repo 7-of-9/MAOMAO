@@ -96,7 +96,7 @@ class ChromeInstall extends React.Component {
             portalClassName='QuestionModal'
             contentLabel='Unlock stream'>
             <p>{msg}</p>
-            <div className="text-right"><button className="btn btn-close" onClick={this.onClose}>Close</button></div>
+            <div className='text-right'><button className='btn btn-close' onClick={this.onClose}>Close</button></div>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
             {!isChrome && !isMobile && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
