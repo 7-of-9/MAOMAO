@@ -218,6 +218,7 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   // save db when user change url
   log.info('active url', window.sessionObservable.activeUrl);
+  // TODO: reset setting for experimental topics when change url
   syncImScore(true);
 });
 

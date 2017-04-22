@@ -1,4 +1,4 @@
-import { action, reaction, when, observable, toJS } from 'mobx'
+import { action, reaction, when, observable, whyRun, toJS } from 'mobx'
 import * as logger from 'loglevel'
 import { HomeStore } from './home'
 import { acceptInvite } from '../services/share'
@@ -20,6 +20,7 @@ class InviteStore extends HomeStore {
     this.shareInfo = shareInfo
     reaction(() => this.userHash.length,
      (userHash) => {
+       whyRun()
        if (userHash > 0) {
          logger.warn('yeah... acceptInviteCode')
          this.acceptInviteCode()

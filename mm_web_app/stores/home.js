@@ -1,11 +1,14 @@
-import { action, reaction, when, observable } from 'mobx'
+import { action, reaction, when, whyRun, computed, intercept, observable } from 'mobx'
 import * as logger from 'loglevel'
+import { fromJS } from 'immutable'
 import { CoreStore } from './core'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 
 let store = null
+
+const TIME_TO_RELOAD = 60000
 
 export class HomeStore extends CoreStore {
   @observable googleConnectResult = {}
@@ -15,17 +18,35 @@ export class HomeStore extends CoreStore {
   @observable friendStreamId = -1
   @observable googleUser = {}
   @observable facebookUser = {}
-  @observable userHistory = null
+  @observable userHistory = fromJS({me: {}, shares: []})
+  counter = 0
 
   constructor (isServer, userAgent) {
     super(isServer, userAgent)
     reaction(() => this.userHash.length,
      (userHash) => {
+       whyRun()
        if (userHash > 0) {
          logger.warn('yeah... getUserHistory')
          this.getUserHistory()
        }
      })
+    setInterval(() => {
+      logger.warn('fetch new user history on every', TIME_TO_RELOAD, ' seconds.')
+      if (this.counter > 0 && this.userHash.length > 0) {
+        this.getUserHistory()
+      }
+    }, TIME_TO_RELOAD)
+  }
+
+  @computed get myStream () {
+    const { me } = this.userHistory.toJS()
+    return me
+  }
+
+  @computed get friendsStream () {
+    const { shares } = this.userHistory.toJS()
+    return shares
   }
 
   @action googleConnect (info) {
@@ -108,11 +129,28 @@ export class HomeStore extends CoreStore {
   @action getUserHistory () {
     logger.info('getUserHistory', this.userId, this.userHash)
     this.userHistoryResult = getUserHistory(this.userId, this.userHash)
+    const disposer = intercept(this, 'userHistory', (change) => {
+      whyRun()
+      logger.warn('observe userHistory: from', change.object.value, 'to', change.newValue)
+      if (!change.newValue) {
+        logger.warn('getUserHistory not found new data')
+        return null
+      }
+
+      if (change.newValue === change.object.value) {
+        logger.warn('getUserHistory same data, ingore this')
+        return null
+      }
+      logger.warn('getUserHistory accept new data')
+      return change
+    })
     when(
       () => this.userHistoryResult.state !== 'pending',
       () => {
-        this.userHistory = this.userHistoryResult.value.data
+        this.userHistory = fromJS(this.userHistoryResult.value.data)
         logger.info('userHistory', this.userHistory)
+        this.counter += 1
+        disposer()
       }
     )
   }

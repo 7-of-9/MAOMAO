@@ -20,14 +20,12 @@ class StreamList extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('componentDidMount StreamList', this.state, this.props)
     if (!this.state.isUpdating) {
       this.bricklayer = new Bricklayer(this.container)
     }
   }
 
   componentDidUpdate () {
-    logger.warn('componentDidUpdate StreamList', this.state, this.props)
     if (!this.state.isUpdating) {
       this.bricklayer.destroy()
       this.bricklayer = new Bricklayer(this.container)
@@ -35,7 +33,6 @@ class StreamList extends React.Component {
   }
 
   componentWillReceiveProps () {
-    logger.warn('componentWillReceiveProps StreamList', this.state, this.props)
     this.setState({
       isUpdating: true
     })
@@ -48,7 +45,7 @@ class StreamList extends React.Component {
   }
 
   componentWillUnmount () {
-    logger.warn('componentWillUnmount StreamList')
+    logger.info('componentWillUnmount StreamList')
   }
 
   render () {

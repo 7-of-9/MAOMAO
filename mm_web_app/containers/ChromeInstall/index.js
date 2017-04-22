@@ -18,7 +18,7 @@ const customStyles = {
     top: '50%',
     left: '50%',
     right: 'auto',
-    bottom: 'auto',
+    bottom: 'auto'
   }
 }
 
