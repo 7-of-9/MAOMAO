@@ -20,3 +20,12 @@ export function googleNewsSearchByTerm (term, page) {
   const crawlerUrl = `${CRALWER_API_URL}?${query}`
   return fromPromise(axios.get(crawlerUrl))
 }
+
+export function googleImageSearchByTerm (term, page) {
+  const query = queryString.stringify({
+    type: 'image',
+    url: `https://www.google.com/search?q=${encodeURI(term)}&tbm=isch&site=imghp`
+  })
+  const crawlerUrl = `${CRALWER_API_URL}?${query}`
+  return fromPromise(axios.get(crawlerUrl))
+}

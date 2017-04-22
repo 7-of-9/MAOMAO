@@ -1,13 +1,15 @@
-import { action, reaction, when, observable } from 'mobx'
+import { action, reaction, when, observable, toJS } from 'mobx'
 import * as logger from 'loglevel'
 import { HomeStore } from './home'
 import { acceptInvite } from '../services/share'
+import { googleImageSearchByTerm } from '../services/crawler'
 import { hasInstalledExtension } from '../utils/chrome'
 
 let store = null
 
 class InviteStore extends HomeStore {
   @observable shareCode = ''
+  @observable bgImage = ''
   @observable acceptInviteResult = {}
   @observable inviteResult = {}
   @observable shareInfo = {}
@@ -29,6 +31,26 @@ class InviteStore extends HomeStore {
     if (this.isChrome && !this.isMobile) {
       logger.info('hasInstalledExtension', hasInstalledExtension())
       this.isInstall = !!hasInstalledExtension()
+    }
+  }
+
+  @action searchBgImage () {
+    const { topic_title: topicTitle } = this.shareInfo
+    if (topicTitle) {
+      const bgImageResult = googleImageSearchByTerm(topicTitle, 1)
+      when(
+        () => bgImageResult.state !== 'pending',
+        () => {
+          logger.info('bgImageResult', bgImageResult.value)
+          const { result } = bgImageResult.value.data
+          const images = toJS(result.filter(item => item.img && item.img.length > 0))
+          logger.info('images', images)
+          if (images.length > 0) {
+            this.bgImage = images[Math.floor(Math.random() * images.length)].img
+          }
+          logger.warn('bgImage', this.bgImage)
+        }
+      )
     }
   }
 

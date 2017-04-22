@@ -7,7 +7,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
-import { Hero, Section } from 'neal-react'
+import { Section } from 'neal-react'
 import Modal from 'react-modal'
 import * as logger from 'loglevel'
 import UnlockNow from '../../components/UnlockNow'
@@ -87,7 +87,10 @@ class ChromeInstall extends React.Component {
     }
     return (
       <Wrapper className='wrap-main'>
-        <Hero className='text-xs-center banner-hero'>
+        <div
+          className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
+          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed;' }}
+          >
           <h1 className='animated fadeInUp'>{description}</h1>
           <Modal
             isOpen={isShow && this.state.showModal}
@@ -108,7 +111,7 @@ class ChromeInstall extends React.Component {
             </div>
             }
           </div>
-        </Hero>
+        </div>
         <Section className='section-list'>
           <div className='section-item'>
             <h3 className='lead'>What is Maomao?</h3>

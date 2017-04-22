@@ -113,6 +113,8 @@ class Home extends React.Component {
     setTimeout(() => {
       if (this.props.store.shareInfo) {
         this.props.store.checkInstall()
+        // search image for bg
+        this.props.store.searchBgImage()
       }
     }, 100)
   }
