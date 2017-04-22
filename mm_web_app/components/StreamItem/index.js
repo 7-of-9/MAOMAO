@@ -27,10 +27,10 @@ function StreamItem ({ url, maxScore }) {
         <a href={href} target='_blank'>
           <h4 className='mt-0'>{title} ({id})</h4>
         </a>
-        <p> Earned XP {href.length} {moment.duration(time_on_tab).humanize()} </p>
+        <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
         <ReactStars edit={false} size={22} count={5} value={rate} />
         <span>
-          {moment(hit_utc).fromNow()}
+          {moment.utc(hit_utc).fromNow()}
         </span>
         {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
       </div>
