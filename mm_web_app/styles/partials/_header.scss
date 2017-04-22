@@ -82,10 +82,10 @@ the header section
       height: 51px;
       .iSrAXa {
         position: relative;
-        margin: 21px 0 0 0;
+        margin: 21px 0 0 10px;
       }
       .stamp-logo {
-        @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: -25px);
+        @include abs-pos ($top: -23px, $right: auto, $bottom: auto, $left: -25px);
         background: url('/static/images/demo.png') no-repeat;
         background-size: contain;
         width: 40px;
