@@ -23,14 +23,12 @@ const customStyles = {
   }
 }
 
-@inject('store') @observer
+@inject('store')
+@inject('ui')
+@observer
 class AppHeader extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      showSignInModal: false,
-      showSignUpModal: false
-    }
     this.onGoogleSuccess = this.onGoogleSuccess.bind(this)
     this.onGoogleFailure = this.onGoogleFailure.bind(this)
     this.responseFacebook = this.responseFacebook.bind(this)
@@ -54,24 +52,15 @@ class AppHeader extends React.Component {
   }
 
   onSignInOpen () {
-    this.setState({
-      showSignInModal: true,
-      showSignUpModal: false
-    })
+    this.props.ui.showSignIn()
   }
 
-  onSignUpOpen (show) {
-    this.setState({
-      showSignInModal: false,
-      showSignUpModal: true
-    })
+  onSignUpOpen () {
+    this.props.ui.showSignUp()
   }
 
   onClose () {
-    this.setState({
-      showSignInModal: false,
-      showSignUpModal: false
-    })
+    this.props.ui.closeModal()
   }
 
   onGoogleSuccess (response) {
@@ -107,7 +96,7 @@ class AppHeader extends React.Component {
         { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
         { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onSignInOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
         <Modal
-          isOpen={this.state.showSignInModal}
+          isOpen={this.props.ui.showSignInModal}
           onRequestClose={this.onClose}
           style={customStyles}
           portalClassName='SignInModal'
@@ -133,10 +122,10 @@ class AppHeader extends React.Component {
               callback={this.responseFacebook}
              />
           </div>
-          <p className='paragraph-question'> Don't have an account? <a href='' onClick={this.onSignUpOpen}>Sign Up</a> </p>
+          <p className='paragraph-question'> Don't have an account? <a href='javacript:void(0)' onClick={this.onSignUpOpen}>Sign Up</a> </p>
         </Modal>
         <Modal
-          isOpen={this.state.showSignUpModal}
+          isOpen={this.props.ui.showSignUpModal}
           onRequestClose={this.onClose}
           style={customStyles}
           portalClassName='SignInModal'
@@ -174,7 +163,7 @@ class AppHeader extends React.Component {
               callback={this.responseFacebook}
              />
           </div>
-          <p className='paragraph-question'> Do have an account? <a href='#' onClick={this.onSignInOpen}>Sign In</a> </p>
+          <p className='paragraph-question'> Do have an account? <a href='javacript:void(0)' onClick={this.onSignInOpen}>Sign In</a> </p>
         </Modal>
       </NavItem>
     )

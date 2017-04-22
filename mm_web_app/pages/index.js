@@ -1,6 +1,7 @@
 import React from 'react'
 import { Provider } from 'mobx-react'
 import { initStore } from '../stores/home'
+import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 
@@ -12,7 +13,8 @@ export default class HomePage extends React.Component {
       userAgent = req.headers['user-agent']
     }
     const store = initStore(isServer, userAgent)
-    return { isServer, ...store }
+    const uiStore = initUIStore(isServer)
+    return { isServer, ...store, ...uiStore }
   }
 
   constructor (props) {
@@ -24,11 +26,12 @@ export default class HomePage extends React.Component {
       this.isClosePopup = false
     }
     this.store = initStore(props.isServer, props.userAgent)
+    this.uiStore = initUIStore(props.isServer)
   }
 
   render () {
     return (
-      <Provider store={this.store}>
+      <Provider store={this.store} ui={this.uiStore}>
         <div>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home isClosePopup={this.isClosePopup} />

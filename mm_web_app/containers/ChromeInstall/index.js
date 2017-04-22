@@ -42,7 +42,9 @@ const Share = styled.button`
  color: #fff;
 `
 
-@inject('store') @observer
+@inject('store')
+@inject('ui')
+@observer
 class ChromeInstall extends React.Component {
   constructor (props) {
     super(props)
@@ -95,14 +97,16 @@ class ChromeInstall extends React.Component {
             <button onClick={this.onClose}>Close</button>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome && !isMobile && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className="icon-wrap"><i className="icon-download"></i></span></a></p></div>}
+            {!isChrome && !isMobile && <div className='panel-extention'><p> MaoMao is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
             {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
             {!isInstall && !isMobile && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
-            <div className="switch-browser">
-              <button className="btn btn-login">Sign In</button>
-              <button className="btn btn-login">Sign Up</button>
+            {(isMobile || !isChrome) &&
+            <div className='switch-browser'>
+              <button className='btn btn-login' onClick={() => { this.props.ui.showSignIn() }}>Sign In</button>
+              <button className='btn btn-login' onClick={() => { this.props.ui.showSignUp() }}>Sign Up</button>
             </div>
+            }
           </div>
         </Hero>
         <Section className='section-list'>
