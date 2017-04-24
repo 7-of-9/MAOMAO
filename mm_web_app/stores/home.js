@@ -9,7 +9,7 @@ import { md5hash } from '../utils/hash'
 
 let store = null
 
-const TIME_TO_RELOAD = 5 * 60 * 1000 // 5 mins
+const TIME_TO_RELOAD = 1 * 60 * 1000 // 5 mins
 
 export class HomeStore extends CoreStore {
   @observable googleConnectResult = {}
@@ -153,18 +153,26 @@ export class HomeStore extends CoreStore {
       () => {
         this.userHistory = this.userHistoryResult.value.data
         logger.info('userHistory', this.userHistory)
-        const normalizedData = normalizedHistoryData(toJS(this.userHistoryResult.value.data))
+        const normalizedData = normalizedHistoryData(toJS(this.userHistory))
         // checking realtime history (new urls)
-        const { entities: { shareLists } } = normalizedData
+        const { entities: { shareLists, urls } } = normalizedData
         if (this.normalizedData) {
           const { entities: { shareLists: oldShareLists } } = this.normalizedData
-
+          let newUrls = []
           _.forOwn(shareLists, (shareList, key) => {
-            logger.warn('key', key, shareList)
+            logger.warn('key', key, shareList, shareList.urls.length, oldShareLists[key].urls.length)
             if (shareList.urls.length !== oldShareLists[key].urls.length) {
               // TODO: find new urls and send notify (2 cases: installed extension or not)
+              newUrls = newUrls.concat(shareList.urls.slice(oldShareLists[key].urls.length))
             }
           })
+
+          logger.warn('newUrls', newUrls)
+          if (newUrls.length) {
+            _.forEach(newUrls, (urlId) => {
+              sendMsgToChromeExtension(actionCreator('NOTIFY_MESSAGE', { title: 'New sharing URL', message: urls[urlId].title }))
+            })
+          }
         }
 
         this.normalizedData = normalizedData

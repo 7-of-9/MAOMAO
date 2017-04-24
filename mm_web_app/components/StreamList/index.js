@@ -11,6 +11,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import StreamItem from '../../components/StreamItem'
 import Loading from '../../components/Loading'
+import { guid } from '../../utils/hash'
 
 const LIMIT = 10
 const masonryOptions = {
@@ -60,10 +61,11 @@ class StreamList extends React.Component {
     const { urls } = this.props
     const items = []
     if (urls && urls.length) {
-      const maxScore = _.maxBy(urls, 'im_score')
-      const sortedUrlsByHitUTC = _.reverse(_.sortBy(urls, [(url) => url.hit_utc]))
+      const uniqUrls = _.uniqBy(urls, 'id')
+      const maxScore = _.maxBy(uniqUrls, 'im_score')
+      const sortedUrlsByHitUTC = _.reverse(_.sortBy(uniqUrls, [(url) => url.hit_utc]))
       const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
-      items.push(<div key={Date.now() + 1} style={{ clear: 'both' }} />)
+      items.push(<div key={guid()} style={{ clear: 'both' }} />)
       _.forEach(currentUrls, (item) => {
         items.push(<StreamItem key={item.id} url={item} maxScore={maxScore.im_score} />)
       })
