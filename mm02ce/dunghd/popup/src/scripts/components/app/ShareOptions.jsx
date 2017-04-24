@@ -37,7 +37,9 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
       <div className="switch-list">        
         <div className="checkbox__content">
           <div className="switch-select">
-            <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
+            <div className="set-size-button">
+              <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
+            </div>
             <span className="share-topic-title"> Single URL: </span>
             <span className="type-name">just this page</span>
           </div>
@@ -46,13 +48,15 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
       <div className="switch-list" style={{ display: topics.length > 0 ? '' : 'none' }}>
         <div className="checkbox__content">        
           <div key={guid()} className="switch-select">
-            <Option
-              key={guid()}
-              value={isToggleTopic}
-              onToggle={() => {
-                onChange((tld && tld.id) || (experimentalTopics[0] && experimentalTopics[0].id));
-              }}
-            />
+            <div className="set-size-button">
+              <Option
+                key={guid()}
+                value={isToggleTopic}
+                onToggle={() => {
+                  onChange((tld && tld.id) || (experimentalTopics[0] && experimentalTopics[0].id));
+                }}
+              />
+            </div>
             <span className="share-topic-title"> Topics (Multiple URLs):</span>
           </div>
           <div className="radio__row">
@@ -96,7 +100,9 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
       <div className="switch-list mb0">        
         <div className="checkbox__content">
           <div className="switch-select">
-            <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+            <div className="set-size-button">
+              <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
+            </div>
             <span className="share-topic-title"> All URLs: </span>
             <span className="type-name">My browsing history</span>
           </div>
