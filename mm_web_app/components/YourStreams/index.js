@@ -13,13 +13,13 @@ function YourStreams ({ topics, changeTerm, activeId }) {
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
       if (topic && topic.term_id) {
-        items.push(<a
+        items.push(<a href="#"
           onClick={(e) => {
             e.preventDefault()
             changeTerm(topic.term_id)
           }} key={topic.term_id}
         >
-          <button className={`${activeId === topic.term_id ? 'btn-primary' : ''}`} >
+          <button className={`${activeId === topic.term_id ? 'btn btn-primary' : 'btn'}`} >
             {topic.term_name} ({topic.url_ids.length})
             </button>
         </a>)
