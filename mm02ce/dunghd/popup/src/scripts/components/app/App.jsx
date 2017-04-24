@@ -193,7 +193,8 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
             />
             <FacebookMessengerButton
               onClick={() => {
-                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
+                const closePopupUrl = `${SITE_URL}/static/success.html`;
+                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}`;
                 openUrl(src);
               }}
             />

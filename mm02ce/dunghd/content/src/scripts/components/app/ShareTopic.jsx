@@ -79,7 +79,7 @@ const enhance = compose(
     },
     sendMsgUrl: props => () => {
       const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
-      const closePopupUrl = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}?close=popup`;
+      const closePopupUrl = `${SITE_URL}/static/success.html`;
       const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`;
       openUrl(src);
       props.closeShare();
@@ -133,26 +133,26 @@ const ShareTopicStepOne = compose(({
 const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
-   <div className="share-social">
-     <h3 className="share-social-title">Click on button below to select.</h3>
-     <div className="toolbar-button">
-       <Toolbar
-         active={type}
-         onChange={(value) => { changeShareType(value, shareOption, 3); }}
-         onShare={shareUrl}
-         onSendMsg={sendMsgUrl}
-         style={style.toolbar}
-       />
-     </div>
-     <div className="share-footer">
-       <button
-         className="btn btn-slide-prev"
-         onClick={() => changeShareType(type, shareOption, 1)}
-       >
-      Previous
+    <div className="share-social">
+      <h3 className="share-social-title">Click on button below to select.</h3>
+      <div className="toolbar-button">
+        <Toolbar
+          active={type}
+          onChange={(value) => { changeShareType(value, shareOption, 3); }}
+          onShare={shareUrl}
+          onSendMsg={sendMsgUrl}
+          style={style.toolbar}
+        />
+      </div>
+      <div className="share-footer">
+        <button
+          className="btn btn-slide-prev"
+          onClick={() => changeShareType(type, shareOption, 1)}
+        >
+          Previous
       </button>
-     </div>
-   </div>
+      </div>
+    </div>
   ));
 
 const enhance2 = withState('copied', 'setCopied', false);
@@ -200,15 +200,15 @@ const ShareTopicStepThree = enhance2(({
           Previous
         </button>
         {type === 'Google' && contacts.length > 0 &&
-        <div className="share-now">
-          <button
-            style={style.button}
-            className="share-button"
-            onClick={sendEmails}
-          >
-            Share Now !
+          <div className="share-now">
+            <button
+              style={style.button}
+              className="share-button"
+              onClick={sendEmails}
+            >
+              Share Now !
           </button>
-        </div>
+          </div>
         }
       </div>
     </div>
