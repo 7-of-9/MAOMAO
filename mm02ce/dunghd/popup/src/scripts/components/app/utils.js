@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const defaultOptions = {
   toolbar: 'no',
   location: 'no',
@@ -18,10 +20,10 @@ const createOptions = () => {
   for (const key in defaultOptions) {
     if (Object.prototype.hasOwnProperty.call(defaultOptions, key)) {
       ret.push(`${key}=${
-         typeof defaultOptions[key] === 'function' ?
-           defaultOptions[key].call(this, defaultOptions, window) :
-           defaultOptions[key]}`,
-     );
+        typeof defaultOptions[key] === 'function' ?
+          defaultOptions[key].call(this, defaultOptions, window) :
+          defaultOptions[key]}`,
+      );
     }
   }
   return ret.join(',');
@@ -38,7 +40,7 @@ export function isInternalTab(url) {
 export function removeHashFromUrl(url) {
   const pos = url.indexOf('#');
   if (url.indexOf('#') !== -1) {
-   return url.substring(0, pos);
+    return url.substring(0, pos);
   }
   return url;
 }
@@ -50,4 +52,12 @@ export function guid() {
       .substring(1);
   }
   return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}${s4()}`;
+}
+
+export function fbScrapeShareUrl(url) {
+  // https://graph.facebook.com?scrape=true&id=http://www.maomao.rocks/
+  return axios({
+    method: 'post',
+    url: `https://graph.facebook.com?scrape=true&id=${url}`,
+  });
 }

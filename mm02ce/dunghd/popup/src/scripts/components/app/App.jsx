@@ -8,7 +8,7 @@ import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
-import { isInternalTab, openUrl, removeHashFromUrl } from './utils';
+import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl } from './utils';
 
 require('../../stylesheets/main.scss');
 
@@ -45,13 +45,12 @@ const defaultProps = {
     terms: [],
     records: [],
   },
-  dispatch: () => {},
-  getLink: () => {},
-  changeShareOption: () => {},
+  dispatch: () => { },
+  getLink: () => { },
+  changeShareOption: () => { },
 };
 
 const isRunable = (url, icon) => {
-  logger.info('isRunable url, icon', url, icon);
   const curentIcon = icon.urls.find(item => item.url === url);
   if ((curentIcon && curentIcon.text.length === 0) || (curentIcon && curentIcon.text.indexOf('!') !== -1)) {
     return false;
@@ -60,7 +59,6 @@ const isRunable = (url, icon) => {
 };
 
 const isAllowToShare = (url, records) => {
-  logger.info('isAllowToShare url, records', url, records);
   if (records && records.length) {
     const isExist = records.filter(item => item.url === url);
     return isExist.length > 0;
@@ -70,7 +68,6 @@ const isAllowToShare = (url, records) => {
 };
 
 const getCurrentTopics = (url, records, terms) => {
-  logger.info('getCurrentTopics url, records, terms', url, records, terms);
   const topics = [];
   if (records.length) {
     const existRecord = records.find(item => item.url === url);
@@ -105,15 +102,17 @@ const getShareUrlCode = (url, codes, records) => {
 };
 
 const getShareTopicCode = (code, key) => {
+  logger.warn('getShareTopicCode', code, key);
   if (code && code.topics && code.topics.length) {
-    const findCode = code.topics.find(item => `${item.id}-${item.name}` === key);
-    return (findCode && findCode.share_code) || '';
+    const findCode = code.topics.find(item => (`${item.id}-tld-${item.name}` === key || `${item.id}-beta-${item.name}` === key));
+    if (findCode) {
+      return findCode.share_code;
+    }
   }
   return '';
 };
 
 const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
-  logger.info('render auth, nlp, url, icon, shareOption', auth, nlp, url, icon, shareOption);
   if (!url) {
     return (
       <div className="popup-browser">
@@ -164,6 +163,9 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
       );
     }
     if (isAllowToShare(url, nlp.records)) {
+      const shareUrl = `${SITE_URL}/${getLink()}`;
+      fbScrapeShareUrl(shareUrl);
+      logger.warn('url', shareUrl);
       return (
         <div className="popup-browser">
           <h3 className="share-heading">
@@ -179,20 +181,18 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <div className="toolbar-button">
             <GoogleButton
               onClick={() => {
-              dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-              dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
-            }}
+                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
+              }}
             />
             <FacebookButton
               onClick={() => {
-                const shareUrl = `${SITE_URL}/${getLink()}`;
                 const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
                 openUrl(src);
               }}
             />
             <FacebookMessengerButton
               onClick={() => {
-                const shareUrl = `${SITE_URL}/${getLink()}`;
                 const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(shareUrl)}`;
                 openUrl(src);
               }}
@@ -201,7 +201,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
                 dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
-            }}
+              }}
             />
           </div>
         </div>
@@ -245,10 +245,10 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
         <button
           className="power-group"
           onClick={() => {
-         dispatch({
-          type: 'OPEN_MODAL',
-         });
-        }}
+            dispatch({
+              type: 'OPEN_MODAL',
+            });
+          }}
         >
           <div className="power-button">
             <div className="power-inner">
@@ -269,7 +269,7 @@ const App = ({ auth, nlp, url, icon, dispatch, shareOption, changeShareOption, g
     render(
       auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink,
-     )
+    )
   }
 </div>;
 
@@ -284,12 +284,11 @@ const enhance = compose(
       props.updateShareOption(val);
     },
     getLink: props => () => {
-      logger.info('shareOption', props.shareOption);
       switch (props.shareOption) {
         case 'all': return getShareAllCode(props.code);
         case 'site': return getShareUrlCode(props.url, props.code, props.nlp.records);
         default:
-          return getShareTopicCode(props.code, props.shareOption);
+          return getShareTopicCode(props.code, props.shareOption, props.nlp.records);
       }
     },
     onReady: props => () => {
