@@ -14,7 +14,7 @@ the home page
     animation: fadeIn 1s both;
     margin-bottom: 0;
     background: url('/static/images/bg_hero.jpg') no-repeat fixed;
-    background-size: cover;
+    background-size: cover !important;
     h1 {
       line-height: 50px;
       @media (max-width: 1050px) {
