@@ -10,13 +10,13 @@ import * as logger from 'loglevel'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import StreamItem from '../../components/StreamItem'
-// import Loading from '../../components/Loading'
+import Loading from '../../components/Loading'
 
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: 0,
-  columnWidth: 200
+  columnWidth: 250
 }
 
 class StreamList extends React.Component {
@@ -26,20 +26,12 @@ class StreamList extends React.Component {
       hasMoreItems: false,
       currentPage: 1
     }
-    logger.warn('StreamList', props)
     this.loadMore = this.loadMore.bind(this)
-  }
-
-  componentDidMount () {
-    logger.warn('componentDidMount StreamList', this.state, this.props)
   }
 
   loadMore () {
     const currentPage = this.state.currentPage + 1
     const hasMoreItems = currentPage * LIMIT <= this.props.urls.length
-    logger.warn('urls length', this.props.urls.length, this.props)
-    logger.warn('currentPage', currentPage)
-    logger.warn('hasMoreItems', hasMoreItems)
     this.setState({
       hasMoreItems,
       currentPage
@@ -47,35 +39,20 @@ class StreamList extends React.Component {
   }
 
   componentWillReceiveProps (props) {
-    logger.warn('componentWillReceiveProps', props)
+    logger.info('componentWillReceiveProps', props)
     if (this.props.urls.length === props.urls.length) {
       const currentPage = this.state.currentPage + 1
       const hasMoreItems = currentPage * LIMIT <= this.props.urls.length
-      logger.warn('urls length', this.props.urls.length, this.props)
-      logger.warn('currentPage', currentPage)
-      logger.warn('hasMoreItems', hasMoreItems)
       this.setState({
         hasMoreItems,
-        currentPage,
-        isUpdating: true
+        currentPage
       })
     } else {
       this.setState({
         hasMoreItems: true,
-        currentPage: 1,
-        isUpdating: true
+        currentPage: 1
       })
     }
-
-    setTimeout(() => {
-      this.setState({
-        isUpdating: false
-      })
-    }, _.max(props.urls.length * 10, 200))
-  }
-
-  componentWillUnmount () {
-    logger.info('componentWillUnmount StreamList')
   }
 
   render () {
@@ -86,7 +63,6 @@ class StreamList extends React.Component {
       const maxScore = _.maxBy(urls, 'im_score')
       const sortedUrlsByHitUTC = _.reverse(_.sortBy(urls, [(url) => url.hit_utc]))
       const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
-      logger.warn('currentUrls', currentPage, currentUrls)
       items.push(<div key={Date.now() + 1} style={{ clear: 'both' }} />)
       _.forEach(currentUrls, (item) => {
         items.push(<StreamItem key={item.id} url={item} maxScore={maxScore.im_score} />)
@@ -97,8 +73,10 @@ class StreamList extends React.Component {
         pageStart={0}
         loadMore={this.loadMore}
         hasMore={this.state.hasMoreItems}
+        loader={<Loading isLoading />}
+        threshold={300}
         >
-        <Masonry className='container-fluid' options={masonryOptions}>
+        <Masonry className='container' options={masonryOptions}>
           {items}
         </Masonry>
       </InfiniteScroll>

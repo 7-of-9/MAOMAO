@@ -41,7 +41,7 @@ const businessAddress = (
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: 0,
-  columnWidth: 200
+  columnWidth: 250
 }
 
 function mashUp (store) {
@@ -203,13 +203,13 @@ class Discovery extends React.Component {
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
-        <Navbar brand={brand}>
+        <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
-          <NavItem><Link href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
+          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
         </Navbar>
-        <StickyContainer className='container-fluid'>
-          <Sticky>
+        <StickyContainer className='container'>
+          <Sticky style={{zIndex: 1000, backgroundColor: '#fff'}}>
             <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
           </Sticky>
           <NoSSR onSSR={<Loading isLoading />}>
