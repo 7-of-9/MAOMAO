@@ -50,11 +50,13 @@ export class CoreStore {
   @action login (userId, userHash) {
     localforage.setItem(USER_ID, this.userId)
     localforage.setItem(USER_HASH, this.userHash)
+    this.isLogin = true
   }
 
   @action logout () {
     localforage.setItem(USER_ID, -1)
     localforage.setItem(USER_HASH, '')
+    this.isLogin = false
   }
 
   @action autoLogin (auth) {

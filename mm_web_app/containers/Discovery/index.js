@@ -9,6 +9,7 @@ import NoSSR from 'react-no-ssr'
 import Router from 'next/router'
 import Link from 'next/link'
 import InfiniteScroll from 'react-infinite-scroller'
+import Masonry from 'react-masonry-component'
 import NProgress from 'nprogress'
 import { List } from 'immutable'
 import _ from 'lodash'
@@ -36,6 +37,12 @@ const businessAddress = (
     Singapore<br />
   </address>
 )
+
+const masonryOptions = {
+  itemSelector: '.grid-item',
+  transitionDuration: 0,
+  columnWidth: 200
+}
 
 function mashUp (store) {
   // Parse data
@@ -195,9 +202,6 @@ class Discovery extends React.Component {
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-          <link rel='stylesheet' href='/static/vendors/css/layout.css' />
-          <link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.css' />
-          <script src='//cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.3/bricklayer.min.js' />
         </Head>
         <Navbar brand={brand}>
           <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
@@ -215,9 +219,9 @@ class Discovery extends React.Component {
               hasMore={this.props.store.hasMore}
               className='container-fluid'
               >
-              <div className='bricklayer'>
+              <Masonry className='container-fluid' options={masonryOptions}>
                 {mashUp(toJS(this.props.store))}
-              </div>
+              </Masonry>
               <Loading isLoading={this.props.store.pendings.length > 0} />
             </InfiniteScroll>
           </NoSSR>

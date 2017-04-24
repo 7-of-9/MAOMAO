@@ -19,7 +19,7 @@ function StreamItem ({ url, maxScore }) {
     discoveryKeys = _.map(url.suggestions_for_url, 'term_name')
   }
   return (
-    <div>
+    <div className='grid-item'>
       <a href={href} target='_blank'>
         <img style={{ maxWidth: '200px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
       </a>
