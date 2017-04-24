@@ -7,7 +7,7 @@ import * as logger from 'loglevel';
 
 const style = {
   card: {
-    top: '50px',
+    top: '90px',
     right: '25px',
     zIndex: 1000,
     position: 'fixed',
