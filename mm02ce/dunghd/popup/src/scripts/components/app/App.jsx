@@ -180,30 +180,38 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           </div>
           <div className="toolbar-button toolbar-share">
             <GoogleButton
-              onClick={() => {
-                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
-              }}
-            />
+                onClick={() => {
+                  dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
+                }}
+              >
+              <span title="Share with Google" className="tooltip" />
+            </GoogleButton>
             <FacebookButton
-              onClick={() => {
-                const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-                openUrl(src);
-              }}
-            />
+                onClick={() => {
+                  const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
+                  openUrl(src);
+                }}
+              >
+              <span title="Share with Facebook" className="tooltip" />
+            </FacebookButton>
             <FacebookMessengerButton
-              onClick={() => {
-                const closePopupUrl = `${SITE_URL}/static/success.html`;
-                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}`;
-                openUrl(src);
-              }}
-            />
+                onClick={() => {
+                  const closePopupUrl = `${SITE_URL}/static/success.html`;
+                  const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}`;
+                  openUrl(src);
+                }}
+              >
+              <span title="Share with Messenger" className="tooltip" />
+            </FacebookMessengerButton>
             <LinkButton
-              onClick={() => {
-                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
-              }}
-            />
+                onClick={() => {
+                  dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
+                }}
+              >
+              <span title="Share with Link" className="tooltip" />
+            </LinkButton>
           </div>
         </div>
       );

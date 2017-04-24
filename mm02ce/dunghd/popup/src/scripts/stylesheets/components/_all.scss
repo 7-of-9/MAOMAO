@@ -330,7 +330,7 @@ $lab-icons: url('./images/icons-lab.png');
       opacity: 1;
     }
     &:hover {
-      transform: scale( 1.2);
+      //transform: scale( 1.2);
       transition: transform 800ms, background-color 800ms;
       &:after {
         transform: translate3d( 0, -25px, 0);
@@ -357,9 +357,43 @@ $lab-icons: url('./images/icons-lab.png');
     }
   }
 }
-.toolbar-share{
 
+.toolbar-share {
+  position: relative;
+  z-index: 9999999;
+  padding: 10px 0 0;
+  .tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    z-index: 9999999;
+    padding: 3px 2px;
+    background: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    font-weight: normal;
+    font-size: 0.75rem;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #0f0f0f;
+    min-width: 90px;
+    opacity: 0;
+    transition: 0.3s;
+    transform: translateX(-50%);
+    &:after {
+      content: attr(title);
+      margin-left: 3px;
+      color: #fff;
+    }
+  }
+  button {
+    position: relative;
+    &:hover .tooltip {
+      bottom: 105%;
+      opacity: 1;
+    }
+  }
 }
+
 .select-cn-title {
   margin: 20px 0 15px;
   color: #606162;
@@ -372,7 +406,7 @@ $lab-icons: url('./images/icons-lab.png');
 
 .share-topic {
   text-align: center;
-  .share-experiment-title{
+  .share-experiment-title {
     display: inline-block;
   }
   .share-topic-title,
@@ -542,6 +576,7 @@ $lab-icons: url('./images/icons-lab.png');
     }
   }
 }
+
 
 /*size-button*/
 
