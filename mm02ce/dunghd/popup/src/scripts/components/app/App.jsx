@@ -178,7 +178,7 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           <div className="popup-content pt0">
             <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
           </div>
-          <div className="toolbar-button">
+          <div className="toolbar-button toolbar-share">
             <GoogleButton
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
