@@ -1,6 +1,5 @@
-import { action, reaction, when, whyRun, computed, intercept, observable, toJS } from 'mobx'
+import { action, reaction, when, whyRun, computed, intercept, observable } from 'mobx'
 import * as logger from 'loglevel'
-// import { fromJS } from 'immutable'
 import { CoreStore } from './core'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'

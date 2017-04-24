@@ -1,23 +1,97 @@
 {
-  "presets": [
-    "next/babel"
-  ],
-  "plugins": [
-    "transform-decorators-legacy",
-    [
-      "module-resolver", {
-        "root": ["."],
-        "alias": {
-          "styles": "./styles"
-        },
-        "cwd": "babelrc"
-    }],
-    [
-      "wrap-in-js",
-      {
-        "extensions": ["css$", "scss$"]
-      }
-    ]
-  ],
-  "ignore": []
+  "env": {
+    "development": {
+      "presets": [
+        "next/babel"
+      ],
+      "plugins": [
+        "transform-decorators-legacy",
+        [
+          "module-resolver",
+          {
+            "root": [
+              "."
+            ],
+            "alias": {
+              "styles": "./styles"
+            },
+            "cwd": "babelrc"
+          }
+        ],
+        [
+          "wrap-in-js",
+          {
+            "extensions": [
+              "css$",
+              "scss$"
+            ]
+          }
+        ]
+      ],
+      "ignore": []
+    },
+    "production": {
+      "presets": [
+        "next/babel"
+      ],
+      "plugins": [
+        "transform-decorators-legacy",
+        [
+          "module-resolver",
+          {
+            "root": [
+              "."
+            ],
+            "alias": {
+              "styles": "./styles"
+            },
+            "cwd": "babelrc"
+          }
+        ],
+        [
+          "wrap-in-js",
+          {
+            "extensions": [
+              "css$",
+              "scss$"
+            ]
+          }
+        ]
+      ],
+      "ignore": []
+    },
+    "test": {
+      // next/babel does not transpile import/export syntax.
+      // So, using es2015 in the beginning will fix that.
+      "presets": [
+        "es2015",
+        "next/babel"
+      ],
+      "plugins": [
+        "transform-decorators-legacy",
+        [
+          "module-resolver",
+          {
+            "root": [
+              "."
+            ],
+            "alias": {
+              "styles": "./styles"
+            },
+            "cwd": "babelrc"
+          }
+        ],
+        [
+          "wrap-in-js",
+          {
+            "extensions": [
+              "css$",
+              "scss$"
+            ]
+          }
+        ]
+      ],
+      "ignore": []
+    }
+  }
 }
