@@ -29,6 +29,7 @@
     "neal-react": "^0.2.5",
     "next": "^2.1.1",
     "normalize.css": "^6.0.0",
+    "normalizr": "^3.2.2",
     "nprogress": "^0.2.0",
     "prop-types": "^15.5.7",
     "query-string": "^4.3.3",

@@ -1,6 +1,8 @@
-import { action, reaction, when, whyRun, computed, intercept, observable } from 'mobx'
+import { action, reaction, when, whyRun, computed, intercept, toJS, observable } from 'mobx'
+import _ from 'lodash'
 import * as logger from 'loglevel'
 import { CoreStore } from './core'
+import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
@@ -19,6 +21,7 @@ export class HomeStore extends CoreStore {
   @observable facebookUser = {}
   @observable userHistory = {me: {}, shares: []}
   counter = 0
+  normalizedData = null
 
   constructor (isServer, userAgent) {
     super(isServer, userAgent)
@@ -31,7 +34,7 @@ export class HomeStore extends CoreStore {
        }
      })
     setInterval(() => {
-      logger.warn('fetch new user history on every', TIME_TO_RELOAD, ' seconds.')
+      logger.warn('fetch new user history on every', TIME_TO_RELOAD, ' miliseconds.')
       if (this.counter > 0 && this.userHash.length > 0) {
         this.getUserHistory()
       }
@@ -150,7 +153,23 @@ export class HomeStore extends CoreStore {
       () => {
         this.userHistory = this.userHistoryResult.value.data
         logger.info('userHistory', this.userHistory)
+        const normalizedData = normalizedHistoryData(toJS(this.userHistoryResult.value.data))
+        // checking realtime history (new urls)
+        const { entities: { shareLists } } = normalizedData
+        if (this.normalizedData) {
+          const { entities: { shareLists: oldShareLists } } = this.normalizedData
+
+          _.forOwn(shareLists, (shareList, key) => {
+            logger.warn('key', key, shareList)
+            if (shareList.urls.length !== oldShareLists[key].urls.length) {
+              // TODO: find new urls and send notify (2 cases: installed extension or not)
+            }
+          })
+        }
+
+        this.normalizedData = normalizedData
         this.counter += 1
+        logger.warn('normalizedData', this.normalizedData)
         disposer()
       }
     )

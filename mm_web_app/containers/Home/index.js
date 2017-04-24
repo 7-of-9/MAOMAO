@@ -52,13 +52,22 @@ class Home extends React.Component {
     super(props)
     this.state = {
       notifications: OrderedSet(),
-      count: 0
+      count: 0,
+      currentTab: 0
     }
     this.onInstallSucess = this.onInstallSucess.bind(this)
     this.onInstallFail = this.onInstallFail.bind(this)
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
+    this.handleSelect = this.handleSelect.bind(this)
+  }
+
+  handleSelect (index, last) {
+    logger.info('Selected tab: ' + index + ', Last tab: ' + last)
+    this.setState({
+      currentTab: index
+    })
   }
 
   onInstallSucess () {
@@ -115,6 +124,10 @@ class Home extends React.Component {
         this.props.store.checkInstall()
         // search image for bg
         this.props.store.searchBgImage()
+        // default tab is friends stream
+        this.setState({
+          currentTab: 1
+        })
       }
     }, 100)
   }
@@ -215,7 +228,7 @@ class Home extends React.Component {
         </NoSSR>
         { this.props.store.isLogin &&
           <div className='container'>
-            <Tabs>
+            <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList>
                 <Tab>Your Streams</Tab>
                 <Tab>Friend Streams</Tab>
