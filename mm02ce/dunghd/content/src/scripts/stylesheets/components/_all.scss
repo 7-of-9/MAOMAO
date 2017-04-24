@@ -78,7 +78,8 @@ $lab-icons: url('./images/icons-lab.png');
 .blurred {
   position: fixed;
   overflow: inherit;
-  bottom: 25px;
+  top: 235px;
+  bottom: auto;
   left: auto;
   right: 25px;
   min-width: 300px;
