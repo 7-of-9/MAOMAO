@@ -381,7 +381,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             enable={isShareOnUrl.enable}
             type={isShareOnUrl.type}
             currentStep={isShareOnUrl.currentStep}
-            shareOption={isShareOnUrl.shareOption}
+            shareOption={isShareOnUrl.shareOption || (topics[0] && topics[0].id)}
             terms={terms}
             topics={topics}
             code={code}

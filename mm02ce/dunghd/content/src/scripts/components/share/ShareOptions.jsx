@@ -35,7 +35,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
           <div className="set-size-button">
             <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
           </div>
-          <span className="share-topic-title">Just this page: </span>
+          <span className="share-topic-title">Just this page</span>
         </div>
       </div>
     </div>
@@ -52,7 +52,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 }}
               />
             </div>
-            <span className="share-topic-title"> Topics (Multiple URLs):</span>
+            <span className="share-topic-title">Topics:</span>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 name="topics"
               />
               <label className="radio__regular__label" htmlFor={tld.id} >
-                {tld.name}
+                {tld.name} <span className="meta">(all my browsing on {window.location.host})</span>
               </label>
             </div>
           }
@@ -87,7 +87,9 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                   name="topics"
                 />
                 <label className="radio__regular__label" htmlFor={topic.id}>
-                  <span className="labs">{topic.name}</span>
+                  <span className="labs">
+                    {topic.name} <span className="meta">(all my browsing on {topic.name.toLowerCase()})</span>
+                  </span>
                 </label>
               </div>,
             )
@@ -100,8 +102,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
         <div className="set-size-button">
           <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />
         </div>
-        <span className="share-topic-title"> All URLs: </span>
-        <span className="type-name">My browsing history</span>
+        <span className="share-topic-title">Everything I browse, on all websites</span>
       </div>
     </div>
   </div>);
