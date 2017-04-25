@@ -13,7 +13,7 @@ function YourStreams ({ topics, changeTerm, activeId }) {
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
       if (topic && topic.term_id) {
-        items.push(<a href="#"
+        items.push(<a href='#'
           onClick={(e) => {
             e.preventDefault()
             changeTerm(topic.term_id)

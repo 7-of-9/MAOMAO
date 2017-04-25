@@ -35,14 +35,12 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
           <div className="set-size-button">
             <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site'); }} />
           </div>
-          <span className="share-topic-title"> Single URL: </span>
-          <span className="type-name">just this page</span>
+          <span className="share-topic-title">Just this page: </span>
         </div>
       </div>
     </div>
     <div className="switch-list" style={{ display: topics.length > 0 ? '' : 'none' }}>
       <div className="checkbox__content">
-        
         <div className="checkbox__content">
           <div key={guid()} className="switch-select">
             <div className="set-size-button">
@@ -97,7 +95,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
         </div>
       </div>
     </div>
-    <div className="switch-list mb0">      
+    <div className="switch-list mb0">
       <div className="switch-select">
         <div className="set-size-button">
           <Option key={guid()} value={active === 'all'} onToggle={() => { onChange('all'); }} />

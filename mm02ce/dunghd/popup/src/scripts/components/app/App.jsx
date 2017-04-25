@@ -16,6 +16,7 @@ const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
 const propTypes = {
+  status: PropTypes.bool,
   url: PropTypes.string,
   shareOption: PropTypes.string,
   icon: PropTypes.object,
@@ -27,6 +28,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+  status: false,
   url: '',
   shareOption: 'site',
   icon: {
@@ -112,8 +114,11 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
-const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink) => {
-  if (!url) {
+const render = (
+  status, auth, nlp, url, icon, dispatch, shareOption,
+  changeShareOption, getLink,
+) => {
+  if (!url || !status) {
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
@@ -123,7 +128,11 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
           </a>
         </h3>
         <div className="popup-content">
-          <p className="paragraph-share">Loading...!</p>
+          <p
+            className="paragraph-share"
+          >
+            This site is not ready. Please wait in a few mins for loading this site !
+            </p>
         </div>
       </div>
     );
@@ -174,42 +183,47 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
               <span className="maomao-text" />
             </a>
           </h3>
-          <p className="select-cn-title">Share:</p>
+          <p className="select-cn-title">Share your stream:</p>
           <div className="popup-content pt0">
-            <ShareOptions active={shareOption} topics={topics} onChange={changeShareOption} />
+            <ShareOptions
+              url={url}
+              active={shareOption}
+              topics={topics}
+              onChange={changeShareOption}
+            />
           </div>
           <div className="toolbar-button toolbar-share">
             <GoogleButton
-                onClick={() => {
-                  dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
-                }}
-              >
+              onClick={() => {
+                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
+              }}
+            >
               <span title="Share with Google" className="tooltip" />
             </GoogleButton>
             <FacebookButton
-                onClick={() => {
-                  const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
-                  openUrl(src);
-                }}
-              >
+              onClick={() => {
+                const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
+                openUrl(src);
+              }}
+            >
               <span title="Share with Facebook" className="tooltip" />
             </FacebookButton>
             <FacebookMessengerButton
-                onClick={() => {
-                  const closePopupUrl = `${SITE_URL}/static/success.html`;
-                  const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}`;
-                  openUrl(src);
-                }}
-              >
+              onClick={() => {
+                const closePopupUrl = `${SITE_URL}/static/success.html`;
+                const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}`;
+                openUrl(src);
+              }}
+            >
               <span title="Share with Messenger" className="tooltip" />
             </FacebookMessengerButton>
             <LinkButton
-                onClick={() => {
-                  dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                  dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
-                }}
-              >
+              onClick={() => {
+                dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
+              }}
+            >
               <span title="Share with Link" className="tooltip" />
             </LinkButton>
           </div>
@@ -271,22 +285,22 @@ const render = (auth, nlp, url, icon, dispatch, shareOption, changeShareOption, 
   );
 };
 
-const App = ({ auth, nlp, url, icon, dispatch, shareOption, changeShareOption, getLink }) => <div
-  style={{ margin: '0 auto' }}
->
-  {
+const App = ({
+  status, auth, nlp, url, icon,
+  dispatch, shareOption, changeShareOption, getLink,
+ }) => <div style={{ margin: '0 auto' }}>{
     render(
-      auth, nlp, removeHashFromUrl(url), icon,
+      status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink,
     )
-  }
-</div>;
+  }</div>;
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
 
 const enhance = compose(
   withState('url', 'activeUrl', ''),
+  withState('status', 'isReady', false),
   withState('shareOption', 'updateShareOption', 'site'),
   withHandlers({
     changeShareOption: props => (val) => {
@@ -303,9 +317,26 @@ const enhance = compose(
     onReady: props => () => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs != null && tabs.length > 0) {
-          const url = tabs[0].url;
+          const activeTab = tabs[0];
+          const url = activeTab.url;
+          logger.warn('props', url, props, activeTab);
+          if (activeTab.status === 'complete') {
+            props.isReady(true);
+          }
+          const topics = getCurrentTopics(url, props.nlp.records, props.nlp.terms);
+          logger.warn('topics', topics);
+          if (topics.length) {
+            props.updateShareOption(topics[0].id);
+          }
           if (url !== props.url) {
             props.activeUrl(url);
+            chrome.tabs.onUpdated.addListener((tabId, info) => {
+              logger.warn('tabId, info', tabId, info);
+              if (info.status === 'complete' && tabId === activeTab.id) {
+                logger.warn('complete', info);
+                props.isReady(true);
+              }
+            });
           }
         }
       });
