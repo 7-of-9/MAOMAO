@@ -24,8 +24,8 @@ if (process.env.NODE_ENV !== 'production') {
 const errBack = (err) => { logger.error(err.message); };
 
 const errorStackTracking = (stackframes) => {
-    const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
-    logger.warn('error stack', stringifiedStack);
+  const stringifiedStack = stackframes.map(sf => sf.toString()).join('\n');
+  logger.warn('error stack', stringifiedStack);
 };
 
 window.onerror = (msg, file, line, col, error) => {

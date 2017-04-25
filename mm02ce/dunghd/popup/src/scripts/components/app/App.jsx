@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
+import $ from 'jquery';
 import * as logger from 'loglevel';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
@@ -288,12 +289,12 @@ const render = (
 const App = ({
   status, auth, nlp, url, icon,
   dispatch, shareOption, changeShareOption, getLink,
- }) => <div style={{ margin: '0 auto' }}>{
-    render(
+ }) => <div style={{ margin: '0 auto' }}>
+    {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink,
-    )
-  }</div>;
+    )}
+  </div>;
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
@@ -346,6 +347,22 @@ const enhance = compose(
     componentDidMount() {
       logger.info('App');
       this.props.onReady();
+      // resize div
+      setTimeout(() => {
+        $('#app').animate({
+          height: document.getElementById('app').firstChild.offsetHeight,
+          width: document.getElementById('app').firstChild.offsetWidth
+        });
+      }, 50);
+    },
+    componentDidUpdate() {
+      // resize div
+      setTimeout(() => {
+        $('#app').animate({
+          height: document.getElementById('app').firstChild.offsetHeight,
+          width: document.getElementById('app').firstChild.offsetWidth
+        });
+      }, 50);
     },
   }),
   onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption']),
