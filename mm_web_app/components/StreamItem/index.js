@@ -24,7 +24,7 @@ function StreamItem ({ url, maxScore }) {
         <div className='thumbnail'>
           <div className='thumbnail-image'>
             <a href={href} target='_blank'>
-              <img style={{ maxWidth: '200px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
+              <img style={{ maxWidth: '250px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
             </a>
           </div>
           <div className='caption'>

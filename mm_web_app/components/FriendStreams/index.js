@@ -30,7 +30,6 @@ function FriendStreams ({ friends, changeFriendStream, activeId }) {
   }
   return (
     <div className='container-fluid'>
-      <h1 className="stream-title">Friend Streams</h1>
       <div className="stream-list">
         {items}
       </div>

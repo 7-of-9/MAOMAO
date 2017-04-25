@@ -240,7 +240,6 @@ class Home extends React.Component {
                   changeTerm={(termId) => { this.props.store.currentTermId = termId }}
               />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                <br />
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel>
@@ -250,7 +249,6 @@ class Home extends React.Component {
                   changeFriendStream={(userId) => { this.props.store.friendStreamId = userId }}
               />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                <br />
                 <StreamList urls={selectedFriendStreamUrls} />
               </TabPanel>
             </Tabs>

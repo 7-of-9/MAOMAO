@@ -16,8 +16,7 @@ import { guid } from '../../utils/hash'
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: 0,
-  columnWidth: 250
+  transitionDuration: 0
 }
 
 class StreamList extends React.Component {
@@ -78,7 +77,7 @@ class StreamList extends React.Component {
         loader={<Loading isLoading />}
         threshold={300}
         >
-        <Masonry className='container' options={masonryOptions}>
+        <Masonry className='container-masonry' options={masonryOptions}>
           <div className="grid-row">
             {items}
           </div>

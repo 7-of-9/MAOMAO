@@ -28,7 +28,6 @@ function YourStreams ({ topics, changeTerm, activeId }) {
   }
   return (
     <div className='container-fluid'>
-      <h1 className="stream-title">Your Streams</h1>
       <div className="stream-list">
         {items}
       </div>

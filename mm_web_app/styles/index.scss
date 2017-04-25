@@ -15,18 +15,6 @@
   }
 }
 
-/* ---- grid-item ---- */
-.grid-item {
-  width: 240px;
-  float: left;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  padding: 5px;
-  &:hover {
-    background-color: #eaeaeb;
-  }
-}
-
 /* React Tags*/
 div.ReactTags__tags {
     position: relative;

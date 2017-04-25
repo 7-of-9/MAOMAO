@@ -5,21 +5,29 @@ the stream page
 **************************************
 **************************************/
 
+.container-masonry {
+  @include clearfix();
+  margin-top: 30px;
+}
+
 
 /* ---- grid-item ---- */
 
 .grid-row {
   @include clearfix();
+  position: relative;
+  margin: 0;
+  width: 100%;
   .grid-item {
-    width: 240px;
-    float: left;
-    margin-bottom: 10px;
-    border-radius: 10px;
+    @include border-radius(8px);
     padding: 5px;
+    margin-bottom: 10px;
+    width: 20%;
+    float: left;
     &::before {
       @include transform(scale(0.96));
-      background: rgba(0, 0, 0, 0.05);
       @include border-radius(8px);
+      background: rgba(0, 0, 0, 0.05);
       position: absolute;
       left: 0;
       top: 0;
@@ -34,10 +42,23 @@ the stream page
       -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
       animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
     }
+    @media (max-width: 1050px) {
+      width: 25%;
+    }
+    @media (max-width: 890px) {
+      width: 33.33%;
+    }
+    @media (max-width: 690px) {
+      width: 50%;
+    }
+    @media (max-width: 390px) {
+      width: 100%;
+    }
   }
 }
 
 .stream-list {
+  margin: 20px 0;
   .stream-item {
     display: inline-block;
     text-decoration: none;
@@ -62,13 +83,15 @@ the stream page
 }
 
 .thumbnail-box {
-  @include border-radius(6px);
+  @include border-radius(8px);
   padding: 10px;
   .thumbnail {
     position: relative;
     overflow: hidden;
     .thumbnail-image {
+      @include border-radius(8px);
       position: relative;
+      overflow: hidden;
       &::before {
         @include border-radius(8px);
         @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);

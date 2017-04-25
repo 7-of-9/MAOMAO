@@ -6,6 +6,10 @@ the footer section
 **************************************/
 
 .footer-area {
+  @include abs-pos ($top: auto, $right: 0, $bottom: 0, $left: 0);
+  z-index: 9999;
+  width: 100%;
+  min-height: 68px;
   footer.neal-footer {
     margin-top: 1rem;
     padding: 0.625rem 0;

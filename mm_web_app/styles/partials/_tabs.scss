@@ -11,10 +11,12 @@ the tab section
   .ReactTabs__TabList {
     border-bottom: 3px solid #2db7f5;
     [role="tab"] {
+      @include transition(all 0.3s ease-in-out);
       padding: 10px 25px;
       font-size: 1.275rem;
     }
     [role="tab"][aria-selected="true"] {
+      @include transition(all 0.3s ease-in-out);
       @include border-radius(0);
       color: #fff;
       border-color: #2db7f5;
@@ -25,15 +27,16 @@ the tab section
     @include transition(all 0.2s ease-in-out);
     padding: 10px 30px;
     opacity: 0;
-    transform: translateY(20%);
     &.ReactTabs__TabPanel--selected {
       @include transition(all 0.2s ease-in-out);
       opacity: 1;
-      transform: translateY(0);
     }
-    h1{
-    	margin: 10px 0 30px;
-    	color: #2db7f5;
+    h1 {
+      margin: 10px 0 30px;
+      color: #2db7f5;
+    }
+    @media (max-width: 890px) {
+      padding: 10px 0;
     }
   }
 }
