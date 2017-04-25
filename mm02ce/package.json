@@ -46,6 +46,7 @@
     "react-draggable": "^2.2.3",
     "react-mfb": "^0.4.1",
     "react-redux": "^5.0.4",
+    "react-simple-dropdown": "^2.0.0",
     "react-tap-event-plugin": "^2.0.1",
     "react-toggle-button": "^2.1.0",
     "react-toggle-display": "^2.1.1",

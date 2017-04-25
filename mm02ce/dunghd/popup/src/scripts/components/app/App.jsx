@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
+import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
 import $ from 'jquery';
 import * as logger from 'loglevel';
 import FacebookButton from './FacebookButton';
@@ -115,6 +116,35 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
+const userMenu = (auth, dispatch) => <Dropdown>
+  <DropdownTrigger>☰</DropdownTrigger>
+  <DropdownContent>
+    <img src={auth.info.picture} alt={auth.info.name} /> {auth.info.name} ({auth.info.email})
+    <ul>
+      <li>
+        <a
+          onClick={() => {
+            dispatch({
+              type: 'OPEN_MODAL',
+              payload: {},
+            });
+          }}
+        >Profile</a>
+      </li>
+      <li>
+        <a
+          onClick={() => {
+            dispatch({
+              type: 'AUTH_LOGOUT',
+              payload: {},
+            });
+          }}
+        >Logout</a>
+      </li>
+    </ul>
+  </DropdownContent>
+</Dropdown>;
+
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
   changeShareOption, getLink,
@@ -122,6 +152,7 @@ const render = (
   if (!url || !status) {
     return (
       <div className="popup-browser">
+        {/* auth.isLogin && userMenu(auth, dispatch) */}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -144,6 +175,7 @@ const render = (
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
+        {/* auth.isLogin && userMenu(auth, dispatch) */}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -159,27 +191,15 @@ const render = (
 
   if (auth.isLogin) {
     const topics = getCurrentTopics(url, nlp.records, nlp.terms);
-    if (!isRunable(url, icon)) {
-      return (
-        <div className="popup-browser">
-          <h3 className="share-heading">
-            <a href="#home">
-              <span className="maomao-logo" />
-              <span className="maomao-text" />
-            </a>
-          </h3>
-          <div className="popup-content">
-            <p className="paragraph-share">Maomao isn’t looking at this page!</p>
-          </div>
-        </div>
-      );
-    }
     if (isAllowToShare(url, nlp.records)) {
       const shareUrl = `${SITE_URL}/${getLink()}`;
       fbScrapeShareUrl(shareUrl);
       logger.warn('url', shareUrl);
+      const currentTopics = getCurrentTopics(url, nlp.records, nlp.terms);
+      logger.warn('currentTopics', currentTopics);
       return (
         <div className="popup-browser">
+          {/* auth.isLogin && userMenu(auth, dispatch) */}
           <h3 className="share-heading">
             <a href="#home">
               <span className="maomao-logo" />
@@ -190,7 +210,7 @@ const render = (
           <div className="popup-content pt0">
             <ShareOptions
               url={url}
-              active={shareOption}
+              active={shareOption || (currentTopics[0] && currentTopics[0].id)}
               topics={topics}
               onChange={changeShareOption}
             />
@@ -234,9 +254,26 @@ const render = (
         </div>
       );
     }
+    if (!isRunable(url, icon)) {
+      return (
+        <div className="popup-browser">
+          {/* auth.isLogin && userMenu(auth, dispatch) */}
+          <h3 className="share-heading">
+            <a href="#home">
+              <span className="maomao-logo" />
+              <span className="maomao-text" />
+            </a>
+          </h3>
+          <div className="popup-content">
+            <p className="paragraph-share">Maomao isn’t looking at this page!</p>
+          </div>
+        </div>
+      );
+    }
     // TODO: check on site is allowable or not
     return (
       <div className="popup-browser">
+        {/* auth.isLogin && userMenu(auth, dispatch) */}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -288,7 +325,8 @@ const render = (
 const App = ({
   status, auth, nlp, url, icon,
   dispatch, shareOption, changeShareOption, getLink,
- }) => <div style={{ margin: '0 auto' }}>
+ }) =>
+  <div style={{ margin: '0 auto' }}>
     {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink,
@@ -301,17 +339,22 @@ App.defaultProps = defaultProps;
 const enhance = compose(
   withState('url', 'activeUrl', ''),
   withState('status', 'isReady', false),
-  withState('shareOption', 'updateShareOption', 'site'),
+  withState('shareOption', 'updateShareOption', ''),
   withHandlers({
     changeShareOption: props => (val) => {
       props.updateShareOption(val);
     },
     getLink: props => () => {
-      switch (props.shareOption) {
+      const currentTopics = getCurrentTopics(props.url, props.nlp.records, props.nlp.terms);
+      let shareOption = props.shareOption;
+      if (shareOption === '') {
+        shareOption = (currentTopics[0] && currentTopics[0].id);
+      }
+      switch (shareOption) {
         case 'all': return getShareAllCode(props.code);
         case 'site': return getShareUrlCode(props.url, props.code, props.nlp.records);
         default:
-          return getShareTopicCode(props.code, props.shareOption, props.nlp.records);
+          return getShareTopicCode(props.code, shareOption, props.nlp.records);
       }
     },
     onReady: props => () => {
@@ -347,21 +390,13 @@ const enhance = compose(
       logger.info('App');
       this.props.onReady();
       // resize div
-      setTimeout(() => {
-        $('#app').animate({
-          height: document.getElementById('app').firstChild.offsetHeight,
-          width: document.getElementById('app').firstChild.offsetWidth,
-        });
-      }, 100);
+      $('#app').width(document.getElementById('app').firstChild.offsetWidth);
+      $('#app').height(document.getElementById('app').firstChild.offsetHeight);
     },
     componentDidUpdate() {
       // resize div
-      setTimeout(() => {
-        $('#app').animate({
-          height: document.getElementById('app').firstChild.offsetHeight,
-          width: document.getElementById('app').firstChild.offsetWidth,
-        });
-      }, 100);
+      $('#app').width(document.getElementById('app').firstChild.offsetWidth);
+      $('#app').height(document.getElementById('app').firstChild.offsetHeight);
     },
   }),
   onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption', 'status']),

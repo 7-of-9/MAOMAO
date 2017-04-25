@@ -61,6 +61,16 @@ $lab-icons: url('./images/icons-lab.png');
     animation: zoomInLogo 1.5s both;
     transition: all 0.2s ease-in-out;
   }
+  .dropdown {
+    display: inline-block;
+  }
+  .dropdown__content {
+    display: none;
+    position: absolute;
+  }
+  .dropdown--active .dropdown__content {
+    display: block;
+  }
   .share-heading {
     text-align: center;
     font-size: 32px;

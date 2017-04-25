@@ -348,6 +348,8 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
     });
 }
 
+const MIN_IM_SCORE = 1; // for showing the tld xp popup
+
 function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
@@ -408,7 +410,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           if={
             auth.isLogin
             && icon.isEnable
-            && score.im_score > 2
+            && score.im_score > MIN_IM_SCORE
             && tld.length > 0
           }
         >
@@ -421,7 +423,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             auth.isLogin
             && icon.isEnableExperimentalTopics
             && icon.isEnable
-            && score.im_score > 2
+            && score.im_score > MIN_IM_SCORE
             && tld.length === 0
             && terms.length > 0
           }
@@ -609,6 +611,7 @@ const enhance = compose(
     },
     closeXp: props => () => {
       // TODO: close XP popup
+      logger.warn('closeXp', props);
     },
     closeTLD: props => () => {
       props.dispatch({
