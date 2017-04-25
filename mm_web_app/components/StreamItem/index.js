@@ -20,19 +20,27 @@ function StreamItem ({ url, maxScore }) {
   }
   return (
     <div className='grid-item'>
-      <a href={href} target='_blank'>
-        <img style={{ maxWidth: '200px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
-      </a>
-      <div className='media-body'>
-        <a href={href} target='_blank'>
-          <h4 className='mt-0'>{title} ({id})</h4>
-        </a>
-        <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
-        <ReactStars edit={false} size={22} count={5} value={rate} />
-        <span>
-          {moment.utc(hit_utc).fromNow()}
-        </span>
-        {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+      <div className='thumbnail-box'>
+        <div className='thumbnail'>
+          <div className='thumbnail-image'>
+            <a href={href} target='_blank'>
+              <img style={{ maxWidth: '200px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
+            </a>
+          </div>
+          <div className='caption'>
+            <h4 className='caption-title'>
+              <a href={href} target='_blank'>{title} ({id})</a>
+            </h4>
+            <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
+            <div className="rating">
+              <ReactStars edit={false} size={22} count={5} value={rate} />
+            </div>
+            <span className='date-time'>
+              {moment.utc(hit_utc).fromNow()}
+            </span>
+            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -15,23 +15,25 @@ function FriendStreams ({ friends, changeFriendStream, activeId }) {
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
       if (friend && friend.user_id) {
-        items.push(<a
+        items.push(<a className="stream-item" href="#"
           onClick={(e) => {
             e.preventDefault()
             changeFriendStream(friend.user_id)
           }} key={friend.user_id}
         >
-          <button className={`${activeId === friend.user_id ? 'btn-primary' : ''}`}>
+          <span className={`${activeId === friend.user_id ? 'active' : ''}`}>
             {friend.fullname}
-          </button>
+          </span>
         </a>)
       }
     })
   }
   return (
     <div className='container-fluid'>
-      <h1>Friend Streams</h1>
-      {items}
+      <h1 className="stream-title">Friend Streams</h1>
+      <div className="stream-list">
+        {items}
+      </div>
     </div>
   )
 }

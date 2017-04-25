@@ -13,11 +13,11 @@ function DiscoveryButton ({ keys }) {
     link = `/discovery?search=${keys}`
   }
   return (
-    <div>
+    <a className='btn-discovery' href='#'>
       <Link href={link} replace>
-        <img width='40' height='40' src='/static/images/discovery-icon.png' alt='Discovery' />
+        <img width='16' height='16' src='/static/images/discovery-icon.png' alt='Discovery' />
       </Link>
-    </div>
+    </a>
   )
 }
 
