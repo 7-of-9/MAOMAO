@@ -5,23 +5,14 @@ let store = null
 
 export class UIStore {
   @observable showSignInModal = false
-  @observable showSignUpModal = false
 
   @action showSignIn () {
     logger.info('showSignIn')
     this.showSignInModal = true
-    this.showSignUpModal = false
-  }
-
-  @action showSignUp () {
-    logger.info('showSignUp')
-    this.showSignUpModal = true
-    this.showSignInModal = false
   }
 
   @action closeModal () {
     logger.info('closeModal')
-    this.showSignUpModal = false
     this.showSignInModal = false
   }
 }

@@ -35,7 +35,6 @@ class AppHeader extends React.Component {
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onSignInOpen = this.onSignInOpen.bind(this)
-    this.onSignUpOpen = this.onSignUpOpen.bind(this)
   }
 
   componentDidMount () {
@@ -53,10 +52,6 @@ class AppHeader extends React.Component {
 
   onSignInOpen () {
     this.props.ui.showSignIn()
-  }
-
-  onSignUpOpen () {
-    this.props.ui.showSignUp()
   }
 
   onClose () {
@@ -102,12 +97,12 @@ class AppHeader extends React.Component {
           portalClassName='SignInModal'
           contentLabel='Sign In Modal'
         >
-          <h2 ref='subtitle'>Sign In</h2>
+          <h2 ref='subtitle'>SIGN IN</h2>
           <div className='justify-content-md-center social-action'>
             <GoogleLogin
               clientId={GOOGLE_CLIENT_ID}
               scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-              buttonText='SIGN IN WITH GOOGLE'
+              buttonText='CONNECT WITH GOOGLE'
               className='btn btn-google'
               onSuccess={this.onGoogleSuccess}
               onFailure={this.onGoogleFailure}
@@ -116,54 +111,12 @@ class AppHeader extends React.Component {
               appId={FACEBOOK_APP_ID}
               autoLoad={false}
               size='small'
-              textButton='SIGN IN WITH FACEBOOK'
+              textButton='CONNECT WITH FACEBOOK'
               fields='name,email,picture'
               cssClass='btn btn-facebook'
               callback={this.responseFacebook}
              />
           </div>
-          <p className='paragraph-question'> Don't have an account? <a href='javacript:void(0)' onClick={this.onSignUpOpen}>Sign Up</a> </p>
-        </Modal>
-        <Modal
-          isOpen={this.props.ui.showSignUpModal}
-          onRequestClose={this.onClose}
-          style={customStyles}
-          portalClassName='SignInModal'
-          contentLabel='Sign Up Modal'
-        >
-          <h2 ref='subtitle'>Sign Up</h2>
-          {/*
-          <form className='form-signup'>
-            <div className='form-group'>
-              <input className='form-control' type='email' placeholder='Email' />
-            </div>
-            <div className='form-group'>
-              <input className='form-control' type='password' placeholder='Password' />
-            </div>
-            <button className='btn btn-signin' type='submit'>Sign Up</button>
-            <div className='wrap-label'> <span className='title'>Or sign up with</span> </div>
-          </form>
-          */}
-          <div className='justify-content-md-center social-action'>
-            <GoogleLogin
-              clientId={GOOGLE_CLIENT_ID}
-              scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-              buttonText='SIGN UP WITH GOOGLE'
-              className='btn btn-google'
-              onSuccess={this.onGoogleSuccess}
-              onFailure={this.onGoogleFailure}
-              />
-            <FacebookLogin
-              appId={FACEBOOK_APP_ID}
-              autoLoad={false}
-              textButton='SIGN UP WITH FACEBOOK'
-              size='small'
-              fields='name,email,picture'
-              cssClass='btn btn-facebook'
-              callback={this.responseFacebook}
-             />
-          </div>
-          <p className='paragraph-question'> Do have an account? <a href='javacript:void(0)' onClick={this.onSignInOpen}>Sign In</a> </p>
         </Modal>
       </NavItem>
     )

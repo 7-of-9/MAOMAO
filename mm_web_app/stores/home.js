@@ -9,7 +9,7 @@ import { md5hash } from '../utils/hash'
 
 let store = null
 
-const TIME_TO_RELOAD = 1 * 60 * 1000 // 5 mins
+const TIME_TO_RELOAD = 5 * 60 * 1000 // 5 mins
 
 export class HomeStore extends CoreStore {
   @observable googleConnectResult = {}

@@ -103,7 +103,7 @@ class ChromeInstall extends React.Component {
               <button
                 className='btn btn-close'
                 onClick={this.onClose}
-              >Close</button>
+              >Ok</button>
             </div>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
@@ -113,8 +113,7 @@ class ChromeInstall extends React.Component {
             {!isInstall && !isMobile && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
             {(isMobile || !isChrome) &&
             <div className='switch-browser'>
-              <button className='btn btn-login' onClick={() => { this.props.ui.showSignIn() }}>Sign In</button>
-              <button className='btn btn-login' onClick={() => { this.props.ui.showSignUp() }}>Sign Up</button>
+              <button className='btn btn-login' onClick={() => { this.props.ui.showSignIn() }}>JOIN NOW</button>
             </div>
             }
           </div>
