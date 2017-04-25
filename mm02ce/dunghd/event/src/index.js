@@ -114,22 +114,6 @@ function onClickHandler(info) {
         store.dispatch(data);
       }
       break;
-    case 'mm-btn-switch-experimental-topics':
-      {
-        if (window.enableExperimentalTopics) {
-          window.enableExperimentalTopics = false;
-        } else {
-          window.enableExperimentalTopics = true;
-        }
-        const data = {
-          type: 'SWITCH_EXPERIMENTAL_TOPICS',
-          payload: {
-            isEnableExperimentalTopics: window.enableExperimentalTopics,
-          },
-        };
-        store.dispatch(data);
-      }
-      break;
     case 'mm-btn-switch-youtube':
       {
         if (window.enableTestYoutube) {
@@ -265,7 +249,6 @@ window.onload = () => {
       type: 'RESET_SETTINGS',
       payload: {
         isEnableIM: window.enableImscore,
-        isEnableExperimentalTopics: window.enableExperimentalTopics,
         isYoutubeTest: window.enableTestYoutube,
       },
     });

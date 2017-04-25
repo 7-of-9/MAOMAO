@@ -408,11 +408,12 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           if={
             auth.isLogin
             && icon.isEnable
+            && score.im_score > 2
             && tld.length > 0
           }
         >
           <Xp
-            terms={tld} shareTopics={openShare} closeXp={closeTLD} closeTimeout={2000}
+            terms={tld} shareTopics={openShare} closeXp={closeTLD} closeTimeout={5000}
           />
         </ToggleDisplay>
         <ToggleDisplay
@@ -420,6 +421,8 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             auth.isLogin
             && icon.isEnableExperimentalTopics
             && icon.isEnable
+            && score.im_score > 2
+            && tld.length === 0
             && terms.length > 0
           }
         >
@@ -605,12 +608,7 @@ const enhance = compose(
       sendHTMLEmail(fromEmail, fullName, name, email, topic, url, props.dispatch);
     },
     closeXp: props => () => {
-      props.dispatch({
-        type: 'SWITCH_EXPERIMENTAL_TOPICS',
-        payload: {
-          isEnableExperimentalTopics: false,
-        },
-      });
+      // TODO: close XP popup
     },
     closeTLD: props => () => {
       props.dispatch({

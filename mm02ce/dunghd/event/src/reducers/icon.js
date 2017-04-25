@@ -6,7 +6,6 @@ const MIN_NSS = 10;
 const initialState = {
   isEnable: false,
   isEnableIM: true,
-  isEnableExperimentalTopics: true,
   isYoutubeTest: false,
   urls: [],
   tldTimers: [],
@@ -75,12 +74,6 @@ export default (state = initialState, action, auth, nlp) => {
       return Object.assign({}, state, { tldTimers });
     }
 
-    case 'SWITCH_EXPERIMENTAL_TOPICS': {
-      window.enableExperimentalTopics = action.payload.isEnableExperimentalTopics;
-      ctxMenuLogin(auth.info, nlp.records);
-      return Object.assign({}, state, action.payload);
-    }
-
     case 'SWITCH_IM_SCORE':
     case 'YOUTUBE_TEST':
       ctxMenuLogin(auth.info, nlp.records);
@@ -92,7 +85,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.5.15',
+        title: 'v0.5.16',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });

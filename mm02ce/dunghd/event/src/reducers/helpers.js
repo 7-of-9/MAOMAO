@@ -17,6 +17,8 @@ function createShareCtxMenu(records) {
       const url = tabs[0].url;
       if (isAllowToShare(url, records)) {
         chrome.contextMenus.create({ id: 'mm-btn-share', title: 'Share' });
+      } else {
+        chrome.contextMenus.create({ id: 'mm-btn-share-off', title: 'Share', enabled: false });
       }
     }
   });
@@ -24,19 +26,17 @@ function createShareCtxMenu(records) {
 
 
 function ctxMenu(records) {
-  chrome.contextMenus.create({ id: 'mm-btn-switch-youtube', title: 'Youtube', type: 'checkbox', checked: window.enableTestYoutube });
-  chrome.contextMenus.create({ id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  chrome.contextMenus.create({ id: 'mm-btn-switch-experimental-topics', title: 'Experimental Topics', type: 'checkbox', checked: window.enableExperimentalTopics });
-  chrome.contextMenus.create({ id: 'mm-btn-reset-tld', title: 'Reset TLD XP timer' });
-  if (records && records.length) {
-    createShareCtxMenu(records);
-  }
+  const parentId = chrome.contextMenus.create({ title: 'Debug' });
+  chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
+  chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
+  chrome.contextMenus.create({ parentId, id: 'mm-btn-reset-tld', title: 'Reset TLD XP timer' });
+  createShareCtxMenu(records);
 }
 
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.15',
+    title: 'v0.5.16',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });
@@ -56,7 +56,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.15',
+    title: 'v0.5.16',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });

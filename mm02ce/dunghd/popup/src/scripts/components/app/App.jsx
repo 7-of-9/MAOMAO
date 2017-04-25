@@ -129,11 +129,13 @@ const render = (
           </a>
         </h3>
         <div className="popup-content">
-          <p
-            className="paragraph-share"
-          >
-            This site is not ready. Please wait in a few mins for loading this site !
+          <div className="circle-share">
+            <p
+              className="paragraph-share"
+            >
+              Maomao is thinking...
             </p>
+          </div>
         </div>
       </div>
     );
@@ -149,7 +151,7 @@ const render = (
           </a>
         </h3>
         <div className="popup-content">
-          <p className="paragraph-share">Maomao is off on Google Chrome page!</p>
+          <p className="paragraph-share">Maomao thinks this page is boring!</p>
         </div>
       </div>
     );
@@ -167,7 +169,7 @@ const render = (
             </a>
           </h3>
           <div className="popup-content">
-            <p className="paragraph-share">Maomao is off on this url !</p>
+            <p className="paragraph-share">Maomao isn’t looking at this page!</p>
           </div>
         </div>
       );
@@ -184,7 +186,7 @@ const render = (
               <span className="maomao-text" />
             </a>
           </h3>
-          <p className="select-cn-title">Share your stream:</p>
+          <p className="select-cn-title">SHARE YOUR STREAM :</p>
           <div className="popup-content pt0">
             <ShareOptions
               url={url}
@@ -193,6 +195,7 @@ const render = (
               onChange={changeShareOption}
             />
           </div>
+          <p className="select-cn-title">WITH FRIENDS FROM:</p>
           <div className="toolbar-button toolbar-share">
             <GoogleButton
               onClick={() => {
@@ -245,11 +248,7 @@ const render = (
             <p
               className="paragraph-share"
             >
-              This site is <br />
-              not ready to sharing. Please wait in a few
-              <br />
-              mins for processing<br />
-              this site !
+              Maomao is thinking...
             </p>
           </div>
         </div>
@@ -351,21 +350,21 @@ const enhance = compose(
       setTimeout(() => {
         $('#app').animate({
           height: document.getElementById('app').firstChild.offsetHeight,
-          width: document.getElementById('app').firstChild.offsetWidth
+          width: document.getElementById('app').firstChild.offsetWidth,
         });
-      }, 50);
+      }, 100);
     },
     componentDidUpdate() {
       // resize div
       setTimeout(() => {
         $('#app').animate({
           height: document.getElementById('app').firstChild.offsetHeight,
-          width: document.getElementById('app').firstChild.offsetWidth
+          width: document.getElementById('app').firstChild.offsetWidth,
         });
-      }, 50);
+      }, 100);
     },
   }),
-  onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption']),
+  onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption', 'status']),
 );
 
 const mapStateToProps = state => ({

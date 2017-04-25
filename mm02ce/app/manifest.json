@@ -1,6 +1,6 @@
 {
-  "name": "mm02ce",
-  "version": "0.5.15",
+  "name": "Maomao",
+  "version": "0.5.16",
   "description": "Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"

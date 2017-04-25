@@ -544,6 +544,10 @@ $lab-icons: url('./images/icons-lab.png');
       .meta {
         font-size: 75%;
         color: gray;
+        strong {
+            color: black;
+            font-size: 110%;
+        }
       }
       .labs {
         padding-right: 20px;

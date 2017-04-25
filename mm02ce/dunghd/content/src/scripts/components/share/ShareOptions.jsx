@@ -70,7 +70,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 name="topics"
               />
               <label className="radio__regular__label" htmlFor={tld.id} >
-                {tld.name} <span className="meta">(all my browsing on {window.location.host})</span>
+                {tld.name} <span className="meta">(all my browsing on <strong>{window.location.host}</strong>)</span>
               </label>
             </div>
           }
@@ -88,7 +88,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 />
                 <label className="radio__regular__label" htmlFor={topic.id}>
                   <span className="labs">
-                    {topic.name} <span className="meta">(all my browsing on {topic.name.toLowerCase()})</span>
+                    {topic.name} <span className="meta">(all my browsing on <strong>{topic.name.toLowerCase()}</strong>)</span>
                   </span>
                 </label>
               </div>,
