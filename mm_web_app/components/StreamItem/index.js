@@ -24,7 +24,7 @@ function StreamItem ({ url, maxScore }) {
         <div className='thumbnail'>
           <div className='thumbnail-image'>
             <a href={href} target='_blank'>
-              <img style={{ maxWidth: '250px', maxHeight: '200px' }} src={img || '/static/images/no-image.png'} alt={title} />
+              <img src={img || '/static/images/no-image.png'} alt={title} />
             </a>
           </div>
           <div className='caption'>
@@ -32,7 +32,7 @@ function StreamItem ({ url, maxScore }) {
               <a href={href} target='_blank'>{title} ({id})</a>
             </h4>
             <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
-            <div className='rating'>
+            <div className="rating">
               <ReactStars edit={false} size={22} count={5} value={rate} />
             </div>
             <span className='date-time'>

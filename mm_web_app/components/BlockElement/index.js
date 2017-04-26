@@ -27,19 +27,17 @@ const Anchor = styled.a`
 `
 
 const Image = styled.img`
-  object-fit contain;
-  width: 210px;
   margin-bottom: 10px;
   border-radius: 8px;
   vertical-align: middle;
-  margin: 5px auto;
+  margin: 0 auto;
   display: block;
 `
 
 const Title = styled.h3`
   font-size: 14px;
   margin: 0;
-  padding: 0 8px 0px;
+  padding: 0;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -49,14 +47,14 @@ const Title = styled.h3`
 const Description = styled.p`
   font-size: 12px;
   margin: 0;
-  padding: 0 8px 16px;
+  padding: 0;
   text-align: left;
 `
 
 const Source = styled.span`
   font-size: 12px;
   margin: 0;
-  padding: 0 8px 16px;
+  padding: 0 8px 3px;
   text-align: left;
 `
 
@@ -83,16 +81,22 @@ function iconType (type) {
 
 function BlockElement (props) {
   return (
-    <Wrapper>
-      <Anchor href={props.url} target='_blank'>
-        <Image src={props.image} alt={props.name} />
-      </Anchor>
-      {props.name && <Title>{props.name}</Title>}
-      {props.description && <Description>{truncate(props.description, { length: 100, separator: /,? +/ })}</Description>}
-      <Source>
-        <Icon src={iconType(props.type)} />
-        {props.type}
-      </Source>
+    <Wrapper className="thumbnail-box">
+      <div className="thumbnail">
+        <div className='thumbnail-image'>
+          <Anchor href={props.url} target='_blank'>
+            <Image src={props.image} alt={props.name} />
+          </Anchor>
+        </div>
+        <div className='caption'>
+          {props.name && <Title className='caption-title'>{props.name}</Title>}
+          {props.description && <Description>{truncate(props.description, { length: 100, separator: /,? +/ })}</Description>}
+          <Source className='credit-info'>
+            <Icon src={iconType(props.type)} />
+            {props.type}
+          </Source>
+        </div>
+        </div>
     </Wrapper>
   )
 }

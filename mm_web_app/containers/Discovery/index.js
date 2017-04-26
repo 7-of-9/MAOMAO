@@ -33,15 +33,14 @@ const brandName = 'MaoMao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <strong>{brandName}</strong><br />
+    <strong>{brandName} </strong>
     Singapore<br />
   </address>
 )
 
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: 0,
-  columnWidth: 250
+  transitionDuration: 0
 }
 
 function mashUp (store) {
@@ -219,18 +218,20 @@ class Discovery extends React.Component {
               hasMore={this.props.store.hasMore}
               className='container-fluid'
               >
-              <Masonry className='container-fluid' options={masonryOptions}>
-                {mashUp(toJS(this.props.store))}
+              <Masonry className='container-masonry' options={masonryOptions}>
+                <div className="grid-row">{mashUp(toJS(this.props.store))}</div>
               </Masonry>
               <Loading isLoading={this.props.store.pendings.length > 0} />
             </InfiniteScroll>
           </NoSSR>
         </StickyContainer>
-        <Footer brandName={brandName}
-          facebookUrl='http://www.facebook.com'
-          twitterUrl='http://www.twitter.com/'
-          address={businessAddress}
-        />
+        <div className='footer-area'>
+          <Footer brandName={brandName}
+            facebookUrl='http://www.facebook.com'
+            twitterUrl='http://www.twitter.com/'
+            address={businessAddress}
+          />
+        </div>
         <script src='/static/vendors/js/layout.js' />
       </Page>
     )

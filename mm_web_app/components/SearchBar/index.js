@@ -19,13 +19,16 @@ const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 
 
 const SearchBar = ({ tags, onSearch, changeTags, handleDelete, handleAddition }) => (
   <Form onSubmit={onSearch}>
-    <A onClick={() => { changeTags(TEST_SET_1) }} > Test Set 1 </A> |
-      <A onClick={() => { changeTags(TEST_SET_2) }} > Test Set 2 </A> |
-      <A onClick={() => { changeTags(TEST_SET_3) }} > Test Set 3 </A> |
-      <A onClick={() => { changeTags(TEST_SET_4) }} > Test Set 4 </A> |
-      <InputWrapper>
+      <div className='stream-list'>
+        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_1) }} > <span>Test Set 1</span> </A> |
+        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_2) }} > <span>Test Set 2</span> </A> |
+        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_3) }} > <span>Test Set 3</span> </A> |
+        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_4) }} > <span>Test Set 4</span> </A> |
+      </div>
+      <InputWrapper className='search-bar'>
         <InputContainer>
           <ReactTags
+            className='form-control'
             tags={tags}
             handleDelete={handleDelete}
             handleAddition={handleAddition}

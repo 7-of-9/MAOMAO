@@ -92,6 +92,13 @@ the header section
             width: 100%;
             background-color: #2db7f5;
           }
+          &:last-child {
+            &:hover:after,
+            &.active:after {
+              width: 0;
+              background: none;
+            }
+          }
           @media (max-width: 990px) {
             padding: 0 1rem;
           }
