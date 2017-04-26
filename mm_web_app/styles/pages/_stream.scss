@@ -78,6 +78,10 @@ the stream page
         color: #1a8dee;
         border-bottom-color: #1a8dee;
       }
+      &,
+      &.active {
+        @include transition(all 0.2s ease-out 0s);
+      }
     }
   }
 }
