@@ -291,6 +291,10 @@ $lab-icons: url('./images/icons-lab.png');
     &:active {
       transition: all 0.2s ease-in-out;
     }
+    &:hover,
+    &:focus {
+      outline: 0;
+    }
     &:nth-child(4) {
       border: 1px solid #ccc;
       border-radius: 50%;
@@ -555,8 +559,8 @@ $lab-icons: url('./images/icons-lab.png');
         font-size: 75%;
         color: gray;
         strong {
-            color: black;
-            font-size: 110%;
+          color: black;
+          font-size: 110%;
         }
       }
       .labs {

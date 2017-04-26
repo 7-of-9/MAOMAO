@@ -593,6 +593,10 @@ fieldset[disabled] .react-autosuggest__input {
         }
       }
     }
+    &:hover,
+    &:focus {
+      outline: 0;
+    }
   }
 }
 
@@ -1423,8 +1427,8 @@ fieldset[disabled] .btn-logout.focus {
         font-size: 75%;
         color: gray;
         strong {
-            color: black;
-            font-size: 110%;
+          color: black;
+          font-size: 110%;
         }
       }
       .labs {
