@@ -82,18 +82,8 @@ export class CoreStore {
   }
 
   @action logout () {
-    db.get(USER_ID).then((doc) => {
-      db.remove(doc)
-    }).then((response) => {
-      logger.warn('clear USER_ID')
-    }).catch((err) => {
-      logger.error(err)
-    })
-
-    db.get(USER_HASH).then((doc) => {
-      db.remove(doc)
-    }).then((response) => {
-      logger.warn('clear USER_HASH')
+    db.destroy().then((response) => {
+      logger.warn('logout', response)
     }).catch((err) => {
       logger.error(err)
     })
