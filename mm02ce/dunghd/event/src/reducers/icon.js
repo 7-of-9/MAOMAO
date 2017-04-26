@@ -5,7 +5,7 @@ const MIN_NSS = 10;
 
 const initialState = {
   isEnable: false,
-  isEnableIM: true,
+  isEnableIM: false,
   isYoutubeTest: false,
   urls: [],
   tldTimers: [],

@@ -76,7 +76,7 @@ const defaultProps = {
   icon: {
     isEnable: false,
     isYoutubeTest: false,
-    isEnableIM: true,
+    isEnableIM: false,
   },
   topics: [],
   terms: [],
