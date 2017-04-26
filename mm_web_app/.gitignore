@@ -3,7 +3,7 @@ coverage
 build -- deploy build file to azure
 node_modules
 stats.json
-
+mmdb # maomao local db
 # Cruft
 .DS_Store
 npm-debug.log

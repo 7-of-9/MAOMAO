@@ -7,7 +7,7 @@ import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '
 let store = null
 const USER_ID = 'MM_USER_ID'
 const USER_HASH = 'MM_USER_HASH'
-const db = new PouchDB('maomao')
+const db = new PouchDB('mmdb')
 
 export class CoreStore {
   isMobile = false
@@ -28,7 +28,7 @@ export class CoreStore {
         this.isLogin = true
       }
     }).catch((err) => {
-      logger.info(err)
+      logger.info('guest', err)
     })
     db.get(USER_HASH).then((doc) => {
       const userHash = doc.userHash
@@ -37,7 +37,7 @@ export class CoreStore {
         this.userHash = userHash
       }
     }).catch((err) => {
-      logger.info(err)
+      logger.info('guest', err)
     })
   }
 
