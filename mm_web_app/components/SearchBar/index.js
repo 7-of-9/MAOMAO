@@ -19,23 +19,23 @@ const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 
 
 const SearchBar = ({ tags, onSearch, changeTags, handleDelete, handleAddition }) => (
   <Form onSubmit={onSearch}>
-      <div className='stream-list'>
-        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_1) }} > <span>Test Set 1</span> </A> |
-        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_2) }} > <span>Test Set 2</span> </A> |
-        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_3) }} > <span>Test Set 3</span> </A> |
-        <A  className='stream-item' onClick={() => { changeTags(TEST_SET_4) }} > <span>Test Set 4</span> </A> |
+    <div className='stream-list'>
+      <A className='stream-item' onClick={() => { changeTags(TEST_SET_1) }} > <span>Test Set 1</span> </A> |
+        <A className='stream-item' onClick={() => { changeTags(TEST_SET_2) }} > <span>Test Set 2</span> </A> |
+        <A className='stream-item' onClick={() => { changeTags(TEST_SET_3) }} > <span>Test Set 3</span> </A> |
+        <A className='stream-item' onClick={() => { changeTags(TEST_SET_4) }} > <span>Test Set 4</span> </A> |
       </div>
-      <InputWrapper className='search-bar'>
-        <InputContainer>
-          <ReactTags
-            className='form-control'
-            tags={tags}
-            handleDelete={handleDelete}
-            handleAddition={handleAddition}
-            placeholder='Search:'
+    <InputWrapper className='search-bar'>
+      <InputContainer>
+        <ReactTags
+          className='form-control'
+          tags={tags}
+          handleDelete={handleDelete}
+          handleAddition={handleAddition}
+          placeholder='Search:'
           />
-        </InputContainer>
-      </InputWrapper>
+      </InputContainer>
+    </InputWrapper>
   </Form>
   )
 

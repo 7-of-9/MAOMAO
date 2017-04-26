@@ -219,7 +219,7 @@ class Discovery extends React.Component {
               className='container-fluid'
               >
               <Masonry className='container-masonry' options={masonryOptions}>
-                <div className="grid-row">{mashUp(toJS(this.props.store))}</div>
+                <div className='grid-row'>{mashUp(toJS(this.props.store))}</div>
               </Masonry>
               <Loading isLoading={this.props.store.pendings.length > 0} />
             </InfiniteScroll>

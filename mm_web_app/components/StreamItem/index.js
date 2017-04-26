@@ -32,7 +32,7 @@ function StreamItem ({ url, maxScore }) {
               <a href={href} target='_blank'>{title} ({id})</a>
             </h4>
             <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
-            <div className="rating">
+            <div className='rating'>
               <ReactStars edit={false} size={22} count={5} value={rate} />
             </div>
             <span className='date-time'>

@@ -1,5 +1,5 @@
 import { observable, computed, action } from 'mobx'
-import localforage from 'localforage'
+import PouchDB from 'pouchdb'
 import * as logger from 'loglevel'
 import { isMobileBrowser, isChromeBrowser } from '../utils/detector'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
@@ -7,6 +7,7 @@ import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '
 let store = null
 const USER_ID = 'MM_USER_ID'
 const USER_HASH = 'MM_USER_HASH'
+const db = new PouchDB('maomao')
 
 export class CoreStore {
   isMobile = false
@@ -19,18 +20,24 @@ export class CoreStore {
   constructor (isServer, userAgent) {
     this.userAgent = userAgent
     this.isMobile = isMobileBrowser(userAgent)
-    localforage.getItem(USER_ID).then((userId) => {
+    db.get(USER_ID).then((doc) => {
+      const userId = doc.userId
       logger.warn('userId', userId)
       if (userId && userId > 0) {
         this.userId = userId
         this.isLogin = true
       }
+    }).catch((err) => {
+      logger.info(err)
     })
-    localforage.getItem(USER_HASH).then((userHash) => {
+    db.get(USER_HASH).then((doc) => {
+      const userHash = doc.userHash
       logger.warn('userHash', userHash)
       if (userHash && userHash.length > 0) {
         this.userHash = userHash
       }
+    }).catch((err) => {
+      logger.info(err)
     })
   }
 
@@ -48,14 +55,40 @@ export class CoreStore {
   }
 
   @action login (userId, userHash) {
-    localforage.setItem(USER_ID, this.userId)
-    localforage.setItem(USER_HASH, this.userHash)
+    db.bulkDocs([
+      {
+        _id: USER_ID,
+        userId: this.userId
+      },
+      {
+        _id: USER_HASH,
+        userHash: this.userHash
+      }
+    ]).then((response) => {
+      logger.warn('save db', response)
+    }).catch((err) => {
+      logger.error(err)
+    })
     this.isLogin = true
   }
 
   @action logout () {
-    localforage.setItem(USER_ID, -1)
-    localforage.setItem(USER_HASH, '')
+    db.get(USER_ID).then((doc) => {
+      db.remove(doc)
+    }).then((response) => {
+      logger.warn('clear USER_ID')
+    }).catch((err) => {
+      logger.error(err)
+    })
+
+    db.get(USER_HASH).then((doc) => {
+      db.remove(doc)
+    }).then((response) => {
+      logger.warn('clear USER_HASH')
+    }).catch((err) => {
+      logger.error(err)
+    })
+
     this.isLogin = false
   }
 
@@ -71,6 +104,7 @@ export class CoreStore {
   }
 
   @action logoutUser () {
+    this.logout()
     if (this.isChrome && this.isInstall) {
       sendMsgToChromeExtension(actionCreator('AUTH_LOGOUT', {}))
     }
@@ -78,7 +112,6 @@ export class CoreStore {
     this.userId = -1
     this.userHash = ''
     this.userHistory = null
-    this.logout()
   }
 }
 

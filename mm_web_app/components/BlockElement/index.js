@@ -81,8 +81,8 @@ function iconType (type) {
 
 function BlockElement (props) {
   return (
-    <Wrapper className="thumbnail-box">
-      <div className="thumbnail">
+    <Wrapper className='thumbnail-box'>
+      <div className='thumbnail'>
         <div className='thumbnail-image'>
           <Anchor href={props.url} target='_blank'>
             <Image src={props.image} alt={props.name} />
@@ -96,7 +96,7 @@ function BlockElement (props) {
             {props.type}
           </Source>
         </div>
-        </div>
+      </div>
     </Wrapper>
   )
 }
