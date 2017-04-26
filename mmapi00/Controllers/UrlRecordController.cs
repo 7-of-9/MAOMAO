@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using mm_svc;
 using System.Web.Http.Cors;
 using mmapi00.Util;
+using PusherServer;
+
 
 namespace mmapi00.Controllers
 {
@@ -46,6 +48,21 @@ namespace mmapi00.Controllers
             var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id, out tld_topic_id);
 
             var history_id = mm_svc.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
+
+            // push notification to client
+            var options = new PusherOptions();
+            options.Cluster = "ap1";
+            options.Encrypted = true;
+
+            var pusher = new Pusher("332227", "056a3bc19f7b681fd6fb", "85101936fa2c6216a316", options);
+
+            var result = pusher.Trigger("my-friend-stream-" + user_id, "record-url", new {
+                url_id = url_id,
+                tld_topic_id = tld_topic_id,
+                tld_topic = tld_topic.term_name,
+                ms = sw.ElapsedMilliseconds,
+            });
+
 
             return Ok( new {
                     url_id = url_id,
