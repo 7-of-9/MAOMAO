@@ -1,11 +1,13 @@
+import { OrderedSet } from 'immutable'
 import { observable, action } from 'mobx'
 import * as logger from 'loglevel'
+import { guid } from '../utils/hash'
 
 let store = null
 
 export class UIStore {
   @observable showSignInModal = false
-
+  @observable notifications = OrderedSet()
   @action showSignIn () {
     logger.info('showSignIn')
     this.showSignInModal = true
@@ -14,6 +16,22 @@ export class UIStore {
   @action closeModal () {
     logger.info('closeModal')
     this.showSignInModal = false
+  }
+
+  @action removeNotification (uuid) {
+    this.notifications = this.notifications.filter((item) => item.key !== uuid)
+  }
+
+  @action addNotification (msg) {
+    const uuid = guid()
+    this.notifications = this.notifications.add({
+      message: msg,
+      key: uuid,
+      action: 'Dismiss',
+      onClick: (deactivate) => {
+        this.removeNotification(deactivate.key)
+      }
+    })
   }
 }
 

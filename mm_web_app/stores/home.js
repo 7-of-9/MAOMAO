@@ -9,8 +9,6 @@ import { md5hash } from '../utils/hash'
 
 let store = null
 
-const TIME_TO_RELOAD = 5 * 60 * 1000 // 5 mins
-
 export class HomeStore extends CoreStore {
   @observable googleConnectResult = {}
   @observable facebookConnectResult = {}
@@ -33,23 +31,27 @@ export class HomeStore extends CoreStore {
          this.getUserHistory()
        }
      })
-    setInterval(() => {
-      logger.warn('fetch new user history on every', TIME_TO_RELOAD, ' miliseconds.')
-      if (this.counter > 0 && this.userHash.length > 0) {
-        this.getUserHistory()
-      }
-    }, TIME_TO_RELOAD)
   }
 
   @computed get myStream () {
     const { me } = this.userHistory
-    logger.warn('myStream', me)
     return me
   }
 
   @computed get friendsStream () {
     const { shares } = this.userHistory
-    logger.warn('friendsStream', shares)
+    // listen new data and reload all
+    const friends = toJS(shares)
+    if (friends.length > 0) {
+      friends.forEach(friend => {
+        // TODO: Check new data is belong to sharing topics or share all
+        this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'record-url', (data) => {
+          logger.warn('YEAH -- found record url data', data)
+          // reload data after 60 seconds after server record new url
+          setTimeout(() => this.getUserHistory(), 60 * 1000)
+        })
+      })
+    }
     return shares
   }
 

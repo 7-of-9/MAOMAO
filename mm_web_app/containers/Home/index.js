@@ -13,7 +13,6 @@ import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
-import { OrderedSet } from 'immutable'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
 import * as logger from 'loglevel'
@@ -46,13 +45,13 @@ const businessAddress = (
   </address>
 )
 
-@inject('store') @observer
+@inject('store')
+@inject('ui')
+@observer
 class Home extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      notifications: OrderedSet(),
-      count: 0,
       currentTab: 0
     }
     this.onInstallSucess = this.onInstallSucess.bind(this)
@@ -82,17 +81,7 @@ class Home extends React.Component {
   }
 
   addNotification (msg) {
-    const uuid = Date.now()
-    return this.setState({
-      notifications: this.state.notifications.add({
-        message: msg,
-        key: uuid,
-        action: 'Dismiss',
-        onClick: (deactivate) => {
-          this.removeNotification(deactivate.key)
-        }
-      })
-    })
+    this.props.ui.addNotification(msg)
   }
 
   inlineInstall () {
@@ -104,14 +93,13 @@ class Home extends React.Component {
   }
 
   removeNotification (uuid) {
-    const notifications = this.state.notifications.filter((item) => item.key !== uuid)
-    this.setState({
-      notifications
-    })
+    this.props.ui.removeNotification(uuid)
   }
+
   componentWillReact () {
     logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
   }
+
   componentDidMount () {
     logger.info('Home - componentDidMount', this.props)
     this.props.store.checkEnvironment()
@@ -131,6 +119,11 @@ class Home extends React.Component {
       }
     }, 100)
   }
+
+  componentDidUpdate () {
+    logger.warn('Home componentDidUpdate!', this.props.store)
+  }
+
   render () {
     const title = 'MaoMao - Home page'
     let description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
@@ -209,11 +202,9 @@ class Home extends React.Component {
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack
-          notifications={this.state.notifications.toArray()}
+          notifications={this.props.ui.notifications.toArray()}
           dismissAfter={5000}
-          onDismiss={(notification) => this.setState({
-            notifications: this.state.notifications.delete(notification)
-          })}
+          onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
         <NoSSR onSSR={<Loading isLoading />}>
           <div>
