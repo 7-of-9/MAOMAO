@@ -9,6 +9,7 @@ const initialState = {
   isYoutubeTest: false,
   urls: [],
   tldTimers: [],
+  xpTimers: [],
 };
 
 const changeIconUrl = (urls, url, color, text) => {
@@ -39,6 +40,19 @@ const findTLD = (nlp, url) => {
 
 export default (state = initialState, action, auth, nlp) => {
   switch (action.type) {
+    case 'TIMER_XP': {
+      // find TLD base on url
+      const url = action.payload.url;
+      let xpTimers = [];
+      if (state.xpTimers.length) {
+        xpTimers = state.xpTimers.filter(item => item.url !== url);
+      }
+      xpTimers = xpTimers.concat({
+        url,
+        timer: moment().add(1, 'hours').format(),
+      });
+      return Object.assign({}, state, { xpTimers });
+    }
     case 'TIMER_TLD': {
       // find TLD base on url
       const url = action.payload.url;
@@ -64,6 +78,7 @@ export default (state = initialState, action, auth, nlp) => {
         return state;
       }
       let tldTimers = [];
+      let xpTimers = [];
       if (state.tldTimers.length) {
         tldTimers = state.tldTimers.filter(item => item.tld !== tld);
       }
@@ -71,7 +86,14 @@ export default (state = initialState, action, auth, nlp) => {
         tld,
         timer: moment().format(),
       });
-      return Object.assign({}, state, { tldTimers });
+      if (state.xpTimers.length) {
+        xpTimers = state.xpTimers.filter(item => item.url !== url);
+      }
+      xpTimers = xpTimers.concat({
+        url,
+        timer: moment().format(),
+      });
+      return Object.assign({}, state, { tldTimers, xpTimers });
     }
 
     case 'SWITCH_IM_SCORE':

@@ -13,7 +13,7 @@ import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
 // import FloatingShare from '../share';
 import { linkAccount, createUser } from '../utils/UserApi';
-import getCurrentTerms from '../../selectors/term';
+import { getCurrentTerms, getCurrentXPTopics } from '../../selectors/term';
 import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
@@ -35,6 +35,7 @@ const propTypes = {
   code: PropTypes.object,
   icon: PropTypes.object,
   terms: PropTypes.array,
+  xpTopics: PropTypes.array,
   tld: PropTypes.array,
   topics: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
@@ -76,10 +77,10 @@ const defaultProps = {
     isEnable: false,
     isYoutubeTest: false,
     isEnableIM: true,
-    isEnableExperimentalTopics: true,
   },
   topics: [],
   terms: [],
+  xpTopics: [],
   tld: [],
   isShareOnUrl: {
     url: '',
@@ -353,7 +354,7 @@ const MIN_IM_SCORE = 1; // for showing the tld xp popup
 function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
-  closeXp, sendEmail, onClose, notifyMsg, tld, closeTLD,
+  closeXp, sendEmail, onClose, notifyMsg, tld, xpTopics, closeTLD,
   }) {
   logger.info('App render');
   return (
@@ -415,21 +416,20 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           }
         >
           <Xp
-            terms={tld} shareTopics={openShare} closeXp={closeTLD} closeTimeout={5000}
+            terms={tld} shareTopics={openShare} closeXp={closeTLD} closeTimeout={10000}
           />
         </ToggleDisplay>
         <ToggleDisplay
           if={
             auth.isLogin
-            && icon.isEnableExperimentalTopics
             && icon.isEnable
             && score.im_score > MIN_IM_SCORE
             && tld.length === 0
-            && terms.length > 0
+            && xpTopics.length > 0
           }
         >
           <Xp
-            terms={terms} shareTopics={openShare} closeXp={closeXp}
+            terms={xpTopics} shareTopics={openShare} closeXp={closeXp} isEnableExperimentalTopics
           />
         </ToggleDisplay>
       </div>
@@ -610,8 +610,12 @@ const enhance = compose(
       sendHTMLEmail(fromEmail, fullName, name, email, topic, url, props.dispatch);
     },
     closeXp: props => () => {
-      // TODO: close XP popup
-      logger.warn('closeXp', props);
+      props.dispatch({
+        type: 'TIMER_XP',
+        payload: {
+          url: window.location.href,
+        },
+      });
     },
     closeTLD: props => () => {
       props.dispatch({
@@ -657,6 +661,7 @@ const mapStateToProps = state => ({
   isShareOnUrl: shareOnUrl(state),
   score: state.score,
   terms: getCurrentTerms(state),
+  xpTopics: getCurrentXPTopics(state),
   tld: getCurrentTLD(state),
   topics: getCurrentTopics(state),
   code: {

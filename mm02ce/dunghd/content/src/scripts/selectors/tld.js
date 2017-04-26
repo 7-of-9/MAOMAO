@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { createSelector } from 'reselect';
-import * as logger from 'loglevel';
 
 const getRecords = state => state.nlp.records;
 const getTimers = state => state.icon.tldTimers;

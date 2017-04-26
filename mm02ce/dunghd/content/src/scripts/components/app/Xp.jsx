@@ -32,7 +32,7 @@ const enhance = compose(
   withState('show', 'changeShow', true),
   withState('text', 'changeText', ''),
   withState('score', 'changeScore', 0),
-  withState('counter', 'changeCounter', 0),
+  withState('played', 'playedItem', []),
   withHandlers({
     closePopup: props => () => {
       props.changeShow(false);
@@ -45,10 +45,10 @@ const enhance = compose(
     playNextItem: props => () => {
       logger.info('playNextItem', props);
       if (props.show) {
-        if (props.counter < props.terms.length) {
-          const counter = props.counter + 1;
-          props.changeCounter(counter);
+        if (props.played.length < props.terms.length) {
+          const counter = props.played.length;
           const xp = props.terms[counter];
+          props.playedItem([...props.played, xp.text]);
           if (xp) {
             props.changeText(xp.text);
             props.changeScore(xp.score);
@@ -72,17 +72,23 @@ const enhance = compose(
 
       if (Number(this.props.closeTimeout) > 0) {
         logger.info('XP closeTimeout', this.props.closeTimeout);
-        setTimeout(() => {
+        this.timer = setTimeout(() => {
           this.props.changeShow(false);
           this.props.closeXp();
         }, this.props.closeTimeout);
+      }
+    },
+    componentWillUnmount() {
+      logger.info('XP componentWillUnmount');
+      if (this.timer) {
+        clearTimeout(this.timer);
       }
     },
   }),
 );
 
 const Xp = enhance(({
-  show, text, score, counter,
+  show, text, score, counter, isEnableExperimentalTopics,
   closePopup, openShare, playNextItem }) => {
   logger.info('XP');
   return (
@@ -92,7 +98,7 @@ const Xp = enhance(({
         {dummies}
         <div
           style={counter === 0 ? styles.bounceInUp : styles.bounceOutUp}
-          className="nlp_topic"
+          className={isEnableExperimentalTopics ? 'nlp_topic labs' : 'nlp_topic'}
         >{text}
         </div>
         <div
@@ -110,13 +116,14 @@ const Xp = enhance(({
         </div>
         <button className="share-button" onClick={openShare}>Share...</button>
       </div>
-    </div>
+    </div >
   );
 });
 
 Xp.propTypes = {
   shareTopics: PropTypes.func.isRequired,
   closeXp: PropTypes.func.isRequired,
+  isEnableExperimentalTopics: PropTypes.bool,
   closeTimeout: PropTypes.number,
 };
 
