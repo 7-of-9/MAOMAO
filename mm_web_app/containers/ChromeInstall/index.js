@@ -82,7 +82,7 @@ class ChromeInstall extends React.Component {
     const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
     if (!isLogin) {
-      msg = `Yeah! One more step to viewing your friend sharing. Please sigin in.`
+      msg = `Yeah! One more step to viewing your friend sharing. Please sign in.`
     } else {
       msg = `Yeah! It's ready to unlock your friemd stream.`
     }
@@ -96,6 +96,7 @@ class ChromeInstall extends React.Component {
           <Modal
             isOpen={isShow && this.state.showModal}
             style={customStyles}
+            onRequestClose={this.onClose}
             portalClassName='QuestionModal'
             contentLabel='Unlock stream'>
             <p>{msg}</p>

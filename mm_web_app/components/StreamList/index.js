@@ -78,7 +78,7 @@ class StreamList extends React.Component {
         threshold={300}
         >
         <Masonry className='container-masonry' options={masonryOptions}>
-          <div className="grid-row">
+          <div className='grid-row'>
             {items}
           </div>
         </Masonry>

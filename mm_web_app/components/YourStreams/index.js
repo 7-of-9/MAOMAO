@@ -13,7 +13,7 @@ function YourStreams ({ topics, changeTerm, activeId }) {
   if (topics && topics.length) {
     _.forEach(topics, (topic) => {
       if (topic && topic.term_id) {
-        items.push(<a className="stream-item" href="#"
+        items.push(<a className='stream-item' href='#'
           onClick={(e) => {
             e.preventDefault()
             changeTerm(topic.term_id)
@@ -28,7 +28,7 @@ function YourStreams ({ topics, changeTerm, activeId }) {
   }
   return (
     <div className='container-fluid'>
-      <div className="stream-list">
+      <div className='stream-list'>
         {items}
       </div>
     </div>

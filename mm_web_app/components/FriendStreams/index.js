@@ -15,7 +15,7 @@ function FriendStreams ({ friends, changeFriendStream, activeId }) {
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
       if (friend && friend.user_id) {
-        items.push(<a className="stream-item" href="#"
+        items.push(<a className='stream-item' href='#'
           onClick={(e) => {
             e.preventDefault()
             changeFriendStream(friend.user_id)
@@ -30,7 +30,7 @@ function FriendStreams ({ friends, changeFriendStream, activeId }) {
   }
   return (
     <div className='container-fluid'>
-      <div className="stream-list">
+      <div className='stream-list'>
         {items}
       </div>
     </div>
