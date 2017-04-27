@@ -1,5 +1,5 @@
 import { action, reaction, when, observable, whyRun, toJS } from 'mobx'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 import { HomeStore } from './home'
 import { acceptInvite } from '../services/share'
 import { googleImageSearchByTerm } from '../services/crawler'

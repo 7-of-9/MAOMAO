@@ -6,7 +6,7 @@
 
 import React from 'react'
 import _ from 'lodash'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import StreamItem from '../../components/StreamItem'

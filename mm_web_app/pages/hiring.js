@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 
 export default class Hiring extends React.Component {
   static getInitialProps ({ req }) {

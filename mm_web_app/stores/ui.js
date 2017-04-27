@@ -1,6 +1,6 @@
 import { OrderedSet } from 'immutable'
 import { observable, action } from 'mobx'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 import { guid } from '../utils/hash'
 
 let store = null

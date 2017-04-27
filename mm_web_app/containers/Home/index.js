@@ -15,7 +15,7 @@ import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
@@ -63,7 +63,6 @@ class Home extends React.Component {
   }
 
   handleSelect (index, last) {
-    logger.info('Selected tab: ' + index + ', Last tab: ' + last)
     this.setState({
       currentTab: index
     })
@@ -95,13 +94,7 @@ class Home extends React.Component {
   removeNotification (uuid) {
     this.props.ui.removeNotification(uuid)
   }
-
-  componentWillReact () {
-    logger.warn('Home Component will re-render, since the data has changed!', this.props.store)
-  }
-
   componentDidMount () {
-    logger.info('Home - componentDidMount', this.props)
     this.props.store.checkEnvironment()
     if (this.props.isClosePopup) {
       logger.warn('Close popup')
@@ -196,9 +189,9 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
-          <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
-          <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
+          <NavItem><Link prefetch href='/discovery' className='nav-link'><a href='/discovery'>Discovery</a></Link></NavItem>
+          <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack
@@ -206,7 +199,7 @@ class Home extends React.Component {
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
-        <NoSSR onSSR={<Loading isLoading />}>
+        <NoSSR onSSR={<div style={{ margin: '0 auto', textAlign: 'center' }} className='container'><Loading isLoading /></div>}>
           <div>
             { !this.props.store.isLogin &&
               <ChromeInstall

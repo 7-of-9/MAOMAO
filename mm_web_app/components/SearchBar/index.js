@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react'
 import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
 import { WithContext as ReactTags } from 'react-tag-input'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import Form from './Form'
 import A from './A'
 import { InputWrapper, InputContainer } from './Input'
@@ -90,7 +90,6 @@ const enhance = compose(
   }),
   lifecycle({
     componentDidMount () {
-      logger.info('componentDidMount', this.props)
       if (this.props.terms.length > 0 && this.props.tags.length === 0) {
         this.props.changeTags(this.props.terms)
       }

@@ -1,7 +1,7 @@
 import { observable, computed, action } from 'mobx'
 import PouchDB from 'pouchdb'
 import Pusher from 'pusher-js'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 import { isMobileBrowser, isChromeBrowser } from '../utils/detector'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 
@@ -35,15 +35,15 @@ export class CoreStore {
       if (userId && userId > 0) {
         this.userId = userId
         this.isLogin = true
-      }
-    }).catch((err) => {
-      logger.info('guest', err)
-    })
-    db.get(USER_HASH).then((doc) => {
-      const userHash = doc.userHash
-      logger.warn('userHash', userHash)
-      if (userHash && userHash.length > 0) {
-        this.userHash = userHash
+        db.get(USER_HASH).then((doc) => {
+          const userHash = doc.userHash
+          logger.warn('userHash', userHash)
+          if (userHash && userHash.length > 0) {
+            this.userHash = userHash
+          }
+        }).catch((err) => {
+          logger.info('guest', err)
+        })
       }
     }).catch((err) => {
       logger.info('guest', err)

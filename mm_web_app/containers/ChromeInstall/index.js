@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
 import { Section } from 'neal-react'
 import Modal from 'react-modal'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import UnlockNow from '../../components/UnlockNow'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
@@ -53,7 +53,6 @@ class ChromeInstall extends React.Component {
   }
 
   componentDidMount () {
-    logger.info('ChromeInstall - componentDidMount', this.props.store)
     if (this.props.store.isInstalledOnChromeDesktop) {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
@@ -65,10 +64,6 @@ class ChromeInstall extends React.Component {
     }
   }
 
-  componentWillReact () {
-    logger.warn('ChromeInstall will re-render, since the data has changed!')
-  }
-
   onClose () {
     this.setState({ showModal: false })
     if (this.props.store.isInstall && !this.props.store.isLogin) {
@@ -78,7 +73,6 @@ class ChromeInstall extends React.Component {
 
   render () {
     const { title, description, install, store: { isChrome, isMobile, isInstall, isLogin, shareInfo } } = this.props
-    logger.info('ChromeInstall isChrome, isInstall, isLogin, shareInfo ', isChrome, isInstall, isLogin, shareInfo)
     const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
     if (!isLogin) {

@@ -4,7 +4,7 @@ import { googleKnowlegeSearchByTerm, youtubeSearchByKeyword } from '../services/
 import { googleNewsSearchByTerm, googleSearchByTerm } from '../services/crawler'
 import { redditListing } from '../services/reddit'
 import _ from 'lodash'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 
 let store = null
 

@@ -1,4 +1,4 @@
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 import { EXTENSION_ID } from '../containers/App/constants'
 
 /* global chrome */

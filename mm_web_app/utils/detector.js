@@ -1,5 +1,5 @@
 import MobileDetect from 'mobile-detect'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 
 export function isMobileBrowser (userAgent) {
   const md = new MobileDetect(userAgent)

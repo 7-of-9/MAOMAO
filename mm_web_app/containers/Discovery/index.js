@@ -13,7 +13,7 @@ import Masonry from 'react-masonry-component'
 import NProgress from 'nprogress'
 import { List } from 'immutable'
 import _ from 'lodash'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import BlockElement from '../../components/BlockElement'
 import Loading from '../../components/Loading'
@@ -160,10 +160,6 @@ class Discovery extends React.Component {
     logger.info('Discovery', this.props)
   }
 
-  componentWillReact () {
-    logger.warn('Discovery Component will re-render, since the data has changed!', this.props.store)
-  }
-
   loadMore () {
     this.props.store.loadMore()
   }
@@ -203,9 +199,9 @@ class Discovery extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
-          <NavItem><Link href='/' className='nav-link'>Home</Link></NavItem>
-          <NavItem><Link prefetch href='/discovery' className='nav-link'>Discovery</Link></NavItem>
-          <NavItem><Link prefetch href='/hiring' className='nav-link'>Hiring</Link></NavItem>
+          <NavItem><Link href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
+          <NavItem><Link href='/discovery' className='nav-link'><a href='/discovery'>Discovery</a></Link></NavItem>
+          <NavItem><Link href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
         </Navbar>
         <StickyContainer className='container'>
           <Sticky style={{zIndex: 1000, backgroundColor: '#fff'}}>

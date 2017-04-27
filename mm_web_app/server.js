@@ -4,15 +4,14 @@ const next = require('next')
 const { parse } = require('url')
 const mobxReact = require('mobx-react')
 const request = require('request')
-const log = require('loglevel')
 const app = next({ dev })
+const log = require('./utils/logger')
 const handle = app.getRequestHandler()
 const argv = require('minimist')(process.argv.slice(2))
 const port = argv.port || process.env.PORT || 3000
 // const graphqlHTTP = require('express-graphql')
 // const { buildSchema } = require('graphql')
 
-log.setLevel(dev ? 'info' : 'error')
 mobxReact.useStaticRendering(true)
 
 // // define graphql schema

@@ -1,6 +1,6 @@
 import { action, reaction, when, whyRun, computed, intercept, toJS, observable } from 'mobx'
 import _ from 'lodash'
-import * as logger from 'loglevel'
+import logger from '../utils/logger'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'

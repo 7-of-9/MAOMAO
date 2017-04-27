@@ -7,11 +7,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import * as logger from 'loglevel'
 
 function FriendStreams ({ friends, changeFriendStream, activeId }) {
   const items = []
-  logger.info('friends', friends)
   if (friends && friends.length) {
     _.forEach(friends, (friend) => {
       if (friend && friend.user_id) {

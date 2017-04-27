@@ -11,7 +11,7 @@ import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
-import * as logger from 'loglevel'
+import logger from '../../utils/logger'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
