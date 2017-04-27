@@ -152,7 +152,7 @@ const render = (
   if (!url || !status) {
     return (
       <div className="popup-browser">
-        {/* auth.isLogin && userMenu(auth, dispatch) */}
+        {auth.isLogin && userMenu(auth, dispatch)}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -175,7 +175,7 @@ const render = (
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
-        {/* auth.isLogin && userMenu(auth, dispatch) */}
+        {auth.isLogin && userMenu(auth, dispatch)}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -199,7 +199,7 @@ const render = (
       logger.warn('currentTopics', currentTopics);
       return (
         <div className="popup-browser">
-          {/* auth.isLogin && userMenu(auth, dispatch) */}
+          {auth.isLogin && userMenu(auth, dispatch)}
           <h3 className="share-heading">
             <a href="#home">
               <span className="maomao-logo" />
@@ -257,7 +257,7 @@ const render = (
     if (!isRunable(url, icon)) {
       return (
         <div className="popup-browser">
-          {/* auth.isLogin && userMenu(auth, dispatch) */}
+          {auth.isLogin && userMenu(auth, dispatch)}
           <h3 className="share-heading">
             <a href="#home">
               <span className="maomao-logo" />
@@ -273,7 +273,7 @@ const render = (
     // TODO: check on site is allowable or not
     return (
       <div className="popup-browser">
-        {/* auth.isLogin && userMenu(auth, dispatch) */}
+        {auth.isLogin && userMenu(auth, dispatch)}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
