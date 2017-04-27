@@ -65,7 +65,7 @@ the stream page
     text-decoration: none;
     font-family: 'Orbitron-Light';
     span {
-      padding: 10px 7px;
+      padding: 10px 8px;
       display: block;
       border-bottom: 1px solid #e1e5eb;
       color: #000;
@@ -118,6 +118,9 @@ the stream page
       img {
         object-fit: contain;
         max-width: 335px;
+        @media (max-width: 1450px) {
+          max-width: 270px;
+        }
         @media (max-width: 1050px) {
           max-width: 225px;
         }
