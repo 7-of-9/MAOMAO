@@ -41,6 +41,7 @@ class AppHeader extends React.Component {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
+          logger.warn('user', user)
           return user.getToken()
           .then((token) => {
             // eslint-disable-next-line no-undef
@@ -64,13 +65,33 @@ class AppHeader extends React.Component {
                   let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
                   let google_user_id = identities['google.com'] && identities['google.com'][0]
                   if (sign_in_provider === 'google.com') {
-                    this.props.store.googleConnect({
-                      email, name, picture, google_user_id
-                    })
+                    if (!email) {
+                      user.providerData.forEach(item => {
+                        if (item.providerId === sign_in_provider) {
+                          this.props.store.googleConnect({
+                            email: item.email, name, picture, google_user_id
+                          })
+                        }
+                      })
+                    } else {
+                      this.props.store.googleConnect({
+                        email, name, picture, google_user_id
+                      })
+                    }
                   } else if (sign_in_provider === 'facebook.com') {
-                    this.props.store.facebookConnect({
-                      email, name, picture, fb_user_id
-                    })
+                    if (!email) {
+                      user.providerData.forEach(item => {
+                        if (item.providerId === sign_in_provider) {
+                          this.props.store.facebookConnect({
+                            email: item.email, name, picture, fb_user_id
+                          })
+                        }
+                      })
+                    } else {
+                      this.props.store.facebookConnect({
+                        email, name, picture, fb_user_id
+                      })
+                    }
                   }
                 })
               }
@@ -97,11 +118,17 @@ class AppHeader extends React.Component {
   }
 
   onGoogleLogin () {
-    firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    const provider = new firebase.auth.GoogleAuthProvider()
+    provider.addScope('https://www.googleapis.com/auth/plus.me')
+    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+    firebase.auth().signInWithPopup(provider)
   }
 
   onFacebookLogin () {
-    firebase.auth().signInWithPopup(new firebase.auth.FacebookAuthProvider())
+    const provider = new firebase.auth.FacebookAuthProvider()
+    provider.addScope('email')
+    firebase.auth().signInWithPopup(provider)
   }
 
   onSignInOpen () {
@@ -113,9 +140,12 @@ class AppHeader extends React.Component {
   }
 
   onLogout () {
-    firebase.auth().signOut()
+    firebase.auth().signOut().then(() => {
+      this.props.notify('Logout.')
+    }).catch((error) => {
+      logger.warn(error)
+    })
     this.props.store.logoutUser()
-    this.props.notify('Logout.')
   }
 
   render () {
