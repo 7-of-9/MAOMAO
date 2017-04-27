@@ -27,7 +27,7 @@ function FriendStreams ({ friends, changeFriendStream, activeId }) {
     })
   }
   return (
-    <div className='container-fluid'>
+    <div className='container-masonry'>
       <div className='stream-list'>
         {items}
       </div>

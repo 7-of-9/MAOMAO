@@ -25,7 +25,7 @@ the tab section
   }
   .ReactTabs__TabPanel {
     @include transition(all 0.2s ease-in-out);
-    padding: 10px 30px;
+    padding: 10px 15px;
     opacity: 0;
     &.ReactTabs__TabPanel--selected {
       @include transition(all 0.2s ease-in-out);

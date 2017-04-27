@@ -31,7 +31,7 @@ function StreamItem ({ url, maxScore }) {
             <h4 className='caption-title'>
               <a href={href} target='_blank'>{title} ({id})</a>
             </h4>
-            <p> Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</p>
+            <p> Earned XP <span className='nlp_score'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})</p>
             <div className='rating'>
               <ReactStars edit={false} size={22} count={5} value={rate} />
             </div>
