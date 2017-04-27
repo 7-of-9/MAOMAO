@@ -3,12 +3,15 @@ import { fromPromise } from 'mobx-utils'
 import { MAOMAO_API_URL } from '../containers/App/constants'
 
 export function loginWithGoogle (info) {
+  const names = info.name.split(' ')
+  const firstName = names[0]
+  const lastName = names.slice(1, names.length).join(' ')
   const user = {
-    email: info.profileObj.email,
-    firstName: info.profileObj.familyName,
-    lastName: info.profileObj.givenName,
-    avatar: info.profileObj.imageUrl,
-    google_user_id: info.googleId
+    email: info.email,
+    firstName,
+    lastName,
+    avatar: info.picture,
+    google_user_id: info.google_user_id
   }
   const apiUrl = `${MAOMAO_API_URL}user/google`
 
@@ -31,8 +34,8 @@ export function loginWithFacebook (info) {
     email: info.email,
     firstName,
     lastName,
-    avatar: info.picture.data.url,
-    fb_user_id: info.userID
+    avatar: info.picture,
+    fb_user_id: info.fb_user_id
   }
   const apiUrl = `${MAOMAO_API_URL}user/fb`
   return fromPromise(axios({

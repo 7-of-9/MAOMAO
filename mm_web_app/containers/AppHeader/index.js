@@ -6,13 +6,14 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import firebase from 'firebase'
+import 'isomorphic-fetch'
 import { inject, observer } from 'mobx-react'
-import GoogleLogin from 'react-google-login'
-import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
-import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
+import { clientCredentials } from '../../firebaseCredentials'
+import logger from '../../utils/logger'
 
 const customStyles = {
   content: {
@@ -28,15 +29,63 @@ const customStyles = {
 class AppHeader extends React.Component {
   constructor (props) {
     super(props)
-    this.onGoogleSuccess = this.onGoogleSuccess.bind(this)
-    this.onGoogleFailure = this.onGoogleFailure.bind(this)
-    this.responseFacebook = this.responseFacebook.bind(this)
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
+    this.onGoogleLogin = this.onGoogleLogin.bind(this)
     this.onSignInOpen = this.onSignInOpen.bind(this)
   }
 
   componentDidMount () {
+    logger.warn('AppHeader componentDidMount')
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(clientCredentials)
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          return user.getToken()
+          .then((token) => {
+            // eslint-disable-next-line no-undef
+            return fetch('/api/login', {
+              method: 'POST',
+              // eslint-disable-next-line no-undef
+              headers: new Headers({ 'Content-Type': 'application/json' }),
+              credentials: 'same-origin',
+              body: JSON.stringify({ token })
+            }).then((res) => {
+              // register for new user
+              this.props.ui.closeModal()
+              if (this.props.store.userId < 0) {
+                res.json().then(json => {
+                  // register new user
+                  logger.warn('user', json)
+                  const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                  /* eslint-disable camelcase */
+                  logger.warn('sign_in_provider', sign_in_provider)
+                  logger.warn('identities', identities)
+                  let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                  let google_user_id = identities['google.com'] && identities['google.com'][0]
+                  if (sign_in_provider === 'google.com') {
+                    this.props.store.googleConnect({
+                      email, name, picture, google_user_id
+                    })
+                  } else if (sign_in_provider === 'facebook.com') {
+                    this.props.store.facebookConnect({
+                      email, name, picture, fb_user_id
+                    })
+                  }
+                })
+              }
+            })
+          })
+        } else {
+        // eslint-disable-next-line no-undef
+          fetch('/api/logout', {
+            method: 'POST',
+            credentials: 'same-origin'
+          }).then((res) => logger.warn('res', res))
+        }
+      })
+    }
+
     if (this.props.store.isInstalledOnChromeDesktop) {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
@@ -47,6 +96,14 @@ class AppHeader extends React.Component {
     }
   }
 
+  onGoogleLogin () {
+    firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+  }
+
+  onFacebookLogin () {
+    firebase.auth().signInWithPopup(new firebase.auth.FacebookAuthProvider())
+  }
+
   onSignInOpen () {
     this.props.ui.showSignIn()
   }
@@ -55,25 +112,8 @@ class AppHeader extends React.Component {
     this.props.ui.closeModal()
   }
 
-  onGoogleSuccess (response) {
-    this.onClose()
-    this.props.notify('Login with google account...')
-    this.props.store.googleConnect(response)
-  }
-
-  onGoogleFailure (response) {
-    this.props.notify(response.error)
-  }
-
-  responseFacebook (response) {
-    if (response && response.id) {
-      this.onClose()
-      this.props.notify('Login with facebook account...')
-      this.props.store.facebookConnect(response)
-    }
-  }
-
   onLogout () {
+    firebase.auth().signOut()
     this.props.store.logoutUser()
     this.props.notify('Logout.')
   }
@@ -92,25 +132,8 @@ class AppHeader extends React.Component {
         >
           <h2 ref='subtitle'>SIGN IN</h2>
           <div className='justify-content-md-center social-action'>
-            <a className="btn btn-facebook"> Sign in with Facebook</a>
-            <a className="btn btn-google">Sign in with Google</a>
-            {/*<GoogleLogin
-              clientId={GOOGLE_CLIENT_ID}
-              scope='profile email https://www.googleapis.com/auth/contacts.readonly'
-              buttonText='CONNECT WITH GOOGLE'
-              className='btn btn-google'
-              onSuccess={this.onGoogleSuccess}
-              onFailure={this.onGoogleFailure}
-              />
-            <FacebookLogin
-              appId={FACEBOOK_APP_ID}
-              autoLoad={false}
-              size='small'
-              textButton='CONNECT WITH FACEBOOK'
-              fields='name,email,picture'
-              cssClass='btn btn-facebook'
-              callback={this.responseFacebook}
-             />*/}
+            <a className='btn btn-facebook' onClick={this.onFacebookLogin}> Sign in with Facebook</a>
+            <a className='btn btn-google' onClick={this.onGoogleLogin}>Sign in with Google</a>
           </div>
         </Modal>
       </NavItem>

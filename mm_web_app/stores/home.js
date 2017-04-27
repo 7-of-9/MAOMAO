@@ -5,6 +5,7 @@ import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
+import logger from '../utils/logger'
 
 let store = null
 
@@ -20,8 +21,8 @@ export class HomeStore extends CoreStore {
   counter = 0
   normalizedData = null
 
-  constructor (isServer, userAgent) {
-    super(isServer, userAgent)
+  constructor (isServer, userAgent, user) {
+    super(isServer, userAgent, user)
     reaction(() => this.userHash.length,
      (userHash) => {
        whyRun()
@@ -52,30 +53,27 @@ export class HomeStore extends CoreStore {
   }
 
   @action googleConnect (info) {
+    logger.warn('googleConnect', info)
     this.googleConnectResult = loginWithGoogle(info)
     when(
       () => this.googleConnectResult.state !== 'pending',
       () => {
         const { data } = this.googleConnectResult.value
-        const userHash = md5hash(info.googleId)
+        const userHash = md5hash(info.google_user_id)
         this.isLogin = true
         this.userId = data.id
         this.userHash = userHash
-        this.googleUser = Object.assign({}, data, { userHash }, {
-          name: info.profileObj.name,
-          email: info.profileObj.email || data.email,
-          picture: info.profileObj.imageUrl
-        })
+        this.googleUser = Object.assign({}, data, { userHash }, info)
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
-          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.googleId }))
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.google_user_id }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
-            googleUserId: info.googleId,
+            googleUserId: info.google_user_id,
             googleToken: info.accessToken,
             info: {
-              name: info.profileObj.name,
-              email: info.profileObj.email || data.email,
-              picture: info.profileObj.imageUrl
+              name: info.name,
+              email: info.email || data.email,
+              picture: info.picture
             }
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
@@ -90,30 +88,27 @@ export class HomeStore extends CoreStore {
   }
 
   @action facebookConnect (info) {
+    logger.warn('facebookConnect', info)
     this.facebookConnectResult = loginWithFacebook(info)
     when(
       () => this.facebookConnectResult.state !== 'pending',
       () => {
         const { data } = this.facebookConnectResult.value
-        const userHash = md5hash(info.userID)
+        const userHash = md5hash(info.fb_user_id)
         this.userId = data.id
         this.userHash = userHash
         this.isLogin = true
-        this.facebookUser = Object.assign({}, data, { userHash }, {
-          name: info.name,
-          email: info.email || data.email,
-          picture: info.picture.data.url
-        })
+        this.facebookUser = Object.assign({}, data, { userHash }, info)
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
-          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.userID }))
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.fb_user_id }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
-            facebookUserId: info.userID,
+            facebookUserId: info.fb_user_id,
             facebookToken: info.accessToken,
             info: {
               name: info.name,
               email: info.email || data.email,
-              picture: info.picture.data.url
+              picture: info.picture
             }
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
@@ -172,12 +167,12 @@ export class HomeStore extends CoreStore {
   }
 }
 
-export function initStore (isServer, userAgent) {
+export function initStore (isServer, userAgent, user) {
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, userAgent)
+    return new HomeStore(isServer, userAgent, user)
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, userAgent)
+      store = new HomeStore(isServer, userAgent, user)
     }
     return store
   }

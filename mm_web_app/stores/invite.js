@@ -13,8 +13,8 @@ class InviteStore extends HomeStore {
   @observable inviteResult = {}
   @observable shareInfo = {}
 
-  constructor (isServer, userAgent, shareCode, shareInfo) {
-    super(isServer, userAgent)
+  constructor (isServer, userAgent, user, shareCode, shareInfo) {
+    super(isServer, userAgent, user)
     this.shareCode = shareCode
     this.shareInfo = shareInfo
     reaction(() => this.userHash.length,
@@ -61,12 +61,12 @@ class InviteStore extends HomeStore {
   }
 }
 
-export function initStore (isServer, userAgent = '', shareCode = '', shareInfo = {}) {
+export function initStore (isServer, userAgent = '', user = null, shareCode = '', shareInfo = {}) {
   if (isServer && typeof window === 'undefined') {
-    return new InviteStore(isServer, userAgent, shareCode, shareInfo)
+    return new InviteStore(isServer, userAgent, user, shareCode, shareInfo)
   } else {
     if (store === null) {
-      store = new InviteStore(isServer, userAgent, shareCode, shareInfo)
+      store = new InviteStore(isServer, userAgent, user, shareCode, shareInfo)
     }
     return store
   }

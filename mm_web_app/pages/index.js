@@ -4,15 +4,18 @@ import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
+import logger from '../utils/logger'
 
 export default class HomePage extends React.Component {
-  static getInitialProps ({ req }) {
+  static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    const store = initStore(isServer, userAgent)
+    const user = req && req.session ? req.session.decodedToken : null
+    logger.warn('user', user)
+    const store = initStore(isServer, userAgent, user)
     const uiStore = initUIStore(isServer)
     return { isServer, ...store, ...uiStore }
   }
@@ -25,7 +28,7 @@ export default class HomePage extends React.Component {
     } else {
       this.isClosePopup = false
     }
-    this.store = initStore(props.isServer, props.userAgent)
+    this.store = initStore(props.isServer, props.userAgent, props.user)
     this.uiStore = initUIStore(props.isServer)
   }
 

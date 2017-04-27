@@ -180,7 +180,7 @@ class Discovery extends React.Component {
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
-          <link rel='shortcut icon' type='image/x-icon' href='/static/assets/favicon.ico' />
+          <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
           <meta name='description' content={description} />
           <meta name='og:title' content={title} />
           <meta name='og:description' content={description} />

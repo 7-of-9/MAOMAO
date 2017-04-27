@@ -187,7 +187,7 @@ class Home extends React.Component {
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
-        <NoSSR onSSR={<div style={{ margin: '0 auto', textAlign: 'center' }} className='container'><Loading isLoading /></div>}>
+        <NoSSR onSSR={<Loading isLoading />}>
           <div>
             { !this.props.store.isLogin &&
               <ChromeInstall

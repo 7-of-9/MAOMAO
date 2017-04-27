@@ -2,15 +2,14 @@ import { observable, computed, action } from 'mobx'
 import PouchDB from 'pouchdb'
 import Pusher from 'pusher-js'
 import { isMobileBrowser, isChromeBrowser } from '../utils/detector'
+import { PUSHER_KEY, USER_ID, USER_HASH } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 
 let store = null
-const USER_ID = 'MM_USER_ID'
-const USER_HASH = 'MM_USER_HASH'
-const PUSHER_KEY = '056a3bc19f7b681fd6fb'
-const db = new PouchDB('mmdb')
 
-Pusher.logToConsole = true
+const db = new PouchDB('mmdb')
+const dev = process.env.NODE_ENV !== 'production'
+Pusher.logToConsole = !!dev
 const pusher = new Pusher(PUSHER_KEY, {
   cluster: 'ap1',
   encrypted: true
@@ -20,19 +19,23 @@ export class CoreStore {
   isMobile = false
   userAgent = {}
   channels = []
+  user = null
   @observable isChrome = false
   @observable userHash = ''
   @observable userId = -1
   @observable isInstall = false
   @observable isLogin = false
-  constructor (isServer, userAgent) {
+  constructor (isServer, userAgent, user) {
     this.userAgent = userAgent
+    this.user = user
+    if (this.user) {
+      this.isLogin = true
+    }
     this.isMobile = isMobileBrowser(userAgent)
     db.get(USER_ID).then((doc) => {
       const userId = doc.userId
       if (userId && userId > 0) {
         this.userId = userId
-        this.isLogin = true
         db.get(USER_HASH).then((doc) => {
           const userHash = doc.userHash
           if (userHash && userHash.length > 0) {
@@ -112,12 +115,12 @@ export class CoreStore {
   }
 }
 
-export function initStore (isServer, userAgent = '') {
+export function initStore (isServer, userAgent = '', user = null) {
   if (isServer && typeof window === 'undefined') {
-    return new CoreStore(isServer, userAgent)
+    return new CoreStore(isServer, userAgent, user)
   } else {
     if (store === null) {
-      store = new CoreStore(isServer, userAgent)
+      store = new CoreStore(isServer, userAgent, user)
     }
     return store
   }

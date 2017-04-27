@@ -41,7 +41,7 @@ export default class Hiring extends React.Component {
       <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
         <Head>
           <title>Maomao is coming, and we're hiring...</title>
-          <link rel='shortcut icon' type='image/x-icon' href='/static/assets/favicon.ico' />
+          <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
           <meta name='viewport' content='initial-scale=1.0, width=device-width' />
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='/static/vendors/js/close_pixelate.js' />

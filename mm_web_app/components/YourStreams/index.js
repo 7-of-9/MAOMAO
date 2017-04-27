@@ -30,18 +30,6 @@ function YourStreams ({ topics, changeTerm, activeId }) {
     <div className='container-fluid'>
       <div className='stream-list'>
         {items}
-        <a className='btn-type-share btn-type-url' href='{href}'>
-          <span className='label-name'>Technology</span>
-          <span className='type-tag'>68</span>
-        </a>
-        <a className='btn-type-share btn-type-topic' href='{href}'>
-          <span className='label-name'>Television</span>
-          <span className='type-tag'>79</span>
-        </a>
-        <a className='btn-type-share btn-type-all' href='{href}'>
-          <span className='label-name'>Arts</span>
-          <span className='type-tag'>68</span>
-        </a>
       </div>
     </div>
   )

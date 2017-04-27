@@ -22,8 +22,8 @@ class DiscoveryStore extends CoreStore {
     return this.pendings.length === 0 && this.terms.length > 0
   }
 
-  constructor (isServer, userAgent, terms) {
-    super(isServer, userAgent)
+  constructor (isServer, userAgent, user, terms) {
+    super(isServer, userAgent, user)
     this.terms = terms
   }
 
@@ -106,12 +106,12 @@ class DiscoveryStore extends CoreStore {
   }
 }
 
-export function initStore (isServer, userAgent = '', terms = []) {
+export function initStore (isServer, userAgent = '', user = null, terms = []) {
   if (isServer && typeof window === 'undefined') {
-    return new DiscoveryStore(isServer, userAgent, terms)
+    return new DiscoveryStore(isServer, userAgent, user, terms)
   } else {
     if (store === null) {
-      store = new DiscoveryStore(isServer, userAgent, terms)
+      store = new DiscoveryStore(isServer, userAgent, user, terms)
     }
     return store
   }

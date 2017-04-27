@@ -4,7 +4,6 @@ import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
-import * as log from 'loglevel'
 
 export default class Invite extends React.Component {
   static getInitialProps ({ req, query: { code, shareInfo } }) {
@@ -20,7 +19,6 @@ export default class Invite extends React.Component {
 
   constructor (props) {
     super(props)
-    log.info('Invite', props)
     const { query: { close, success } } = props.url
     if ((close && close === 'popup') || (success && Number(success) === 1)) {
       this.isClosePopup = true
