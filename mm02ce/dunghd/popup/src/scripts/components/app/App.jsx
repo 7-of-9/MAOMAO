@@ -116,10 +116,17 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
-const userMenu = (auth, dispatch) => <Dropdown>
-  <DropdownTrigger>☰</DropdownTrigger>
+const userMenu = (auth, dispatch) => <Dropdown className='dropdown-panel'>
+  <DropdownTrigger className='trigger-nav'>
+    <span />
+    <span />
+    <span />
+  </DropdownTrigger>
   <DropdownContent>
-    <img src={auth.info.picture} alt={auth.info.name} /> {auth.info.name} ({auth.info.email})
+    <div className='dropdown-account'>
+      <img className='image-account' src={auth.info.picture} alt={auth.info.name} /> 
+      <span className='info-account'><span>{auth.info.name}</span> <span>({auth.info.email})</span></span>
+    </div>
     <ul>
       <li>
         <a
@@ -316,7 +323,7 @@ const render = (
             </div>
           </div>
         </button>
-        <p>Click to turn it on!</p>
+        <p>click here to login !</p>
       </div>
     </div>
   );
