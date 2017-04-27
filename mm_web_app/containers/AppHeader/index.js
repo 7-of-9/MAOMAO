@@ -92,7 +92,9 @@ class AppHeader extends React.Component {
         >
           <h2 ref='subtitle'>SIGN IN</h2>
           <div className='justify-content-md-center social-action'>
-            <GoogleLogin
+            <a className="btn btn-facebook"> Sign in with Facebook</a>
+            <a className="btn btn-google">Sign in with Google</a>
+            {/*<GoogleLogin
               clientId={GOOGLE_CLIENT_ID}
               scope='profile email https://www.googleapis.com/auth/contacts.readonly'
               buttonText='CONNECT WITH GOOGLE'
@@ -108,7 +110,7 @@ class AppHeader extends React.Component {
               fields='name,email,picture'
               cssClass='btn btn-facebook'
               callback={this.responseFacebook}
-             />
+             />*/}
           </div>
         </Modal>
       </NavItem>

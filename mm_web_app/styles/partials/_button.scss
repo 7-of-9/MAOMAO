@@ -168,6 +168,7 @@ the button section
 
 .btn-google,
 .btn-facebook {
+  color: #fff !important;
   padding: 0.6875rem 0.75rem 0.625rem;
   min-width: 180px;
   text-transform: uppercase;
@@ -179,7 +180,7 @@ the button section
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
+  color: #fff !important;
   background: #3b5998;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
@@ -215,14 +216,14 @@ the button section
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
+  color: #fff !important;
   background: #dd4b39;
   border-color: rgba(0, 0, 0, 0.2);
   &:hover,
   &:focus,
   &:active,
   &.active {
-    color: #fff;
+    color: #fff !important;
     background: #ca3523;
     border-color: rgba(0, 0, 0, 0.2)
   }
@@ -258,7 +259,7 @@ the button section
     float: right;
   }
   @media (max-width: 590px) {
-    .btn-google {
+    .btn-facebook {
       margin-bottom: 20px;
     }
     .btn-google,
