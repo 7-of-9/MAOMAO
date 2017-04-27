@@ -18,7 +18,9 @@
     clear: both;
   }
 }
-
+.notification-bar{
+    z-index: 9999;
+}
 /* React Tags*/
 div.ReactTags__tags {
     position: relative;
