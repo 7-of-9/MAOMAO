@@ -45,10 +45,9 @@ export class HomeStore extends CoreStore {
     if (friends.length > 0) {
       friends.forEach(friend => {
         // TODO: Check new data is belong to sharing topics or share all
-        this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'record-url', (data) => {
+        this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'process-url', (data) => {
           logger.warn('YEAH -- found record url data', data)
-          // reload data after 60 seconds after server record new url
-          setTimeout(() => this.getUserHistory(), 60 * 1000)
+          this.getUserHistory()
         })
       })
     }

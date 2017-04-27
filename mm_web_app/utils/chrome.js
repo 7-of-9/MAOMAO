@@ -11,7 +11,7 @@ export function sendMsgToChromeExtension (payload, callback = () => {}) {
     chrome.runtime.sendMessage(EXTENSION_ID, { type: 'chromex.dispatch', portName: 'maomao-extension', payload },
     (response) => {
       logger.warn('response from extension', payload, response)
-      if (callback) {
+      if (callback && response) {
         callback(response.error, response.value)
       }
     })
