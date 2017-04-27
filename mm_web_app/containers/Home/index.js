@@ -15,7 +15,6 @@ import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
@@ -30,7 +29,6 @@ import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
 
 Router.onRouteChangeStart = (url) => {
-  logger.info(`Loading: ${url}`)
   NProgress.start()
 }
 Router.onRouteChangeComplete = () => NProgress.done()
@@ -94,10 +92,10 @@ class Home extends React.Component {
   removeNotification (uuid) {
     this.props.ui.removeNotification(uuid)
   }
+
   componentDidMount () {
     this.props.store.checkEnvironment()
     if (this.props.isClosePopup) {
-      logger.warn('Close popup')
       window.close()
     }
     setTimeout(() => {
@@ -111,10 +109,6 @@ class Home extends React.Component {
         })
       }
     }, 100)
-  }
-
-  componentDidUpdate () {
-    logger.warn('Home componentDidUpdate!', this.props.store)
   }
 
   render () {
@@ -139,7 +133,6 @@ class Home extends React.Component {
     if (this.props.store.userHistory) {
       const { urls, topics } = toJS(this.props.store.myStream)
       friends = toJS(this.props.store.friendsStream)
-      logger.info('friends', friends)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       let urlIds = []
       // first for my stream
@@ -151,24 +144,19 @@ class Home extends React.Component {
         if (currentTopic) {
           urlIds = currentTopic.url_ids
         }
-        logger.info('currentTopic', currentTopic)
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
       if (friendStreamId === -1 && friends.length) {
         friendStreamId = friends[0].user_id
-        logger.info('found friendStreamId', friendStreamId)
       }
       const currentStream = friends.find((item) => item && item.user_id === friendStreamId)
-      logger.info('currentStream', currentStream)
       if (currentStream) {
         const list = currentStream.list.slice()
-        logger.info('list', list)
         selectedFriendStreamUrls = _.uniq(_.flatten(list.map((item) => item && item.urls)))
-        logger.info('selectedFriendStreamUrls', selectedFriendStreamUrls)
       }
     }
-    logger.info('selectedMyStreamUrls', selectedMyStreamUrls)
+
     return (
       <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
         <Head>

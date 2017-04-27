@@ -1,6 +1,5 @@
 import { OrderedSet } from 'immutable'
 import { observable, action } from 'mobx'
-import logger from '../utils/logger'
 import { guid } from '../utils/hash'
 
 let store = null
@@ -9,12 +8,10 @@ export class UIStore {
   @observable showSignInModal = false
   @observable notifications = OrderedSet()
   @action showSignIn () {
-    logger.info('showSignIn')
     this.showSignInModal = true
   }
 
   @action closeModal () {
-    logger.info('closeModal')
     this.showSignInModal = false
   }
 
@@ -36,7 +33,6 @@ export class UIStore {
 }
 
 export function initUIStore (isServer, userAgent = '') {
-  logger.info('init UIStore')
   if (isServer && typeof window === 'undefined') {
     return new UIStore(isServer)
   } else {

@@ -7,7 +7,6 @@
 import React, { PropTypes } from 'react'
 import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
 import { WithContext as ReactTags } from 'react-tag-input'
-import logger from '../../utils/logger'
 import Form from './Form'
 import A from './A'
 import { InputWrapper, InputContainer } from './Input'
@@ -52,7 +51,6 @@ const enhance = compose(
   withState('tags', 'updateTags', []),
   withHandlers({
     changeTags: (props) => (newTags) => {
-      logger.info('changeTags', newTags)
       props.updateTags(() => {
         const tags = []
         for (let counter = 0; counter < newTags.length; counter += 1) {
@@ -67,7 +65,6 @@ const enhance = compose(
       })
     },
     handleDelete: (props) => (index) => {
-      logger.info('handleDelete', index)
       props.updateTags((tags) => {
         tags.splice(index, 1)
         const selectedTags = tags.map((item) => item.text)
@@ -76,7 +73,6 @@ const enhance = compose(
       })
     },
     handleAddition: (props) => (tag) => {
-      logger.info('handleAddition', tag)
       props.updateTags((tags) => {
         tags.push({
           id: tags.length + 1,

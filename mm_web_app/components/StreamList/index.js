@@ -6,7 +6,6 @@
 
 import React from 'react'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import StreamItem from '../../components/StreamItem'
@@ -39,7 +38,6 @@ class StreamList extends React.Component {
   }
 
   componentWillReceiveProps (props) {
-    logger.info('componentWillReceiveProps', props)
     if (this.props.urls.length === props.urls.length) {
       const currentPage = this.state.currentPage + 1
       const hasMoreItems = currentPage * LIMIT <= this.props.urls.length

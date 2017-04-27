@@ -9,7 +9,6 @@ import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
 import { Section } from 'neal-react'
 import Modal from 'react-modal'
-import logger from '../../utils/logger'
 import UnlockNow from '../../components/UnlockNow'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
@@ -56,7 +55,6 @@ class ChromeInstall extends React.Component {
     if (this.props.store.isInstalledOnChromeDesktop) {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
-          logger.error(error)
         } else {
           this.props.store.autoLogin(data.payload)
         }

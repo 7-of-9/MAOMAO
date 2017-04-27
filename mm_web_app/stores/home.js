@@ -1,6 +1,5 @@
 import { action, reaction, when, whyRun, computed, intercept, toJS, observable } from 'mobx'
 import _ from 'lodash'
-import logger from '../utils/logger'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
@@ -27,7 +26,6 @@ export class HomeStore extends CoreStore {
      (userHash) => {
        whyRun()
        if (userHash > 0) {
-         logger.warn('yeah... getUserHistory')
          this.getUserHistory()
        }
      })
@@ -46,7 +44,6 @@ export class HomeStore extends CoreStore {
       friends.forEach(friend => {
         // TODO: Check new data is belong to sharing topics or share all
         this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'process-url', (data) => {
-          logger.warn('YEAH -- found record url data', data)
           this.getUserHistory()
         })
       })
@@ -70,7 +67,6 @@ export class HomeStore extends CoreStore {
           picture: info.profileObj.imageUrl
         })
         // send data to chrome extension
-        logger.warn('isInstalledOnChromeDesktop', this.isInstalledOnChromeDesktop)
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.googleId }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
@@ -109,7 +105,6 @@ export class HomeStore extends CoreStore {
           picture: info.picture.data.url
         })
         // send data to chrome extension
-        logger.warn('isInstalledOnChromeDesktop', this.isInstalledOnChromeDesktop)
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.userID }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
@@ -132,28 +127,23 @@ export class HomeStore extends CoreStore {
   }
 
   @action getUserHistory () {
-    logger.info('getUserHistory', this.userId, this.userHash)
     this.userHistoryResult = getUserHistory(this.userId, this.userHash)
     const disposer = intercept(this, 'userHistory', (change) => {
       whyRun()
-      logger.warn('observe userHistory: from', change.object.value, 'to', change.newValue)
       if (!change.newValue) {
-        logger.warn('getUserHistory not found new data')
         return null
       }
 
       if (change.newValue === change.object.value) {
-        logger.warn('getUserHistory same data, ingore this')
         return null
       }
-      logger.warn('getUserHistory accept new data')
+
       return change
     })
     when(
       () => this.userHistoryResult.state !== 'pending',
       () => {
         this.userHistory = this.userHistoryResult.value.data
-        logger.info('userHistory', this.userHistory)
         const normalizedData = normalizedHistoryData(toJS(this.userHistory))
         // checking realtime history (new urls)
         const { entities: { shareLists, urls } } = normalizedData
@@ -161,14 +151,12 @@ export class HomeStore extends CoreStore {
           const { entities: { shareLists: oldShareLists } } = this.normalizedData
           let newUrls = []
           _.forOwn(shareLists, (shareList, key) => {
-            logger.warn('key', key, shareList, shareList.urls.length, oldShareLists[key].urls.length)
             if (shareList.urls.length !== oldShareLists[key].urls.length) {
               // TODO: find new urls and send notify (2 cases: installed extension or not)
               newUrls = newUrls.concat(shareList.urls.slice(oldShareLists[key].urls.length))
             }
           })
 
-          logger.warn('newUrls', newUrls)
           if (newUrls.length) {
             _.forEach(newUrls, (urlId) => {
               sendMsgToChromeExtension(actionCreator('NOTIFY_MESSAGE', { title: 'New sharing URL', message: urls[urlId].title }))
@@ -178,7 +166,6 @@ export class HomeStore extends CoreStore {
 
         this.normalizedData = normalizedData
         this.counter += 1
-        logger.warn('normalizedData', this.normalizedData)
         disposer()
       }
     )

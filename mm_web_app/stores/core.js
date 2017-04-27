@@ -1,7 +1,6 @@
 import { observable, computed, action } from 'mobx'
 import PouchDB from 'pouchdb'
 import Pusher from 'pusher-js'
-import logger from '../utils/logger'
 import { isMobileBrowser, isChromeBrowser } from '../utils/detector'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 
@@ -31,22 +30,18 @@ export class CoreStore {
     this.isMobile = isMobileBrowser(userAgent)
     db.get(USER_ID).then((doc) => {
       const userId = doc.userId
-      logger.warn('userId', userId)
       if (userId && userId > 0) {
         this.userId = userId
         this.isLogin = true
         db.get(USER_HASH).then((doc) => {
           const userHash = doc.userHash
-          logger.warn('userHash', userHash)
           if (userHash && userHash.length > 0) {
             this.userHash = userHash
           }
-        }).catch((err) => {
-          logger.info('guest', err)
+        }).catch(() => {
         })
       }
-    }).catch((err) => {
-      logger.info('guest', err)
+    }).catch(() => {
     })
   }
 
@@ -55,10 +50,8 @@ export class CoreStore {
   }
 
   @action checkEnvironment () {
-    logger.info('checkEnvironment')
     this.isChrome = !!isChromeBrowser()
     if (this.isChrome) {
-      logger.info('hasInstalledExtension', hasInstalledExtension())
       this.isInstall = !!hasInstalledExtension()
     }
   }
@@ -73,26 +66,21 @@ export class CoreStore {
         _id: USER_HASH,
         userHash: this.userHash
       }
-    ]).then((response) => {
-      logger.warn('save db', response)
-    }).catch((err) => {
-      logger.error(err)
+    ]).then(() => {
+    }).catch(() => {
     })
     this.isLogin = true
   }
 
   @action logout () {
-    db.destroy().then((response) => {
-      logger.warn('logout', response)
-    }).catch((err) => {
-      logger.error(err)
+    db.destroy().then(() => {
+    }).catch(() => {
     })
 
     this.isLogin = false
   }
 
   @action autoLogin (auth) {
-    logger.warn('autoLogin', auth)
     const { isLogin, userId, userHash } = auth
     if (userId > 0) {
       this.isLogin = isLogin
@@ -125,7 +113,6 @@ export class CoreStore {
 }
 
 export function initStore (isServer, userAgent = '') {
-  logger.info('init CoreStore')
   if (isServer && typeof window === 'undefined') {
     return new CoreStore(isServer, userAgent)
   } else {

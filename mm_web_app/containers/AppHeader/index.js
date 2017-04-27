@@ -11,7 +11,6 @@ import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login'
 import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
-import logger from '../../utils/logger'
 import { FACEBOOK_APP_ID, GOOGLE_CLIENT_ID } from '../../containers/App/constants'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
 
@@ -38,11 +37,9 @@ class AppHeader extends React.Component {
   }
 
   componentDidMount () {
-    logger.info('componentDidMount - AppHeader', this.props.store)
     if (this.props.store.isInstalledOnChromeDesktop) {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
-          logger.error(error)
         } else {
           this.props.store.autoLogin(data.payload)
         }
@@ -59,19 +56,16 @@ class AppHeader extends React.Component {
   }
 
   onGoogleSuccess (response) {
-    logger.info('onGoogleSuccess', response)
     this.onClose()
     this.props.notify('Login with google account...')
     this.props.store.googleConnect(response)
   }
 
   onGoogleFailure (response) {
-    logger.info('onGoogleFailure', response)
     this.props.notify(response.error)
   }
 
   responseFacebook (response) {
-    logger.info('responseFacebook', response)
     if (response && response.id) {
       this.onClose()
       this.props.notify('Login with facebook account...')
@@ -85,7 +79,6 @@ class AppHeader extends React.Component {
   }
 
   render () {
-    logger.info('AppHeader', this.props, this.state)
     return (
       <NavItem>
         { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }

@@ -13,7 +13,6 @@ import Masonry from 'react-masonry-component'
 import NProgress from 'nprogress'
 import { List } from 'immutable'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import BlockElement from '../../components/BlockElement'
 import Loading from '../../components/Loading'
@@ -23,7 +22,6 @@ import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 
 Router.onRouteChangeStart = (url) => {
-  logger.info(`Loading: ${url}`)
   NProgress.start()
 }
 Router.onRouteChangeComplete = () => NProgress.done()
@@ -45,7 +43,6 @@ const masonryOptions = {
 
 function mashUp (store) {
   // Parse data
-  logger.info('mashup', store)
   if (store.terms.length === 0) {
     return []
   }
@@ -157,7 +154,6 @@ class Discovery extends React.Component {
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
     this.onSearch = this.onSearch.bind(this)
-    logger.info('Discovery', this.props)
   }
 
   loadMore () {

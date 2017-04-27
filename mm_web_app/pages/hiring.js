@@ -1,19 +1,13 @@
 import React from 'react'
 import Head from 'next/head'
-import logger from '../utils/logger'
 
 export default class Hiring extends React.Component {
   static getInitialProps ({ req }) {
     const isServer = !!req
     return { isServer }
   }
-  constructor (props) {
-    super(props)
-    logger.warn('Hiring', props)
-  }
 
   componentDidMount () {
-    logger.warn('componentDidMount')
     if (!this.props.isServer) {
       const initLogoAnimation = () => {
         let i = 1
