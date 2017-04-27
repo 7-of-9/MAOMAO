@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
+using PusherServer;
 
 namespace mmapi00.Controllers
 {
@@ -52,6 +53,24 @@ namespace mmapi00.Controllers
             var history_id = mm_svc.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
 
             var db_url = mm_svc.UrlInfo.GetUrl(url);
+            // push notification to client
+            var options = new PusherOptions();
+            options.Cluster = "ap1";
+            options.Encrypted = true;
+
+            var pusher = new Pusher("332227", "056a3bc19f7b681fd6fb", "85101936fa2c6216a316", options);
+
+            var result = pusher.Trigger("my-friend-stream-" + user_id, "process-url", new
+            {
+                url = nlp_info.url.href,
+                new_calais_terms = ret.new_calais_terms,
+                url_W = db_url != null ? db_url.W : -1000,
+                url_W_n = db_url != null ? db_url.W_n : -1000,
+                url_id = db_url != null ? (long?)db_url.id : null,
+                topics = ret.topics,
+                suggestions = ret.suggestions,
+                ms = sw.ElapsedMilliseconds
+            });
 
             return Ok( new { url = nlp_info.url.href,
                 new_calais_terms = ret.new_calais_terms,
