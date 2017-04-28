@@ -17,13 +17,13 @@ const getCurrentTLD = createSelector(
         if (foundTimer) {
           if (moment().isAfter(foundTimer.timer)) {
             xp.push({
-              text: foundTimer.tld,
+              text: foundTimer.tld !== window.location.host ? `${foundTimer.tld} (${window.location.host})` : foundTimer.tld,
               score: foundTimer.tld.length,
             });
           }
         } else {
           xp.push({
-            text: term.data.tld_topic,
+            text: term.data.tld_topic !== window.location.host ? `${term.data.tld_topic} (${window.location.host})` : term.data.tld_topic,
             score: term.data.tld_topic.length,
           });
         }

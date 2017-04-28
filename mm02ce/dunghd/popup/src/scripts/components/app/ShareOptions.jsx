@@ -72,10 +72,10 @@ const ShareOptions = enhance(({ url, topics, active, onChange }) => {
                   name="topics"
                 />
                 <label className="radio__regular__label" htmlFor={tld.id} >
-                  {tld.name.toUpperCase()}&nbsp;
-                  <span className="meta">
-                    (all my browsing on <strong>{host.toLowerCase()}</strong>)
-                  </span>
+                  <span className="meta">All my browsing on </span>
+                  {
+                    host !== tld.name ? `${tld.name.toUpperCase()} (${host})` : tld.name.toUpperCase()
+                  }
                 </label>
               </div>
             }
@@ -93,10 +93,7 @@ const ShareOptions = enhance(({ url, topics, active, onChange }) => {
                   />
                   <label className="radio__regular__label" htmlFor={topic.id}>
                     <span className="labs">
-                      {topic.name.toUpperCase()}&nbsp;
-                      <span className="meta">
-                        (all my browsing on <strong>{topic.name.toLowerCase()}</strong>)
-                      </span>
+                      <span className="meta">All my browsing on</span> {topic.name.toUpperCase()}
                     </span>
                   </label>
                 </div>,

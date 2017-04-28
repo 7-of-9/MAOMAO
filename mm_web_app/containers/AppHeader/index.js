@@ -44,7 +44,8 @@ class AppHeader extends React.Component {
           logger.warn('user', user)
           return user.getToken()
           .then((token) => {
-            // eslint-disable-next-line no-undef
+            /* global fetch */
+            this.props.notify(`Welcome, ${user.displayName} (${user.email})!`)
             return fetch('/api/login', {
               method: 'POST',
               // eslint-disable-next-line no-undef

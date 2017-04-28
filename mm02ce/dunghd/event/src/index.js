@@ -94,7 +94,6 @@ function onClickHandler(info) {
           type: 'AUTH_LOGOUT',
           payload: {},
         };
-        window.BG_APP_UUID = guid();
         store.dispatch(data);
       }
       break;

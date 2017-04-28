@@ -36,6 +36,7 @@ export class CoreStore {
       const userId = doc.userId
       if (userId && userId > 0) {
         this.userId = userId
+        this.isLogin = true
         db.get(USER_HASH).then((doc) => {
           const userHash = doc.userHash
           if (userHash && userHash.length > 0) {

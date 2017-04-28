@@ -31,6 +31,7 @@ const dummies = Object.keys(styles).map(
 const enhance = compose(
   withState('show', 'changeShow', true),
   withState('text', 'changeText', ''),
+  withState('timer', 'changeTimer', null),
   withState('score', 'changeScore', 0),
   withState('played', 'playedItem', []),
   withHandlers({
@@ -53,9 +54,11 @@ const enhance = compose(
             props.changeText(xp.text);
             props.changeScore(xp.score);
           }
-        } else {
-          logger.info('close xp popup');
-          props.closeXp();
+        } else if (!props.timer) {
+          props.changeTimer(() => setTimeout(() => {
+            props.changeShow(true);
+            props.closeXp();
+          }, 5000));
         }
       }
     },
@@ -69,18 +72,10 @@ const enhance = compose(
         this.props.changeScore(xp.score);
         this.props.changeShow(true);
       }
-
-      if (Number(this.props.closeTimeout) > 0) {
-        logger.info('XP closeTimeout', this.props.closeTimeout);
-        this.timer = setTimeout(() => {
-          this.props.changeShow(false);
-          this.props.closeXp();
-        }, this.props.closeTimeout);
-      }
     },
     componentWillUnmount() {
       logger.info('XP componentWillUnmount');
-      if (this.timer) {
+      if (this.timer > 0) {
         clearTimeout(this.timer);
       }
     },
@@ -124,7 +119,6 @@ Xp.propTypes = {
   shareTopics: PropTypes.func.isRequired,
   closeXp: PropTypes.func.isRequired,
   isEnableExperimentalTopics: PropTypes.bool,
-  closeTimeout: PropTypes.number,
 };
 
 export default Radium(Xp);
