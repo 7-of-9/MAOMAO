@@ -32,7 +32,7 @@ function showSounds() {
   sounds.innerText = "Discovered sounds: (uncheck to disable)";
   var keys = new Array();
   for (var key in localStorage) {
-    if(key.indexOf('firebase') === -1 && key.indexOf('redux') === -1) {
+    if (key.indexOf('firebase') === -1 && key.indexOf('redux') === -1 && key.indexOf('loglevel') === -1) {
       keys.push(key);
       console.log(key);
     }
@@ -51,7 +51,7 @@ function showSounds() {
     text.id = key;
     text.innerText = key;
     text.className = "sound";
-    text.onclick = function(event) { playSound(event.target.id); };
+    text.onclick = function (event) { playSound(event.target.id); };
     div.appendChild(text);
     sounds.appendChild(div);
   }

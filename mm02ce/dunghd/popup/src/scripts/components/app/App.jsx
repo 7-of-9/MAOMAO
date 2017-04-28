@@ -116,41 +116,44 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
-const userMenu = (auth, dispatch) => <Dropdown className='dropdown-panel'>
-  <DropdownTrigger className='trigger-nav'>
-    <span />
-    <span />
-    <span />
-  </DropdownTrigger>
-  <DropdownContent>
-    <div className='dropdown-account'>
-      <img className='image-account' src={auth.info.picture} alt={auth.info.name} /> 
-      <span className='info-account'><span>{auth.info.name}</span> <span>({auth.info.email})</span></span>
-    </div>
-    <ul>
-      <li>
-        <a
-          onClick={() => {
-            dispatch({
-              type: 'OPEN_MODAL',
-              payload: {},
-            });
-          }}
-        >Profile</a>
-      </li>
-      <li>
-        <a
-          onClick={() => {
-            dispatch({
-              type: 'AUTH_LOGOUT',
-              payload: {},
-            });
-          }}
-        >Logout</a>
-      </li>
-    </ul>
-  </DropdownContent>
-</Dropdown>;
+const userMenu = (auth, dispatch) =>
+  <Dropdown className="dropdown-panel">
+    <DropdownTrigger className="trigger-nav">
+      <span />
+      <span />
+      <span />
+    </DropdownTrigger>
+    <DropdownContent>
+      <div className="dropdown-account">
+        <img className="image-account" src={auth.info.picture} alt={auth.info.name} />
+        <span className="info-account">
+          <span>{auth.info.name}</span> <span>({auth.info.email})</span>
+        </span>
+      </div>
+      <ul>
+        <li>
+          <a
+            onClick={() => {
+              dispatch({
+                type: 'OPEN_MODAL',
+                payload: {},
+              });
+            }}
+          >Profile</a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              dispatch({
+                type: 'AUTH_LOGOUT',
+                payload: {},
+              });
+            }}
+          >Logout</a>
+        </li>
+      </ul>
+    </DropdownContent>
+  </Dropdown>;
 
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
@@ -171,7 +174,7 @@ const render = (
             <p
               className="paragraph-share"
             >
-              Maomao is thinking...
+              maomao is thinking...
             </p>
           </div>
         </div>
@@ -190,7 +193,7 @@ const render = (
           </a>
         </h3>
         <div className="popup-content">
-          <p className="paragraph-share">Maomao thinks this page is boring!</p>
+          <p className="paragraph-share">maomao thinks this page is boring!</p>
         </div>
       </div>
     );
@@ -272,7 +275,7 @@ const render = (
             </a>
           </h3>
           <div className="popup-content">
-            <p className="paragraph-share">Maomao isn’t looking at this page!</p>
+            <p className="paragraph-share">maomao isn’t looking at this page!</p>
           </div>
         </div>
       );
@@ -292,7 +295,7 @@ const render = (
             <p
               className="paragraph-share"
             >
-              Maomao is thinking...
+              maomao is thinking...
             </p>
           </div>
         </div>
@@ -332,8 +335,7 @@ const render = (
 const App = ({
   status, auth, nlp, url, icon,
   dispatch, shareOption, changeShareOption, getLink,
- }) =>
-  <div style={{ margin: '0 auto' }}>
+ }) => <div style={{ margin: '0 auto' }}>
     {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink,

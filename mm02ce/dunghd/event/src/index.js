@@ -13,7 +13,6 @@ import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
 import { saveImScore, checkImScore } from './imscore';
-import { guid } from './utils';
 
 // NOTE: Expose global modules for bg.js
 /* eslint-disable */
@@ -75,8 +74,8 @@ function onClickHandler(info) {
             url: window.sessionObservable.activeUrl,
           },
         });
+        break;
       }
-      break;
     case 'mm-btn-share':
       {
         store.dispatch({
@@ -86,17 +85,40 @@ function onClickHandler(info) {
             type: 'Google',
           },
         });
+        break;
       }
-      break;
     case 'mm-btn-logout':
       {
         const data = {
           type: 'AUTH_LOGOUT',
           payload: {},
         };
-        store.dispatch(data);
+        store.dispatch(data).then(() => {
+          store.dispatch({
+            type: 'MAOMAO_ENABLE',
+            payload: {
+              url: window.sessionObservable.activeUrl,
+            },
+          });
+        });
       }
       break;
+    case 'mm-btn-switch-xp':
+      {
+        if (window.enableXP) {
+          window.enableXP = false;
+        } else {
+          window.enableXP = true;
+        }
+        const data = {
+          type: 'SWITCH_XP',
+          payload: {
+            isEnableXP: window.enableXP,
+          },
+        };
+        store.dispatch(data);
+        break;
+      }
     case 'mm-btn-switch-imscore':
       {
         if (window.enableImscore) {
@@ -111,8 +133,24 @@ function onClickHandler(info) {
           },
         };
         store.dispatch(data);
+        break;
       }
-      break;
+    case 'mm-btn-switch-icon-text':
+      {
+        if (window.enableIconText) {
+          window.enableIconText = false;
+        } else {
+          window.enableIconText = true;
+        }
+        const data = {
+          type: 'SWITCH_ICON_TEXT',
+          payload: {
+            isEnableIconText: window.enableIconText,
+          },
+        };
+        store.dispatch(data);
+        break;
+      }
     case 'mm-btn-switch-youtube':
       {
         if (window.enableTestYoutube) {
@@ -127,8 +165,8 @@ function onClickHandler(info) {
           },
         };
         store.dispatch(data);
+        break;
       }
-      break;
     case 'mm-btn-login':
     case 'mm-btn-show':
       {
@@ -137,8 +175,8 @@ function onClickHandler(info) {
           payload: {},
         };
         store.dispatch(data);
+        break;
       }
-      break;
     default:
   }
 }
@@ -248,6 +286,7 @@ window.onload = () => {
       type: 'RESET_SETTINGS',
       payload: {
         isEnableIM: window.enableImscore,
+        isEnableXP: window.enableXP,
         isYoutubeTest: window.enableTestYoutube,
       },
     });

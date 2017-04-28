@@ -16,9 +16,14 @@ function createShareCtxMenu(records) {
     if (tabs != null && tabs.length > 0) {
       const url = tabs[0].url;
       if (isAllowToShare(url, records)) {
-        chrome.contextMenus.create({ id: 'mm-btn-share', title: 'Share' });
+        chrome.contextMenus.create({ id: 'mm-btn-share', title: 'maomao share' });
       } else {
-        chrome.contextMenus.create({ id: 'mm-btn-share-off', title: 'Share', enabled: false });
+        const parentId = chrome.contextMenus.create({ title: 'maomao dev' });
+        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
+        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
+        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXP });
+        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });
+        chrome.contextMenus.create({ parentId, id: 'mm-btn-reset-tld', title: 'Reset TLD timer' });
       }
     }
   });
@@ -26,17 +31,13 @@ function createShareCtxMenu(records) {
 
 
 function ctxMenu(records) {
-  const parentId = chrome.contextMenus.create({ title: 'Debug' });
-  chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
-  chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-  chrome.contextMenus.create({ parentId, id: 'mm-btn-reset-tld', title: 'Reset TLD XP timer' });
   createShareCtxMenu(records);
 }
 
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.17',
+    title: 'v0.5.18',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });
@@ -56,7 +57,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.17',
+    title: 'v0.5.18',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
   });

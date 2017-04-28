@@ -75,6 +75,7 @@ const defaultProps = {
   },
   icon: {
     isEnable: false,
+    isEnableXP: false,
     isYoutubeTest: false,
     isEnableIM: false,
   },
@@ -144,7 +145,7 @@ const notify = msg => ({
 });
 
 function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
-  const title = `Join Maomao! ${fullName} want to share with you...`;
+  const title = `Join maomao! ${fullName} want to share with you...`;
   const emailTemplate = `
     <!doctype html>
     <html>
@@ -274,13 +275,13 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
                   <tr>
                     <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top">
                       <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
-                        <tr><td style="font-family: 'Rokkitt', sans-serif; vertical-align: top;" valign="top"><h1> Maomao </h1></td></tr>
+                        <tr><td style="font-family: 'Rokkitt', sans-serif; vertical-align: top;" valign="top"><h1> maomao </h1></td></tr>
                         <tr><td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top"> <img src="https://firebasestorage.googleapis.com/v0/b/maomao-testing.appspot.com/o/ps_sirius_dog_blue.png?alt=media&token=36329989-7ca0-4210-a56a-d7a76592ad55" /> </td></tr>
                         <tr>
                           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hi ${name || 'there'},</p>
                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${fullName} would like to share the MaoMao stream with you: <strong>${topic}.</p>
-                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Click <a href="${url}" target="_blank">here</a> to unlock ${fullName}'s stream - you'll get to see his best picks in this stream on your Maomao homepage!</p>
+                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Click <a href="${url}" target="_blank">here</a> to unlock ${fullName}'s stream - you'll get to see his best picks in this stream on your maomao homepage!</p>
                             <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;" width="100%">
                               <tbody>
                                 <tr>
@@ -296,7 +297,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
                                 </tr>
                               </tbody>
                             </table>
-                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Kind regards, <br/> Maomao Team</p> <br/> www.maomao.rocks</p>
+                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Kind regards, <br/> maomao Team</p> <br/> www.maomao.rocks</p>
                           </td>
                         </tr>
                       </table>
@@ -412,6 +413,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             auth.isLogin
             && icon.isEnable
             && score.im_score > MIN_IM_SCORE
+            && icon.isEnableXP
             && tld.length > 0
           }
         >
@@ -424,6 +426,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             auth.isLogin
             && icon.isEnable
             && score.im_score > MIN_IM_SCORE
+            && icon.isEnableXP
             && tld.length === 0
             && xpTopics.length > 0
           }
@@ -596,6 +599,12 @@ const enhance = compose(
       props.dispatch(logout()).then(() => {
         props.dispatch({
           type: 'USER_AFTER_LOGOUT',
+        });
+        props.dispatch({
+          type: 'MAOMAO_ENABLE',
+          payload: {
+            url: window.location.href,
+          },
         });
       });
     },

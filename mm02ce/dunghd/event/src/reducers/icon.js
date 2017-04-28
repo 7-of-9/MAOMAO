@@ -5,6 +5,8 @@ const MIN_NSS = 10;
 
 const initialState = {
   isEnable: false,
+  isEnableXP: false,
+  isEnableIconText: false,
   isEnableIM: false,
   isYoutubeTest: false,
   urls: [],
@@ -97,6 +99,8 @@ export default (state = initialState, action, auth, nlp) => {
     }
 
     case 'SWITCH_IM_SCORE':
+    case 'SWITCH_ICON_TEXT':
+    case 'SWITCH_XP':
     case 'YOUTUBE_TEST':
       ctxMenuLogin(auth.info, nlp.records);
       return Object.assign({}, state, action.payload);
@@ -107,7 +111,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.5.17',
+        title: 'v0.5.18',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });

@@ -55,10 +55,12 @@ const enhance = compose(
             props.changeScore(xp.score);
           }
         } else if (!props.timer) {
+          // TODO: fadeout and cancel the fadeout if moveover
+          logger.info('close xp popup in 10s');
           props.changeTimer(() => setTimeout(() => {
             props.changeShow(true);
             props.closeXp();
-          }, 5000));
+          }, 10000));
         }
       }
     },

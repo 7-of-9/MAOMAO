@@ -62,7 +62,11 @@ function setIconApp(rawUrl, image, msg, color) {
   chrome.browserAction.setIcon({
     path: 'img/ps_sirius_dog_' + image + '.png'
   });
-  setIconText(msg, color);
+
+  if (window.enableIconText) {
+    setIconText(msg, color);
+  }
+
   if (rawUrl) {
     var url = bglib_remove_hash_url(rawUrl);
     sessionObservable.icons.set(url, {

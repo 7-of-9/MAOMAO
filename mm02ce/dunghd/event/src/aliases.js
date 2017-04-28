@@ -39,6 +39,8 @@ function logout(auth) {
     window.userHash = '';
     window.enableTestYoutube = false;
     window.enableImscore = false;
+    window.enableIconText = false;
+    window.enableXP = false;
     if (auth.googleUserId && auth.googleToken) {
       chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
         if (chrome.runtime.lastError) {

@@ -98,11 +98,9 @@ const defaultProps = {
 };
 
 function WelcomeModal({
-  /* onLinkedFacebook, onLinkedGoogle, */
-   auth, isOpen,
+  auth, isOpen,
   onGoogleLogin, onFacebookLogin,
   onClose, onLogout }) {
-  // const networks = auth.accounts.map(item => item.providerId);
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
@@ -131,21 +129,6 @@ function WelcomeModal({
                 avatar={auth.info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
-                {/* auth &&
-                  !networks.includes('facebook.com') &&
-                  <a
-                    className="btn btn-block btn-social btn-facebook"
-                    onTouchTap={onLinkedFacebook}
-                  >
-                    <span><i className="icons-facebook" /></span> Link your account with Facebook
-                  </a> */}
-                {/* auth &&
-                  !networks.includes('google.com') &&
-                  <a
-                    className="btn btn-block btn-social btn-google-plus" onTouchTap={onLinkedGoogle}
-                  >
-                    <span><i className="icons-googleplus" /></span> Link your account with Google
-                  </a> */}
                 <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
                   <span><i className="icons_signout" /></span> Logout
                   </a>
