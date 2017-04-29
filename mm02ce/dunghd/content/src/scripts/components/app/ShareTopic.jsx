@@ -73,7 +73,8 @@ const enhance = compose(
   withHandlers({
     shareUrl: props => () => {
       const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`;
-      const src = `https://www.facebook.com/sharer.php?u=${encodeURI(url)}`;
+      const closePopupUrl = `${SITE_URL}/static/success.html`;
+      const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`;
       openUrl(src);
       props.closeShare();
     },

@@ -37,6 +37,7 @@ function isInjectAble(url) {
   const disableUrls = [
     'maomao-testing.firebaseapp.com', // firebase login
     'www.facebook.com/sharer.php', // fb share
+    'www.facebook.com/dialog/share', // fb share
     'www.facebook.com/dialog/send', // fb send msg
     'accounts.google.com', // gg login
   ];
@@ -46,16 +47,16 @@ function isInjectAble(url) {
 // turn off for firebase auth
 const url = document.URL;
 if (isInjectAble(url)) {
- document.body.insertBefore(anchor, document.body.childNodes[0]);
- injectTapEventPlugin();
- // wait for the store to connect to the background page
- proxyStore.ready().then(() => {
-   render(
-     <MuiThemeProvider>
-       <Provider store={proxyStore}>
-         <App {...config} />
-       </Provider>
-     </MuiThemeProvider>
-     , document.getElementById('maomao-extension-anchor'));
- });
+  document.body.insertBefore(anchor, document.body.childNodes[0]);
+  injectTapEventPlugin();
+  // wait for the store to connect to the background page
+  proxyStore.ready().then(() => {
+    render(
+      <MuiThemeProvider>
+        <Provider store={proxyStore}>
+          <App {...config} />
+        </Provider>
+      </MuiThemeProvider>
+      , document.getElementById('maomao-extension-anchor'));
+  });
 }

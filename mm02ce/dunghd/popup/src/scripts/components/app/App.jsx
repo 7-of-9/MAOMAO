@@ -235,7 +235,8 @@ const render = (
             </GoogleButton>
             <FacebookButton
               onClick={() => {
-                const src = `https://www.facebook.com/sharer.php?u=${encodeURI(shareUrl)}`;
+                const closePopupUrl = `${SITE_URL}/static/success.html`;
+                const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(shareUrl)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`;
                 openUrl(src);
               }}
             >
@@ -259,7 +260,7 @@ const render = (
               <span title="Share with Link" className="tooltip" />
             </LinkButton>
           </div>
-        </div>
+        </div >
       );
     }
     if (!isRunable(url, icon)) {
