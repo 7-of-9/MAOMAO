@@ -288,6 +288,7 @@ window.onload = () => {
         isEnableIM: window.enableImscore,
         isEnableXP: window.enableXP,
         isYoutubeTest: window.enableTestYoutube,
+        isEnableIconText: window.enableIconText,
       },
     });
     syncImScore(false);

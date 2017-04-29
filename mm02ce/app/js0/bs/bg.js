@@ -51,6 +51,34 @@ $(document).ready(function () {
   });
 });
 
+
+var isFlashingDog = false;
+function animationIcon(tabId) {
+  var sizes = [
+    'img/dog_flash.png',
+    'img/ps_sirius_dog_blue.png',
+    'img/dog_flash2.png',
+  ];
+  var round = 4;
+  isFlashingDog = true;
+  var framePerSecond = 1000 / 5;
+  var counter = sizes.length * round;
+  var timer = setInterval(function () {
+    var path = sizes[counter % sizes.length];
+    counter -= 1;
+    log.warn('counter', counter, path);
+    if (counter < 0) {
+      isFlashingDog = false;
+      clearInterval(timer);
+    } else {
+      chrome.browserAction.setIcon({
+        path: path,
+        tabId: tabId,
+      });
+    }
+  }, framePerSecond);
+}
+
 /**
  * Set browser icon with image, text and color
  * @param string rawUrl
@@ -59,12 +87,26 @@ $(document).ready(function () {
  * @param color string text color
  */
 function setIconApp(rawUrl, image, msg, color) {
-  chrome.browserAction.setIcon({
-    path: 'img/ps_sirius_dog_' + image + '.png'
+  var currentTab = tabmap.find(function (item) {
+    return item && item.url === rawUrl;
   });
+  log.warn('currentTab', rawUrl, tabmap, currentTab);
+
+  if (image === 'blue') {
+    if (!isFlashingDog) {
+      animationIcon(currentTab && currentTab.id);
+    }
+  } else {
+    chrome.browserAction.setIcon({
+      path: 'img/ps_sirius_dog_' + image + '.png',
+      tabId: currentTab && currentTab.id,
+    });
+  }
 
   if (window.enableIconText) {
-    setIconText(msg, color);
+    setIconText(msg, color, currentTab && currentTab.id);
+  } else {
+    setIconText('', color, currentTab && currentTab.id);
   }
 
   if (rawUrl) {
@@ -77,16 +119,19 @@ function setIconApp(rawUrl, image, msg, color) {
   }
 }
 
-function setIconText(s, c) {
+function setIconText(s, c, tabId) {
   chrome.browserAction.setBadgeText({
-    text: s
+    text: s,
+    tabId: tabId,
   });
   chrome.browserAction.setTitle({
-    title: s
+    title: s,
+    tabId: tabId,
   });
   if (c) {
     chrome.browserAction.setBadgeBackgroundColor({
-      color: c
+      color: c,
+      tabId: tabId,
     });
   }
 }

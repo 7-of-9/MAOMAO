@@ -162,7 +162,6 @@ const render = (
   if (!url || !status) {
     return (
       <div className="popup-browser">
-        {auth.isLogin && userMenu(auth, dispatch)}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
@@ -185,7 +184,6 @@ const render = (
   if (isInternalTab(url)) {
     return (
       <div className="popup-browser">
-        {auth.isLogin && userMenu(auth, dispatch)}
         <h3 className="share-heading">
           <a href="#home">
             <span className="maomao-logo" />
