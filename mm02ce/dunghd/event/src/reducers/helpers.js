@@ -17,13 +17,6 @@ function createShareCtxMenu(records) {
       const url = tabs[0].url;
       if (isAllowToShare(url, records)) {
         chrome.contextMenus.create({ id: 'mm-btn-share', title: 'maomao share' });
-      } else {
-        const parentId = chrome.contextMenus.create({ title: 'maomao dev' });
-        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
-        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
-        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXP });
-        chrome.contextMenus.create({ parentId, id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });
-        chrome.contextMenus.create({ parentId, id: 'mm-btn-reset-tld', title: 'Reset TLD timer' });
       }
     }
   });
@@ -32,24 +25,19 @@ function createShareCtxMenu(records) {
 
 function ctxMenu(records) {
   createShareCtxMenu(records);
+  chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
+  chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-switch-imscore', title: 'Im Score', type: 'checkbox', checked: window.enableImscore });
+  chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXP });
+  chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });
+  chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-reset-tld', title: 'Reset TLD timer' });
 }
 
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.18',
+    title: 'v0.5.19',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
-  });
-  chrome.contextMenus.create({
-    title: `Welcome, ${userInfo.name} (${userInfo.email})!`,
-    contexts: ['browser_action'],
-    id: 'mm-btn-show',
-  });
-  chrome.contextMenus.create({
-    title: 'Logout',
-    contexts: ['browser_action'],
-    id: 'mm-btn-logout',
   });
   ctxMenu(records);
 }
@@ -57,14 +45,9 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.18',
+    title: 'v0.5.19',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
-  });
-  chrome.contextMenus.create({
-    title: 'Login',
-    contexts: ['browser_action'],
-    id: 'mm-btn-login',
   });
   ctxMenu([]);
 }

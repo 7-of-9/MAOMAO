@@ -87,6 +87,11 @@ function animationIcon(tabId) {
  * @param color string text color
  */
 function setIconApp(rawUrl, image, msg, color) {
+  if (!rawUrl) {
+    log.warn('not found url', rawUrl);
+    return;
+  }
+
   var currentTab = tabmap.find(function (item) {
     return item && item.url === rawUrl;
   });

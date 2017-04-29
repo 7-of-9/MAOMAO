@@ -4,16 +4,20 @@ import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
+import logger from '../utils/logger'
 
 export default class Invite extends React.Component {
-  static getInitialProps ({ req, query: { code, shareInfo } }) {
+  static async getInitialProps ({ req, query: { code, shareInfo } }) {
     const isServer = !!req
     let userAgent = ''
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    const store = initStore(isServer, userAgent, code, shareInfo)
+    const user = req && req.session ? req.session.decodedToken : null
+    logger.warn('user', user)
+    const store = initStore(isServer, userAgent, user, code, shareInfo)
     const uiStore = initUIStore(isServer)
+    logger.warn('Invite', code, shareInfo)
     return { isServer, ...store, ...uiStore }
   }
 
@@ -26,7 +30,7 @@ export default class Invite extends React.Component {
       this.isClosePopup = false
     }
     this.uiStore = initUIStore(props.isServer)
-    this.store = initStore(props.isServer, props.userAgent, props.shareCode, props.shareInfo)
+    this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
   }
 
   render () {

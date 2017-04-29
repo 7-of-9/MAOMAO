@@ -45,6 +45,7 @@ class AppHeader extends React.Component {
           return user.getToken()
           .then((token) => {
             /* global fetch */
+            this.props.ui.closeModal()
             this.props.notify(`Welcome, ${user.displayName} (${user.email})!`)
             return fetch('/api/login', {
               method: 'POST',
@@ -54,7 +55,6 @@ class AppHeader extends React.Component {
               body: JSON.stringify({ token })
             }).then((res) => {
               // register for new user
-              this.props.ui.closeModal()
               if (this.props.store.userId < 0) {
                 res.json().then(json => {
                   // register new user
@@ -98,12 +98,6 @@ class AppHeader extends React.Component {
               }
             })
           })
-        } else {
-        // eslint-disable-next-line no-undef
-          fetch('/api/logout', {
-            method: 'POST',
-            credentials: 'same-origin'
-          }).then((res) => logger.warn('res', res))
         }
       })
     }
@@ -142,11 +136,16 @@ class AppHeader extends React.Component {
 
   onLogout () {
     firebase.auth().signOut().then(() => {
+      fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'same-origin'
+      }).then(() => {
+        this.props.store.logoutUser()
+      })
       this.props.notify('Logout.')
     }).catch((error) => {
       logger.warn(error)
     })
-    this.props.store.logoutUser()
   }
 
   render () {

@@ -396,14 +396,6 @@ const enhance = compose(
     componentDidMount() {
       logger.info('App');
       this.props.onReady();
-      // resize div
-      $('#app').width(document.getElementById('app').firstChild.offsetWidth);
-      $('#app').height(document.getElementById('app').firstChild.offsetHeight);
-    },
-    componentDidUpdate() {
-      // resize div
-      $('#app').width(document.getElementById('app').firstChild.offsetWidth);
-      $('#app').height(document.getElementById('app').firstChild.offsetHeight);
     },
   }),
   onlyUpdateForKeys(['auth', 'nlp', 'code', 'url', 'icon', 'shareOption', 'status']),
