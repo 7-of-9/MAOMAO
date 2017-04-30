@@ -115,6 +115,7 @@ the button section
   &:hover,
   &:focus {
     @include box-shadow(none);
+    outline: 0;
   }
 }
 
@@ -127,6 +128,7 @@ the button section
     background: #3aa4ff;
     border: 1px solid #3aa4ff;
     color: #fff;
+    outline: 0;
   }
 }
 

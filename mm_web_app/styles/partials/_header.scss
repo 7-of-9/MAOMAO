@@ -9,6 +9,7 @@ the header section
   position: relative;
   z-index: 100;
   .header-nav {
+    padding: 0;
     height: 72px;
     background-color: #fff;
     border-bottom: 1px solid #e1e5eb;
@@ -40,15 +41,16 @@ the header section
       }
     }
     .navbar-toggleable-sm {
-      padding: 0.6rem 0;
+      padding: 0;
       float: right;
       .nav {
-        .nav-item {
+        > .nav-item {
+          padding: 0 1rem;
           white-space: nowrap;
           position: relative;
           z-index: 10;
-          a {
-            margin: 0.7rem 0 0.6rem;
+          > a {
+            margin: 1.6rem 0 0.3rem;
             color: #222;
             font-weight: 700;
             font-size: 0.875rem;
@@ -93,11 +95,16 @@ the header section
             background-color: #2db7f5;
           }
           &:last-child {
+            padding-right: 0;
             &:hover:after,
             &.active:after {
               width: 0;
               background: none;
             }
+          }
+          .btn-logout,
+          .btn-login {
+            margin-top: 6px;
           }
           @media (max-width: 990px) {
             padding: 0 1rem;
@@ -219,6 +226,21 @@ the header section
         &:hover,
         &:focus {
           color: #2db7f5;
+        }
+      }
+    }
+    .account-dropdown {
+      .dropdown-toggle {
+        padding: 1.1875rem 0 1.125rem;
+        display: block;
+        text-decoration: none;
+        img {
+          @include border-radius(50%);
+        }
+      }
+      .dropdown-menu {
+        a {
+          padding: 0.5rem;
         }
       }
     }

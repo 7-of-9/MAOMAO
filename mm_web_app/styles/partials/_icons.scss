@@ -1,0 +1,27 @@
+/*************************************
+**************************************
+These are the styles for
+the icons section
+**************************************
+**************************************/
+
+[class^="icons-"],
+[class*=" icons-"] {
+  display: inline-block;
+  *margin-right: .3em;
+  background-image: url("../static/images/sprite.png");
+}
+
+.icons-vert {
+  width: 15px;
+  height: 12px;
+  line-height: 12px;
+  background-position: 0 0;
+}
+
+.icons-horizon {
+  width: 13px;
+  height: 13px;
+  line-height: 13px;
+  background-position: 0 -17px;
+}
