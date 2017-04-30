@@ -20,7 +20,7 @@ namespace mm_svc
                 var me = db.users.Find(user_id);
                 var urls_list = FindUserUrls(user_id);
                 // find all accepted share base on user_id
-                var share_urls = db.share_active.Include("share").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                var share_urls = db.share_active.Include("share").Include("term").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
                 // 3 types of sharing: url, topic or all
                 var shares_list = share_urls.Select(p => new ShareActiveInput()
                 {
@@ -28,6 +28,7 @@ namespace mm_svc
                     share_code = p.share.share_code,
                     url_id = p.share.url_id,
                     topic_id = p.share.topic_id,
+                    topic_name = (p.share.term != null) ? p.share.term.name : "",
                     share_all = p.share.share_all,
                     user_id = p.share.source_user_id
                 }).ToList();
@@ -242,6 +243,7 @@ namespace mm_svc
                 {
                     user_id = me.id,
                     email = me.email,
+                    avatar = me.avatar ?? "",
                     fullname = me.firstname + " " + me.lastname,
                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
                     topics = FindUserTopicInfos(urls_list, url_infos),
@@ -298,6 +300,7 @@ namespace mm_svc
                         {
                             share_code = share.share_code,
                             type = "all",
+                            // topic_name = "all",
                             urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
                         });
                     }
@@ -314,6 +317,7 @@ namespace mm_svc
                                 {
                                     share_code = share.share_code,
                                     type = "topic",
+                                    topic_name = share.topic_name,
                                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
                                 });
                             }
@@ -326,6 +330,7 @@ namespace mm_svc
                                 {
                                     share_code = share.share_code,
                                     type = "url",
+                                    // topic_name = "url",
                                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
                                 });
                             }
@@ -346,6 +351,7 @@ namespace mm_svc
                     {
                         user_id = user.id,
                         email = user.email,
+                        avatar = user.avatar ?? "",
                         fullname = user.firstname + " " + user.lastname,
                         list = urls_share_list
                     });
@@ -365,6 +371,7 @@ namespace mm_svc
         public class UserStreamInfo
         {
             public string fullname;
+            public string avatar;
             public string email;
             public long user_id;
             public List<UserStreamUrlInfo> urls;
@@ -381,6 +388,7 @@ namespace mm_svc
             public string share_code { get; set; }
             public Nullable<long> url_id { get; set; }
             public Nullable<long> topic_id { get; set; }
+            public Nullable<string> topic_name { get; set; }
         }
 
         public class UserStreamTopicInfo
@@ -408,6 +416,7 @@ namespace mm_svc
         public class ShareListReturn
         {
             public string type;
+            public Nullable<string> topic_name;
             public string share_code;
             public List<UserStreamUrlInfo> urls;
         }
@@ -416,8 +425,9 @@ namespace mm_svc
         {
             public string email { get; set; }
             public long user_id { get; set; }
-            public List<ShareListReturn> list { get; set; }
+            public long avatar { get; set; }
             public string fullname { get; set; }
+            public List<ShareListReturn> list { get; set; }
         }
     }
 

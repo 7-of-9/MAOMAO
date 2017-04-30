@@ -6,7 +6,7 @@ namespace mm_svc
 {
     public static class Register
     {
-        public static user CreateGoogleUserIfNotExist(string firstname, string lastname, string email, string gender, string google_user_id)
+        public static user CreateGoogleUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string google_user_id)
         {
             using (var db = mm02Entities.Create())
             {
@@ -17,6 +17,7 @@ namespace mm_svc
                     if (!string.IsNullOrEmpty(google_user_id))
                     {
                         db_user.google_user_id = google_user_id;
+                        db_user.avatar = avatar;
                         db.SaveChangesTraceValidationErrors();
                     }
                     return db_user;
@@ -30,6 +31,7 @@ namespace mm_svc
                     db_user.email = email;
                     db_user.google_user_id = google_user_id;
                     db_user.gender = gender;
+                    db_user.avatar = avatar;
 
                     db.users.Add(db_user);
                     db.SaveChangesTraceValidationErrors();
@@ -39,7 +41,7 @@ namespace mm_svc
             }
         }
 
-        public static user CreateFacebookUserIfNotExist(string firstname, string lastname, string email, string gender, string fb_user_id)
+        public static user CreateFacebookUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string fb_user_id)
         {
             using (var db = mm02Entities.Create()) {
                 // check that Google email is exist 
@@ -48,6 +50,7 @@ namespace mm_svc
                     if (!string.IsNullOrEmpty(fb_user_id))
                     {
                         db_user.fb_user_id = fb_user_id;
+                        db_user.avatar = avatar;
                         db.SaveChangesTraceValidationErrors();
                     }
                     return db_user;
@@ -60,6 +63,7 @@ namespace mm_svc
                     db_user.email = email;
                     db_user.fb_user_id = fb_user_id;
                     db_user.gender = gender;
+                    db_user.avatar = avatar;
 
                     db.users.Add(db_user);
                     db.SaveChangesTraceValidationErrors();
