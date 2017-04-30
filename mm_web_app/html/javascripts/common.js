@@ -21,29 +21,24 @@ var App = function() {
   }
 
   function bind() {
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      e.target // newly activated tab
-      e.relatedTarget // previous active tab
-      handleSort();
-    })
     $('.control-sort li a').click(function() {
       $('.control-sort li a').removeClass('active');
       $(this).addClass('active');
     });
     $('.control-sort li a.bt-vert').click(function() {
-      $('.grid-row .grid-item').removeClass('expend');
+      $('.grid-row-js').removeClass('grid-expend');
       return false;
     });
 
     $('.control-sort li a.bt-horizontal').click(function() {
-      $('.grid-row .grid-item').addClass('expend');
+      $('.grid-row-js').addClass('grid-expend');
       return false;
     });
   }
 
   return {
     init: function() {
-      handleSort();
+      //handleSort();
       bind();
 
     }
@@ -54,26 +49,4 @@ var App = function() {
 
 $(document).ready(function() {
   App.init();
-  //init animation
-  /*function animateElements() {
-    var windowHeight = jQuery(window).height();
-    $('.grid_row').each(function() {
-      var imagePos = jQuery(this).offset().top;
-      var topOfWindow = jQuery(window).scrollTop();
-      if (imagePos < topOfWindow + windowHeight - 200) {
-        $(this).find('.grid-item').each(function(index) {
-          var self = jQuery(this);
-          setTimeout(function() {
-            self.addClass("animated fadeInUp");
-          }, index * 500);
-        });
-      }
-    });
-  }
-  setTimeout(function() {
-    animateElements();
-  }, 500);
-  $(window).scroll(function() {
-    animateElements();
-  });*/
 });

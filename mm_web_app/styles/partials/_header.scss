@@ -22,7 +22,7 @@ the header section
       padding: 0;
       float: left;
       .logo {
-        padding: 0;
+        padding: 20px 0 0;
       }
       &.hidden-sm-down {
         @media (max-width: 767px) {
@@ -104,7 +104,7 @@ the header section
           }
           .btn-logout,
           .btn-login {
-            margin-top: 6px;
+            margin-top: 0.9375rem;
           }
           @media (max-width: 990px) {
             padding: 0 1rem;
@@ -209,6 +209,7 @@ the header section
       }
       .btn-login,
       .btn-logout {
+        margin-top: 6px;
         color: #222;
         &,
         &:hover,

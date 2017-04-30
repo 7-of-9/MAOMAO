@@ -185,7 +185,7 @@ img {
       padding: 4px 10px 4px 36px;
       height: 36px;
       width: 300px;
-      background: url("../static/images/search-input.png") no-repeat 8px center #fff scroll;
+      background: url("/static/images/search-input.png") no-repeat 8px center #fff scroll;
     }
   }
 }
@@ -275,15 +275,49 @@ img {
 .scope-brand {
   @include abs-pos ($top: -4px, $right: 10px, $bottom: 0, $left: auto);
   z-index: 500;
-  background: url('../static/images/bg-scope.png') no-repeat scroll;
-  width: 36px;
-  height: 41px;
+  background: #0fa733;
+  min-width: 36px;
+  height: 30px;
   text-align: center;
   span {
-    padding: 5px 6px 5px 10px;
+    position: relative;
+    padding: 5px 7px;
     font-weight: bold;
     display: inline-block;
     color: #fff;
+    font-size: 0.75rem;
+    &::before {
+      @include abs-pos ($top: 0, $right: 0, $bottom: auto, $left: -4px);
+      content: "";
+      width: 0;
+      height: 0;
+      border-style: solid;
+      display: inline-block;
+      border-width: 0 0 4px 4px;
+      border-color: #0fa733 transparent;
+    }
+  }
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-width: 7px;
+    border-color: #0fa733 transparent transparent;
+  }
+  &::before {
+    @include abs-pos ($top: auto, $right: 0, $bottom: -14px, $left: auto);
+    border-left-color: transparent;
+    border-right-color: #0fa733;
+    border-top-color: #0fa733;
+    border-bottom-right-radius: 0;
+  }
+  &::after {
+    @include abs-pos ($top: auto, $right: auto, $bottom: -14px, $left: 0);
+    border-left-color: #0fa733;
+    border-top-color: #0fa733;
+    border-bottom-left-radius: 0;
   }
 }
 
@@ -309,27 +343,30 @@ img {
 .tooltip-user {
   display: inline;
   position: relative;
+  font-size: 0.75rem;
   &:hover {
     &::after {
       @include border-radius(5px);
-      @include abs-pos ($top: auto, $right: auto, $bottom: 26px, $left: 10px);
+      @include abs-pos ($top: auto, $right: auto, $bottom: 26px, $left: 0);
       background: #333;
-      background: rgba(0, 0, 0, .5);
+      background: rgba(0, 0, 0, .7);
       color: #fff;
       content: attr(title);
-      padding: 5px 15px;
-      position: absolute;
+      padding: 3px 10px;
       z-index: 98;
-      width: 220px;
+      max-width: 120px;
+      text-overflow: ellipsis;
+      /* Required for text-overflow to do anything */
+      white-space: nowrap;
+      overflow: hidden;
     }
     &::before {
-      @include abs-pos ($top: auto, $right: auto, $bottom: 20px, $left: 50%);
+      @include abs-pos ($top: auto, $right: auto, $bottom: 20px, $left: 8px);
       border: solid;
       border-color: #333 transparent;
-      border-color: rgba(0, 0, 0, .5) transparent;
+      border-color: rgba(0, 0, 0, .7) transparent;
       border-width: 6px 6px 0 6px;
       content: "";
-      position: absolute;
       z-index: 99;
     }
   }
@@ -448,11 +485,43 @@ img {
     @media (max-width: 890px) {
       width: 33.33%;
     }
-    @media (max-width: 690px) {
+    @media (max-width: 750px) {
       width: 50%;
     }
-    @media (max-width: 390px) {
+    @media (max-width: 550px) {
       width: 100%;
+    }
+  }
+  &.grid-expend {
+    @include equal_height();
+    .grid-item {
+      width: 33.33%;
+      .thumbnail-image {
+        margin-right: 20px;
+        float: left;
+        width: 50%;
+        > a {
+          img {
+            max-width: inherit;
+            width: auto;
+            max-height: 250px;
+          }
+        }
+        @media (max-width: 550px) {
+          margin-right: 0;
+          width: 100%;
+          float: none;
+        }
+      }
+      .caption {
+        overflow: hidden;
+      }
+      @media (max-width: 1050px) {
+        width: 50%;
+      }
+      @media (max-width: 750px) {
+        width: 100%;
+      }
     }
   }
 }
@@ -505,19 +574,26 @@ img {
   text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
 }
 
+
+/*-----thumbnail-box-----*/
+
 .thumbnail-box {
+  @include clearfix();
   @include border-radius(8px);
+  overflow: hidden;
   padding: 10px;
-  .thumbnail-inner {
-    position: relative;
-  }
   .thumbnail {
     position: relative;
     .thumbnail-image {
       @include border-radius(8px);
       position: relative;
-      overflow: hidden;
+      > a {
+        @include border-radius(8px);
+        display: block;
+        overflow: hidden;
+      }
       img {
+        @include border-radius(8px);
         object-fit: contain;
         max-width: 335px;
         @media (max-width: 1450px) {
@@ -645,6 +721,9 @@ img {
   }
 }
 
+
+/*-----search-bar-----*/
+
 .search-bar {
   padding: 10px 5px 10px 44px;
   background-position: 10px center;
@@ -700,6 +779,45 @@ img {
   .ReactTags__tagInputField[readonly] {
     background-color: #eee;
     opacity: 1;
+  }
+}
+
+
+/*-----random-bg-----*/
+
+.random-bg {
+  @include border-radius(8px);
+  display: block;
+  min-height: 200px;
+  &-1 {
+    background-color: #949382;
+  }
+  &-2 {
+    background-color: #9b8965;
+  }
+  &-3 {
+    background-color: #ac9e86;
+  }
+  &-4 {
+    background-color: #a68a72;
+  }
+  &-5 {
+    background-color: #949382;
+  }
+  &-6 {
+    background-color: #d5c3c1;
+  }
+  &-7 {
+    background-color: #cfb19e;
+  }
+  &-8 {
+    background-color: #b28d7a;
+  }
+  &-9 {
+    background-color: #8a8781;
+  }
+  &-10 {
+    background-color: #998174;
   }
 }
 
