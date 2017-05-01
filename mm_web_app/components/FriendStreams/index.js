@@ -6,39 +6,57 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
+import Select from 'react-select'
+import logger from '../../utils/logger'
 
-function FriendStreams ({ friends, changeFriendStream, activeId }) {
-  const items = []
-  if (friends && friends.length) {
-    _.forEach(friends, (friend) => {
-      if (friend && friend.user_id) {
-        items.push(<a className='stream-item' href='#'
-          onClick={(e) => {
-            e.preventDefault()
-            changeFriendStream(friend.user_id)
-          }} key={friend.user_id}
-        >
-          <span className={`${activeId === friend.user_id ? 'active' : ''}`}>
-            {friend.fullname}
-          </span>
-        </a>)
-      }
-    })
-  }
+// import _ from 'lodash'
+
+var options = [
+  { value: 'one', label: 'Topic One' },
+  { value: 'two', label: 'Topic Two' }
+]
+
+function logChange (val) {
+  console.log('Selected: ' + val)
+}
+
+function FriendStreams ({ friends }) {
+  logger.warn('friends', friends)
   return (
-    <div className='container-masonry'>
-      <div className='stream-list'>
-        {items}
+    <div className='container'>
+      <div className='ReactTabs react-tabs'>
+        <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
+          <div className='standand-sort'>
+            <nav className='navbar'>
+              <ul className='nav navbar-nav'>
+                <li>
+                  <div>
+                    <span>>Topic</span>
+                    <Select
+                      name='user-name'
+                      value=''
+                      options={options}
+                      onChange={logChange}
+                        />
+                  </div>
+                </li>
+                <li>
+                  <div className='input-group'>
+                    <input type='text' className='form-control' placeholder='Search URL ...' />
+                  </div>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div className='container-masonry' />
+        </div>
       </div>
     </div>
   )
 }
 
 FriendStreams.propTypes = {
-  friends: PropTypes.array.isRequired,
-  activeId: PropTypes.number.isRequired,
-  changeFriendStream: PropTypes.func.isRequired
+  friends: PropTypes.array.isRequired
 }
 
 export default FriendStreams

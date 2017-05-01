@@ -28,7 +28,6 @@ import YourStreams from '../../components/YourStreams'
 import ShareWithFriends from '../../components/ShareWithFriends'
 import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
-import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -127,7 +126,6 @@ class Home extends React.Component {
       }
     }
     let selectedMyStreamUrls = []
-    let selectedFriendStreamUrls = []
     let sortedTopicByUrls = []
     let friends = []
     let currentTermId = this.props.store.currentTermId
@@ -157,11 +155,6 @@ class Home extends React.Component {
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
       if (friendStreamId === -1 && friends.length) {
         friendStreamId = friends[0].user_id
-      }
-      const currentStream = friends.find((item) => item && item.user_id === friendStreamId)
-      if (currentStream) {
-        const list = currentStream.list.slice()
-        selectedFriendStreamUrls = _.uniq(_.flatten(list.map((item) => item && item.urls)))
       }
     }
 
@@ -224,13 +217,8 @@ class Home extends React.Component {
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel>
-                <FriendStreams
-                  friends={friends}
-                  activeId={friendStreamId}
-                  changeFriendStream={(userId) => { this.props.store.friendStreamId = userId }}
-              />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                <StreamList urls={selectedFriendStreamUrls} />
+                <FriendStreams friends={friends} />
               </TabPanel>
             </Tabs>
           </div>

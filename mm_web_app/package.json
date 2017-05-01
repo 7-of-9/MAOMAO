@@ -46,6 +46,7 @@
     "react-modal": "^1.7.7",
     "react-no-ssr": "^1.1.0",
     "react-notification": "^6.6.0",
+    "react-select": "^1.0.0-rc.3",
     "react-stars": "^2.1.0",
     "react-sticky": "^5.0.5",
     "react-tabs": "^0.8.2",
