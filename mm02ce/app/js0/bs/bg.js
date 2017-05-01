@@ -53,15 +53,14 @@ $(document).ready(function () {
 
 
 var isFlashingDog = false;
-function animationIcon(tabId) {
+function animationIcon(tabId, round) {
   var sizes = [
     'img/dog_flash.png',
     'img/ps_sirius_dog_blue.png',
     'img/dog_flash2.png',
   ];
-  var round = 4;
   isFlashingDog = true;
-  var framePerSecond = 1000 / 5;
+  var framePerSecond = 1000 / (round * 2);
   var counter = sizes.length * round;
   var timer = setInterval(function () {
     var path = sizes[counter % sizes.length];
@@ -97,9 +96,9 @@ function setIconApp(rawUrl, image, msg, color) {
   });
   log.warn('currentTab', rawUrl, tabmap, currentTab);
 
-  if (image === 'blue') {
+  if (image.indexOf('blue') !== -1) {
     if (!isFlashingDog) {
-      animationIcon(currentTab && currentTab.id);
+      animationIcon(currentTab && currentTab.id, image.length);
     }
   } else {
     chrome.browserAction.setIcon({
