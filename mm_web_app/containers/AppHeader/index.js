@@ -29,7 +29,6 @@ const customStyles = {
 class AppHeader extends React.Component {
   constructor (props) {
     super(props)
-    logger.warn('AppHeader', props.store.avatar)
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onGoogleLogin = this.onGoogleLogin.bind(this)

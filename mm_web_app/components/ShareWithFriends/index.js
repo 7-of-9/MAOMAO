@@ -7,24 +7,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { WithContext as ReactTags } from 'react-tag-input'
-
-const Wrapper = styled.div`
-  float: left;
-  margin-right: 10px;
-`
-
-const ShareWith = styled.button`
-  float: left;
-  padding: 0.75em;
-  backgroundColor: #0b9803;
-  color: #fff;
-  margin-right: 10px;
-  border: 2px solid #000;
-`
-
-const YourFriends = styled.div`
-  float: left;
-`
+import logger from '../../utils/logger'
 
 const Description = styled.p`
   width: 90px;
@@ -33,22 +16,18 @@ const Description = styled.p`
 `
 
 function ShareWithFriends ({ friends }) {
-  return (
-    <Wrapper>
-      <ShareWith>Share ...</ShareWith>
-      <YourFriends>
-        <Description>Share with:</Description>
-        <ReactTags
-          placeholder={''}
-          tags={friends}
-          labelField={'name'}
-          autofocus={false}
-          handleDelete={() => {}}
-          handleAddition={() => {}}
+  logger.warn('ShareWithFriends', friends)
+  return (<div className='container'>
+    <Description>Share with:</Description>
+    <ReactTags
+      placeholder={''}
+      tags={friends}
+      labelField={'name'}
+      autofocus={false}
+      handleDelete={() => {}}
+      handleAddition={() => {}}
         />
-      </YourFriends>
-    </Wrapper>
-  )
+  </div>)
 }
 
 ShareWithFriends.propTypes = {

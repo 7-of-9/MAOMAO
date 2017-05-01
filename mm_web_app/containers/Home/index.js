@@ -25,8 +25,10 @@ import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import YourStreams from '../../components/YourStreams'
+import ShareWithFriends from '../../components/ShareWithFriends'
 import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
+import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -130,8 +132,9 @@ class Home extends React.Component {
     let friends = []
     let currentTermId = this.props.store.currentTermId
     let friendStreamId = this.props.store.friendStreamId
+    let shareWiths = []
     if (this.props.store.userHistory) {
-      const { urls, topics } = toJS(this.props.store.myStream)
+      const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
       friends = toJS(this.props.store.friendsStream)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       let urlIds = []
@@ -144,6 +147,11 @@ class Home extends React.Component {
         if (currentTopic) {
           urlIds = currentTopic.url_ids
         }
+      }
+
+      /* eslint-disable camelcase */
+      if (accept_shares) {
+        shareWiths = accept_shares.filter(item => item.topic_id === currentTermId)
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
@@ -212,6 +220,7 @@ class Home extends React.Component {
                   changeTerm={(termId) => { this.props.store.currentTermId = termId }}
               />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+                {shareWiths.length > 0 && <ShareWithFriends friends={shareWiths} />}
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel>
