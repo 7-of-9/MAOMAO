@@ -29,6 +29,7 @@ const customStyles = {
 class AppHeader extends React.Component {
   constructor (props) {
     super(props)
+    logger.warn('AppHeader', props.store.avatar)
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
     this.onGoogleLogin = this.onGoogleLogin.bind(this)
@@ -151,7 +152,16 @@ class AppHeader extends React.Component {
   render () {
     return (
       <NavItem>
-        { this.props.store.isLogin && <button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' aria-hidden='true' /> Logout</button> }
+        { this.props.store.isLogin &&
+          <div className='dropdown account-dropdown'>
+            <a className='dropdown-toggle' href='#' data-toggle='dropdown'>
+              <img className='image-account' src={this.props.store.avatar} alt={this.props.store.user.name} width='33' height='33' />
+            </a>
+            <ul className='dropdown-menu pull-right'>
+              <li><a onClick={this.onLogout}><i className='fa fa-sign-out' /> Logout</a></li>
+            </ul>
+          </div>
+        }
         { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onSignInOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
         <Modal
           isOpen={this.props.ui.showSignInModal}

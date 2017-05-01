@@ -34,6 +34,13 @@ export class CoreStore {
     return this.isInstall && this.isChrome && !this.isMobile
   }
 
+  @computed get avatar () {
+    if (this.user) {
+      return this.user.picture
+    }
+    return '/static/images/no-avatar.png'
+  }
+
   @action checkEnvironment () {
     this.isChrome = !!isChromeBrowser()
     if (this.isChrome) {
