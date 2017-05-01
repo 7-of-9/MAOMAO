@@ -47,7 +47,7 @@ class AppHeader extends React.Component {
           .then((token) => {
             /* global fetch */
             this.props.ui.closeModal()
-            this.props.notify(`Welcome, ${user.displayName} (${user.email})!`)
+            this.props.notify(`Welcome, ${user.displayName}!`)
             return fetch('/api/login', {
               method: 'POST',
               // eslint-disable-next-line no-undef
@@ -155,9 +155,14 @@ class AppHeader extends React.Component {
         { this.props.store.isLogin &&
           <div className='dropdown account-dropdown'>
             <a className='dropdown-toggle' href='#' data-toggle='dropdown'>
-              <img className='image-account' src={this.props.store.avatar} alt={this.props.store.user.name} width='33' height='33' />
+              <img className='image-account' src={this.props.store.avatar} alt={this.props.store.userId} width='33' height='33' />
             </a>
             <ul className='dropdown-menu pull-right'>
+              { this.props.store.user && this.props.store.user.name &&
+                <div className='account-dropdown__identity account-dropdown__segment'>
+                Signed in as <strong>{this.props.store.user.name}</strong>
+                </div>
+              }
               <li><a onClick={this.onLogout}><i className='fa fa-sign-out' /> Logout</a></li>
             </ul>
           </div>

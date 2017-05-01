@@ -64,6 +64,11 @@ export class HomeStore extends CoreStore {
         this.userId = data.id
         this.userHash = userHash
         this.googleUser = Object.assign({}, data, { userHash }, info)
+        this.user = {
+          name: info.name,
+          email: info.email || data.email,
+          picture: info.picture
+        }
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.google_user_id }))
@@ -99,6 +104,11 @@ export class HomeStore extends CoreStore {
         this.userHash = userHash
         this.isLogin = true
         this.facebookUser = Object.assign({}, data, { userHash }, info)
+        this.user = {
+          name: info.name,
+          email: info.email || data.email,
+          picture: info.picture
+        }
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.fb_user_id }))

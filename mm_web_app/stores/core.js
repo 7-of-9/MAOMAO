@@ -35,7 +35,7 @@ export class CoreStore {
   }
 
   @computed get avatar () {
-    if (this.user) {
+    if (this.user && this.user.picture) {
       return this.user.picture
     }
     return '/static/images/no-avatar.png'
@@ -61,9 +61,10 @@ export class CoreStore {
   }
 
   @action autoLogin (auth) {
-    const { isLogin, userId, userHash } = auth
+    const { isLogin, userId, userHash, info } = auth
     if (userId > 0) {
       this.isLogin = isLogin
+      this.user = info
       this.login(userId, userHash)
     }
   }

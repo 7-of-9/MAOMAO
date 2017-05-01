@@ -1,11 +1,10 @@
 {
-  "name": "Maomao",
-  "version": "0.5.19",
-  "description": "Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
+  "name": "maomao",
+  "version": "0.5.20",
+  "description": "maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"
   },
-  "options_page": "pages/options.html",
   "icons": {
     "16": "img/s_ps_sirius_dog_blue.png",
     "48": "img/m_ps_sirius_dog_blue.png",
@@ -56,7 +55,7 @@
     ]
   },
   "browser_action": {
-    "default_title": "Maomao - Share your stream with friends",
+    "default_title": "maomao - share your stream with friends",
     "default_icon": "img/icon.png",
     "default_popup": "build/popup.html"
   },

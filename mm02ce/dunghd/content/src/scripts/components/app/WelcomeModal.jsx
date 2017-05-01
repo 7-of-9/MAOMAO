@@ -111,7 +111,7 @@ function WelcomeModal({
             <span className="logo-bg" />
           </h1>
           <ToggleDisplay hide={auth.isLogin} className="position-normal">
-            <h2 style={customStyles.cardTitle}>Join MaoMao!</h2>
+            <h2 style={customStyles.cardTitle}>Join maomao!</h2>
             <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>
               <span><i className="icons-facebook" /></span> Sign in with Facebook
             </a>

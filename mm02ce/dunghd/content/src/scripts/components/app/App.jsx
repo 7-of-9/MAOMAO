@@ -152,7 +152,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
       <head>
         <meta name="viewport" content="width=device-width">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>MaoMao Extension</title>
+        <title>maomao.rocks</title>
         <link href='https://fonts.googleapis.com/css?family=Rokkitt' rel='stylesheet' type='text/css'>
         <style media="all" type="text/css">
         @media all {
@@ -268,7 +268,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
               <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
 
                 <!-- START CENTERED WHITE CONTAINER -->
-                <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">${fullName} would like to share the MaoMao stream with you: <strong>${topic}.</span>
+                <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">${fullName} would like to share the maomao stream with you: <strong>${topic}.</span>
                 <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #fff; border-radius: 3px;" width="100%">
 
                   <!-- START MAIN CONTENT AREA -->
@@ -280,7 +280,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
                         <tr>
                           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hi ${name || 'there'},</p>
-                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${fullName} would like to share the MaoMao stream with you: <strong>${topic}.</p>
+                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${fullName} would like to share the maomao stream with you: <strong>${topic}.</p>
                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Click <a href="${url}" target="_blank">here</a> to unlock ${fullName}'s stream - you'll get to see his best picks in this stream on your maomao homepage!</p>
                             <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;" width="100%">
                               <tbody>
@@ -312,7 +312,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
                   <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
                     <tr>
                       <td class="content-block powered-by" style="font-family: sans-serif; vertical-align: top; padding-top: 10px; padding-bottom: 10px; font-size: 12px; color: #999999; text-align: center;" valign="top" align="center">
-                        Powered by <a href="http://maomao.rocks" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">MaoMao.rocks</a>.
+                        Powered by <a href="http://maomao.rocks" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">maomao.rocks</a>.
                       </td>
                     </tr>
                   </table>

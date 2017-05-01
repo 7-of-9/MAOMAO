@@ -148,7 +148,14 @@ function onClickHandler(info) {
             isEnableIconText: window.enableIconText,
           },
         };
-        store.dispatch(data);
+        store.dispatch(data).then(() => {
+          store.dispatch({
+            type: 'MAOMAO_ENABLE',
+            payload: {
+              url: window.sessionObservable.activeUrl,
+            },
+          });
+        });
         break;
       }
     case 'mm-btn-switch-youtube':
