@@ -231,12 +231,17 @@ the header section
       }
     }
     .account-dropdown {
+      .account-dropdown__segment {
+        padding: 0.5rem;
+      }
       .dropdown-toggle {
         padding: 1.1875rem 0 1.125rem;
         display: block;
         text-decoration: none;
         img {
           @include border-radius(50%);
+          width: 33px;
+          height: 33px;
         }
       }
       .dropdown-menu {
