@@ -23,10 +23,27 @@ const masonryOptions = {
   transitionDuration: 0
 }
 
-var options = [
-  { value: 'one', label: 'Topic One' },
-  { value: 'two', label: 'Topic Two' }
-]
+function mapTopicsOption (topics) {
+  logger.warn('topics', topics)
+  return _.map(topics, topic => ({
+    value: topic,
+    label: topic
+  })).concat({
+    value: '',
+    label: 'All topics'
+  })
+}
+
+function mapUsersOption (users) {
+  logger.warn('users', users)
+  return _.map(users, item => ({
+    value: item.user_id,
+    label: item.fullname
+  })).concat({
+    value: '',
+    label: 'All users'
+  })
+}
 
 function logChange (val) {
   console.log('Selected: ' + val)
@@ -39,7 +56,8 @@ class FriendStreams extends React.Component {
       hasMoreItems: false,
       currentPage: 1,
       urls: [],
-      users: []
+      users: [],
+      topics: []
     }
     this.loadMore = this.loadMore.bind(this)
   }
@@ -48,25 +66,30 @@ class FriendStreams extends React.Component {
     const { friends } = this.props
     let urls = []
     let users = []
+    let topics = []
     _.forEach(friends, friend => {
       const { user_id, fullname, avatar, list } = friend
       users.push({ user_id, fullname, avatar })
       _.forEach(list, item => {
         urls.push(...item.urls)
+        if (item.topic_name) {
+          topics.push(item.topic_name)
+        }
       })
     })
+
+    const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
     this.setState({
       urls,
-      users
+      users,
+      topics,
+      hasMoreItems
     })
   }
 
   loadMore () {
     const currentPage = this.state.currentPage + 1
     const hasMoreItems = currentPage * LIMIT <= this.state.urls.length
-    logger.warn('urls length', this.state.urls.length)
-    logger.warn('currentPage', currentPage)
-    logger.warn('hasMoreItems', hasMoreItems)
     this.setState({
       hasMoreItems,
       currentPage
@@ -76,7 +99,7 @@ class FriendStreams extends React.Component {
   render () {
     const { currentPage, urls } = this.state
     const items = []
-    logger.warn('urls', urls)
+    logger.warn('urls', this.state.currentPage, urls)
     if (urls && urls.length) {
       const uniqUrls = _.uniqBy(urls, 'id')
       const maxScore = _.maxBy(uniqUrls, 'im_score')
@@ -142,7 +165,7 @@ class FriendStreams extends React.Component {
                       <Select
                         name='topic-name'
                         value=''
-                        options={options}
+                        options={mapTopicsOption(this.state.topics)}
                         onChange={logChange}
                         />
                     </div>
@@ -153,7 +176,7 @@ class FriendStreams extends React.Component {
                       <Select
                         name='user-name'
                         value=''
-                        options={options}
+                        options={mapUsersOption(this.state.users)}
                         onChange={logChange}
                         />
                     </div>
