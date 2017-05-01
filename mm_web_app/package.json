@@ -60,6 +60,7 @@
     "parser": "babel-eslint",
     "ignore": [
       "/static/vendors",
+      "/html",
       "/build",
       "/.next",
       "/node_modules"
