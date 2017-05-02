@@ -175,7 +175,7 @@ class FriendStreams extends React.Component {
                 <div className='scope-brand'>
                   <span className='brand-inner'>
                     <span className='brand-text'>
-                      Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})
+                      Earned XP <span className='number-sync'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})
                     </span>
                   </span>
                 </div>
