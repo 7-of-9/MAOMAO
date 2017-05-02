@@ -162,7 +162,7 @@ class AppHeader extends React.Component {
                 Signed in as <strong>{this.props.store.user.name}</strong>
                 </div>
               }
-              <li><a onClick={this.onLogout}><i className='fa fa-sign-out' /> Logout</a></li>
+              <li><button className="btn btn-logout" onClick={this.onLogout}><i className='fa fa-sign-out' /> Logout</button></li>
             </ul>
           </div>
         }
