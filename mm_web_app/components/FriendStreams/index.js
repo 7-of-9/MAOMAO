@@ -24,10 +24,9 @@ const masonryOptions = {
 }
 
 function mapTopicsOption (topics) {
-  logger.warn('topics', topics)
   return _.map(topics, topic => ({
-    value: topic,
-    label: topic
+    value: topic.name,
+    label: topic.name
   })).concat({
     value: '',
     label: 'All topics'
@@ -35,7 +34,6 @@ function mapTopicsOption (topics) {
 }
 
 function mapUsersOption (users) {
-  logger.warn('users', users)
   return _.map(users, item => ({
     value: item.user_id,
     label: item.fullname
@@ -50,7 +48,7 @@ function logChange (val) {
 }
 
 function urlOwner (id, users) {
-  logger.warn('urlOwner', id, users)
+  // TODO: click on name to filter by user
   const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(owners, owner => {
@@ -63,6 +61,20 @@ function urlOwner (id, users) {
   })
   return (
     <div className='panel-user'>
+      {items}
+    </div>
+  )
+}
+
+function urlTopic (id, topics) {
+    // TODO: click on name to filter by topic
+  const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
+  const items = []
+  _.forEach(currentTopics, topic => {
+    items.push(<span className='tags' rel='tag'>{topic.name}</span>)
+  })
+  return (
+    <div className='mix-tag'>
       {items}
     </div>
   )
@@ -93,7 +105,7 @@ class FriendStreams extends React.Component {
         urls.push(...item.urls)
         urlIds.push(...item.urls.map(item => item.id))
         if (item.topic_name) {
-          topics.push(item.topic_name)
+          topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
         }
       })
       users.push({ user_id, fullname, avatar, urlIds })
@@ -143,7 +155,7 @@ class FriendStreams extends React.Component {
                 <a href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                <div className='mix-tag'><span className='tags' rel='tag'>Economy</span></div>
+                {urlTopic(id, this.state.topics)}
                 <div className='scope-brand'>
                   <span>Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</span>
                 </div>
@@ -157,7 +169,7 @@ class FriendStreams extends React.Component {
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
                 <p><span className='date-time'><i className='fa fa-calendar-o' />
-                  {moment.utc(hit_utc).fromNow()}
+                  &nbsp;{moment.utc(hit_utc).fromNow()}
                 </span></p>
                 {urlOwner(id, this.state.users)}
               </div>
