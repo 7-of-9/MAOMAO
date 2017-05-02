@@ -217,8 +217,8 @@ class Home extends React.Component {
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel>
-                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
                 <FriendStreams friends={friends} />
+                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
               </TabPanel>
             </Tabs>
           </div>

@@ -46,7 +46,26 @@ function mapUsersOption (users) {
 }
 
 function logChange (val) {
-  console.log('Selected: ' + val)
+  logger.warn('Selected: ' + val)
+}
+
+function urlOwner (id, users) {
+  logger.warn('urlOwner', id, users)
+  const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
+  const items = []
+  _.forEach(owners, owner => {
+    items.push(<div className='panel-user-img'>
+      <a className='tooltip-user' title={owner.fullname}>
+        <img src={owner.picture || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+        {owner.fullname}
+      </a>
+    </div>)
+  })
+  return (
+    <div className='panel-user'>
+      {items}
+    </div>
+  )
 }
 
 class FriendStreams extends React.Component {
@@ -69,13 +88,15 @@ class FriendStreams extends React.Component {
     let topics = []
     _.forEach(friends, friend => {
       const { user_id, fullname, avatar, list } = friend
-      users.push({ user_id, fullname, avatar })
+      const urlIds = []
       _.forEach(list, item => {
         urls.push(...item.urls)
+        urlIds.push(...item.urls.map(item => item.id))
         if (item.topic_name) {
           topics.push(item.topic_name)
         }
       })
+      users.push({ user_id, fullname, avatar, urlIds })
     })
 
     const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
@@ -138,14 +159,7 @@ class FriendStreams extends React.Component {
                 <p><span className='date-time'><i className='fa fa-calendar-o' />
                   {moment.utc(hit_utc).fromNow()}
                 </span></p>
-                <div className='panel-user'>
-                  <div className='panel-user-img'>
-                    <a href='#' className='tooltip-user' title='Melissa McBride'><img src='../static/images/default_30.png' width='40' height='40' alt='' /></a>
-                  </div>
-                  <div className='panel-user-img'>
-                    <a href='#' className='tooltip-user' title='Helen Adamson'><img src='../static/images/avatar.jpg' width='40' height='40' alt='' /></a>
-                  </div>
-                </div>
+                {urlOwner(id, this.state.users)}
               </div>
             </div>
           </div>
