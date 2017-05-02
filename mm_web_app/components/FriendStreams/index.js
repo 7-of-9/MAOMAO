@@ -138,7 +138,8 @@ class FriendStreams extends React.Component {
 
   loadMore () {
     const currentPage = this.state.currentPage + 1
-    const hasMoreItems = currentPage * LIMIT <= this.state.urls.length
+    const sortedUrls = filterUrls(this.state)
+    const hasMoreItems = currentPage * LIMIT <= sortedUrls.length
     this.setState({
       hasMoreItems,
       currentPage
@@ -154,6 +155,7 @@ class FriendStreams extends React.Component {
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
       /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
+    logger.warn('currentUrls', currentUrls, currentPage)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, im_score, time_on_tab, hit_utc } = item
@@ -212,7 +214,7 @@ class FriendStreams extends React.Component {
                         multi
                         value={this.state.filterByTopic}
                         options={mapTopicsOption(this.state.topics)}
-                        onChange={(selectValue) => this.setState({filterByTopic: selectValue})}
+                        onChange={(selectValue) => this.setState({filterByTopic: selectValue, currentPage: 1, hasMoreItems: true})}
                         />
                     </div>
                   </li>
@@ -225,7 +227,7 @@ class FriendStreams extends React.Component {
                         name='user-name'
                         value={this.state.filterByUser}
                         options={mapUsersOption(this.state.users)}
-                        onChange={(selectValue) => this.setState({filterByUser: selectValue})}
+                        onChange={(selectValue) => this.setState({filterByUser: selectValue, currentPage: 1, hasMoreItems: true})}
                         />
                     </div>
                   </li>
