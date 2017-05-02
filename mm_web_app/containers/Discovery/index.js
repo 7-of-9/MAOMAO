@@ -31,7 +31,7 @@ const brandName = 'MaoMao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <strong>{brandName} </strong>
+    <img src='/static/images/maomao.png' alt='maomao' />
     Singapore<br />
   </address>
 )

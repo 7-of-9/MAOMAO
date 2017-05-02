@@ -113,16 +113,16 @@ class Home extends React.Component {
   }
 
   render () {
-    const title = 'MaoMao - Home page'
-    let description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
+    const title = 'maomao - home page'
+    let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = this.props.store.shareInfo
       if (shareAll) {
-        description = `${fullname} would like to share all MaoMao stream with you`
+        description = `${fullname} would like to share all maomao stream with you`
       } else if (urlTitle && urlTitle.length) {
         description = `${fullname} would like to share "${urlTitle}" with you`
       } else if (topicTitle && topicTitle.length) {
-        description = `${fullname} would like to share the MaoMao stream with you: "${topicTitle}"`
+        description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
     let selectedMyStreamUrls = []
