@@ -366,6 +366,10 @@ img {
       overflow: hidden;
       max-width: 179px;
       display: inline-block;
+      .number-sync {
+        font-family: 'Orbitron Light', sans-serif;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+      }
     }
     &::before {
       @include abs-pos ($top: 0, $right: 0, $bottom: auto, $left: -4px);
@@ -409,9 +413,8 @@ img {
 
 .panel-user {
   @include clearfix();
-  margin-top: 0.5rem;
   .panel-user-img {
-    margin-right: 0.375rem;
+    margin: 0.5rem 0.375rem 0 0;
     float: left;
     img {
       @include border-radius(50%);
@@ -463,13 +466,15 @@ img {
 /* -----tag------*/
 
 .tags {
+  @include clearfix();
   position: relative;
-  display: inline-block;
+  margin-top: 10px;
   padding: 3px 10px 3px 12px;
+  display: inline-block;
   border: none;
   text-decoration: none;
-  font-family: Arial, sans-serif;
-  font-size: 12px;
+  font-family: 'Orbitron-Light';
+  font-size: 0.75rem;
   line-height: 19px;
   color: #fff;
   background-color: rgba(15, 167, 51, 1);
@@ -524,6 +529,8 @@ img {
 
 .mix-tag {
   @include abs-pos ($top: auto, $right: 10px, $bottom: 10px, $left: auto);
+  @include flexbox();
+  flex-flow: column wrap;
   z-index: 500;
 }
 
@@ -585,8 +592,7 @@ img {
       width: 33.33%;
       .thumbnail-image {
         margin-right: 20px;
-        float: left;
-        min-height: 140px;
+        float: left;        
         width: 50%;
         > a {
           img {
@@ -620,7 +626,7 @@ img {
   .stream-item {
     display: inline-block;
     text-decoration: none;
-    font-family: 'Orbitron-Light';
+    font-family: 'Orbitron Light', sans-serif;
     span {
       padding: 10px 8px;
       display: block;
@@ -675,6 +681,7 @@ img {
     .thumbnail-image {
       @include border-radius(8px);
       position: relative;
+      min-height: 120px;
       > a {
         @include border-radius(8px);
         display: block;
