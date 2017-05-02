@@ -159,7 +159,7 @@ class FriendStreams extends React.Component {
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, im_score, time_on_tab, hit_utc } = item
-        const rate = Math.ceil((im_score / maxScore) * 5)
+        const rate = Math.ceil((im_score / maxScore.im_score) * 5)
         let discoveryKeys = []
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
