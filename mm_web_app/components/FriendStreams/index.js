@@ -25,15 +25,15 @@ const masonryOptions = {
 
 function mapTopicsOption (topics) {
   return _.map(topics, topic => ({
-    value: topic.name,
-    label: topic.name
+    value: topic.urlIds,
+    label: `${topic.name} (${topic.urlIds.length})`
   }))
 }
 
 function mapUsersOption (users) {
   return _.map(users, item => ({
-    value: item.user_id,
-    label: item.fullname
+    value: item.urlIds,
+    label: `${item.fullname} (${item.urlIds.length})`
   }))
 }
 
@@ -42,7 +42,7 @@ function urlOwner (id, users) {
   const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(owners, owner => {
-    items.push(<div className='panel-user-img'>
+    items.push(<div key={guid()} className='panel-user-img'>
       <a className='tooltip-user' title={owner.fullname}>
         <img src={owner.picture || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
         <span className='full-name'>{owner.fullname}</span>
@@ -61,13 +61,37 @@ function urlTopic (id, topics) {
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(currentTopics, topic => {
-    items.push(<span className='tags' rel='tag'>{topic.name}</span>)
+    items.push(<span key={guid()} className='tags' rel='tag'>{topic.name}</span>)
   })
   return (
     <div className='mix-tag'>
       {items}
     </div>
   )
+}
+
+function filterUrls (data) {
+  const { urls, filterByTopic, filterByUser } = data
+  logger.warn('filter', filterByTopic, filterByUser)
+  if (filterByTopic.length > 0 || filterByUser.length > 0) {
+    const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
+    const userUrlIds = _.flatMap(filterByUser, item => item.value)
+    logger.warn('topicUrlIds', topicUrlIds)
+    logger.warn('userUrlIds', userUrlIds)
+    let foundIds = []
+    if (topicUrlIds.length && userUrlIds.length) {
+      foundIds = _.intersection(topicUrlIds, userUrlIds)
+    } else {
+      if (topicUrlIds.length) {
+        foundIds = topicUrlIds
+      } else {
+        foundIds = userUrlIds
+      }
+    }
+
+    return urls.filter(item => foundIds.indexOf(item.id) !== -1)
+  }
+  return urls
 }
 
 class FriendStreams extends React.Component {
@@ -122,17 +146,15 @@ class FriendStreams extends React.Component {
   }
 
   render () {
-    const { currentPage, urls, filterByTopic, filterByUser } = this.state
-    logger.warn('filter', filterByTopic, filterByUser)
+    const { currentPage } = this.state
     const items = []
-    logger.warn('urls', this.state.currentPage, urls)
-    if (urls && urls.length) {
-      const uniqUrls = _.uniqBy(urls, 'id')
-      const maxScore = _.maxBy(uniqUrls, 'im_score')
-      const sortedUrlsByHitUTC = _.reverse(_.sortBy(uniqUrls, [(url) => url.hit_utc]))
       // TODO: support sort by time or score
+    const sortedUrls = filterUrls(this.state)
+    const maxScore = _.maxBy(sortedUrls, 'im_score')
+    const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
       /* eslint-disable camelcase */
-      const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
+    const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
+    if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, im_score, time_on_tab, hit_utc } = item
         const rate = Math.ceil((im_score / maxScore) * 5)
@@ -183,7 +205,7 @@ class FriendStreams extends React.Component {
                 <ul className='nav navbar-nav'>
                   <li>
                     <div className='item-select'>
-                      <span className='label-select'>Filter by topic</span>
+                      <span className='label-select'>Filter by topics</span>
                       <Select
                         className='drop-select'
                         name='topic-name'
@@ -196,7 +218,7 @@ class FriendStreams extends React.Component {
                   </li>
                   <li>
                     <div className='item-select'>
-                      <span className='label-select'>Filter by user</span>
+                      <span className='label-select'>Filter by users</span>
                       <Select
                         className='drop-select'
                         multi
