@@ -7,7 +7,7 @@ the header section
 
 .neal-navbar-wrapper {
   position: relative;
-  z-index: 100;
+  z-index: 2000;
   .header-nav {
     padding: 0;
     height: 72px;
@@ -242,6 +242,9 @@ the header section
           @include border-radius(50%);
           width: 33px;
           height: 33px;
+        }
+        @media (max-width: 768px) {
+          padding: 0;
         }
       }
       .dropdown-menu {

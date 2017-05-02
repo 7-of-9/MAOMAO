@@ -135,7 +135,7 @@ img {
 .standand-sort {
   @include clearfix();
   position: relative;
-  z-index: 9999;
+  z-index: 1000;
   margin-bottom: 15px;
   background: #ffffff;
   border: 1px solid #eee;
@@ -150,6 +150,9 @@ img {
     padding: 0;
     min-height: inherit;
     float: left;
+    @media (max-width: 750px) {
+      float: none;
+    }
   }
   .navbar-nav {
     @include border-radius(0);
@@ -168,6 +171,25 @@ img {
           text-decoration: none;
         }
       }
+      &:nth-child(1),
+      &:nth-child(2) {
+        @media (max-width: 750px) {
+          width: 50%;
+        }
+      }
+      &:nth-child(2) .item-select {
+        @media (max-width: 750px) {
+          border-right: 0;
+        }
+      }
+      &:nth-child(3) {
+        @media (max-width: 750px) {
+          width: 100%;
+        }
+      }
+    }
+    @media (max-width: 750px) {
+      flex-flow: row wrap;
     }
   }
   .input-group {
@@ -190,13 +212,22 @@ img {
       height: 36px;
       width: 300px;
       background: url("/static/images/search-input.png") no-repeat 8px center #fff scroll;
+      @media (max-width: 390px) {
+        width: 100%;
+      }
+    }
+    @media (max-width: 750px) {
+      padding: 5px 10px;
     }
   }
   .item-select {
-    padding: 6px 10px 5px;
+    position: relative;
+    z-index: 100;
+    padding: 0.375rem 0.625rem 0.3125rem;
     border-right: 1px solid #eee;
     .label-select {
-      padding: 0 10px 0 0;
+      padding: 0 0.625rem 0 0;
+      margin-top: -0.125rem;
     }
     .label-select,
     .drop-select {
@@ -206,7 +237,7 @@ img {
     .drop-select {
       text-align: left;
       .Select-control {
-        min-width: 105px;
+        min-width: 6.5625rem;
         border: 0;
         background: none;
         cursor: pointer;
@@ -220,12 +251,15 @@ img {
         }
       }
       .Select-menu-outer {
-        margin-top: 6px;
-        min-width: 150px;
+        margin-top: 0.375rem;
+        min-width: 9.375rem;
       }
       .Select-control {
         @include border-radius(0);
       }
+    }
+    @media (max-width: 750px) {
+      border-bottom: 1px solid #eee;
     }
   }
 }
@@ -552,6 +586,7 @@ img {
       .thumbnail-image {
         margin-right: 20px;
         float: left;
+        min-height: 140px;
         width: 50%;
         > a {
           img {
@@ -662,8 +697,8 @@ img {
           max-width: 260px;
         }
       }
-      .btn-discovery{
-        img{
+      .btn-discovery {
+        img {
           @include border-radius(0);
           width: 20px;
           height: 20px;
