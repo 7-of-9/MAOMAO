@@ -147,6 +147,10 @@ the home page
   text-align: left;
   .section-item {
     margin-bottom: 2rem;
+    .maomao-img{
+      max-height: 18px;
+      vertical-align: top;
+    }
     .lead {
       margin-bottom: 1rem;
       font-size: 1.875rem;
@@ -154,6 +158,9 @@ the home page
       color: #1c232e;
       font-weight: 600;
       word-break: break-word;
+      .maomao-img{
+        vertical-align: middle;
+      }
       @media (max-width: 850px) {
         font-size: 1.625rem;
         line-height: 2rem;

@@ -15,7 +15,12 @@ the footer section
     padding: 0.625rem 0;
     .neal-footer-copyright,
     address {
-      margin-bottom: 0;
+      margin: 3px 0 0;
+      img{
+        margin-right: 7px;
+        max-height: 18px;
+        vertical-align: top;
+      }
     }
     .neal-footer-copyright {
       margin-top: 5px;
