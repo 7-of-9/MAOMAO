@@ -27,24 +27,14 @@ function mapTopicsOption (topics) {
   return _.map(topics, topic => ({
     value: topic.name,
     label: topic.name
-  })).concat({
-    value: '',
-    label: 'All topics'
-  })
+  }))
 }
 
 function mapUsersOption (users) {
   return _.map(users, item => ({
     value: item.user_id,
     label: item.fullname
-  })).concat({
-    value: '',
-    label: 'All users'
-  })
-}
-
-function logChange (val) {
-  logger.warn('Selected: ' + val)
+  }))
 }
 
 function urlOwner (id, users) {
@@ -55,7 +45,7 @@ function urlOwner (id, users) {
     items.push(<div className='panel-user-img'>
       <a className='tooltip-user' title={owner.fullname}>
         <img src={owner.picture || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-        <span className="full-name">{owner.fullname}</span>
+        <span className='full-name'>{owner.fullname}</span>
       </a>
     </div>)
   })
@@ -88,7 +78,9 @@ class FriendStreams extends React.Component {
       currentPage: 1,
       urls: [],
       users: [],
-      topics: []
+      topics: [],
+      filterByTopic: '',
+      filterByUser: ''
     }
     this.loadMore = this.loadMore.bind(this)
   }
@@ -130,7 +122,8 @@ class FriendStreams extends React.Component {
   }
 
   render () {
-    const { currentPage, urls } = this.state
+    const { currentPage, urls, filterByTopic, filterByUser } = this.state
+    logger.warn('filter', filterByTopic, filterByUser)
     const items = []
     logger.warn('urls', this.state.currentPage, urls)
     if (urls && urls.length) {
@@ -140,7 +133,6 @@ class FriendStreams extends React.Component {
       // TODO: support sort by time or score
       /* eslint-disable camelcase */
       const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
-      items.push(<div key={guid()} style={{ clear: 'both' }} />)
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, im_score, time_on_tab, hit_utc } = item
         const rate = Math.ceil((im_score / maxScore) * 5)
@@ -190,26 +182,28 @@ class FriendStreams extends React.Component {
               <nav className='navbar'>
                 <ul className='nav navbar-nav'>
                   <li>
-                    <div className="item-select">
-                      <span className="label-select">Topic</span>
+                    <div className='item-select'>
+                      <span className='label-select'>Filter by topic</span>
                       <Select
-                        className="drop-select"
+                        className='drop-select'
                         name='topic-name'
-                        value=''
+                        multi
+                        value={this.state.filterByTopic}
                         options={mapTopicsOption(this.state.topics)}
-                        onChange={logChange}
+                        onChange={(selectValue) => this.setState({filterByTopic: selectValue})}
                         />
                     </div>
                   </li>
                   <li>
-                    <div className="item-select">
-                      <span className="label-select">User</span>
+                    <div className='item-select'>
+                      <span className='label-select'>Filter by user</span>
                       <Select
-                        className="drop-select"
+                        className='drop-select'
+                        multi
                         name='user-name'
-                        value=''
+                        value={this.state.filterByUser}
                         options={mapUsersOption(this.state.users)}
-                        onChange={logChange}
+                        onChange={(selectValue) => this.setState({filterByUser: selectValue})}
                         />
                     </div>
                   </li>
