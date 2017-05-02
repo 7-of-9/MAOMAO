@@ -35,11 +35,11 @@ Router.onRouteChangeStart = (url) => {
 Router.onRouteChangeComplete = () => NProgress.done()
 Router.onRouteChangeError = () => NProgress.done()
 
-const brandName = 'MaoMao'
+const brandName = 'maomao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <strong>{brandName} </strong>
+    <img src='/static/images/maomao.png' alt='maomao' />
     Singapore<br />
   </address>
 )
@@ -189,15 +189,11 @@ class Home extends React.Component {
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
         <NoSSR onSSR={<Loading isLoading />}>
-          <div>
-            { !this.props.store.isLogin &&
-              <ChromeInstall
-                description={description}
-                title='Unlock Now'
-                install={this.inlineInstall}
-                />
-            }
-          </div>
+          <ChromeInstall
+            description={description}
+            title='Unlock Now'
+            install={this.inlineInstall}
+          />
         </NoSSR>
         { this.props.store.isLogin &&
           <div className='container'>

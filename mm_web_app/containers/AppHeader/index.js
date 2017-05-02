@@ -142,7 +142,7 @@ class AppHeader extends React.Component {
       }).then(() => {
         this.props.store.logoutUser()
       })
-      this.props.notify('Logout.')
+      this.props.notify('You have succesfully sign out.')
     }).catch((error) => {
       logger.warn(error)
     })
@@ -162,7 +162,7 @@ class AppHeader extends React.Component {
                 Signed in as <strong>{this.props.store.user.name}</strong>
                 </div>
               }
-              <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Logout</button></li>
+              <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
             </ul>
           </div>
         }

@@ -29,6 +29,7 @@ export default class Invite extends React.Component {
     } else {
       this.isClosePopup = false
     }
+    logger.warn('Invite', props)
     this.uiStore = initUIStore(props.isServer)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
   }

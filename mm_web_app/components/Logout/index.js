@@ -18,7 +18,7 @@ const Button = styled.button`
 
 function Logout ({ onLogout }) {
   return (
-    <Button onClick={onLogout}>Logout</Button>
+    <Button onClick={onLogout}>Sign Out</Button>
   )
 }
 

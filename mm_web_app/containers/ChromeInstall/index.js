@@ -56,6 +56,8 @@ class ChromeInstall extends React.Component {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
         } else {
+          // FIXME: there is an edge case when user logged out on extension but still be an user on web
+          // MM extension will be autologin. Should be considered as bug or not ?
           this.props.store.autoLogin(data.payload)
         }
       })
@@ -111,14 +113,15 @@ class ChromeInstall extends React.Component {
             }
           </div>
         </div>
+        {!this.props.store.isLogin &&
         <Section className='section-list'>
           <div className='section-item'>
-            <h3 className='lead'>What is Maomao?</h3>
-            <p>Maomao is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
-            <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the Maomao social graph.</p>
-            <p>Maomao overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
+            <h3 className='lead'>What is <img src='/static/images/maomao.png' alt='maomao' />?</h3>
+            <p><img src='/static/images/maomao.png' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
+            <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the <img src='/static/images/maomao.png' alt='maomao' /> social graph.</p>
+            <p><img src='/static/images/maomao.png' alt='maomao' /> overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
             <p>It’s a radical reimagining of what sharing can be, always in the complete control of users: it’s safe, automatic and intelligent, highlighting only the best and most relevant content to friends.</p>
-            <p>Because Maomao learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
+            <p>Because <img src='/static/images/maomao.png' alt='maomao' /> learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
           </div>
           <div className='section-item'>
             <h3 className='lead'>How does it work?</h3>
@@ -130,9 +133,10 @@ class ChromeInstall extends React.Component {
           </div>
           <div className='section-item'>
             <h3 className='lead'>Who are we?</h3>
-            <p>Maomao is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
+            <p><img src='/static/images/maomao.png' alt='maomao' /> is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
           </div>
         </Section>
+        }
       </Wrapper>
     )
   }
