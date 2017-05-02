@@ -26,6 +26,7 @@ function StreamItem ({ url, maxScore }) {
             <a href={href} target='_blank'>
               <img src={img || '/static/images/no-image.png'} alt={title} />
             </a>
+            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
           </div>
           <div className='caption'>
             <h4 className='caption-title'>
@@ -35,10 +36,9 @@ function StreamItem ({ url, maxScore }) {
             <div className='rating'>
               <ReactStars edit={false} size={22} count={5} value={rate} />
             </div>
-            <span className='date-time'>
-              {moment.utc(hit_utc).fromNow()}
-            </span>
-            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+            <p className='para-date'>
+              <span className='date-time'>{moment.utc(hit_utc).fromNow()}</span>
+            </p>
           </div>
         </div>
       </div>

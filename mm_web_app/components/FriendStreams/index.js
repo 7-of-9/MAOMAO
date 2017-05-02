@@ -55,7 +55,7 @@ function urlOwner (id, users) {
     items.push(<div className='panel-user-img'>
       <a className='tooltip-user' title={owner.fullname}>
         <img src={owner.picture || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-        {owner.fullname}
+        <span className="full-name">{owner.fullname}</span>
       </a>
     </div>)
   })
@@ -157,7 +157,11 @@ class FriendStreams extends React.Component {
                 </a>
                 {urlTopic(id, this.state.topics)}
                 <div className='scope-brand'>
-                  <span>Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})</span>
+                  <span className='brand-inner'>
+                    <span className='brand-text'>
+                      Earned XP {href.length} ({moment.duration(time_on_tab).humanize()})
+                    </span>
+                  </span>
                 </div>
                 {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
               </div>
@@ -168,7 +172,7 @@ class FriendStreams extends React.Component {
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
-                <p><span className='date-time'><i className='fa fa-calendar-o' />
+                <p className='para-date'><span className='date-time'><i className='fa fa-calendar-o' />
                   &nbsp;{moment.utc(hit_utc).fromNow()}
                 </span></p>
                 {urlOwner(id, this.state.users)}
@@ -186,9 +190,10 @@ class FriendStreams extends React.Component {
               <nav className='navbar'>
                 <ul className='nav navbar-nav'>
                   <li>
-                    <div>
-                      <span>Topic</span>
+                    <div className="item-select">
+                      <span className="label-select">Topic</span>
                       <Select
+                        className="drop-select"
                         name='topic-name'
                         value=''
                         options={mapTopicsOption(this.state.topics)}
@@ -197,9 +202,10 @@ class FriendStreams extends React.Component {
                     </div>
                   </li>
                   <li>
-                    <div>
-                      <span>User</span>
+                    <div className="item-select">
+                      <span className="label-select">User</span>
                       <Select
+                        className="drop-select"
                         name='user-name'
                         value=''
                         options={mapUsersOption(this.state.users)}

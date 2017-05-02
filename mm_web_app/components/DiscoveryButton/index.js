@@ -15,7 +15,7 @@ function DiscoveryButton ({ keys }) {
   return (
     <a className='btn-discovery' href='#'>
       <Link href={link} replace>
-        <img width='16' height='16' src='/static/images/discovery-icon.png' alt='Discovery' />
+        <img width='16' height='16' src='/static/images/search-input.png' alt='Discovery' />
       </Link>
     </a>
   )
