@@ -149,7 +149,6 @@ img {
     margin: 0;
     padding: 0;
     min-height: inherit;
-    float: left;
     @media (max-width: 750px) {
       float: none;
     }
@@ -253,7 +252,7 @@ img {
       }
       .Select-menu-outer {
         margin-top: 0.375rem;
-        min-width: 9.375rem;
+        min-width: 10.625rem;
       }
       .Select-control {
         @include border-radius(0);
@@ -409,14 +408,13 @@ img {
 
 .container-masonry {
   @include clearfix();
-  margin-top: 30px;
+  margin: 30px 0 20px;
 }
 
 .panel-user {
   @include clearfix();
   .panel-user-img {
-    margin: 0.5rem 0.375rem 0 0;
-    float: left;
+    margin: 0.5rem 0 0 0;
     img {
       @include border-radius(50%);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -553,7 +551,7 @@ img {
     @include border-radius(8px);
     position: relative;
     margin-bottom: 10px;
-    padding: 5px;
+    padding: 15px;
     width: 20%;
     float: left;
     &::before {
@@ -574,7 +572,7 @@ img {
       -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
       animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
     }
-    @media (max-width: 1050px) {
+    @media (max-width: 1290px) {
       width: 25%;
     }
     @media (max-width: 890px) {
@@ -675,8 +673,7 @@ img {
 .thumbnail-box {
   @include clearfix();
   @include border-radius(8px);
-  overflow: hidden;
-  padding: 10px;
+  padding: 0;
   .thumbnail {
     position: relative;
     .thumbnail-image {

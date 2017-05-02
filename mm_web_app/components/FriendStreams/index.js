@@ -199,60 +199,58 @@ class FriendStreams extends React.Component {
       })
     }
     return (
-      <div className='container'>
-        <div className='ReactTabs react-tabs'>
-          <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
-            <div className='standand-sort'>
-              <nav className='navbar'>
-                <ul className='nav navbar-nav'>
-                  <li>
-                    <div className='item-select'>
-                      <span className='label-select'>Filter by topics</span>
-                      <Select
-                        className='drop-select'
-                        name='topic-name'
-                        multi
-                        value={this.state.filterByTopic}
-                        options={mapTopicsOption(this.state.topics)}
-                        onChange={(selectValue) => this.setState({filterByTopic: selectValue, currentPage: 1, hasMoreItems: true})}
-                        />
-                    </div>
-                  </li>
-                  <li>
-                    <div className='item-select'>
-                      <span className='label-select'>Filter by users</span>
-                      <Select
-                        className='drop-select'
-                        multi
-                        name='user-name'
-                        value={this.state.filterByUser}
-                        options={mapUsersOption(this.state.users)}
-                        onChange={(selectValue) => this.setState({filterByUser: selectValue, currentPage: 1, hasMoreItems: true})}
-                        />
-                    </div>
-                  </li>
-                  <li>
-                    <div className='input-group'>
-                      <input type='text' className='form-control' placeholder='Search URL ...' />
-                    </div>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadMore}
-              hasMore={this.state.hasMoreItems}
-              loader={<Loading isLoading />}
-              threshold={300}
-            >
-              <Masonry className='container-masonry' options={masonryOptions}>
-                <div className='grid-row'>
-                  {items}
-                </div>
-              </Masonry>
-            </InfiniteScroll>
+      <div className='ReactTabs react-tabs'>
+        <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
+          <div className='standand-sort'>
+            <nav className='navbar'>
+              <ul className='nav navbar-nav'>
+                <li>
+                  <div className='item-select'>
+                    <span className='label-select'>Filter by topics</span>
+                    <Select
+                      className='drop-select'
+                      name='topic-name'
+                      multi
+                      value={this.state.filterByTopic}
+                      options={mapTopicsOption(this.state.topics)}
+                      onChange={(selectValue) => this.setState({filterByTopic: selectValue, currentPage: 1, hasMoreItems: true})}
+                      />
+                  </div>
+                </li>
+                <li>
+                  <div className='item-select'>
+                    <span className='label-select'>Filter by users</span>
+                    <Select
+                      className='drop-select'
+                      multi
+                      name='user-name'
+                      value={this.state.filterByUser}
+                      options={mapUsersOption(this.state.users)}
+                      onChange={(selectValue) => this.setState({filterByUser: selectValue, currentPage: 1, hasMoreItems: true})}
+                      />
+                  </div>
+                </li>
+                <li>
+                  <div className='input-group'>
+                    <input type='text' className='form-control' placeholder='Search URL ...' />
+                  </div>
+                </li>
+              </ul>
+            </nav>
           </div>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.state.hasMoreItems}
+            loader={<Loading isLoading />}
+            threshold={300}
+          >
+            <Masonry className='container-masonry' options={masonryOptions}>
+              <div className='grid-row'>
+                {items}
+              </div>
+            </Masonry>
+          </InfiniteScroll>
         </div>
       </div>
     )
