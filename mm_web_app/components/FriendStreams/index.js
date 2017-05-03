@@ -91,7 +91,7 @@ function filterUrls (data) {
 
     return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1), 'title')
   }
-  return urls
+  return _.uniqBy(urls, 'title')
 }
 
 class FriendStreams extends React.Component {
