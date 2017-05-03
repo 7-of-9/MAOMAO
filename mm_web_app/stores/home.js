@@ -14,7 +14,6 @@ export class HomeStore extends CoreStore {
   @observable facebookConnectResult = {}
   @observable userHistoryResult = {}
   @observable currentTermId = -1
-  @observable friendStreamId = -1
   @observable googleUser = {}
   @observable facebookUser = {}
   @observable userHistory = {me: {}, shares: []}

@@ -28,6 +28,7 @@ import YourStreams from '../../components/YourStreams'
 import ShareWithFriends from '../../components/ShareWithFriends'
 import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
+import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -64,6 +65,26 @@ class Home extends React.Component {
   handleSelect (index, last) {
     this.setState({
       currentTab: index
+    }, () => {
+      const currentTermId = this.props.store.currentTermId
+      if (index === 0) {
+        logger.warn('currentTermId', currentTermId)
+        if (currentTermId > 0) {
+        // hotfix to reload data
+          this.props.store.currentTermId = -1
+          this.props.store.currentTermId = currentTermId
+        } else {
+          if (this.props.store.userHistory) {
+            const { topics } = toJS(this.props.store.myStream)
+            const sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
+          // first for my stream
+            logger.warn('sortedTopicByUrls', sortedTopicByUrls)
+            if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
+              this.props.store.currentTermId = sortedTopicByUrls[0].term_id
+            }
+          }
+        }
+      }
     })
   }
 
@@ -129,7 +150,6 @@ class Home extends React.Component {
     let sortedTopicByUrls = []
     let friends = []
     let currentTermId = this.props.store.currentTermId
-    let friendStreamId = this.props.store.friendStreamId
     let shareWiths = []
     if (this.props.store.userHistory) {
       const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
@@ -153,9 +173,6 @@ class Home extends React.Component {
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
-      if (friendStreamId === -1 && friends.length) {
-        friendStreamId = friends[0].user_id
-      }
     }
 
     return (

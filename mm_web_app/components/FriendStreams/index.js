@@ -89,7 +89,7 @@ function filterUrls (data) {
       }
     }
 
-    return urls.filter(item => foundIds.indexOf(item.id) !== -1)
+    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1), 'title')
   }
   return urls
 }
