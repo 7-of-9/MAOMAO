@@ -204,11 +204,11 @@ class FriendStreams extends React.Component {
                 </a>
                 {urlTopic(id, this.state.topics)}
                 <div className='scope-brand'>
-                  <span className='brand-inner'>
-                    <span className='brand-text'>
+                  <div className='brand-inner'>
+                    <div className='brand-text'>
                       Earned XP <span className='number-sync'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </div>
                 {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
               </div>
