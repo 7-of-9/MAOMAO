@@ -126,7 +126,7 @@ class FriendStreams extends React.Component {
       })
       users.push({ user_id, fullname, avatar, urlIds })
     })
-    topics = _.uniqBy(topics, 'name')
+    topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
     const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
     this.setState({
       urls,
@@ -156,7 +156,7 @@ class FriendStreams extends React.Component {
         })
         users.push({ user_id, fullname, avatar, urlIds })
       })
-      topics = _.uniqBy(topics, 'name')
+      topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
       const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
       this.setState({
         urls,

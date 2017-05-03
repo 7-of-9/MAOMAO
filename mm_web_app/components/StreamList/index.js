@@ -58,7 +58,7 @@ class StreamList extends React.Component {
     const { urls } = this.props
     const items = []
     if (urls && urls.length) {
-      const uniqUrls = _.uniqBy(urls, 'id')
+      const uniqUrls = _.uniqBy(urls, 'title')
       const maxScore = _.maxBy(uniqUrls, 'im_score')
       const sortedUrlsByHitUTC = _.reverse(_.sortBy(uniqUrls, [(url) => url.hit_utc]))
       const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
