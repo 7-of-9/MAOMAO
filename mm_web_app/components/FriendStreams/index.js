@@ -136,6 +136,37 @@ class FriendStreams extends React.Component {
     })
   }
 
+  componentWillUpdate (props) {
+    logger.warn('componentWillUpdate', props)
+    const { friends } = props
+    const { users } = this.state
+    if (friends.length !== users.length) {
+      let urls = []
+      let users = []
+      let topics = []
+      _.forEach(friends, friend => {
+        const { user_id, fullname, avatar, list } = friend
+        const urlIds = []
+        _.forEach(list, item => {
+          urls.push(...item.urls)
+          urlIds.push(...item.urls.map(item => item.id))
+          if (item.topic_name) {
+            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+          }
+        })
+        users.push({ user_id, fullname, avatar, urlIds })
+      })
+      topics = _.uniqBy(topics, 'name')
+      const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
+      this.setState({
+        urls,
+        users,
+        topics,
+        hasMoreItems
+      })
+    }
+  }
+
   loadMore () {
     const currentPage = this.state.currentPage + 1
     const sortedUrls = filterUrls(this.state)
