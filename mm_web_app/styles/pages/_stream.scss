@@ -681,7 +681,7 @@ img {
       position: relative;
       min-height: 120px;
       > a {
-        @include border-radius(8px);
+        @include border-radius(4px);
         display: block;
         overflow: hidden;
       }

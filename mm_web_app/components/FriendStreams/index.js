@@ -203,19 +203,13 @@ class FriendStreams extends React.Component {
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
                 {urlTopic(id, this.state.topics)}
-                <div className='scope-brand'>
-                  <div className='brand-inner'>
-                    <div className='brand-text'>
-                      Earned XP <span className='number-sync'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})
-                    </div>
-                  </div>
-                </div>
                 {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>{title} ({id})</a>
                 </h4>
+                <p> Earned XP <span className='nlp_score'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})</p>
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
