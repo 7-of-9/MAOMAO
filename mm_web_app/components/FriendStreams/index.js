@@ -61,7 +61,7 @@ function urlTopic (id, topics) {
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(currentTopics, topic => {
-    items.push(<span key={guid()} className='tags' rel='tag'>{topic.name}</span>)
+    items.push(<span key={guid()} className='tags tags-green' rel='tag'>{topic.name}</span>)
   })
   return (
     <div className='mix-tag'>

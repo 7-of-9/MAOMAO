@@ -466,6 +466,7 @@ img {
 
 .tags {
   @include clearfix();
+  @include transition(all 0.2s ease-out 0s);
   position: relative;
   margin-top: 10px;
   padding: 3px 10px 3px 12px;
@@ -476,7 +477,7 @@ img {
   font-size: 0.75rem;
   line-height: 19px;
   color: #fff;
-  background-color: rgba(15, 167, 51, 1);
+  background-color: transparent;
   -webkit-border-top-right-radius: 5px;
   -webkit-border-bottom-right-radius: 5px;
   -webkit-border-bottom-left-radius: 0;
@@ -493,35 +494,87 @@ img {
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   &::before {
+    @include transition(all 0.2s ease-out 0s);
     position: absolute;
     top: 0;
     left: -13px;
     width: 0;
     height: 0;
     border-top: 12px solid transparent;
-    border-right: 13px solid red;
+    border-right: 13px solid transparent;
     border-bottom: 13px solid transparent;
     content: "";
-    border-right-color: rgba(15, 167, 51, 1);
+    border-right-color: transparent;
   }
   &::after {
+    @include transition(all 0.2s ease-out 0s);
     position: absolute;
     left: -2px;
     top: 50%;
-    margin-top: -4px;
+    margin-top: -3px;
     width: 6px;
     height: 6px;
     content: "";
-    background: #ffffff;
+    background: #fff;
     border-radius: 50%;
   }
   &:hover,
   &:focus {
+    @include transition(all 0.2s ease-out 0s);
     color: #fff;
     text-decoration: none;
-    background-color: #0fa733;
+    background-color: transparent;
     &:before {
-      border-right-color: #0fa733;
+      @include transition(all 0.2s ease-out 0s);
+      border-right-color: transparent;
+    }
+  }
+  &.tags-green {
+    background-color: rgba(15, 167, 51, 0.9);
+    &::before {
+      border-right-color: rgba(15, 167, 51, 0.9);
+    }
+    &::after {
+      background: #fff;
+    }
+    &:hover,
+    &:focus {
+      background-color: #0fa733;
+      &:before {
+        border-right-color: #0fa733;
+      }
+    }
+  }
+  &.tags-yellow {
+    background-color: rgba(253, 216, 53, 0.9);
+    &::before {
+      border-right-color: rgba(253, 216, 53, 0.9);
+    }
+    &::after {
+      background: #fff;
+    }
+    &:hover,
+    &:focus {
+      background-color: #FDD835;
+      &:before {
+        border-right-color: #FDD835;
+      }
+    }
+  }
+  &.tags-orange {
+    background-color: rgba(255, 152, 0, 0.9);
+    &::before {
+      border-right-color: rgba(255, 152, 0, 0.9);
+    }
+    &::after {
+      background: #fff;
+    }
+    &:hover,
+    &:focus {
+      background-color: #FF9800;
+      &:before {
+        border-right-color: #FF9800;
+      }
     }
   }
 }
