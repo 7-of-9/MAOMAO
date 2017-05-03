@@ -27,11 +27,11 @@ Router.onRouteChangeStart = (url) => {
 Router.onRouteChangeComplete = () => NProgress.done()
 Router.onRouteChangeError = () => NProgress.done()
 
-const brandName = 'MaoMao'
+const brandName = 'maomao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <img src='/static/images/maomao.png' alt='maomao' />
+    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
     Singapore<br />
   </address>
 )
@@ -172,8 +172,8 @@ class Discovery extends React.Component {
   }
 
   render () {
-    const title = 'MaoMao - Discovery page'
-    const description = 'Maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
+    const title = 'maomao - peer-to-peer real time content sharing network - discovery mode'
+    const description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     const terms = toJS(this.props.store.terms)
     return (
       <Page>

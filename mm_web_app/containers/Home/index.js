@@ -39,7 +39,7 @@ const brandName = 'maomao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
-    <img src='/static/images/maomao.png' alt='maomao' />
+    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
     Singapore<br />
   </address>
 )
@@ -113,7 +113,7 @@ class Home extends React.Component {
   }
 
   render () {
-    const title = 'maomao - home page'
+    const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = this.props.store.shareInfo

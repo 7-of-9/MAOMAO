@@ -126,7 +126,7 @@ class FriendStreams extends React.Component {
       })
       users.push({ user_id, fullname, avatar, urlIds })
     })
-
+    topics = _.uniqBy(topics, 'name')
     const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
     this.setState({
       urls,

@@ -40,7 +40,7 @@ const Share = styled.button`
 `
 
 const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<img src='/static/images/maomao.png' alt='maomao' />")
+  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
 }
 
 @inject('store')
@@ -107,7 +107,7 @@ class ChromeInstall extends React.Component {
             </div>
           </Modal>
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome && !isMobile && <div className='panel-extention'><p> <img src='/static/images/maomao.png' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
+            {!isChrome && !isMobile && <div className='panel-extention'><p> <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
             {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
             {!isInstall && !isMobile && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
