@@ -35,10 +35,11 @@ function ajax_isTldAllowable(tld, successFn, errorFn) {
  * api/url_nlpinfo -- get
  *
  * @param string url
+ * @param string url_hash
  * @param function successFn
  * @param function errorFn
  */
-function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
+function ajax_get_UrlNlpInfo(url, url_hash, successFn, errorFn) {
   var parsed_url = null;
   try {
     parsed_url = new URL(url);
@@ -47,7 +48,7 @@ function ajax_get_UrlNlpInfo(url, successFn, errorFn) {
   if (parsed_url != null) {
     $.ajax({
       type: 'GET',
-      url: api_base + 'info/get?url=' + url,
+      url: api_base + 'info/get?url_hash=' + url_hash + '&url=' + url,
       success: successFn,
       error: errorFn,
     });

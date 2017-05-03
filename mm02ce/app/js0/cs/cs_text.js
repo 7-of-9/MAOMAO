@@ -10,18 +10,18 @@
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
   log.info("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
-  log.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())], cs_log_style_info);
+  log.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())], cs_log_style_info);
   log.info("%c > document.location.href=" + document.location.href, cs_log_style_info);
-  log.info("%c > mm_app_uuid " + (mm_app_uuid && mm_app_uuid()), cs_log_style_info);
+  log.info("%c > mm_app_uuid " + (mm_app_uuid !== undefined && mm_app_uuid()), cs_log_style_info);
   //document.addEventListener("DOMContentLoaded", function (event)
   {
     // TODO: Try to clear sessionStorage when extension reload
     // FIXME: Use sessionStorage is not stable
     //if (!have_run_text_proc) {
-    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())]) {
+    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())]) {
       //have_run_text_proc = true;
-      log.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())], cs_log_style_info);
-      sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid && mm_app_uuid())] = document.location.href;
+      log.info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())], cs_log_style_info);
+      sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())] = document.location.href;
       log.info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location.href, cs_log_style_info);
       log.info("%c $(document).ready{ajax_get_UrlNlpInfo.complete} -- readyState=" + document.readyState, cs_log_style_info);
 
@@ -112,10 +112,10 @@ $(document).ready(function () {
 function process_text(page_meta) {
 
   // prevent running text processing more than once (see above: $.ready firing more than once on a variety of conditions)
-  log.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())], "background:white; color:orange; font-weight:bold;");
+  log.info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())], "background:white; color:orange; font-weight:bold;");
   log.info("%c >> document.location=" + document.location.href, "background:white; color:orange; font-weight:bold;");
-  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())]) {
-    log.info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())] + "]", "background:orange; color:black; font-weight:bold;");
+  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())]) {
+    log.info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())] + "]", "background:orange; color:black; font-weight:bold;");
     if (document.getElementById('maomao-extension-youtube-test')) {
       cslib_test_NextYouTubeVid();
     } else {
@@ -123,7 +123,7 @@ function process_text(page_meta) {
     }
     return;
   }
-  sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid && mm_app_uuid())] = document.location.href;
+  sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())] = document.location.href;
 
   log.info("%c **** CS TEXT PROCESSING RUNNING... [" + window.location + "] ****", "background: #888; color: #bada55; font-weight:bold; font-size:large;");
   log.info("%c >> sending process_text_start...", "background:blue; color:white; font-weight:bold;");
@@ -280,19 +280,28 @@ function process_text(page_meta) {
   log.info("ALL_TEXT (len = " + t.length + "): [" + t + "]");
   dispatchDataToBg({ type: 'PROCESS_TEXT_RESULT', payload: { status: t.length > 200 ? true : false, url: remove_hash_url(document.location.href), text: t, } });
   var detectLang = franc(t);
+  var detectTitleLang = franc(page_meta.html_title);
+  var detectDescriptionLang = franc(page_meta.ip_description || page_meta.description || page_meta.og_description || page_meta.tw_description);
   if (t.length > 200) {
     log.warn('detectLang', detectLang);
-    if (detectLang === 'eng') {
-      ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), function (data) {
+    log.warn('detectTitleLang', detectTitleLang);
+    log.warn('detectDescriptionLang', detectDescriptionLang);
+    if (detectLang === 'eng' || detectTitleLang === 'eng' || detectDescriptionLang === 'eng') {
+      var ctx = new Checksum("fnv32", 0); // fnv32-0
+      ctx.updateObject(page_meta);
+      log.warn('page_meta', page_meta);
+      var url_hash = ctx.result.toString(16);
+      log.warn('url_hash', url_hash);
+      ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), url_hash, function (data) {
         log.info("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
         if (data.is_known == true && data.has_calais_info == true) {
           // no need to text process, no need for calais
-          dispatchDataToBg({ type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } });
+          dispatchDataToBg({ type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, url_hash: url_hash, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } });
           dispatchDataToBg({ type: 'GENERATE_SHARE_TOPICS', payload: { lang: detectLang, url: remove_hash_url(document.location.href), topics: data.topics } });
-          ajax_put_UrlRecord(mm_user_id(),mm_user_hash(), { href: remove_hash_url(document.location.href), text: t }, function(data) {
+          ajax_put_UrlRecord(mm_user_id(), mm_user_hash(), { href: remove_hash_url(document.location.href), text: t, url_hash: url_hash }, function (data) {
             dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } });
             dispatchDataToBg({ type: 'PRELOAD_SHARE', payload: { data: data, url: remove_hash_url(document.location.href) } });
-          }, function(error) {
+          }, function (error) {
             dispatchDataToBg({ type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } });
           });
           log.info("%c /url_nlpinfo HAS NLP DATA: NOP.", cs_log_style_hi);
@@ -302,12 +311,12 @@ function process_text(page_meta) {
             log.info("Disable youtube test");
           }
         } else {
-          dispatchDataToBg({ type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: false } });
-          ajax_put_UrlRecord(mm_user_id(),mm_user_hash(), { href: remove_hash_url(document.location.href), text: t }, function(data) {
+          dispatchDataToBg({ type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), url_hash: url_hash, status: false } });
+          ajax_put_UrlRecord(mm_user_id(), mm_user_hash(), { href: remove_hash_url(document.location.href), text: t, url_hash: url_hash }, function (data) {
             dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } });
             dispatchDataToBg({ type: 'PRELOAD_SHARE', payload: { data: data, url: remove_hash_url(document.location.href) } });
-            nlp_calais(page_meta, t, document.location, mm_user_id(), mm_user_hash());
-          }, function(error) {
+            nlp_calais(page_meta, t, document.location, mm_user_id(), mm_user_hash(), url_hash);
+          }, function (error) {
             dispatchDataToBg({ type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } });
           });
         }

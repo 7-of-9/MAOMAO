@@ -92,6 +92,7 @@ class Home extends React.Component {
     this.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       window.location.reload()
+      this.props.store.checkEnvironment()
     }, 1000)
   }
 

@@ -257,7 +257,10 @@ export default (state = initialState, action, auth, nlp) => {
       const score = findScoreUrl(nlp, url);
       const urls = changeIconUrl(state.urls, url, 'blue', `${score}`);
       // set to blue2 for faster animation
-      window.setIconApp(url, 'blueblue', `${score}`, window.BG_SUCCESS_COLOR);
+      window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
+      // call animation
+      /* eslint-disable no-underscore-dangle */
+      window.animationIcon(action._sender.tab.id, 5);
       return Object.assign({}, state, {
         urls,
       });
@@ -338,6 +341,8 @@ export default (state = initialState, action, auth, nlp) => {
       const score = findScoreUrl(nlp, url);
       const urls = changeIconUrl(state.urls, url, 'blue', `${score} **`);
       window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
+      /* eslint-disable no-underscore-dangle */
+      window.animationIcon(action._sender.tab.id, 10);
       return Object.assign({}, state, {
         urls,
       });

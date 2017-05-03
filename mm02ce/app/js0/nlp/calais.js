@@ -314,7 +314,7 @@ function calais_process(nlp) {
   return nlp;
 }
 
-function nlp_calais(page_meta, test_data, url, user_id, hash) {
+function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
   var nlp_items = [];
   var nlp = null;
   var millis = new Date().getTime();
@@ -324,13 +324,13 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
     url: "https://api.thomsonreuters.com/permid/calais",
     data: test_data, // remove unicode from str, Calais doesn't like it
 
-      //async: false,
+    //async: false,
     contentType: "text/raw",
     crossDomain: true,
     headers: {
       "X-AG-Access-Token": millis % 3 == 0 ? "BFRb8pCzYflF9ndHBGryXZXUZXAZBYXd" // dunghd.it@gmail.com
-                         : millis % 3 == 1 ? "tDRSzbuifZKYL2QfH2nM37vpDMiQv4sN" // a12pct@gmail.com
-                         :                   "mq9C5G9BrsS8PMEjKjR0FTnmiISABWDx" // khapcd@gmail.com
+        : millis % 3 == 1 ? "tDRSzbuifZKYL2QfH2nM37vpDMiQv4sN" // a12pct@gmail.com
+          : "mq9C5G9BrsS8PMEjKjR0FTnmiISABWDx" // khapcd@gmail.com
       ,
       "Content-Type": "text/raw",
       "outputformat": "application/json"
@@ -388,6 +388,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash) {
 
       nlp = {
         url: url, // NLP refdata
+        url_hash: url_hash,
         meta: page_meta, // NLP refdata
         items: nlp_items, // NLP raw Calais
         content_lang: content_lang, // NLP lang string

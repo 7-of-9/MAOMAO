@@ -60,7 +60,7 @@ function animationIcon(tabId, round) {
     'img/dog_flash2.png',
   ];
   isFlashingDog = true;
-  var framePerSecond = 1000 / (round * 2);
+  var framePerSecond = 1000 / round;
   var counter = sizes.length * round;
   var timer = setInterval(function () {
     var path = sizes[counter % sizes.length];
@@ -96,16 +96,10 @@ function setIconApp(rawUrl, image, msg, color) {
   });
   log.warn('currentTab', rawUrl, tabmap, currentTab);
 
-  if (image.indexOf('blue') !== -1) {
-    if (!isFlashingDog) {
-      animationIcon(currentTab && currentTab.id, image.length);
-    }
-  } else {
-    chrome.browserAction.setIcon({
-      path: 'img/ps_sirius_dog_' + image + '.png',
-      tabId: currentTab && currentTab.id,
-    });
-  }
+  chrome.browserAction.setIcon({
+    path: 'img/ps_sirius_dog_' + image + '.png',
+    tabId: currentTab && currentTab.id,
+  });
 
   if (window.enableIconText) {
     setIconText(msg, color, currentTab && currentTab.id);
@@ -384,6 +378,12 @@ function inject_cs(session, tab_id, skip_text) {
     'js0/lib/wait_key_elements.js',
     'js0/nlp/stopwords.js',
     'js0/lib/nlp.js',
+    'js0/lib/checksum.js',
+    'js0/lib/algorithms/adler32.js',
+    'js0/lib/algorithms/bsd16.js',
+    'js0/lib/algorithms/crc32.js',
+    'js0/lib/algorithms/fletcher.js',
+    'js0/lib/algorithms/fnv32.js',
     'js0/ajax/mm_api.js',
     'js0/nlp/calais.js',
     'js0/cs/cs_meta.js',
