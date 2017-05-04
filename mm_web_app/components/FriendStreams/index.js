@@ -263,12 +263,14 @@ class FriendStreams extends React.Component {
                 <li>
                   <div className='item-select'>
                     <span className='label-select'>Filter by ratings</span>
-                    <ReactStars
-                      count={5}
-                      onChange={ratingChanged}
-                      size={24}
-                      color2={'#ffd700'}
-                    />
+                    <div className='filter-rating'>
+                      <ReactStars
+                        count={5}
+                        onChange={ratingChanged}
+                        size={24}
+                        color2={'#ffd700'}
+                      />
+                  </div>
                   </div>
                 </li>
                 <li>
