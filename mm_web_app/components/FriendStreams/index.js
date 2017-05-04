@@ -80,11 +80,10 @@ function urlTopic (id, topics, onSelectTopic) {
 
 function filterUrls (data) {
   const { urls, filterByTopic, filterByUser, filterByRating, filterByUrl } = data
+  logger.warn('urls', urls)
   if (filterByTopic.length > 0 || filterByUser.length > 0) {
     const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
     const userUrlIds = _.flatMap(filterByUser, item => item.value)
-    logger.warn('topicUrlIds', topicUrlIds)
-    logger.warn('userUrlIds', userUrlIds)
     let foundIds = []
     if (topicUrlIds.length && userUrlIds.length) {
       foundIds = _.intersection(topicUrlIds, userUrlIds)
@@ -97,9 +96,13 @@ function filterUrls (data) {
     }
     logger.warn('foundIds', foundIds)
     if (filterByUrl.length) {
-      return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
+      const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating && item.title.toLowerCase().indexOf(filterByUrl) !== -1)
+      logger.warn('result', result)
+      return _.uniqBy(result, 'title')
     } else {
-      return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating), 'title')
+      const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating)
+      logger.warn('result', result)
+      return _.uniqBy(result, 'title')
     }
   }
   if (filterByUrl.length) {
@@ -145,7 +148,7 @@ class FriendStreams extends React.Component {
         }
       })
       const maxScore = _.maxBy(userUrls, 'im_score')
-      urls.push(...userUrls.map(item => ({ ...item, rate: Math.floor(item.im_score * 5 / maxScore.im_score) })))
+      urls.push(...userUrls.map(item => ({ ...item, rate: maxScore.im_score > 0 ? Math.floor(item.im_score * 5 / maxScore.im_score) : 0 })))
       users.push({ user_id, fullname, avatar, urlIds })
     })
     topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
@@ -177,7 +180,7 @@ class FriendStreams extends React.Component {
           }
         })
         const maxScore = _.maxBy(userUrls, 'im_score')
-        urls.push(...userUrls.map(item => ({ ...item, rate: Math.floor(item.im_score * 5 / maxScore.im_score) })))
+        urls.push(...userUrls.map(item => ({ ...item, rate: maxScore.im_score > 0 ? Math.floor(item.im_score * 5 / maxScore.im_score) : 0 })))
         users.push({ user_id, fullname, avatar, urlIds })
       })
       topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
