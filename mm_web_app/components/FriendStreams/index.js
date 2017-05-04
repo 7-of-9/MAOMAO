@@ -266,14 +266,16 @@ class FriendStreams extends React.Component {
                 <li>
                   <div className='item-select'>
                     <span className='label-select'>Rating</span>
-                    <ReactStars
-                      count={5}
-                      value={this.state.filterByRating}
-                      onChange={(selectValue) => this.setState({filterByRating: selectValue, currentPage: 1, hasMoreItems: true})}
-                      size={24}
-                      half={false}
-                      color2={'#ffd700'}
-                    />
+                    <div className='filter-rating'>
+                      <ReactStars
+                        count={5}
+                        value={this.state.filterByRating}
+                        onChange={(selectValue) => this.setState({filterByRating: selectValue, currentPage: 1, hasMoreItems: true})}
+                        size={24}
+                        half={false}
+                        color2={'#ffd700'}
+                      />
+                    </div>
                   </div>
                 </li>
                 <li>
@@ -290,7 +292,7 @@ class FriendStreams extends React.Component {
             hasMore={this.state.hasMoreItems}
             loader={<Loading isLoading />}
             threshold={600}
-              >
+          >
             <Masonry className='container-masonry' options={masonryOptions}>
               <div className='grid-row'>
                 {items}
