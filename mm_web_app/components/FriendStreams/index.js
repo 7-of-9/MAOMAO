@@ -40,14 +40,14 @@ function mapUsersOption (users) {
   }))
 }
 
-function urlOwner (id, users) {
+function urlOwner (id, users, onSelectUser) {
   // TODO: click on name to filter by user
   const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(owners, owner => {
     items.push(<div key={guid()} className='panel-user-img'>
-      <a className='tooltip-user' title={owner.fullname}>
-        <img src={owner.picture || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+      <a onClick={() => { onSelectUser(owner) }} className='tooltip-user' title={owner.fullname}>
+        <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
         <span className='full-name'>{owner.fullname}</span>
       </a>
     </div>)
@@ -59,12 +59,12 @@ function urlOwner (id, users) {
   )
 }
 
-function urlTopic (id, topics) {
+function urlTopic (id, topics, onSelectTopic) {
     // TODO: click on name to filter by topic
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
-  _.forEach(currentTopics, topic => {
-    items.push(<span key={guid()} className='tags tags-color-1' rel='tag'>{topic.name}</span>)
+  _.forEach(currentTopics, (topic) => {
+    items.push(<a key={guid()} onClick={() => { onSelectTopic(topic) }}><span className={`tags tags-color-${topics.indexOf(topic) + 1}`} rel='tag'>{topic.name}</span></a>)
   })
   return (
     <div className='mix-tag'>
@@ -97,9 +97,17 @@ function filterUrls (data) {
       }
     }
 
-    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
+    if (filterByUrl.length) {
+      return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
+    } else {
+      return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore), 'title')
+    }
   }
-  return _.uniqBy(urls.filter(item => item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
+  if (filterByUrl.length) {
+    return _.uniqBy(urls.filter(item => item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
+  } else {
+    return _.uniqBy(urls.filter(item => item.im_score >= imScore), 'title')
+  }
 }
 
 class FriendStreams extends React.Component {
@@ -117,6 +125,8 @@ class FriendStreams extends React.Component {
       filterByRating: 0
     }
     this.loadMore = this.loadMore.bind(this)
+    this.onSelectTopic = this.onSelectTopic.bind(this)
+    this.onSelectUser = this.onSelectUser.bind(this)
   }
 
   componentDidMount () {
@@ -176,6 +186,16 @@ class FriendStreams extends React.Component {
     }
   }
 
+  onSelectTopic (topic) {
+    logger.warn('onSelectTopic', topic)
+    this.setState({filterByTopic: [{ value: topic.urlIds, label: topic.name }], currentPage: 1, hasMoreItems: true})
+  }
+
+  onSelectUser (user) {
+    logger.warn('onSelectUser', user)
+    this.setState({filterByUser: [{ value: user.urlIds, label: user.fullname }], currentPage: 1, hasMoreItems: true})
+  }
+
   loadMore () {
     const currentPage = this.state.currentPage + 1
     const sortedUrls = filterUrls(this.state)
@@ -211,7 +231,7 @@ class FriendStreams extends React.Component {
                 <a href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(id, this.state.topics)}
+                {urlTopic(id, this.state.topics, this.onSelectTopic)}
                 {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
               </div>
               <div className='caption'>
@@ -233,7 +253,7 @@ class FriendStreams extends React.Component {
                 <p className='para-date'><span className='date-time'><i className='fa fa-calendar-o' />
                   &nbsp;{moment.utc(hit_utc).fromNow()}
                 </span></p>
-                {urlOwner(id, this.state.users)}
+                {urlOwner(id, this.state.users, this.onSelectUser)}
               </div>
             </div>
           </div>

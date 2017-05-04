@@ -3,7 +3,6 @@ import { Provider } from 'mobx-react'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
-import { MAOMAO_SITE_URL } from '../containers/App/constants'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
