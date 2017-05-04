@@ -209,13 +209,19 @@ class Home extends React.Component {
           />
         </NoSSR>
         { this.props.store.isLogin &&
-          <div className='container'>
+          <div className='wrap-main'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
-              <TabList>
-                <Tab>Your Streams</Tab>
-                <Tab>Friend Streams</Tab>
+              <TabList className='slidebar-nav'>
+                <Tab>
+                  <span className='stream-symbol'><i className='fa fa-users' aria-hidden='true'></i></span>
+                  Your Streams
+                </Tab>
+                <Tab>
+                  <span className='stream-symbol'><i className='fa fa-slideshare' aria-hidden='true'></i></span>
+                  Friend Streams
+                </Tab>
               </TabList>
-              <TabPanel>
+              <TabPanel className='main-content'>
                 <YourStreams
                   topics={sortedTopicByUrls}
                   activeId={currentTermId}
@@ -225,7 +231,7 @@ class Home extends React.Component {
                 {shareWiths.length > 0 && <ShareWithFriends friends={shareWiths} />}
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
-              <TabPanel>
+              <TabPanel className='main-content'>
                 <FriendStreams friends={friends} />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
               </TabPanel>

@@ -16,3 +16,23 @@ the main-content section
     width: 100%;
   }
 }
+
+
+/*grid tab layout*/
+
+.wrap-main {
+  @include clearfix();
+  height: 100%;
+  background-color: #272b33;
+  .slidebar-nav {
+    float: left;
+    width: 150px;
+    min-height: 100%;
+    background-color: #272b33;
+  }
+  .main-content {
+    margin-left: 150px;
+    padding: 0 15px;
+    background-color: #fff;
+  }
+}

@@ -133,7 +133,6 @@ img {
 }
 
 .standand-sort {
-  @include clearfix();
   position: relative;
   z-index: 1000;
   margin-bottom: 15px;
