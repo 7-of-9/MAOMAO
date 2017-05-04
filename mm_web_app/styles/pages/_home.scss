@@ -8,7 +8,7 @@ the home page
 .neal-hero {
   &.banner-hero {
     position: relative;
-    min-height: 280px;
+    min-height: 250px;
     -moz-animation: fadeIn 1s both;
     -webkit-animation: fadeIn 1s both;
     animation: fadeIn 1s both;
@@ -16,14 +16,8 @@ the home page
     background: url('/static/images/bg_hero.jpg') no-repeat fixed;
     background-size: cover !important;
     h1 {
-      line-height: 50px;
-      @media (max-width: 1050px) {
-        font-size: 2.375rem;
-      }
-      @media (max-width: 850px) {
-        font-size: 2.25rem;
-        line-height: 2.5rem;
-      }
+      font-size: 1.75rem;
+      line-height: 2rem;
       @media (max-width: 650px) {
         font-size: 1.875rem;
       }
@@ -60,12 +54,12 @@ the home page
       padding-bottom: 3rem;
     }
     @media (min-width: 850px) {
-      padding-top: 5rem;
-      padding-bottom: 5rem;
+      padding-top: 4rem;
+      padding-bottom: 4rem;
     }
     @media (min-width: 1400px) {
-      padding-top: 10rem;
-      padding-bottom: 10rem;
+      padding-top: 5rem;
+      padding-bottom: 5rem;
     }
   }
 }
