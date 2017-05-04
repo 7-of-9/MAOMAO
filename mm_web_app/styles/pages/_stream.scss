@@ -429,6 +429,7 @@ img {
   display: inline;
   position: relative;
   font-size: 0.75rem;
+  cursor: pointer;
   .full-name {
     font-weight: bold;
     color: #606162;
@@ -724,6 +725,9 @@ img {
 }
 
 .mix-tag {
+  a{
+    cursor: pointer;
+  }
   @include abs-pos ($top: auto, $right: 10px, $bottom: 10px, $left: auto);
   @include flexbox();
   flex-flow: column wrap;
