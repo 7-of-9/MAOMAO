@@ -1,6 +1,6 @@
 /**
 *
-* YourStreams
+* FriendStreams
 *
 */
 
@@ -20,7 +20,11 @@ import { guid } from '../../utils/hash'
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: 0
+  transitionDuration: '0.4s'
+}
+
+function ratingChanged (newRating) {
+  logger.warn('ratingChanged', newRating)
 }
 
 function mapTopicsOption (topics) {
@@ -104,7 +108,8 @@ class FriendStreams extends React.Component {
       users: [],
       topics: [],
       filterByTopic: '',
-      filterByUser: ''
+      filterByUser: '',
+      filterByRating: 0
     }
     this.loadMore = this.loadMore.bind(this)
   }
@@ -195,7 +200,7 @@ class FriendStreams extends React.Component {
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
         }
-        items.push(<div key={guid()} className='grid-item shuffle-item'>
+        items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             <div className='thumbnail'>
               <div className='thumbnail-image'>
@@ -256,6 +261,17 @@ class FriendStreams extends React.Component {
                   </div>
                 </li>
                 <li>
+                  <div className='item-select'>
+                    <span className='label-select'>Filter by ratings</span>
+                    <ReactStars
+                      count={5}
+                      onChange={ratingChanged}
+                      size={24}
+                      color2={'#ffd700'}
+                    />
+                  </div>
+                </li>
+                <li>
                   <div className='input-group'>
                     <input type='text' className='form-control' placeholder='Search URL ...' />
                   </div>
@@ -268,7 +284,7 @@ class FriendStreams extends React.Component {
             loadMore={this.loadMore}
             hasMore={this.state.hasMoreItems}
             loader={<Loading isLoading />}
-            threshold={300}
+            threshold={500}
           >
             <Masonry className='container-masonry' options={masonryOptions}>
               <div className='grid-row'>
