@@ -10,7 +10,6 @@ import styled from 'styled-components'
 const Button = styled.button`
   padding: 0.5em;
   background: #0b9803;
-  width: 124px;
   color: #fff;
 `
 

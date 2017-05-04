@@ -204,7 +204,7 @@ class Home extends React.Component {
         <NoSSR onSSR={<Loading isLoading />}>
           <ChromeInstall
             description={description}
-            title='Unlock Now'
+            title='Unlock YOUR FRIEND STREAM Now'
             install={this.inlineInstall}
           />
         </NoSSR>
