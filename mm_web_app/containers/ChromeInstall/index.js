@@ -32,13 +32,6 @@ const AddToChrome = styled.button`
  color: #fff;
 `
 
-const Share = styled.button`
- margin-left: 1px;
- padding: 0.5em 1em;
- background: #1b7ac5;
- color: #fff;
-`
-
 const replaceMMIcon = (desc) => {
   return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
 }

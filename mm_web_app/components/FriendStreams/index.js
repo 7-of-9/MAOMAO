@@ -17,27 +17,23 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import { guid } from '../../utils/hash'
 
-const LIMIT = 10
+const LIMIT = 20
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.4s'
-}
-
-function ratingChanged (newRating) {
-  logger.warn('ratingChanged', newRating)
+  transitionDuration: '0.6s'
 }
 
 function mapTopicsOption (topics) {
   return _.map(topics, topic => ({
     value: topic.urlIds,
-    label: `${topic.name} (${topic.urlIds.length})`
+    label: `${topic.name}`
   }))
 }
 
 function mapUsersOption (users) {
   return _.map(users, item => ({
     value: item.urlIds,
-    label: `${item.fullname} (${item.urlIds.length})`
+    label: `${item.fullname}`
   }))
 }
 
@@ -75,8 +71,15 @@ function urlTopic (id, topics) {
 }
 
 function filterUrls (data) {
-  const { urls, filterByTopic, filterByUser } = data
-  logger.warn('filter', filterByTopic, filterByUser)
+  const { urls, filterByTopic, filterByUser, filterByRating } = data
+  logger.warn('filter', filterByRating, filterByTopic, filterByUser)
+  const maxScore = _.maxBy(urls, 'im_score')
+  let imScore = 0
+  if (maxScore && maxScore.im_score) {
+    logger.warn('maxScore', maxScore.im_score)
+    imScore = parseInt(maxScore.im_score * filterByRating / 5)
+  }
+  logger.warn('imScore', imScore)
   if (filterByTopic.length > 0 || filterByUser.length > 0) {
     const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
     const userUrlIds = _.flatMap(filterByUser, item => item.value)
@@ -93,9 +96,9 @@ function filterUrls (data) {
       }
     }
 
-    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1), 'title')
+    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore), 'title')
   }
-  return _.uniqBy(urls, 'title')
+  return _.uniqBy(urls.filter(item => item.im_score >= imScore), 'title')
 }
 
 class FriendStreams extends React.Component {
@@ -195,7 +198,7 @@ class FriendStreams extends React.Component {
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, im_score, time_on_tab, hit_utc } = item
-        const rate = Math.ceil((im_score / maxScore.im_score) * 5)
+        const rate = Math.floor(im_score * 5 / maxScore.im_score)
         let discoveryKeys = []
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
@@ -236,7 +239,7 @@ class FriendStreams extends React.Component {
               <ul className='nav navbar-nav'>
                 <li>
                   <div className='item-select'>
-                    <span className='label-select'>Filter by topics</span>
+                    <span className='label-select'>Topics</span>
                     <Select
                       className='drop-select'
                       name='topic-name'
@@ -249,7 +252,7 @@ class FriendStreams extends React.Component {
                 </li>
                 <li>
                   <div className='item-select'>
-                    <span className='label-select'>Filter by users</span>
+                    <span className='label-select'>Users</span>
                     <Select
                       className='drop-select'
                       multi
@@ -262,11 +265,13 @@ class FriendStreams extends React.Component {
                 </li>
                 <li>
                   <div className='item-select'>
-                    <span className='label-select'>Filter by ratings</span>
+                    <span className='label-select'>Rating</span>
                     <ReactStars
                       count={5}
-                      onChange={ratingChanged}
+                      value={this.state.filterByRating}
+                      onChange={(selectValue) => this.setState({filterByRating: selectValue, currentPage: 1, hasMoreItems: true})}
                       size={24}
+                      half={false}
                       color2={'#ffd700'}
                     />
                   </div>
@@ -284,8 +289,8 @@ class FriendStreams extends React.Component {
             loadMore={this.loadMore}
             hasMore={this.state.hasMoreItems}
             loader={<Loading isLoading />}
-            threshold={500}
-          >
+            threshold={600}
+              >
             <Masonry className='container-masonry' options={masonryOptions}>
               <div className='grid-row'>
                 {items}
