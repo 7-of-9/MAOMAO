@@ -6,10 +6,13 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import latinize from 'latinize'
 import Select from 'react-select'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import ReactStars from 'react-stars'
+import DebounceInput from 'react-debounce-input'
+import Highlighter from 'react-highlight-words'
 import moment from 'moment'
 import _ from 'lodash'
 import logger from '../../utils/logger'
@@ -71,15 +74,13 @@ function urlTopic (id, topics) {
 }
 
 function filterUrls (data) {
-  const { urls, filterByTopic, filterByUser, filterByRating } = data
-  logger.warn('filter', filterByRating, filterByTopic, filterByUser)
+  const { urls, filterByTopic, filterByUser, filterByRating, filterByUrl } = data
   const maxScore = _.maxBy(urls, 'im_score')
   let imScore = 0
   if (maxScore && maxScore.im_score) {
     logger.warn('maxScore', maxScore.im_score)
     imScore = parseInt(maxScore.im_score * filterByRating / 5)
   }
-  logger.warn('imScore', imScore)
   if (filterByTopic.length > 0 || filterByUser.length > 0) {
     const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
     const userUrlIds = _.flatMap(filterByUser, item => item.value)
@@ -96,9 +97,9 @@ function filterUrls (data) {
       }
     }
 
-    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore), 'title')
+    return _.uniqBy(urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
   }
-  return _.uniqBy(urls.filter(item => item.im_score >= imScore), 'title')
+  return _.uniqBy(urls.filter(item => item.im_score >= imScore && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
 }
 
 class FriendStreams extends React.Component {
@@ -112,6 +113,7 @@ class FriendStreams extends React.Component {
       topics: [],
       filterByTopic: '',
       filterByUser: '',
+      filterByUrl: '',
       filterByRating: 0
     }
     this.loadMore = this.loadMore.bind(this)
@@ -145,7 +147,6 @@ class FriendStreams extends React.Component {
   }
 
   componentWillUpdate (props) {
-    logger.warn('componentWillUpdate', props)
     const { friends } = props
     const { users } = this.state
     if (friends.length !== users.length) {
@@ -215,7 +216,15 @@ class FriendStreams extends React.Component {
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
-                  <a href={href} target='_blank'>{title} ({id})</a>
+                  <a href={href} target='_blank'>
+                    <Highlighter
+                      activeIndex={title}
+                      highlightStyle={{backgroundColor: '#ffd54f'}}
+                      sanitize={latinize}
+                      searchWords={[this.state.filterByUrl]}
+                      textToHighlight={title}
+                   />
+                   ({id})</a>
                 </h4>
                 <p> Earned XP <span className='nlp_score'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})</p>
                 <div className='rating'>
@@ -280,7 +289,11 @@ class FriendStreams extends React.Component {
                 </li>
                 <li>
                   <div className='input-group'>
-                    <input type='text' className='form-control' placeholder='Search URL ...' />
+                    <DebounceInput
+                      placeholder='Search URL ...'
+                      minLength={2}
+                      debounceTimeout={300}
+                      onChange={event => this.setState({filterByUrl: event.target.value.toLowerCase()})} />
                   </div>
                 </li>
               </ul>
