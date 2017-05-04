@@ -64,7 +64,12 @@ function urlTopic (id, topics, onSelectTopic) {
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(currentTopics, (topic) => {
-    items.push(<a key={guid()} onClick={() => { onSelectTopic(topic) }}><span className={`tags tags-color-${topics.indexOf(topic) + 1}`} rel='tag'>{topic.name}</span></a>)
+    items.push(
+      <a key={guid()} onClick={() => { onSelectTopic(topic) }}>
+      <span className={`tags tags-color-${topics.indexOf(topic) + 1}`} rel='tag'>
+        <span className='text-tag'>{topic.name}</span>
+      </span>
+    </a>)
   })
   return (
     <div className='mix-tag'>
