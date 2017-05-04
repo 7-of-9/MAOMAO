@@ -408,7 +408,7 @@ img {
 
 .container-masonry {
   @include clearfix();
-  margin: 30px 0 20px;
+  margin: 15px 0;
 }
 
 .panel-user {
@@ -817,7 +817,7 @@ img {
 }
 
 .stream-list {
-  margin: 20px 0;
+  margin: 20px 0 10px;
   text-align: center;
   .stream-item {
     display: inline-block;

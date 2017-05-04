@@ -6,7 +6,7 @@ the tab section
 **************************************/
 
 .react-tabs {
-  margin-top: 30px;
+  margin-top: 15px;
   text-align: center;
   .ReactTabs__TabList {
     padding: 0;
@@ -31,7 +31,7 @@ the tab section
   .ReactTabs__TabPanel {
     @include clearfix();
     @include transition(all 0.2s ease-in-out);
-    padding: 10px 0;
+    padding: 0;
     opacity: 0;
     &.ReactTabs__TabPanel--selected {
       @include transition(all 0.2s ease-in-out);
