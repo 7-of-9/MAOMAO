@@ -1,7 +1,8 @@
-import { action, reaction, when, observable, whyRun, toJS } from 'mobx'
+import { action, reaction, when, observable, whyRun } from 'mobx'
 import { HomeStore } from './home'
+import { MAOMAO_SITE_URL } from '../containers/App/constants'
 import { acceptInvite } from '../services/share'
-import { googleImageSearchByTerm } from '../services/crawler'
+import { fetchImageSearchByTerm } from '../services/crawler'
 import { hasInstalledExtension } from '../utils/chrome'
 
 let store = null
@@ -24,7 +25,6 @@ class InviteStore extends HomeStore {
          this.acceptInviteCode()
        }
      })
-    this.searchBgImage()
   }
 
   @action checkInstall () {
@@ -36,18 +36,9 @@ class InviteStore extends HomeStore {
   @action searchBgImage () {
     const { topic_title: topicTitle } = this.shareInfo
     if (topicTitle) {
-      const bgImageResult = googleImageSearchByTerm(topicTitle, 1)
-      when(
-        () => bgImageResult.state !== 'pending',
-        () => {
-          const { result } = bgImageResult.value.data
-          const images = toJS(result.filter(item => item.img && item.img.length > 0))
-          if (images.length > 0) {
-            this.bgImage = images[Math.floor(Math.random() * images.length)].img
-          }
-        }
-      )
+      return fetchImageSearchByTerm(topicTitle, 1)
     }
+    return Promise.resolve(`${MAOMAO_SITE_URL}static/images/logo.png`)
   }
 
   @action acceptInviteCode () {

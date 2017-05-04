@@ -3,6 +3,7 @@ import { Provider } from 'mobx-react'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import Home from '../containers/Home'
+import { MAOMAO_SITE_URL } from '../containers/App/constants'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
@@ -18,20 +19,28 @@ export default class Invite extends React.Component {
     const store = initStore(isServer, userAgent, user, code, shareInfo)
     const uiStore = initUIStore(isServer)
     logger.warn('Invite', code, shareInfo)
+    const bgImageResult = await store.searchBgImage()
+    try {
+      logger.warn('bgImageResult', bgImageResult)
+      const { result } = bgImageResult.data
+      const images = result.filter(item => item.img && item.img.length > 0)
+      if (images.length > 0) {
+        store.bgImage = images[Math.floor(Math.random() * images.length)].img
+      } else {
+        store.bgImage = ''
+      }
+    } catch (err) {
+      store.bgImage = ''
+    }
     return { isServer, ...store, ...uiStore }
   }
 
   constructor (props) {
     super(props)
-    const { query: { close, success } } = props.url
-    if ((close && close === 'popup') || (success && Number(success) === 1)) {
-      this.isClosePopup = true
-    } else {
-      this.isClosePopup = false
-    }
     logger.warn('Invite', props)
     this.uiStore = initUIStore(props.isServer)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
+    this.store.bgImage = props.bgImage
     this.store.checkInstall()
   }
 
