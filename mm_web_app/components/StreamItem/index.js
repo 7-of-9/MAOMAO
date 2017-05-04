@@ -24,7 +24,7 @@ function StreamItem ({ url, maxScore }) {
         <div className='thumbnail'>
           <div className='thumbnail-image'>
             <a href={href} target='_blank'>
-              <img src={img || '/static/images/no-image.png'} alt={title} />
+              <img src={img && img.indexOf('http') !== -1 ? img : '/static/images/no-image.png'} alt={title} />
             </a>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
           </div>

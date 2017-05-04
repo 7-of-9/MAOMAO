@@ -86,7 +86,22 @@ class ChromeInstall extends React.Component {
     }
     return (
       <Wrapper className='wrap-main'>
-        { (!isLogin || !isInstall) &&
+        { isLogin && isChrome && !isInstall &&
+        <div
+          className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
+          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed' }}
+          >
+          <h1 className='animated fadeInUp'>
+            Are you missing to install&nbsp;
+            <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension?
+          </h1>
+          <div className='hero-caption animated fadeInUp'>
+            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
+            {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
+          </div>
+        </div>
+        }
+        { !isLogin &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed' }}
@@ -110,7 +125,6 @@ class ChromeInstall extends React.Component {
             {!isChrome && !isMobile && <div className='panel-extention'><p> <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p> <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p></div>}
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
             {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
-            {!isInstall && !isMobile && isChrome && <Share className='btn btn-share'><i className='fa fa-share-alt' aria-hidden='true' /></Share> }
             {(isMobile || !isChrome) && !isLogin &&
             <div className='switch-browser'>
               <button className='btn btn-login' onClick={() => { this.props.ui.showSignIn() }}>JOIN NOW</button>
