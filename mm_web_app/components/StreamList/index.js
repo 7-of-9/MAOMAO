@@ -15,7 +15,7 @@ import { guid } from '../../utils/hash'
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.6s'
+  transitionDuration: '0.4s'
 }
 
 class StreamList extends React.Component {

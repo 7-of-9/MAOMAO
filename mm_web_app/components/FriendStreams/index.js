@@ -23,7 +23,7 @@ import { guid } from '../../utils/hash'
 const LIMIT = 20
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.6s'
+  transitionDuration: '0.4s'
 }
 
 function mapTopicsOption (topics) {
