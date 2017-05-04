@@ -82,7 +82,7 @@ class ChromeInstall extends React.Component {
         { isLogin && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
-          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed' }}
+          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
           >
           <h1 className='animated fadeInUp'>
             Are you missing to install&nbsp;
@@ -98,7 +98,7 @@ class ChromeInstall extends React.Component {
         { !isLogin &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) no-repeat fixed' }}
+          style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
           >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{__html: replaceMMIcon(description)}} />
           <Modal
