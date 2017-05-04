@@ -121,17 +121,12 @@ class Home extends React.Component {
     if (this.props.isClosePopup) {
       window.close()
     }
-    setTimeout(() => {
-      if (this.props.store.shareInfo) {
-        this.props.store.checkInstall()
-        // search image for bg
-        this.props.store.searchBgImage()
-        // default tab is friends stream
-        this.setState({
-          currentTab: 1
-        })
-      }
-    }, 100)
+    if (this.props.store.shareInfo) {
+      // default tab is friends stream
+      this.setState({
+        currentTab: 1
+      })
+    }
   }
 
   render () {
@@ -185,7 +180,7 @@ class Home extends React.Component {
           <meta name='description' content={description} />
           <meta name='og:title' content={title} />
           <meta name='og:description' content={description} />
-          <meta name='og:image' content={`${MAOMAO_SITE_URL}static/images/logo.png`} />
+          <meta name='og:image' content={this.props.store.bgImage && this.props.store.bgImage.length > 0 ? this.props.store.bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
           <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />

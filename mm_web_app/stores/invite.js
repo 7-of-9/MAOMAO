@@ -24,6 +24,7 @@ class InviteStore extends HomeStore {
          this.acceptInviteCode()
        }
      })
+    this.searchBgImage()
   }
 
   @action checkInstall () {

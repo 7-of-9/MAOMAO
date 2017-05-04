@@ -32,6 +32,7 @@ export default class Invite extends React.Component {
     logger.warn('Invite', props)
     this.uiStore = initUIStore(props.isServer)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
+    this.store.checkInstall()
   }
 
   render () {

@@ -73,9 +73,9 @@ class ChromeInstall extends React.Component {
     const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
     if (!isLogin) {
-      msg = `Yeah! One more step to viewing your friend sharing. Please sign in.`
+      msg = `Please sign in to unlock your friend stream.`
     } else {
-      msg = `Yeah! It's ready to unlock your friemd stream.`
+      msg = `Yeah! It's ready to unlock your friend stream.`
     }
     return (
       <Wrapper className='wrap-main'>
