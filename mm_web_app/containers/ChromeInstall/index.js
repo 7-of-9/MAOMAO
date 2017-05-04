@@ -85,8 +85,8 @@ class ChromeInstall extends React.Component {
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
           >
           <h1 className='animated fadeInUp'>
-            Are you missing to install&nbsp;
-            <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension?
+            Install &nbsp;
+            <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension!
           </h1>
           <p className='text-engine' dangerouslySetInnerHTML={{__html: replaceMMIcon(description)}} />
           <div className='hero-caption animated fadeInUp'>
