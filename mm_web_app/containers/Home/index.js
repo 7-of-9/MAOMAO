@@ -117,9 +117,6 @@ class Home extends React.Component {
 
   componentDidMount () {
     this.props.store.checkEnvironment()
-    if (this.props.isClosePopup) {
-      window.close()
-    }
     if (this.props.store.shareInfo) {
       // default tab is friends stream
       this.setState({
@@ -171,7 +168,7 @@ class Home extends React.Component {
     }
 
     return (
-      <Page style={{ display: this.props.isClosePopup ? 'none' : '' }}>
+      <Page>
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
@@ -267,7 +264,6 @@ Home.propTypes = {
   history: PropTypes.object,
   home: PropTypes.object,
   loading: PropTypes.bool,
-  isClosePopup: PropTypes.bool,
   notifications: PropTypes.object,
   changeNotifications: PropTypes.func,
   inlineInstall: PropTypes.func,

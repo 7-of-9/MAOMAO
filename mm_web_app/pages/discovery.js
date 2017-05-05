@@ -6,7 +6,7 @@ import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
 export default class DiscoveryPage extends React.Component {
-  static async getInitialProps ({ req, query: { search } }) {
+  static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''
     if (req && req.headers && req.headers['user-agent']) {
@@ -15,6 +15,7 @@ export default class DiscoveryPage extends React.Component {
     const user = req && req.session ? req.session.decodedToken : null
     logger.warn('user', user)
     let terms = []
+    const { search } = query
     if (search) {
       terms = search.split(',')
     }

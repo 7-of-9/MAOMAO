@@ -48,7 +48,7 @@ export default class Invite extends React.Component {
       <Provider store={this.store} ui={this.uiStore}>
         <div>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home isClosePopup={this.isClosePopup} />
+          <Home />
         </div>
       </Provider>
     )
