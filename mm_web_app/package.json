@@ -17,6 +17,7 @@
     "axios": "^0.16.1",
     "blueimp-md5": "^2.7.0",
     "body-parser": "^1.17.1",
+    "bowser": "^1.6.1",
     "express": "^4.15.2",
     "express-session": "^1.15.2",
     "firebase": "^3.9.0",

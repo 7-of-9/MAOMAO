@@ -22,8 +22,11 @@ export default class HomePage extends React.Component {
 
   constructor (props) {
     super(props)
+    logger.warn('Home', props)
     this.store = initStore(props.isServer, props.userAgent, props.user)
     this.uiStore = initUIStore(props.isServer)
+    this.store.checkEnvironment()
+    this.store.checkInstall()
   }
 
   render () {

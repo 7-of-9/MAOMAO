@@ -69,7 +69,7 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, store: { isChrome, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    const { title, description, install, store: { isChrome, browserName, isMobile, isInstall, isLogin, shareInfo } } = this.props
     const isShow = !!shareInfo && (isInstall || !isChrome)
     let msg = ''
     if (!isLogin) {
@@ -79,7 +79,7 @@ class ChromeInstall extends React.Component {
     }
     return (
       <Wrapper className='wrap-main' style={{ display: isInstall && isLogin ? 'none' : '' }}>
-        { isLogin && isChrome && !isInstall &&
+        { isLogin && browserName.length > 0 && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
@@ -95,7 +95,7 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
         }
-        { !isLogin &&
+        { !isLogin && browserName.length > 0 &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
@@ -127,7 +127,7 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
         }
-        {!isLogin &&
+        {!isLogin && browserName.length > 0 &&
         <Section className='section-list' style={{backgroundColor: '#fff', padding: '2rem 0'}}>
           <div className='section-item'>
             <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>

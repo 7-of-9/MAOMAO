@@ -1,9 +1,8 @@
-import { action, reaction, when, observable, whyRun } from 'mobx'
+import { action, reaction, when, observable } from 'mobx'
 import { HomeStore } from './home'
 import { MAOMAO_SITE_URL } from '../containers/App/constants'
 import { acceptInvite } from '../services/share'
 import { fetchImageSearchByTerm } from '../services/crawler'
-import { hasInstalledExtension } from '../utils/chrome'
 
 let store = null
 
@@ -20,17 +19,10 @@ class InviteStore extends HomeStore {
     this.shareInfo = shareInfo
     reaction(() => this.userHash.length,
      (userHash) => {
-       whyRun()
        if (userHash > 0) {
          this.acceptInviteCode()
        }
      })
-  }
-
-  @action checkInstall () {
-    if (this.isChrome && !this.isMobile) {
-      this.isInstall = !!hasInstalledExtension()
-    }
   }
 
   @action searchBgImage () {

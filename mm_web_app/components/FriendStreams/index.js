@@ -124,7 +124,7 @@ class FriendStreams extends React.Component {
       filterByTopic: '',
       filterByUser: '',
       filterByUrl: '',
-      filterByRating: 0
+      filterByRating: 1
     }
     this.loadMore = this.loadMore.bind(this)
     this.onSelectTopic = this.onSelectTopic.bind(this)

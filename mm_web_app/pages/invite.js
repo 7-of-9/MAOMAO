@@ -40,6 +40,7 @@ export default class Invite extends React.Component {
     this.uiStore = initUIStore(props.isServer)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
     this.store.bgImage = props.bgImage
+    this.store.checkEnvironment()
     this.store.checkInstall()
   }
 

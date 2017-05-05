@@ -1,4 +1,5 @@
 import MobileDetect from 'mobile-detect'
+import bowser from 'bowser'
 
 export function isMobileBrowser (userAgent) {
   const md = new MobileDetect(userAgent)
@@ -6,5 +7,9 @@ export function isMobileBrowser (userAgent) {
 }
 
 export function isChromeBrowser () {
-  return !!window.chrome && !!window.chrome.webstore
+  return bowser.chrome
+}
+
+export function browserName () {
+  return bowser.name
 }

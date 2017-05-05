@@ -1,4 +1,4 @@
-import { action, reaction, when, whyRun, computed, intercept, toJS, observable } from 'mobx'
+import { action, reaction, when, computed, intercept, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
@@ -24,7 +24,6 @@ export class HomeStore extends CoreStore {
     super(isServer, userAgent, user)
     reaction(() => this.userHash.length,
      (userHash) => {
-       whyRun()
        if (userHash > 0) {
          this.getUserHistory()
        }
@@ -133,7 +132,6 @@ export class HomeStore extends CoreStore {
   @action getUserHistory () {
     this.userHistoryResult = getUserHistory(this.userId, this.userHash)
     const disposer = intercept(this, 'userHistory', (change) => {
-      whyRun()
       if (!change.newValue) {
         return null
       }

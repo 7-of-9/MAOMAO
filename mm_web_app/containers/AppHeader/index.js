@@ -37,6 +37,7 @@ class AppHeader extends React.Component {
 
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
+    console.trace('AppHeader')
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {

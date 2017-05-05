@@ -116,7 +116,6 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    this.props.store.checkEnvironment()
     if (this.props.store.shareInfo) {
       // default tab is friends stream
       this.setState({
