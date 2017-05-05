@@ -142,7 +142,7 @@ class AppHeader extends React.Component {
       }).then(() => {
         this.props.store.logoutUser()
       })
-      this.props.notify('You have succesfully sign out.')
+      this.props.notify('You have successfully signed out.')
     }).catch((error) => {
       logger.warn(error)
     })

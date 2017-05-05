@@ -128,7 +128,7 @@ class ChromeInstall extends React.Component {
         </div>
         }
         {!isLogin &&
-        <Section className='section-list'>
+        <Section className='section-list' style={{backgroundColor: '#fff'}}>
           <div className='section-item'>
             <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
             <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>

@@ -11,7 +11,6 @@ import Router from 'next/router'
 import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
@@ -201,28 +200,33 @@ class Home extends React.Component {
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
+        {!this.props.store.isLogin &&
+        <ChromeInstall
+          description={description}
+          title='Unlock YOUR FRIEND STREAM Now'
+          install={this.inlineInstall}
+          />
+        }
         { this.props.store.isLogin &&
           <div className='wrap-main'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList className='slidebar-nav'>
                 <Tab>
-                  <span className='stream-symbol'><i className='fa fa-users' aria-hidden='true' /></span>
+                  <span className='stream-symbol'><i className='fa fa-user' aria-hidden='true' /></span>
                   Your Streams
                 </Tab>
                 <Tab>
-                  <span className='stream-symbol'><i className='fa fa-slideshare' aria-hidden='true' /></span>
+                  <span className='stream-symbol'><i className='fa fa-users' aria-hidden='true' /></span>
                   Friend Streams
                 </Tab>
               </TabList>
               <TabPanel className='main-content'>
                 {!this.props.store.shareInfo &&
-                  <NoSSR onSSR={<Loading isLoading />}>
-                    <ChromeInstall
-                      description={description}
-                      title='Unlock YOUR FRIEND STREAM Now'
-                      install={this.inlineInstall}
+                <ChromeInstall
+                  description={description}
+                  title='Unlock YOUR FRIEND STREAM Now'
+                  install={this.inlineInstall}
                     />
-                  </NoSSR>
                 }
                 <YourStreams
                   topics={sortedTopicByUrls}
@@ -235,13 +239,11 @@ class Home extends React.Component {
               </TabPanel>
               <TabPanel className='main-content'>
                 {!!this.props.store.shareInfo &&
-                <NoSSR onSSR={<Loading isLoading />}>
-                  <ChromeInstall
-                    description={description}
-                    title='Unlock YOUR FRIEND STREAM Now'
-                    install={this.inlineInstall}
+                <ChromeInstall
+                  description={description}
+                  title='Unlock YOUR FRIEND STREAM Now'
+                  install={this.inlineInstall}
                   />
-                </NoSSR>
                 }
                 <FriendStreams friends={friends} />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
