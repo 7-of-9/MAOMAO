@@ -78,7 +78,7 @@ class ChromeInstall extends React.Component {
       msg = `Yeah! It's ready to unlock your friend stream.`
     }
     return (
-      <Wrapper className='wrap-main'>
+      <Wrapper className='wrap-main' style={{ display: isInstall && isLogin ? 'none' : '' }}>
         { isLogin && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
@@ -128,7 +128,7 @@ class ChromeInstall extends React.Component {
         </div>
         }
         {!isLogin &&
-        <Section className='section-list' style={{backgroundColor: '#fff'}}>
+        <Section className='section-list' style={{backgroundColor: '#fff', padding: '2rem 0'}}>
           <div className='section-item'>
             <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
             <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>

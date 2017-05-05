@@ -38,7 +38,7 @@ function ctxMenu(records) {
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.21',
+    title: 'v0.5.22',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
@@ -49,7 +49,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.21',
+    title: 'v0.5.22',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
