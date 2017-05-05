@@ -190,7 +190,6 @@ class Discovery extends React.Component {
           <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
-          <script src='https://not-an-aardvark.github.io/snoowrap/snoowrap-v1.11.3.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
@@ -226,7 +225,7 @@ class Discovery extends React.Component {
             address={businessAddress}
           />
         </div>
-        <script src='/static/vendors/js/layout.js' />
+        <script src='/static/vendors/js/snoowrap-v1.min.js' />
       </Page>
     )
   }

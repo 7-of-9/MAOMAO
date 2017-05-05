@@ -4,16 +4,15 @@ const REDIDT_REFRESH_TOKEN = '69838591-jrgIILLyZ9z8M_5Z7pQXqXwZ2Z4'
 
 // Use reddit-oauth-helper to create an permanent token
 /* eslint new-cap: ["error", { "newIsCap": false }] */
-/* global snoowrap */
-const r = new snoowrap({
-  userAgent: 'webapp:maomao:v0.0.3 (by u/dunghd)',
-  clientId: REDDIT_CLIENT_ID,
-  clientSecret: REDDIT_CLIENT_SECRET,
-  refreshToken: REDIDT_REFRESH_TOKEN
-})
-r.config({ debug: true })
 
 export function redditListing (keyword, page) {
+  const r = new window.snoowrap({
+    userAgent: 'webapp:maomao:v0.0.3 (by u/dunghd)',
+    clientId: REDDIT_CLIENT_ID,
+    clientSecret: REDDIT_CLIENT_SECRET,
+    refreshToken: REDIDT_REFRESH_TOKEN
+  })
+  r.config({ debug: true })
   return fromPromise(r.search({
     query: keyword,
     relevance: 'top',
