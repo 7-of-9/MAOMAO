@@ -124,7 +124,7 @@ class FriendStreams extends React.Component {
       filterByTopic: '',
       filterByUser: '',
       filterByUrl: '',
-      filterByRating: 1
+      filterByRating: 3
     }
     this.loadMore = this.loadMore.bind(this)
     this.onSelectTopic = this.onSelectTopic.bind(this)
@@ -252,13 +252,22 @@ class FriendStreams extends React.Component {
                    />
                    ({id})</a>
                 </h4>
-                <p> Earned XP <span className='nlp_score'>{href.length}</span> ({moment.duration(time_on_tab).humanize()})</p>
+                <p>
+                  <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
+                </p>
+                <p className='para-date'>
+                  <span className='date-time'>
+                    <i className='fa fa-clock-o' /> Time on page: {moment.duration(time_on_tab).humanize()}
+                  </span>
+                </p>
+                <p className='para-date'>
+                  <span className='date-time'>
+                    <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hit_utc).fromNow()}
+                  </span>
+                </p>
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
-                <p className='para-date'><span className='date-time'><i className='fa fa-calendar-o' />
-                  &nbsp;{moment.utc(hit_utc).fromNow()}
-                </span></p>
                 {urlOwner(id, this.state.users, this.onSelectUser)}
               </div>
             </div>
@@ -272,9 +281,10 @@ class FriendStreams extends React.Component {
           <div className='standand-sort'>
             <nav className='navbar'>
               <ul className='nav navbar-nav'>
+                { this.state.filterByTopic.length > 0 &&
                 <li>
                   <div className='item-select'>
-                    <span className='label-select'>Topics</span>
+                    <span className='label-select'>Streams</span>
                     <Select
                       className='drop-select'
                       name='topic-name'
@@ -285,6 +295,8 @@ class FriendStreams extends React.Component {
                       />
                   </div>
                 </li>
+                }
+                { this.state.filterByUser.length > 0 &&
                 <li>
                   <div className='item-select'>
                     <span className='label-select'>Users</span>
@@ -298,6 +310,7 @@ class FriendStreams extends React.Component {
                       />
                   </div>
                 </li>
+                }
                 <li>
                   <div className='item-select'>
                     <span className='label-select'>Rating</span>
