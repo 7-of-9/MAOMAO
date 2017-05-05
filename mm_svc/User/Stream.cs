@@ -51,7 +51,7 @@ namespace mm_svc
         {
             using (var db = mm02Entities.Create())
             {
-                var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id && p.time_on_tab > 0).Distinct().ToListNoLock();
                 return user_urls.Select(p => new ClassifyUrlInput()
                 {
                     url_id = p.url_id,
@@ -67,7 +67,7 @@ namespace mm_svc
         {
             using (var db = mm02Entities.Create())
             {
-                var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id && p.time_on_tab > 0).Distinct().ToListNoLock();
                 var urls_list = user_urls.Select(p => new ClassifyUrlInput()
                 {
                     url_id = p.url_id,
@@ -103,7 +103,7 @@ namespace mm_svc
         {
             using (var db = mm02Entities.Create())
             {
-                var user_urls = db.user_url.AsNoTracking().Where(p => p.url_id == url_id).Distinct().ToListNoLock();
+                var user_urls = db.user_url.AsNoTracking().Where(p => p.url_id == url_id && p.time_on_tab > 0).Distinct().ToListNoLock();
                 var urls_list = user_urls.Select(p => new ClassifyUrlInput()
                 {
                     url_id = p.url_id,
@@ -274,6 +274,7 @@ namespace mm_svc
                 {
                     user_id = p.user_id,
                     email = p.user.email,
+                    avatar = p.user.avatar,
                     fullname = p.user.firstname + " " + p.user.lastname,
                     share_code = p.share.share_code,
                     url_id = p.share.url_id,
@@ -451,5 +452,6 @@ namespace mm_svc
         public long? topic_id { get; internal set; }
         public string email { get; internal set; }
         public string fullname { get; internal set; }
+        public string avatar { get; internal set; }
     }
 }
