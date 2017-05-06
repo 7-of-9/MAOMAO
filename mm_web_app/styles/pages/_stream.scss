@@ -733,16 +733,13 @@ img {
 }
 
 .mix-tag {
-  a {
-    cursor: pointer;
-  }
-  @include abs-pos ($top: auto,
-  $right: 10px,
-  $bottom: 10px,
-  $left: auto);
+  @include abs-pos ($top: auto, $right: 10px, $bottom: 10px, $left: auto);
   @include flexbox();
   flex-flow: column wrap;
   z-index: 500;
+  a {
+    cursor: pointer;
+  }
 }
 
 .tab-box {
@@ -769,10 +766,12 @@ img {
     &::before {
       @include transform(scale(0.96));
       @include border-radius(8px);
-      background: rgba(0, 0, 0, 0.05);
-      position: absolute;
-      left: 0;
-      top: 0;
+      @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+      @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
+      /* background: rgba(255, 255, 255, 0.05); */
+      -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+      -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+      box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
       opacity: 0;
       content: " ";
       height: 100%;
@@ -781,6 +780,12 @@ img {
       z-index: 3;
     }
     &:hover::before {
+      /* -webkit-box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18);
+      -moz-box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18); */
+      -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 3px 7px rgba(0, 0, 0, 0.18);
+      -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 3px 7px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2), 0 3px 7px rgba(0, 0, 0, 0.18);
       -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
       animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
     }
