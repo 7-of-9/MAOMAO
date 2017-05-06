@@ -13,31 +13,31 @@ the tab section
     margin: 0;
     list-style: none;
     overflow: hidden;
-    border-bottom: 1px solid #1c1f24;
+    border-bottom: 1px solid #e1e5eb;
     .stream-symbol {
       display: block;
-      color: #96a7b5;
-      font-size: 1rem;
+      color: #212121;
+      font-size: 2rem;
     }
     .ReactTabs__Tab {
       @include transition(all 0.3s ease-in-out);
-      padding: 30px 5px;
+      @include box-shadow(none);
+      padding: 20px 3px;
       font-size: 0.875rem;
       display: block;
-      color: #8c9caa;
+      color: #212121;
       text-align: center;
       border: 0;
-      border-top: 1px solid #323743;
-      border-bottom: 1px solid #1c1f24;
+      border-bottom: 1px solid #e1e5eb;
       min-height: 90px;
     }
     .ReactTabs__Tab--selected {
       @include transition(all 0.3s ease-in-out);
       @include border-radius(0);
-      color: #fff;
-      background-color: #222428;
+      color: #212121;
+      background-color: #fff;
       .stream-symbol {
-        color: #fff;
+        color: #1a8dee;
       }
     }
   }

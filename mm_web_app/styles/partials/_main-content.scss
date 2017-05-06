@@ -23,16 +23,54 @@ the main-content section
 .wrap-main {
   @include clearfix();
   height: 100%;
-  background-color: #272b33;
+  background-color: #fff;
   .slidebar-nav {
     float: left;
-    width: 150px;
+    width: 120px;
     min-height: 100%;
-    background-color: #272b33;
-  }
-  .main-content {
-    margin-left: 150px;
-    padding: 0 15px;
     background-color: #fff;
   }
+  .main-content {
+    @include box-shadow(0 1px 2px 0 rgba(0, 0, 0, 0.22));
+    margin-left: 122px;
+    padding: 0;
+    background-color: #fff;
+    min-height: 500px;
+    .wrap-main {
+      height: auto;
+      background: none;
+      &:before,
+      &:after {
+        content: "";
+        display: none;
+      }
+      &:after {
+        clear: none;
+      }
+    }
+  }
+  &.wrap-toggle {
+    .slidebar-nav {
+      width: 68px;
+      .stream-text {
+        display: none;
+      }
+    }
+    .main-content {
+      margin-left: 70px;
+    }
+    .react-tabs {
+      .ReactTabs__TabList {
+        .ReactTabs__Tab {
+          padding: 7px 3px;
+          min-height: inherit;
+        }
+      }
+    }
+  }
+}
+
+.main-inner {
+  @include clearfix();
+  padding: 0 15px;
 }

@@ -204,16 +204,16 @@ class Home extends React.Component {
           />
         }
         { this.props.store.isLogin &&
-          <div className='wrap-main'>
+          <div className='wrap-main wrap-toggle'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
-              <TabList className='slidebar-nav'>
+              <TabList className='slidebar-nav animated fadeInLeft'>
                 <Tab>
                   <span className='stream-symbol'><i className='fa fa-user' aria-hidden='true' /></span>
-                  Your Streams
+                  <span className='stream-text'>Your Streams</span>
                 </Tab>
                 <Tab>
                   <span className='stream-symbol'><i className='fa fa-users' aria-hidden='true' /></span>
-                  Friend Streams
+                  <span className='stream-text'>Friend Streams</span>
                 </Tab>
               </TabList>
               <TabPanel className='main-content'>

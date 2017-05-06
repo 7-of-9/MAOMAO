@@ -345,11 +345,13 @@ class FriendStreams extends React.Component {
             loader={<Loading isLoading />}
             threshold={600}
           >
-            <Masonry className='container-masonry' options={masonryOptions}>
-              <div className='grid-row'>
-                {items}
-              </div>
-            </Masonry>
+            <div className='main-inner'>
+              <Masonry className='container-masonry' options={masonryOptions}>
+                <div className='grid-row'>
+                  {items}
+                </div>
+              </Masonry>
+            </div>
           </InfiniteScroll>
         </div>
       </div>
