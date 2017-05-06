@@ -500,7 +500,7 @@ img {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 179px;
+    max-width: 140px;
   }
   &::before {
     @include transition(all 0.2s ease-out 0s);
