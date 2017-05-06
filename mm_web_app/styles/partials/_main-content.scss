@@ -52,6 +52,8 @@ the main-content section
   &.wrap-toggle {
     .slidebar-nav {
       width: 68px;
+      position: relative;
+      z-index: 1000;
       .stream-text {
         display: none;
       }
@@ -61,6 +63,69 @@ the main-content section
     }
     .react-tabs {
       .ReactTabs__TabList {
+        overflow: visible;
+        .stream-symbol {
+          .fa {
+            min-width: 33px;
+          }
+        }
+        .stream-symbol[data-tooltip] {
+          position: relative;
+          display: inline;
+          &:after,
+          &:before {
+            @include transition(transform 200ms ease, opacity 200ms);
+            position: absolute;
+            visibility: hidden;
+            opacity: 0;
+            z-index: 99;
+          }
+          &:before {
+            @include border-radius(5px);
+            content: attr(data-tooltip);
+            background: #1a8dee;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            padding: 10px 15px;
+            font-size: 10px;
+            white-space: nowrap;
+            text-decoration: none;
+            text-transform: uppercase;
+          }
+          &:after {
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            content: '';
+          }
+          &:hover:after,
+          &:hover:before {
+            @include transform (translateY(0));
+            visibility: visible;
+            opacity: 0.85;
+          }
+          &:before,
+          &:after {
+            @include transform (translateX(0));
+          }
+          &:hover:after,
+          &:hover:before {
+            @include transform (translateX(10px));
+          }
+        }
+        // right tooltip
+        .stream-symbol[data-tooltip][data-position="right"]:before {
+          top: 0;
+          left: 100%;
+          margin-left: 10px;
+        }
+        .stream-symbol[data-tooltip][data-position="right"]:after {
+          border-right-color: #1a8dee;
+          border-left: none;
+          top: calc(50% - 6px);
+          left: calc(100% + 4px);
+        }
         .ReactTabs__Tab {
           padding: 7px 3px;
           min-height: inherit;
