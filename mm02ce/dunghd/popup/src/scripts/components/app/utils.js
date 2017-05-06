@@ -1,4 +1,13 @@
 import axios from 'axios';
+import * as logger from 'loglevel';
+
+function queryString(obj) {
+  const str = [];
+  Object.keys(obj).forEach((prop) => {
+    str.push(`${encodeURIComponent(prop)}=${encodeURIComponent(obj[prop])}`);
+  });
+  return str.join('&');
+}
 
 const defaultOptions = {
   toolbar: 'no',
@@ -59,5 +68,20 @@ export function fbScrapeShareUrl(url) {
   return axios({
     method: 'post',
     url: `https://graph.facebook.com?scrape=true&id=${url}`,
+  });
+}
+
+export function createUser(url, user) {
+  return new Promise((resolve, reject) => {
+    logger.info('Register user with data', user);
+    return axios({
+      method: 'post',
+      url,
+      data: queryString(user),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }).then(response => resolve(response))
+      .catch(error => reject(error));
   });
 }

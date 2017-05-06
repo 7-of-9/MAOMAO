@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
 import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
-import $ from 'jquery';
 import * as logger from 'loglevel';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
-import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl } from './utils';
+import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl, createUser } from './utils';
 
 require('../../stylesheets/main.scss');
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
+const API_URL = 'https://mmapi00.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
 const propTypes = {
@@ -26,6 +26,7 @@ const propTypes = {
   nlp: PropTypes.object,
   dispatch: PropTypes.func,
   getLink: PropTypes.func,
+  onFacebookLogin: PropTypes.func,
   changeShareOption: PropTypes.func,
 };
 
@@ -51,6 +52,7 @@ const defaultProps = {
   },
   dispatch: () => { },
   getLink: () => { },
+  onFacebookLogin: () => { },
   changeShareOption: () => { },
 };
 
@@ -157,7 +159,7 @@ const userMenu = (auth, dispatch) =>
 
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
-  changeShareOption, getLink,
+  changeShareOption, getLink, onFacebookLogin,
 ) => {
   if (!url || !status) {
     return (
@@ -311,21 +313,14 @@ const render = (
         </a>
       </h3>
       <div className="popup-content">
+        <h1 style={{ fontSize: '25px' }} >Join maomao now!</h1>
         <button
-          className="power-group"
-          onClick={() => {
-            dispatch({
-              type: 'OPEN_MODAL',
-            });
-          }}
+          className="btn btn-block btn-social btn-facebook"
+          onClick={onFacebookLogin}
         >
-          <div className="power-button">
-            <div className="power-inner">
-              <span />
-            </div>
-          </div>
+          <span><i className="icons-facebook" /></span>
+          Sign in with Facebook
         </button>
-        <p>click here to login !</p>
       </div>
     </div>
   );
@@ -333,22 +328,87 @@ const render = (
 
 const App = ({
   status, auth, nlp, url, icon,
-  dispatch, shareOption, changeShareOption, getLink,
- }) => <div style={{ margin: '0 auto' }}>
+  dispatch, shareOption, changeShareOption,
+  getLink, onFacebookLogin,
+ }) =>
+  <div style={{ margin: '0 auto' }}>
     {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
-      dispatch, shareOption, changeShareOption, getLink,
+      dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
     )}
   </div>;
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
 
+const notify = msg => ({
+  type: 'NOTIFY_MESSAGE',
+  payload: msg,
+});
+
+const checkAuth = (type, isLinked = false) => {
+  const data = {
+    type: `AUTH_LOGIN_${type}`,
+    payload: {
+      isLinked,
+    },
+  };
+  return data;
+};
+
+
 const enhance = compose(
   withState('url', 'activeUrl', ''),
   withState('status', 'isReady', false),
   withState('shareOption', 'updateShareOption', ''),
   withHandlers({
+    onFacebookLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Facebook Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('FACEBOOK'))
+        .then((data) => {
+          const { info, facebookUserId, error } = data;
+          if (error) {
+            return Promise.reject(error);
+          }
+          const names = info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
+          return createUser(`${API_URL}/user/fb`, {
+            firstName,
+            lastName,
+            email: info.email,
+            avatar: info.picture,
+            fb_user_id: facebookUserId,
+          });
+        })
+        .then((user) => {
+          let userId = -1;
+          if (user.data && user.data.id) {
+            userId = user.data.id;
+          }
+          props.dispatch({
+            type: 'USER_AFTER_LOGIN',
+            payload: {
+              userId,
+            },
+          });
+          props.dispatch({
+            type: 'PRELOAD_SHARE_ALL',
+            payload: {
+              userId,
+            },
+          });
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
     changeShareOption: props => (val) => {
       props.updateShareOption(val);
     },

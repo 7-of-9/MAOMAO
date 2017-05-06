@@ -38,22 +38,41 @@ function ctxMenu(records) {
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.22',
+    title: 'v0.5.23',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
   });
+  chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
+  chrome.contextMenus.create({
+    title: `Welcome, ${userInfo.name} (${userInfo.email})!`,
+    contexts: ['browser_action'],
+    id: 'mm-btn-show',
+  });
+  chrome.contextMenus.create({
+    title: 'Logout',
+    contexts: ['browser_action'],
+    id: 'mm-btn-logout',
+  });
+  chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
   ctxMenu(records);
 }
 
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.22',
+    title: 'v0.5.23',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
   });
+  chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
+  chrome.contextMenus.create({
+    title: 'Login',
+    contexts: ['browser_action'],
+    id: 'mm-btn-login',
+  });
+  chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
   ctxMenu([]);
 }
 
