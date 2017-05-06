@@ -898,7 +898,7 @@ img {
       position: relative;
       min-height: 120px;
       > a {
-        @include border-radius(4px);
+        @include border-radius(4px);        
         display: block;
         overflow: hidden;
       }
@@ -957,10 +957,10 @@ img {
         line-height: 1.3125rem;
         font-weight: bold;
         a {
-          color: #606162;
+          color: #1a8dee;
           &:hover,
           &:focus {
-            color: #2db7f5;
+            color: #0174d5;
             text-decoration: none;
           }
         }
