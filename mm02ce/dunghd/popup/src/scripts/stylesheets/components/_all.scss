@@ -236,6 +236,7 @@ $facebook-icons: './images/facebook_icon.svg';
   -webkit-mask: url($facebook-icons) no-repeat;
 }
 
+
 /*dropdown-panel*/
 
 .dropdown-panel {
@@ -289,8 +290,17 @@ $facebook-icons: './images/facebook_icon.svg';
     box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
     transition: opacity .5s linear, top .5s linear;
     .dropdown-account {
-      padding: 10px 5px 10px 15px;
+      padding: 10px 5px 7px 15px;
       border-bottom: 1px solid #d5d3d3;
+    }
+    .image-account {
+      margin-right: 7px;
+      vertical-align: middle;
+      img {
+        border-radius: 50%;
+        width: 33px;
+        height: 33px;
+      }
     }
     .image-account,
     .info-account {
@@ -301,15 +311,13 @@ $facebook-icons: './images/facebook_icon.svg';
         font-weight: bold;
       }
     }
-    .image-account {
-      margin-right: 7px;
-      width: 33px;
-      height: 33px;
-      vertical-align: middle;
-    }
     .info-account {
       span {
         display: block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 130px;
       }
     }
     ul {
@@ -322,11 +330,17 @@ $facebook-icons: './images/facebook_icon.svg';
           line-height: 1.42857143;
           color: #333;
           white-space: nowrap;
+          cursor: pointer;
           &:hover,
           &:focus {
             color: #262626;
             text-decoration: none;
-            background-color: #f5f5f5;
+            background-color: #fff;
+          }
+          &,
+          &:hover,
+          &:focus {
+            transition: all 0.2s ease-out 0s;
           }
         }
       }
