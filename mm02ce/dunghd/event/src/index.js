@@ -89,20 +89,12 @@ function onClickHandler(info) {
       }
     case 'mm-btn-logout':
       {
-        const data = {
+        store.dispatch({
           type: 'AUTH_LOGOUT',
           payload: {},
-        };
-        store.dispatch(data).then(() => {
-          store.dispatch({
-            type: 'MAOMAO_ENABLE',
-            payload: {
-              url: window.sessionObservable.activeUrl,
-            },
-          });
         });
+        break;
       }
-      break;
     case 'mm-btn-switch-xp':
       {
         if (window.enableXP) {

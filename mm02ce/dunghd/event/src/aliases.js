@@ -5,10 +5,12 @@ import * as logger from 'loglevel';
 import { checkGoogleAuth, fetchContacts } from './social/google';
 import checkFacebookAuth from './social/facebook';
 import { shareAll, shareThisSite, shareTheTopic, fbScrapeShareUrl } from './sharelink';
-import { actionCreator, notifyMsg } from './utils';
+import { actionCreator, notifyMsg, queryString } from './utils';
+import Config from './config';
 
 const throttledQueue = require('throttled-queue');
 
+const config = new Config();
 const throttle = throttledQueue(10, 1000); // at most make 10 request every second.
 
 function logout(auth) {
@@ -111,13 +113,16 @@ const authLogout = () => (
       dispatch({
         type: 'AUTH_PENDING',
       });
-      return logout(auth)
+      logout(auth)
         .then(data => dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info })))
         .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
+    } else {
+      dispatch(
+        actionCreator('LOGOUT_FULFILLED', { token: '', info: {} }),
+      );
     }
-    return dispatch(
-      actionCreator('LOGOUT_FULFILLED', { token: '', info: {} }),
-    );
+    dispatch(actionCreator('USER_AFTER_LOGOUT'));
+    return dispatch(actionCreator('MAOMAO_ENABLE', { url: window.sessionObservable.activeUrl }));
   }
 );
 
@@ -164,7 +169,35 @@ const authFacebookLogin = data => (
           if (!isLinked) {
             dispatch(actionCreator('USER_HASH', { userHash: result.facebookUserId }));
           }
-          return dispatch(actionCreator('AUTH_FULFILLED', result));
+          dispatch(actionCreator('AUTH_FULFILLED', result));
+          const { info, facebookUserId, error } = result;
+          if (error) {
+            return dispatch(actionCreator('AUTH_REJECTED', { error }));
+          }
+          const names = info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
+          return axios({
+            method: 'post',
+            url: `${config.apiUrl}/user/fb`,
+            data: queryString({
+              firstName,
+              lastName,
+              email: info.email,
+              avatar: info.picture,
+              fb_user_id: facebookUserId,
+            }),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }).then((newUser) => {
+            let userId = -1;
+            if (newUser.data && newUser.data.id) {
+              userId = newUser.data.id;
+            }
+            dispatch(actionCreator('USER_AFTER_LOGIN', { userId }));
+            return dispatch(actionCreator('PRELOAD_SHARE_ALL', { userId }));
+          }).catch(err => logger.warn(err));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {

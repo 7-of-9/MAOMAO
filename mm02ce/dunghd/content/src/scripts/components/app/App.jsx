@@ -11,8 +11,6 @@ import Score from './Score';
 import ShareTopic from './ShareTopic';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
-// import FloatingShare from '../share';
-import { linkAccount, createUser } from '../utils/UserApi';
 import { getCurrentTerms, getCurrentXPTopics } from '../../selectors/term';
 import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
@@ -40,10 +38,7 @@ const propTypes = {
   topics: PropTypes.array,
   isOpen: PropTypes.bool.isRequired,
   isShareOnUrl: PropTypes.object,
-  onGoogleLogin: PropTypes.func,
   onFacebookLogin: PropTypes.func,
-  onLinkedFacebook: PropTypes.func,
-  onLinkedGoogle: PropTypes.func,
   onLogout: PropTypes.func,
   changeShareType: PropTypes.func,
   accessGoogleContacts: PropTypes.func,
@@ -89,10 +84,7 @@ const defaultProps = {
     enable: false,
   },
   isOpen: false,
-  onGoogleLogin: () => { },
   onFacebookLogin: () => { },
-  onLinkedFacebook: () => { },
-  onLinkedGoogle: () => { },
   onLogout: () => { },
   changeShareType: () => { },
   accessGoogleContacts: () => { },
@@ -353,7 +345,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
 const MIN_IM_SCORE = 1; // for showing the tld xp popup
 
 function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
-  onGoogleLogin, onFacebookLogin, onLinkedFacebook, onLinkedGoogle, onLogout,
+  onFacebookLogin, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
   closeXp, sendEmail, onClose, notifyMsg, tld, xpTopics, closeTLD,
   }) {
@@ -361,14 +353,10 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
-        {/* <FloatingShare /> */}
         <ToggleDisplay if={icon.isEnable}>
           <WelcomeModal
             auth={auth}
-            onGoogleLogin={onGoogleLogin}
             onFacebookLogin={onFacebookLogin}
-            onLinkedFacebook={onLinkedFacebook}
-            onLinkedGoogle={onLinkedGoogle}
             onClose={onClose}
             onLogout={onLogout}
             isOpen={isOpen}
@@ -474,120 +462,16 @@ const enhance = compose(
         message: 'Please wait in a minute!',
       }));
       props.dispatch(checkAuth('FACEBOOK'))
-        .then((data) => {
-          const { info, facebookUserId, error } = data;
+        .then((result) => {
+          logger.warn('result', result);
+          const { error } = result;
           if (error) {
-            return Promise.reject(error);
+            props.dispatch(notify({
+              title: 'Oops!',
+              message: error.message,
+            }));
           }
-          const names = info.name.split(' ');
-          const firstName = names[0];
-          const lastName = names.slice(1, names.length).join(' ');
-          return createUser(`${props.apiUrl}/user/fb`, {
-            firstName,
-            lastName,
-            email: info.email,
-            avatar: info.picture,
-            fb_user_id: facebookUserId,
-          });
         })
-        .then((user) => {
-          let userId = -1;
-          if (user.data && user.data.id) {
-            userId = user.data.id;
-          }
-          props.dispatch({
-            type: 'USER_AFTER_LOGIN',
-            payload: {
-              userId,
-            },
-          });
-          props.dispatch({
-            type: 'PRELOAD_SHARE_ALL',
-            payload: {
-              userId,
-            },
-          });
-        })
-        .catch((err) => {
-          props.dispatch(notify({
-            title: 'Oops!',
-            message: err.message,
-          }));
-        });
-    },
-    onGoogleLogin: props => () => {
-      props.dispatch(notify({
-        title: 'Google Login',
-        message: 'Please wait in a minute!',
-      }));
-      props.dispatch(checkAuth('GOOGLE'))
-        .then((data) => {
-          const { error, info, googleUserId } = data;
-          if (error) {
-            return Promise.reject(error);
-          }
-          props.dispatch(fetchContacts());
-          const names = info.name.split(' ');
-          const firstName = names[0];
-          const lastName = names.slice(1, names.length).join(' ');
-          return createUser(`${props.apiUrl}/user/google`, {
-            firstName,
-            lastName,
-            email: info.email,
-            avatar: info.picture,
-            google_user_id: googleUserId,
-          });
-        })
-        .then((user) => {
-          let userId = -1;
-          if (user.data && user.data.id) {
-            userId = user.data.id;
-          }
-          props.dispatch({
-            type: 'USER_AFTER_LOGIN',
-            payload: {
-              userId,
-            },
-          });
-          props.dispatch({
-            type: 'PRELOAD_SHARE_ALL',
-            payload: {
-              userId,
-            },
-          });
-        })
-        .catch((err) => {
-          props.dispatch(notify({
-            title: 'Oops!',
-            message: err.message,
-          }));
-        });
-    },
-    onLinkedFacebook: props => () => {
-      props.dispatch(notify({
-        title: 'Connect with Facebook',
-        message: 'Please wait in a minute!',
-      }));
-      props.dispatch(checkAuth('FACEBOOK', true))
-        .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
-          fb_user_id: props.auth.facebookUserId,
-        }))
-        .catch((err) => {
-          props.dispatch(notify({
-            title: 'Oops!',
-            message: err.message,
-          }));
-        });
-    },
-    onLinkedGoogle: props => () => {
-      props.dispatch(notify({
-        title: 'Connect with Google',
-        message: 'Please wait in a minute!',
-      }));
-      props.props.dispatch(checkAuth('GOOGLE', true))
-        .then(() => linkAccount(`${props.apiUrl}/user/link?user_id=${props.auth.userId}&hash=${props.auth.userHash}`, {
-          google_user_id: props.auth.googleUserId,
-        }))
         .catch((err) => {
           props.dispatch(notify({
             title: 'Oops!',
@@ -596,17 +480,7 @@ const enhance = compose(
         });
     },
     onLogout: props => () => {
-      props.dispatch(logout()).then(() => {
-        props.dispatch({
-          type: 'USER_AFTER_LOGOUT',
-        });
-        props.dispatch({
-          type: 'MAOMAO_ENABLE',
-          payload: {
-            url: window.location.href,
-          },
-        });
-      });
+      props.dispatch(logout());
     },
     onClose: props => () => {
       props.dispatch({

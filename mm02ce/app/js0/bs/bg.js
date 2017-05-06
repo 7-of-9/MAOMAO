@@ -54,6 +54,7 @@ $(document).ready(function () {
 
 var isFlashingDog = false;
 function animationIcon(tabId, round) {
+  log.info('animationIcon on tabId', tabId);
   var sizes = [
     'img/dog_flash.png',
     'img/ps_sirius_dog_blue.png',
@@ -70,10 +71,17 @@ function animationIcon(tabId, round) {
       isFlashingDog = false;
       clearInterval(timer);
     } else {
-      chrome.browserAction.setIcon({
-        path: path,
-        tabId: tabId,
-      });
+      if (tabId) {
+        chrome.browserAction.setIcon({
+          path: path,
+          tabId: tabId,
+        });
+
+      } else {
+        chrome.browserAction.setIcon({
+          path: path,
+        });
+      }
     }
   }, framePerSecond);
 }
@@ -118,19 +126,34 @@ function setIconApp(rawUrl, image, msg, color) {
 }
 
 function setIconText(s, c, tabId) {
-  chrome.browserAction.setBadgeText({
-    text: s,
-    tabId: tabId,
-  });
-  chrome.browserAction.setTitle({
-    title: s,
-    tabId: tabId,
-  });
-  if (c) {
-    chrome.browserAction.setBadgeBackgroundColor({
-      color: c,
+  log.info('setIconText on tabId', tabId);
+  if (tabId) {
+    chrome.browserAction.setBadgeText({
+      text: s,
       tabId: tabId,
     });
+    chrome.browserAction.setTitle({
+      title: s,
+      tabId: tabId,
+    });
+    if (c) {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: c,
+        tabId: tabId,
+      });
+    }
+  } else {
+    chrome.browserAction.setBadgeText({
+      text: s,
+    });
+    chrome.browserAction.setTitle({
+      title: s,
+    });
+    if (c) {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: c,
+      });
+    }
   }
 }
 

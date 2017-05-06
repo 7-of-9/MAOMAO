@@ -9,12 +9,11 @@ import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
 import LinkButton from './LinkButton';
 import ShareOptions from './ShareOptions';
-import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl, createUser } from './utils';
+import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl } from './utils';
 
 require('../../stylesheets/main.scss');
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
-const API_URL = 'https://mmapi00.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
 
 const propTypes = {
@@ -319,7 +318,7 @@ const render = (
           onClick={onFacebookLogin}
         >
           <span><i className="icons-facebook" /></span>
-          Sign in with Facebook
+          SIGN IN WITH FACEBOOK
         </button>
       </div>
     </div>
@@ -369,38 +368,7 @@ const enhance = compose(
       }));
       props.dispatch(checkAuth('FACEBOOK'))
         .then((data) => {
-          const { info, facebookUserId, error } = data;
-          if (error) {
-            return Promise.reject(error);
-          }
-          const names = info.name.split(' ');
-          const firstName = names[0];
-          const lastName = names.slice(1, names.length).join(' ');
-          return createUser(`${API_URL}/user/fb`, {
-            firstName,
-            lastName,
-            email: info.email,
-            avatar: info.picture,
-            fb_user_id: facebookUserId,
-          });
-        })
-        .then((user) => {
-          let userId = -1;
-          if (user.data && user.data.id) {
-            userId = user.data.id;
-          }
-          props.dispatch({
-            type: 'USER_AFTER_LOGIN',
-            payload: {
-              userId,
-            },
-          });
-          props.dispatch({
-            type: 'PRELOAD_SHARE_ALL',
-            payload: {
-              userId,
-            },
-          });
+          logger.warn('data', data);
         })
         .catch((err) => {
           props.dispatch(notify({
@@ -431,7 +399,7 @@ const enhance = compose(
           const activeTab = tabs[0];
           const url = activeTab.url;
           logger.warn('props', url, props, activeTab);
-          if (activeTab.status === 'complete') {
+          if (activeTab.status === 'complete' || url.length > 0) {
             props.isReady(true);
           }
           const topics = getCurrentTopics(url, props.nlp.records, props.nlp.terms);

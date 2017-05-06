@@ -34,7 +34,7 @@ function calais_process(nlp) {
   // log entities, order by =" + a.relevance
   var entities = _.filter(nlp.items, { type: "ENTITY" });
   nlp.entities = _.sortBy(entities, function (a) { return a.relevance }).reverse();
-  _.each(nlp.entities, function (a) { log.info("%c" + a.type + " [" + a.name + "] (" + a.entity_type + ") relevance=" + a.relevance, "background:white; color:green; font-weight:bold;") });
+  _.each(nlp.entities, function (a) { logger().info("%c" + a.type + " [" + a.name + "] (" + a.entity_type + ") relevance=" + a.relevance, "background:white; color:green; font-weight:bold;") });
 
   // detect non-specific content (e.g. http://order-order.com/2015/09/11/environment-minister-totty-watch-laissez-phwoar/#:N5GUD2Cxm-B2XA)
   // seems that this "mish-mash" type content doesn't return any entities that are more relevant than any others...
@@ -58,24 +58,24 @@ function calais_process(nlp) {
   //
   // ******
   page_meta.title_ex_stopwords = remove_stop_words(page_meta.html_title);
-  log.info("%c html_title=" + page_meta.html_title, "color:blue");
-  log.info("%c title_ex_stopwords=" + page_meta.title_ex_stopwords, "color:blue");
-  log.info("%c og_title=" + page_meta.og_title, "color:blue");
-  log.info("%c og_image=" + page_meta.og_image, "color:blue");
-  log.info("%c og_sitename=" + page_meta.og_sitename, "color:blue");
-  log.info("%c og_type=" + page_meta.og_type, "color:blue");
+  logger().info("%c html_title=" + page_meta.html_title, "color:blue");
+  logger().info("%c title_ex_stopwords=" + page_meta.title_ex_stopwords, "color:blue");
+  logger().info("%c og_title=" + page_meta.og_title, "color:blue");
+  logger().info("%c og_image=" + page_meta.og_image, "color:blue");
+  logger().info("%c og_sitename=" + page_meta.og_sitename, "color:blue");
+  logger().info("%c og_type=" + page_meta.og_type, "color:blue");
 
   // calais topic is *very* general, probably not specific enough
   var topics = _.chain(nlp.items).where({ type: "TOPIC" }).sortBy("score").reverse().value();
   if (topics.length > 0) {
     nlp.topic_general = topics[0].name;
-    topics.forEach(function (a) { log.info("%c" + a.type + " '" + a.name + "' score=" + a.score, "background:black; color:white; font-weight:bold;") });
+    topics.forEach(function (a) { logger().info("%c" + a.type + " '" + a.name + "' score=" + a.score, "background:black; color:white; font-weight:bold;") });
   } else
-    log.warn("%c ** NO CALAIS TOPICS RETURNED **", "background:black; color:red; font-weight:bold;");
+    logger().warn("%c ** NO CALAIS TOPICS RETURNED **", "background:black; color:red; font-weight:bold;");
 
   // no social tags? can't do much for now!
   if (social_tags.length == 0) {
-    log.warn("%c ** NO SOCIAL TAGS RETURNED: NOP/EXITING -- TODO: need a different way of handling these cases?... **", "background:black; color:red; font-weight:bold;");
+    logger().warn("%c ** NO SOCIAL TAGS RETURNED: NOP/EXITING -- TODO: need a different way of handling these cases?... **", "background:black; color:red; font-weight:bold;");
     return nlp;
   }
 
@@ -121,7 +121,7 @@ function calais_process(nlp) {
   // title best partial match - e.g. https://www.youtube.com/watch?v=iVWizzs06L0
   _.each(social_tags, function (t) {
     //if (t.name == "John Carmack")
-    //    log.info("dbg");
+    //    logger().info("dbg");
 
     t.words_common_to_title = cslib_words_in_common(t.name.toLowerCase(), page_meta.title_ex_stopwords.toLowerCase());
 
@@ -237,9 +237,9 @@ function calais_process(nlp) {
   //    var n = new window.nlp.noun(pos.tokens[0].text);
   //    nlp.topic_specific = n.conjugate().plural;
   //} else
-  log.info("%c >> no_high_relevance_entities: " + no_high_relevance_entities, "background:orange; color:white;");
-  log.info("%c >> no_entities: " + no_entities, "background:orange; color:white;");
-  log.info("%c >> high_relevance_entity_ratio: " + high_relevance_entity_ratio, "background:orange; color:white; font-weight:bold;");
+  logger().info("%c >> no_high_relevance_entities: " + no_high_relevance_entities, "background:orange; color:white;");
+  logger().info("%c >> no_entities: " + no_entities, "background:orange; color:white;");
+  logger().info("%c >> high_relevance_entity_ratio: " + high_relevance_entity_ratio, "background:orange; color:white; font-weight:bold;");
   if (high_relevance_entity_ratio > 0.1)
     nlp.topic_specific = nlp.social_tags[0].name;
   else
@@ -250,12 +250,12 @@ function calais_process(nlp) {
         nlp.social_tags[0].candidate_reason.indexOf("TITLE_BEST_MATCH") != -1)
         nlp.topic_specific = nlp.social_tags[0].name;
       else
-        log.info("%c >> high_relevance_entity_ratio LOW && no >21 entity && top entity !(TITLE_EXACT||TITLE_EXACT) -- assuming non-specific content...", "background:red; color:white; font-weight:bold;");
+        logger().info("%c >> high_relevance_entity_ratio LOW && no >21 entity && top entity !(TITLE_EXACT||TITLE_EXACT) -- assuming non-specific content...", "background:red; color:white; font-weight:bold;");
 
   // log social tags -- now ranked by perceived importance
   _.forEach(nlp.social_tags, function (a) {
 
-    log.info("%c" + a.type + " '" + a.name + "' " +
+    logger().info("%c" + a.type + " '" + a.name + "' " +
       " importance=" + a.importance +
       " score=" + a.topic_specifc_score +
       " reasons=" + a.candidate_reason +
@@ -266,20 +266,20 @@ function calais_process(nlp) {
     var pos_types = "";
     sentences.forEach(function (s) {
       s.tokens.forEach(function (t) {
-        log.info("\t" + t.text + ": " + t.pos.name + ", " + t.pos.parent + " (tense: " + t.pos.tense + ") " + t.pos.tag);
+        logger().info("\t" + t.text + ": " + t.pos.name + ", " + t.pos.parent + " (tense: " + t.pos.tense + ") " + t.pos.tag);
         pos_types += t.pos.tag + " ";
       })
     });
 
     if (a.words_common_to_title.length > 0)
-      log.info("\twords_common_to_title = '" + a.words_common_to_title + "'");
+      logger().info("\twords_common_to_title = '" + a.words_common_to_title + "'");
     if (a.words_common_to_title_and_entities.length > 0)
-      log.info("\twords_common_to_title_and_entities = '" + a.words_common_to_title_and_entities + "'");
+      logger().info("\twords_common_to_title_and_entities = '" + a.words_common_to_title_and_entities + "'");
   });
 
   // log candidate topic_specific
   //_.forEach(nlp.single_topic_candidates, function (a) {
-  //    log.info("%cCANDIDATE TOPIC '" + a.name + "'" +
+  //    logger().info("%cCANDIDATE TOPIC '" + a.name + "'" +
   //        " score=" + a.topic_specifc_score +
   //        " reason=" + a.candidate_reason +
   //        " importance=" + a.importance +
@@ -287,14 +287,14 @@ function calais_process(nlp) {
   //        "background:blue; color:white; font-weight:bold;");
   //});
 
-  //log.info("%c >> nlp.topic_specific = [" + nlp.topic_specific + "] <<", "background:green; color:white; font-weight:bold;");
+  //logger().info("%c >> nlp.topic_specific = [" + nlp.topic_specific + "] <<", "background:green; color:white; font-weight:bold;");
   cslib_info("%c >> nlp.topic_specific (social_tags only) = [" + nlp.topic_specific + "] <<", "background:green; color:white; font-weight:bold;");
 
   // NLP test mode -- compare against expected; notify result
   //if (typeof nlp_test_ok1 !== 'undefined' || typeof nlp_test_ok2 !== 'undefined') {
   //    if (!nlp_test_run) {
-  //        log.info("%c >> TEST_MODE !! ok1=" + nlp_test_ok1 + " <<", "background:yellow; color:black; font-weight:bold;");
-  //        log.info("%c >> TEST_MODE !! ok2=" + nlp_test_ok2 + " <<", "background:yellow; color:black; font-weight:bold;");
+  //        logger().info("%c >> TEST_MODE !! ok1=" + nlp_test_ok1 + " <<", "background:yellow; color:black; font-weight:bold;");
+  //        logger().info("%c >> TEST_MODE !! ok2=" + nlp_test_ok2 + " <<", "background:yellow; color:black; font-weight:bold;");
   //        if (nlp.topic_specific == nlp_test_ok1 || nlp.topic_specific == nlp_test_ok2)
   //            chrome.extension.sendMessage({ "nlp_test_result": true, "result": "NLP_TEST_PASS" });
   //        else
@@ -314,7 +314,7 @@ function calais_process(nlp) {
   return nlp;
 }
 
-function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
+function nlp_calais(page_meta, test_data, url, user_id, hash, document_head_hash) {
   var nlp_items = [];
   var nlp = null;
   var millis = new Date().getTime();
@@ -338,7 +338,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
     dataType: "JSON",
 
     success: function (o) {
-      log.warn(o);
+      logger().warn(o);
       _.each(o, function (obj, prop_name) {
         if (obj.hasOwnProperty("_typeGroup")) {
           var type = obj._typeGroup;
@@ -388,7 +388,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
 
       nlp = {
         url: url, // NLP refdata
-        url_hash: url_hash,
+        document_head_hash: document_head_hash,
         meta: page_meta, // NLP refdata
         items: nlp_items, // NLP raw Calais
         content_lang: content_lang, // NLP lang string
@@ -407,12 +407,12 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
         // TEST MODE: hit next button - or reseed if not english
         if (document.getElementById('maomao-extension-youtube-test')) {
           if (content_lang != "http://d.opencalais.com/lid/DefaultLangId/English") {
-            log.info("content_lang != ENGLISH -- reseeding...");
+            logger().info("content_lang != ENGLISH -- reseeding...");
             if (cslib_isYouTubeSite())
               cslib_test_Reseed();
           } else cslib_test_NextYouTubeVid();
         } else {
-          log.info("Disable youtube test");
+          logger().info("Disable youtube test");
         }
       }, function (error) {
         dispatchDataToBg({ type: 'NLP_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } });
@@ -427,7 +427,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
       if (jqXHR.status == 429) {
         // TODO: handle
         //Object {readyState: 4, responseText: "You exceeded the concurrent request limit for your…later or contact support to upgrade your license.", status: 429, statusText: "Too Many Requests"}
-        log.info("429 RATE LIMIT EXCEEDED! -- wait & reseeding...");
+        logger().info("429 RATE LIMIT EXCEEDED! -- wait & reseeding...");
 
         // TEST MODE: reseed the random walk -- wait 5
         setTimeout(function () {
@@ -437,7 +437,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, url_hash) {
       } else if (jqXHR.status == 400) { // get this for non-english/unsupported langs
         // TEST MODE: reseed the random walk
         if (cslib_isYouTubeSite()) {
-          log.info("400 BAD REQUEST! -- reseeding...");
+          logger().info("400 BAD REQUEST! -- reseeding...");
           cslib_test_Reseed();
         }
       }
