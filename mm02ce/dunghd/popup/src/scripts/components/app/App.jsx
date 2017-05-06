@@ -126,9 +126,12 @@ const userMenu = (auth, dispatch) =>
     </DropdownTrigger>
     <DropdownContent>
       <div className="dropdown-account">
-        <img className="image-account" src={auth.info.picture} alt={auth.info.name} />
+        <span className="image-account">
+          <img src={auth.info.picture} alt={auth.info.name} />
+        </span>
         <span className="info-account">
-          <span>{auth.info.name}</span> <span>({auth.info.email})</span>
+          <span>{auth.info.name}</span> 
+          <span>({auth.info.email})</span>
         </span>
       </div>
       <ul>

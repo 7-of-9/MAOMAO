@@ -2,6 +2,10 @@
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
 
+body {
+  letter-spacing: normal !important;
+}
+
 #maomao-extension-anchor {
   position: relative;
   z-index: 9999999999;

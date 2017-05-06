@@ -36,8 +36,9 @@ const customStyles = {
     padding: 'none',
   },
   cardTitle: {
+    textAlign: 'center',
     padding: '0',
-    marginTop: '10px',
+    margin: '10px 0 15px',
     fontSize: '20px',
     color: '#000',
   },

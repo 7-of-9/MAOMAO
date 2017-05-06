@@ -1,10 +1,16 @@
 @import 'fonts/Roboto/font';
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
-#maomao-extension-anchor{
+
+body {
+  letter-spacing: normal !important;
+}
+
+#maomao-extension-anchor {
   position: relative;
   z-index: 9999999999;
 }
+
 .maomao-ext-component {
   @font-face {
     font-family: 'Roboto';
