@@ -140,7 +140,8 @@ the header section
       .fSBjqc {
         -moz-animation: zoomInLogo 1.5s both;
         -webkit-animation: zoomInLogo 1.5s both;
-        animation: zoomInLogo 1.5s both;
+        animation: zoomInLogo 1.5s both; 
+        /* -webkit-animation-duration: 8s; -webkit-animation-name: shakeIt; -webkit-animation-iteration-count: infinite; animation-duration: 8s; animation-name: shakeIt; animation-iteration-count: infinite; */
       }
       .fSBjqc,
       .dbtaox {
@@ -206,7 +207,7 @@ the header section
         border-width: 8px;
         margin-left: -8px;
       }
-      .btn-login{
+      .btn-login {
         margin-top: 6px;
         color: #222;
         &,
@@ -286,5 +287,71 @@ the header section
   }
   50% {
     opacity: 1;
+  }
+}
+
+@-webkit-keyframes shakeIt {
+  0% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  10% {
+    -webkit-transform: translate(2px, 0) rotate(-10deg);
+    -ms-transform: translate(2px, 0) rotate(-10deg);
+    transform: translate(2px, 0) rotate(-10deg);
+  }
+  20% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  30% {
+    -webkit-transform: translate(2px, 0) rotate(-10deg);
+    -ms-transform: translate(2px, 0) rotate(-10deg);
+    transform: translate(2px, 0) rotate(-10deg);
+  }
+  40% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  100% {
+    -webkit-transform: translate(0, 0) rotate(0deg);
+    -ms-transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@keyframes shakeIt {
+  0% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  10% {
+    -webkit-transform: translate(2px, 0) rotate(-10deg);
+    -ms-transform: translate(2px, 0) rotate(-10deg);
+    transform: translate(2px, 0) rotate(-10deg);
+  }
+  20% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  30% {
+    -webkit-transform: translate(2px, 0) rotate(-10deg);
+    -ms-transform: translate(2px, 0) rotate(-10deg);
+    transform: translate(2px, 0) rotate(-10deg);
+  }
+  40% {
+    -webkit-transform: translate(-2px, 0) rotate(10deg);
+    -ms-transform: translate(-2px, 0) rotate(10deg);
+    transform: translate(-2px, 0) rotate(10deg);
+  }
+  100% {
+    -webkit-transform: translate(0, 0) rotate(0deg);
+    -ms-transform: translate(0, 0) rotate(0deg);
+    transform: translate(0, 0) rotate(0deg);
   }
 }

@@ -88,7 +88,7 @@ class ChromeInstall extends React.Component {
             Install &nbsp;
             <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension!
           </h1>
-          <p className='text-engine' dangerouslySetInnerHTML={{__html: replaceMMIcon(description)}} />
+          <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{__html: replaceMMIcon(description)}} />
           <div className='hero-caption animated fadeInUp'>
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} /> }
             {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
