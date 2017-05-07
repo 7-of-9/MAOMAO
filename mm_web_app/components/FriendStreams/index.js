@@ -329,6 +329,7 @@ class FriendStreams extends React.Component {
                 <li>
                   <div className='input-group'>
                     <DebounceInput
+                      className='form-control'
                       placeholder='Search URL ...'
                       minLength={2}
                       debounceTimeout={300}

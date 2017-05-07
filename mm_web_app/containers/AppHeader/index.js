@@ -151,11 +151,12 @@ class AppHeader extends React.Component {
   render () {
     return (
       <NavItem>
-        { this.props.store.isLogin &&
+        { this.props.store.isLogin &&          
           <div className='dropdown account-dropdown'>
             <a className='dropdown-toggle' href='#' data-toggle='dropdown'>
               <img className='image-account' src={this.props.store.avatar} alt={this.props.store.userId} width='33' height='33' />
             </a>
+            <a className='link-logout-res' onClick={this.onLogout} href="#"><i className='fa fa-sign-out' /> Sign Out</a>
             <ul className='dropdown-menu pull-right'>
               { this.props.store.user && this.props.store.user.name &&
                 <div className='account-dropdown__identity account-dropdown__segment'>

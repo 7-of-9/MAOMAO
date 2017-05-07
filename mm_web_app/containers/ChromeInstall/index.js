@@ -121,7 +121,7 @@ class ChromeInstall extends React.Component {
             {!isInstall && !isMobile && isChrome && !shareInfo && <AddToChrome className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</AddToChrome> }
             {(isMobile || !isChrome) && !isLogin &&
             <div className='switch-browser'>
-              <button className='btn btn-login' onClick={() => { this.props.ui.showSignIn() }}>JOIN NOW</button>
+              <button className='btn btn-login btn-effect' onClick={() => { this.props.ui.showSignIn() }}>JOIN NOW</button>
             </div>
             }
           </div>

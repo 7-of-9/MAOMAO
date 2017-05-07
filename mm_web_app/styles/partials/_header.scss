@@ -32,9 +32,12 @@ the header section
     }
     .navbar-toggler {
       cursor: pointer;
+      &:focus {
+        outline: 0;
+      }
       @media (max-width: 767px) {
         @include border-radius(3px);
-        margin-top: 9px;
+        margin-top: 17px;
         float: right;
         border: 1px solid #ccc;
         padding: 0.5rem 0.75rem;
@@ -88,11 +91,21 @@ the header section
             width: 0;
             background: transparent;
             transition: width .3s ease, background-color .5s ease;
+            @media (max-width: 767px) {
+              opacity: 0;
+              display: none;
+              visibility: hidden;
+            }
           }
           &:hover:after,
           &.active:after {
             width: 100%;
             background-color: #2db7f5;
+            @media (max-width: 767px) {
+              opacity: 0;
+              display: none;
+              visibility: hidden;
+            }
           }
           &:last-child {
             padding-right: 0;
@@ -100,6 +113,11 @@ the header section
             &.active:after {
               width: 0;
               background: none;
+              @media (max-width: 767px) {
+                opacity: 0;
+                display: none;
+                visibility: hidden;
+              }
             }
           }
           .btn-login {
@@ -140,7 +158,7 @@ the header section
       .fSBjqc {
         -moz-animation: zoomInLogo 1.5s both;
         -webkit-animation: zoomInLogo 1.5s both;
-        animation: zoomInLogo 1.5s both; 
+        animation: zoomInLogo 1.5s both;
         /* -webkit-animation-duration: 8s; -webkit-animation-name: shakeIt; -webkit-animation-iteration-count: infinite; animation-duration: 8s; animation-name: shakeIt; animation-iteration-count: infinite; */
       }
       .fSBjqc,
@@ -166,7 +184,7 @@ the header section
     }
     .neal-mobile-nav {
       position: absolute;
-      top: 54px;
+      top: 62px;
       left: auto;
       right: 15px;
       z-index: 1000;
@@ -245,6 +263,33 @@ the header section
         }
         @media (max-width: 768px) {
           padding: 0;
+        }
+        @media (max-width: 767px) {
+          opacity: 0;
+          display: none;
+          visibility: hidden;
+        }
+      }
+      .link-logout-res {
+        opacity: 0;
+        display: none;
+        visibility: hidden;
+        color: #222;
+        font-weight: 700;
+        font-size: 0.875rem;
+        line-height: 1rem;
+        text-transform: uppercase;
+        &:hover,
+        &:focus {
+          @include transition(all 0.2s ease-out 0s);
+          color: #2db7f5;
+          text-decoration: none;
+        }
+        @media (max-width: 767px) {
+          margin: 0.4375rem 0;
+          opacity: 1;
+          display: block;
+          visibility: visible;
         }
       }
       .dropdown-menu {

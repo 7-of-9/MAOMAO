@@ -29,6 +29,10 @@ the main-content section
     width: 120px;
     min-height: 100%;
     background-color: #fff;
+    @media (max-width: 590px) {
+      float: none;
+      width: 100%;
+    }
   }
   .main-content {
     @include box-shadow(0 1px 2px 0 rgba(0, 0, 0, 0.22));
@@ -48,18 +52,27 @@ the main-content section
         clear: none;
       }
     }
+    @media (max-width: 590px) {
+      margin-left: 0;
+    }
   }
   &.wrap-toggle {
     .slidebar-nav {
-      width: 68px;
+      width: 69px;
       position: relative;
       z-index: 1000;
       .stream-text {
         display: none;
       }
+      @media (max-width: 590px) {
+        width: 100%;
+      }
     }
     .main-content {
       margin-left: 70px;
+      @media (max-width: 590px) {
+        margin-left: 0;
+      }
     }
     .react-tabs {
       .ReactTabs__TabList {
@@ -98,6 +111,7 @@ the main-content section
             height: 0;
             border: 6px solid transparent;
             content: '';
+            
           }
           &:hover:after,
           &:hover:before {
@@ -108,10 +122,20 @@ the main-content section
           &:before,
           &:after {
             @include transform (translateX(0));
+            @media (max-width: 390px) {
+              opacity: 0;
+              display: none;
+              visibility: hidden;
+            }
           }
           &:hover:after,
           &:hover:before {
             @include transform (translateX(10px));
+            @media (max-width: 390px) {
+              opacity: 0;
+              display: none;
+              visibility: hidden;
+            }
           }
         }
         // right tooltip
@@ -129,6 +153,19 @@ the main-content section
         .ReactTabs__Tab {
           padding: 7px 3px;
           min-height: inherit;
+          @media (max-width: 590px) {
+            padding: 7px 20px;
+            display: inline-block;
+            border-right: 1px solid #e1e5eb;
+          }
+          &:first-child {
+            @media (max-width: 590px) {
+              border-left: 1px solid #e1e5eb;
+            }
+          }
+        }
+        @media (max-width: 590px) {
+          overflow: hidden;
         }
       }
     }

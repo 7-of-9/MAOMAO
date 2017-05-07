@@ -38,7 +38,7 @@ const businessAddress = (
 
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: 0
+  transitionDuration: '0.4s'
 }
 
 function mashUp (store) {
