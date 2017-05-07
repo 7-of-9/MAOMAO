@@ -66,7 +66,7 @@ export default (state = initialState, action, nlp) => {
       return Object.assign({}, state, { userHash: window.userHash });
     case 'USER_AFTER_LOGOUT':
       window.after_logout();
-      return Object.assign({}, state, { contacts: [], userId: -1, userHash: '', googleUserId: '', facebookUserId: '' });
+      return Object.assign({}, state, { isLogin: false, contacts: [], userId: -1, userHash: '', googleUserId: '', facebookUserId: '' });
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
     case 'AUTH_REJECTED':

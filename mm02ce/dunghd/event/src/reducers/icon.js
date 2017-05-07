@@ -103,7 +103,11 @@ export default (state = initialState, action, auth, nlp) => {
     case 'SWITCH_ICON_TEXT':
     case 'SWITCH_XP':
     case 'YOUTUBE_TEST':
-      ctxMenuLogin(auth.info, nlp.records);
+      if (auth.isLogin) {
+        ctxMenuLogin(auth.info, nlp.records);
+      } else {
+        ctxMenuLogout();
+      }
       return Object.assign({}, state, action.payload);
 
     case 'RESET_SETTINGS':
@@ -112,7 +116,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.5.24',
+        title: 'v0.5.25',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });

@@ -9,22 +9,23 @@ const isAllowToShare = (url, records) => {
 };
 
 function createShareCtxMenu(records) {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  }, (tabs) => {
-    if (tabs != null && tabs.length > 0) {
-      const url = tabs[0].url;
-      if (isAllowToShare(url, records)) {
-        chrome.contextMenus.create({ contexts: ['page_action', 'page', 'selection'], id: 'mm-btn-share', title: ' maomao share' });
+  if (records.length > 0) {
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    }, (tabs) => {
+      if (tabs != null && tabs.length > 0) {
+        const url = tabs[0].url;
+        if (isAllowToShare(url, records)) {
+          chrome.contextMenus.create({ contexts: ['page_action', 'page', 'selection'], id: 'mm-btn-share', title: ' maomao share' });
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 
-function ctxMenu(records) {
-  createShareCtxMenu(records);
+function ctxMenu() {
   const parentId = chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-dev-menu', title: 'Dev menu' });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], type: 'separator' });
@@ -38,7 +39,7 @@ function ctxMenu(records) {
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.24',
+    title: 'v0.5.25',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
@@ -55,13 +56,14 @@ export function ctxMenuLogin(userInfo, records) {
     id: 'mm-btn-logout',
   });
   chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
-  ctxMenu(records);
+  ctxMenu();
+  createShareCtxMenu(records);
 }
 
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.24',
+    title: 'v0.5.25',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
@@ -73,7 +75,7 @@ export function ctxMenuLogout() {
     id: 'mm-btn-login',
   });
   chrome.contextMenus.create({ contexts: ['browser_action'], type: 'separator' });
-  ctxMenu([]);
+  ctxMenu();
 }
 
 export function md5hash(userId) {

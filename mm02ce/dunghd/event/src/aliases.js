@@ -106,6 +106,7 @@ const authLogout = () => (
       dispatch({
         type: 'AUTH_PENDING',
       });
+      notifyMsg('Sign Out', 'You are about to sign out!');
       logout(auth)
         .then(data => dispatch(actionCreator('LOGOUT_FULFILLED', { token: data.token, info: data.info })))
         .catch(error => dispatch(actionCreator('LOGOUT_REJECTED', error)));
