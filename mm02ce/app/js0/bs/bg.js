@@ -428,6 +428,8 @@ function inject_cs(session, tab_id, skip_text) {
     'js0/lib/algorithms/crc32.js',
     'js0/lib/algorithms/fletcher.js',
     'js0/lib/algorithms/fnv32.js',
+    'js0/lib/justext/justext.js',
+    'js0/lib/franc.js',
     'js0/ajax/mm_api.js',
     'js0/nlp/calais.js',
     'js0/cs/cs_meta.js',

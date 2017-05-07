@@ -10,8 +10,6 @@ import Config from './config';
 
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
-require('expose-loader?justext!justext');
-require('expose-loader?franc!franc');
 require('expose-loader?StackTrace!stacktrace-js');
 require('expose-loader?log!loglevel');
 
