@@ -130,7 +130,7 @@ const userMenu = (auth, dispatch) =>
           <img src={auth.info.picture} alt={auth.info.name} />
         </span>
         <span className="info-account">
-          <span>{auth.info.name}</span> 
+          <span>{auth.info.name}</span>
           <span>({auth.info.email})</span>
         </span>
       </div>
@@ -370,8 +370,17 @@ const enhance = compose(
         message: 'Please wait in a minute!',
       }));
       props.dispatch(checkAuth('FACEBOOK'))
-        .then((data) => {
-          logger.warn('data', data);
+        .then((result) => {
+          logger.warn('result', result);
+          if (result) {
+            const { error } = result;
+            if (error) {
+              props.dispatch(notify({
+                title: 'Oops!',
+                message: error.message,
+              }));
+            }
+          }
         })
         .catch((err) => {
           props.dispatch(notify({

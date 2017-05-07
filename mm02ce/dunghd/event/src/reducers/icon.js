@@ -4,6 +4,7 @@ import { ctxMenuLogin, ctxMenuLogout } from './helpers';
 const MIN_NSS = 10;
 
 const initialState = {
+  appId: '',
   isEnable: false,
   isEnableXP: false,
   isEnableIconText: false,
@@ -197,13 +198,13 @@ export default (state = initialState, action, auth, nlp) => {
         return Object.assign({}, state, {
           isEnable: true,
           urls,
-        });
+        }, { appId: window.BG_APP_UUID });
       }
 
     case 'LOGOUT_FULFILLED': {
       const url = window.sessionObservable.activeUrl;
       window.setIconApp(url, 'gray', '', window.BG_INACTIVE_COLOR);
-      return Object.assign({}, initialState);
+      return Object.assign({}, initialState, { appId: window.BG_APP_UUID });
     }
 
     case 'AUTH_FULFILLED': {

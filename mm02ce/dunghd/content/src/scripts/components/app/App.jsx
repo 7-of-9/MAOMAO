@@ -464,12 +464,14 @@ const enhance = compose(
       props.dispatch(checkAuth('FACEBOOK'))
         .then((result) => {
           logger.warn('result', result);
-          const { error } = result;
-          if (error) {
-            props.dispatch(notify({
-              title: 'Oops!',
-              message: error.message,
-            }));
+          if (result) {
+            const { error } = result;
+            if (error) {
+              props.dispatch(notify({
+                title: 'Oops!',
+                message: error.message,
+              }));
+            }
           }
         })
         .catch((err) => {

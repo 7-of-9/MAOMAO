@@ -266,6 +266,9 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
     isGuest = true;
     userId = -1;
     BG_APP_UUID = new_guid();
+    session = session_get_by_tab(sender.tab, true);
+    if (session != null)
+      inject_cs(session, null, false);
   }
 
   // replaces deprecated sendRequest

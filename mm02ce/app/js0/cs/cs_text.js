@@ -9,22 +9,22 @@
 //var have_run_text_proc = false;
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
+  // var app_uuid = app_uuid
+  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
   logger().info("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
-  logger().info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())], cs_log_style_info);
+  logger().info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + app_uuid], cs_log_style_info);
   logger().info("%c > document.location.href=" + document.location.href, cs_log_style_info);
-  logger().info("%c > mm_app_uuid " + (mm_app_uuid !== undefined && mm_app_uuid()), cs_log_style_info);
+  logger().info("%c > mm_app_uuid " + app_uuid, cs_log_style_info);
   //document.addEventListener("DOMContentLoaded", function (event)
   {
-    // TODO: Try to clear sessionStorage when extension reload
-    // FIXME: Use sessionStorage is not stable
     //if (!have_run_text_proc) {
-    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())]) {
+    if (document.location.href != sessionStorage["mm_cs_text_haveFiredDocReady_" + app_uuid]) {
       //have_run_text_proc = true;
-      logger().info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())], cs_log_style_info);
-      sessionStorage["mm_cs_text_haveFiredDocReady_" + (mm_app_uuid !== undefined && mm_app_uuid())] = document.location.href;
+      logger().info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + app_uuid], cs_log_style_info);
+      sessionStorage["mm_cs_text_haveFiredDocReady_" + app_uuid] = document.location.href;
       logger().info("%c > SET mm_cs_text_haveFiredDocReady=" + document.location.href, cs_log_style_info);
       logger().info("%c $(document).ready{ajax_get_UrlNlpInfo.complete} -- readyState=" + document.readyState, cs_log_style_info);
-
+      sessionStorage['mm_app_uuid'] = app_uuid;
       // this *masks* the problem of $.ready being called an indeterminate # of times??
       var millisecondsToWait = 1500; // shouldn't be necessary, but is! indeterminate behaviour without this, esp. on YT
       setTimeout(function () {
@@ -110,12 +110,13 @@ $(document).ready(function () {
 });
 
 function process_text(page_meta) {
+  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
 
   // prevent running text processing more than once (see above: $.ready firing more than once on a variety of conditions)
-  logger().info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())], "background:white; color:orange; font-weight:bold;");
+  logger().info("%c >> mm_cs_text_haveRunTextProc=" + sessionStorage["mm_cs_text_haveRunTextProc_" + app_uuid], "background:white; color:orange; font-weight:bold;");
   logger().info("%c >> document.location=" + document.location.href, "background:white; color:orange; font-weight:bold;");
-  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())]) {
-    logger().info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())] + "]", "background:orange; color:black; font-weight:bold;");
+  if (document.location.href == sessionStorage["mm_cs_text_haveRunTextProc_" + app_uuid]) {
+    logger().info("%c >> mm_cs_text_haveRunTextProc=document.location.href-- NOP: already run text processing for [" + sessionStorage["mm_cs_text_haveRunTextProc_" + app_uuid] + "]", "background:orange; color:black; font-weight:bold;");
     if (document.getElementById('maomao-extension-youtube-test')) {
       cslib_test_NextYouTubeVid();
     } else {
@@ -123,7 +124,7 @@ function process_text(page_meta) {
     }
     return;
   }
-  sessionStorage["mm_cs_text_haveRunTextProc_" + (mm_app_uuid !== undefined && mm_app_uuid())] = document.location.href;
+  sessionStorage["mm_cs_text_haveRunTextProc_" + app_uuid] = document.location.href;
 
   logger().info("%c **** CS TEXT PROCESSING RUNNING... [" + window.location + "] ****", "background: #888; color: #bada55; font-weight:bold; font-size:large;");
   logger().info("%c >> sending process_text_start...", "background:blue; color:white; font-weight:bold;");

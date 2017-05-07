@@ -169,11 +169,14 @@ function onClickHandler(info) {
     case 'mm-btn-login':
     case 'mm-btn-show':
       {
-        const data = {
+        store.dispatch({
+          type: 'CLOSE_MODAL',
+          payload: {},
+        });
+        store.dispatch({
           type: 'OPEN_MODAL',
           payload: {},
-        };
-        store.dispatch(data);
+        });
         break;
       }
     default:
