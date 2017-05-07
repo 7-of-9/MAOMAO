@@ -169,14 +169,18 @@ function onClickHandler(info) {
     case 'mm-btn-login':
     case 'mm-btn-show':
       {
-        store.dispatch({
-          type: 'CLOSE_MODAL',
-          payload: {},
-        });
-        store.dispatch({
-          type: 'OPEN_MODAL',
-          payload: {},
-        });
+        store.dispatch(batchActions([
+          {
+            type: 'OPEN_MODAL',
+            payload: {},
+          },
+          {
+            type: 'MAOMAO_ENABLE',
+            payload: {
+              url: window.sessionObservable.activeUrl,
+            },
+          },
+        ]));
         break;
       }
     default:

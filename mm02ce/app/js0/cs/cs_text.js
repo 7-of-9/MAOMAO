@@ -10,11 +10,15 @@
 //document.addEventListener("DOMContentLoaded", function (event) {
 $(document).ready(function () {
   // var app_uuid = app_uuid
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
+  var app_uuid = typeof mm_app_uuid === 'function' && mm_app_uuid();
   logger().info("%c $(document).ready [cs_text.js] -- readyState=" + document.readyState, cs_log_style_hi);
   logger().info("%c > mm_cs_text_haveFiredDocReady=" + sessionStorage["mm_cs_text_haveFiredDocReady_" + app_uuid], cs_log_style_info);
   logger().info("%c > document.location.href=" + document.location.href, cs_log_style_info);
   logger().info("%c > mm_app_uuid " + app_uuid, cs_log_style_info);
+  if (sessionStorage['mm_app_uuid'] !== app_uuid) {
+    logger().warn('reInjectScript');
+    reInjectScript();
+  }
   //document.addEventListener("DOMContentLoaded", function (event)
   {
     //if (!have_run_text_proc) {

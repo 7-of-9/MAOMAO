@@ -36,13 +36,6 @@ function logout(auth) {
     }
 
     // NOTE: set value for bg_session.js
-    window.isGuest = true;
-    window.userId = -1;
-    window.userHash = '';
-    window.enableTestYoutube = false;
-    window.enableImscore = false;
-    window.enableIconText = false;
-    window.enableXP = false;
     if (auth.googleUserId && auth.googleToken) {
       chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
         if (chrome.runtime.lastError) {

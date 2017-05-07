@@ -257,20 +257,6 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   log.info('%c *** GOT MESSAGE > sender=' + JSON.stringify(sender) + ' ***', 'background: #222; color: #bada55');
   var session;
 
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGIN') {
-    session = session_get_by_tab(sender.tab, true);
-    session_add_view_instance(session);
-  }
-
-  if (message && message.payload && message.payload.type && message.payload.type === 'USER_AFTER_LOGOUT') {
-    isGuest = true;
-    userId = -1;
-    BG_APP_UUID = new_guid();
-    session = session_get_by_tab(sender.tab, true);
-    if (session != null)
-      inject_cs(session, null, false);
-  }
-
   // replaces deprecated sendRequest
   if (message.doc_event == true) {
     handle_cs_doc_event(message, sender);
@@ -280,10 +266,10 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   // vk.com -- history.pushState() navigation
   // http://stackoverflow.com/questions/13806307/how-to-insert-content-script-in-google-chrome-extension-when-page-was-changed-vi
   if (message == 'Rerun script') {
-    log.trace('Rerun script');
-    session = session_get_by_url(sender.tab.url);
-    if (session != null)
-      inject_cs(session, null, false);
+    // session = session_get_by_url(sender.tab.url);
+    session = session_get_by_tab(sender.tab, true);
+    log.warn('Rerun script', session);
+    if (session != null) inject_cs(session, null, false);
   }
 
   // session: CS process_text started callback
@@ -336,6 +322,38 @@ chrome.extension.onMessage.addListener(function (message, sender, callback) {
   if (message.log_error == true)
     log.error('\t\t' + message.log_msg, message.log_format);
 });
+
+function after_login(userId) {
+  log.warn('after_login', userId);
+  window.userId = userId;
+  window.isGuest = false;
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    var tab = tabs[0];
+    if (tab != null && process_url(tab.url)) {
+      var session = session_get_by_tab(tab, true);
+      session_add_view_instance(session);
+    }
+  });
+}
+
+function after_logout() {
+  log.warn('reset data on logout');
+  window.isGuest = true;
+  window.userId = -1;
+  window.userHash = '';
+  window.BG_APP_UUID = new_guid();
+  window.enableTestYoutube = false;
+  window.enableImscore = false;
+  window.enableIconText = false;
+  window.enableXP = false;
+  // TODO: running below code on all tabs
+  chrome.tabs.executeScript({
+    code: 'mm_app_uuid = ' + undefined + '; mm_user_id = ' + undefined + '; mm_user_hash = ' + undefined + ';'
+  });
+}
 
 function handle_cs_doc_event(data, sender) {
   // dbg sounds
@@ -440,56 +458,54 @@ function inject_cs(session, tab_id, skip_text) {
       if (chrome.runtime.lastError) {
         log.warn(chrome.runtime.lastError);
       }
-      if (tabs != null && tabs.length > 0)
-        var current_tab = tabs[0];
+      var current_tab;
+      if (tabs != null && tabs.length > 0) {
+        current_tab = tabs[0];
+      } else {
+        log.warn('not found tab', tab_id);
+        return;
+      }
 
-      var process = process_url(tab.url);
-      if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
+      var process = process_url(current_tab.url);
+      if (process && !isGuest && NotInjectCSUrls.indexOf(current_tab.url) === -1) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
-        ajax_isTldAllowable(tab.url, function (data) {
+        ajax_isTldAllowable(current_tab.url, function (data) {
           log.info('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
-          chrome.tabs.get(tab_id, function (existTab) {
-            if (chrome.runtime.lastError) {
-              log.warn(chrome.runtime.lastError);
-            }
-            if (existTab && existTab.url === tab.url) {
-              if (data.allowable) {
+          if (data.allowable) {
+            chrome.tabs.executeScript({
+              code: 'function mm_app_uuid(){ return "' + window.BG_APP_UUID + '";} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
+            });
+            $.each(cs_files, function (ndx, cs) {
+              try {
                 chrome.tabs.executeScript({
-                  code: 'function mm_app_uuid(){ return "' + window.BG_APP_UUID + '";} function mm_user_id(){ return ' + window.userId + ';} function mm_user_hash(){ return "' + window.userHash + '";}'
-                });
-                $.each(cs_files, function (ndx, cs) {
-                  try {
-                    chrome.tabs.executeScript({
-                      file: cs,
-                      runAt: run_at
-                    }, function (result) {
-                      if (chrome.runtime.lastError) {
-                        log.warn(chrome.runtime.lastError);
-                      }
-                      // log.info('inject file', cs, run_at, result);
-                    });
-                  } catch (err) {
-                    log.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + tab.url + '] (skip_text=' + skip_text + ')', log_style);
-                    log.warn(err);
+                  file: cs,
+                  runAt: run_at
+                }, function (result) {
+                  if (chrome.runtime.lastError) {
+                    log.warn(chrome.runtime.lastError);
                   }
+                  // log.info('inject file', cs, run_at, result);
                 });
-                log.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
-                if (session != null)
-                  session.injected_cs_timestamp = Date.now();
-              } else {
-                setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+              } catch (err) {
+                log.info('%c (re)injection **FAILED** tab_id=' + tab_id + ' [' + current_tab.url + '] (skip_text=' + skip_text + ')', log_style);
+                log.warn(err);
               }
-            }
-          });
+            });
+            log.info('%c (re)injection OK current_tab (skip_text=' + skip_text + ')', log_style);
+            if (session != null)
+              session.injected_cs_timestamp = Date.now();
+          } else {
+            setIconApp(current_tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+          }
         }, function (error) {
           StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
           if (NotInjectCSUrls.indexOf(tab.url) === -1) {
             NotInjectCSUrls.push(tab.url);
           }
-          setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
+          setIconApp(current_tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
         });
       } else {
-        log.warn('Do not inject cs on url #1', tab.url);
+        log.warn('Do not inject cs on url #1', current_tab.url);
       }
     });
   } else {

@@ -41,11 +41,11 @@ export default (state = initialState, action, nlp) => {
       return Object.assign({}, state, { isPending: true });
     case 'FETCH_CONTACTS_PENDING':
       return Object.assign({}, state, { isFetchContacts: true });
-    case 'GOOGLE_CONTACTS_FULFILLED' :
-    return Object.assign({}, state, {
-      googleToken: action.payload.googleToken || state.googleToken,
-      googleUserId: action.payload.googleUserId || state.googleUserId,
-    });
+    case 'GOOGLE_CONTACTS_FULFILLED':
+      return Object.assign({}, state, {
+        googleToken: action.payload.googleToken || state.googleToken,
+        googleUserId: action.payload.googleUserId || state.googleUserId,
+      });
     case 'AUTH_FULFILLED':
       ctxMenuLogin(action.payload.info, nlp.records);
       return Object.assign({}, state, {
@@ -59,13 +59,13 @@ export default (state = initialState, action, nlp) => {
         isLogin: true,
       });
     case 'USER_AFTER_LOGIN':
-        window.userId = action.payload.userId;
-        window.isGuest = false;
+      window.after_login(action.payload.userId);
       return Object.assign({}, state, action.payload);
     case 'USER_HASH':
       window.userHash = md5hash(action.payload.userHash);
       return Object.assign({}, state, { userHash: window.userHash });
     case 'USER_AFTER_LOGOUT':
+      window.after_logout();
       return Object.assign({}, state, { contacts: [], userId: -1, userHash: '', googleUserId: '', facebookUserId: '' });
     case 'FETCH_CONTACTS_FULFILLED':
       return Object.assign({}, state, { contacts: action.payload.data, isFetchContacts: false });
@@ -88,16 +88,19 @@ export default (state = initialState, action, nlp) => {
       });
     case 'FETCH_CONTACTS_REJECTED':
       return Object.assign({}, state, {
-         message: action.payload.error.message,
-          isFetchContacts: false,
-         });
+        message: action.payload.error.message,
+        isFetchContacts: false,
+      });
     case 'GOOGLE_CONTACTS_REJECTED':
       return Object.assign({}, state, {
-         message: action.payload.error.message,
-         });
+        message: action.payload.error.message,
+      });
     case 'LOGOUT_FULFILLED':
       ctxMenuLogout();
       // TODO: clear all sessions on bg and tracking tab
+      window.sessionObservable.icons.clear();
+      window.sessionObservable.urls.clear();
+      window.mm_load();
       return Object.assign({}, initialState);
     case 'LOGOUT_REJECTED':
       return Object.assign({}, state, {

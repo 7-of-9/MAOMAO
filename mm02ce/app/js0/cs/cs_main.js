@@ -12,33 +12,28 @@ var cs_log_style_hi = "background: blue; color: white; font-weight:bold;";
 // doc.ready
 //
 $(document).ready(function () { // fires more than once! observed; proven. lol.
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
-  logger().info("%c **** CS HANDLERS RUNNING... [" + window.location + "][" + app_uuid + "] ****", cs_log_style_hi);
-  if (sessionStorage['mm_app_uuid'] !== app_uuid) {
-    chrome.extension.sendMessage('Rerun script');
-  } else {
-    // setup up IM events
-    listenAndCoalesce(document, "scroll");
+  logger().info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
+  // setup up IM events
+  listenAndCoalesce(document, "scroll");
 
-    // For some reason, "resize" doesn't seem to work with addEventListener.
-    if ((window == window.top) && document.body && !document.body.onresize) {
-      document.body.onresize = function (event) {
-        sendEvent("resize", "IM", "started");
-      };
-    }
-
-    listenAndCoalesce(document, "click");
-
-    listenAndCoalesce(document, "keypress", function (event) {
-      if (event.charCode == 13)
-        return false;
-
-      // TODO(erikkay) This doesn't work in gmail's rich texts compose window.
-      return event.target.tagName == "TEXTAREA" ||
-        event.target.tagName == "INPUT" ||
-        event.target.isContentEditable;
-    });
+  // For some reason, "resize" doesn't seem to work with addEventListener.
+  if ((window == window.top) && document.body && !document.body.onresize) {
+    document.body.onresize = function (event) {
+      sendEvent("resize", "IM", "started");
+    };
   }
+
+  listenAndCoalesce(document, "click");
+
+  listenAndCoalesce(document, "keypress", function (event) {
+    if (event.charCode == 13)
+      return false;
+
+    // TODO(erikkay) This doesn't work in gmail's rich texts compose window.
+    return event.target.tagName == "TEXTAREA" ||
+      event.target.tagName == "INPUT" ||
+      event.target.isContentEditable;
+  });
 
   // UI/TESTS
   ///////////////////////////////////////////
@@ -91,12 +86,7 @@ $(document).ready(function () { // fires more than once! observed; proven. lol.
 });
 
 $(window).on('resize', function (event) {
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
-  if (sessionStorage['mm_app_uuid'] === app_uuid) {
-    sendEvent("resize", "IM", "started");
-  } else {
-    chrome.extension.sendMessage('Rerun script');
-  }
+  sendEvent("resize", "IM", "started");
 });
 
 
@@ -109,30 +99,15 @@ $(window).on('resize', function (event) {
 // used by BS for TOT tracking
 //
 window.onbeforeunload = function (e) {
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
-  if (sessionStorage['mm_app_uuid'] === app_uuid) {
-    sendEvent("onbeforeunload", "WINDOW", document.location);
-  } else {
-    chrome.extension.sendMessage('Rerun script');
-  }
+  sendEvent("onbeforeunload", "WINDOW", document.location);
 }
 
 window.onunload = function (e) {
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
-  if (sessionStorage['mm_app_uuid'] === app_uuid) {
-    sendEvent("onunload", "WINDOW", document.location);
-  } else {
-    chrome.extension.sendMessage('Rerun script');
-  }
+  sendEvent("onunload", "WINDOW", document.location);
 }
 
 window.onload = function (e) {
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
-  if (sessionStorage['mm_app_uuid'] === app_uuid) {
-    sendEvent("onload", "WINDOW", document.location);
-  } else {
-    chrome.extension.sendMessage('Rerun script');
-  }
+  sendEvent("onload", "WINDOW", document.location);
 }
 
 //
@@ -141,10 +116,22 @@ window.onload = function (e) {
 function sendEvent(event, type, value) {
   // logger().warn('sendEvent', event, type, value);
   //if (chrome.extension != null) chrome.extension.sendRequest({ eventName: event, eventValue: value });
+  var app_uuid = typeof mm_app_uuid === 'function' && mm_app_uuid();
+  if (sessionStorage['mm_app_uuid'] !== app_uuid) {
+    return;
+  }
 
-  var msg = { "doc_event": true, "type": type, "eventName": event, "eventValue": value };
-  //logger().warn(msg);
-  chrome.extension.sendMessage(msg);
+  var m_uid = typeof mm_user_id === 'function' && mm_user_id();
+  if (m_uid && m_uid > 0) {
+    logger().info('sendEvent', m_uid, app_uuid, event, type, value);
+    var msg = { "doc_event": true, "type": type, "eventName": event, "eventValue": value };
+    //logger().warn(msg);
+    chrome.extension.sendMessage(msg);
+  }
+}
+
+function reInjectScript() {
+  chrome.extension.sendMessage('Rerun script');
 }
 
 /**
@@ -172,9 +159,8 @@ function handleEvent(event, type, validator) {
       return;
     }
   }
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
+  var app_uuid = typeof mm_app_uuid === 'function' && mm_app_uuid();
   if (sessionStorage['mm_app_uuid'] !== app_uuid) {
-    chrome.extension.sendMessage('Rerun script');
     return;
   }
   // logger().warn('handleEvent', event, type);
@@ -191,11 +177,11 @@ function handleEvent(event, type, validator) {
 
 function listenAndCoalesce(target, type, validator) {
   // logger().warn('listenAndCoalesce', target, type);
-  var app_uuid = typeof mm_app_uuid !== undefined && mm_app_uuid();
+  var app_uuid = typeof mm_app_uuid === 'function' && mm_app_uuid();
   if (sessionStorage['mm_app_uuid'] !== app_uuid) {
-    chrome.extension.sendMessage('Rerun script');
     return;
   }
+  logger().info('listenAndCoalesce', app_uuid, target, type);
   target.addEventListener(type, function (event) {
     handleEvent(event, type, validator);
   }, true);
