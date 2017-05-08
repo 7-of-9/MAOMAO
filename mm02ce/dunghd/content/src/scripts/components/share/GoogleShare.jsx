@@ -36,7 +36,7 @@ function getSuggestions(contacts, value) {
   };
   const fuse = new Fuse(contacts, options);
   const result = fuse.search(value);
-  return result.slice(0, 5).map(item => item && item.item);
+  return result.slice(0, 5);
 }
 
 /* eslint-disable no-param-reassign */
@@ -74,17 +74,17 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
   onSuggestionsClearRequested }) => <div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
-      mostRecentUses.map((contact) => {
-        if (!selectedContacts.map(item => item.email).includes(contact.email)) {
-          return (
-            <Contact
-              onClick={() => { addContact(contact); }} key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image}
-            />
-           );
-        }
-        return '';
-      })
-    }
+        mostRecentUses.map((contact) => {
+          if (!selectedContacts.map(item => item.email).includes(contact.email)) {
+            return (
+              <Contact
+                onClick={() => { addContact(contact); }} key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image}
+              />
+            );
+          }
+          return '';
+        })
+      }
     </div>
     <div className="panel-autocomplete">
       <Autosuggest
@@ -95,18 +95,18 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
         renderSuggestion={renderSuggestion}
         highlightFirstSuggestion
         inputProps={{
-        placeholder: 'To: type name to search...',
-        value,
-        onChange,
-      }}
+          placeholder: 'To: type name to search...',
+          value,
+          onChange,
+        }}
       />
     </div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
-      selectedContacts.map(contact => (
-        <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+        selectedContacts.map(contact => (
+          <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
-    }
+      }
     </div>
   </div>;
 
@@ -129,11 +129,11 @@ GoogleShare.defaultProps = {
   mostRecentUses: [],
   selectedContacts: [],
   suggestions: [],
-  addContact: () => {},
-  removeContact: () => {},
-  onChange: () => {},
-  onSuggestionsFetchRequested: () => {},
-  onSuggestionsClearRequested: () => {},
+  addContact: () => { },
+  removeContact: () => { },
+  onChange: () => { },
+  onSuggestionsFetchRequested: () => { },
+  onSuggestionsClearRequested: () => { },
 };
 
 
@@ -153,8 +153,8 @@ const enhance = compose(
     addContact: props => (contact) => {
       const emails = props.selectedContacts.map(item => item.email);
       if (!emails.includes(contact.email)) {
-          props.changeSelectedContacts([].concat(props.selectedContacts, contact));
-          props.handleChange([].concat(props.selectedContacts, contact));
+        props.changeSelectedContacts([].concat(props.selectedContacts, contact));
+        props.handleChange([].concat(props.selectedContacts, contact));
       }
     },
     removeContact: props => (contact) => {
