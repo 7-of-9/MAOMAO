@@ -120,12 +120,7 @@ const getShareTopicCode = (code, key) => {
 const userMenu = (auth, dispatch) =>
   <Dropdown className="dropdown-panel">
     <DropdownTrigger className="trigger-nav">
-      <span />
-      <span />
-      <span />
-    </DropdownTrigger>
-    <DropdownContent>
-      <div className="dropdown-account">
+      <span className="dropdown-account">
         <span className="image-account">
           <img src={auth.info.picture} alt={auth.info.name} />
         </span>
@@ -133,7 +128,9 @@ const userMenu = (auth, dispatch) =>
           <span>{auth.info.name}</span>
           <span>({auth.info.email})</span>
         </span>
-      </div>
+      </span>
+    </DropdownTrigger>
+    {/*<DropdownContent>
       <ul>
         <li>
           <a
@@ -156,7 +153,7 @@ const userMenu = (auth, dispatch) =>
           >Logout</a>
         </li>
       </ul>
-    </DropdownContent>
+    </DropdownContent>*/}
   </Dropdown>;
 
 const render = (
@@ -211,13 +208,15 @@ const render = (
       logger.warn('currentTopics', currentTopics);
       return (
         <div className="popup-browser">
-          {auth.isLogin && userMenu(auth, dispatch)}
-          <h3 className="share-heading">
-            <a href="#home">
-              <span className="maomao-logo" />
-              <span className="maomao-text" />
-            </a>
-          </h3>
+          <div className="map-browser">
+            <h3 className="share-heading">
+              <a href="#home">
+                <span className="maomao-logo" />
+                <span className="maomao-text" />
+              </a>
+            </h3>
+            {auth.isLogin && userMenu(auth, dispatch)}
+          </div>
           <p className="select-cn-title">SHARE YOUR STREAM :</p>
           <div className="popup-content pt0">
             <ShareOptions
@@ -270,13 +269,15 @@ const render = (
     if (!isRunable(url, icon)) {
       return (
         <div className="popup-browser">
-          {auth.isLogin && userMenu(auth, dispatch)}
-          <h3 className="share-heading">
-            <a href="#home">
-              <span className="maomao-logo" />
-              <span className="maomao-text" />
-            </a>
-          </h3>
+          <div className="map-browser">
+            <h3 className="share-heading">
+              <a href="#home">
+                <span className="maomao-logo" />
+                <span className="maomao-text" />
+              </a>
+            </h3>
+            {auth.isLogin && userMenu(auth, dispatch)}
+          </div>
           <div className="popup-content">
             <p className="paragraph-share">maomao isn’t looking at this page!</p>
           </div>
@@ -286,13 +287,15 @@ const render = (
     // TODO: check on site is allowable or not
     return (
       <div className="popup-browser">
-        {auth.isLogin && userMenu(auth, dispatch)}
-        <h3 className="share-heading">
-          <a href="#home">
-            <span className="maomao-logo" />
-            <span className="maomao-text" />
-          </a>
-        </h3>
+        <div className="map-browser">
+          <h3 className="share-heading">
+            <a href="#home">
+              <span className="maomao-logo" />
+              <span className="maomao-text" />
+            </a>
+          </h3>
+          {auth.isLogin && userMenu(auth, dispatch)}
+        </div>
         <div className="popup-content">
           <div className="circle-share">
             <p
