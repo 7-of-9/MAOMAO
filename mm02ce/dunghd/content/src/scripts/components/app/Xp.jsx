@@ -4,7 +4,7 @@ import { withState, withHandlers, lifecycle, compose } from 'recompose';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
 import Radium from 'radium';
-import * as logger from 'loglevel';
+import logger from '../utils/logger';
 
 const styles = {
   bounceInUp: {

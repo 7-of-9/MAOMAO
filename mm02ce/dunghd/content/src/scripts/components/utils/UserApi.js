@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as logger from 'loglevel';
+import logger from './logger';
 
 function queryString(obj) {
   const str = [];

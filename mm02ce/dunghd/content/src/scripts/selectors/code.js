@@ -57,4 +57,4 @@ const getShareTopicCodes = createSelector(
   },
 );
 
-export { getShareAllCode, getShareUrlCode, getShareTopicCodes } ;
+export { getShareAllCode, getShareUrlCode, getShareTopicCodes };

@@ -3,7 +3,7 @@ import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import * as logger from 'loglevel';
+import logger from '../utils/logger';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 

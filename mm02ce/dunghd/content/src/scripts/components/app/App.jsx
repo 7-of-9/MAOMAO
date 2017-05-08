@@ -5,7 +5,6 @@ import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import Mailgun from 'mailgun';
-import * as logger from 'loglevel';
 import $ from 'jquery';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
@@ -16,6 +15,7 @@ import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
 import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
+import logger from '../utils/logger';
 
 window.jQuery = $;
 

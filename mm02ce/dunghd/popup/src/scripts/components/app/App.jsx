@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
 import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
-import * as logger from 'loglevel';
+import logger from './logger';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
