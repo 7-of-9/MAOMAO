@@ -27,6 +27,7 @@ namespace mm_svc
             if (nlp_info.url == null) throw new ArgumentException("missing url");
             if (nlp_info.meta == null) throw new ArgumentException("missing meta");
             if (nlp_info.items == null) throw new ArgumentException("missing items");
+            if (nlp_info.document_head_hash == null) throw new ArgumentException("missing document_head_hash");
             var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
 
             // get awis site -- prep/sanity checking
@@ -36,7 +37,7 @@ namespace mm_svc
             if (!mm_svc.SiteInfo.IsSiteAllowable(awis_site)) throw new ApplicationException("bad site");
 
             // get URL, should be known, from RecordUrl()
-            var db_url = (url)mm_svc.UrlInfo.GetUrl(url);
+            var db_url = (url)mm_svc.UrlInfo.GetUrl(url, nlp_info.document_head_hash);
             if (db_url == null) throw new ApplicationException("url not known - should already be recorded");
 
             // update URL - add calais & meta data

@@ -23,11 +23,18 @@ namespace mm_svc
             public double S;
         }
 
-        public static url GetUrl(string url)
+        public static url GetUrl(string url, string document_head_hash)
         {
             using (var db = mm02Entities.Create()) {
                 var db_url = db.urls.Where(p => p.url1 == url).FirstOrDefaultNoLock();
                 if (db_url != null) {
+                    g.LogLine($"returning URL DB info for url_id={db_url.id}, calais_as_of_utc={db_url.calais_as_of_utc}");
+                    return db_url;
+                }
+
+                db_url = db.urls.Where(p => p.url_hash == document_head_hash).FirstOrDefaultNoLock();
+                if (db_url != null)
+                {
                     g.LogLine($"returning URL DB info for url_id={db_url.id}, calais_as_of_utc={db_url.calais_as_of_utc}");
                     return db_url;
                 }

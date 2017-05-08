@@ -16,10 +16,10 @@ namespace tests
         {
             long? url_id;
             long? tld_topic_id;
-            var tld_title0 = UrlRecorder.RecordUrl("blah", "blah", out url_id, out tld_topic_id);
+            var tld_title0 = UrlRecorder.RecordUrl("blah", "blah", "test checksum", out url_id, out tld_topic_id);
 
-            var tld_title2 = UrlRecorder.RecordUrl("www.blahblah.com.xyz", "test text", out url_id, out tld_topic_id);
-            var tld_title1 = UrlRecorder.RecordUrl("www.youtube.com", "test text", out url_id, out tld_topic_id);
+            var tld_title2 = UrlRecorder.RecordUrl("www.blahblah.com.xyz", "test text", "test checksum", out url_id, out tld_topic_id);
+            var tld_title1 = UrlRecorder.RecordUrl("www.youtube.com", "test text", "test checksum", out url_id, out tld_topic_id);
         }
     }
 }

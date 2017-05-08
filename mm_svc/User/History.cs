@@ -11,7 +11,7 @@ namespace mm_svc
 {
     public static class UserHistory
     {
-        public static long TrackUrl(string href, long user_id,
+        public static long TrackUrl(string href, string document_head_hash, long user_id,
             double im_score_delta = 0,
             int time_on_tab_delta = 0,
             int audible_pings_delta = 0)
@@ -22,7 +22,7 @@ namespace mm_svc
                 var db_user = db.users.Find(user_id);
                 if (db_user == null)
                     throw new ApplicationException("bad user");
-                var db_url = db.urls.FirstOrDefault(p => p.url1 == url);
+                var db_url = UrlInfo.GetUrl(href, document_head_hash);
                 if (db_url == null)
                     throw new ApplicationException("bad url");
 

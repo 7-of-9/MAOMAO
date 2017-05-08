@@ -44,15 +44,15 @@ namespace mmapi00.Controllers
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
-            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfoController t) => t.GetNlpInfo(null));
+            var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfoController t) => t.GetNlpInfo(null,null));
             var url_href = (string)(nlp_info.url.href.ToString());
             this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
 
             // record user_url history
             var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
-            var history_id = mm_svc.UserHistory.TrackUrl(url, user_id, 0, 0, 0);
+            var history_id = mm_svc.UserHistory.TrackUrl(url, nlp_info.document_head_hash, user_id, 0, 0, 0);
 
-            var db_url = mm_svc.UrlInfo.GetUrl(url);
+            var db_url = mm_svc.UrlInfo.GetUrl(url, nlp_info.document_head_hash);
             // push notification to client
             var options = new PusherOptions();
             options.Cluster = "ap1";

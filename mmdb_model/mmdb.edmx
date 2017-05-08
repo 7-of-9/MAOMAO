@@ -168,6 +168,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="disambig_wiki_terms" Type="int" Nullable="false" />
           <Property Name="W" Type="float" Nullable="false" />
           <Property Name="W_n" Type="int" Nullable="false" />
+          <Property Name="url_hash" Type="nvarchar" MaxLength="50" />
+          <Property Name="raw_text" Type="text" />
         </EntityType>
         <EntityType Name="url_parent_term">
           <Key>
@@ -1465,6 +1467,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="url_term" Relationship="mm02Model.FK_urlTerms_url" FromRole="url" ToRole="url_term" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_url" FromRole="url" ToRole="user_url" />
           <NavigationProperty Name="url_text" Relationship="mm02Model.FK_url_text_url" FromRole="url" ToRole="url_text" />
+          <Property Name="url_hash" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="raw_text" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
@@ -1877,6 +1881,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySetMapping Name="urls">
             <EntityTypeMapping TypeName="mm02Model.url">
               <MappingFragment StoreEntitySet="url">
+                <ScalarProperty Name="raw_text" ColumnName="raw_text" />
+                <ScalarProperty Name="url_hash" ColumnName="url_hash" />
                 <ScalarProperty Name="W_n" ColumnName="W_n" />
                 <ScalarProperty Name="W" ColumnName="W" />
                 <ScalarProperty Name="disambig_wiki_terms" ColumnName="disambig_wiki_terms" />

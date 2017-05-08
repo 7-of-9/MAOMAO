@@ -23,6 +23,7 @@ namespace mmapi00.Controllers
         public class RecordUrlParam {
             public string href { get; set; }
             public string text { get; set; }
+            public string document_head_hash { get; set; }
         }
 
         /// <summary>
@@ -45,9 +46,9 @@ namespace mmapi00.Controllers
 
             long? url_id;
             long? tld_topic_id;
-            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, out url_id, out tld_topic_id);
+            var tld_topic = UrlRecorder.RecordUrl(param.href, param.text, param.document_head_hash, out url_id, out tld_topic_id);
 
-            var history_id = mm_svc.UserHistory.TrackUrl(param.href, user_id, 0, 0, 0);
+            var history_id = mm_svc.UserHistory.TrackUrl(param.href, param.document_head_hash, user_id, 0, 0, 0);
 
             // push notification to client
             var options = new PusherOptions();

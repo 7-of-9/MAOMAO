@@ -328,7 +328,7 @@ namespace mm_svc
                 //Trace.WriteLine(pretty_meta_all);
 
                 // create user_url, if not already
-                var user_url_id = mm_svc.UserHistory.TrackUrl(url.url1, user.id);
+                var user_url_id = mm_svc.UserHistory.TrackUrl(url.url1, url.url_hash, user.id);
                 Trace.WriteLine($"{new string('\t', call_level)}>>> url_id={url_id} user_url_id={user_url_id} [{url.meta_title}] ({url.url1})");
 
                 // remove previous user_url classification(s)

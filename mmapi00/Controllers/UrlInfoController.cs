@@ -56,15 +56,16 @@ namespace mmapi00.Controllers
         /// Returns NLP info (if known) and overall known state for a URL
         /// </summary>
         /// <param name="url">URL on which you would like NLP and known info</param>
+        /// <param name="document_head_hash">checksum of document.head object</param>
         /// <returns></returns>
         [Route("info/get")]
         [HttpGet]
         //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 24 * 30)] // 30 days  // FIXME: NO CACHE!! seeing weird behavior on Dung's testing
-        public IHttpActionResult GetNlpInfo(string url)
+        public IHttpActionResult GetNlpInfo(string url, string document_head_hash)
         {
             if (string.IsNullOrEmpty(url)) return BadRequest("bad url");
-
-            var db_url = mm_svc.UrlInfo.GetUrl(url);
+            if (string.IsNullOrEmpty(document_head_hash)) return BadRequest("bad checksum document.head");
+            var db_url = mm_svc.UrlInfo.GetUrl(url, document_head_hash);
 
             var topics = new List<mm_svc.UrlInfo.UrlParent>();
             var suggestions = new List<mm_svc.UrlInfo.UrlParent>();

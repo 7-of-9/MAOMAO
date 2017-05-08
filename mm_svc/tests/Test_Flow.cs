@@ -22,7 +22,7 @@ namespace tests
             // (1) record new URL
             long? url_id;
             long? tld_topic_id;
-            var tld_title = UrlRecorder.RecordUrl(test_url, "test text", out url_id, out tld_topic_id);
+            var tld_title = UrlRecorder.RecordUrl(test_url,"test checksum", "test text", out url_id, out tld_topic_id);
 
             // (2) PUT NLP for new URL
             var assembly = Assembly.GetExecutingAssembly();
