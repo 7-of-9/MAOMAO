@@ -48,7 +48,7 @@ const businessAddress = (
 @inject('ui')
 @observer
 class Home extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       currentTab: 0
@@ -61,7 +61,7 @@ class Home extends React.Component {
     this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSelect (index, last) {
+  handleSelect(index, last) {
     this.setState({
       currentTab: index
     }, () => {
@@ -69,14 +69,14 @@ class Home extends React.Component {
       if (index === 0) {
         logger.warn('currentTermId', currentTermId)
         if (currentTermId > 0) {
-        // hotfix to reload data
+          // hotfix to reload data
           this.props.store.currentTermId = -1
           this.props.store.currentTermId = currentTermId
         } else {
           if (this.props.store.userHistory) {
             const { topics } = toJS(this.props.store.myStream)
             const sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
-          // first for my stream
+            // first for my stream
             logger.warn('sortedTopicByUrls', sortedTopicByUrls)
             if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
               this.props.store.currentTermId = sortedTopicByUrls[0].term_id
@@ -87,7 +87,7 @@ class Home extends React.Component {
     })
   }
 
-  onInstallSucess () {
+  onInstallSucess() {
     this.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       window.location.reload()
@@ -95,15 +95,15 @@ class Home extends React.Component {
     }, 1000)
   }
 
-  onInstallFail (error) {
+  onInstallFail(error) {
     this.addNotification(error)
   }
 
-  addNotification (msg) {
+  addNotification(msg) {
     this.props.ui.addNotification(msg)
   }
 
-  inlineInstall () {
+  inlineInstall() {
     /* global chrome */
     chrome.webstore.install(
       'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
@@ -111,11 +111,11 @@ class Home extends React.Component {
       this.onInstallFail)
   }
 
-  removeNotification (uuid) {
+  removeNotification(uuid) {
     this.props.ui.removeNotification(uuid)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.store.shareInfo) {
       // default tab is friends stream
       this.setState({
@@ -124,7 +124,7 @@ class Home extends React.Component {
     }
   }
 
-  render () {
+  render() {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
@@ -197,13 +197,13 @@ class Home extends React.Component {
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
         {!this.props.store.isLogin &&
-        <ChromeInstall
-          description={description}
-          title='Unlock YOUR FRIEND STREAM Now'
-          install={this.inlineInstall}
+          <ChromeInstall
+            description={description}
+            title='Unlock YOUR FRIEND STREAM Now'
+            install={this.inlineInstall}
           />
         }
-        { this.props.store.isLogin &&
+        {this.props.store.isLogin &&
           <div className='wrap-main wrap-toggle'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList className='slidebar-nav animated fadeInDown'>
@@ -217,28 +217,28 @@ class Home extends React.Component {
                 </Tab>
               </TabList>
               <TabPanel className='main-content'>
-                {!this.props.store.shareInfo &&
-                <ChromeInstall
-                  description={description}
-                  title='Unlock YOUR FRIEND STREAM Now'
-                  install={this.inlineInstall}
-                    />
+                {!this.props.store.shareInfo && !this.props.store.isMobile &&
+                  <ChromeInstall
+                    description={description}
+                    title='Unlock YOUR FRIEND STREAM Now'
+                    install={this.inlineInstall}
+                  />
                 }
                 <YourStreams
                   topics={sortedTopicByUrls}
                   activeId={currentTermId}
                   changeTerm={(termId) => { this.props.store.currentTermId = termId }}
-              />
+                />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
                 {shareWiths.length > 0 && <ShareWithFriends friends={shareWiths} />}
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel className='main-content'>
-                {!!this.props.store.shareInfo &&
-                <ChromeInstall
-                  description={description}
-                  title='Unlock YOUR FRIEND STREAM Now'
-                  install={this.inlineInstall}
+                {!!this.props.store.shareInfo && !this.props.store.isMobile &&
+                  <ChromeInstall
+                    description={description}
+                    title='Unlock YOUR FRIEND STREAM Now'
+                    install={this.inlineInstall}
                   />
                 }
                 <FriendStreams friends={friends} />
