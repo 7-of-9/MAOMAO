@@ -10,7 +10,6 @@ import Config from './config';
 
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
-require('expose-loader?StackTrace!stacktrace-js');
 require('expose-loader?log!loglevel');
 
 if (process.env.NODE_ENV !== 'production') {

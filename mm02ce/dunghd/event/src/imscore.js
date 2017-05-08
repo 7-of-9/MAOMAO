@@ -5,23 +5,23 @@ const histories = {};
  * get im_score base url
  */
 export function getImScore(sessionObservable, rawUrl) {
-    const url = window.bglib_remove_hash_url(rawUrl);
-    const score = sessionObservable.urls.get(url);
-    let result = {
-        im_score: 0,
-        audible_pings: 0,
-        time_on_tab: 0,
-        url,
+  const url = window.bglib_remove_hash_url(rawUrl);
+  const score = sessionObservable.urls.get(url);
+  let result = {
+    im_score: 0,
+    audible_pings: 0,
+    time_on_tab: 0,
+    url,
+  };
+  if (score) {
+    result = {
+      im_score: score.im_score,
+      audible_pings: score.audible_pings,
+      time_on_tab: score.time_on_tab,
+      url: score.url,
     };
-    if (score) {
-        result = {
-            im_score: score.im_score,
-            audible_pings: score.audible_pings,
-            time_on_tab: score.time_on_tab,
-            url: score.url,
-        };
-    }
-    return result;
+  }
+  return result;
 }
 
 
@@ -29,54 +29,59 @@ export function getImScore(sessionObservable, rawUrl) {
  * Save im_score and save latest record on for tracking history
  */
 export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, userId, hash) {
-    const now = new Date().toISOString();
-    const url = window.bglib_remove_hash_url(rawUrl);
-    const data = Object.assign({}, getImScore(sessionObservable, url));
+  const now = new Date().toISOString();
+  const url = window.bglib_remove_hash_url(rawUrl);
+  const data = Object.assign({}, getImScore(sessionObservable, url));
 
-    // find which changes from last time
-    if (histories[url]) {
-        data.im_score -= Number(histories[url].im_score);
-        data.audible_pings -= Number(histories[url].audible_pings);
-        data.time_on_tab -= Number(histories[url].time_on_tab || 0);
-    }
+  // find which changes from last time
+  if (histories[url]) {
+    data.im_score -= Number(histories[url].im_score);
+    data.audible_pings -= Number(histories[url].audible_pings);
+    data.time_on_tab -= Number(histories[url].time_on_tab || 0);
+  }
 
-    // fix time_on_tab is null
-    if (isNaN(parseFloat(data.time_on_tab))) {
-        data.time_on_tab = 0;
-    }
+  // fix time_on_tab is null
+  if (isNaN(parseFloat(data.time_on_tab))) {
+    data.time_on_tab = 0;
+  }
 
-    // Only save when im_score change
-    if (Number(data.im_score) > 0) {
-        apiSaveImScore(userId, hash, data,
-            (error) => {
-                histories[url] = data;
-                store.dispatch({
-                    type: 'IM_SAVE_ERROR',
-                    payload: {
-                        url,
-                        saveAt: now,
-                        history: {
-                            data,
-                            error,
-                        },
-                    },
-                });
+  const urlOnSession = window.sessionObservable.urls.get(window.bglib_remove_hash_url(url));
+  if (urlOnSession) {
+    data.document_head_hash = urlOnSession.document_head_hash;
+  }
+
+  // Only save when im_score change
+  if (Number(data.im_score) > 0) {
+    apiSaveImScore(userId, hash, data,
+      (error) => {
+        histories[url] = data;
+        store.dispatch({
+          type: 'IM_SAVE_ERROR',
+          payload: {
+            url,
+            saveAt: now,
+            history: {
+              data,
+              error,
             },
-            (result) => {
-                histories[url] = data;
-                store.dispatch({
-                    type: 'IM_SAVE_SUCCESS',
-                    payload: {
-                        url,
-                        saveAt: now,
-                        history: {
-                            data,
-                            result,
-                        },
-                    },
-                });
-            });
-    }
+          },
+        });
+      },
+      (result) => {
+        histories[url] = data;
+        store.dispatch({
+          type: 'IM_SAVE_SUCCESS',
+          payload: {
+            url,
+            saveAt: now,
+            history: {
+              data,
+              result,
+            },
+          },
+        });
+      });
+  }
 }
 
 
@@ -84,43 +89,43 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
  * Check im_score base on active url and update time
  */
 export function checkImScore(sessionObservable, batchActions, store, rawUrl, updateAt) {
-    // checking current url is allow or not
-    const url = window.bglib_remove_hash_url(rawUrl);
-    if (sessionObservable.urls.get(url)) {
-        store.dispatch(batchActions(
-            [
-                {
-                    type: 'IM_SCORE',
-                    payload: {
-                        url,
-                        updateAt,
-                    },
-                },
-                {
-                    type: 'IM_ALLOWABLE',
-                    payload: {
-                        url,
-                        isOpen: true,
-                    },
-                },
-            ]));
-    } else {
-        store.dispatch(batchActions(
-            [
-                {
-                    type: 'IM_SCORE',
-                    payload: {
-                        url,
-                        updateAt,
-                    },
-                },
-                {
-                    type: 'IM_ALLOWABLE',
-                    payload: {
-                        url,
-                        isOpen: false,
-                    },
-                },
-            ]));
-    }
+  // checking current url is allow or not
+  const url = window.bglib_remove_hash_url(rawUrl);
+  if (sessionObservable.urls.get(url)) {
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: true,
+          },
+        },
+      ]));
+  } else {
+    store.dispatch(batchActions(
+      [
+        {
+          type: 'IM_SCORE',
+          payload: {
+            url,
+            updateAt,
+          },
+        },
+        {
+          type: 'IM_ALLOWABLE',
+          payload: {
+            url,
+            isOpen: false,
+          },
+        },
+      ]));
+  }
 }

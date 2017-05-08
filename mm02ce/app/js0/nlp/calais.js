@@ -402,7 +402,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, document_head_hash
       ajax_put_UrlNlpInfoCalais(user_id, hash, nlp, function (data) {
 
         cslib_info("%c ]] ajax_put_UrlNlpInfoCalais: " + JSON.stringify(data), "color:green; font-weight:bold;");
-        dispatchDataToBg({ type: 'NLP_TERMS', payload: { url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } });
+        dispatchDataToBg({ type: 'NLP_TERMS', payload: { document_head_hash: document_head_hash, url: remove_hash_url(document.location.href), topics: data.topics, suggestions: data.suggestions } });
         dispatchDataToBg({ type: 'GENERATE_SHARE_TOPICS', payload: { url: remove_hash_url(document.location.href), topics: data.topics } });
         // TEST MODE: hit next button - or reseed if not english
         if (document.getElementById('maomao-extension-youtube-test')) {

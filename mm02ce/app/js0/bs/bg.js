@@ -422,6 +422,7 @@ function inject_cs(session, tab_id, skip_text) {
     'js0/lib/wait_key_elements.js',
     'js0/nlp/stopwords.js',
     'js0/lib/nlp.js',
+    'js0/lib/stacktrace.js',
     'js0/lib/checksum.js',
     'js0/lib/algorithms/adler32.js',
     'js0/lib/algorithms/bsd16.js',

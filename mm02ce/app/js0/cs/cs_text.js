@@ -303,7 +303,7 @@ function process_text(page_meta) {
           dispatchDataToBg({ type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, document_head_hash: document_head_hash, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } });
           dispatchDataToBg({ type: 'GENERATE_SHARE_TOPICS', payload: { lang: detectLang, url: remove_hash_url(document.location.href), topics: data.topics } });
           ajax_put_UrlRecord(mm_user_id(), mm_user_hash(), { href: remove_hash_url(document.location.href), text: t, document_head_hash: document_head_hash }, function (data) {
-            dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } });
+            dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, document_head_hash: document_head_hash, url: remove_hash_url(document.location.href) } });
             dispatchDataToBg({ type: 'PRELOAD_SHARE', payload: { data: data, url: remove_hash_url(document.location.href) } });
           }, function (error) {
             dispatchDataToBg({ type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } });
@@ -317,11 +317,11 @@ function process_text(page_meta) {
         } else {
           dispatchDataToBg({ type: 'NLP_INFO_UNKNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), document_head_hash: document_head_hash, status: false } });
           ajax_put_UrlRecord(mm_user_id(), mm_user_hash(), { href: remove_hash_url(document.location.href), text: t, document_head_hash: document_head_hash }, function (data) {
-            dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, url: remove_hash_url(document.location.href) } });
+            dispatchDataToBg({ type: 'URL_RECORD_SUCCESS', payload: { data: data, document_head_hash: document_head_hash, url: remove_hash_url(document.location.href) } });
             dispatchDataToBg({ type: 'PRELOAD_SHARE', payload: { data: data, url: remove_hash_url(document.location.href) } });
             nlp_calais(page_meta, t, document.location, mm_user_id(), mm_user_hash(), document_head_hash);
           }, function (error) {
-            dispatchDataToBg({ type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), error: error } });
+            dispatchDataToBg({ type: 'URL_RECORD_ERROR', payload: { url: remove_hash_url(document.location.href), document_head_hash: document_head_hash, error: error } });
           });
         }
       }, function (error) {
