@@ -37,7 +37,7 @@ namespace mm_svc
             if (!mm_svc.SiteInfo.IsSiteAllowable(awis_site)) throw new ApplicationException("bad site");
 
             // get URL, should be known, from RecordUrl()
-            var db_url = (url)mm_svc.UrlInfo.GetUrl(url, nlp_info.document_head_hash);
+            var db_url = (url)mm_svc.UrlInfo.GetUrl(url, (string) nlp_info.document_head_hash);
             if (db_url == null) throw new ApplicationException("url not known - should already be recorded");
 
             // update URL - add calais & meta data
