@@ -105,33 +105,36 @@ $facebook-icons: './images/facebook_icon.svg';
       }
     }
   }
-  .map-browser {
-    min-width: 400px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #c5c5d0;
-    &:before,
-    &:after {
-      content: '';
-      display: table;
-    }
-    &:after {
-      clear: both;
-    }
-    .share-heading {
-      padding-bottom: 0;
-      text-align: left;
-      float: left;
-      border: 0;
-    }
-    .dropdown-panel {
-      position: relative;
-      float: right;
-      margin-top: 2px;
-    }
-    .dropdown__content {
-      top: 51px !important;
-      min-width: 100px;
-    }
+}
+
+.map-browser {
+  position: relative;
+  min-width: 400px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #c5c5d0;
+  &:before,
+  &:after {
+    content: '';
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+  .share-heading {
+    padding-bottom: 0;
+    border: 0;
+  }
+  .dropdown-panel {
+    position: absolute;
+    left: 0;
+    top: 1px;
+    z-index: 50;
+    margin-top: 2px;
+    float: left;
+  }
+  .dropdown__content {
+    top: 51px !important;
+    min-width: 100px;
   }
 }
 
@@ -305,8 +308,105 @@ $facebook-icons: './images/facebook_icon.svg';
       }
     } */
   }
+  .image-account {
+    vertical-align: middle;
+    cursor: pointer;
+    display: inline-block;
+    &[data-tooltip] {
+      position: relative;
+      &:after,
+      &:before {
+        transition: transform 200ms ease, opacity 200ms;
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 99;
+      }
+      &:before {
+        border-radius: 5px;
+        content: attr(data-tooltip);
+        background: #1a8dee;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        font-weight: bold;
+        padding: 6px 8px;
+        font-size: 10px;
+        white-space: nowrap;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+      &:after {
+        width: 0;
+        height: 0;
+        border: 6px solid transparent;
+        content: '';
+      }
+      &:hover:after,
+      &:hover:before {
+        transform: translateY(0);
+        visibility: visible;
+        opacity: 0.85;
+      }
+      &:before,
+      &:after {
+        transform: translateX(0);
+      }
+      &:hover:after,
+      &:hover:before {
+        transform: translateX(10px);
+      }
+      // right tooltip
+      &[data-position="right"]:before {
+        top: 0;
+        left: 25px;
+        margin-left: 6px;
+      }
+      &[data-position="right"]:after {
+        border-right-color: #1a8dee;
+        border-left: none;
+        top: 50%;
+        left: 25px;
+        margin-top: -6px;
+      }
+      &.bottom {
+        &:before,
+        &:after {
+          transform: translateY(-10px);
+        }
+        &:hover:after,
+        &:hover:before {
+          transform: translateY(0px);
+        }
+      }
+      &[data-position="bottom"]:before {
+        top: 29px;
+        left: 6px;
+        margin-top: 10px;
+      }
+      &[data-position="bottom"]:after {
+        content: "";
+        position: absolute;
+        top: 31px;
+        left: 15px;
+        right: auto;
+        bottom: auto;
+        margin: 0;
+        display: block;
+        border-width: 4px;
+        border-style: solid;
+        border-color: #1a8dee transparent transparent;
+        border-top-color: transparent;
+        border-bottom-color: #1a8dee;
+        border-left-color: #1a8dee;
+      }
+    }
+    img {
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+    }
+  }
   .dropdown-account {
-    padding: 10px 5px 7px 0;
     .image-account,
     .info-account {
       display: inline-block;
@@ -319,15 +419,6 @@ $facebook-icons: './images/facebook_icon.svg';
         &:last-child {
           color: #808080;
         }
-      }
-    }
-    .image-account {
-      margin-right: 7px;
-      vertical-align: middle;
-      img {
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
       }
     }
     .info-account {
@@ -701,17 +792,28 @@ $facebook-icons: './images/facebook_icon.svg';
     left: 50%;
     z-index: 9999999;
     padding: 3px 2px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(26, 141, 238, 0.85);
     text-align: center;
     font-weight: normal;
     font-size: 0.75rem;
     border-radius: 5px;
-    overflow: hidden;
-    border: 1px solid #0f0f0f;
     min-width: 90px;
     opacity: 0;
     transition: 0.3s;
     transform: translateX(-50%);
+    &:before {
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      content: '';
+      border-top-color: rgba(26, 141, 238, 0.85);
+      border-bottom: none;
+      bottom: -10px;
+      left: 50%;
+      margin-left: -6px;
+      margin-bottom: 4px;
+    }
     &:after {
       content: attr(title);
       margin-left: 3px;
@@ -721,7 +823,7 @@ $facebook-icons: './images/facebook_icon.svg';
   button {
     position: relative;
     &:hover .tooltip {
-      bottom: 105%;
+      bottom: 107%;
       opacity: 1;
     }
   }

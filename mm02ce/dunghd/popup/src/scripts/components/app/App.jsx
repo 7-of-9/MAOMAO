@@ -119,41 +119,9 @@ const getShareTopicCode = (code, key) => {
 
 const userMenu = (auth, dispatch) =>
   <Dropdown className="dropdown-panel">
-    <DropdownTrigger className="trigger-nav">
-      <span className="dropdown-account">
-        <span className="image-account">
-          <img src={auth.info.picture} alt={auth.info.name} />
-        </span>
-        <span className="info-account">
-          <span>{auth.info.name}</span>
-          <span>({auth.info.email})</span>
-        </span>
-      </span>
+    <DropdownTrigger className="trigger-nav" className="image-account bottom" data-tooltip={auth.info.name} data-position='bottom'>
+      <img src={auth.info.picture} alt={auth.info.name} />
     </DropdownTrigger>
-    {/*<DropdownContent>
-      <ul>
-        <li>
-          <a
-            onClick={() => {
-              dispatch({
-                type: 'OPEN_MODAL',
-                payload: {},
-              });
-            }}
-          >Profile</a>
-        </li>
-        <li>
-          <a
-            onClick={() => {
-              dispatch({
-                type: 'AUTH_LOGOUT',
-                payload: {},
-              });
-            }}
-          >Logout</a>
-        </li>
-      </ul>
-    </DropdownContent>*/}
   </Dropdown>;
 
 const render = (
@@ -209,13 +177,13 @@ const render = (
       return (
         <div className="popup-browser">
           <div className="map-browser">
+            {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
               <a href="#home">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
             </h3>
-            {auth.isLogin && userMenu(auth, dispatch)}
           </div>
           <p className="select-cn-title">SHARE YOUR STREAM :</p>
           <div className="popup-content pt0">
@@ -270,13 +238,13 @@ const render = (
       return (
         <div className="popup-browser">
           <div className="map-browser">
+            {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
               <a href="#home">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
             </h3>
-            {auth.isLogin && userMenu(auth, dispatch)}
           </div>
           <div className="popup-content">
             <p className="paragraph-share">maomao isn’t looking at this page!</p>
@@ -288,13 +256,13 @@ const render = (
     return (
       <div className="popup-browser">
         <div className="map-browser">
+          {auth.isLogin && userMenu(auth, dispatch)}
           <h3 className="share-heading">
             <a href="#home">
               <span className="maomao-logo" />
               <span className="maomao-text" />
             </a>
           </h3>
-          {auth.isLogin && userMenu(auth, dispatch)}
         </div>
         <div className="popup-content">
           <div className="circle-share">

@@ -79,7 +79,7 @@ the main-content section
         overflow: visible;
         .stream-symbol {
           .fa {
-            min-width: 33px;
+            min-width: 35px;
           }
         }
         .stream-symbol[data-tooltip] {
@@ -142,13 +142,14 @@ the main-content section
         .stream-symbol[data-tooltip][data-position="right"]:before {
           top: 0;
           left: 100%;
-          margin-left: 10px;
+          margin-left: 6px;
         }
         .stream-symbol[data-tooltip][data-position="right"]:after {
           border-right-color: #1a8dee;
           border-left: none;
-          top: calc(50% - 6px);
-          left: calc(100% + 4px);
+          top: 50%;
+          left: 100%;
+          margin-top: -6px;
         }
         .ReactTabs__Tab {
           padding: 7px 3px;
