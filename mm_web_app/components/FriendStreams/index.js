@@ -312,7 +312,7 @@ class FriendStreams extends React.Component {
                   </li>
                 }
                 <li>
-                  <div className='input-group'>
+                  <div className='input-group open'>
                     <DebounceInput
                       className='form-control'
                       placeholder='Search URL ...'
@@ -328,6 +328,49 @@ class FriendStreams extends React.Component {
                         half={false}
                         color2={'#ffd700'}
                       />
+                    </div>
+                    <div className='search-box-drop'>
+                      <p className='search-box-title'>Base on what you are typing</p>
+                      <ul className='search-box-list'>
+                        <li><a href='#'><i className="fa fa-angle-right" aria-hidden="true"></i> Product</a></li>
+                        <li><a href='#'><i className="fa fa-angle-right" aria-hidden="true"></i> Furniture</a></li>
+                      </ul>
+                      <p className='search-box-title'>Other</p>
+                      <ul className='search-item-list'>
+                        <li>
+                          <a className='search-media' href='#'>
+                            <span className='search-media-left'>
+                              <img className='img-object' src='https://avatars0.githubusercontent.com/u/2302315?v=3&s=400' width='38' height='38' alt='' />
+                            </span>
+                            <span className='search-media-body'>
+                              <span className='search-media-heading'>Installing OpenSSH</span>
+                              <span>An accessible widget & pattern library</span>
+                            </span>
+                          </a>
+                        </li>
+                        <li>
+                          <a className='search-media' href='#'>
+                            <span className='search-media-left'>
+                              <img className='img-object' src='https://avatars3.githubusercontent.com/u/121766?v=3&s=400' width='38' height='38' alt='' />
+                            </span>
+                            <span className='search-media-body'>
+                              <span className='search-media-heading'>Installing OpenSSH</span>
+                              <span>An accessible widget & pattern library</span>
+                            </span>
+                          </a>
+                        </li>
+                        <li>
+                          <a className='search-media' href='#'>
+                            <span className='search-media-left'>
+                              <img className='img-object' src='https://www.sitepoint.com/wp-content/themes/sitepoint/assets/images/icon.javascript.png' width='38' height='38' alt='' />
+                            </span>
+                            <span className='search-media-body'>
+                              <span className='search-media-heading'>Installing OpenSSH</span>
+                              <span>An accessible widget & pattern library</span>
+                            </span>
+                          </a>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </li>
