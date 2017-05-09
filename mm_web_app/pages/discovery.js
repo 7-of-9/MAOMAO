@@ -33,7 +33,7 @@ export default class DiscoveryPage extends React.Component {
   render () {
     return (
       <Provider store={this.store}>
-        <div>
+        <div className='discovery'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Discovery />
         </div>

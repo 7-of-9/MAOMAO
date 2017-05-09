@@ -48,7 +48,7 @@ const businessAddress = (
 @inject('ui')
 @observer
 class Home extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       currentTab: 0
@@ -61,7 +61,7 @@ class Home extends React.Component {
     this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSelect(index, last) {
+  handleSelect (index, last) {
     this.setState({
       currentTab: index
     }, () => {
@@ -87,7 +87,7 @@ class Home extends React.Component {
     })
   }
 
-  onInstallSucess() {
+  onInstallSucess () {
     this.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       window.location.reload()
@@ -95,15 +95,15 @@ class Home extends React.Component {
     }, 1000)
   }
 
-  onInstallFail(error) {
+  onInstallFail (error) {
     this.addNotification(error)
   }
 
-  addNotification(msg) {
+  addNotification (msg) {
     this.props.ui.addNotification(msg)
   }
 
-  inlineInstall() {
+  inlineInstall () {
     /* global chrome */
     chrome.webstore.install(
       'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
@@ -111,11 +111,11 @@ class Home extends React.Component {
       this.onInstallFail)
   }
 
-  removeNotification(uuid) {
+  removeNotification (uuid) {
     this.props.ui.removeNotification(uuid)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.store.shareInfo) {
       // default tab is friends stream
       this.setState({
@@ -124,7 +124,7 @@ class Home extends React.Component {
     }
   }
 
-  render() {
+  render () {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {

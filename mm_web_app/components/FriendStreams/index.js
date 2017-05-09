@@ -60,7 +60,7 @@ function urlOwner (id, users, onSelectUser) {
 }
 
 function urlTopic (id, topics, onSelectTopic) {
-    // TODO: click on name to filter by topic
+  // TODO: click on name to filter by topic
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(currentTopics, (topic) => {
@@ -196,12 +196,12 @@ class FriendStreams extends React.Component {
 
   onSelectTopic (topic) {
     logger.warn('onSelectTopic', topic)
-    this.setState({filterByTopic: [{ value: topic.urlIds, label: topic.name }], currentPage: 1, hasMoreItems: true})
+    this.setState({ filterByTopic: [{ value: topic.urlIds, label: topic.name }], currentPage: 1, hasMoreItems: true })
   }
 
   onSelectUser (user) {
     logger.warn('onSelectUser', user)
-    this.setState({filterByUser: [{ value: user.urlIds, label: user.fullname }], currentPage: 1, hasMoreItems: true})
+    this.setState({ filterByUser: [{ value: user.urlIds, label: user.fullname }], currentPage: 1, hasMoreItems: true })
   }
 
   loadMore () {
@@ -217,10 +217,10 @@ class FriendStreams extends React.Component {
   render () {
     const { currentPage } = this.state
     const items = []
-      // TODO: support sort by time or score
+    // TODO: support sort by time or score
     const sortedUrls = filterUrls(this.state)
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
-      /* eslint-disable camelcase */
+    /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
     logger.warn('currentUrls', currentUrls, currentPage)
     if (currentUrls && currentUrls.length) {
@@ -238,19 +238,19 @@ class FriendStreams extends React.Component {
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
                 {urlTopic(id, this.state.topics, this.onSelectTopic)}
-                {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} /> }
+                {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>
                     <Highlighter
                       activeIndex={title}
-                      highlightStyle={{backgroundColor: '#ffd54f'}}
+                      highlightStyle={{ backgroundColor: '#ffd54f' }}
                       sanitize={latinize}
                       searchWords={[this.state.filterByUrl]}
                       textToHighlight={title}
-                   />
-                   ({id})</a>
+                    />
+                    ({id})</a>
                 </h4>
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
@@ -281,35 +281,35 @@ class FriendStreams extends React.Component {
           <div className='standand-sort'>
             <nav className='navbar'>
               <ul className='nav navbar-nav'>
-                { this.state.filterByTopic.length > 0 &&
-                <li>
-                  <div className='item-select'>
-                    <span className='label-select'>Streams</span>
-                    <Select
-                      className='drop-select'
-                      name='topic-name'
-                      multi
-                      value={this.state.filterByTopic}
-                      options={mapTopicsOption(this.state.topics)}
-                      onChange={(selectValue) => this.setState({filterByTopic: selectValue, currentPage: 1, hasMoreItems: true})}
+                {this.state.filterByTopic.length > 0 &&
+                  <li>
+                    <div className='item-select'>
+                      <span className='label-select'>Streams</span>
+                      <Select
+                        className='drop-select'
+                        name='topic-name'
+                        multi
+                        value={this.state.filterByTopic}
+                        options={mapTopicsOption(this.state.topics)}
+                        onChange={(selectValue) => this.setState({ filterByTopic: selectValue, currentPage: 1, hasMoreItems: true })}
                       />
-                  </div>
-                </li>
+                    </div>
+                  </li>
                 }
-                { this.state.filterByUser.length > 0 &&
-                <li>
-                  <div className='item-select'>
-                    <span className='label-select'>Users</span>
-                    <Select
-                      className='drop-select'
-                      multi
-                      name='user-name'
-                      value={this.state.filterByUser}
-                      options={mapUsersOption(this.state.users)}
-                      onChange={(selectValue) => this.setState({filterByUser: selectValue, currentPage: 1, hasMoreItems: true})}
+                {this.state.filterByUser.length > 0 &&
+                  <li>
+                    <div className='item-select'>
+                      <span className='label-select'>Users</span>
+                      <Select
+                        className='drop-select'
+                        multi
+                        name='user-name'
+                        value={this.state.filterByUser}
+                        options={mapUsersOption(this.state.users)}
+                        onChange={(selectValue) => this.setState({ filterByUser: selectValue, currentPage: 1, hasMoreItems: true })}
                       />
-                  </div>
-                </li>
+                    </div>
+                  </li>
                 }
                 <li>
                   <div className='input-group'>
@@ -318,12 +318,12 @@ class FriendStreams extends React.Component {
                       placeholder='Search URL ...'
                       minLength={2}
                       debounceTimeout={300}
-                      onChange={event => this.setState({filterByUrl: event.target.value.toLowerCase()})} />
-                      <div className='filter-rating'>
+                      onChange={event => this.setState({ filterByUrl: event.target.value.toLowerCase() })} />
+                    <div className='filter-rating'>
                       <ReactStars
                         count={5}
                         value={this.state.filterByRating}
-                        onChange={(selectValue) => this.setState({filterByRating: selectValue, currentPage: 1, hasMoreItems: true})}
+                        onChange={(selectValue) => this.setState({ filterByRating: selectValue, currentPage: 1, hasMoreItems: true })}
                         size={24}
                         half={false}
                         color2={'#ffd700'}

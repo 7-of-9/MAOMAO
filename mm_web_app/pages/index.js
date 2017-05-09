@@ -32,7 +32,7 @@ export default class HomePage extends React.Component {
   render () {
     return (
       <Provider store={this.store} ui={this.uiStore}>
-        <div>
+        <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home />
         </div>
