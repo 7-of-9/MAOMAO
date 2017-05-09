@@ -354,7 +354,10 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
-        <ShareOnPage />
+        <ShareOnPage
+          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+          openShare={openShare}
+        />
         <ToggleDisplay if={icon.isEnable}>
           <WelcomeModal
             auth={auth}

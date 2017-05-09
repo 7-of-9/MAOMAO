@@ -332,8 +332,8 @@ class FriendStreams extends React.Component {
                     <div className='search-box-drop'>
                       <p className='search-box-title'>Base on what you are typing</p>
                       <ul className='search-box-list'>
-                        <li><a href='#'><i className="fa fa-angle-right" aria-hidden="true"></i> Product</a></li>
-                        <li><a href='#'><i className="fa fa-angle-right" aria-hidden="true"></i> Furniture</a></li>
+                        <li><a href='#'><i className='fa fa-angle-right' aria-hidden='true' /> Product</a></li>
+                        <li><a href='#'><i className='fa fa-angle-right' aria-hidden='true' /> Furniture</a></li>
                       </ul>
                       <p className='search-box-title'>Other</p>
                       <ul className='search-item-list'>

@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { onlyUpdateForKeys, compose } from 'recompose';
 import iconImage from './images/dog_blue.png';
 import logger from '../utils/logger';
 
@@ -20,12 +22,11 @@ function ShareButton(icon, clickFn) {
   return btn;
 }
 
-function MaomaoShare(onShare) {
-  const networks = {
-    maomao: true,
+function MaomaoShare() {
+  const settings = {
+    isReady: true,
   };
-  const maomaoConfig = {
-    ready: false,
+  const iconConfig = {
     icon: `<img width="24" height="24" src="${iconImage}" alt="maomao share" />`,
   };
 
@@ -42,8 +43,8 @@ function MaomaoShare(onShare) {
   let left = 0;
 
   function maomaoShareButton() {
-    const btn = new ShareButton(maomaoConfig.icon, () => {
-      onShare(text);
+    const btn = new ShareButton(iconConfig.icon, () => {
+      settings.onShare(text);
       return false;
     });
 
@@ -59,10 +60,8 @@ function MaomaoShare(onShare) {
   function appendIcons() {
     const div = document.createElement('div');
     let count = 0;
-    if (networks.maomao) {
-      div.appendChild(maomaoShareButton());
-      count += 1;
-    }
+    div.appendChild(maomaoShareButton());
+    count += 1;
 
     return {
       icons: div,
@@ -72,11 +71,9 @@ function MaomaoShare(onShare) {
 
   function setTooltipPosition() {
     const position = selection.getRangeAt(0).getBoundingClientRect();
-    logger.warn('setTooltipPosition position', position.top, position.left);
     const DOCUMENT_SCROLLTOP = window.pageXOffset ||
       document.documentElement.scrollTop ||
       document.body.scrollTop;
-    logger.warn('setTooltipPosition DOCUMENT_SCROLLTOP', DOCUMENT_SCROLLTOP);
     top = (position.top + DOCUMENT_SCROLLTOP) - iconSize - arrowSize;
     left = position.left + ((position.width - (iconSize * icons.length)) / 2);
   }
@@ -99,6 +96,7 @@ function MaomaoShare(onShare) {
       + 'background-color:'}${backgroundColor};`
       + 'border-radius:6px;'
       + `top:${top}px;`
+      + `display:${settings.isReady ? 'block' : 'none'};`
       + `left:${left}px;`
       + 'z-index: 999;'
       + 'animation: vex-flyin 0.5s;'
@@ -121,40 +119,41 @@ function MaomaoShare(onShare) {
     document.body.appendChild(div);
   }
 
-  function attachEvents() {
+  function handleEvent() {
     function hasSelection() {
       const selectText = window.getSelection().toString().trim();
       return !!selectText && selectText.length > 0;
     }
-
     function hasTooltipDrawn() {
       return !!document.querySelector('.maomaoshare');
     }
-
-    window.addEventListener('mouseup', () => {
-      setTimeout(() => {
-        if (hasTooltipDrawn()) {
-          if (hasSelection()) {
-            selection = window.getSelection();
-            text = selection.toString();
-            moveTooltip();
-            return;
-          }
-          document.querySelector('.maomaoshare').remove();
-        }
+    setTimeout(() => {
+      if (hasTooltipDrawn()) {
         if (hasSelection()) {
           selection = window.getSelection();
           text = selection.toString();
-          drawTooltip();
+          moveTooltip();
+          return;
         }
-      }, 10);
-    }, false);
+        document.querySelector('.maomaoshare').remove();
+      }
+      if (hasSelection()) {
+        selection = window.getSelection();
+        text = selection.toString();
+        drawTooltip();
+      }
+    }, 10);
+  }
+
+  function attachEvents() {
+    window.addEventListener('mouseup', handleEvent, false);
   }
 
   function config(options) {
-    networks.maomao = options.maomao === undefined
-      ? networks.maomao
-      : options.maomao;
+    settings.isReady = options.isReady === undefined
+      ? settings.isReady
+      : options.isReady;
+    settings.onShare = typeof options.onShare === 'function' ? options.onShare : () => { };
     backgroundColor = options.backgroundColor || '#333';
     iconColor = options.iconColor || '#fff';
     return this;
@@ -172,17 +171,37 @@ function MaomaoShare(onShare) {
   };
 }
 
-function ShareOnPage() {
-  const share = new MaomaoShare((txt) => {
-    logger.warn('text selection', txt);
-  });
+
+const propTypes = {
+  isReady: PropTypes.bool.isRequired,
+  openShare: PropTypes.func.isRequired,
+};
+
+const defaultProps = {
+  isReady: false,
+  openShare: () => { },
+};
+
+const share = new MaomaoShare();
+/* ShareOnPage pure component */
+function ShareOnPage({ isReady, openShare }) {
+  logger.warn('ShareOnPage isReady', isReady);
   share.config({
     backgroundColor: 'rgba(242, 242, 242, 0.7)',
     arrowSize: 10,
+    onShare: openShare,
+    isReady,
   }).init();
   return (
     <div />
   );
 }
 
-export default ShareOnPage;
+ShareOnPage.propTypes = propTypes;
+ShareOnPage.defaultProps = defaultProps;
+
+const enhance = compose(
+  onlyUpdateForKeys(['isReady']),
+);
+
+export default enhance(ShareOnPage);
