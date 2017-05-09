@@ -140,7 +140,7 @@ the main-content section
         }
         // right tooltip
         .stream-symbol[data-tooltip][data-position="right"]:before {
-          top: 0;
+          top: 5px;
           left: 100%;
           margin-left: 6px;
         }

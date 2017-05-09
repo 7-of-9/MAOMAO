@@ -312,9 +312,14 @@ class FriendStreams extends React.Component {
                 </li>
                 }
                 <li>
-                  <div className='item-select'>
-                    <span className='label-select'>Rating</span>
-                    <div className='filter-rating'>
+                  <div className='input-group'>
+                    <DebounceInput
+                      className='form-control'
+                      placeholder='Search URL ...'
+                      minLength={2}
+                      debounceTimeout={300}
+                      onChange={event => this.setState({filterByUrl: event.target.value.toLowerCase()})} />
+                      <div className='filter-rating'>
                       <ReactStars
                         count={5}
                         value={this.state.filterByRating}
@@ -324,16 +329,6 @@ class FriendStreams extends React.Component {
                         color2={'#ffd700'}
                       />
                     </div>
-                  </div>
-                </li>
-                <li>
-                  <div className='input-group'>
-                    <DebounceInput
-                      className='form-control'
-                      placeholder='Search URL ...'
-                      minLength={2}
-                      debounceTimeout={300}
-                      onChange={event => this.setState({filterByUrl: event.target.value.toLowerCase()})} />
                   </div>
                 </li>
               </ul>
