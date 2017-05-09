@@ -17,7 +17,7 @@ function createShareCtxMenu(records) {
       if (tabs != null && tabs.length > 0) {
         const url = tabs[0].url;
         if (isAllowToShare(url, records)) {
-          chrome.contextMenus.create({ contexts: ['page_action', 'page', 'selection'], id: 'mm-btn-share', title: ' maomao share' });
+          chrome.contextMenus.create({ contexts: ['page_action', 'page'], id: 'mm-btn-share', title: ' maomao share' });
         }
       }
     });

@@ -135,7 +135,9 @@ const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
     <div className="share-social">
-      <h3 className="share-social-title">Click on button below to select.</h3>
+      <h3 className="share-social-title">
+        Click on button below to select.
+      </h3>
       <div className="toolbar-button">
         <Toolbar
           active={type}

@@ -8,6 +8,7 @@ import Mailgun from 'mailgun';
 import $ from 'jquery';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
+import ShareOnPage from './ShareOnPage';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
 import { getCurrentTerms, getCurrentXPTopics } from '../../selectors/term';
@@ -353,6 +354,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
+        <ShareOnPage />
         <ToggleDisplay if={icon.isEnable}>
           <WelcomeModal
             auth={auth}

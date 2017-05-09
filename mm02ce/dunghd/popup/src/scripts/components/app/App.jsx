@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
-import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
+import Dropdown, { DropdownTrigger } from 'react-simple-dropdown';
 import logger from './logger';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
@@ -117,9 +117,9 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
-const userMenu = (auth, dispatch) =>
+const userMenu = auth =>
   <Dropdown className="dropdown-panel">
-    <DropdownTrigger className="trigger-nav" className="image-account bottom" data-tooltip={auth.info.name} data-position='bottom'>
+    <DropdownTrigger className="image-account bottom" data-tooltip={`${auth.info.name} (${auth.info.email})`} data-position="bottom">
       <img src={auth.info.picture} alt={auth.info.name} />
     </DropdownTrigger>
   </Dropdown>;
