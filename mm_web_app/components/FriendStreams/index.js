@@ -97,8 +97,8 @@ class FriendStreams extends React.Component {
       urls: [],
       users: [],
       topics: [],
-      filterByTopic: '',
-      filterByUser: '',
+      filterByTopic: [],
+      filterByUser: [],
       rating: 3,
       value: ''
     }
@@ -106,6 +106,8 @@ class FriendStreams extends React.Component {
     this.onChangeRate = this.onChangeRate.bind(this)
     this.onSelectTopic = this.onSelectTopic.bind(this)
     this.onSelectUser = this.onSelectUser.bind(this)
+    this.onRemoveUser = this.onRemoveUser.bind(this)
+    this.onRemoveTopic = this.onRemoveTopic.bind(this)
   }
 
   componentDidMount () {
@@ -171,14 +173,26 @@ class FriendStreams extends React.Component {
     }
   }
 
+  onRemoveTopic (topic) {
+    logger.warn('onRemoveTopic', topic)
+    const { filterByTopic } = this.state
+    this.setState({ filterByTopic: filterByTopic.filter(item => item.name !== topic.name), currentPage: 1, hasMoreItems: true })
+  }
+
   onSelectTopic (topic) {
     logger.warn('onSelectTopic', topic)
     this.setState({ filterByTopic: [{ value: topic.urlIds, label: topic.name }], currentPage: 1, hasMoreItems: true })
   }
 
+  onRemoveUser (user) {
+    logger.warn('onRemoveUser', user)
+    const { filterByUser } = this.state
+    this.setState({ filterByUser: filterByUser.filter(item => item.user_id !== user.user_id), currentPage: 1, hasMoreItems: true })
+  }
+
   onSelectUser (user) {
     logger.warn('onSelectUser', user)
-    this.setState({ filterByUser: [{ value: user.urlIds, label: user.fullname }], currentPage: 1, hasMoreItems: true })
+    this.setState({ filterByUser: [{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }], currentPage: 1, hasMoreItems: true })
   }
 
   onChangeRate (rating) {
@@ -197,7 +211,7 @@ class FriendStreams extends React.Component {
   }
 
   render () {
-    const { currentPage, users, topics } = this.state
+    const { currentPage } = this.state
     logger.warn('currentPage', currentPage)
     const items = []
     // TODO: support sort by time or score
@@ -265,7 +279,12 @@ class FriendStreams extends React.Component {
           <div className='standand-sort'>
             <nav className='navbar'>
               <ul className='nav navbar-nav' >
-                <FilterSearch {...this.state} onChangeRate={this.onChangeRate} />
+                <FilterSearch
+                  {...this.state}
+                  onChangeRate={this.onChangeRate}
+                  onRemoveTopic={this.onRemoveTopic}
+                  onRemoveUser={this.onRemoveUser}
+                />
               </ul>
             </nav>
           </div>

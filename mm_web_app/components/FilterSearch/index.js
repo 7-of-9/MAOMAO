@@ -6,14 +6,11 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import Fuse from 'fuse.js'
 import Autosuggest from 'react-autosuggest'
 import ReactStars from 'react-stars'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
-
-function escapeRegexCharacters (str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-}
 
 class FilterSearch extends React.Component {
   constructor (props) {
@@ -34,26 +31,40 @@ class FilterSearch extends React.Component {
   }
 
   getSuggestions (value) {
-    const inputValue = value.trim().toLowerCase()
-    const inputLength = inputValue.length
-    const escapedValue = escapeRegexCharacters(value.trim())
-
-    if (escapedValue === '' || inputLength === 0) {
+    if (value === '' || value.length === 0) {
       return []
     }
-    const { users, topics } = this.state
 
-    const regex = new RegExp('^' + escapedValue, 'i')
+    const { users, topics } = this.props
+    const options = {
+      include: ['matches', 'score'],
+      shouldSort: true,
+      tokenize: true,
+      matchAllTokens: true,
+      findAllMatches: true,
+      threshold: 0.1,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: [
+        'name',
+        'fullname',
+        'title'
+      ]
+    }
+
     const sections = []
-
+    const fuseUser = new Fuse(users, options)
     sections.push({
       title: 'User',
-      data: users.filter(user => regex.test(user.fullname))
+      data: fuseUser.search(value)
     })
 
+    const fuseTopic = new Fuse(topics, options)
     sections.push({
       title: 'Stream',
-      data: topics.filter(topic => regex.test(topic.name))
+      data: fuseTopic.search(value)
     })
 
     return sections.filter(section => section.data.length > 0)
@@ -64,15 +75,17 @@ class FilterSearch extends React.Component {
   }
 
   getSuggestionValue (suggestion) {
-    return suggestion.name || suggestion.fullname
+    return suggestion.name || suggestion.fullname || suggestion.title
   }
 
   renderSuggestion (suggestion) {
     if (suggestion.name) {
+      /* topic html */
       return (<div>
         {suggestion.name}
       </div>)
     }
+    /* user html */
     return (
       <div>
         <img src={suggestion.avatar} />
@@ -86,7 +99,7 @@ class FilterSearch extends React.Component {
       <DebounceInput
         className='form-control'
         minLength={2}
-        debounceTimeout={300}
+        debounceTimeout={200}
         {...inputProps}
         />
     )
@@ -118,6 +131,7 @@ class FilterSearch extends React.Component {
 
   render () {
     const { value, suggestions } = this.state
+    const { filterByTopic, filterByUser } = this.props
     const inputProps = {
       placeholder: 'Search...',
       value,
@@ -125,11 +139,14 @@ class FilterSearch extends React.Component {
     }
     logger.warn('value', value)
     logger.warn('suggestions', suggestions)
+    logger.warn('filterByTopic', filterByTopic)
+    logger.warn('filterByUser', filterByUser)
 
     return (
       <div className='input-group'>
         <Autosuggest
           multiSection
+          highlightFirstSuggestion
           focusInputOnSuggestionClick={false}
           suggestions={suggestions}
           onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
@@ -140,7 +157,7 @@ class FilterSearch extends React.Component {
           renderSuggestion={this.renderSuggestion}
           inputProps={inputProps}
           renderInputComponent={this.renderInputComponent}
-                  />
+        />
         <div className='filter-rating'>
           <ReactStars
             count={5}
@@ -151,6 +168,21 @@ class FilterSearch extends React.Component {
             color2={'#ffd700'}
             />
         </div>
+        <ul>
+          {
+            filterByTopic.map(item => (
+              <li>{item.label} <a onClick={() => { this.props.onRemoveTopic(item) }}>Remove</a></li>
+            ))
+          }
+          {
+            filterByUser.map(item => (
+              <li>
+                <img src={item.avatar} alt={item.label} />
+                {item.label} <a onClick={() => { this.props.onRemoveUser(item) }}>Remove</a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     )
   }
@@ -160,8 +192,12 @@ FilterSearch.propTypes = {
   urls: PropTypes.array.isRequired,
   topics: PropTypes.array.isRequired,
   users: PropTypes.array.isRequired,
+  filterByTopic: PropTypes.array.isRequired,
+  filterByUser: PropTypes.array.isRequired,
   rating: PropTypes.number.isRequired,
-  onChangeRate: PropTypes.func.isRequired
+  onChangeRate: PropTypes.func.isRequired,
+  onRemoveTopic: PropTypes.func.isRequired,
+  onRemoveUser: PropTypes.func.isRequired
 }
 
 export default FilterSearch
