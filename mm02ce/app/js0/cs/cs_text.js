@@ -292,9 +292,7 @@ function process_text(page_meta) {
     logger().warn('detectTitleLang', detectTitleLang);
     logger().warn('detectDescriptionLang', detectDescriptionLang);
     if (detectLang === 'eng' || detectTitleLang === 'eng' || detectDescriptionLang === 'eng') {
-      var ctx = new Checksum("fnv32", 0); // fnv32-0
-      ctx.updateObject(document.head);
-      var document_head_hash = ctx.result.toString(16);
+      var document_head_hash = md5(document.head.innerHTML);
       logger().warn('document_head_hash', document_head_hash);
       ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), document_head_hash, function (data) {
         logger().info("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);

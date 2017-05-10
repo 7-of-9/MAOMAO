@@ -110,6 +110,7 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
     </div>
   </div>;
 
+
 GoogleShare.propTypes = {
   value: PropTypes.string,
   contacts: PropTypes.array.isRequired,
