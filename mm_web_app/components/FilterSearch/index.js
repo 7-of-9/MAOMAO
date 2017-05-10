@@ -36,7 +36,7 @@ class FilterSearch extends React.Component {
     }
 
     const { users, topics } = this.props
-    const options = {
+    const userOptions = {
       include: ['matches', 'score'],
       shouldSort: true,
       tokenize: true,
@@ -48,20 +48,33 @@ class FilterSearch extends React.Component {
       maxPatternLength: 32,
       minMatchCharLength: 1,
       keys: [
-        'name',
-        'fullname',
-        'title'
+        'fullname'
       ]
     }
 
     const sections = []
-    const fuseUser = new Fuse(users, options)
+    const fuseUser = new Fuse(users, userOptions)
     sections.push({
       title: 'User',
       data: fuseUser.search(value)
     })
 
-    const fuseTopic = new Fuse(topics, options)
+    const topicOtions = {
+      include: ['matches', 'score'],
+      shouldSort: true,
+      tokenize: true,
+      matchAllTokens: true,
+      findAllMatches: true,
+      threshold: 0.1,
+      location: 0,
+      distance: 100,
+      maxPatternLength: 32,
+      minMatchCharLength: 1,
+      keys: [
+        'name'
+      ]
+    }
+    const fuseTopic = new Fuse(topics, topicOtions)
     sections.push({
       title: 'Stream',
       data: fuseTopic.search(value)
@@ -123,10 +136,18 @@ class FilterSearch extends React.Component {
     )
   }
 
-  onChange (event, { newValue }) {
-    this.setState({
-      value: newValue
-    })
+  onChange (event, { newValue, method }) {
+    if (method === 'click' || method === 'enter') {
+      const selected = this.getSuggestions(newValue)
+      logger.warn('selected', selected)
+      this.setState({
+        value: ''
+      })
+    } else {
+      this.setState({
+        value: newValue
+      })
+    }
   }
 
   render () {
@@ -196,7 +217,9 @@ FilterSearch.propTypes = {
   filterByUser: PropTypes.array.isRequired,
   rating: PropTypes.number.isRequired,
   onChangeRate: PropTypes.func.isRequired,
+  onSelectTopic: PropTypes.func.isRequired,
   onRemoveTopic: PropTypes.func.isRequired,
+  onSelectUser: PropTypes.func.isRequired,
   onRemoveUser: PropTypes.func.isRequired
 }
 
