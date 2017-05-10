@@ -312,7 +312,7 @@ class FriendStreams extends React.Component {
                   </li>
                 }
                 <li>
-                  <div className='input-group open'>
+                  <div className='input-group'>
                     <DebounceInput
                       className='form-control'
                       placeholder='Search URL ...'
