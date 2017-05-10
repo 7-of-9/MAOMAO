@@ -146,7 +146,7 @@ body {
         }
         // right tooltip
         .stream-symbol[data-tooltip][data-position="right"]:before {
-          top: 5px;
+          top: 0;
           left: 100%;
           margin-left: 6px;
         }

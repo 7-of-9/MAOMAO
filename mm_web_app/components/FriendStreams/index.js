@@ -174,25 +174,38 @@ class FriendStreams extends React.Component {
   }
 
   onRemoveTopic (topic) {
-    logger.warn('onRemoveTopic', topic)
     const { filterByTopic } = this.state
-    this.setState({ filterByTopic: filterByTopic.filter(item => item.name !== topic.name), currentPage: 1, hasMoreItems: true })
+    this.setState({
+      filterByTopic: filterByTopic.filter(item => item.name !== topic.name),
+      currentPage: 1,
+      hasMoreItems: true
+    })
   }
 
   onSelectTopic (topic) {
-    logger.warn('onSelectTopic', topic)
-    this.setState({ filterByTopic: [{ value: topic.urlIds, label: topic.name }], currentPage: 1, hasMoreItems: true })
+    const { filterByTopic } = this.state
+    if (!filterByTopic.find(item => item.label === topic.name)) {
+      this.setState({
+        filterByTopic: filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }]),
+        currentPage: 1,
+        hasMoreItems: true
+      })
+    }
   }
 
   onRemoveUser (user) {
-    logger.warn('onRemoveUser', user)
     const { filterByUser } = this.state
     this.setState({ filterByUser: filterByUser.filter(item => item.user_id !== user.user_id), currentPage: 1, hasMoreItems: true })
   }
 
   onSelectUser (user) {
-    logger.warn('onSelectUser', user)
-    this.setState({ filterByUser: [{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }], currentPage: 1, hasMoreItems: true })
+    const { filterByUser } = this.state
+    if (!filterByUser.find(item => item.user_id === user.user_id)) {
+      this.setState({
+        filterByUser: filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }]),
+        currentPage: 1,
+        hasMoreItems: true })
+    }
   }
 
   onChangeRate (rating) {
@@ -248,7 +261,6 @@ class FriendStreams extends React.Component {
                     />
                     ({id})</a>
                 </h4>
-                {urlTopic(id, this.state.topics, this.onSelectTopic)}
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>
@@ -266,6 +278,7 @@ class FriendStreams extends React.Component {
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
                 {urlOwner(id, this.state.users, this.onSelectUser)}
+                {urlTopic(id, this.state.topics, this.onSelectTopic)}
               </div>
             </div>
           </div>
@@ -282,7 +295,9 @@ class FriendStreams extends React.Component {
                 <FilterSearch
                   {...this.state}
                   onChangeRate={this.onChangeRate}
+                  onSelectTopic={this.onSelectTopic}
                   onRemoveTopic={this.onRemoveTopic}
+                  onSelectUser={this.onSelectUser}
                   onRemoveUser={this.onRemoveUser}
                 />
               </ul>

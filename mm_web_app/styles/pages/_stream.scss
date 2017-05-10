@@ -139,7 +139,7 @@ img {
   clear: both;
   background: #fff;
   text-align: left;
-  border: 1px solid #eee;
+  border: 1px solid #e1e5eb;
   border-left: 0;
   border-right: 0;
   background: -moz-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
@@ -150,7 +150,7 @@ img {
   background: linear-gradient(to bottom, #ffffff 0%, #f4f4f4 100%);
   .navbar {
     margin: 0;
-    padding: 0;
+    padding: 11px 15px 10px;
     min-height: inherit;
     display: block;
     @media (max-width: 750px) {
@@ -368,7 +368,7 @@ img {
   @include clearfix();
   @include transition(all 0.2s ease-out 0s);
   position: relative;
-  margin-top: 5px;
+  margin-top: 10px;
   padding: 3px 10px 2px 12px;
   display: inline-block;
   border: none;
@@ -397,10 +397,10 @@ img {
     min-height: 20px;
     display: inline-block;
     vertical-align: middle;
-    /* text-overflow: ellipsis;
+    text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 140px; */
+    max-width: 140px;
   }
   &::before {
     @include transition(all 0.2s ease-out 0s);
@@ -635,7 +635,7 @@ img {
 
 .mix-tag {
   padding-left: 13px;
-  margin-bottom: 10px;
+  text-align: right;
   a {
     cursor: pointer;
   }
@@ -946,7 +946,7 @@ img {
 /*-----filter rating-----*/
 
 .filter-rating {
-  @include abs-pos ($top: 12px, $right: 22px, $bottom: auto, $left: auto);
+  @include abs-pos ($top: 3px, $right: 8px, $bottom: auto, $left: auto);
   z-index: 100;
 }
 
@@ -1025,7 +1025,6 @@ img {
 
 .input-group {
   position: relative;
-  padding: 10px 15px;
   display: block;
   max-width: 700px;
   .btn {
@@ -1039,28 +1038,101 @@ img {
       outline: 0;
     }
   }
-  .form-control {
+  .react-autosuggest__input {
     @include border-radius(25px);
     padding: 4px 119px 4px 36px;
     height: 42px;
     width: 100%;
+    display: block;
+    font-size: 1rem;
+    line-height: 1.42857143;
+    color: #555;
+    border: 1px solid #ccc;
     background: url("/static/images/search-input.png") no-repeat 8px center #fff scroll;
-    @media (max-width: 590px) {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    &:focus {
+      border-color: #66afe9;
+      outline: 0;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+    &::-moz-placeholder {
+      color: #999;
+      opacity: 1;
+    }
+    &:-ms-input-placeholder {
+      color: #999;
+    }
+    &::-webkit-input-placeholder {
+      color: #999;
+    }
+    &::-ms-expand {
+      background-color: transparent;
+      border: 0;
+    }
+  }
+  .search-box-title {
+    @include border-radius(4px);
+    padding: 7px 10px 8px;
+    margin: 10px 12px 12px;
+    font-size: 0.9375rem;
+    color: #fff;
+    background-color: #2db7f5;
+    font-weight: bold;
+  }
+  .search-box-list,
+  .react-autosuggest__suggestions-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    li {
+      padding: 8px 12px;
       width: 100%;
+      display: block;
+      border-bottom: 1px solid #cfcfcf;
+      &.search-item {
+        padding: 8px 12px;
+        a {
+          &,
+          &:hover,
+          &:focus {
+            @include transition(all 0.2s ease-out 0s);
+            text-decoration: none;
+          }
+          &:hover,
+          &:focus {
+            span {
+              color: #2db7f5;
+            }
+          }
+        }
+      }
+      &:last-child {
+        border-bottom: 0;
+      }
     }
   }
 }
 
-.search-box-drop {
-  @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 2%);
+.search-box-drop,
+.react-autosuggest__section-container {
+  @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
+}
+
+.search-box-drop .search-box-list,
+.react-autosuggest__section-container {
   @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0,0,0,.175));
-  display: none;
-  z-index: 5000;
-  float: left;
-  min-width: 160px;
-  width: 96%;
-  padding: 15px 15px 5px;
+  @include box-shadow(0 6px 12px rgba(0,
+  0,
+  0,
+  .175));
+  /* min-width: 160px;
+  width: 96%; 
+  padding: 5px 15px 5px; */
   margin: 3px 0 0;
   font-size: 0.875rem;
   text-align: left;
@@ -1070,61 +1142,6 @@ img {
   background-clip: padding-box;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, .15);
-  .search-box-title {
-    @include border-radius(4px);
-    padding: 7px 10px 8px;
-    margin-bottom: 5px;
-    font-size: 0.9375rem;
-    color: #fff;
-    background-color: #2db7f5;
-    font-weight: bold;
-  }
-  .search-box-list {
-    list-style: none;
-    margin: 0 0 10px;
-    padding: 3px 0 0;
-    li {
-      padding: 2px 0;
-      a {
-        color: #767676;
-        &:hover,
-        &:focus {
-          @include transition(all 0.2s ease-out 0s);
-          color: #2db7f5;
-          text-decoration: none;
-        }
-      }
-    }
-  }
-  .search-item-list {
-    list-style: none;
-    margin: 0 0 10px;
-    padding: 0;
-    li {
-      padding: 5px 0;
-      border-top: 1px solid #cfcfcf;
-      &:first-child {
-        border-top: 0;
-      }
-      &:last-child {
-        padding-bottom: 0;
-      }
-      a {
-        &,
-        &:hover,
-        &:focus {
-          @include transition(all 0.2s ease-out 0s);
-          text-decoration: none;
-        }
-        &:hover,
-        &:focus {
-          span {
-            color: #2db7f5;
-          }
-        }
-      }
-    }
-  }
 }
 
 .search-media {
@@ -1141,26 +1158,6 @@ img {
   }
   .search-media-body {
     width: 10000px;
-    span {
-      display: block;
-      color: #767676;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      @media (max-width: 690px) {
-        max-width: 425px;
-      }
-      @media (max-width: 590px) {
-        max-width: 379px;
-      }
-      @media (max-width: 390px) {
-        max-width: 225px;
-      }
-      &.search-media-heading {
-        font-weight: bold;
-        color: #2c2c2c;
-      }
-    }
   }
   .img-object {
     display: block;
@@ -1172,6 +1169,21 @@ img {
   .search-media-body {
     display: table-cell;
     vertical-align: middle;
+  }
+}
+
+.text-topic {
+  color: #999;
+  font-family: 'Orbitron-Light';
+}
+
+a.btn-box-remove {
+  margin-left: 10px;
+  color: #de0606;
+  display: inline-block;
+  &:hover,
+  &:focus {
+    color: #f00;
   }
 }
 
