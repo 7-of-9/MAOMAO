@@ -100,7 +100,8 @@ function MaomaoShare() {
       + `left:${left}px;`
       + 'z-index: 999;'
       + 'animation: vex-flyin 0.5s;'
-      + 'transition:all .2s ease-in-out;';
+      + 'transition:all .2s ease-in-out;'
+      + 'box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;';
 
     div.appendChild(icons.icons);
 
