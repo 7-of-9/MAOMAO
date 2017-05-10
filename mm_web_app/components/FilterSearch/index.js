@@ -102,7 +102,7 @@ class FilterSearch extends React.Component {
     return (
       <div className='search-media'>
         <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
-        <div className='search-media-body'><span className='text-topic'>{suggestion.fullname}</span></div>
+        <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
       </div>
     )
   }
@@ -193,7 +193,7 @@ class FilterSearch extends React.Component {
           <ul className='search-box-list'>
             {
               filterByTopic.map(item => (
-                <li><i className="fa fa-angle-right" aria-hidden="true"></i> <span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden="true"></i> Remove</a></li>
+                <li><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden="true"></i></a></li>
               ))
             }
             {
@@ -201,7 +201,7 @@ class FilterSearch extends React.Component {
                 <li className='search-item'>
                   <div className='search-media'>
                     <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' alt='' width='40' height='40' /></div>
-                    <div className='search-media-body'><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden="true"></i> Remove</a></div>
+                    <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden="true"></i></a></div>
                   </div>
                 </li>
               ))
