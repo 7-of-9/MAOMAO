@@ -7,37 +7,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import latinize from 'latinize'
-import Select from 'react-select'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import ReactStars from 'react-stars'
-import DebounceInput from 'react-debounce-input'
 import Highlighter from 'react-highlight-words'
 import moment from 'moment'
 import _ from 'lodash'
 import logger from '../../utils/logger'
-import Loading from '../../components/Loading'
-import DiscoveryButton from '../../components/DiscoveryButton'
+import Loading from '../Loading'
+import DiscoveryButton from '../DiscoveryButton'
+import FilterSearch from '../FilterSearch'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 20
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.4s'
-}
-
-function mapTopicsOption (topics) {
-  return _.map(topics, topic => ({
-    value: topic.urlIds,
-    label: `${topic.name}`
-  }))
-}
-
-function mapUsersOption (users) {
-  return _.map(users, item => ({
-    value: item.urlIds,
-    label: `${item.fullname}`
-  }))
 }
 
 function urlOwner (id, users, onSelectUser) {
@@ -79,7 +64,7 @@ function urlTopic (id, topics, onSelectTopic) {
 }
 
 function filterUrls (data) {
-  const { urls, filterByTopic, filterByUser, filterByRating, filterByUrl } = data
+  const { urls, filterByTopic, filterByUser, rating } = data
   logger.warn('urls', urls)
   if (filterByTopic.length > 0 || filterByUser.length > 0) {
     const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
@@ -95,27 +80,18 @@ function filterUrls (data) {
       }
     }
     logger.warn('foundIds', foundIds)
-    if (filterByUrl.length) {
-      const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating && item.title.toLowerCase().indexOf(filterByUrl) !== -1)
-      logger.warn('result', result)
-      return _.uniqBy(result, 'title')
-    } else {
-      const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= filterByRating)
-      logger.warn('result', result)
-      return _.uniqBy(result, 'title')
-    }
+    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= rating)
+    logger.warn('result', result)
+    return _.uniqBy(result, 'title')
   }
-  if (filterByUrl.length) {
-    return _.uniqBy(urls.filter(item => item.rate >= filterByRating && item.title.toLowerCase().indexOf(filterByUrl) !== -1), 'title')
-  } else {
-    return _.uniqBy(urls.filter(item => item.rate >= filterByRating), 'title')
-  }
+  return _.uniqBy(urls.filter(item => item.rate >= rating), 'title')
 }
 
 class FriendStreams extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      suggestions: [],
       hasMoreItems: false,
       currentPage: 1,
       urls: [],
@@ -123,10 +99,11 @@ class FriendStreams extends React.Component {
       topics: [],
       filterByTopic: '',
       filterByUser: '',
-      filterByUrl: '',
-      filterByRating: 3
+      rating: 3,
+      value: ''
     }
     this.loadMore = this.loadMore.bind(this)
+    this.onChangeRate = this.onChangeRate.bind(this)
     this.onSelectTopic = this.onSelectTopic.bind(this)
     this.onSelectUser = this.onSelectUser.bind(this)
   }
@@ -204,6 +181,11 @@ class FriendStreams extends React.Component {
     this.setState({ filterByUser: [{ value: user.urlIds, label: user.fullname }], currentPage: 1, hasMoreItems: true })
   }
 
+  onChangeRate (rating) {
+    logger.warn('onChangeRate', rating)
+    this.setState({ rating, currentPage: 1, hasMoreItems: true })
+  }
+
   loadMore () {
     const currentPage = this.state.currentPage + 1
     const sortedUrls = filterUrls(this.state)
@@ -215,7 +197,8 @@ class FriendStreams extends React.Component {
   }
 
   render () {
-    const { currentPage } = this.state
+    const { currentPage, users, topics } = this.state
+    logger.warn('currentPage', currentPage)
     const items = []
     // TODO: support sort by time or score
     const sortedUrls = filterUrls(this.state)
@@ -275,105 +258,14 @@ class FriendStreams extends React.Component {
         </div>)
       })
     }
+
     return (
       <div className='ReactTabs react-tabs'>
         <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
           <div className='standand-sort'>
             <nav className='navbar'>
-              <ul className='nav navbar-nav'>
-                {this.state.filterByTopic.length > 0 &&
-                  <li>
-                    <div className='item-select'>
-                      <span className='label-select'>Streams</span>
-                      <Select
-                        className='drop-select'
-                        name='topic-name'
-                        multi
-                        value={this.state.filterByTopic}
-                        options={mapTopicsOption(this.state.topics)}
-                        onChange={(selectValue) => this.setState({ filterByTopic: selectValue, currentPage: 1, hasMoreItems: true })}
-                      />
-                    </div>
-                  </li>
-                }
-                {this.state.filterByUser.length > 0 &&
-                  <li>
-                    <div className='item-select'>
-                      <span className='label-select'>Users</span>
-                      <Select
-                        className='drop-select'
-                        multi
-                        name='user-name'
-                        value={this.state.filterByUser}
-                        options={mapUsersOption(this.state.users)}
-                        onChange={(selectValue) => this.setState({ filterByUser: selectValue, currentPage: 1, hasMoreItems: true })}
-                      />
-                    </div>
-                  </li>
-                }
-                <li>
-                  <div className='input-group open'>
-                    <DebounceInput
-                      className='form-control'
-                      placeholder='Search URL ...'
-                      minLength={2}
-                      debounceTimeout={300}
-                      onChange={event => this.setState({ filterByUrl: event.target.value.toLowerCase() })} />
-                    <div className='filter-rating'>
-                      <ReactStars
-                        count={5}
-                        value={this.state.filterByRating}
-                        onChange={(selectValue) => this.setState({ filterByRating: selectValue, currentPage: 1, hasMoreItems: true })}
-                        size={24}
-                        half={false}
-                        color2={'#ffd700'}
-                      />
-                    </div>
-                    <div className='search-box-drop'>
-                      <p className='search-box-title'>Base on what you are typing</p>
-                      <ul className='search-box-list'>
-                        <li><a href='#'><i className='fa fa-angle-right' aria-hidden='true' /> Product</a></li>
-                        <li><a href='#'><i className='fa fa-angle-right' aria-hidden='true' /> Furniture</a></li>
-                      </ul>
-                      <p className='search-box-title'>Other</p>
-                      <ul className='search-item-list'>
-                        <li>
-                          <a className='search-media' href='#'>
-                            <span className='search-media-left'>
-                              <img className='img-object' src='https://avatars0.githubusercontent.com/u/2302315?v=3&s=400' width='38' height='38' alt='' />
-                            </span>
-                            <span className='search-media-body'>
-                              <span className='search-media-heading'>Installing OpenSSH</span>
-                              <span>An accessible widget & pattern library</span>
-                            </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a className='search-media' href='#'>
-                            <span className='search-media-left'>
-                              <img className='img-object' src='https://avatars3.githubusercontent.com/u/121766?v=3&s=400' width='38' height='38' alt='' />
-                            </span>
-                            <span className='search-media-body'>
-                              <span className='search-media-heading'>Installing OpenSSH</span>
-                              <span>An accessible widget & pattern library</span>
-                            </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a className='search-media' href='#'>
-                            <span className='search-media-left'>
-                              <img className='img-object' src='https://www.sitepoint.com/wp-content/themes/sitepoint/assets/images/icon.javascript.png' width='38' height='38' alt='' />
-                            </span>
-                            <span className='search-media-body'>
-                              <span className='search-media-heading'>Installing OpenSSH</span>
-                              <span>An accessible widget & pattern library</span>
-                            </span>
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </li>
+              <ul className='nav navbar-nav' >
+                <FilterSearch {...this.state} onChangeRate={this.onChangeRate} />
               </ul>
             </nav>
           </div>
@@ -393,7 +285,7 @@ class FriendStreams extends React.Component {
             </div>
           </InfiniteScroll>
         </div>
-      </div>
+      </div >
     )
   }
 }
