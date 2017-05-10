@@ -92,6 +92,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 <label className="radio__regular__label" htmlFor={topic.id}>
                   <span className="labs">
                     <span className="meta">All my browsing on</span>  {topic.name.toUpperCase()}
+                    <span className='icons-labs'></span>
                   </span>
                 </label>
               </div>,
