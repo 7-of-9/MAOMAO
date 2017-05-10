@@ -331,7 +331,7 @@ img {
   cursor: pointer;
   .full-name {
     font-weight: bold;
-    color: #606162;
+    color: #808080;
   }
   &:hover {
     &::after {
@@ -747,7 +747,7 @@ img {
       padding: 10px 8px;
       display: block;
       border-bottom: 1px solid #e1e5eb;
-      color: #000;
+      color: #404040;
       display: block;
       font-size: 0.75rem;
       font-weight: 600;
@@ -756,8 +756,8 @@ img {
       text-transform: uppercase;
       width: 100%;
       &.active {
-        color: #1a8dee;
-        border-bottom-color: #1a8dee;
+        color: #2db7f5;
+        border-bottom-color: #2db7f5;
       }
       &,
       &.active {
@@ -851,16 +851,19 @@ img {
     .caption {
       padding-top: 15px;
       text-align: left;
+      color: #404040;
       .caption-title {
         margin-bottom: 0.3125rem;
         font-size: 0.875rem;
         line-height: 1.3125rem;
         font-weight: bold;
         a {
-          color: #1a8dee;
+          @include transition(all 0.2s ease-out 0s);
+          color: #2db7f5;
           &:hover,
           &:focus {
-            color: #0174d5;
+            @include transition(all 0.3s ease-out 0s);
+            color: #0292d3;
             text-decoration: none;
           }
         }
@@ -1074,7 +1077,7 @@ img {
     margin-bottom: 5px;
     font-size: 0.9375rem;
     color: #fff;
-    background-color: #1a8dee;
+    background-color: #2db7f5;
     font-weight: bold;
   }
   .search-box-list {
@@ -1088,7 +1091,7 @@ img {
         &:hover,
         &:focus {
           @include transition(all 0.2s ease-out 0s);
-          color: #1a8dee;
+          color: #2db7f5;
           text-decoration: none;
         }
       }
@@ -1117,7 +1120,7 @@ img {
         &:hover,
         &:focus {
           span {
-            color: #1a8dee;
+            color: #2db7f5;
           }
         }
       }
