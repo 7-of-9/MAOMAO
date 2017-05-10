@@ -220,7 +220,6 @@ class FriendStreams extends React.Component {
                 <a href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(id, this.state.topics, this.onSelectTopic)}
                 {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
               </div>
               <div className='caption'>
@@ -235,6 +234,7 @@ class FriendStreams extends React.Component {
                     />
                     ({id})</a>
                 </h4>
+                {urlTopic(id, this.state.topics, this.onSelectTopic)}
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>

@@ -368,14 +368,14 @@ img {
   @include clearfix();
   @include transition(all 0.2s ease-out 0s);
   position: relative;
-  margin-top: 10px;
+  margin-top: 5px;
   padding: 3px 10px 2px 12px;
   display: inline-block;
   border: none;
   text-decoration: none;
   font-family: 'Orbitron-Light';
   font-size: 0.75rem;
-  max-height: 26px;
+  line-height: 1.0625rem;
   color: #fff;
   background-color: transparent;
   -webkit-border-top-right-radius: 5px;
@@ -397,18 +397,19 @@ img {
     min-height: 20px;
     display: inline-block;
     vertical-align: middle;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 140px;
+    max-width: 140px; */
   }
   &::before {
     @include transition(all 0.2s ease-out 0s);
     position: absolute;
-    top: 0;
+    top: 50%;
     left: -13px;
     width: 0;
     height: 0;
+    margin-top: -13px;
     border-top: 12px solid transparent;
     border-right: 13px solid transparent;
     border-bottom: 13px solid transparent;
@@ -633,10 +634,8 @@ img {
 }
 
 .mix-tag {
-  @include abs-pos ($top: auto, $right: 10px, $bottom: 10px, $left: auto);
-  @include flexbox();
-  flex-flow: column wrap;
-  z-index: 100;
+  padding-left: 13px;
+  margin-bottom: 10px;
   a {
     cursor: pointer;
   }
