@@ -317,7 +317,7 @@ img {
     img {
       @include border-radius(50%);
       margin-right: 0.625rem;
-      float: left;
+      display: inline-block;
       width: 30px;
       height: 30px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -1092,8 +1092,10 @@ img {
     position: relative;
     padding: 0 119px 0 36px;
     min-height: 42px;
-    width: 100%;
     display: block;
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: fit-content;
     font-size: 1rem;
     line-height: 1.42857143;
     color: #555;
@@ -1130,8 +1132,11 @@ img {
     }
   }
   .react-autosuggest__container {
-    display: inline-block;
     margin-top: 4px;
+    display: inline-block;
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: fit-content;
   }
   .react-autosuggest__input {
     display: inline-block;
@@ -1141,7 +1146,7 @@ img {
     font-family: sans-serif;
     outline: none;
     padding: 5px;
-    width: 80px;
+    width: 100%;
   }
   .search-box-title {
     @include border-radius(4px);
@@ -1259,6 +1264,9 @@ img {
   display: inline-block;
   vertical-align: top;
   margin-top: 1px;
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
   /* @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: 0); */
 }
 
@@ -1269,6 +1277,8 @@ img {
   0,
   .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
+  width: 100%;
+  min-height: 94px;
   margin: 3px 0 0;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, .15);
