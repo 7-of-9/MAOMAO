@@ -316,10 +316,11 @@ img {
     margin: 0.5rem 0 0 0;
     img {
       @include border-radius(50%);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
       margin-right: 0.625rem;
+      float: left;
       width: 30px;
       height: 30px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     }
   }
 }
@@ -946,8 +947,18 @@ img {
 /*-----filter rating-----*/
 
 .filter-rating {
-  @include abs-pos ($top: 3px, $right: 8px, $bottom: auto, $left: auto);
+  @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
   z-index: 100;
+  span {
+    line-height: 20px;
+  }
+  @media (max-width: 750px) {
+    position: static;
+    left: auto;
+    top: auto;
+    right: auto;
+    bottom: auto;
+  }
 }
 
 
@@ -1038,6 +1049,11 @@ img {
   .search-media-body {
     width: 10000px;
     .full-name {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 109px;
+      display: inline-block;
       font-weight: bold;
       color: #808080;
       font-size: 0.75rem;
@@ -1071,10 +1087,11 @@ img {
       outline: 0;
     }
   }
-  .react-autosuggest__input {
+  .input-group-suggest {
     @include border-radius(25px);
-    padding: 4px 119px 4px 36px;
-    height: 42px;
+    position: relative;
+    padding: 0 119px 0 36px;
+    min-height: 42px;
     width: 100%;
     display: block;
     font-size: 1rem;
@@ -1107,6 +1124,24 @@ img {
       background-color: transparent;
       border: 0;
     }
+    @media (max-width: 750px) {
+      @include border-radius(5px);
+      padding: 3px 20px 4px 36px;
+    }
+  }
+  .react-autosuggest__container {
+    display: inline-block;
+    margin-top: 4px;
+  }
+  .react-autosuggest__input {
+    display: inline-block;
+    background: transparent;
+    border: 0;
+    color: #777;
+    font-family: sans-serif;
+    outline: none;
+    padding: 5px;
+    width: 80px;
   }
   .search-box-title {
     @include border-radius(4px);
@@ -1120,13 +1155,15 @@ img {
   .search-box-list {
     @include border-radius(14px);
     list-style: none;
-    margin: 6px 0 0 6px;
+    margin: 0;
     padding: 0;
+    display: inline-block;
+    vertical-align: middle;
     line-height: 10px;
     li {
       @include border-radius(14px);
       padding: 4px 5px;
-      margin-right: 5px;
+      margin: 4px 5px 3px 0;
       display: inline-block;
       border: 1px solid #a1ac9e;
       background-color: #acbaaa;
@@ -1219,7 +1256,10 @@ img {
 }
 
 .search-box-drop {
-  @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: 0);
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 1px;
+  /* @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: 0); */
 }
 
 .react-autosuggest__section-container {

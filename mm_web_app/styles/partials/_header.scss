@@ -32,8 +32,10 @@ the header section
     }
     .navbar-toggler {
       cursor: pointer;
-      &:focus {
+      &:focus,&:hover {
         outline: 0;
+        color: #2db7f5;
+        border-color: #2db7f5;
       }
       @media (max-width: 767px) {
         @include border-radius(3px);

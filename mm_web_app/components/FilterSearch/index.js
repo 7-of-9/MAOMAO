@@ -173,48 +173,50 @@ class FilterSearch extends React.Component {
 
     return (
       <div className='input-group'>
-        <Autosuggest
-          multiSection
-          highlightFirstSuggestion
-          focusInputOnSuggestionClick={false}
-          suggestions={suggestions}
-          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-          getSuggestionValue={this.getSuggestionValue}
-          getSectionSuggestions={this.getSectionSuggestions}
-          renderSectionTitle={this.renderSectionTitle}
-          renderSuggestion={this.renderSuggestion}
-          inputProps={inputProps}
-          renderInputComponent={this.renderInputComponent}
-        />
-        <div className='filter-rating'>
-          <ReactStars
-            count={5}
-            value={this.props.rating}
-            onChange={(selectValue) => { this.props.onChangeRate(selectValue) }}
-            size={24}
-            half={false}
-            color2={'#ffd700'}
-            />
-        </div>
-        <div className='search-box-drop'>
-          <ul className='search-box-list'>
-            {
-              filterByTopic.map(item => (
-                <li key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
-              ))
-            }
-            {
-              filterByUser.map(item => (
-                <li key={guid()} className='search-item'>
-                  <div className='search-media'>
-                    <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' /></div>
-                    <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></div>
-                  </div>
-                </li>
-              ))
-            }
-          </ul>
+        <div className='input-group-suggest'>
+          <div className='filter-rating'>
+            <ReactStars
+              count={5}
+              value={this.props.rating}
+              onChange={(selectValue) => { this.props.onChangeRate(selectValue) }}
+              size={24}
+              half={false}
+              color2={'#ffd700'}
+              />
+          </div>
+          <div className='search-box-drop'>
+            <ul className='search-box-list'>
+              {
+                filterByTopic.map(item => (
+                  <li key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
+                ))
+              }
+              {
+                filterByUser.map(item => (
+                  <li key={guid()} className='search-item'>
+                    <div className='search-media'>
+                      <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' /></div>
+                      <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <Autosuggest
+            multiSection
+            highlightFirstSuggestion
+            focusInputOnSuggestionClick={false}
+            suggestions={suggestions}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            getSuggestionValue={this.getSuggestionValue}
+            getSectionSuggestions={this.getSectionSuggestions}
+            renderSectionTitle={this.renderSectionTitle}
+            renderSuggestion={this.renderSuggestion}
+            inputProps={inputProps}
+            renderInputComponent={this.renderInputComponent}
+          />
         </div>
       </div>
     )
