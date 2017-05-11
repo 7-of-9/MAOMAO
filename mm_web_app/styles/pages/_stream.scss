@@ -367,10 +367,11 @@ img {
 
 .tags {
   @include clearfix();
+  @include border-radius(5px);
   @include transition(all 0.2s ease-out 0s);
   position: relative;
   margin-top: 10px;
-  padding: 3px 10px 2px 12px;
+  padding: 3px 10px 2px 25px;
   display: inline-block;
   border: none;
   text-decoration: none;
@@ -379,48 +380,20 @@ img {
   line-height: 1.0625rem;
   color: #fff;
   background-color: transparent;
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px;
-  -webkit-border-bottom-left-radius: 0;
-  -webkit-border-top-left-radius: 0;
-  -moz-border-radius-topright: 5px;
-  -moz-border-radius-bottomright: 5px;
-  -moz-border-radius-bottomleft: 0;
-  -moz-border-radius-topleft: 0;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-  -moz-background-clip: padding;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
   .text-tag {
     min-height: 20px;
+    line-height: 18px;
     display: inline-block;
     vertical-align: middle;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 140px;
-  }
-  &::before {
-    @include transition(all 0.2s ease-out 0s);
-    position: absolute;
-    top: 50%;
-    left: -13px;
-    width: 0;
-    height: 0;
-    margin-top: -13px;
-    border-top: 12px solid transparent;
-    border-right: 13px solid transparent;
-    border-bottom: 13px solid transparent;
-    content: "";
-    border-right-color: transparent;
+    max-width: 143px;
   }
   &::after {
     @include transition(all 0.2s ease-out 0s);
     position: absolute;
-    left: -2px;
+    left: 8px;
     top: 50%;
     margin-top: -3px;
     width: 6px;
@@ -441,195 +414,87 @@ img {
     }
   }
   &.tags-color-1 {
-    background-color: rgba(15, 167, 51, 0.9);
-    &::before {
-      border-right-color: rgba(15, 167, 51, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #0fa733;
     &:hover,
     &:focus {
-      background-color: #0fa733;
-      &:before {
-        border-right-color: #0fa733;
-      }
+      background-color: #00d833;
     }
   }
   &.tags-color-2 {
-    background-color: rgba(0, 150, 136, 0.9);
-    &::before {
-      border-right-color: rgba(0, 150, 136, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #009688;
     &:hover,
     &:focus {
-      background-color: #009688;
-      &:before {
-        border-right-color: #009688;
-      }
+      background-color: #02ecd6;
     }
   }
   &.tags-color-3 {
-    background-color: rgba(253, 216, 53, 0.9);
-    &::before {
-      border-right-color: rgba(253, 216, 53, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #e6bc01;
     &:hover,
     &:focus {
       background-color: #FDD835;
-      &:before {
-        border-right-color: #FDD835;
-      }
     }
   }
   &.tags-color-4 {
-    background-color: rgba(255, 152, 0, 0.9);
-    &::before {
-      border-right-color: rgba(255, 152, 0, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #FF9800;
     &:hover,
     &:focus {
-      background-color: #FF9800;
-      &:before {
-        border-right-color: #FF9800;
-      }
+      background-color: #e6bc01;
     }
   }
   &.tags-color-5 {
-    background-color: rgba(121, 85, 72, 0.9);
-    &::before {
-      border-right-color: rgba(121, 85, 72, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #795548;
     &:hover,
     &:focus {
-      background-color: #795548;
-      &:before {
-        border-right-color: #795548;
-      }
+      background-color: #a5634c;
     }
   }
   &.tags-color-6 {
-    background-color: rgba(128, 128, 128, 0.9);
-    &::before {
-      border-right-color: rgba(128, 128, 128, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #808080;
     &:hover,
     &:focus {
-      background-color: #808080;
-      &:before {
-        border-right-color: #808080;
-      }
+      background-color: #b8afaf;
     }
   }
   &.tags-color-7 {
-    background-color: rgba(183, 28, 28, 0.9);
-    &::before {
-      border-right-color: rgba(183, 28, 28, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #B71C1C;
     &:hover,
     &:focus {
-      background-color: #B71C1C;
-      &:before {
-        border-right-color: #B71C1C;
-      }
+      background-color: #fa0707;
     }
   }
   &.tags-color-8 {
-    background-color: rgba(216, 27, 96, 0.9);
-    &::before {
-      border-right-color: rgba(216, 27, 96, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #D81B60;
     &:hover,
     &:focus {
-      background-color: #D81B60;
-      &:before {
-        border-right-color: #D81B60;
-      }
+      background-color: #fe1c6e;
     }
   }
   &.tags-color-9 {
-    background-color: rgba(142, 36, 170, 0.9);
-    &::before {
-      border-right-color: rgba(142, 36, 170, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #8E24AA;
     &:hover,
     &:focus {
-      background-color: #8E24AA;
-      &:before {
-        border-right-color: #8E24AA;
-      }
+      background-color: #bb0bea;
     }
   }
   &.tags-color-10 {
-    background-color: rgba(84, 110, 122, 0.9);
-    &::before {
-      border-right-color: rgba(84, 110, 122, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #546E7A;
     &:hover,
     &:focus {
-      background-color: #546E7A;
-      &:before {
-        border-right-color: #546E7A;
-      }
+      background-color: #306076;
     }
   }
   &.tags-color-11 {
-    background-color: rgba(27, 94, 32, 0.9);
-    &::before {
-      border-right-color: rgba(27, 94, 32, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #1B5E20;
     &:hover,
     &:focus {
-      background-color: #1B5E20;
-      &:before {
-        border-right-color: #1B5E20;
-      }
+      background-color: #38b642;
     }
   }
   &.tags-color-12 {
-    background-color: rgba(62, 39, 35, 0.9);
-    &::before {
-      border-right-color: rgba(62, 39, 35, 0.9);
-    }
-    &::after {
-      background: #fff;
-    }
+    background-color: #3E2723;
     &:hover,
     &:focus {
-      background-color: #3E2723;
-      &:before {
-        border-right-color: #3E2723;
-      }
+      background-color: #3f1811;
     }
   }
 }
