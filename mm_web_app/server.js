@@ -1,3 +1,4 @@
+const nodeReport = require('node-report')
 const express = require('express')
 const bodyParser = require('body-parser')
 const session = require('express-session')
@@ -8,6 +9,7 @@ const mobxReact = require('mobx-react')
 const request = require('request')
 const admin = require('firebase-admin')
 const log = require('loglevel')
+nodeReport.triggerReport()
 
 const firebase = admin.initializeApp({
   credential: admin.credential.cert(require('./firebaseCredentials').serverCredentials),

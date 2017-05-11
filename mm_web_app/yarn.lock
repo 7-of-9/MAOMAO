@@ -4198,7 +4198,7 @@ mz@2.6.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@^2.3.0, nan@^2.3.2:
+nan@^2.3.0, nan@^2.3.2, nan@^2.3.5:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
 
@@ -4370,6 +4370,12 @@ node-pre-gyp@^0.6.29:
     semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
+
+node-report@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/node-report/-/node-report-2.1.2.tgz#fb410ee025af859334eb98fda3ea5cddd56bc435"
+  dependencies:
+    nan "^2.3.5"
 
 node-sass@^4.5.2:
   version "4.5.2"

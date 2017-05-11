@@ -4,7 +4,7 @@ import { onlyUpdateForKeys, compose } from 'recompose';
 import iconImage from './images/dog_blue.png';
 import logger from '../utils/logger';
 
-// borrow code from https://github.com/estevanmaito/maomaoshare
+// borrow code from https://github.com/estevanmaito/sharect
 function ShareButton(icon, clickFn) {
   const btn = document.createElement('div');
   btn.style = 'display:inline-block;'
@@ -26,8 +26,9 @@ function MaomaoShare() {
   const settings = {
     isReady: true,
   };
+  const imgSize = 50;
   const iconConfig = {
-    icon: `<img width="24" height="24" src="${iconImage}" alt="maomao share" />`,
+    icon: `<img width="${imgSize}" height="${imgSize}" src="${iconImage}" alt="maomao share" />`,
   };
 
   let selection = '';
@@ -36,9 +37,8 @@ function MaomaoShare() {
   let iconColor = '#fff';
 
   let icons = {};
-  const arrowSize = 5;
   const SharebuttonMargin = 7 * 2;
-  const iconSize = 24 + SharebuttonMargin;
+  const iconSize = imgSize + SharebuttonMargin;
   let top = 0;
   let left = 0;
 
@@ -69,13 +69,27 @@ function MaomaoShare() {
     };
   }
 
+  function getSelectionParentElementPosition() {
+    let parentEl = selection.getRangeAt(0).commonAncestorContainer;
+    if (parentEl.nodeType !== 1) {
+      parentEl = parentEl.parentNode;
+    }
+    return parentEl.getBoundingClientRect();
+  }
+
   function setTooltipPosition() {
-    const position = selection.getRangeAt(0).getBoundingClientRect();
+    const position = getSelectionParentElementPosition();
+    const textPosition = selection.getRangeAt(0).getBoundingClientRect();
     const DOCUMENT_SCROLLTOP = window.pageXOffset ||
       document.documentElement.scrollTop ||
       document.body.scrollTop;
-    top = (position.top + DOCUMENT_SCROLLTOP) - iconSize - arrowSize;
-    left = position.left + ((position.width - (iconSize * icons.length)) / 2);
+    top = (position.top + DOCUMENT_SCROLLTOP + position.height) - iconSize;
+    // HOTFIX: when top positio is too far with text selection
+    const textDistance = (textPosition.bottom + DOCUMENT_SCROLLTOP) - iconSize;
+    if (top > textDistance) {
+      top = textDistance;
+    }
+    left = position.left - iconSize - 10;
   }
 
   function moveTooltip() {
@@ -104,19 +118,6 @@ function MaomaoShare() {
       + 'box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;';
 
     div.appendChild(icons.icons);
-
-    const arrow = document.createElement('div');
-    arrow.style = `${'position:absolute;'
-      + 'border-left:'}${arrowSize}px solid transparent;`
-      + `border-right:${arrowSize}px solid transparent;`
-      + `border-top:${arrowSize}px solid ${backgroundColor};`
-      + `bottom:-${arrowSize - 1}px;`
-      + `left:${((iconSize * icons.length) / 2) - arrowSize}px;`
-      + 'width:0;'
-      + 'height:0;';
-
-    div.appendChild(arrow);
-
     document.body.appendChild(div);
   }
 
