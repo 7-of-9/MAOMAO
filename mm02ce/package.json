@@ -30,6 +30,7 @@
     "moment": "^2.18.1",
     "postcss-loader": "^2.0.2",
     "prop-types": "^15.5.8",
+    "pusher-js": "^4.1.0",
     "qs": "^6.4.0",
     "radium": "^0.18.2",
     "rc-steps": "^2.5.1",
