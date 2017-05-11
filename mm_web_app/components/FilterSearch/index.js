@@ -11,6 +11,7 @@ import Autosuggest from 'react-autosuggest'
 import ReactStars from 'react-stars'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
+import { guid } from '../../utils/hash'
 
 class FilterSearch extends React.Component {
   constructor (props) {
@@ -140,6 +141,13 @@ class FilterSearch extends React.Component {
     if (method === 'click' || method === 'enter') {
       const selected = this.getSuggestions(newValue)
       logger.warn('selected', selected)
+      if (selected && selected.length > 0) {
+        if (selected[0].title === 'User') {
+          this.props.onSelectUser(selected[0].data[0])
+        } else {
+          this.props.onSelectTopic(selected[0].data[0])
+        }
+      }
       this.setState({
         value: ''
       })
@@ -164,8 +172,8 @@ class FilterSearch extends React.Component {
     logger.warn('filterByUser', filterByUser)
 
     return (
-      <div className='input-group'>      
-        <Autosuggest          
+      <div className='input-group'>
+        <Autosuggest
           multiSection
           highlightFirstSuggestion
           focusInputOnSuggestionClick={false}
@@ -189,26 +197,26 @@ class FilterSearch extends React.Component {
             color2={'#ffd700'}
             />
         </div>
-        <div className='search-box-drop'>          
+        <div className='search-box-drop'>
           <ul className='search-box-list'>
             {
               filterByTopic.map(item => (
-                <li><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden="true"></i></a></li>
+                <li key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
               ))
             }
             {
               filterByUser.map(item => (
-                <li className='search-item'>
+                <li key={guid()} className='search-item'>
                   <div className='search-media'>
-                    <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' alt='' width='40' height='40' /></div>
-                    <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden="true"></i></a></div>
+                    <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' /></div>
+                    <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></div>
                   </div>
                 </li>
               ))
             }
           </ul>
         </div>
-      </div>      
+      </div>
     )
   }
 }

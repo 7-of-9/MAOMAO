@@ -1,6 +1,6 @@
 {
   "name": "maomao",
-  "version": "0.5.30",
+  "version": "0.5.31",
   "description": "maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"
@@ -15,7 +15,7 @@
     "build/*.*",
     "css/*.*"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://*.google.com https://*.googleapis.com https://connect.facebook.net; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.auth0.com blob: filesystem: chrome-extension-resource: https://www.gstatic.com/ https://*.firebaseio.com https://*.pusher.com https://*.google.com https://*.googleapis.com https://connect.facebook.net; object-src 'self'",
   "permissions": [
     "webRequest",
     "contextMenus",

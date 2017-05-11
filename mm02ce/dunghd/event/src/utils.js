@@ -33,5 +33,5 @@ export function notifyMsg(title, message, imageUrl) {
     options = Object.assign({}, options, { type: 'image', imageUrl });
   }
   const id = guid();
-  chrome.notifications.create(id, options, () => {});
+  chrome.notifications.create(id, options, () => { });
 }

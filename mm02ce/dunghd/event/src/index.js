@@ -12,6 +12,7 @@ import * as log from 'loglevel';
 import aliases from './aliases';
 import rootReducer from './reducers';
 import Config from './config';
+import realtimeStream from './realtime';
 import { saveImScore, checkImScore } from './imscore';
 
 // NOTE: Expose global modules for bg.js
@@ -25,7 +26,8 @@ require('expose-loader?mobx!mobx');
 require('expose-loader?log!loglevel');
 /* eslint-enable */
 
-if (process.env.NODE_ENV === 'production') {
+const dev = process.env.NODE_ENV !== 'production';
+if (!dev) {
   // This disables all logging below the given level
   log.setLevel('error');
 } else {
@@ -39,7 +41,6 @@ const middleware = [
   thunkMiddleware,
   logger,
 ];
-
 const manifest = {
   1: state => ({ ...state, staleReducer: undefined }),
   2: state => ({ ...state, app: { ...state.app, staleKey: undefined } }),
@@ -298,5 +299,8 @@ window.onload = () => {
       },
     });
     syncImScore(false);
+
+    // TODO: get all friends and streams to listen new data
+    realtimeStream([]);
   }, 1000);
 };
