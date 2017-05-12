@@ -99,7 +99,7 @@ class FriendStreams extends React.Component {
       topics: [],
       filterByTopic: [],
       filterByUser: [],
-      rating: 3,
+      rating: 1,
       value: ''
     }
     this.loadMore = this.loadMore.bind(this)
@@ -224,7 +224,7 @@ class FriendStreams extends React.Component {
   }
 
   render () {
-    const { currentPage } = this.state
+    const { currentPage, topics } = this.state
     logger.warn('currentPage', currentPage)
     const items = []
     // TODO: support sort by time or score
@@ -286,9 +286,19 @@ class FriendStreams extends React.Component {
       })
     }
 
+    const streamList = []
+    _.forEach(topics, (topic) =>
+      streamList.push(<a key={guid()} onClick={() => this.onSelectTopic(topic)} className='stream-item'>
+        <span>
+          {topic.name} ({topic.urlIds.length})
+        </span>
+      </a>))
     return (
       <div className='ReactTabs react-tabs'>
         <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
+          <div className='stream-list'>
+            {streamList}
+          </div>
           <div className='standand-sort'>
             <nav className='navbar'>
               <ul className='nav navbar-nav' >
