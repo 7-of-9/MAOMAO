@@ -60,6 +60,28 @@ namespace mmapi00.Controllers
         }
 
         /// <summary>
+        /// Unshare an share code
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="hash"></param>
+        /// <param name="share_code">Share code to accept</param>
+        /// <param name="receiver_id">eceiver id</param>
+        /// <returns>Accepted share or not</returns>
+        [HttpGet] [Route("share/deny")]
+        public IHttpActionResult Deny(
+            long user_id, string hash,
+            string share_code, long receiver_id)
+        {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+
+            var share_accepted = mm_svc.ShareAcceptor.Unshare(receiver_id, share_code);
+
+            return Ok(new {
+                share_accepted = share_accepted
+            });
+        }
+
+        /// <summary>
         /// Get a MM share info
         /// </summary>
         /// <param name="share_code">Share code to accept</param>
