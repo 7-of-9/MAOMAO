@@ -1,5 +1,4 @@
 import { action, reaction, when, computed, intercept, toJS, observable } from 'mobx'
-import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
@@ -14,6 +13,7 @@ export class HomeStore extends CoreStore {
   @observable facebookConnectResult = {}
   @observable userHistoryResult = {}
   @observable currentTermId = -1
+  @observable rating = 1
   @observable googleUser = {}
   @observable facebookUser = {}
   @observable userHistory = {me: {}, shares: []}
@@ -147,25 +147,6 @@ export class HomeStore extends CoreStore {
       () => {
         this.userHistory = this.userHistoryResult.value.data
         const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-        // checking realtime history (new urls)
-        const { entities: { shareLists, urls } } = normalizedData
-        if (this.normalizedData) {
-          const { entities: { shareLists: oldShareLists } } = this.normalizedData
-          let newUrls = []
-          _.forOwn(shareLists, (shareList, key) => {
-            if (shareList.urls.length !== oldShareLists[key].urls.length) {
-              // TODO: find new urls and send notify (2 cases: installed extension or not)
-              newUrls = newUrls.concat(shareList.urls.slice(oldShareLists[key].urls.length))
-            }
-          })
-
-          if (newUrls.length) {
-            _.forEach(newUrls, (urlId) => {
-              sendMsgToChromeExtension(actionCreator('NOTIFY_MESSAGE', { title: 'New sharing URL', message: urls[urlId].title }))
-            })
-          }
-        }
-
         this.normalizedData = normalizedData
         this.counter += 1
         disposer()

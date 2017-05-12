@@ -19,12 +19,12 @@ import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import ChromeInstall from '../../containers/ChromeInstall'
+import FriendStreams from '../../containers/FriendStreams'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import YourStreams from '../../components/YourStreams'
-import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
@@ -70,7 +70,6 @@ class Home extends React.Component {
         logger.warn('currentTermId', currentTermId)
         if (currentTermId > 0) {
           // hotfix to reload data
-          this.props.store.currentTermId = -1
           this.props.store.currentTermId = currentTermId
         } else {
           if (this.props.store.userHistory) {
