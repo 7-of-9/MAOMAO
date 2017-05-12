@@ -719,6 +719,7 @@ function tabCreated(tab) {
 }
 
 // TABMAP: chrome.tabs.onRemoved
+// TODO: need to save im_score and time_on_tab on db
 function tabRemoved(tabId) {
   update_tabmap(function () {
     mm_session_clean();
@@ -750,6 +751,7 @@ var events_style_hi = 'background: orange; color: white;';
 var events_style = 'background: white; color: orange;';
 var events_style_err = 'background: red; color: white;';
 
+// TODO: stop tracking TOT for last url
 function tabNavigated(tabId, changeInfo, tab) {
 
   log.info('%c >tabNavigated tabId=' + tabId +

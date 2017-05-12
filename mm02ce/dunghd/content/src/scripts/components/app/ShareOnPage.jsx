@@ -187,7 +187,7 @@ const defaultProps = {
 const share = new MaomaoShare();
 /* ShareOnPage pure component */
 function ShareOnPage({ isReady, openShare }) {
-  logger.warn('ShareOnPage isReady', isReady);
+  logger.info('ShareOnPage isReady', isReady);
   share.config({
     backgroundColor: 'rgba(242, 242, 242, 0.7)',
     arrowSize: 10,
