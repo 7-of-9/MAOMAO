@@ -977,7 +977,7 @@ $facebook-icons: './images/facebook_icon.svg';
     position: absolute;
     + .radio__regular__label {
       position: relative;
-      padding: 0 20px 0 40px;
+      padding: 0 0 0 40px;
       margin-bottom: 0;
       font-weight: normal;
       display: block;
@@ -997,7 +997,7 @@ $facebook-icons: './images/facebook_icon.svg';
       .labs {
         display: inline-block;
         .icons-labs {
-          margin-left: 9px;
+          margin-left: 5px;
           display: inline-block;
           vertical-align: middle;
         }
