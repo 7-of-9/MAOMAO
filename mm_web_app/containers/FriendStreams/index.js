@@ -14,9 +14,9 @@ import Highlighter from 'react-highlight-words'
 import moment from 'moment'
 import _ from 'lodash'
 import logger from '../../utils/logger'
-import Loading from '../Loading'
-import DiscoveryButton from '../DiscoveryButton'
-import FilterSearch from '../FilterSearch'
+import Loading from '../../components/Loading'
+import DiscoveryButton from '../../components/DiscoveryButton'
+import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 20
