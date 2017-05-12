@@ -19,15 +19,15 @@ import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import ChromeInstall from '../../containers/ChromeInstall'
+import FriendStreams from '../../containers/FriendStreams'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import YourStreams from '../../components/YourStreams'
-import ShareWithFriends from '../../components/ShareWithFriends'
-import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
 import logger from '../../utils/logger'
+import { guid } from '../../utils/hash'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -48,7 +48,7 @@ const businessAddress = (
 @inject('ui')
 @observer
 class Home extends React.Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       currentTab: 0
@@ -61,7 +61,7 @@ class Home extends React.Component {
     this.handleSelect = this.handleSelect.bind(this)
   }
 
-  handleSelect(index, last) {
+  handleSelect (index, last) {
     this.setState({
       currentTab: index
     }, () => {
@@ -70,7 +70,6 @@ class Home extends React.Component {
         logger.warn('currentTermId', currentTermId)
         if (currentTermId > 0) {
           // hotfix to reload data
-          this.props.store.currentTermId = -1
           this.props.store.currentTermId = currentTermId
         } else {
           if (this.props.store.userHistory) {
@@ -87,7 +86,7 @@ class Home extends React.Component {
     })
   }
 
-  onInstallSucess() {
+  onInstallSucess () {
     this.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       window.location.reload()
@@ -95,15 +94,15 @@ class Home extends React.Component {
     }, 1000)
   }
 
-  onInstallFail(error) {
+  onInstallFail (error) {
     this.addNotification(error)
   }
 
-  addNotification(msg) {
+  addNotification (msg) {
     this.props.ui.addNotification(msg)
   }
 
-  inlineInstall() {
+  inlineInstall () {
     /* global chrome */
     chrome.webstore.install(
       'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
@@ -111,11 +110,11 @@ class Home extends React.Component {
       this.onInstallFail)
   }
 
-  removeNotification(uuid) {
+  removeNotification (uuid) {
     this.props.ui.removeNotification(uuid)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.store.shareInfo) {
       // default tab is friends stream
       this.setState({
@@ -124,7 +123,12 @@ class Home extends React.Component {
     }
   }
 
-  render() {
+  render () {
+    let selectedMyStreamUrls = []
+    let sortedTopicByUrls = []
+    let friends = []
+    let currentTermId = this.props.store.currentTermId
+    let friendAcceptedList = []
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
@@ -137,11 +141,6 @@ class Home extends React.Component {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
-    let selectedMyStreamUrls = []
-    let sortedTopicByUrls = []
-    let friends = []
-    let currentTermId = this.props.store.currentTermId
-    let shareWiths = []
     if (this.props.store.userHistory) {
       const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
       friends = toJS(this.props.store.friendsStream)
@@ -160,7 +159,15 @@ class Home extends React.Component {
 
       /* eslint-disable camelcase */
       if (accept_shares) {
-        shareWiths = accept_shares.filter(item => item.topic_id === currentTermId)
+        logger.warn('accept_shares', accept_shares)
+        _.forEach(accept_shares, (user) =>
+        friendAcceptedList.push(<li key={guid()} className='share-item'>
+          <span>
+            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+            {user.fullname} has unlocked {user.share_code}
+            <a href='#'> UnShare</a>
+          </span>
+        </li>))
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
@@ -224,13 +231,23 @@ class Home extends React.Component {
                     install={this.inlineInstall}
                   />
                 }
+                <h1> Your Streams </h1>
+                {friendAcceptedList && friendAcceptedList.length > 0 &&
+                <div className='friend-list'>
+                  <p>
+                  You have shared {friendAcceptedList.length} streams with friends:
+                  </p>
+                  <ul>
+                    {friendAcceptedList}
+                  </ul>
+                </div>
+                }
                 <YourStreams
                   topics={sortedTopicByUrls}
                   activeId={currentTermId}
                   changeTerm={(termId) => { this.props.store.currentTermId = termId }}
                 />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                {shareWiths.length > 0 && <ShareWithFriends friends={shareWiths} />}
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel className='main-content'>

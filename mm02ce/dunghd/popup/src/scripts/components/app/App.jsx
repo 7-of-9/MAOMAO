@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, withHandlers, withState, lifecycle, onlyUpdateForKeys } from 'recompose';
-import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
-import * as logger from 'loglevel';
+import Dropdown, { DropdownTrigger } from 'react-simple-dropdown';
+import logger from './logger';
 import FacebookButton from './FacebookButton';
 import FacebookMessengerButton from './FacebookMessengerButton';
 import GoogleButton from './GoogleButton';
@@ -117,46 +117,11 @@ const getShareTopicCode = (code, key) => {
   return '';
 };
 
-const userMenu = (auth, dispatch) =>
+const userMenu = auth =>
   <Dropdown className="dropdown-panel">
-    <DropdownTrigger className="trigger-nav">
-      <span />
-      <span />
-      <span />
+    <DropdownTrigger className="image-account bottom" data-tooltip={`${auth.info.name} (${auth.info.email})`} data-position="bottom">
+      <img src={auth.info.picture} alt={auth.info.name} />
     </DropdownTrigger>
-    <DropdownContent>
-      <div className="dropdown-account">
-        <span className="image-account">
-          <img src={auth.info.picture} alt={auth.info.name} />
-        </span>
-        <span className="info-account">
-          <span>{auth.info.name}</span>
-          <span>({auth.info.email})</span>
-        </span>
-      </div>
-      <ul>
-        <li>
-          <a
-            onClick={() => {
-              dispatch({
-                type: 'OPEN_MODAL',
-                payload: {},
-              });
-            }}
-          >Profile</a>
-        </li>
-        <li>
-          <a
-            onClick={() => {
-              dispatch({
-                type: 'AUTH_LOGOUT',
-                payload: {},
-              });
-            }}
-          >Logout</a>
-        </li>
-      </ul>
-    </DropdownContent>
   </Dropdown>;
 
 const render = (
@@ -211,13 +176,15 @@ const render = (
       logger.warn('currentTopics', currentTopics);
       return (
         <div className="popup-browser">
-          {auth.isLogin && userMenu(auth, dispatch)}
-          <h3 className="share-heading">
-            <a href="#home">
-              <span className="maomao-logo" />
-              <span className="maomao-text" />
-            </a>
-          </h3>
+          <div className="map-browser">
+            {auth.isLogin && userMenu(auth, dispatch)}
+            <h3 className="share-heading">
+              <a href="#home">
+                <span className="maomao-logo" />
+                <span className="maomao-text" />
+              </a>
+            </h3>
+          </div>
           <p className="select-cn-title">SHARE YOUR STREAM :</p>
           <div className="popup-content pt0">
             <ShareOptions
@@ -270,13 +237,15 @@ const render = (
     if (!isRunable(url, icon)) {
       return (
         <div className="popup-browser">
-          {auth.isLogin && userMenu(auth, dispatch)}
-          <h3 className="share-heading">
-            <a href="#home">
-              <span className="maomao-logo" />
-              <span className="maomao-text" />
-            </a>
-          </h3>
+          <div className="map-browser">
+            {auth.isLogin && userMenu(auth, dispatch)}
+            <h3 className="share-heading">
+              <a href="#home">
+                <span className="maomao-logo" />
+                <span className="maomao-text" />
+              </a>
+            </h3>
+          </div>
           <div className="popup-content">
             <p className="paragraph-share">maomao isn’t looking at this page!</p>
           </div>
@@ -286,13 +255,15 @@ const render = (
     // TODO: check on site is allowable or not
     return (
       <div className="popup-browser">
-        {auth.isLogin && userMenu(auth, dispatch)}
-        <h3 className="share-heading">
-          <a href="#home">
-            <span className="maomao-logo" />
-            <span className="maomao-text" />
-          </a>
-        </h3>
+        <div className="map-browser">
+          {auth.isLogin && userMenu(auth, dispatch)}
+          <h3 className="share-heading">
+            <a href="#home">
+              <span className="maomao-logo" />
+              <span className="maomao-text" />
+            </a>
+          </h3>
+        </div>
         <div className="popup-content">
           <div className="circle-share">
             <p

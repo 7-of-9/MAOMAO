@@ -16,7 +16,7 @@ the tab section
     border-bottom: 1px solid #e1e5eb;
     .stream-symbol {
       display: block;
-      color: #212121;
+      color: #404040;
       font-size: 2rem;
     }
     .ReactTabs__Tab {
@@ -37,14 +37,14 @@ the tab section
       color: #212121;
       background-color: #fff;
       .stream-symbol {
-        color: #1a8dee;
+        color: #2db7f5;
       }
     }
   }
   .ReactTabs__TabPanel {
-    @include clearfix();
     @include transition(all 0.2s ease-in-out);
     opacity: 0;
+    overflow: hidden;
     &.ReactTabs__TabPanel--selected {
       @include transition(all 0.2s ease-in-out);
       opacity: 1;
@@ -53,8 +53,6 @@ the tab section
       margin: 10px 0 30px;
       color: #2db7f5;
     }
-    @media (max-width: 890px) {
-      
-    }
+    @media (max-width: 890px) {}
   }
 }

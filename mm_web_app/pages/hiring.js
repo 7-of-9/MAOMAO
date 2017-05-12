@@ -38,7 +38,7 @@ export default class Hiring extends React.Component {
 
   render () {
     return (
-      <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
+      <div className='hiring' style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
         <Head>
           <title>Maomao is coming, and we're hiring...</title>
           <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import moment from 'moment';
-import * as logger from 'loglevel';
+import logger from '../utils/logger';
 
 const style = {
   card: {

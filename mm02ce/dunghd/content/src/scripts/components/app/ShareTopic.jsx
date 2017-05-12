@@ -3,9 +3,10 @@ import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import * as logger from 'loglevel';
+import logger from '../utils/logger';
 import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
+import fbScrapeShareUrl from '../utils/fb';
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
@@ -112,7 +113,7 @@ const enhance = compose(
 );
 
 const ShareTopicStepOne = compose(({
-   type, shareOption, currentStep, topics, changeShareType,
+   type, code, shareOption, currentStep, topics, changeShareType,
   }) => (
     <div>
       <ShareOptions
@@ -123,7 +124,11 @@ const ShareTopicStepOne = compose(({
       <div className="share-footer">
         <button
           className="btn btn-slide-next"
-          onClick={() => changeShareType(type, shareOption, 2)}
+          onClick={() => {
+            const url = `${SITE_URL}/${selectUrl(code, shareOption)}`;
+            fbScrapeShareUrl(url);
+            changeShareType(type, shareOption, 2);
+          }}
         >
           Next
         </button>
@@ -135,7 +140,9 @@ const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType,
  }) => (
     <div className="share-social">
-      <h3 className="share-social-title">Click on button below to select.</h3>
+      <h3 className="share-social-title">
+        Click on button below to select.
+      </h3>
       <div className="toolbar-button">
         <Toolbar
           active={type}
@@ -247,6 +254,7 @@ const ShareTopic = enhance(({
       <ShareTopicStepOne
         shareOption={shareOption}
         type={type}
+        code={code}
         currentStep={currentStep}
         changeShareType={changeShareType}
         topics={topics}

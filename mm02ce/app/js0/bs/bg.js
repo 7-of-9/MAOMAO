@@ -423,12 +423,7 @@ function inject_cs(session, tab_id, skip_text) {
     'js0/nlp/stopwords.js',
     'js0/lib/nlp.js',
     'js0/lib/stacktrace.js',
-    'js0/lib/checksum.js',
-    'js0/lib/algorithms/adler32.js',
-    'js0/lib/algorithms/bsd16.js',
-    'js0/lib/algorithms/crc32.js',
-    'js0/lib/algorithms/fletcher.js',
-    'js0/lib/algorithms/fnv32.js',
+    'js0/lib/md5.js',
     'js0/lib/justext/justext.js',
     'js0/lib/franc.js',
     'js0/ajax/mm_api.js',
@@ -724,6 +719,7 @@ function tabCreated(tab) {
 }
 
 // TABMAP: chrome.tabs.onRemoved
+// TODO: need to save im_score and time_on_tab on db
 function tabRemoved(tabId) {
   update_tabmap(function () {
     mm_session_clean();
@@ -755,6 +751,7 @@ var events_style_hi = 'background: orange; color: white;';
 var events_style = 'background: white; color: orange;';
 var events_style_err = 'background: red; color: white;';
 
+// TODO: stop tracking TOT for last url
 function tabNavigated(tabId, changeInfo, tab) {
 
   log.info('%c >tabNavigated tabId=' + tabId +

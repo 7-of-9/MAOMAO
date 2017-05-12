@@ -172,9 +172,9 @@ function session_get_by_url(url) {
     log.info('%c (get_session_by_url - existing: ' + url + ')', session_style);
     return existing_session[0];
   } else if (existing_session.length == 0)
-    log.error('%c ### get_session_by_url - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
+    log.error('%c ### get_session_by_url ' + url + ' - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
   else
-    log.error('%c ### get_session_by_url - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
+    log.error('%c ### get_session_by_url ' + url + ' - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
   return null;
 }
 

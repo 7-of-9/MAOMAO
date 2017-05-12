@@ -5,10 +5,10 @@ import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import Mailgun from 'mailgun';
-import * as logger from 'loglevel';
 import $ from 'jquery';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
+import ShareOnPage from './ShareOnPage';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
 import { getCurrentTerms, getCurrentXPTopics } from '../../selectors/term';
@@ -16,6 +16,7 @@ import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
 import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
+import logger from '../utils/logger';
 
 window.jQuery = $;
 
@@ -353,6 +354,10 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
+        <ShareOnPage
+          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+          openShare={openShare}
+        />
         <ToggleDisplay if={icon.isEnable}>
           <WelcomeModal
             auth={auth}

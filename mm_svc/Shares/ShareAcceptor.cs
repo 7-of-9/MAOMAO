@@ -41,5 +41,24 @@ namespace mm_svc
                 return true;
             }
         }
+
+        public static bool Unshare(long user_id, string share_code)
+        {
+            using (var db = mm02Entities.Create()) {
+                var share = db.shares.Where(p => p.share_code == share_code).FirstOrDefaultNoLock();
+                if (share == null)
+                    return false;
+
+                // has the user already accepted this share?
+                var existing = db.share_active.Where(p => p.share_id == share.id && p.user_id == user_id).FirstOrDefaultNoLock();
+                if (existing != null){
+                    db.share_active.Remove(existing);
+                    db.SaveChangesTraceValidationErrors();
+                    return true;
+                }
+
+                return false;
+            }
+        }
     }
 }

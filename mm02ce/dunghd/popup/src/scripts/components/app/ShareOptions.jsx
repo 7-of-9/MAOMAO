@@ -2,7 +2,7 @@ import React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 import ToggleButton from 'react-toggle-button'; // https://gdowens.github.io/react-toggle-button/
-import * as logger from 'loglevel';
+import logger from './logger';
 import { guid } from './utils';
 
 /* eslint-disable no-confusing-arrow */
@@ -94,6 +94,7 @@ const ShareOptions = enhance(({ url, topics, active, onChange }) => {
                   <label className="radio__regular__label" htmlFor={topic.id}>
                     <span className="labs">
                       <span className="meta">All my browsing on</span> {topic.name.toUpperCase()}
+                      <span className='icons-labs'></span>
                     </span>
                   </label>
                 </div>,

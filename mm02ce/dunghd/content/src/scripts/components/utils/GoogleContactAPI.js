@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as logger from 'loglevel';
+import logger from './logger';
 import guid from './guid';
 
 function queryString(obj) {

@@ -17,7 +17,7 @@ function createShareCtxMenu(records) {
       if (tabs != null && tabs.length > 0) {
         const url = tabs[0].url;
         if (isAllowToShare(url, records)) {
-          chrome.contextMenus.create({ contexts: ['page_action', 'page', 'selection'], id: 'mm-btn-share', title: ' maomao share' });
+          chrome.contextMenus.create({ contexts: ['page_action', 'page'], id: 'mm-btn-share', title: ' maomao share' });
         }
       }
     });
@@ -39,7 +39,7 @@ function ctxMenu() {
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.27',
+    title: 'v0.5.34',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
@@ -63,7 +63,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.27',
+    title: 'v0.5.34',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,

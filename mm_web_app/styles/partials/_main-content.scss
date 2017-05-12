@@ -5,9 +5,16 @@ the main-content section
 **************************************
 **************************************/
 
+body {
+  color: #404040;
+}
+
+
+/*-----container-----*/
+
 .neal-page {
   position: relative;
-  min-height: 650px;
+  min-height: 750px;
   padding-bottom: 68px;
 }
 
@@ -39,7 +46,7 @@ the main-content section
     margin-left: 122px;
     padding: 0;
     background-color: #fff;
-    min-height: 500px;
+    min-height: 768px;
     .wrap-main {
       height: auto;
       background: none;
@@ -79,7 +86,7 @@ the main-content section
         overflow: visible;
         .stream-symbol {
           .fa {
-            min-width: 33px;
+            min-width: 35px;
           }
         }
         .stream-symbol[data-tooltip] {
@@ -96,7 +103,7 @@ the main-content section
           &:before {
             @include border-radius(5px);
             content: attr(data-tooltip);
-            background: #1a8dee;
+            background: #2db7f5;
             color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
             font-weight: bold;
@@ -111,7 +118,6 @@ the main-content section
             height: 0;
             border: 6px solid transparent;
             content: '';
-            
           }
           &:hover:after,
           &:hover:before {
@@ -142,13 +148,14 @@ the main-content section
         .stream-symbol[data-tooltip][data-position="right"]:before {
           top: 0;
           left: 100%;
-          margin-left: 10px;
+          margin-left: 6px;
         }
         .stream-symbol[data-tooltip][data-position="right"]:after {
-          border-right-color: #1a8dee;
+          border-right-color: #2db7f5;
           border-left: none;
-          top: calc(50% - 6px);
-          left: calc(100% + 4px);
+          top: 50%;
+          left: 100%;
+          margin-top: -6px;
         }
         .ReactTabs__Tab {
           padding: 7px 3px;
@@ -175,4 +182,5 @@ the main-content section
 .main-inner {
   @include clearfix();
   padding: 0 15px;
+  min-height: 100px;
 }
