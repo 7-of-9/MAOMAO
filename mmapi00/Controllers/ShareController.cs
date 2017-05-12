@@ -74,10 +74,10 @@ namespace mmapi00.Controllers
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
 
-            var share_accepted = mm_svc.ShareAcceptor.Unshare(receiver_id, share_code);
+            var result = mm_svc.ShareAcceptor.Unshare(receiver_id, user_id, share_code);
 
             return Ok(new {
-                share_accepted = share_accepted
+                deny = result
             });
         }
 

@@ -42,10 +42,10 @@ namespace mm_svc
             }
         }
 
-        public static bool Unshare(long user_id, string share_code)
+        public static bool Unshare(long user_id, long source_user_id, string share_code)
         {
             using (var db = mm02Entities.Create()) {
-                var share = db.shares.Where(p => p.share_code == share_code).FirstOrDefaultNoLock();
+                var share = db.shares.Where(p => p.share_code == share_code && p.source_user_id == source_user_id).FirstOrDefaultNoLock();
                 if (share == null)
                     return false;
 
