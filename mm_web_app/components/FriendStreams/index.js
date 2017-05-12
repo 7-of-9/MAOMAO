@@ -225,6 +225,7 @@ class FriendStreams extends React.Component {
 
   render () {
     const { currentPage, topics } = this.state
+    const { friends } = this.props
     logger.warn('currentPage', currentPage)
     const items = []
     // TODO: support sort by time or score
@@ -288,14 +289,30 @@ class FriendStreams extends React.Component {
 
     const streamList = []
     _.forEach(topics, (topic) =>
-      streamList.push(<a key={guid()} onClick={() => this.onSelectTopic(topic)} className='stream-item'>
+      streamList.push(<a key={guid()} href='#' onClick={() => this.onSelectTopic(topic)} className='stream-item'>
         <span>
-          {topic.name} ({topic.urlIds.length})
+          {topic.name} ({topic.urlIds.length} urls)
+        </span>
+      </a>))
+
+    const friendList = []
+    _.forEach(friends, (user) =>
+      friendList.push(<a key={guid()} href='#' className='user-item'>
+        <span>
+          <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+          {user.fullname} ({user.list.length} invitations)
         </span>
       </a>))
     return (
       <div className='ReactTabs react-tabs'>
         <div className='ReactTabs__TabPanel ReactTabs__TabPanel--selected' role='tabpanel' id='react-tabs-1'>
+          <h1> Friend Streams </h1>
+          <div className='friend-list'>
+            <p>
+            You have unlocked {topics.length} topics from {friendList.length} friends:
+            </p>
+            {friendList}
+          </div>
           <div className='stream-list'>
             {streamList}
           </div>

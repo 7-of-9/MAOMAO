@@ -24,10 +24,10 @@ import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import YourStreams from '../../components/YourStreams'
-import ShareWithFriends from '../../components/ShareWithFriends'
 import FriendStreams from '../../components/FriendStreams'
 import StreamList from '../../components/StreamList'
 import logger from '../../utils/logger'
+import { guid } from '../../utils/hash'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -125,6 +125,11 @@ class Home extends React.Component {
   }
 
   render () {
+    let selectedMyStreamUrls = []
+    let sortedTopicByUrls = []
+    let friends = []
+    let currentTermId = this.props.store.currentTermId
+    let friendAcceptedList = []
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
@@ -137,11 +142,6 @@ class Home extends React.Component {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
-    let selectedMyStreamUrls = []
-    let sortedTopicByUrls = []
-    let friends = []
-    let currentTermId = this.props.store.currentTermId
-    let shareWiths = []
     if (this.props.store.userHistory) {
       const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
       friends = toJS(this.props.store.friendsStream)
@@ -160,7 +160,15 @@ class Home extends React.Component {
 
       /* eslint-disable camelcase */
       if (accept_shares) {
-        shareWiths = accept_shares.filter(item => item.topic_id === currentTermId)
+        logger.warn('accept_shares', accept_shares)
+        _.forEach(accept_shares, (user) =>
+        friendAcceptedList.push(<li key={guid()} className='share-item'>
+          <span>
+            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+            {user.fullname} has unlocked {user.share_code}
+            <a href='#'> UnShare</a>
+          </span>
+        </li>))
       }
 
       selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
@@ -224,13 +232,23 @@ class Home extends React.Component {
                     install={this.inlineInstall}
                   />
                 }
+                <h1> Your Streams </h1>
+                {friendAcceptedList && friendAcceptedList.length > 0 &&
+                <div className='friend-list'>
+                  <p>
+                  You have shared {friendAcceptedList.length} streams with friends:
+                  </p>
+                  <ul>
+                    {friendAcceptedList}
+                  </ul>
+                </div>
+                }
                 <YourStreams
                   topics={sortedTopicByUrls}
                   activeId={currentTermId}
                   changeTerm={(termId) => { this.props.store.currentTermId = termId }}
                 />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                {shareWiths.length > 0 && <ShareWithFriends friends={shareWiths} />}
                 <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel className='main-content'>
