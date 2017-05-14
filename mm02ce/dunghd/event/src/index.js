@@ -240,28 +240,48 @@ window.sessionObservable = mobx.observable({
 });
 
 mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
-  const session = window.session_get_by_url(window.sessionObservable.activeUrl);
-  if (session) {
-    window.session_stop_TOT(session);
-  }
-  syncImScore(false);
-  if (session) {
-    window.session_start_TOT(session);
-  }
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  }, (tabs) => {
+    if (tabs != null && tabs.length > 0) {
+      const session = window.session_get_by_tab(tabs[0]);
+      if (session) {
+        window.session_stop_TOT(session);
+      }
+      syncImScore(false);
+      if (session) {
+        window.session_start_TOT(session);
+      }
+    } else {
+      log.warn('not found active tab');
+      syncImScore(false);
+    }
+  });
 });
 
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   // save db when user change url
   log.info('active url', window.sessionObservable.activeUrl);
   // TODO: reset setting for experimental topics when change url
-  const session = window.session_get_by_url(window.sessionObservable.activeUrl);
-  if (session) {
-    window.session_stop_TOT(session);
-  }
-  syncImScore(true);
-  if (session) {
-    window.session_start_TOT(session);
-  }
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  }, (tabs) => {
+    if (tabs != null && tabs.length > 0) {
+      const session = window.session_get_by_tab(tabs[0]);
+      if (session) {
+        window.session_stop_TOT(session);
+      }
+      syncImScore(true);
+      if (session) {
+        window.session_start_TOT(session);
+      }
+    } else {
+      log.warn('not found active tab');
+      syncImScore(true);
+    }
+  });
 });
 
 // save im_score every 30 seconds

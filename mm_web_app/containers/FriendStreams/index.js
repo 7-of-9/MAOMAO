@@ -5,7 +5,8 @@
 */
 
 import React from 'react'
-import PropTypes from 'prop-types'
+import { inject, observer } from 'mobx-react'
+import { toJS } from 'mobx'
 import latinize from 'latinize'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -87,6 +88,9 @@ function filterUrls (data) {
   return _.uniqBy(urls.filter(item => item.rate >= rating), 'title')
 }
 
+@inject('store')
+@inject('ui')
+@observer
 class FriendStreams extends React.Component {
   constructor (props) {
     super(props)
@@ -111,10 +115,10 @@ class FriendStreams extends React.Component {
   }
 
   componentDidMount () {
-    const { friends } = this.props
     let urls = []
     let users = []
     let topics = []
+    const friends = toJS(this.props.store.friendsStream)
     _.forEach(friends, friend => {
       const { user_id, fullname, avatar, list } = friend
       const urlIds = []
@@ -141,7 +145,7 @@ class FriendStreams extends React.Component {
   }
 
   componentWillUpdate (props) {
-    const { friends } = props
+    const friends = toJS(this.props.store.friendsStream)
     const { users } = this.state
     if (friends.length !== users.length) {
       let urls = []
@@ -225,7 +229,7 @@ class FriendStreams extends React.Component {
 
   render () {
     const { currentPage, topics } = this.state
-    const { friends } = this.props
+    const friends = toJS(this.props.store.friendsStream)
     logger.warn('currentPage', currentPage)
     const items = []
     // TODO: support sort by time or score
@@ -349,10 +353,6 @@ class FriendStreams extends React.Component {
       </div >
     )
   }
-}
-
-FriendStreams.propTypes = {
-  friends: PropTypes.array.isRequired
 }
 
 export default FriendStreams

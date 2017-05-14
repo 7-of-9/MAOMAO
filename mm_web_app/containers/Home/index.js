@@ -20,14 +20,12 @@ import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants
 import AppHeader from '../../containers/AppHeader'
 import ChromeInstall from '../../containers/ChromeInstall'
 import FriendStreams from '../../containers/FriendStreams'
+import MyStreams from '../../containers/MyStreams'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
-import YourStreams from '../../components/YourStreams'
-import StreamList from '../../components/StreamList'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -124,11 +122,6 @@ class Home extends React.Component {
   }
 
   render () {
-    let selectedMyStreamUrls = []
-    let sortedTopicByUrls = []
-    let friends = []
-    let currentTermId = this.props.store.currentTermId
-    let friendAcceptedList = []
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     if (this.props.store.shareInfo) {
@@ -140,37 +133,6 @@ class Home extends React.Component {
       } else if (topicTitle && topicTitle.length) {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
-    }
-    if (this.props.store.userHistory) {
-      const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
-      friends = toJS(this.props.store.friendsStream)
-      sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
-      let urlIds = []
-      // first for my stream
-      if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-        urlIds = sortedTopicByUrls[0].url_ids
-        currentTermId = sortedTopicByUrls[0].term_id
-      } else {
-        const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
-        if (currentTopic) {
-          urlIds = currentTopic.url_ids
-        }
-      }
-
-      /* eslint-disable camelcase */
-      if (accept_shares) {
-        logger.warn('accept_shares', accept_shares)
-        _.forEach(accept_shares, (user) =>
-        friendAcceptedList.push(<li key={guid()} className='share-item'>
-          <span>
-            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-            {user.fullname} has unlocked {user.share_code}
-            <a href='#'> UnShare</a>
-          </span>
-        </li>))
-      }
-
-      selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
     }
 
     return (
@@ -224,31 +186,15 @@ class Home extends React.Component {
                 </Tab>
               </TabList>
               <TabPanel className='main-content'>
-                {!this.props.store.shareInfo && !this.props.store.isMobile &&
-                  <ChromeInstall
-                    description={description}
-                    title='Unlock YOUR FRIEND STREAM Now'
-                    install={this.inlineInstall}
+                { !this.props.store.shareInfo && !this.props.store.isMobile &&
+                <ChromeInstall
+                  description={description}
+                  title='Unlock YOUR FRIEND STREAM Now'
+                  install={this.inlineInstall}
                   />
                 }
-                <h1> Your Streams </h1>
-                {friendAcceptedList && friendAcceptedList.length > 0 &&
-                <div className='friend-list'>
-                  <p>
-                  You have shared {friendAcceptedList.length} streams with friends:
-                  </p>
-                  <ul>
-                    {friendAcceptedList}
-                  </ul>
-                </div>
-                }
-                <YourStreams
-                  topics={sortedTopicByUrls}
-                  activeId={currentTermId}
-                  changeTerm={(termId) => { this.props.store.currentTermId = termId }}
-                />
+                <MyStreams />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
-                <StreamList urls={selectedMyStreamUrls} />
               </TabPanel>
               <TabPanel className='main-content'>
                 {!!this.props.store.shareInfo && !this.props.store.isMobile &&
@@ -258,7 +204,7 @@ class Home extends React.Component {
                     install={this.inlineInstall}
                   />
                 }
-                <FriendStreams friends={friends} />
+                <FriendStreams />
                 <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
               </TabPanel>
             </Tabs>
