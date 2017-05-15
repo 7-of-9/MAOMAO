@@ -112,7 +112,7 @@ class MyStreams extends React.PureComponent {
           loader={<Loading isLoading />}
           threshold={600}
             >
-          <GridView urls={selectedMyStreamUrls} maxScore={maxScore} />
+          <GridView topics={sortedTopicByUrls} urls={selectedMyStreamUrls} maxScore={maxScore} />
         </InfiniteScroll>
       </div>
     )

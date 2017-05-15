@@ -8,7 +8,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Masonry from 'react-masonry-component'
-import GridItem from '../GridItem'
+import GridItem from '../../components/GridItem'
+import logger from '../../utils/logger'
 
 const masonryOptions = {
   itemSelector: '.grid-item',
@@ -17,11 +18,13 @@ const masonryOptions = {
 
 class GridView extends React.PureComponent {
   render () {
-    const { urls, maxScore } = this.props
+    const { urls, maxScore, topics } = this.props
+    logger.warn('topics', topics)
+    const selectedTopics = topics.map(item => ({name: item.term_name, urlIds: item.url_ids}))
     const items = []
     if (urls && urls.length) {
       _.forEach(urls, (item) => {
-        items.push(<GridItem key={item.id} url={item} maxScore={maxScore} />)
+        items.push(<GridItem key={item.id} topics={selectedTopics} url={item} maxScore={maxScore} />)
       })
     }
     return (
@@ -38,6 +41,7 @@ class GridView extends React.PureComponent {
 
 GridView.propTypes = {
   urls: PropTypes.array.isRequired,
+  topics: PropTypes.array.isRequired,
   maxScore: PropTypes.number.isRequired
 }
 

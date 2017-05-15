@@ -327,6 +327,7 @@ class FriendStreams extends React.Component {
               <ul className='nav navbar-nav' >
                 <FilterSearch
                   {...this.state}
+                  rating={this.props.ui.friendStream.rating}
                   onChangeRate={this.onChangeRate}
                   onSelectTopic={this.onSelectTopic}
                   onRemoveTopic={this.onRemoveTopic}
@@ -337,7 +338,7 @@ class FriendStreams extends React.Component {
             </nav>
           </div>
           <InfiniteScroll
-            pageStart={0}
+            pageStart={this.props.ui.friendStream.page}
             loadMore={this.loadMore}
             hasMore={this.state.hasMoreItems}
             loader={<Loading isLoading />}
