@@ -384,22 +384,16 @@ the button section
 }
 
 .btn-unshare {
-  color: #fff;
-  background-color: #11c759;
-  padding: 6px 12px;
-  margin-bottom: 0;
   font-size: 14px;
   font-weight: normal;
   line-height: 1.42857143;
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  touch-action: manipulation;
+  color: #11c759;
   cursor: pointer;
   user-select: none;
   background-image: none;
-  border: 1px solid transparent;
-  border-radius: 4px;
   &:focus,
   &:active:focus,
   {
@@ -416,8 +410,7 @@ the button section
   &:active {
     cursor: pointer;
     text-decoration: none;
-    color: #fff;
-    background-color: #2de475;
+    color: #018e39;
   }
   &,
   &:hover,
@@ -426,6 +419,30 @@ the button section
     transition: all 0.2s ease-in-out;
   }
 }
+
+.btn-share-detail {
+  padding: 11px 12px;
+  min-width: 180px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid #0d8aee;
+  background-color: #2196f3;
+  text-align: center;
+  .fa{
+    font-size: 19px;
+    vertical-align: middle;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    outline: 0;
+    border-color: #0364b1;
+    background-color: #046abc;
+  }
+}
+
+
 /*-----btn for tag a link-----*/
 
 button.btn-link {

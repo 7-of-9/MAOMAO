@@ -132,10 +132,15 @@ img {
   left: 0;
 }
 
+.number-share {
+  color: #000;
+  font-weight: bold;
+}
+
 .standand-sort {
   position: relative;
   z-index: 500;
-  margin: -1px 0 15px;
+  margin: 30px 0 15px;
   clear: both;
   background: #fff;
   text-align: left;
@@ -590,7 +595,8 @@ img {
 }
 
 .stream-list {
-  margin: 20px 0 10px;
+  margin: 0 0 10px;
+  padding: 0 12px;
   text-align: center;
   .stream-item {
     display: inline-block;
@@ -620,6 +626,10 @@ img {
   }
 }
 
+.neal-page .paragraph-descript {
+  margin-bottom: 20px;
+}
+
 .nlp_topic {
   font-family: 'Courier New', sans-serif;
   font-weight: bold;
@@ -639,43 +649,72 @@ img {
 
 .heading-stream {
   margin: 30px 0 5px;
+  padding: 0 20px;
   color: #2db7f5;
 }
 
 .friend-list {
-  padding: 0 30px;
+  padding: 0 20px;
+}
+
+.loading-detail {
+  margin: 0 0 20px;
+  text-align: center;
 }
 
 .accepted-list {
   @include clearfix();
+  @include equal_height();
   list-style: none;
   padding: 0;
-  margin: 0 -10px;
+  margin: 30px -10px 20px;
   .share-item {
     padding: 0 10px;
     margin-bottom: 15px;
     float: left;
     width: 33.33%;
+    @media (max-width: 890px) {
+      width: 50%;
+    }
+    @media (max-width: 590px) {
+      width: 100%;
+    }
   }
 }
 
 .friend-list {
   @include clearfix();
-  .user-item {
-    padding: 0 10px;
-    margin-bottom: 15px;
-    float: left;
-    width: 33.33%;
+  .user-list {
+    @include clearfix();
+    @include equal_height();
+    margin: 0 -10px;
+    .user-item {
+      padding: 0 10px;
+      margin-bottom: 15px;
+      float: left;
+      width: 33.33%;
+      a {
+        &:hover,
+        &:focus {
+          text-decoration: none;
+          .user-info {
+            color: #2db7f5;
+          }
+        }
+      }
+      @media (max-width: 890px) {
+        width: 50%;
+      }
+      @media (max-width: 590px) {
+        width: 100%;
+      }
+    }
   }
-}
-
-.user-item {
-  display: inline-block;
 }
 
 .user-share {
   /* @include equal_height(); */
-  display: block;
+  display: inline-block;
   .user-share-img {
     padding-right: 10px;
     width: 43px;
@@ -689,21 +728,14 @@ img {
     }
   }
   .user-share-cnt {
+    margin-top: 4px;
     display: block;
     text-align: left;
     overflow: hidden;
-    .user-share-inner {
-      margin-right: -83px;
-      float: left;
-      width: 100%;
-    }
     .user-info {
-      margin: 0 83px 0 0;
+      margin: 0;
+      line-height: 20px;
       color: #413f3c;
-    }
-    .btn-unshare {
-      float: right;
-      width: 83px;
     }
   }
 }

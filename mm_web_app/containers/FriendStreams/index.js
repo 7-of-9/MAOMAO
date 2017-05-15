@@ -299,25 +299,29 @@ class FriendStreams extends React.Component {
 
     const friendList = []
     _.forEach(friends, (user) =>
-      friendList.push(<a key={guid()} href='#' className='user-item'>
-        <span className='user-share'>
-          <span className='user-share-img'>
-            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-          </span>
-          <span className='user-share-cnt'>
-            <span className='user-share-inner'>
-              <span className='user-info'><span className='share-fullname'>{user.fullname}</span> ({user.list.length} invitations)</span>
+      friendList.push(<div key={guid()} className='user-item'>
+        <a href='#'>
+          <span className='user-share'>
+            <span className='user-share-img'>
+              <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+            </span>
+            <span className='user-share-cnt'>
+              <span className='user-share-inner'>
+                <span className='user-info'><span className='share-fullname'>{user.fullname}</span> ({user.list.length} invitations)</span>
+              </span>
             </span>
           </span>
-        </span>
-      </a>))
+        </a>
+      </div>))
     return (
       <div className='react-tabs react-tabs'>
         <div className='react-tabs__tab-panel react-tabs__tab-panel--selected' role='tab-panel' id='react-tabs-1'>
           <h1 className='heading-stream'>Friend Streams</h1>
           <div className='friend-list'>
             <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
-            {friendList}
+            <div className='user-list'>
+              {friendList}
+            </div>
           </div>
           <div className='stream-list'>
             {streamList}

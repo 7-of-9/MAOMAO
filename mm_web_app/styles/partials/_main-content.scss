@@ -42,7 +42,6 @@ body {
   .main-content {
     padding: 0;
     background-color: #fff;
-    min-height: 768px;
     .wrap-main {
       height: auto;
       background: none;
@@ -63,17 +62,6 @@ body {
     .slidebar-nav {
       position: relative;
       z-index: 1000;
-      .stream-text {
-        display: none;
-      }
-      @media (max-width: 590px) {
-        width: 100%;
-      }
-    }
-    .main-content {
-      @media (max-width: 590px) {
-        margin-left: 0;
-      }
     }
     .react-tabs {
       .react-tabs__tab-list {

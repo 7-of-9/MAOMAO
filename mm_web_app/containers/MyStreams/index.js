@@ -75,7 +75,7 @@ class MyStreams extends React.PureComponent {
               <div className='user-share-inner'>
                 <p className='user-info'><span className='share-fullname'>{user.fullname}</span> has unlocked <span className='share-code'>{user.share_code}</span></p>
               </div>
-              <a className='btn-unshare' href='#'> UnShare</a>
+              <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true'></i> UnShare</a>
             </div>
           </div>
         </li>))
@@ -88,8 +88,10 @@ class MyStreams extends React.PureComponent {
         <h1 className='heading-stream'>Your Streams</h1>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
           <div className='friend-list'>
-            <p>You have shared {friendAcceptedList.length} streams with friends:</p>
-            <a onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}>{!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</a>
+            <p className='paragraph-descript'>You have shared <span className='number-share'>{friendAcceptedList.length}</span> streams with friends:</p>
+            <div className='loading-detail'>
+              <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true'></i> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
+            </div>
             <ToggleDisplay show={this.props.ui.showAcceptInvite}>
               <ul className='accepted-list'>
                 {friendAcceptedList}
