@@ -637,6 +637,85 @@ img {
   text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
 }
 
+.heading-stream {
+  margin: 30px 0 5px;
+  color: #2db7f5;
+}
+
+.friend-list {
+  padding: 0 30px;
+}
+
+.accepted-list {
+  @include clearfix();
+  list-style: none;
+  padding: 0;
+  margin: 0 -10px;
+  .share-item {
+    padding: 0 10px;
+    margin-bottom: 15px;
+    float: left;
+    width: 33.33%;
+  }
+}
+
+.friend-list {
+  @include clearfix();
+  .user-item {
+    padding: 0 10px;
+    margin-bottom: 15px;
+    float: left;
+    width: 33.33%;
+  }
+}
+
+.user-item {
+  display: inline-block;
+}
+
+.user-share {
+  /* @include equal_height(); */
+  display: block;
+  .user-share-img {
+    padding-right: 10px;
+    width: 43px;
+    float: left;
+    img {
+      @include border-radius(50%);
+      border: 3px solid #8d8d8d;
+      width: 33px;
+      height: 33px;
+      display: block;
+    }
+  }
+  .user-share-cnt {
+    display: block;
+    text-align: left;
+    overflow: hidden;
+    .user-share-inner {
+      margin-right: -83px;
+      float: left;
+      width: 100%;
+    }
+    .user-info {
+      margin: 0 83px 0 0;
+      color: #413f3c;
+    }
+    .btn-unshare {
+      float: right;
+      width: 83px;
+    }
+  }
+}
+
+.share-fullname {
+  font-weight: bold;
+}
+
+.share-code {
+  color: #999;
+}
+
 
 /*-----thumbnail-box-----*/
 

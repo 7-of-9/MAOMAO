@@ -383,7 +383,49 @@ the button section
   }
 }
 
-
+.btn-unshare {
+  color: #fff;
+  background-color: #11c759;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  &:focus,
+  &:active:focus,
+  {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+  }
+  &:active {
+    background-image: none;
+    outline: 0;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  }
+  &:hover,
+  &:focus,
+  &:active {
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    background-color: #2de475;
+  }
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    transition: all 0.2s ease-in-out;
+  }
+}
 /*-----btn for tag a link-----*/
 
 button.btn-link {

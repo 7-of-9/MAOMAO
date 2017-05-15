@@ -7,7 +7,7 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import Modal from 'react-modal'
+import ToggleDisplay from 'react-toggle-display'
 import InfiniteScroll from 'react-infinite-scroller'
 import _ from 'lodash'
 import GridView from '../../components/GridView'
@@ -17,15 +17,6 @@ import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 10
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto'
-  }
-}
 
 function getUrls (urls, topics, currentTermId) {
   let sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
@@ -76,24 +67,35 @@ class MyStreams extends React.PureComponent {
         logger.warn('accept_shares', accept_shares)
         _.forEach(accept_shares, (user) =>
         friendAcceptedList.push(<li key={guid()} className='share-item'>
-          <span>
-            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-            {user.fullname} has unlocked {user.share_code}
-            <a href='#'> UnShare</a>
-          </span>
+          <div className='user-share'>
+            <div className='user-share-img'>
+              <img width='30' height='30' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+            </div>
+            <div className='user-share-cnt'>
+              <div className='user-share-inner'>
+                <p className='user-info'><span className='share-fullname'>{user.fullname}</span> has unlocked <span className='share-code'>{user.share_code}</span></p>
+              </div>
+              <a className='btn-unshare' href='#'> UnShare</a>
+            </div>
+          </div>
         </li>))
       }
       maxScore = findMaxScore(urls)
     }
 
     return (
-      <div>
-        <h1> Your Streams </h1>
+      <div className=''>
+        <h1 className='heading-stream'>Your Streams</h1>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
-        <p>
-            You have shared {friendAcceptedList.length} streams with friends:
-            <a onClick={() => { this.props.ui.openAcceptInviteModal() }}>View detail</a>
-        </p>
+          <div className='friend-list'>
+            <p>You have shared {friendAcceptedList.length} streams with friends:</p>
+            <a onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}>{!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</a>
+            <ToggleDisplay show={this.props.ui.showAcceptInvite}>
+              <ul className='accepted-list'>
+                {friendAcceptedList}
+              </ul>
+            </ToggleDisplay>
+          </div>
         }
         <StreamList
           topics={sortedTopicByUrls}
@@ -112,17 +114,6 @@ class MyStreams extends React.PureComponent {
           >
           <GridView urls={selectedMyStreamUrls} maxScore={maxScore} />
         </InfiniteScroll>
-        <Modal
-          isOpen={this.props.ui.showAcceptInviteModal}
-          style={customStyles}
-          onRequestClose={() => { this.props.ui.closeAcceptInviteModal() }}
-          contentLabel='Friend List'
-          portalClassName='QuestionModal'
-          >
-          <ul>
-            {friendAcceptedList}
-          </ul>
-        </Modal>
       </div>
     )
   }
