@@ -406,90 +406,6 @@ img {
       border-right-color: transparent;
     }
   }
-  &.tags-color-1 {
-    background-color: #0fa733;
-    &:hover,
-    &:focus {
-      background-color: #00d833;
-    }
-  }
-  &.tags-color-2 {
-    background-color: #009688;
-    &:hover,
-    &:focus {
-      background-color: #02ecd6;
-    }
-  }
-  &.tags-color-3 {
-    background-color: #e6bc01;
-    &:hover,
-    &:focus {
-      background-color: #FDD835;
-    }
-  }
-  &.tags-color-4 {
-    background-color: #FF9800;
-    &:hover,
-    &:focus {
-      background-color: #e6bc01;
-    }
-  }
-  &.tags-color-5 {
-    background-color: #795548;
-    &:hover,
-    &:focus {
-      background-color: #a5634c;
-    }
-  }
-  &.tags-color-6 {
-    background-color: #808080;
-    &:hover,
-    &:focus {
-      background-color: #b8afaf;
-    }
-  }
-  &.tags-color-7 {
-    background-color: #B71C1C;
-    &:hover,
-    &:focus {
-      background-color: #fa0707;
-    }
-  }
-  &.tags-color-8 {
-    background-color: #D81B60;
-    &:hover,
-    &:focus {
-      background-color: #fe1c6e;
-    }
-  }
-  &.tags-color-9 {
-    background-color: #8E24AA;
-    &:hover,
-    &:focus {
-      background-color: #bb0bea;
-    }
-  }
-  &.tags-color-10 {
-    background-color: #546E7A;
-    &:hover,
-    &:focus {
-      background-color: #306076;
-    }
-  }
-  &.tags-color-11 {
-    background-color: #1B5E20;
-    &:hover,
-    &:focus {
-      background-color: #38b642;
-    }
-  }
-  &.tags-color-12 {
-    background-color: #3E2723;
-    &:hover,
-    &:focus {
-      background-color: #3f1811;
-    }
-  }
 }
 
 .mix-tag {
@@ -1134,8 +1050,6 @@ img {
       padding: 4px 5px;
       margin: 4px 5px 3px 0;
       display: inline-block;
-      border: 1px solid #a1ac9e;
-      background-color: #acbaaa;
       vertical-align: middle;
       &.search-item {
         padding: 4px 5px;
@@ -1264,9 +1178,10 @@ img {
 }
 
 a.btn-box-remove {
+  @include opacity(0.5);
   @include border-radius(50%);
   margin-left: 5px;
-  background-color: #d9e0d7;
+  background-color: #fff;
   color: #abbaa8;
   display: inline-block;
   font-weight: normal;
@@ -1276,7 +1191,7 @@ a.btn-box-remove {
   text-align: center;
   &:hover,
   &:focus {
-    color: #e72222;
+    color: #222;
   }
 }
 
@@ -1316,6 +1231,105 @@ a.btn-box-remove {
   }
   &-10 {
     background-color: #998174;
+  }
+}
+
+
+/* ---- color topic radom ---- */
+
+.tags-color-1 {
+  background-color: #0fa733;
+  &:hover,
+  &:focus {
+    background-color: #00d833;
+  }
+}
+
+.tags-color-2 {
+  background-color: #009688;
+  &:hover,
+  &:focus {
+    background-color: #02ecd6;
+  }
+}
+
+.tags-color-3 {
+  background-color: #e6bc01;
+  &:hover,
+  &:focus {
+    background-color: #FDD835;
+  }
+}
+
+.tags-color-4 {
+  background-color: #FF9800;
+  &:hover,
+  &:focus {
+    background-color: #e6bc01;
+  }
+}
+
+.tags-color-5 {
+  background-color: #795548;
+  &:hover,
+  &:focus {
+    background-color: #a5634c;
+  }
+}
+
+.tags-color-6 {
+  background-color: #808080;
+  &:hover,
+  &:focus {
+    background-color: #b8afaf;
+  }
+}
+
+.tags-color-7 {
+  background-color: #B71C1C;
+  &:hover,
+  &:focus {
+    background-color: #fa0707;
+  }
+}
+
+.tags-color-8 {
+  background-color: #D81B60;
+  &:hover,
+  &:focus {
+    background-color: #fe1c6e;
+  }
+}
+
+.tags-color-9 {
+  background-color: #8E24AA;
+  &:hover,
+  &:focus {
+    background-color: #bb0bea;
+  }
+}
+
+.tags-color-10 {
+  background-color: #546E7A;
+  &:hover,
+  &:focus {
+    background-color: #306076;
+  }
+}
+
+.tags-color-11 {
+  background-color: #1B5E20;
+  &:hover,
+  &:focus {
+    background-color: #38b642;
+  }
+}
+
+.tags-color-12 {
+  background-color: #3E2723;
+  &:hover,
+  &:focus {
+    background-color: #3f1811;
   }
 }
 

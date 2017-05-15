@@ -188,7 +188,7 @@ class FilterSearch extends React.Component {
             <ul className='search-box-list'>
               {
                 filterByTopic.map(item => (
-                  <li key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
+                  <li className='tags-color-1' key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
                 ))
               }
               {
