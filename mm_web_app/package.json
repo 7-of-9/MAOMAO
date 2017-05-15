@@ -57,6 +57,7 @@
     "react-sticky": "^5.0.5",
     "react-tabs": "^0.8.2",
     "react-tag-input": "^4.7.2",
+    "react-toggle-display": "^2.2.0",
     "recompose": "^0.23.4",
     "request": "^2.81.0",
     "session-file-store": "^1.0.0",
