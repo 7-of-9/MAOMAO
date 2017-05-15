@@ -49,10 +49,6 @@ the tab section
       @include transition(all 0.2s ease-in-out);
       opacity: 1;
     }
-    h1 {
-      margin: 10px 0 30px;
-      color: #2db7f5;
-    }
     @media (max-width: 890px) {}
   }
 }

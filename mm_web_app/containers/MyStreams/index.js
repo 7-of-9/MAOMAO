@@ -42,11 +42,17 @@ class MyStreams extends React.PureComponent {
         logger.warn('accept_shares', accept_shares)
         _.forEach(accept_shares, (user) =>
         friendAcceptedList.push(<li key={guid()} className='share-item'>
-          <span>
-            <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-            {user.fullname} has unlocked {user.share_code}
-            <a href='#'> UnShare</a>
-          </span>
+          <div className='user-share'>
+            <div className='user-share-img'>
+              <img width='30' height='30' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
+            </div>
+            <div className='user-share-cnt'>
+              <div className='user-share-inner'>
+                <p className='user-info'><span className='share-fullname'>{user.fullname}</span> has unlocked <span className='share-code'>{user.share_code}</span></p>
+              </div>
+              <a className='btn-unshare' href='#'> UnShare</a>
+            </div>
+          </div>
         </li>))
       }
 
@@ -54,21 +60,19 @@ class MyStreams extends React.PureComponent {
     }
 
     return (
-      <div>
-        <h1> Your Streams </h1>
+      <div className=''>
+        <h1 className='heading-stream'>Your Streams</h1>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
           <div className='friend-list'>
-            <p>
-          You have shared {friendAcceptedList.length} streams with friends:
-          </p>
-            <ul>
+            <p>ou have shared {friendAcceptedList.length} streams with friends:</p>
+            <ul className='accepted-list'>
               {friendAcceptedList}
             </ul>
           </div>
         }
         <YourStreams
           topics={sortedTopicByUrls}
-          activeId={currentTermId}
+          activeId={currentTermId}          
           changeTerm={(termId) => { this.props.store.currentTermId = termId }}
         />
         <StreamList urls={selectedMyStreamUrls} />
