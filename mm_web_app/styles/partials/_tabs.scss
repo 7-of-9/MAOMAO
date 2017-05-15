@@ -8,7 +8,7 @@ the tab section
 .react-tabs {
   @include clearfix();
   text-align: center;
-  .ReactTabs__TabList {
+  .react-tabs__tab-list {
     padding: 0;
     margin: 0;
     list-style: none;
@@ -19,7 +19,7 @@ the tab section
       color: #404040;
       font-size: 2rem;
     }
-    .ReactTabs__Tab {
+    .react-tabs__tab {
       @include transition(all 0.3s ease-in-out);
       @include box-shadow(none);
       padding: 20px 3px;
@@ -31,7 +31,7 @@ the tab section
       border-bottom: 1px solid #e1e5eb;
       min-height: 90px;
     }
-    .ReactTabs__Tab--selected {
+    .react-tabs__tab--selected {
       @include transition(all 0.3s ease-in-out);
       @include border-radius(0);
       color: #212121;
@@ -41,11 +41,11 @@ the tab section
       }
     }
   }
-  .ReactTabs__TabPanel {
+  .react-tabs__tab-panel {
     @include transition(all 0.2s ease-in-out);
     opacity: 0;
     overflow: hidden;
-    &.ReactTabs__TabPanel--selected {
+    &.react-tabs__tab-panel--selected {
       @include transition(all 0.2s ease-in-out);
       opacity: 1;
     }

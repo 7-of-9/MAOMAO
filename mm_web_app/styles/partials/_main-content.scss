@@ -32,8 +32,6 @@ body {
   height: 100%;
   background-color: #fff;
   .slidebar-nav {
-    float: left;
-    width: 120px;
     min-height: 100%;
     background-color: #fff;
     @media (max-width: 590px) {
@@ -42,8 +40,6 @@ body {
     }
   }
   .main-content {
-    @include box-shadow(0 1px 2px 0 rgba(0, 0, 0, 0.22));
-    margin-left: 122px;
     padding: 0;
     background-color: #fff;
     min-height: 768px;
@@ -65,7 +61,6 @@ body {
   }
   &.wrap-toggle {
     .slidebar-nav {
-      width: 69px;
       position: relative;
       z-index: 1000;
       .stream-text {
@@ -76,13 +71,12 @@ body {
       }
     }
     .main-content {
-      margin-left: 70px;
       @media (max-width: 590px) {
         margin-left: 0;
       }
     }
     .react-tabs {
-      .ReactTabs__TabList {
+      .react-tabs__tab-list {
         overflow: visible;
         .stream-symbol {
           .fa {
@@ -157,7 +151,7 @@ body {
           left: 100%;
           margin-top: -6px;
         }
-        .ReactTabs__Tab {
+        .react-tabs__tab {
           padding: 7px 3px;
           min-height: inherit;
           @media (max-width: 590px) {
