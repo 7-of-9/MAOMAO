@@ -27,7 +27,6 @@ import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -177,16 +176,16 @@ class Home extends React.Component {
           <div className='wrap-main wrap-toggle'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList className='slidebar-nav animated fadeInDown'>
-                <Tab key={guid()}>
+                <Tab>
                   <span className='stream-symbol' data-tooltip='Your Streams' data-position='right'><i className='fa fa-user' aria-hidden='true' /></span>
                   <span className='stream-text'>Your Streams</span>
                 </Tab>
-                <Tab key={guid()}>
+                <Tab>
                   <span className='stream-symbol' data-tooltip='Friend Streams' data-position='right'><i className='fa fa-users' aria-hidden='true' /></span>
                   <span className='stream-text'>Friend Streams</span>
                 </Tab>
               </TabList>
-              <TabPanel key={guid()} className='main-content'>
+              <TabPanel className='main-content'>
                 { !this.props.store.shareInfo && !this.props.store.isMobile &&
                 <ChromeInstall
                   description={description}
@@ -197,7 +196,7 @@ class Home extends React.Component {
                 <MyStreams />
                 <Loading isLoading={this.props.store.isProcessing} />
               </TabPanel>
-              <TabPanel key={guid()} className='main-content'>
+              <TabPanel className='main-content'>
                 {!!this.props.store.shareInfo && !this.props.store.isMobile &&
                   <ChromeInstall
                     description={description}

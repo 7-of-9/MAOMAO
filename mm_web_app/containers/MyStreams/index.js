@@ -56,9 +56,9 @@ class MyStreams extends React.PureComponent {
       selectedMyStreamUrls = getUrls(urls, topics, currentTermId)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
       if (selectedMyStreamUrls && selectedMyStreamUrls.length) {
-        selectedMyStreamUrls = selectedMyStreamUrls.slice(this.props.ui.myStream.page, LIMIT)
+        selectedMyStreamUrls = selectedMyStreamUrls.slice(0, (this.props.ui.myStream.page + 1) * LIMIT)
       }
-      hasMoreItems = this.props.ui.myStream.page * LIMIT <= selectedMyStreamUrls.length
+      hasMoreItems = this.props.ui.myStream.page * LIMIT < selectedMyStreamUrls.length
       logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
       logger.warn('hasMoreItems', hasMoreItems)
 
@@ -84,7 +84,7 @@ class MyStreams extends React.PureComponent {
     }
 
     return (
-      <div className=''>
+      <div className='mystreams'>
         <h1 className='heading-stream'>Your Streams</h1>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
           <div className='friend-list'>
@@ -111,7 +111,7 @@ class MyStreams extends React.PureComponent {
           hasMore={hasMoreItems}
           loader={<Loading isLoading />}
           threshold={600}
-          >
+            >
           <GridView urls={selectedMyStreamUrls} maxScore={maxScore} />
         </InfiniteScroll>
       </div>
