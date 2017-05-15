@@ -5,6 +5,7 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import { WithContext as ReactTags } from 'react-tag-input'
 import logger from '../../utils/logger'
 
@@ -24,7 +25,7 @@ function ShareWithFriends ({ friends }) {
 }
 
 ShareWithFriends.propTypes = {
-  friends: React.PropTypes.array
+  friends: PropTypes.array.isRequired
 }
 
 export default ShareWithFriends

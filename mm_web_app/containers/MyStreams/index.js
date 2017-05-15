@@ -7,35 +7,69 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
+import Modal from 'react-modal'
+import InfiniteScroll from 'react-infinite-scroller'
 import _ from 'lodash'
-import YourStreams from '../../components/YourStreams'
+import GridView from '../../components/GridView'
 import StreamList from '../../components/StreamList'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
+
+const LIMIT = 10
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto'
+  }
+}
+
+function getUrls (urls, topics, currentTermId) {
+  let sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
+  let urlIds = []
+
+  const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
+  logger.warn('currentTopic', currentTopic)
+  if (currentTopic) {
+    urlIds = currentTopic.url_ids
+    return _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
+  } else {
+    return urls || []
+  }
+}
+
+function findMaxScore (urls) {
+  const score = _.maxBy(urls, 'im_score')
+  if (score && score.im_score) {
+    return score.im_score
+  }
+  return 0
+}
 
 @inject('store')
 @inject('ui')
 @observer
 class MyStreams extends React.PureComponent {
   render () {
+    let maxScore = 0
     let selectedMyStreamUrls = []
     let sortedTopicByUrls = []
-    let currentTermId = this.props.store.currentTermId
+    let currentTermId = this.props.ui.myStream.currentTermId
     let friendAcceptedList = []
+    let hasMoreItems = false
     if (this.props.store.userHistory) {
       const { urls, topics, accept_shares } = toJS(this.props.store.myStream)
+      selectedMyStreamUrls = getUrls(urls, topics, currentTermId)
       sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
-      let urlIds = []
-      // first for my stream
-      if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-        urlIds = sortedTopicByUrls[0].url_ids
-        currentTermId = sortedTopicByUrls[0].term_id
-      } else {
-        const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
-        if (currentTopic) {
-          urlIds = currentTopic.url_ids
-        }
+      if (selectedMyStreamUrls && selectedMyStreamUrls.length) {
+        selectedMyStreamUrls = selectedMyStreamUrls.slice(this.props.ui.myStream.page, LIMIT)
       }
+      hasMoreItems = this.props.ui.myStream.page * LIMIT <= selectedMyStreamUrls.length
+      logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
+      logger.warn('hasMoreItems', hasMoreItems)
 
       /* eslint-disable camelcase */
       if (accept_shares) {
@@ -49,29 +83,46 @@ class MyStreams extends React.PureComponent {
           </span>
         </li>))
       }
-
-      selectedMyStreamUrls = _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
+      maxScore = findMaxScore(urls)
     }
 
     return (
       <div>
         <h1> Your Streams </h1>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
-          <div className='friend-list'>
-            <p>
-          You have shared {friendAcceptedList.length} streams with friends:
-          </p>
-            <ul>
-              {friendAcceptedList}
-            </ul>
-          </div>
+        <p>
+            You have shared {friendAcceptedList.length} streams with friends:
+            <a onClick={() => { this.props.ui.openAcceptInviteModal() }}>View detail</a>
+        </p>
         }
-        <YourStreams
+        <StreamList
           topics={sortedTopicByUrls}
-          activeId={currentTermId}
-          changeTerm={(termId) => { this.props.store.currentTermId = termId }}
+          currentTopic={currentTermId}
+          onChange={(termId) => {
+            this.props.ui.myStream.currentTermId = termId
+            this.props.ui.myStream.page = 0
+          }}
         />
-        <StreamList urls={selectedMyStreamUrls} />
+        <InfiniteScroll
+          pageStart={this.props.ui.myStream.page}
+          loadMore={() => { this.props.ui.myStream.page += 1 }}
+          hasMore={hasMoreItems}
+          loader={<Loading isLoading />}
+          threshold={600}
+          >
+          <GridView urls={selectedMyStreamUrls} maxScore={maxScore} />
+        </InfiniteScroll>
+        <Modal
+          isOpen={this.props.ui.showAcceptInviteModal}
+          style={customStyles}
+          onRequestClose={() => { this.props.ui.closeAcceptInviteModal() }}
+          contentLabel='Friend List'
+          portalClassName='QuestionModal'
+          >
+          <ul>
+            {friendAcceptedList}
+          </ul>
+        </Modal>
       </div>
     )
   }

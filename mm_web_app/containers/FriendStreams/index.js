@@ -97,13 +97,11 @@ class FriendStreams extends React.Component {
     this.state = {
       suggestions: [],
       hasMoreItems: false,
-      currentPage: 1,
       urls: [],
       users: [],
       topics: [],
       filterByTopic: [],
       filterByUser: [],
-      rating: 1,
       value: ''
     }
     this.loadMore = this.loadMore.bind(this)
@@ -350,7 +348,7 @@ class FriendStreams extends React.Component {
             </div>
           </InfiniteScroll>
         </div>
-      </div >
+      </div>
     )
   }
 }

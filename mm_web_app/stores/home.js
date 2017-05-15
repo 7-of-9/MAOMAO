@@ -1,4 +1,4 @@
-import { action, reaction, when, computed, intercept, toJS, observable } from 'mobx'
+import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
@@ -9,16 +9,11 @@ import logger from '../utils/logger'
 let store = null
 
 export class HomeStore extends CoreStore {
-  @observable googleConnectResult = {}
-  @observable facebookConnectResult = {}
-  @observable userHistoryResult = {}
-  @observable currentTermId = -1
-  @observable rating = 1
+  normalizedData = {}
+  @observable isProcessing = false
   @observable googleUser = {}
   @observable facebookUser = {}
   @observable userHistory = {me: {}, shares: []}
-  counter = 0
-  normalizedData = null
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
@@ -52,11 +47,13 @@ export class HomeStore extends CoreStore {
 
   @action googleConnect (info) {
     logger.warn('googleConnect', info)
-    this.googleConnectResult = loginWithGoogle(info)
+    const googleConnectResult = loginWithGoogle(info)
+    this.isProcessing = true
     when(
-      () => this.googleConnectResult.state !== 'pending',
+      () => googleConnectResult.state !== 'pending',
       () => {
-        const { data } = this.googleConnectResult.value
+        this.isProcessing = false
+        const { data } = googleConnectResult.value
         const userHash = md5hash(info.google_user_id)
         this.isLogin = true
         this.userId = data.id
@@ -92,11 +89,13 @@ export class HomeStore extends CoreStore {
 
   @action facebookConnect (info) {
     logger.warn('facebookConnect', info)
-    this.facebookConnectResult = loginWithFacebook(info)
+    const facebookConnectResult = loginWithFacebook(info)
+    this.isProcessing = true
     when(
-      () => this.facebookConnectResult.state !== 'pending',
+      () => facebookConnectResult.state !== 'pending',
       () => {
-        const { data } = this.facebookConnectResult.value
+        this.isProcessing = false
+        const { data } = facebookConnectResult.value
         const userHash = md5hash(info.fb_user_id)
         this.userId = data.id
         this.userHash = userHash
@@ -130,26 +129,16 @@ export class HomeStore extends CoreStore {
   }
 
   @action getUserHistory () {
-    this.userHistoryResult = getUserHistory(this.userId, this.userHash)
-    const disposer = intercept(this, 'userHistory', (change) => {
-      if (!change.newValue) {
-        return null
-      }
-
-      if (change.newValue === change.object.value) {
-        return null
-      }
-
-      return change
-    })
+    this.isProcessing = true
+    const userHistoryResult = getUserHistory(this.userId, this.userHash)
     when(
-      () => this.userHistoryResult.state !== 'pending',
+      () => userHistoryResult.state !== 'pending',
       () => {
-        this.userHistory = this.userHistoryResult.value.data
+        this.isProcessing = false
+        this.userHistory = userHistoryResult.value.data
         const normalizedData = normalizedHistoryData(toJS(this.userHistory))
+        logger.warn('normalizedData', normalizedData)
         this.normalizedData = normalizedData
-        this.counter += 1
-        disposer()
       }
     )
   }

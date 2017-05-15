@@ -5,6 +5,7 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import _ from 'lodash'
@@ -50,10 +51,10 @@ function StreamCategory ({ parentId, parentName, topic, change }) {
 }
 
 StreamCategory.propTypes = {
-  topic: React.PropTypes.object,
-  parentId: React.PropTypes.number,
-  parentName: React.PropTypes.string,
-  change: React.PropTypes.func
+  topic: PropTypes.object.isRequired,
+  parentId: PropTypes.number.isRequired,
+  parentName: PropTypes.string.isRequired,
+  change: PropTypes.func.isRequired
 }
 
 export default StreamCategory

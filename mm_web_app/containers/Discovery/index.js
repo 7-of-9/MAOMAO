@@ -32,7 +32,6 @@ const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
-    Singapore<br />
   </address>
 )
 
@@ -221,8 +220,7 @@ class Discovery extends React.Component {
         </StickyContainer>
         <div className='footer-area'>
           <Footer brandName={brandName}
-            facebookUrl='http://www.facebook.com'
-            twitterUrl='http://www.twitter.com/'
+            facebookUrl='https://www.facebook.com/maomao.hiring'
             address={businessAddress}
           />
         </div>

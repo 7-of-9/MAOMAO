@@ -187,11 +187,7 @@ class AppHeader extends React.Component {
 }
 
 AppHeader.propTypes = {
-  onGoogleSuccess: PropTypes.func,
-  onGoogleFailure: PropTypes.func,
-  responseFacebook: PropTypes.func,
-  notify: PropTypes.func,
-  onLogout: PropTypes.func
+  notify: PropTypes.func.isRequired
 }
 
 export default AppHeader

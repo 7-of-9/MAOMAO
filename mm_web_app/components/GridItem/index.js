@@ -1,17 +1,18 @@
 /**
 *
-* StreamItem
+* GridItem
 *
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import ReactStars from 'react-stars'
 import moment from 'moment'
 import _ from 'lodash'
 import DiscoveryButton from '../../components/DiscoveryButton'
 
 /* eslint-disable camelcase */
-function StreamItem ({ url, maxScore }) {
+function GridItem ({ url, maxScore }) {
   const { id, href, img, title, im_score, time_on_tab, hit_utc } = url
   const rate = Math.ceil((im_score / maxScore) * 5)
   let discoveryKeys = []
@@ -46,9 +47,9 @@ function StreamItem ({ url, maxScore }) {
   )
 }
 
-StreamItem.propTypes = {
-  url: React.PropTypes.object,
-  maxScore: React.PropTypes.number
+GridItem.propTypes = {
+  url: PropTypes.object,
+  maxScore: PropTypes.number
 }
 
-export default StreamItem
+export default GridItem

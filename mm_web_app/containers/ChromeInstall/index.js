@@ -5,6 +5,7 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { inject, observer } from 'mobx-react'
 import { Section } from 'neal-react'
@@ -158,9 +159,9 @@ class ChromeInstall extends React.Component {
 }
 
 ChromeInstall.propTypes = {
-  install: React.PropTypes.func.isRequired,
-  title: React.PropTypes.string.isRequired,
-  description: React.PropTypes.string.isRequired
+  install: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired
 }
 
 export default ChromeInstall

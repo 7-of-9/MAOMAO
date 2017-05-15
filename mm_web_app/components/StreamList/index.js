@@ -5,90 +5,38 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
-import InfiniteScroll from 'react-infinite-scroller'
-import Masonry from 'react-masonry-component'
-import StreamItem from '../../components/StreamItem'
-import Loading from '../../components/Loading'
-import { guid } from '../../utils/hash'
 
-const LIMIT = 10
-const masonryOptions = {
-  itemSelector: '.grid-item',
-  transitionDuration: '0.4s'
-}
-
-class StreamList extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      hasMoreItems: false,
-      currentPage: 1
-    }
-    this.loadMore = this.loadMore.bind(this)
-  }
-
-  loadMore () {
-    const currentPage = this.state.currentPage + 1
-    const hasMoreItems = currentPage * LIMIT <= this.props.urls.length
-    this.setState({
-      hasMoreItems,
-      currentPage
+function StreamList ({ topics, currentTopic, onChange }) {
+  const items = []
+  if (topics && topics.length) {
+    _.forEach(topics, (topic) => {
+      if (topic && topic.term_id) {
+        items.push(<a className='stream-item' href='#'
+          onClick={(e) => {
+            e.preventDefault()
+            onChange(topic.term_id)
+          }} key={topic.term_id}
+        >
+          <span className={`${currentTopic === topic.term_id ? 'active' : ''}`} >
+            {topic.term_name} ({topic.url_ids.length})
+          </span>
+        </a>)
+      }
     })
   }
-
-  componentWillReceiveProps (props) {
-    if (this.props.urls.length === props.urls.length) {
-      const currentPage = this.state.currentPage + 1
-      const hasMoreItems = currentPage * LIMIT <= this.props.urls.length
-      this.setState({
-        hasMoreItems,
-        currentPage
-      })
-    } else {
-      this.setState({
-        hasMoreItems: true,
-        currentPage: 1
-      })
-    }
-  }
-
-  render () {
-    const { currentPage } = this.state
-    const { urls } = this.props
-    const items = []
-    if (urls && urls.length) {
-      const uniqUrls = _.uniqBy(urls, 'title')
-      const maxScore = _.maxBy(uniqUrls, 'im_score')
-      const sortedUrlsByHitUTC = _.reverse(_.sortBy(uniqUrls, [(url) => url.hit_utc]))
-      const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
-      items.push(<div key={guid()} style={{ clear: 'both' }} />)
-      _.forEach(currentUrls, (item) => {
-        items.push(<StreamItem key={item.id} url={item} maxScore={maxScore.im_score} />)
-      })
-    }
-    return (
-      <InfiniteScroll
-        pageStart={0}
-        loadMore={this.loadMore}
-        hasMore={this.state.hasMoreItems}
-        loader={<Loading isLoading />}
-        threshold={300}
-        >
-        <div className='main-inner'>
-          <Masonry className='container-masonry' options={masonryOptions}>
-            <div className='grid-row'>
-              {items}
-            </div>
-          </Masonry>
-        </div>
-      </InfiniteScroll>
-    )
-  }
- }
+  return (
+    <div className='stream-list'>
+      {items}
+    </div>
+  )
+}
 
 StreamList.propTypes = {
-  urls: React.PropTypes.array
+  topics: PropTypes.array.isRequired,
+  currentTopic: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired
 }
 
 export default StreamList

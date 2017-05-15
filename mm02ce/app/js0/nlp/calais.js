@@ -139,13 +139,13 @@ function calais_process(nlp) {
       t.common_to_entities_exact.length;
   });
   nlp.social_tags = _.sortBy(nlp.social_tags, function (a) { return a.words_common_to_title.length }).reverse();
-  if (nlp.social_tags[0].words_common_to_title.length > 0) {
+  if (nlp.social_tags[0].words_common_to_title && nlp.social_tags[0].words_common_to_title.length > 0) {
     nlp.social_tags[0].candidate_reason += " TITLE_BEST_MATCH ";
     nlp.social_tags[0].topic_specifc_score += 4;
   }
 
   nlp.social_tags = _.sortBy(nlp.social_tags, function (a) { return a.words_common_to_title_and_entities.length }).reverse();
-  if (nlp.social_tags[0].words_common_to_title_and_entities.length > 0) {
+  if (nlp.social_tags[0].words_common_to_title_and_entities && nlp.social_tags[0].words_common_to_title_and_entities.length > 0) {
     nlp.social_tags[0].candidate_reason += " TITLE_ENTITIES_BEST_MATCH ";
   }
 

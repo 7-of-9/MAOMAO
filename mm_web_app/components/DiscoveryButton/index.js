@@ -5,6 +5,7 @@
 */
 
 import React from 'react'
+import PropTypes from 'prop-types'
 import Link from 'next/link'
 
 function DiscoveryButton ({ keys }) {
@@ -22,7 +23,7 @@ function DiscoveryButton ({ keys }) {
 }
 
 DiscoveryButton.propTypes = {
-  keys: React.PropTypes.string
+  keys: PropTypes.string.isRequired
 }
 
 export default DiscoveryButton

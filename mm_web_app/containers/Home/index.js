@@ -16,6 +16,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import NProgress from 'nprogress'
+import DevTools from 'mobx-react-devtools'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import ChromeInstall from '../../containers/ChromeInstall'
@@ -26,6 +27,7 @@ import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import logger from '../../utils/logger'
+import { guid } from '../../utils/hash'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -38,7 +40,6 @@ const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
-    Singapore<br />
   </address>
 )
 
@@ -176,16 +177,16 @@ class Home extends React.Component {
           <div className='wrap-main wrap-toggle'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList className='slidebar-nav animated fadeInDown'>
-                <Tab>
+                <Tab key={guid()}>
                   <span className='stream-symbol' data-tooltip='Your Streams' data-position='right'><i className='fa fa-user' aria-hidden='true' /></span>
                   <span className='stream-text'>Your Streams</span>
                 </Tab>
-                <Tab>
+                <Tab key={guid()}>
                   <span className='stream-symbol' data-tooltip='Friend Streams' data-position='right'><i className='fa fa-users' aria-hidden='true' /></span>
                   <span className='stream-text'>Friend Streams</span>
                 </Tab>
               </TabList>
-              <TabPanel className='main-content'>
+              <TabPanel key={guid()} className='main-content'>
                 { !this.props.store.shareInfo && !this.props.store.isMobile &&
                 <ChromeInstall
                   description={description}
@@ -194,9 +195,9 @@ class Home extends React.Component {
                   />
                 }
                 <MyStreams />
-                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+                <Loading isLoading={this.props.store.isProcessing} />
               </TabPanel>
-              <TabPanel className='main-content'>
+              <TabPanel key={guid()} className='main-content'>
                 {!!this.props.store.shareInfo && !this.props.store.isMobile &&
                   <ChromeInstall
                     description={description}
@@ -205,18 +206,18 @@ class Home extends React.Component {
                   />
                 }
                 <FriendStreams />
-                <Loading isLoading={this.props.store.userHistoryResult && this.props.store.userHistoryResult.state === 'pending'} />
+                <Loading isLoading={this.props.store.isProcessing} />
               </TabPanel>
             </Tabs>
           </div>
         }
         <div className='footer-area'>
           <Footer brandName={brandName}
-            facebookUrl='http://www.facebook.com'
-            twitterUrl='http://www.twitter.com/'
+            facebookUrl='https://www.facebook.com/maomao.hiring'
             address={businessAddress}
           />
         </div>
+        <DevTools />
       </Page>
     )
   }
