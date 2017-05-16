@@ -11,21 +11,20 @@ import moment from 'moment'
 import _ from 'lodash'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import { guid } from '../../utils/hash'
-import logger from '../../utils/logger'
+
+const MAX_COLORS = 12
 
 function urlTopic (id, topics, onSelectTopic) {
   // TODO: click on name to filter by topic
-  logger.warn('urlTopic', id, topics)
   let currentTopics = []
   if (topics && topics.length) {
     currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(id) !== -1)
   }
-  logger.warn('currentTopics', currentTopics)
   const items = []
   _.forEach(currentTopics, (topic) => {
     items.push(
       <a key={guid()} onClick={() => { onSelectTopic && onSelectTopic(topic) }}>
-        <span className={`tags tags-color-${topics.indexOf(topic) + 1}`} rel='tag'>
+        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span className='text-tag'>{topic.name}</span>
         </span>
       </a>)

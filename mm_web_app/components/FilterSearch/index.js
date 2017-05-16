@@ -13,6 +13,8 @@ import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
+const MAX_COLORS = 12
+
 class FilterSearch extends React.Component {
   constructor (props) {
     super(props)
@@ -188,15 +190,27 @@ class FilterSearch extends React.Component {
             <ul className='search-box-list'>
               {
                 filterByTopic.map(item => (
-                  <li className='tags-color-1' key={guid()}><span className='text-topic'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveTopic(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></li>
+                  <li className={`tags-color-${(filterByTopic.indexOf(item) % MAX_COLORS) + 1}`} key={guid()}>
+                    <span className='text-topic'>{item.label}</span>
+                    <a className='btn-box-remove' onClick={() => { this.props.onRemoveTopic(item) }}>
+                      <i className='fa fa-remove' aria-hidden='true' />
+                    </a>
+                  </li>
                 ))
               }
               {
                 filterByUser.map(item => (
                   <li key={guid()} className='search-item'>
                     <div className='search-media'>
-                      <div className='search-media-left'><img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' /></div>
-                      <div className='search-media-body'><span className='full-name'>{item.label}</span> <a className='btn-box-remove' href='#' onClick={() => { this.props.onRemoveUser(item) }}><i className='fa fa-remove' aria-hidden='true' /></a></div>
+                      <div className='search-media-left'>
+                        <img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' />
+                      </div>
+                      <div className='search-media-body'>
+                        <span className='full-name'>{item.label}</span>
+                        <a className='btn-box-remove' onClick={() => { this.props.onRemoveUser(item) }}>
+                          <i className='fa fa-remove' aria-hidden='true' />
+                        </a>
+                      </div>
                     </div>
                   </li>
                 ))

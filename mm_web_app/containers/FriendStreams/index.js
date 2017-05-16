@@ -7,11 +7,9 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import latinize from 'latinize'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import ReactStars from 'react-stars'
-import Highlighter from 'react-highlight-words'
 import moment from 'moment'
 import _ from 'lodash'
 import logger from '../../utils/logger'
@@ -21,6 +19,7 @@ import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 20
+const MAX_COLORS = 12
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.4s'
@@ -52,7 +51,7 @@ function urlTopic (id, topics, onSelectTopic) {
   _.forEach(currentTopics, (topic) => {
     items.push(
       <a key={guid()} onClick={() => { onSelectTopic(topic) }}>
-        <span className={`tags tags-color-${topics.indexOf(topic) + 1}`} rel='tag'>
+        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span className='text-tag'>{topic.name}</span>
         </span>
       </a>)
@@ -64,8 +63,7 @@ function urlTopic (id, topics, onSelectTopic) {
   )
 }
 
-function filterUrls (data) {
-  const { urls, filterByTopic, filterByUser, rating } = data
+function filterUrls (urls, filterByTopic, filterByUser, rating) {
   logger.warn('urls', urls)
   if (filterByTopic.length > 0 || filterByUser.length > 0) {
     const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
@@ -91,28 +89,8 @@ function filterUrls (data) {
 @inject('store')
 @inject('ui')
 @observer
-class FriendStreams extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      suggestions: [],
-      hasMoreItems: false,
-      urls: [],
-      users: [],
-      topics: [],
-      filterByTopic: [],
-      filterByUser: [],
-      value: ''
-    }
-    this.loadMore = this.loadMore.bind(this)
-    this.onChangeRate = this.onChangeRate.bind(this)
-    this.onSelectTopic = this.onSelectTopic.bind(this)
-    this.onSelectUser = this.onSelectUser.bind(this)
-    this.onRemoveUser = this.onRemoveUser.bind(this)
-    this.onRemoveTopic = this.onRemoveTopic.bind(this)
-  }
-
-  componentDidMount () {
+class FriendStreams extends React.PureComponent {
+  render () {
     let urls = []
     let users = []
     let topics = []
@@ -133,109 +111,15 @@ class FriendStreams extends React.Component {
       users.push({ user_id, fullname, avatar, urlIds })
     })
     topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
-    const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
-    this.setState({
-      urls,
-      users,
-      topics,
-      hasMoreItems
-    })
-  }
-
-  componentWillUpdate (props) {
-    const friends = toJS(this.props.store.friendsStream)
-    const { users } = this.state
-    if (friends.length !== users.length) {
-      let urls = []
-      let users = []
-      let topics = []
-      _.forEach(friends, friend => {
-        const { user_id, fullname, avatar, list } = friend
-        const urlIds = []
-        const userUrls = []
-        _.forEach(list, item => {
-          userUrls.push(...item.urls)
-          urlIds.push(...item.urls.map(item => item.id))
-          if (item.topic_name) {
-            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
-          }
-        })
-        const maxScore = _.maxBy(userUrls, 'im_score')
-        urls.push(...userUrls.map(item => ({ ...item, rate: maxScore.im_score > 0 ? Math.floor(item.im_score * 5 / maxScore.im_score) : 0 })))
-        users.push({ user_id, fullname, avatar, urlIds })
-      })
-      topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
-      const hasMoreItems = this.state.currentPage * LIMIT <= urls.length
-      this.setState({
-        urls,
-        users,
-        topics,
-        hasMoreItems
-      })
-    }
-  }
-
-  onRemoveTopic (topic) {
-    const { filterByTopic } = this.state
-    this.setState({
-      filterByTopic: filterByTopic.filter(item => item.name !== topic.name),
-      currentPage: 1,
-      hasMoreItems: true
-    })
-  }
-
-  onSelectTopic (topic) {
-    const { filterByTopic } = this.state
-    if (!filterByTopic.find(item => item.label === topic.name)) {
-      this.setState({
-        filterByTopic: filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }]),
-        currentPage: 1,
-        hasMoreItems: true
-      })
-    }
-  }
-
-  onRemoveUser (user) {
-    const { filterByUser } = this.state
-    this.setState({ filterByUser: filterByUser.filter(item => item.user_id !== user.user_id), currentPage: 1, hasMoreItems: true })
-  }
-
-  onSelectUser (user) {
-    const { filterByUser } = this.state
-    if (!filterByUser.find(item => item.user_id === user.user_id)) {
-      this.setState({
-        filterByUser: filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }]),
-        currentPage: 1,
-        hasMoreItems: true })
-    }
-  }
-
-  onChangeRate (rating) {
-    logger.warn('onChangeRate', rating)
-    this.setState({ rating, currentPage: 1, hasMoreItems: true })
-  }
-
-  loadMore () {
-    const currentPage = this.state.currentPage + 1
-    const sortedUrls = filterUrls(this.state)
-    const hasMoreItems = currentPage * LIMIT <= sortedUrls.length
-    this.setState({
-      hasMoreItems,
-      currentPage
-    })
-  }
-
-  render () {
-    const { currentPage, topics } = this.state
-    const friends = toJS(this.props.store.friendsStream)
-    logger.warn('currentPage', currentPage)
+    let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
-    const sortedUrls = filterUrls(this.state)
+    const { filterByTopic, filterByUser, rating } = this.props.ui.friendStream
+    const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
     /* eslint-disable camelcase */
-    const currentUrls = sortedUrlsByHitUTC.slice(0, currentPage * LIMIT)
-    logger.warn('currentUrls', currentUrls, currentPage)
+    const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.friendStream.page + 1) * LIMIT)
+    logger.warn('currentUrls', currentUrls, this.props.ui.friendStream.page)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, time_on_tab, hit_utc, rate } = item
@@ -255,14 +139,8 @@ class FriendStreams extends React.Component {
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>
-                    <Highlighter
-                      activeIndex={title}
-                      highlightStyle={{ backgroundColor: '#ffd54f' }}
-                      sanitize={latinize}
-                      searchWords={[this.state.filterByUrl]}
-                      textToHighlight={title}
-                    />
-                    ({id})</a>
+                    {title} ({id})
+                  </a>
                 </h4>
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
@@ -280,8 +158,8 @@ class FriendStreams extends React.Component {
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
-                {urlOwner(id, this.state.users, this.onSelectUser)}
-                {urlTopic(id, this.state.topics, this.onSelectTopic)}
+                {urlOwner(id, users, this.onSelectUser)}
+                {urlTopic(id, topics, this.onSelectTopic)}
               </div>
             </div>
           </div>
@@ -289,9 +167,11 @@ class FriendStreams extends React.Component {
       })
     }
 
+    hasMoreItems = this.props.ui.myStream.page * LIMIT < sortedUrlsByHitUTC.length
+    logger.warn('hasMoreItems', hasMoreItems)
     const streamList = []
     _.forEach(topics, (topic) =>
-      streamList.push(<a key={guid()} href='#' onClick={() => this.onSelectTopic(topic)} className='stream-item'>
+      streamList.push(<a key={guid()} onClick={() => this.props.ui.selectTopic(topic)} className='stream-item'>
         <span>
           {topic.name} ({topic.urlIds.length} urls)
         </span>
@@ -300,7 +180,7 @@ class FriendStreams extends React.Component {
     const friendList = []
     _.forEach(friends, (user) =>
       friendList.push(<div key={guid()} className='user-item'>
-        <a href='#'>
+        <a onClick={() => { this.props.ui.selectUser(user) }}>
           <span className='user-share'>
             <span className='user-share-img'>
               <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
@@ -317,12 +197,14 @@ class FriendStreams extends React.Component {
       <div className='react-tabs react-tabs'>
         <div className='react-tabs__tab-panel react-tabs__tab-panel--selected' role='tab-panel' id='react-tabs-1'>
           <h1 className='heading-stream'>Friend Streams</h1>
+          {friendList.length > 0 &&
           <div className='friend-list'>
             <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
             <div className='user-list'>
               {friendList}
             </div>
           </div>
+          }
           <div className='stream-list'>
             {streamList}
           </div>
@@ -330,21 +212,25 @@ class FriendStreams extends React.Component {
             <nav className='navbar'>
               <ul className='nav navbar-nav' >
                 <FilterSearch
-                  {...this.state}
-                  rating={this.props.ui.friendStream.rating}
-                  onChangeRate={this.onChangeRate}
-                  onSelectTopic={this.onSelectTopic}
-                  onRemoveTopic={this.onRemoveTopic}
-                  onSelectUser={this.onSelectUser}
-                  onRemoveUser={this.onRemoveUser}
+                  urls={urls}
+                  topics={topics}
+                  users={users}
+                  rating={rating}
+                  filterByTopic={filterByTopic.slice()}
+                  filterByUser={filterByUser.slice()}
+                  onChangeRate={this.props.ui.changeRate}
+                  onSelectTopic={this.props.ui.selectTopic}
+                  onRemoveTopic={this.props.ui.removeTopic}
+                  onSelectUser={this.props.ui.selectUser}
+                  onRemoveUser={this.props.ui.removeUser}
                 />
               </ul>
             </nav>
           </div>
           <InfiniteScroll
             pageStart={this.props.ui.friendStream.page}
-            loadMore={this.loadMore}
-            hasMore={this.state.hasMoreItems}
+            loadMore={() => { this.props.ui.friendStream.page += 1 }}
+            hasMore={false}
             loader={<Loading isLoading />}
             threshold={600}
           >

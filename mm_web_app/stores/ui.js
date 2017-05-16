@@ -10,6 +10,8 @@ export class UIStore {
     currentTermId: -1
   }
   @observable friendStream = {
+    filterByTopic: [],
+    filterByUser: [],
     page: 0,
     rating: 1
   }
@@ -38,6 +40,35 @@ export class UIStore {
         this.removeNotification(deactivate.key)
       }
     })
+  }
+
+  @action removeTopic (topic) {
+    this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.name !== topic.name)
+    this.friendStream.page = 1
+  }
+
+  @action selectTopic (topic) {
+    if (!this.friendStream.filterByTopic.find(item => item.label === topic.name)) {
+      this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
+    }
+    this.friendStream.page = 1
+  }
+
+  @action removeUser (user) {
+    this.friendStream.filterByUser = this.friendStream.filterByUser.filter(item => item.user_id !== user.user_id)
+    this.friendStream.page = 1
+  }
+
+  @action selectUser (user) {
+    if (!this.friendStream.filterByUser.find(item => item.user_id === user.user_id)) {
+      this.friendStream.filterByUser = this.friendStream.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
+    }
+    this.friendStream.page = 1
+  }
+
+  @action changeRate (rating) {
+    this.friendStream.rating = rating
+    this.friendStream.page = 1
   }
 }
 

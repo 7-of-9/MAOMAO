@@ -2232,9 +2232,9 @@ eslint-config-airbnb-base@^11.2.0:
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/eslint-config-airbnb-base/-/eslint-config-airbnb-base-11.2.0.tgz#19a9dc4481a26f70904545ec040116876018f853"
 
-eslint-config-airbnb@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-airbnb/-/eslint-config-airbnb-15.0.0.tgz#3f610c8fedc6baec84d87af5c8124301389d45d8"
+eslint-config-airbnb@^15.0.1:
+  version "15.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-airbnb/-/eslint-config-airbnb-15.0.1.tgz#7b5188e5b7c74b9b2ce639fd5e1daba8fd761aed"
   dependencies:
     eslint-config-airbnb-base "^11.2.0"
 
@@ -2692,9 +2692,9 @@ function.prototype.name@^1.0.0:
     function-bind "^1.1.0"
     is-callable "^1.1.2"
 
-fuse.js@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-3.0.2.tgz#7a67fc646272b2ed90e53988bc256822c839371f"
+fuse.js@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-3.0.3.tgz#d5913ccb1b1a87ddf448b1436412e1885a175519"
 
 gauge@~2.7.1:
   version "2.7.4"

@@ -2,9 +2,10 @@ import { LIMIT, REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET } from '../containers/App
 import { fromPromise } from 'mobx-utils'
 const REDIDT_REFRESH_TOKEN = '69838591-jrgIILLyZ9z8M_5Z7pQXqXwZ2Z4'
 const dev = process.env.NODE_ENV !== 'production'
+const snoowrap = require('snoowrap')
+
 // Use reddit-oauth-helper to create an permanent token
 /* eslint new-cap: ["error", { "newIsCap": false }] */
-/* global snoowrap */
 export function redditListing (keyword, page) {
   const r = new snoowrap({
     userAgent: 'webapp:maomao:v0.0.3 (by u/dunghd)',

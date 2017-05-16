@@ -16,14 +16,12 @@ import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
-const LIMIT = 10
+const LIMIT = 20
 
 function getUrls (urls, topics, currentTermId) {
   let sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
   let urlIds = []
-
   const currentTopic = sortedTopicByUrls.find((item) => item.term_id === currentTermId)
-  logger.warn('currentTopic', currentTopic)
   if (currentTopic) {
     urlIds = currentTopic.url_ids
     return _.filter(urls, (item) => item.id && urlIds.indexOf(item.id) !== -1)
@@ -59,9 +57,6 @@ class MyStreams extends React.PureComponent {
         selectedMyStreamUrls = selectedMyStreamUrls.slice(0, (this.props.ui.myStream.page + 1) * LIMIT)
       }
       hasMoreItems = this.props.ui.myStream.page * LIMIT < selectedMyStreamUrls.length
-      logger.warn('selectedMyStreamUrls', selectedMyStreamUrls)
-      logger.warn('hasMoreItems', hasMoreItems)
-
       /* eslint-disable camelcase */
       if (accept_shares) {
         logger.warn('accept_shares', accept_shares)
@@ -75,7 +70,7 @@ class MyStreams extends React.PureComponent {
               <div className='user-share-inner'>
                 <p className='user-info'><span className='share-fullname'>{user.fullname}</span> has unlocked <span className='share-code'>{user.share_code}</span></p>
               </div>
-              <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true'></i> UnShare</a>
+              <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true' /> UnShare</a>
             </div>
           </div>
         </li>))
@@ -90,7 +85,7 @@ class MyStreams extends React.PureComponent {
           <div className='friend-list'>
             <p className='paragraph-descript'>You have shared <span className='number-share'>{friendAcceptedList.length}</span> streams with friends:</p>
             <div className='loading-detail'>
-              <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true'></i> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
+              <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true' /> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
             </div>
             <ToggleDisplay show={this.props.ui.showAcceptInvite}>
               <ul className='accepted-list'>
