@@ -7,6 +7,7 @@ const initialState = {
   appId: '',
   isEnable: false,
   isEnableXP: false,
+  isEnableXpInfo: false,
   isEnableIconText: false,
   isEnableIM: false,
   isYoutubeTest: false,
@@ -100,6 +101,7 @@ export default (state = initialState, action, auth, nlp) => {
     }
 
     case 'SWITCH_IM_SCORE':
+    case 'SWITCH_IM_XP_INFO':
     case 'SWITCH_ICON_TEXT':
     case 'SWITCH_XP':
     case 'YOUTUBE_TEST':
@@ -116,7 +118,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.5.36',
+        title: 'v0.5.37',
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });

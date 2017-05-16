@@ -8,6 +8,7 @@
 var isGuest = true;
 var enableTestYoutube = false;
 var enableImscore = false;
+var enableXpInfo = false;
 var enableIconText = false;
 var enableXP = false;
 var userId = -1;

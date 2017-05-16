@@ -72,7 +72,7 @@ const isAllowToShare = (url, records) => {
   return false;
 };
 
-const getCurrentTopics = (url, records, terms) => {
+const getCurrentTopics = (url, records, terms, isEnableXpInfo) => {
   const topics = [];
   if (records.length) {
     const existRecord = records.find(item => item.url === url);
@@ -83,7 +83,10 @@ const getCurrentTopics = (url, records, terms) => {
   if (terms.length) {
     const existRecord = terms.find(item => item.url === url);
     if (existRecord) {
-      topics.push(...existRecord.topics.map(item => ({ id: `${item.term_id}-beta-${item.term_name}`, name: item.term_name })));
+      topics.push(...existRecord.topics.map(item => ({
+        id: `${item.term_id}-beta-${item.term_name}`,
+        name: isEnableXpInfo ? `${item.term_name} [${item.dbg_info.substr(item.dbg_info.indexOf('S_norm='), 11)}]` : item.term_name,
+      })));
     }
   }
   return topics;
@@ -167,12 +170,12 @@ const render = (
   }
 
   if (auth.isLogin) {
-    const topics = getCurrentTopics(url, nlp.records, nlp.terms);
+    const topics = getCurrentTopics(url, nlp.records, nlp.terms, icon.isEnableXpInfo);
     if (isAllowToShare(url, nlp.records)) {
       const shareUrl = `${SITE_URL}/${getLink()}`;
       fbScrapeShareUrl(shareUrl);
       logger.warn('url', shareUrl);
-      const currentTopics = getCurrentTopics(url, nlp.records, nlp.terms);
+      const currentTopics = getCurrentTopics(url, nlp.records, nlp.terms, icon.isEnableXpInfo);
       logger.warn('currentTopics', currentTopics);
       return (
         <div className="popup-browser">
@@ -364,7 +367,9 @@ const enhance = compose(
       props.updateShareOption(val);
     },
     getLink: props => () => {
-      const currentTopics = getCurrentTopics(props.url, props.nlp.records, props.nlp.terms);
+      const currentTopics = getCurrentTopics(
+        props.url, props.nlp.records, props.nlp.terms, props.icon.isEnableXpInfo,
+      );
       let shareOption = props.shareOption;
       if (shareOption === '') {
         shareOption = (currentTopics[0] && currentTopics[0].id);
@@ -385,7 +390,9 @@ const enhance = compose(
           if (activeTab.status === 'complete' || url.length > 0) {
             props.isReady(true);
           }
-          const topics = getCurrentTopics(url, props.nlp.records, props.nlp.terms);
+          const topics = getCurrentTopics(
+            url, props.nlp.records, props.nlp.terms, props.icon.isEnableXpInfo,
+          );
           logger.warn('topics', topics);
           if (topics.length) {
             props.updateShareOption(topics[0].id);

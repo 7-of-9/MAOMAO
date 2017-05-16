@@ -112,6 +112,22 @@ function onClickHandler(info) {
         store.dispatch(data);
         break;
       }
+    case 'mm-btn-switch-xpinfo':
+      {
+        if (window.enableXpInfo) {
+          window.enableXpInfo = false;
+        } else {
+          window.enableXpInfo = true;
+        }
+        const data = {
+          type: 'SWITCH_IM_XP_INFO',
+          payload: {
+            isEnableXpInfo: window.enableXpInfo,
+          },
+        };
+        store.dispatch(data);
+        break;
+      }
     case 'mm-btn-switch-imscore':
       {
         if (window.enableImscore) {
@@ -328,6 +344,7 @@ window.onload = () => {
       payload: {
         isEnableIM: window.enableImscore,
         isEnableXP: window.enableXP,
+        isEnableXpInfo: window.enableXpInfo,
         isYoutubeTest: window.enableTestYoutube,
         isEnableIconText: window.enableIconText,
       },

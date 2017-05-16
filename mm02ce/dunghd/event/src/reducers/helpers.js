@@ -33,13 +33,14 @@ function ctxMenu() {
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], type: 'separator' });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXP });
+  chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-xpinfo', title: 'XP Debug Info', type: 'checkbox', checked: window.enableXpInfo });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-reset-tld', title: 'Reset TLD timer' });
 }
 
 export function ctxMenuLogin(userInfo, records) {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.36',
+    title: 'v0.5.37',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
@@ -63,7 +64,7 @@ export function ctxMenuLogin(userInfo, records) {
 export function ctxMenuLogout() {
   chrome.contextMenus.removeAll();
   chrome.contextMenus.create({
-    title: 'v0.5.36',
+    title: 'v0.5.37',
     contexts: ['browser_action'],
     id: 'mm-btn-version',
     enabled: false,
