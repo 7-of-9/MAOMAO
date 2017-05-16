@@ -196,7 +196,7 @@ class FilterSearch extends React.Component {
               }
               {
                 filterByUser.map(item => (
-                  <li key={guid()} className='search-item'>
+                  <li key={guid()} className='search-item tags-color-1'>
                     <div className='search-media'>
                       <div className='search-media-left'>
                         <img src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
