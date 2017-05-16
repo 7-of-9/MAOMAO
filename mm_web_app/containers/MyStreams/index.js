@@ -13,6 +13,7 @@ import _ from 'lodash'
 import GridView from '../../components/GridView'
 import StreamList from '../../components/StreamList'
 import Loading from '../../components/Loading'
+import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 20
@@ -79,19 +80,8 @@ class MyStreams extends React.PureComponent {
     return (
       <div className='mystreams'>
         <div className='fragment-hash'>
-          <div className='fragment-within'>
-            <h1 className='heading-stream'>Your Streams</h1>
-          </div>
-          {friendAcceptedList.length > 0 &&
-            <div>
-              <p className='paragraph-descript'>
-              You have shared <span className='number-share'>{friendAcceptedList.length}</span> streams with friends:
-              </p>
-              <div className='loading-detail'>
-                <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true' /> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
-              </div>
-            </div>
-          }
+          <h1 className='heading-stream'>Your Streams</h1>
+          <p className='paragraph-descript'>You have shared <span className='nlp_score'>{friendAcceptedList.length}</span> streams with friends: <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true' /> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button></p>
         </div>
         {friendAcceptedList && friendAcceptedList.length > 0 &&
         <div className='friend-list'>

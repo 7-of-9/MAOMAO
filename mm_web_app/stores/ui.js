@@ -57,8 +57,8 @@ export class UIStore {
 
   @action selectTopic (topic) {
     logger.info('selectTopic', topic, this.friendStream)
-    if (!this.friendStream.filterByTopic.find(item => item.label === topic.name)) {
-      this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
+    if (!this.friendStream.filterByTopic.find(item => item.label === topic.label)) {
+      this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.label !== topic.label).concat([{ value: topic.urlIds, label: topic.name }])
     }
     this.friendStream.page = 1
   }

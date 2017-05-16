@@ -197,10 +197,10 @@ class FriendStreams extends React.PureComponent {
       </div>))
     return (
       <div className='friendstreams'>
-        <div className='fragment-within'>
+        <div className='fragment-hash'>
           <h1 className='heading-stream'>Friend Streams</h1>
           {friendList.length > 0 &&
-          <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
+          <p>You have unlocked <span className='nlp_score'>{topics.length}</span> topics from <span className='nlp_score'>{friendList.length}</span> friends:</p>
             }
         </div>
         {friendList.length > 0 &&
