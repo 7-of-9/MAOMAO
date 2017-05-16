@@ -79,9 +79,9 @@ class MyStreams extends React.PureComponent {
     return (
       <div className='mystreams'>
         <div className='fragment-hash'>
-          <h1 className='heading-stream'>Your Streams</h1>
+          <h1 className='heading-stream animated fadeInUp'>Your Streams</h1>
           {friendAcceptedList.length > 0 &&
-          <p className='paragraph-descript'>
+          <p className='paragraph-descript animated fadeInUp'>
             You have shared <span className='nlp_score'>{friendAcceptedList.length}</span> streams with friends:
             <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}>
               <i className='fa fa-eye' aria-hidden='true' /> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail

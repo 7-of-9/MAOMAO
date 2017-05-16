@@ -664,6 +664,9 @@ img {
   text-align: center;
   .btn-share-detail {
     margin-left: 10px;
+    @media (max-width: 490px) {
+      margin-top: 15px;
+    }
   }
 }
 
