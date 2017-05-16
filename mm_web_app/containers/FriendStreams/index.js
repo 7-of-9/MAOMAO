@@ -176,7 +176,7 @@ class FriendStreams extends React.PureComponent {
     const friendList = []
     _.forEach(friends, (user) =>
       friendList.push(<div key={guid()} className='user-item'>
-        <a onClick={() => { this.props.ui.selectUser(user) }}>
+        <a onClick={() => { this.props.ui.selectUser(users.find(item => item.user_id === user.user_id)) }}>
           <span className='user-share'>
             <span className='user-share-img'>
               <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />

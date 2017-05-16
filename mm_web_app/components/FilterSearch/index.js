@@ -162,13 +162,12 @@ class FilterSearch extends React.Component {
 
   render () {
     const { value, suggestions } = this.state
-    const { filterByTopic, filterByUser } = this.props
+    const { filterByTopic, filterByUser, topics } = this.props
     const inputProps = {
       placeholder: 'Search...',
       value,
       onChange: this.onChange
     }
-
     return (
       <div className='input-group'>
         <div className='input-group-suggest'>
@@ -186,7 +185,7 @@ class FilterSearch extends React.Component {
             <ul className='search-box-list'>
               {
                 filterByTopic.map(item => (
-                  <li className={`tags-color-${(filterByTopic.indexOf(item) % MAX_COLORS) + 1}`} key={guid()}>
+                  <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={guid()}>
                     <span className='text-topic'>{item.label}</span>
                     <a className='btn-box-remove' onClick={() => { this.props.onRemoveTopic(item) }}>
                       <i className='fa fa-remove' aria-hidden='true' />
