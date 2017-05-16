@@ -8,15 +8,15 @@ the tab section
 .react-tabs {
   @include clearfix();
   .slidebar-nav {
-    padding: 0;
+    @include clearfix();
+    padding: 0 0 0 1px;
     margin: 0;
     list-style: none;
-    overflow: hidden;
     border-bottom: 1px solid #e1e5eb;
     .stream-symbol {
       display: block;
       color: #404040;
-      font-size: 2rem;
+      font-size: 1.3rem;
     }
     .stream-text {
       font-weight: bold;
@@ -24,17 +24,25 @@ the tab section
     .react-tabs__tab {
       @include transition(all 0.3s ease-in-out);
       @include box-shadow(none);
-      padding: 10px 21px 10px 22px;
+      position: relative;
+      margin: 0 -1px -1px 0;
       font-size: 0.875rem;
-      display: inline-block;
+      float: left;
+      display: block;
       color: #212121;
       border: 0;
+      border-top: 3px solid #fff;
+      border-left: 1px solid #e1e5eb;
       border-right: 1px solid #e1e5eb;
-      min-height: 68px;
       text-align: center;
       cursor: pointer;
-      &:first-child{
-        border-left: 1px solid #e1e5eb;
+      .stream-tabs {
+        padding: 8px 15px 9px;
+        border: 0;
+      }
+      @media (max-width: 590px) {
+        float: none;
+        display: inline-block;
       }
     }
     .react-tabs__tab--selected {
@@ -42,9 +50,13 @@ the tab section
       @include border-radius(0);
       color: #212121;
       background-color: #fff;
+      border-top: 3px solid #2db7f5;
       .stream-symbol,
       .stream-text {
         color: #2db7f5;
+      }
+      .stream-tabs {
+        background-color: #fff;
       }
     }
     @media (max-width: 590px) {

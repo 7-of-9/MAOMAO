@@ -196,7 +196,7 @@ class FriendStreams extends React.PureComponent {
     return (
       <div className='react-tabs react-tabs'>
         <div className='react-tabs__tab-panel react-tabs__tab-panel--selected' role='tab-panel' id='react-tabs-1'>
-          <h1 className='heading-stream'>Friend Streams</h1>
+              <h1 className='heading-stream'>Friend Streams</h1>
           {friendList.length > 0 &&
           <div className='friend-list'>
             <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>

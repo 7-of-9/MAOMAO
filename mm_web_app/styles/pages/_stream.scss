@@ -566,16 +566,12 @@ img {
 .heading-stream {
   margin: 30px 0 5px;
   padding: 0 20px;
+  font-size: 2rem;
   color: #2db7f5;
 }
 
 .friend-list {
   padding: 0 20px;
-}
-
-.loading-detail {
-  margin: 0 0 20px;
-  text-align: center;
 }
 
 .accepted-list {
@@ -662,6 +658,22 @@ img {
 
 .share-code {
   color: #999;
+}
+
+.fragment-hash {
+  @include clearfix();
+  @include equal_height();
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  .fragment-within {
+    margin-right: 20px;
+    float: left;
+    text-align: left;
+  }
+  .loading-detail {
+    overflow: hidden;
+  }
 }
 
 
