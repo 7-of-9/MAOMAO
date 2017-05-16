@@ -65,9 +65,11 @@ function urlTopic (id, topics, onSelectTopic) {
 
 function filterUrls (urls, filterByTopic, filterByUser, rating) {
   logger.warn('urls', urls)
-  if (filterByTopic.length > 0 || filterByUser.length > 0) {
-    const topicUrlIds = _.flatMap(filterByTopic, item => item.value)
-    const userUrlIds = _.flatMap(filterByUser, item => item.value)
+  const topics = toJS(filterByTopic)
+  const users = toJS(filterByUser)
+  if (topics.length > 0 || users.length > 0) {
+    const topicUrlIds = _.flatMap(topics, item => item.value)
+    const userUrlIds = _.flatMap(users, item => item.value)
     let foundIds = []
     if (topicUrlIds.length && userUrlIds.length) {
       foundIds = _.intersection(topicUrlIds, userUrlIds)
@@ -194,59 +196,57 @@ class FriendStreams extends React.PureComponent {
         </a>
       </div>))
     return (
-      <div className='react-tabs react-tabs'>
-        <div className='react-tabs__tab-panel react-tabs__tab-panel--selected' role='tab-panel' id='react-tabs-1'>
-          <div className='fragment-within'>
-            <h1 className='heading-stream'>Friend Streams</h1>
-            {friendList.length > 0 &&
-            <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
-            }
-          </div>
+      <div className='friendstreams'>
+        <div className='fragment-within'>
+          <h1 className='heading-stream'>Friend Streams</h1>
           {friendList.length > 0 &&
-            <div className='friend-list'>
-              <div className='user-list'>
-                {friendList}
-              </div>
-            </div>
-          }
-          <div className='stream-list'>
-            {streamList}
-          </div>
-          <div className='standand-sort'>
-            <nav className='navbar'>
-              <ul className='nav navbar-nav' >
-                <FilterSearch
-                  urls={urls}
-                  topics={topics}
-                  users={users}
-                  rating={rating}
-                  filterByTopic={filterByTopic.slice()}
-                  filterByUser={filterByUser.slice()}
-                  onChangeRate={this.props.ui.changeRate}
-                  onSelectTopic={this.props.ui.selectTopic}
-                  onRemoveTopic={this.props.ui.removeTopic}
-                  onSelectUser={this.props.ui.selectUser}
-                  onRemoveUser={this.props.ui.removeUser}
-                />
-              </ul>
-            </nav>
-          </div>
-          <InfiniteScroll
-            pageStart={this.props.ui.friendStream.page}
-            loadMore={() => { this.props.ui.friendStream.page += 1 }}
-            hasMore={false}
-            loader={<Loading isLoading />}
-            threshold={600}
-          >
-            <div className='main-inner'>
-              <Masonry className='container-masonry' options={masonryOptions}>
-                <div className='grid-row'>
-                  {items}
-                </div>
-              </Masonry>
-            </div>
-          </InfiniteScroll>
+          <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
+            }
         </div>
+        {friendList.length > 0 &&
+        <div className='friend-list'>
+          <div className='user-list'>
+            {friendList}
+          </div>
+        </div>
+          }
+        <div className='stream-list'>
+          {streamList}
+        </div>
+        <div className='standand-sort'>
+          <nav className='navbar'>
+            <ul className='nav navbar-nav' >
+              <FilterSearch
+                urls={urls}
+                topics={topics}
+                users={users}
+                rating={rating}
+                filterByTopic={toJS(filterByTopic)}
+                filterByUser={toJS(filterByUser)}
+                onChangeRate={(rate) => this.props.ui.changeRate(rate)}
+                onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
+                onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
+                onSelectUser={(user) => this.props.ui.selectUser(user)}
+                onRemoveUser={(user) => this.props.ui.removeUser(user)}
+                />
+            </ul>
+          </nav>
+        </div>
+        <InfiniteScroll
+          pageStart={this.props.ui.friendStream.page}
+          loadMore={() => { this.props.ui.friendStream.page += 1 }}
+          hasMore={false}
+          loader={<Loading isLoading />}
+          threshold={600}
+          >
+          <div className='main-inner'>
+            <Masonry className='container-masonry' options={masonryOptions}>
+              <div className='grid-row'>
+                {items}
+              </div>
+            </Masonry>
+          </div>
+        </InfiniteScroll>
       </div>
     )
   }

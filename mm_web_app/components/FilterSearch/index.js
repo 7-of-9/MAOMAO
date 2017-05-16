@@ -180,7 +180,7 @@ class FilterSearch extends React.Component {
             <ReactStars
               count={5}
               value={this.props.rating}
-              onChange={(selectValue) => { this.props.onChangeRate(selectValue) }}
+              onChange={this.props.onChangeRate}
               size={24}
               half={false}
               color2={'#ffd700'}

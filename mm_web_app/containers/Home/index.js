@@ -15,6 +15,7 @@ import { NotificationStack } from 'react-notification'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
+import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import DevTools from 'mobx-react-devtools'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
@@ -34,6 +35,7 @@ Router.onRouteChangeStart = (url) => {
 Router.onRouteChangeComplete = () => NProgress.done()
 Router.onRouteChangeError = () => NProgress.done()
 
+const dev = process.env.NODE_ENV !== 'production'
 const brandName = 'maomao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
@@ -119,6 +121,8 @@ class Home extends React.Component {
         currentTab: 1
       })
     }
+    // re-check install MM extenion by timeout
+    setTimeout(() => this.props.store.checkEnvironment(), 100)
   }
 
   render () {
@@ -165,14 +169,14 @@ class Home extends React.Component {
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
-        {!this.props.store.isLogin &&
+        <ToggleDisplay if={!this.props.store.isLogin}>
           <ChromeInstall
             description={description}
             title='Unlock YOUR FRIEND STREAM Now'
             install={this.inlineInstall}
           />
-        }
-        {this.props.store.isLogin &&
+        </ToggleDisplay>
+        <ToggleDisplay if={this.props.store.isLogin}>
           <div className='wrap-main wrap-toggle'>
             <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
               <TabList className='slidebar-nav animated fadeInDown'>
@@ -217,14 +221,14 @@ class Home extends React.Component {
               </TabPanel>
             </Tabs>
           </div>
-        }
+        </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}
             facebookUrl='https://www.facebook.com/maomao.hiring'
             address={businessAddress}
           />
         </div>
-        <DevTools />
+        {dev && <DevTools />}
       </Page>
     )
   }
