@@ -109,7 +109,7 @@ class FriendStreams extends React.PureComponent {
         }
       })
       const maxScore = _.maxBy(userUrls, 'im_score')
-      urls.push(...userUrls.map(item => ({ ...item, rate: maxScore.im_score > 0 ? Math.floor(item.im_score * 5 / maxScore.im_score) : 0 })))
+      urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
       users.push({ user_id, fullname, avatar, urlIds })
     })
     topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
@@ -160,8 +160,8 @@ class FriendStreams extends React.PureComponent {
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
-                {urlOwner(id, users, this.onSelectUser)}
-                {urlTopic(id, topics, this.onSelectTopic)}
+                {urlOwner(id, users, (user) => this.props.ui.selectUser(user))}
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic))}
               </div>
             </div>
           </div>
@@ -169,7 +169,8 @@ class FriendStreams extends React.PureComponent {
       })
     }
 
-    hasMoreItems = this.props.ui.myStream.page * LIMIT < sortedUrlsByHitUTC.length
+    hasMoreItems = this.props.ui.friendStream.page * LIMIT < sortedUrlsByHitUTC.length
+    logger.warn('page', this.props.ui.friendStream.page)
     logger.warn('hasMoreItems', hasMoreItems)
     const streamList = []
     _.forEach(topics, (topic) =>
@@ -235,7 +236,7 @@ class FriendStreams extends React.PureComponent {
         <InfiniteScroll
           pageStart={this.props.ui.friendStream.page}
           loadMore={() => { this.props.ui.friendStream.page += 1 }}
-          hasMore={false}
+          hasMore={hasMoreItems}
           loader={<Loading isLoading />}
           threshold={600}
           >
