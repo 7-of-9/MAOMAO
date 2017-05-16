@@ -168,10 +168,6 @@ class FilterSearch extends React.Component {
       value,
       onChange: this.onChange
     }
-    logger.warn('value', value)
-    logger.warn('suggestions', suggestions)
-    logger.warn('filterByTopic', filterByTopic)
-    logger.warn('filterByUser', filterByUser)
 
     return (
       <div className='input-group'>
@@ -203,7 +199,7 @@ class FilterSearch extends React.Component {
                   <li key={guid()} className='search-item'>
                     <div className='search-media'>
                       <div className='search-media-left'>
-                        <img src={item.avatar} alt={item.label} className='img-object' width='40' height='40' />
+                        <img src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
                       </div>
                       <div className='search-media-body'>
                         <span className='full-name'>{item.label}</span>

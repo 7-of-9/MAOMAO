@@ -1,5 +1,5 @@
 import { OrderedSet } from 'immutable'
-import { observable, action } from 'mobx'
+import { observable, action, toJS } from 'mobx'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
@@ -50,15 +50,17 @@ export class UIStore {
   }
 
   @action removeTopic (topic) {
-    logger.info('removeTopic', topic, this.friendStream)
-    this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.name !== topic.label)
+    logger.info('removeTopic topic', topic)
+    const filterByTopic = toJS(this.friendStream.filterByTopic)
+    logger.info('removeTopic filterByTopic', filterByTopic)
+    this.friendStream.filterByTopic = filterByTopic.filter(item => item.label !== topic.label)
     this.friendStream.page = 1
   }
 
   @action selectTopic (topic) {
     logger.info('selectTopic', topic, this.friendStream)
-    if (!this.friendStream.filterByTopic.find(item => item.label === topic.label)) {
-      this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.label !== topic.label).concat([{ value: topic.urlIds, label: topic.name }])
+    if (!this.friendStream.filterByTopic.find(item => item.label === topic.name)) {
+      this.friendStream.filterByTopic = this.friendStream.filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
     }
     this.friendStream.page = 1
   }
