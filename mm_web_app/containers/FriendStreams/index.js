@@ -316,9 +316,13 @@ class FriendStreams extends React.Component {
     return (
       <div className='react-tabs react-tabs'>
         <div className='react-tabs__tab-panel react-tabs__tab-panel--selected' role='tab-panel' id='react-tabs-1'>
-          <h1 className='heading-stream'>Friend Streams</h1>
+          <div className='fragment-hash'>
+            <div className='fragment-within'>
+              <h1 className='heading-stream'>Friend Streams</h1>
+              <p>You have unlocked <span className='number-share'>{topics.length}</span> topics from <span className='number-share'>{friendList.length}</span> friends:</p>
+            </div>
+          </div>
           <div className='friend-list'>
-            <p>You have unlocked {topics.length} topics from {friendList.length} friends:</p>
             <div className='user-list'>
               {friendList}
             </div>

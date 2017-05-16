@@ -85,19 +85,23 @@ class MyStreams extends React.PureComponent {
 
     return (
       <div className='mystreams'>
-        <h1 className='heading-stream'>Your Streams</h1>
-        {friendAcceptedList && friendAcceptedList.length > 0 &&
-          <div className='friend-list'>
+        <div className='fragment-hash'>
+          <div className='fragment-within'>
+            <h1 className='heading-stream'>Your Streams</h1>
             <p className='paragraph-descript'>You have shared <span className='number-share'>{friendAcceptedList.length}</span> streams with friends:</p>
-            <div className='loading-detail'>
-              <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true'></i> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
-            </div>
-            <ToggleDisplay show={this.props.ui.showAcceptInvite}>
-              <ul className='accepted-list'>
-                {friendAcceptedList}
-              </ul>
-            </ToggleDisplay>
           </div>
+          <div className='loading-detail'>
+            <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}><i className='fa fa-eye' aria-hidden='true'></i> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail</button>
+          </div>
+        </div>
+        {friendAcceptedList && friendAcceptedList.length > 0 &&          
+        <div className='friend-list'>
+          <ToggleDisplay show={this.props.ui.showAcceptInvite}>
+            <ul className='accepted-list'>
+              {friendAcceptedList}
+            </ul>
+          </ToggleDisplay>
+        </div>
         }
         <StreamList
           topics={sortedTopicByUrls}
