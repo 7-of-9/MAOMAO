@@ -148,6 +148,7 @@ $lab-icons: url('./images/icons-lab.png');
   float: left;
   color: #fff;
   margin: 3px 0 4px 0;
+  border-color: #11c759;
   background-color: #11c759;
   padding: 6px 12px;
   margin-bottom: 0;
@@ -180,6 +181,7 @@ $lab-icons: url('./images/icons-lab.png');
     cursor: pointer;
     text-decoration: none;
     color: #fff;
+    border-color: #2de475;
     background-color: #2de475;
   }
   &,
@@ -336,7 +338,9 @@ $lab-icons: url('./images/icons-lab.png');
 }
 
 .react-autosuggest__input {
-  font-family: Helvetica, sans-serif;
+  font-family: 'Roboto';
+  letter-spacing: normal;
+  text-transform: none;
   display: block;
   width: 100%;
   height: 34px;
@@ -361,6 +365,11 @@ $lab-icons: url('./images/icons-lab.png');
 
 .react-autosuggest__input::-webkit-input-placeholder {
   color: #999;
+  font-family: 'Roboto';
+  letter-spacing: normal;
+  font-weight: normal;
+  text-transform: none;
+  font-size: 14px;
 }
 
 .react-autosuggest__input[disabled],
@@ -392,7 +401,7 @@ fieldset[disabled] .react-autosuggest__input {
   width: 280px;
   border: 1px solid #aaa;
   background-color: #fff;
-  font-family: Helvetica, sans-serif;
+  font-family: 'Roboto';
   font-weight: 300;
   font-size: 16px;
   border-bottom-left-radius: 4px;
@@ -1298,10 +1307,12 @@ fieldset[disabled] .btn-logout.focus {
     padding: 8px 12px;
     min-width: 100px;
     background: #4fc3f7;
+    border-color: #4fc3f7;
     &:hover,
     &:focus,
     &:active {
       background: #039be5;
+      border-color: #039be5;
     }
     &,
     &:hover,

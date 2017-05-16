@@ -1,7 +1,6 @@
 @import 'fonts/Roboto/font';
 @import 'fonts/Courier New/font';
 @import 'fonts/Orbitron/font';
-
 body {
   letter-spacing: normal !important;
 }
@@ -28,6 +27,28 @@ body {
   font-family: 'Roboto';
   position: relative;
   z-index: 9999999999;
+  .btn,
+  button,
+  .input,
+  .select,
+  .textarea,
+  input,
+  select,
+  textarea {
+    font-family: 'Roboto';
+  }
+  .input,
+  .select,
+  .textarea,
+  input,
+  select,
+  textarea {
+    font-weight: normal;
+  }
+  .btn,
+  button {
+    letter-spacing: normal;
+  }
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
