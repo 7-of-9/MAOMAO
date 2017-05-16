@@ -5,7 +5,6 @@ import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import { StickyContainer, Sticky } from 'react-sticky'
-import NoSSR from 'react-no-ssr'
 import Router from 'next/router'
 import Link from 'next/link'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -201,22 +200,28 @@ class Discovery extends React.Component {
           <NavItem><Link href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
         </Navbar>
         <StickyContainer className='container'>
-          <Sticky style={{zIndex: 1000, backgroundColor: '#fff'}}>
-            <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
+          <Sticky>
+            {
+              ({style}) => {
+                return (
+                  <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}}>
+                    <SearchBar terms={terms} onChange={this.onChange} onSearch={this.onSearch} />
+                  </div>
+                )
+              }
+            }
           </Sticky>
-          <NoSSR onSSR={<Loading isLoading />}>
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadMore}
-              hasMore={this.props.store.hasMore}
-              className='container-fluid'
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.props.store.hasMore}
+            className='container-fluid'
               >
-              <Masonry className='container-masonry' options={masonryOptions}>
-                <div className='grid-row'>{mashUp(toJS(this.props.store))}</div>
-              </Masonry>
-              <Loading isLoading={this.props.store.pendings.length > 0} />
-            </InfiniteScroll>
-          </NoSSR>
+            <Masonry className='container-masonry' options={masonryOptions}>
+              <div className='grid-row'>{mashUp(toJS(this.props.store))}</div>
+            </Masonry>
+            <Loading isLoading={this.props.store.pendings.length > 0} />
+          </InfiniteScroll>
         </StickyContainer>
         <div className='footer-area'>
           <Footer brandName={brandName}
