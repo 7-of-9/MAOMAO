@@ -13,7 +13,6 @@ import _ from 'lodash'
 import GridView from '../../components/GridView'
 import StreamList from '../../components/StreamList'
 import Loading from '../../components/Loading'
-import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
 const LIMIT = 20

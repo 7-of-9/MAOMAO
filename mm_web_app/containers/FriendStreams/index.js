@@ -12,7 +12,6 @@ import InfiniteScroll from 'react-infinite-scroller'
 import ReactStars from 'react-stars'
 import moment from 'moment'
 import _ from 'lodash'
-import logger from '../../utils/logger'
 import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
@@ -64,7 +63,6 @@ function urlTopic (id, topics, onSelectTopic) {
 }
 
 function filterUrls (urls, filterByTopic, filterByUser, rating) {
-  logger.warn('urls', urls)
   const topics = toJS(filterByTopic)
   const users = toJS(filterByUser)
   if (topics.length > 0 || users.length > 0) {
@@ -80,9 +78,7 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
         foundIds = userUrlIds
       }
     }
-    logger.warn('foundIds', foundIds)
     const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= rating)
-    logger.warn('result', result)
     return _.uniqBy(result, 'title')
   }
   return _.uniqBy(urls.filter(item => item.rate >= rating), 'title')
@@ -121,7 +117,6 @@ class FriendStreams extends React.PureComponent {
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
     /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.friendStream.page + 1) * LIMIT)
-    logger.warn('currentUrls', currentUrls, this.props.ui.friendStream.page)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, time_on_tab, hit_utc, rate } = item
@@ -170,8 +165,6 @@ class FriendStreams extends React.PureComponent {
     }
 
     hasMoreItems = this.props.ui.friendStream.page * LIMIT < sortedUrlsByHitUTC.length
-    logger.warn('page', this.props.ui.friendStream.page)
-    logger.warn('hasMoreItems', hasMoreItems)
     const streamList = []
     _.forEach(topics, (topic) =>
       streamList.push(<a key={guid()} onClick={() => this.props.ui.selectTopic(topic)} className='stream-item'>

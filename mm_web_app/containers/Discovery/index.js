@@ -155,6 +155,11 @@ class Discovery extends React.Component {
     this.onSearch = this.onSearch.bind(this)
   }
 
+  componentDidMount () {
+    const terms = toJS(this.props.store.terms)
+    this.props.store.changeTerms(terms)
+  }
+
   loadMore () {
     this.props.store.loadMore()
   }
