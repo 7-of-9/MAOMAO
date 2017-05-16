@@ -104,7 +104,9 @@ function WelcomeModal({
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
           <a className="close_popup" onTouchTap={onClose}><i className="icons-close" /></a>
-          <div className="maomao-logo" />
+          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+            <div className="maomao-logo" />
+          </a>
           <h1 className="welcome-heading">
             <span className="logo-bg" />
           </h1>

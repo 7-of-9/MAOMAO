@@ -240,7 +240,9 @@ const ShareTopic = enhance(({
     />
   ));
   return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
-    <div className="maomao-logo" />
+    <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+      <div className="maomao-logo" />
+    </a>
     <a className="close_popup" onTouchTap={closeShare}><i className="icons-close" /></a>
     <Steps className="share-steps" current={currentStep - 1} direction="vertical" size="small">
       {steps}

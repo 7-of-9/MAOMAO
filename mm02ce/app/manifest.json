@@ -1,6 +1,7 @@
 {
-  "name": "maomao",
-  "version": "0.5.35",
+  "name": "maomao - peer-to-peer real time content sharing network",
+  "short_name": "maomao",
+  "version": "0.5.36",
   "description": "maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"
@@ -68,6 +69,7 @@
       "https://www.googleapis.com/auth/contacts.readonly"
     ]
   },
+  "homepage_url": "http://maomao.rocks",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7MBci5r4CUpLE3189gBTW1XJOUkokt8n+p03zYOwcHZk1ZclHFP/CMRnBsA9aFfZETenOQ97pliun5pMiowrmJ9nxf/kT+IERorcoYqa6XMqtE0fSX8td4EebQAdgS2kbjFp6inbwsjdTx0Q3ziokbCuP24gOWP+rSixg6N4e2XLJ3QGVsxlBaVsQkQ5vP/7KpaAeoPkkTg7MWQoBGkSgYe1wYR8ISrjsRM67URTbloDDMfQ8w4CdEyJ+7R/4mXxzxK7i4ODj2QAlgcDj5qRPXJN/7KhgADLlJe8OvyRSMQHIV5bTQ7GZfj1Wj32v+qEDBNWLnZehJVb2Ee5VZr3JQIDAQAB",
   "manifest_version": 2
 }

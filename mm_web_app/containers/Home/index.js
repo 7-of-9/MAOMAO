@@ -17,7 +17,6 @@ import _ from 'lodash'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
-import DevTools from 'mobx-react-devtools'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import ChromeInstall from '../../containers/ChromeInstall'
@@ -35,7 +34,6 @@ Router.onRouteChangeStart = (url) => {
 Router.onRouteChangeComplete = () => NProgress.done()
 Router.onRouteChangeError = () => NProgress.done()
 
-const dev = process.env.NODE_ENV !== 'production'
 const brandName = 'maomao'
 const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
@@ -228,7 +226,6 @@ class Home extends React.Component {
             address={businessAddress}
           />
         </div>
-        {dev && <DevTools />}
       </Page>
     )
   }

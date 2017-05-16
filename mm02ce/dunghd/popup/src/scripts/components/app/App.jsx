@@ -118,11 +118,11 @@ const getShareTopicCode = (code, key) => {
 };
 
 const userMenu = auth =>
-  <Dropdown className="dropdown-panel">
+  (<Dropdown className="dropdown-panel">
     <DropdownTrigger className="image-account bottom" data-tooltip={`${auth.info.name} (${auth.info.email})`} data-position="bottom">
       <img src={auth.info.picture} alt={auth.info.name} />
     </DropdownTrigger>
-  </Dropdown>;
+  </Dropdown>);
 
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
@@ -132,7 +132,7 @@ const render = (
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home">
+          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
             <span className="maomao-logo" />
             <span className="maomao-text" />
           </a>
@@ -154,7 +154,7 @@ const render = (
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="#home">
+          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
             <span className="maomao-logo" />
             <span className="maomao-text" />
           </a>
@@ -179,7 +179,7 @@ const render = (
           <div className="map-browser">
             {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
-              <a href="#home">
+              <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
@@ -240,7 +240,7 @@ const render = (
           <div className="map-browser">
             {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
-              <a href="#home">
+              <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
@@ -258,7 +258,7 @@ const render = (
         <div className="map-browser">
           {auth.isLogin && userMenu(auth, dispatch)}
           <h3 className="share-heading">
-            <a href="#home">
+            <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
               <span className="maomao-logo" />
               <span className="maomao-text" />
             </a>
@@ -280,7 +280,7 @@ const render = (
   return (
     <div className="popup-browser">
       <h3 className="share-heading">
-        <a href="#home">
+        <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
           <span className="maomao-logo" />
           <span className="maomao-text" />
         </a>
@@ -304,12 +304,12 @@ const App = ({
   dispatch, shareOption, changeShareOption,
   getLink, onFacebookLogin,
  }) =>
-  <div style={{ margin: '0 auto' }}>
+  (<div style={{ margin: '0 auto' }}>
     {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
     )}
-  </div>;
+  </div>);
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;
