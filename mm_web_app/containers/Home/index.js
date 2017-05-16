@@ -178,13 +178,17 @@ class Home extends React.Component {
               <TabList className='slidebar-nav animated fadeInDown'>
                 <Tab>
                   <div className='stream-tabs'>
-                    <span className='stream-symbol' data-tooltip='Your Streams' data-position='right'><i className='fa fa-user' aria-hidden='true' /></span>
+                    <span className='stream-symbol' data-tooltip='Your Streams' data-position='right'>
+                      <i className='fa fa-user' aria-hidden='true' />
+                    </span>
                     <span className='stream-text'>Your Streams</span>
                   </div>
                 </Tab>
                 <Tab>
                   <div className='stream-tabs'>
-                    <span className='stream-symbol' data-tooltip='Friend Streams' data-position='right'><i className='fa fa-users' aria-hidden='true' /></span>
+                    <span className='stream-symbol' data-tooltip='Friend Streams' data-position='right'>
+                      <i className='fa fa-users' aria-hidden='true' />
+                    </span>
                     <span className='stream-text'>Friend Streams</span>
                   </div>
                 </Tab>
