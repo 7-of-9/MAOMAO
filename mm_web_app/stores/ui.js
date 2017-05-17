@@ -6,24 +6,13 @@ import logger from '../utils/logger'
 let store = null
 
 export class UIStore {
-  @observable myStream = {}
-  @observable friendStream = {}
+  @observable filterByTopic = []
+  @observable filterByUser = []
+  @observable page = 0
+  @observable rating = 1
   @observable showSignInModal = false
   @observable showAcceptInvite = false
   @observable notifications = OrderedSet()
-
-  constructor (isServer) {
-    this.myStream = {
-      page: 0,
-      currentTermId: -1
-    }
-    this.friendStream = {
-      filterByTopic: [],
-      filterByUser: [],
-      page: 0,
-      rating: 1
-    }
-  }
 
   @action showSignIn () {
     this.showSignInModal = true
@@ -51,39 +40,39 @@ export class UIStore {
 
   @action removeTopic (topic) {
     logger.info('removeTopic topic', topic)
-    const filterByTopic = toJS(this.friendStream.filterByTopic)
+    const filterByTopic = toJS(this.filterByTopic)
     logger.info('removeTopic filterByTopic', filterByTopic)
-    this.friendStream.filterByTopic = filterByTopic.filter(item => item.label !== topic.label)
-    this.friendStream.page = 1
+    this.filterByTopic = filterByTopic.filter(item => item.label !== topic.label)
+    this.page = 1
   }
 
   @action selectTopic (topic) {
-    logger.info('selectTopic', topic, this.friendStream)
-    const filterByTopic = toJS(this.friendStream.filterByTopic)
+    logger.info('selectTopic', topic, this)
+    const filterByTopic = toJS(this.filterByTopic)
     logger.info('selectTopic filterByTopic', filterByTopic)
     if (!filterByTopic.find(item => item.label === topic.name)) {
-      this.friendStream.filterByTopic = filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
+      this.filterByTopic = filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
     }
-    this.friendStream.page = 1
+    this.page = 1
   }
 
   @action removeUser (user) {
-    logger.info('removeUser', user, this.friendStream)
-    this.friendStream.filterByUser = this.friendStream.filterByUser.filter(item => item.user_id !== user.user_id)
-    this.friendStream.page = 1
+    logger.info('removeUser', user, this)
+    this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id)
+    this.page = 1
   }
 
   @action selectUser (user) {
-    logger.info('selectUser', user, this.friendStream)
-    if (!this.friendStream.filterByUser.find(item => item.user_id === user.user_id)) {
-      this.friendStream.filterByUser = this.friendStream.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
+    logger.info('selectUser', user, this)
+    if (!this.filterByUser.find(item => item.user_id === user.user_id)) {
+      this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
     }
-    this.friendStream.page = 1
+    this.page = 1
   }
 
   @action changeRate (rating) {
-    this.friendStream.rating = rating
-    this.friendStream.page = 1
+    this.rating = rating
+    this.page = 1
   }
 }
 

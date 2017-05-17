@@ -90,29 +90,24 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
 @observer
 class Streams extends React.PureComponent {
   render () {
+    // populate urls and users
     let urls = []
     let users = []
     let topics = []
-    let friendAcceptedList = []
     const friends = toJS(this.props.store.friendsStream)
-    const { accept_shares } = toJS(this.props.store.myStream)
-    /* eslint-disable camelcase */
-    if (accept_shares) {
-      _.forEach(accept_shares, (user) =>
-        friendAcceptedList.push(<li key={guid()} className='share-item'>
-          <div className='user-share'>
-            <div className='user-share-img'>
-              <img width='30' height='30' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-            </div>
-            <div className='user-share-cnt'>
-              <div className='user-share-inner'>
-                <p className='user-info'><span className='share-fullname'>{user.fullname}</span> has unlocked <span className='share-code'>{user.share_code}</span></p>
-              </div>
-              <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true' /> UnShare</a>
-            </div>
-          </div>
-        </li>))
+    const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(this.props.store.myStream)
+
+    if (myUrls && myUrls.length) {
+      const maxScore = _.maxBy(myUrls, 'im_score')
+      urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+      users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
+      _.forEach(myTopics, item => {
+        if (item.term_id > 0 && item.url_ids.length > 0) {
+          topics.push({ name: item.term_name, urlIds: item.url_ids })
+        }
+      })
     }
+
     _.forEach(friends, friend => {
       const { user_id, fullname, avatar, list } = friend
       const urlIds = []
@@ -121,22 +116,31 @@ class Streams extends React.PureComponent {
         userUrls.push(...item.urls)
         urlIds.push(...item.urls.map(item => item.id))
         if (item.topic_name) {
-          topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+          const existTopic = topics.find(item => item.name === item.topic_name)
+          if (existTopic) {
+            existTopic.urlIds.push(...item.urls.map(item => item.id))
+          } else {
+            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+          }
         }
       })
       const maxScore = _.maxBy(userUrls, 'im_score')
       urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
       users.push({ user_id, fullname, avatar, urlIds })
     })
+
+    console.warn('topics', topics)
     topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
+    console.warn('topics', topics)
+
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
-    const { filterByTopic, filterByUser, rating } = this.props.ui.friendStream
+    const { filterByTopic, filterByUser, rating } = this.props.ui
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
     /* eslint-disable camelcase */
-    const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.friendStream.page + 1) * LIMIT)
+    const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, time_on_tab, hit_utc, rate } = item
@@ -184,31 +188,7 @@ class Streams extends React.PureComponent {
       })
     }
 
-    hasMoreItems = this.props.ui.friendStream.page * LIMIT < sortedUrlsByHitUTC.length
-    const streamList = []
-    _.forEach(topics, (topic) =>
-      streamList.push(<a key={guid()} onClick={() => this.props.ui.selectTopic(topic)} className='stream-item'>
-        <span>
-          {topic.name} ({topic.urlIds.length} urls)
-        </span>
-      </a>))
-
-    const friendList = []
-    _.forEach(friends, (user) =>
-      friendList.push(<div key={guid()} className='user-item'>
-        <a onClick={() => { this.props.ui.selectUser(users.find(item => item.user_id === user.user_id)) }}>
-          <span className='user-share'>
-            <span className='user-share-img'>
-              <img width='24' height='24' src={user.avatar || '/static/images/no-image.png'} alt={user.fullname} />
-            </span>
-            <span className='user-share-cnt'>
-              <span className='user-share-inner'>
-                <span className='user-info'><span className='share-fullname'>{user.fullname}</span> ({user.list.length} invitations)</span>
-              </span>
-            </span>
-          </span>
-        </a>
-      </div>))
+    hasMoreItems = this.props.ui.page * LIMIT < sortedUrlsByHitUTC.length
     return (
       <StickyContainer className='streams'>
         <Sticky>
@@ -239,8 +219,8 @@ class Streams extends React.PureComponent {
             }
         </Sticky>
         <InfiniteScroll
-          pageStart={this.props.ui.friendStream.page}
-          loadMore={() => { this.props.ui.friendStream.page += 1 }}
+          pageStart={this.props.ui.page}
+          loadMore={() => { this.props.ui.page += 1 }}
           hasMore={hasMoreItems}
           loader={<Loading isLoading />}
           threshold={600}
