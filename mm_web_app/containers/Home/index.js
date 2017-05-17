@@ -46,40 +46,11 @@ const businessAddress = (
 class Home extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      currentTab: 0
-    }
     this.onInstallSucess = this.onInstallSucess.bind(this)
     this.onInstallFail = this.onInstallFail.bind(this)
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-  }
-
-  handleSelect (index, last) {
-    this.setState({
-      currentTab: index
-    }, () => {
-      const currentTermId = this.props.store.currentTermId
-      if (index === 0) {
-        logger.warn('currentTermId', currentTermId)
-        if (currentTermId > 0) {
-          // hotfix to reload data
-          this.props.store.currentTermId = currentTermId
-        } else {
-          if (this.props.store.userHistory) {
-            const { topics } = toJS(this.props.store.myStream)
-            const sortedTopicByUrls = _.reverse(_.sortBy(_.filter(topics, (topic) => topic && topic.term_id > 0), [(topic) => topic.url_ids.length]))
-            // first for my stream
-            logger.warn('sortedTopicByUrls', sortedTopicByUrls)
-            if (currentTermId === -1 && sortedTopicByUrls.length > 0) {
-              this.props.store.currentTermId = sortedTopicByUrls[0].term_id
-            }
-          }
-        }
-      }
-    })
   }
 
   onInstallSucess () {
@@ -112,10 +83,7 @@ class Home extends React.Component {
 
   componentDidMount () {
     if (this.props.store.shareInfo) {
-      // default tab is friends stream
-      this.setState({
-        currentTab: 1
-      })
+      // TODO: ad user to filer result
     }
     // re-check install MM extenion by timeout
     setTimeout(() => this.props.store.checkEnvironment(), 100)
