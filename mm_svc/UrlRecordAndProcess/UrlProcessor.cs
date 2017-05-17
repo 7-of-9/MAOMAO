@@ -197,8 +197,8 @@ namespace mm_svc
                 //
                 var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
-                const double MIN_NORM = 0.8;
-                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > MIN_NORM), p => {
+                const double MIN_TSS_NORM = 0.1;
+                Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > MIN_TSS_NORM), p => {
 
                     // perf: taking quite some time here...
                     var term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.term_id, reprocess_all || reprocess_term_parents); //***
