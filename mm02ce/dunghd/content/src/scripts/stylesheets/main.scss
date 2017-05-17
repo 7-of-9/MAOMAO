@@ -48,6 +48,7 @@ body {
   .btn,
   button {
     letter-spacing: normal;
+    text-transform: none;
   }
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
