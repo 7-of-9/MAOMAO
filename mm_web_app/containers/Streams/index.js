@@ -91,48 +91,7 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
 class Streams extends React.PureComponent {
   render () {
     // populate urls and users
-    let urls = []
-    let users = []
-    let topics = []
-    const friends = toJS(this.props.store.friendsStream)
-    const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(this.props.store.myStream)
-
-    if (myUrls && myUrls.length) {
-      const maxScore = _.maxBy(myUrls, 'im_score')
-      urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
-      _.forEach(myTopics, item => {
-        if (item.term_id > 0 && item.url_ids.length > 0) {
-          topics.push({ name: item.term_name, urlIds: item.url_ids })
-        }
-      })
-    }
-
-    _.forEach(friends, friend => {
-      const { user_id, fullname, avatar, list } = friend
-      const urlIds = []
-      const userUrls = []
-      _.forEach(list, item => {
-        userUrls.push(...item.urls)
-        urlIds.push(...item.urls.map(item => item.id))
-        if (item.topic_name) {
-          const existTopic = topics.find(item => item.name === item.topic_name)
-          if (existTopic) {
-            existTopic.urlIds.push(...item.urls.map(item => item.id))
-          } else {
-            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
-          }
-        }
-      })
-      const maxScore = _.maxBy(userUrls, 'im_score')
-      urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      users.push({ user_id, fullname, avatar, urlIds })
-    })
-
-    console.warn('topics', topics)
-    topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
-    console.warn('topics', topics)
-
+    const { urls, users, topics } = toJS(this.props.store)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score

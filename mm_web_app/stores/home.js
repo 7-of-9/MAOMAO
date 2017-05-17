@@ -1,4 +1,5 @@
 import { action, reaction, when, computed, toJS, observable } from 'mobx'
+import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
@@ -9,11 +10,14 @@ import logger from '../utils/logger'
 let store = null
 
 export class HomeStore extends CoreStore {
-  normalizedData = {}
   @observable isProcessing = false
   @observable googleUser = {}
   @observable facebookUser = {}
-  @observable userHistory = {me: {}, shares: []}
+  @observable urls = []
+  @observable users = []
+  @observable topics = []
+  userHistory = {me: {}, shares: []}
+  normalizedData = {}
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
@@ -43,6 +47,46 @@ export class HomeStore extends CoreStore {
       })
     }
     return shares
+  }
+
+  @action findAllUrlsAndTopics () {
+    const { shares, me } = this.userHistory
+    const friends = toJS(shares)
+    const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
+    if (myUrls && myUrls.length) {
+      const maxScore = _.maxBy(myUrls, 'im_score')
+      this.urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+      this.users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
+      _.forEach(myTopics, item => {
+        if (item.term_id > 0 && item.url_ids.length > 0) {
+          this.topics.push({ name: item.term_name, urlIds: item.url_ids })
+        }
+      })
+    }
+
+    _.forEach(friends, friend => {
+      const { user_id, fullname, avatar, list } = friend
+      const urlIds = []
+      const userUrls = []
+      _.forEach(list, item => {
+        userUrls.push(...item.urls)
+        urlIds.push(...item.urls.map(item => item.id))
+        if (item.topic_name) {
+          const existTopic = this.topics.find(item => item.name === item.topic_name)
+          if (existTopic) {
+            existTopic.urlIds.push(...item.urls.map(item => item.id))
+          } else {
+            this.topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+          }
+        }
+      })
+      const maxScore = _.maxBy(userUrls, 'im_score')
+      this.urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+      this.users.push({ user_id, fullname, avatar, urlIds })
+    })
+
+    this.topics = _.uniqBy(this.topics, (item) => `${item.name}-${item.urlIds.length}`)
+    return { urls: this.urls, users: this.users, topics: this.topics }
   }
 
   @action googleConnect (info) {
@@ -139,6 +183,7 @@ export class HomeStore extends CoreStore {
         const normalizedData = normalizedHistoryData(toJS(this.userHistory))
         logger.warn('normalizedData', normalizedData)
         this.normalizedData = normalizedData
+        this.findAllUrlsAndTopics()
       }
     )
   }
