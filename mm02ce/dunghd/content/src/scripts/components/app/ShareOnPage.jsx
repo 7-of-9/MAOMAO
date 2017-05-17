@@ -35,6 +35,7 @@ function MaomaoShare() {
   let text = '';
   let backgroundColor = '#333';
   let iconColor = '#fff';
+  const containterSize = 64;
 
   let icons = {};
   const SharebuttonMargin = 7 * 2;
@@ -90,6 +91,8 @@ function MaomaoShare() {
       top = textDistance;
     }
     left = position.left - iconSize - 10;
+    // detect position left or right of paragraph
+    logger.info('left top', left, top, containterSize);
   }
 
   function moveTooltip() {
@@ -101,8 +104,7 @@ function MaomaoShare() {
 
   function drawTooltip() {
     icons = appendIcons();
-    setTooltipPosition();
-
+    setTooltipPosition(containterSize);
     const div = document.createElement('div');
     div.className = 'maomaoshare';
     div.style = `${'line-height:0;'
@@ -112,7 +114,9 @@ function MaomaoShare() {
       + `top:${top}px;`
       + `display:${settings.isReady ? 'block' : 'none'};`
       + `left:${left}px;`
-      + 'z-index: 999;'
+      + 'z-index: 9999;'
+      + `width: ${containterSize}px;`
+      + `height: ${containterSize}px;`
       + 'animation: vex-flyin 0.5s;'
       + 'transition:all .2s ease-in-out;'
       + 'box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;';

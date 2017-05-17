@@ -201,7 +201,6 @@ class Discovery extends React.Component {
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
-          <NavItem><Link href='/discovery' className='nav-link'><a href='/discovery'>Discovery</a></Link></NavItem>
           <NavItem><Link href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
         </Navbar>
         <StickyContainer className='container'>

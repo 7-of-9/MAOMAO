@@ -33,7 +33,7 @@ function ctxMenu() {
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], type: 'separator' });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-xp', title: 'XP', type: 'checkbox', checked: window.enableXP });
-  chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-xpinfo', title: 'XP Debug Info', type: 'checkbox', checked: window.enableXpInfo });
+  chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-xpinfo', title: 'Topics Debug Info', type: 'checkbox', checked: window.enableXpInfo });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-reset-tld', title: 'Reset TLD timer' });
 }
 

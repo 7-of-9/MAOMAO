@@ -8,22 +8,23 @@ import React, { PropTypes } from 'react'
 import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
 import { WithContext as ReactTags } from 'react-tag-input'
 import Form from './Form'
-import A from './A'
 import { InputWrapper, InputContainer } from './Input'
+// import A from './A'
 
-const TEST_SET_1 = ['Classical music', 'Musical', 'Musical compositions', 'Musical history', '1840s', 'Arts']
-const TEST_SET_2 = ['Hanna-Barbera', 'Warner Bros', 'Cartoon Network', 'Rivalry', 'Anthropomorphism']
-const TEST_SET_3 = ['Chess', 'Traditional games', 'Games', 'Board games', 'Game theory']
-const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 'Human behavior']
+// const TEST_SET_1 = ['Classical music', 'Musical', 'Musical compositions', 'Musical history', '1840s', 'Arts']
+// const TEST_SET_2 = ['Hanna-Barbera', 'Warner Bros', 'Cartoon Network', 'Rivalry', 'Anthropomorphism']
+// const TEST_SET_3 = ['Chess', 'Traditional games', 'Games', 'Board games', 'Game theory']
+// const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 'Human behavior']
 
 const SearchBar = ({ tags, onSearch, changeTags, handleDelete, handleAddition }) => (
   <Form onSubmit={onSearch}>
-    <div className='stream-list'>
+    {/* <div className='stream-list'>
       <A className='stream-item' onClick={() => { changeTags(TEST_SET_1) }} > <span>Test Set 1</span> </A> |
         <A className='stream-item' onClick={() => { changeTags(TEST_SET_2) }} > <span>Test Set 2</span> </A> |
         <A className='stream-item' onClick={() => { changeTags(TEST_SET_3) }} > <span>Test Set 3</span> </A> |
         <A className='stream-item' onClick={() => { changeTags(TEST_SET_4) }} > <span>Test Set 4</span> </A> |
       </div>
+      */}
     <InputWrapper className='search-bar'>
       <InputContainer>
         <ReactTags

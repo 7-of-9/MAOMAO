@@ -12,16 +12,14 @@ import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import { NotificationStack } from 'react-notification'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import _ from 'lodash'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
+import Streams from '../../containers/Streams'
 import ChromeInstall from '../../containers/ChromeInstall'
-import FriendStreams from '../../containers/FriendStreams'
-import MyStreams from '../../containers/MyStreams'
 import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
@@ -158,7 +156,6 @@ class Home extends React.Component {
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
-          <NavItem><Link prefetch href='/discovery' className='nav-link'><a href='/discovery'>Discovery</a></Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
@@ -176,48 +173,15 @@ class Home extends React.Component {
         </ToggleDisplay>
         <ToggleDisplay if={this.props.store.isLogin}>
           <div className='wrap-main wrap-toggle'>
-            <Tabs onSelect={this.handleSelect} selectedIndex={this.state.currentTab}>
-              <TabList className='slidebar-nav animated fadeInDown'>
-                <Tab>
-                  <div className='stream-tabs'>
-                    <span className='stream-symbol' data-tooltip='Your Streams' data-position='right'>
-                      <i className='fa fa-user' aria-hidden='true' />
-                    </span>
-                    <span className='stream-text'>Your Streams</span>
-                  </div>
-                </Tab>
-                <Tab>
-                  <div className='stream-tabs'>
-                    <span className='stream-symbol' data-tooltip='Friend Streams' data-position='right'>
-                      <i className='fa fa-users' aria-hidden='true' />
-                    </span>
-                    <span className='stream-text'>Friend Streams</span>
-                  </div>
-                </Tab>
-              </TabList>
-              <TabPanel className='main-content'>
-                { !this.props.store.shareInfo && !this.props.store.isMobile &&
-                <ChromeInstall
-                  description={description}
-                  title='Unlock YOUR FRIEND STREAM Now'
-                  install={this.inlineInstall}
-                  />
-                }
-                <MyStreams />
-                <Loading isLoading={this.props.store.isProcessing} />
-              </TabPanel>
-              <TabPanel className='main-content'>
-                {!!this.props.store.shareInfo && !this.props.store.isMobile &&
-                  <ChromeInstall
-                    description={description}
-                    title='Unlock YOUR FRIEND STREAM Now'
-                    install={this.inlineInstall}
-                  />
-                }
-                <FriendStreams />
-                <Loading isLoading={this.props.store.isProcessing} />
-              </TabPanel>
-            </Tabs>
+            { !this.props.store.isMobile &&
+            <ChromeInstall
+              description={description}
+              title='Unlock YOUR FRIEND STREAM Now'
+              install={this.inlineInstall}
+            />
+            }
+            <Streams />
+            <Loading isLoading={this.props.store.isProcessing} />
           </div>
         </ToggleDisplay>
         <div className='footer-area'>
