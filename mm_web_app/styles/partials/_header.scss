@@ -32,7 +32,8 @@ the header section
     }
     .navbar-toggler {
       cursor: pointer;
-      &:focus,&:hover {
+      &:focus,
+      &:hover {
         outline: 0;
         color: #2db7f5;
         border-color: #2db7f5;
@@ -55,6 +56,7 @@ the header section
           position: relative;
           z-index: 10;
           > a {
+            position: relative;
             margin: 1.6rem 0 0.3rem;
             color: #222;
             font-weight: 700;
@@ -70,6 +72,12 @@ the header section
             &:focus {
               color: #2db7f5;
               text-decoration: none;
+              .notifications-number {
+                -moz-animation:none;
+                -webkit-animation:none;
+                -moz-animation-play-state: paused;
+                -webkit-animation-play-state: paused;
+              }
             }
             &,
             &:hover,

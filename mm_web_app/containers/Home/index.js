@@ -123,6 +123,8 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
+          <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Streams <span className='notifications-number notifications-stream'>25</span></a></Link></NavItem>
+          <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Topic <span className='notifications-number notifications-topic'>70</span></a></Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
