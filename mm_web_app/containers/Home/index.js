@@ -155,7 +155,6 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
-          <NavItem><Link href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
           <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
@@ -172,17 +171,15 @@ class Home extends React.Component {
           />
         </ToggleDisplay>
         <ToggleDisplay if={this.props.store.isLogin}>
-          <div className='wrap-main wrap-toggle'>
-            { !this.props.store.isMobile &&
+          { !this.props.store.isMobile &&
             <ChromeInstall
               description={description}
               title='Unlock YOUR FRIEND STREAM Now'
               install={this.inlineInstall}
             />
             }
-            <Streams />
-            <Loading isLoading={this.props.store.isProcessing} />
-          </div>
+          <Streams />
+          <Loading isLoading={this.props.store.isProcessing} />
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}

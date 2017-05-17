@@ -7,7 +7,7 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import ToggleDisplay from 'react-toggle-display'
+import { StickyContainer, Sticky } from 'react-sticky'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import ReactStars from 'react-stars'
@@ -210,50 +210,34 @@ class Streams extends React.PureComponent {
         </a>
       </div>))
     return (
-      <div className='streams'>
-        <div className='fragment-hash'>
-          <div className='paragraph-descript animated fadeInUp'>
-            {
-              friendAcceptedList.length > 0 &&
-              <p>You have shared <span className='nlp_score'>{friendAcceptedList.length}</span> streams with friends.</p>
+      <StickyContainer className='streams'>
+        <Sticky>
+          {
+              ({style}) => {
+                return (
+                  <div style={{...style, margin: '0', zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
+                    <nav className='navbar'>
+                      <ul className='nav navbar-nav' >
+                        <FilterSearch
+                          urls={urls}
+                          topics={topics}
+                          users={users}
+                          rating={rating}
+                          filterByTopic={toJS(filterByTopic)}
+                          filterByUser={toJS(filterByUser)}
+                          onChangeRate={(rate) => this.props.ui.changeRate(rate)}
+                          onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
+                          onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
+                          onSelectUser={(user) => this.props.ui.selectUser(user)}
+                          onRemoveUser={(user) => this.props.ui.removeUser(user)}
+                        />
+                      </ul>
+                    </nav>
+                  </div>
+                )
+              }
             }
-            {
-              friendList.length > 0 &&
-              <p>You have unlocked <span className='nlp_score'>{topics.length}</span> topics from <span className='nlp_score'>{friendList.length}</span> friends.</p>
-            }
-            <button type='button' className='btn btn-share-detail' onClick={() => { this.props.ui.showAcceptInvite = !this.props.ui.showAcceptInvite }}>
-              <i className='fa fa-eye' aria-hidden='true' /> {!this.props.ui.showAcceptInvite ? 'View' : 'Hide'} detail
-              </button>
-          </div>
-        </div>
-        {friendAcceptedList && friendAcceptedList.length > 0 &&
-        <div className='friend-list'>
-          <ToggleDisplay show={this.props.ui.showAcceptInvite}>
-            <ul className='accepted-list'>
-              {friendAcceptedList}
-            </ul>
-          </ToggleDisplay>
-        </div>
-        }
-        <div className='standand-sort'>
-          <nav className='navbar'>
-            <ul className='nav navbar-nav' >
-              <FilterSearch
-                urls={urls}
-                topics={topics}
-                users={users}
-                rating={rating}
-                filterByTopic={toJS(filterByTopic)}
-                filterByUser={toJS(filterByUser)}
-                onChangeRate={(rate) => this.props.ui.changeRate(rate)}
-                onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
-                onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
-                onSelectUser={(user) => this.props.ui.selectUser(user)}
-                onRemoveUser={(user) => this.props.ui.removeUser(user)}
-                />
-            </ul>
-          </nav>
-        </div>
+        </Sticky>
         <InfiniteScroll
           pageStart={this.props.ui.friendStream.page}
           loadMore={() => { this.props.ui.friendStream.page += 1 }}
@@ -269,7 +253,7 @@ class Streams extends React.PureComponent {
             </Masonry>
           </div>
         </InfiniteScroll>
-      </div>
+      </StickyContainer>
     )
   }
 }
