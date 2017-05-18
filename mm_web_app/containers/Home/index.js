@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { toJS } from 'mobx'
 import { inject, observer } from 'mobx-react'
 import { NotificationStack } from 'react-notification'
+import Modal from 'react-modal'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
@@ -38,6 +39,15 @@ const businessAddress = (
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
   </address>
 )
+
+const customModalStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto'
+  }
+}
 
 @inject('store')
 @inject('ui')
@@ -82,10 +92,12 @@ class Home extends React.Component {
 
   componentDidMount () {
     if (this.props.store.shareInfo) {
-      // TODO: ad user to filer result
+      // TODO: add user to filer result
     }
     // re-check install MM extenion by timeout
-    setTimeout(() => this.props.store.checkEnvironment(), 100)
+    setTimeout(() => {
+      this.props.store.checkEnvironment()
+    }, 100)
   }
 
   render () {
@@ -132,6 +144,22 @@ class Home extends React.Component {
           {
               this.props.store.isLogin &&
               <NavItem>
+                <a onClick={() => { this.props.ui.openShareModal() }}>
+                  <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
+                </a>
+                <Modal
+                  isOpen={this.props.ui.showShareModal}
+                  onRequestClose={() => this.props.ui.closeShareModal()}
+                  portalClassName='ShareModal'
+                  style={customModalStyles}
+                  contentLabel='Manage sharing'>
+                  <div> Share Modal </div>
+                </Modal>
+              </NavItem>
+          }
+          {
+              this.props.store.isLogin &&
+              <NavItem>
                 <a data-toggle='dropdown'>
                   <i className='fa fa-list fa-2x' aria-hidden='true' />
                   {
@@ -141,7 +169,7 @@ class Home extends React.Component {
                 </a>
                 <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
                   {topics.map(topic => (
-                    <li key={guid()}><span className='topic-name'><i className="fa fa-angle-right" aria-hidden="true"></i> {topic.name}</span></li>
+                    <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
                   ))}
                 </ul>
               </NavItem>

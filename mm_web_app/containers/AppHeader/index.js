@@ -42,7 +42,7 @@ class AppHeader extends React.Component {
       firebase.auth().onAuthStateChanged(user => {
         if (user) {
           logger.warn('user', user)
-          return user.getToken()
+          return user.getIdToken()
           .then((token) => {
             /* global fetch */
             this.props.ui.closeModal()

@@ -12,14 +12,23 @@ export class UIStore {
   @observable rating = 1
   @observable showSignInModal = false
   @observable showAcceptInvite = false
+  @observable showShareModal = false
   @observable notifications = OrderedSet()
 
   @action showSignIn () {
     this.showSignInModal = true
   }
 
+  @action openShareModal () {
+    this.showShareModal = true
+  }
+
   @action closeModal () {
     this.showSignInModal = false
+  }
+
+  @action closeShareModal () {
+    this.showShareModal = false
   }
 
   @action removeNotification (uuid) {

@@ -16,10 +16,10 @@
   "dependencies": {
     "axios": "^0.16.1",
     "blueimp-md5": "^2.7.0",
-    "body-parser": "^1.17.1",
+    "body-parser": "^1.17.2",
     "bowser": "^1.6.1",
     "express": "^4.15.3",
-    "express-session": "^1.15.2",
+    "express-session": "^1.15.3",
     "firebase": "^4.0.0",
     "firebase-admin": "^5.0.0",
     "fuse.js": "^3.0.3",

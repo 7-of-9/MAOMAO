@@ -206,6 +206,10 @@ function onClickHandler(info) {
 
 chrome.contextMenus.onClicked.addListener(onClickHandler);
 
+/**
+ * Call API save IM_SCORE
+ * @param bool forceSave
+ */
 function syncImScore(forceSave) {
   chrome.tabs.query({
     active: true,
@@ -256,30 +260,7 @@ window.sessionObservable = mobx.observable({
 });
 
 mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  }, (tabs) => {
-    if (tabs != null && tabs.length > 0) {
-      log.warn('lastUpdate on tab', tabs[0]);
-      let session = window.session_get_by_tab(tabs[0]);
-      // fallback to get by url
-      if (!session) {
-        session = window.session_get_by_url(tabs[0].url);
-      }
-
-      if (session) {
-        window.session_stop_TOT(session);
-      }
-      syncImScore(false);
-      if (session && window.idleState === 'active') {
-        window.session_start_TOT(session);
-      }
-    } else {
-      log.warn('not found active tab');
-      syncImScore(false);
-    }
-  });
+  syncImScore(false);
 });
 
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
