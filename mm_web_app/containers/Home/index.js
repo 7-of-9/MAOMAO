@@ -9,10 +9,9 @@ import PropTypes from 'prop-types'
 import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
-import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
+import { inject, observer } from 'mobx-react'
 import { NotificationStack } from 'react-notification'
-import _ from 'lodash'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
@@ -24,7 +23,6 @@ import Loading from '../../components/Loading'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
-import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -103,6 +101,8 @@ class Home extends React.Component {
       }
     }
 
+    const { users, topics } = toJS(this.props.store)
+
     return (
       <Page>
         <Head>
@@ -123,9 +123,9 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
-          <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Streams <span className='notifications-number notifications-stream'>25</span></a></Link></NavItem>
-          <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Topic <span className='notifications-number notifications-topic'>70</span></a></Link></NavItem>
-          <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'>Hiring</a></Link></NavItem>
+          <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'><i className='fa fa-briefcase fa-2x' aria-hidden='true' /></a></Link></NavItem>
+          <NavItem><a href='/'><i className='fa fa-list fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{topics.length}</span></a></NavItem>
+          <NavItem><a href='/'><i className='fa fa-users fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{users.length}</span></a></NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack
