@@ -6,7 +6,6 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import Link from 'next/link'
 
 function DiscoveryButton ({ keys }) {
   let link = '/discovery'
@@ -14,11 +13,9 @@ function DiscoveryButton ({ keys }) {
     link = `/discovery?search=${keys}`
   }
   return (
-    <Link href={link}>
-      <a className='btn-discovery' href={link}>
-        <img width='16' height='16' src='/static/images/search-input.png' alt='Discovery' />
-      </a>
-    </Link>
+    <a className='btn-discovery' target='_blank' href={link}>
+      <img width='16' height='16' src='/static/images/search-input.png' alt='Discovery' />
+    </a>
   )
 }
 

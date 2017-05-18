@@ -85,6 +85,12 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
   return _.uniqBy(urls.filter(item => item.rate >= rating), 'title')
 }
 
+function parseDomain (link) {
+  /* global URL */
+  const url = new URL(link)
+  return url.hostname
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -109,19 +115,20 @@ class Streams extends React.PureComponent {
         }
         items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
+            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
             <div className='thumbnail'>
-              <div className='thumbnail-image'>
-                <a href={href} target='_blank'>
+              <a href={href} target='_blank'>
+                <div className='thumbnail-image'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
-                </a>
-                {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
-              </div>
+                </div>
+              </a>
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>
                     {title} ({id})
                   </a>
                 </h4>
+                <h5 className='caption-title'>{parseDomain(href)}</h5>
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>

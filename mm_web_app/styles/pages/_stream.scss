@@ -802,7 +802,7 @@ img {
     @include border-radius(3px);
     @include transform(translateY(-50px));
     @include transition(all 0.3s ease);
-    @include abs-pos ($top: auto, $right: auto, $bottom: 10px, $left: 12px);
+    @include abs-pos ($bottom: auto, $right: auto, $top: 10px, $left: 12px);
     z-index: 500;
     border: 0;
     width: 36px;
