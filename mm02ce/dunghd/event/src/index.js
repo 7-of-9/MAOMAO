@@ -261,12 +261,18 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
     currentWindow: true,
   }, (tabs) => {
     if (tabs != null && tabs.length > 0) {
-      const session = window.session_get_by_tab(tabs[0]);
+      log.warn('lastUpdate on tab', tabs[0]);
+      let session = window.session_get_by_tab(tabs[0]);
+      // fallback to get by url
+      if (!session) {
+        session = window.session_get_by_url(tabs[0].url);
+      }
+
       if (session) {
         window.session_stop_TOT(session);
       }
       syncImScore(false);
-      if (session) {
+      if (session && window.idleState === 'active') {
         window.session_start_TOT(session);
       }
     } else {
@@ -285,12 +291,17 @@ mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
     currentWindow: true,
   }, (tabs) => {
     if (tabs != null && tabs.length > 0) {
-      const session = window.session_get_by_tab(tabs[0]);
+      log.warn('active on tab', tabs[0]);
+      let session = window.session_get_by_tab(tabs[0]);
+      // fallback to get by url
+      if (!session) {
+        session = window.session_get_by_url(tabs[0].url);
+      }
       if (session) {
         window.session_stop_TOT(session);
       }
       syncImScore(true);
-      if (session) {
+      if (session && window.idleState === 'active') {
         window.session_start_TOT(session);
       }
     } else {
@@ -304,7 +315,29 @@ mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
 const ROUND_CLOCK = 30;
 setInterval(() => {
   if (Number(window.userId) > 0) {
-    syncImScore(true);
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    }, (tabs) => {
+      if (tabs != null && tabs.length > 0) {
+        log.warn('active on tab (timer 30s)', tabs[0]);
+        let session = window.session_get_by_tab(tabs[0]);
+        // fallback to get by url
+        if (!session) {
+          session = window.session_get_by_url(tabs[0].url);
+        }
+        if (session) {
+          window.session_stop_TOT(session);
+        }
+        syncImScore(true);
+        if (session && window.idleState === 'active') {
+          window.session_start_TOT(session);
+        }
+      } else {
+        log.warn('not found active tab');
+        syncImScore(true);
+      }
+    });
   }
 }, ROUND_CLOCK * 1000);
 
@@ -339,6 +372,12 @@ window.onload = () => {
     store.dispatch({
       type: 'AUTO_LOGIN',
     });
+
+    if (dev) {
+      window.enableImscore = true;
+      window.enableXpInfo = true;
+      window.enableIconText = true;
+    }
     store.dispatch({
       type: 'RESET_SETTINGS',
       payload: {

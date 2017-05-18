@@ -173,9 +173,9 @@ function session_get_by_url(url) {
     log.info('%c (get_session_by_url - existing: ' + url + ')', session_style);
     return existing_session[0];
   } else if (existing_session.length == 0)
-    log.error('%c ### get_session_by_url ' + url + ' - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
+    log.warn('%c ### get_session_by_url ' + url + ' - GOT NO URL MATCH! shouldn\'t happen.', session_style_err);
   else
-    log.error('%c ### get_session_by_url ' + url + ' - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
+    log.warn('%c ### get_session_by_url ' + url + ' - GOT >1 URL MATCH! shouldn\'t happen.', session_style_err);
   return null;
 }
 
@@ -338,9 +338,9 @@ function session_stop_TOT(session) {
       log.warn('session_stop_TOT! session.TOT_cur_start_at=' + session.TOT_cur_start_at);
 
       if (isNaN(session.TOT_cur_stop_at))
-        log.error('%c > TOT.stop: TOT_cur_stop_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
+        log.warn('%c > TOT.stop: TOT_cur_stop_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
       if (isNaN(session.TOT_cur_start_at))
-        log.error('%c > TOT.stop: TOT_cur_start_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
+        log.warn('%c > TOT.stop: TOT_cur_start_at NaN' + '[' + session.url + '] sid=' + session.sid, session_style_err);
 
       var tot_delta_millis = session.TOT_cur_stop_at - session.TOT_cur_start_at;
       if (!isNaN(tot_delta_millis)) {
@@ -349,7 +349,7 @@ function session_stop_TOT(session) {
         session.TOT_cur_stop_at = 0;
         log.info('%c > TOT.stop: delta=' + tot_delta_millis + ' (new: ' + session.TOT_total_millis / 1000 + ' s)' + '[' + session.url + '] sid=' + session.sid, session_style);
       } else
-        log.error('%c > TOT.stop: tot_delta_millis NaN' + '[' + session.url + ']', session_style_err);
+        log.warn('%c > TOT.stop: tot_delta_millis NaN' + '[' + session.url + ']', session_style_err);
     } else
       log.info('%c > TOT.stop: nop - not started [' + session.url + '] sid=' + session.sid, session_style);
 

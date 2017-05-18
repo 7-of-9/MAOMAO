@@ -66,7 +66,6 @@ function animationIcon(tabId, round) {
   var timer = setInterval(function () {
     var path = sizes[counter % sizes.length];
     counter -= 1;
-    log.warn('counter', counter, path);
     if (counter < 0) {
       isFlashingDog = false;
       clearInterval(timer);
@@ -102,7 +101,7 @@ function setIconApp(rawUrl, image, msg, color) {
   var currentTab = tabmap.find(function (item) {
     return item && item.url === rawUrl;
   });
-  log.warn('currentTab', rawUrl, tabmap, currentTab);
+  log.info('currentTab', rawUrl, tabmap, currentTab);
 
   chrome.browserAction.setIcon({
     path: 'img/ps_sirius_dog_' + image + '.png',

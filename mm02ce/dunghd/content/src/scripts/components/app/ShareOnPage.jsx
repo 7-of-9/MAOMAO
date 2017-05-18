@@ -128,7 +128,8 @@ function MaomaoShare() {
   function handleEvent() {
     function hasSelection() {
       const selectText = window.getSelection().toString().trim();
-      return !!selectText && selectText.length > 0;
+      const isSelectMaoMaoExtensionHTML = document.getElementById('maomao-extension-anchor').contains(window.getSelection().anchorNode);
+      return !!selectText && selectText.length > 0 && !isSelectMaoMaoExtensionHTML;
     }
     function hasTooltipDrawn() {
       return !!document.querySelector('.maomaoshare');

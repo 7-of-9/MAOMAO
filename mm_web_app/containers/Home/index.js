@@ -124,8 +124,30 @@ class Home extends React.Component {
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'><i className='fa fa-briefcase fa-2x' aria-hidden='true' /></a></Link></NavItem>
-          <NavItem><a href='/'><i className='fa fa-list fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{topics.length}</span></a></NavItem>
-          <NavItem><a href='/'><i className='fa fa-users fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{users.length}</span></a></NavItem>
+          {
+            this.props.store.isLogin &&
+            <NavItem>
+              <a href='/'>
+                <i className='fa fa-list fa-2x' aria-hidden='true' />
+                {
+                topics.length > 0 &&
+                <span className='notifications-number notifications-topic'>{topics.length}</span>
+                }
+              </a>
+            </NavItem>
+          }
+          {
+            this.props.store.isLogin &&
+            <NavItem>
+              <a href='/'>
+                <i className='fa fa-users fa-2x' aria-hidden='true' />
+                {
+                users.length > 0 &&
+                <span className='notifications-number notifications-topic'>{users.length}</span>
+                }
+              </a>
+            </NavItem>
+          }
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack

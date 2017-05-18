@@ -277,7 +277,6 @@ const generateShareTopics = data => (
   (dispatch, getState) => {
     const { auth: { userId, userHash }, code: { topics } } = getState();
     const { topics: topicsInput } = data.payload;
-    logger.warn('topicsInput', topicsInput);
     if (topicsInput && topicsInput.length) {
       topicsInput.forEach(({ term_id, term_name }) => {
         const findTopicCode = topics.find(item => item && item.id === term_id);

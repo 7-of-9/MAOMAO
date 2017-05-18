@@ -1,6 +1,6 @@
+import logger from './logger';
 // tracking latest record for by url
 const histories = {};
-
 /**
  * get im_score base url
  */
@@ -32,12 +32,15 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
   const now = new Date().toISOString();
   const url = window.bglib_remove_hash_url(rawUrl);
   const data = Object.assign({}, getImScore(sessionObservable, url));
-
+  logger.warn('saveImScore histories', histories);
+  logger.warn('saveImScore url', url);
   // find which changes from last time
-  if (histories[url]) {
-    data.im_score -= Number(histories[url].im_score);
-    data.audible_pings -= Number(histories[url].audible_pings);
-    data.time_on_tab -= Number(histories[url].time_on_tab || 0);
+  const lastRecord = histories[url];
+  if (lastRecord) {
+    logger.warn('saveImScore lastRecord', lastRecord);
+    data.im_score -= Number(lastRecord.im_score);
+    data.audible_pings -= Number(lastRecord.audible_pings);
+    data.time_on_tab -= Number(lastRecord.time_on_tab);
   }
 
   // fix time_on_tab is null
@@ -49,12 +52,12 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
   if (urlOnSession) {
     data.document_head_hash = urlOnSession.document_head_hash;
   }
-
+  logger.warn('saveImScore data', data);
   // Only save when im_score change
-  if (Number(data.im_score) > 0) {
+  if (Number(data.im_score) > 0 && Number(data.time_on_tab) > 0) {
+    histories[url] = data;
     apiSaveImScore(userId, hash, data,
       (error) => {
-        histories[url] = data;
         store.dispatch({
           type: 'IM_SAVE_ERROR',
           payload: {
@@ -68,7 +71,6 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
         });
       },
       (result) => {
-        histories[url] = data;
         store.dispatch({
           type: 'IM_SAVE_SUCCESS',
           payload: {

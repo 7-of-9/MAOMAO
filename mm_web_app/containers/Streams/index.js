@@ -18,7 +18,7 @@ import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
 
-const LIMIT = 20
+const LIMIT = 10
 const MAX_COLORS = 12
 const masonryOptions = {
   itemSelector: '.grid-item',
