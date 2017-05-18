@@ -124,30 +124,89 @@ class Home extends React.Component {
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem><Link prefetch href='/hiring' className='nav-link'><a href='/hiring'><i className='fa fa-briefcase fa-2x' aria-hidden='true' /></a></Link></NavItem>
-          {
-            this.props.store.isLogin &&
-            <NavItem>
-              <a href='/'>
-                <i className='fa fa-list fa-2x' aria-hidden='true' />
-                {
-                topics.length > 0 &&
-                <span className='notifications-number notifications-topic'>{topics.length}</span>
-                }
-              </a>
-            </NavItem>
-          }
-          {
-            this.props.store.isLogin &&
-            <NavItem>
-              <a href='/'>
-                <i className='fa fa-users fa-2x' aria-hidden='true' />
-                {
-                users.length > 0 &&
-                <span className='notifications-number notifications-topic'>{users.length}</span>
-                }
-              </a>
-            </NavItem>
-          }
+          <NavItem>
+            <a href='javascript:void(0)' data-toggle='dropdown'><i className='fa fa-list fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{topics.length}</span></a>
+            <ul className='dropdown-menu dropdown-modifier pull-right'>
+              <li>
+                <div className='user-share'>
+                  <div className='user-share-img'>
+                    <img width='30' height='30' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1098332_526239880830644_611792346_n.jpg?oh=a8613e2896f4ad275da640f36bc72ac1&oe=599AC622' alt='' />
+                  </div>
+                  <div className='user-share-cnt'>
+                    <div className='user-share-inner'>
+                      <p className='user-info'>
+                        <span className='share-fullname'>Dang Cong Dao</span> has unlocked 
+                        <span className='share-code'> 094JJGG</span>
+                      </p>
+                    </div>
+                    <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true' /> UnShare</a>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className='user-share'>
+                  <div className='user-share-img'>
+                    <img width='30' height='30' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' />
+                  </div>
+                  <div className='user-share-cnt'>
+                    <div className='user-share-inner'>
+                      <p className='user-info'>
+                        <span className='share-fullname'>Đức Dũng Huỳnh</span> has unlocked 
+                        <span className='share-code'> 094JJGG</span>
+                      </p>
+                    </div>
+                    <a className='btn-unshare' href='#'><i className='fa fa-share-alt' aria-hidden='true' /> UnShare</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </NavItem>
+          <NavItem>
+            <a href='javascript:void(0)' data-toggle='dropdown'><i className='fa fa-users fa-2x' aria-hidden='true' /> <span className='notifications-number notifications-topic'>{users.length}</span></a>
+            <ul className='dropdown-menu dropdown-modifier  pull-right'>
+              <li>
+                <div className='user-share'>
+                  <div className='user-share-img'>
+                    <img width='24' height='24' src='/static/images/no-avatar.png' alt='' />
+                  </div>
+                  <div className='user-share-cnt'>
+                    <div className='user-share-inner'>
+                      <p className='user-info'>
+                      <span className='share-fullname'>Jack Son</span> (7 invitations)</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className='user-share'>
+                  <div className='user-share-img'>
+                    <img width='24' height='24' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' />
+                  </div>
+                  <div className='user-share-cnt'>
+                    <div className='user-share-inner'>
+                      <p className='user-info'>
+                        <span className='share-fullname'>Dominic Morris</span> (7 invitations)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className='user-share'>
+                  <div className='user-share-img'>
+                    <img width='24' height='24' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' />
+                  </div>
+                  <div className='user-share-cnt'>
+                    <div className='user-share-inner'>
+                      <p className='user-info'>
+                        <span className='share-fullname'>Đức Dũng Huỳnh</span> (7 invitations)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </NavItem>
           <AppHeader notify={this.addNotification} />
         </Navbar>
         <NotificationStack

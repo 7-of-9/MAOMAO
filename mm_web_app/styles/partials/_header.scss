@@ -30,6 +30,26 @@ the header section
         }
       }
     }
+    .dropdown-menu {
+      a {
+        padding: 0;
+        white-space: normal;
+      }
+      a.btn-unshare {
+        color: #11c759;
+        &:hover,
+        &:focus,
+        &:active {
+          color: #018e39;
+        }
+      }
+      &.dropdown-modifier {
+        padding: 5px 0;
+        max-height: 423px;
+        overflow: hidden;
+        overflow-y: auto;
+      }
+    }
     .navbar-toggler {
       cursor: pointer;
       &:focus,
@@ -52,18 +72,22 @@ the header section
       .nav {
         > .nav-item {
           padding: 0 1rem;
-          white-space: nowrap;
           position: relative;
           z-index: 10;
+          white-space: nowrap;
           > a {
             position: relative;
-            margin: 1.6rem 0 0.3rem;
+            margin: 1.3rem 0 0.3rem;
             color: #222;
             font-weight: 700;
             font-size: 0.875rem;
             line-height: 1rem;
             display: block;
             text-transform: uppercase;
+            .fa-briefcase,
+            .fa-list {
+              font-size: 2.1rem;
+            }
             &::before {
               content: '';
               height: 100%;
@@ -73,8 +97,8 @@ the header section
               color: #2db7f5;
               text-decoration: none;
               .notifications-number {
-                -moz-animation:none;
-                -webkit-animation:none;
+                -moz-animation: none;
+                -webkit-animation: none;
                 -moz-animation-play-state: paused;
                 -webkit-animation-play-state: paused;
               }
@@ -266,8 +290,11 @@ the header section
         display: block;
         color: #222;
         text-decoration: none;
+        cursor: pointer;
         img {
           @include border-radius(50%);
+          -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
           width: 33px;
           height: 33px;
         }
@@ -303,6 +330,12 @@ the header section
         }
       }
       .dropdown-menu {
+        li {
+          white-space: nowrap;
+        }
+        a {
+          white-space: nowrap;
+        }
         a,
         .btn-logout {
           padding: 0.5rem;
