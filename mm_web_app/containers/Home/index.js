@@ -141,7 +141,7 @@ class Home extends React.Component {
                 </a>
                 <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
                   {topics.map(topic => (
-                    <li key={guid()}>{topic.name}</li>
+                    <li key={guid()}><span className='topic-name'><i className="fa fa-angle-right" aria-hidden="true"></i> {topic.name}</span></li>
                   ))}
                 </ul>
               </NavItem>

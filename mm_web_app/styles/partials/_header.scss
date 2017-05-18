@@ -31,6 +31,17 @@ the header section
       }
     }
     .dropdown-menu {
+      .topic-name {
+        padding: 7px 10px;
+        display: block;
+        text-align: left;
+        font-family: 'Orbitron-Light';
+        font-size: 0.75rem;
+        &:hover,
+        &:focus {
+          background-color: #e6e6e6;
+        }
+      }
       a {
         padding: 0;
         white-space: normal;
