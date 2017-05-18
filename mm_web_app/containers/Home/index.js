@@ -138,7 +138,12 @@ class Home extends React.Component {
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem>
             <Link prefetch href='/hiring' className='nav-link'>
-              <a href='/hiring'><i className='fa fa-briefcase fa-2x' aria-hidden='true' /></a>
+              <a href='/hiring'>
+                <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
+                <span className='notifications-number notifications-topic'>
+                  <i className='fa fa-bullhorn' aria-hidden='true' />
+                </span>
+              </a>
             </Link>
           </NavItem>
           {
