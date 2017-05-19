@@ -25,6 +25,7 @@ function new_session(url) {
     'sid': new_guid(),
     'im_score': 0,
     'audible_pings': 0,
+    'audible': false,
   }
   set_session_accessors(ret);
   return ret;
@@ -240,6 +241,7 @@ function session_add_IM(session, data, tab) {
     var audible_weighting = tab.audible ? 2.0 : 0.5;
     var score_mod = 0;
 
+    session.audible = tab.audible;
     // init session properties
     if (!session.hasOwnProperty('events')) session.events = [];
     if (!session.hasOwnProperty('clicks')) session.clicks = 0;

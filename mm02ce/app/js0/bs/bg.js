@@ -928,7 +928,7 @@ function windowRemoved(window) {
 // BG libs
 //
 function bglib_remove_hash_url(url) { // remove trailing page anchor # from tab URLs
-  var url_ex_hash = url;
+  var url_ex_hash = url || '';
   var hash_ndx = url_ex_hash.indexOf('#');
   if (hash_ndx != -1)
     url_ex_hash = url_ex_hash.substring(0, hash_ndx);

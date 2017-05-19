@@ -1,6 +1,7 @@
 import logger from './logger';
 // tracking latest record for by url
 const histories = {};
+logger.info('histories', histories);
 /**
  * get im_score base url
  */
@@ -32,12 +33,11 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
   const now = new Date().toISOString();
   const url = window.bglib_remove_hash_url(rawUrl);
   const data = Object.assign({}, getImScore(sessionObservable, url));
-  logger.warn('saveImScore histories', histories);
-  logger.warn('saveImScore url', url);
+  logger.info('saveImScore url', url);
   // find which changes from last time
   const lastRecord = histories[url];
   if (lastRecord) {
-    logger.warn('saveImScore lastRecord', lastRecord);
+    logger.info('saveImScore lastRecord', lastRecord);
     data.im_score -= Number(lastRecord.im_score);
     data.audible_pings -= Number(lastRecord.audible_pings);
     data.time_on_tab -= Number(lastRecord.time_on_tab);
@@ -51,38 +51,43 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
   const urlOnSession = window.sessionObservable.urls.get(window.bglib_remove_hash_url(url));
   if (urlOnSession) {
     data.document_head_hash = urlOnSession.document_head_hash;
-  }
-  logger.warn('saveImScore data', data);
-  // Only save when im_score change
-  if (Number(data.im_score) > 0 && Number(data.time_on_tab) > 0) {
-    histories[url] = data;
-    apiSaveImScore(userId, hash, data,
-      (error) => {
-        store.dispatch({
-          type: 'IM_SAVE_ERROR',
-          payload: {
-            url,
-            saveAt: now,
-            history: {
-              data,
-              error,
+    logger.info('saveImScore data', data);
+    // Only save when im_score change
+    if (Number(data.im_score) > 0 ||
+      Number(data.time_on_tab) > 0 ||
+      Number(data.audible_pings) > 0) {
+      histories[url] = Object.assign({}, getImScore(sessionObservable, url));
+      logger.info('saveImScore histories', histories);
+      apiSaveImScore(userId, hash, data,
+        (error) => {
+          store.dispatch({
+            type: 'IM_SAVE_ERROR',
+            payload: {
+              url,
+              saveAt: now,
+              history: {
+                data,
+                error,
+              },
             },
-          },
-        });
-      },
-      (result) => {
-        store.dispatch({
-          type: 'IM_SAVE_SUCCESS',
-          payload: {
-            url,
-            saveAt: now,
-            history: {
-              data,
-              result,
+          });
+        },
+        (result) => {
+          store.dispatch({
+            type: 'IM_SAVE_SUCCESS',
+            payload: {
+              url,
+              saveAt: now,
+              history: {
+                data,
+                result,
+              },
             },
-          },
+          });
         });
-      });
+    }
+  } else {
+    logger.info('not found session for url');
   }
 }
 
