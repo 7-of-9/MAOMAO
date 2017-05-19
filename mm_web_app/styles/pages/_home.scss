@@ -36,7 +36,7 @@ the home page
         font-size: 1rem;
       }
     }
-    .text-engine{
+    .text-engine {
       color: #fff;
     }
     .hero-caption {
@@ -190,7 +190,74 @@ the home page
   }
 }
 
+.ShareModal {
+  .ReactModal__Content {
+    padding: 10px;
+    .modal-header {
+      padding: 0 0 10px;
+      .modal-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+    }
+    .modal-body {
+      padding: 15px 0 0;
+    }
+  }
+}
 
+.media-share {
+  .media-object {
+    @include border-radius(50%);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    width: 40px;
+    height: 40px;
+  }
+  .media-left {
+    width: 50px;
+    a {
+      padding-right: 10px;
+      display: block;
+    }
+  }
+  .media-body {
+    .media-heading {
+      margin-bottom: 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+  }
+}
+.share-with{
+  @include clearfix();
+  margin-top: 5px;
+  .share-title{
+    margin: 5px 0 0;
+    float: left;
+    width: 95px;
+  }
+  .list-member-share{
+
+  }
+}
+.list-member-share{
+  @include clearfix();
+  list-style: none;
+  padding: 3px 0 3px 10px;
+  margin: 0 0 0 95px;
+  .item-member-share{
+    margin-left: -10px;
+    float: left;
+    .media-object {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #fff;
+      background-color: #fff;
+    }
+  }
+}
 /*animation download*/
 
 @keyframes icon-bounce {

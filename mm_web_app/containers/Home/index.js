@@ -42,10 +42,14 @@ const businessAddress = (
 
 const customModalStyles = {
   content: {
-    top: '50%',
+    top: '100px',
     left: '50%',
     right: 'auto',
-    bottom: 'auto'
+    bottom: 'auto',
+    width: '600px',
+    overflow: 'hidden',
+    padding: '15px',
+    margin: '0 0 0 -300px'
   }
 }
 
@@ -158,7 +162,36 @@ class Home extends React.Component {
                   portalClassName='ShareModal'
                   style={customModalStyles}
                   contentLabel='Manage sharing'>
-                  <div> Share Modal </div>
+                  <div className='share-modal-content'> 
+                    <div className="modal-header">
+                      <h4 className='modal-title'>Modal title</h4>
+                    </div>
+                    <div className='modal-body'>
+                      <div className='media media-share'>
+                        <div className='media-left'>
+                          <a href='javascript:void(0)'>
+                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                          </a>
+                        </div>
+                        <div className='media-body'>
+                          <div className='media-body-inner'>
+                            <h4 className='media-heading'>Media heading</h4>
+                            <div className='share-with'>
+                              <p className='share-title'>Share with: </p>
+                              <ul className='list-member-share'>
+                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
+                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
+                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
+                              </ul>
+                              <a href="#" className='btn btn-unfollow'>Following</a>
+                              <a href="#" className='btn btn-unfollow'>Unfollow</a>
+                              <a href="#" className='btn btn-unfollow'>Unshare</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </Modal>
               </NavItem>
           }

@@ -429,7 +429,7 @@ a.btn-unshare {
   border: 1px solid #0d8aee;
   background-color: #2196f3;
   text-align: center;
-  .fa{
+  .fa {
     font-size: 19px;
   }
   &:hover,
@@ -438,6 +438,23 @@ a.btn-unshare {
     outline: 0;
     border-color: #0364b1;
     background-color: #046abc;
+  }
+}
+
+.btn-unfollow {
+  border: 1px solid #369bc8;
+  background-color: #1b8ff2;
+  font-size: 14px;
+  &,
+  &:hover,
+  &:focus {
+    color: #fff;
+  }
+  &:hover,
+  &:focus {
+    outline: 0;
+    border-color: #0279de;
+    background-color: #0366bb;
   }
 }
 

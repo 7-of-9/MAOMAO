@@ -141,7 +141,7 @@ the modal section
   overflow: hidden;
 }
 
-.in .modal-body {
+.ReactModal__Content--after-open .modal-body {
   @include opacity(1);
   pointer-events: auto;
   -webkit-transform: translate3d(0, 0, 0);
@@ -159,7 +159,7 @@ the modal section
   transform: translate3d(0, 20px, 0);
 }
 
-.in .modal-header {
+.ReactModal__Content--after-open .modal-header {
   @include opacity(1);
   -webkit-transition-delay: 0.35s;
   transition-delay: 0.35s;
@@ -178,7 +178,7 @@ the modal section
   transform: translate3d(0, 20px, 0);
 }
 
-.in .modal-footer {
+.ReactModal__Content--after-open .modal-footer {
   @include opacity(1);
   -webkit-transition-delay: 0.35s;
   transition-delay: 0.35s;
