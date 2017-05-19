@@ -46,10 +46,10 @@ const customModalStyles = {
     left: '50%',
     right: 'auto',
     bottom: 'auto',
-    width: '600px',
+    width: '400px',
     overflow: 'hidden',
     padding: '15px',
-    margin: '0 0 0 -300px'
+    margin: '0 0 0 -200px'
   }
 }
 
@@ -170,7 +170,7 @@ class Home extends React.Component {
                       <div className='media media-share'>
                         <div className='media-left'>
                           <a href=''>
-                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                            <img className='media-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='40' height='40' />
                           </a>
                         </div>
                         <div className='media-body'>
@@ -188,53 +188,42 @@ class Home extends React.Component {
                       <div className='media media-share'>
                         <div className='media-left'>
                           <a href=''>
-                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                            <img className='media-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='40' height='40' />
                           </a>
                         </div>
                         <div className='media-body'>
                           <div className='media-body-inner'>
-                            <h4 className='media-heading'>All</h4>
-                            <div className='share-with'>
-                              <a href='' className='btn btn-related'>Unshare</a>
-                            </div>
+                            <h4 className='media-heading'>
+                            <span className="topic-worth">All </span> 
+                            <a href='' className='btn btn-related'>Unshare</a>
+                            </h4>
                           </div>
                         </div>
                       </div>
                       <div className='media media-share'>
                         <div className='media-left'>
                           <a href=''>
-                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                            <img className='media-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='40' height='40' />
                           </a>
                         </div>
                         <div className='media-body'>
                           <div className='media-body-inner'>
-                            <h4 className='media-heading'>Web</h4>
-                            <div className='share-with'>
-                              <div className='tags-topic'>
-                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
-                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
-                              </div>
-                            </div>
+                            <h4 className='media-heading'><span className="topic-worth">Web</span></h4>
                           </div>
                         </div>
                       </div>
                       <div className='media media-share'>
                         <div className='media-left'>
                           <a href=''>
-                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                            <img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' />
                           </a>
                         </div>
                         <div className='media-body'>
                           <div className='media-body-inner'>
-                            <h4 className='media-heading'>JS</h4>
-                            <div className='share-with'>
-                              <div className='tags-topic'>
-                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
-                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
-                                <a href='' className='btn btn-unfollow'>Unfollow</a>
-                              </div>
-                              
-                            </div>
+                            <h4 className='media-heading'>
+                              <span className="topic-worth">JS </span>
+                              <a href='' className='btn btn-unfollow'>Unfollow</a>
+                            </h4>
                           </div>
                         </div>
                       </div>

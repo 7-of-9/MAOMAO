@@ -216,6 +216,7 @@ the home page
 }
 
 .media-share {
+  align-items: center;
   .media-object {
     @include border-radius(50%);
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
@@ -224,7 +225,6 @@ the home page
     height: 40px;
   }
   .media-left {
-    margin-top: 4px;
     width: 50px;
     a {
       padding-right: 10px;
@@ -233,10 +233,21 @@ the home page
   }
   .media-body {
     .media-heading {
+      @include clearfix();
+      @include equal_height();
+      align-items: center;
+      flex-wrap: wrap;
       font-size: 0.875rem;
       font-weight: bold;
-      line-height: 1.3125rem;
+      line-height: 1rem;
       margin-bottom: 0;
+    }
+    .media-body-inner{
+      @include clearfix();
+    }
+    .btn-related,
+    .btn-unfollow {
+      float: right;
     }
   }
 }
@@ -270,8 +281,11 @@ the home page
 }
 
 .tags-topic {
+  margin-top: 3px;
   .tags {
     margin: 0 10px 0 0;
+    padding: 4px 10px;
+    vertical-align: middle;
   }
 }
 
