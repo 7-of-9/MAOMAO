@@ -42,7 +42,7 @@ const businessAddress = (
 
 const customModalStyles = {
   content: {
-    top: '100px',
+    top: '72px',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
@@ -144,8 +144,8 @@ class Home extends React.Component {
             <Link prefetch href='/hiring' className='nav-link'>
               <a href='/hiring'>
                 <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-                <span className='notifications-number notifications-topic'>
-                  <i className='fa fa-bullhorn' aria-hidden='true' />
+                <span className='notifications-number notifications-hiring'>
+                  <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
                 </span>
               </a>
             </Link>
@@ -169,23 +169,71 @@ class Home extends React.Component {
                     <div className='modal-body'>
                       <div className='media media-share'>
                         <div className='media-left'>
-                          <a href='javascript:void(0)'>
+                          <a href=''>
                             <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
                           </a>
                         </div>
                         <div className='media-body'>
                           <div className='media-body-inner'>
-                            <h4 className='media-heading'>Media heading</h4>
+                            <h4 className='media-heading'>github.com</h4>
                             <div className='share-with'>
-                              <p className='share-title'>Share with: </p>
-                              <ul className='list-member-share'>
-                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
-                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
-                                <li className='item-member-share'><a href='javascript:void(0)'><img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' /></a></li>
-                              </ul>
-                              <a href="#" className='btn btn-unfollow'>Following</a>
-                              <a href="#" className='btn btn-unfollow'>Unfollow</a>
-                              <a href="#" className='btn btn-unfollow'>Unshare</a>
+                              <div className='tags-topic'>
+                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
+                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='media media-share'>
+                        <div className='media-left'>
+                          <a href=''>
+                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                          </a>
+                        </div>
+                        <div className='media-body'>
+                          <div className='media-body-inner'>
+                            <h4 className='media-heading'>All</h4>
+                            <div className='share-with'>
+                              <a href='' className='btn btn-related'>Unshare</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='media media-share'>
+                        <div className='media-left'>
+                          <a href=''>
+                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                          </a>
+                        </div>
+                        <div className='media-body'>
+                          <div className='media-body-inner'>
+                            <h4 className='media-heading'>Web</h4>
+                            <div className='share-with'>
+                              <div className='tags-topic'>
+                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
+                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='media media-share'>
+                        <div className='media-left'>
+                          <a href=''>
+                            <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                          </a>
+                        </div>
+                        <div className='media-body'>
+                          <div className='media-body-inner'>
+                            <h4 className='media-heading'>JS</h4>
+                            <div className='share-with'>
+                              <div className='tags-topic'>
+                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
+                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
+                                <a href='' className='btn btn-unfollow'>Unfollow</a>
+                              </div>
+                              
                             </div>
                           </div>
                         </div>

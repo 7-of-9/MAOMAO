@@ -691,6 +691,7 @@ img {
       @include border-radius(8px);
       position: relative;
       min-height: 120px;
+      overflow: hidden;
       > a {
         @include border-radius(4px);
         display: block;
@@ -1377,7 +1378,8 @@ a.btn-box-remove {
   animation-iteration-count: infinite;
 }
 
-.notifications-topic {
+.notifications-topic,
+.notifications-hiring {
   -webkit-animation-delay: 2s;
   animation-delay: 2s;
   -webkit-animation-duration: 3s;
@@ -1386,6 +1388,16 @@ a.btn-box-remove {
   animation-duration: 3s;
   animation-name: shakeIt;
   animation-iteration-count: infinite;
+}
+
+.notifications-hiring {
+  @include border-radius(10px);
+  @include abs-pos ($top: -21px, $right: -32px, $bottom: auto, $left: auto);
+  padding: 0 5px;
+  height: auto;
+  width: auto;
+  min-height: 20px;
+  min-width: 20px;
 }
 
 

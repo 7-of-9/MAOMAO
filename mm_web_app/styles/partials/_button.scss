@@ -441,9 +441,29 @@ a.btn-unshare {
   }
 }
 
+a.btn-unfollow,
 .btn-unfollow {
-  border: 1px solid #369bc8;
-  background-color: #1b8ff2;
+  padding: 4px 8px;
+  background-color: #f9fafa;
+  border: 1px solid #b5bdc4;
+  font-size: 14px;
+  &,
+  &:hover,
+  &:focus {
+    color: #7f8893;
+  }
+  &:hover,
+  &:focus {
+    outline: 0;
+    background-color: #d1d9d9;
+    border-color: #939fa9;
+    color: #656d77;
+  }
+}
+.btn-related {
+  padding: 4px 8px;
+  background-color: #51c04e;
+  border: 1px solid #51c04e;
   font-size: 14px;
   &,
   &:hover,
@@ -453,11 +473,10 @@ a.btn-unshare {
   &:hover,
   &:focus {
     outline: 0;
-    border-color: #0279de;
-    background-color: #0366bb;
+    background-color: #5ddb5a;
+    border: 1px solid #5ddb5a;
   }
 }
-
 
 /*-----btn for tag a link-----*/
 

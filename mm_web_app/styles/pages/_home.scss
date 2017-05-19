@@ -202,7 +202,15 @@ the home page
       }
     }
     .modal-body {
-      padding: 15px 0 0;
+      padding: 0;
+      .media-share {
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+        &:last-child {
+          padding-bottom: 0;
+          border-bottom: 0;
+        }
+      }
     }
   }
 }
@@ -216,6 +224,7 @@ the home page
     height: 40px;
   }
   .media-left {
+    margin-top: 4px;
     width: 50px;
     a {
       padding-right: 10px;
@@ -224,30 +233,31 @@ the home page
   }
   .media-body {
     .media-heading {
-      margin-bottom: 0;
-      font-size: 16px;
+      font-size: 0.875rem;
       font-weight: bold;
+      line-height: 1.3125rem;
+      margin-bottom: 0;
     }
   }
 }
-.share-with{
+
+.share-with {
   @include clearfix();
-  margin-top: 5px;
-  .share-title{
+  margin-top: 2px;
+  .share-title {
     margin: 5px 0 0;
     float: left;
     width: 95px;
   }
-  .list-member-share{
-
-  }
+  .list-member-share {}
 }
-.list-member-share{
+
+.list-member-share {
   @include clearfix();
   list-style: none;
   padding: 3px 0 3px 10px;
   margin: 0 0 0 95px;
-  .item-member-share{
+  .item-member-share {
     margin-left: -10px;
     float: left;
     .media-object {
@@ -258,6 +268,14 @@ the home page
     }
   }
 }
+
+.tags-topic {
+  .tags {
+    margin: 0 10px 0 0;
+  }
+}
+
+
 /*animation download*/
 
 @keyframes icon-bounce {
