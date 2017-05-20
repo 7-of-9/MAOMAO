@@ -166,66 +166,140 @@ class Home extends React.Component {
                       <h4 className='modal-title'>List share topic</h4>
                     </div>
                     <div className='modal-body'>
-                      <div className='media media-share'>
-                        <div className='media-left'>
-                          <a href=''>
-                            <img className='media-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='40' height='40' />
-                          </a>
-                        </div>
-                        <div className='media-body'>
-                          <div className='media-body-inner'>
-                            <h4 className='media-heading'>github.com</h4>
-                            <div className='share-with'>
-                              <div className='tags-topic'>
-                                <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
-                                <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
+                      <ul className='list-topics'>
+                        <li className='items-topics'>
+                          <div className='directional-user'>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-line'>
+                              <div className='case-line-side'></div>
+                            </div>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                          </div>
+                          <div className='media media-share'>
+                            <div className='media-left'>
+                              <a href=''>
+                                <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='40' height='40' />
+                              </a>
+                            </div>
+                            <div className='media-body'>
+                              <div className='media-body-inner'>
+                                <h4 className='media-heading'>
+                                  <span className='text-ellipsis'>reactjs/react-modal: Accessible modal dialog component for React (7839)</span>
+                                </h4>
+                                <div className='share-with'>
+                                  <div className='tags-topic'>
+                                    <a href=''><span className="tags tags-color-4" rel="tag"><span class="text-tag">JavaScript</span></span></a>
+                                    <a href=''><span className="tags tags-color-1" rel="tag"><span class="text-tag">Television</span></span></a>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className='media media-share'>
-                        <div className='media-left'>
-                          <a href=''>
-                            <img className='media-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='40' height='40' />
-                          </a>
-                        </div>
-                        <div className='media-body'>
-                          <div className='media-body-inner'>
-                            <h4 className='media-heading'>
-                            <span className="topic-worth">All </span> 
-                            <a href='' className='btn btn-related'>Unshare</a>
-                            </h4>
+                        </li>
+                        <li className='items-topics'>
+                          <div className='directional-user'>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-line'>
+                              <div className='case-line-side'></div>
+                            </div>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-status'>
+                              <a href='#' className="btn btn-related">Unshare</a>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className='media media-share'>
-                        <div className='media-left'>
-                          <a href=''>
-                            <img className='media-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='40' height='40' />
-                          </a>
-                        </div>
-                        <div className='media-body'>
-                          <div className='media-body-inner'>
-                            <h4 className='media-heading'><span className="topic-worth">Web</span></h4>
+                          <div className='media media-share'>
+                            <div className='media-left'>
+                              <a href=''>
+                                <img className='media-object' src='http://cdn.tutorialzine.com/wp-content/uploads/2017/05/js-animations.png' alt='' width='40' height='40' />
+                              </a>
+                            </div>
+                            <div className='media-body'>
+                              <div className='media-body-inner'>
+                                <h4 className='media-heading'>
+                                  <span className='text-ellipsis'>20 Tips For Writing Modern CSS | Tutorialzine (16125)</span>
+                                </h4>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className='media media-share'>
-                        <div className='media-left'>
-                          <a href=''>
-                            <img className='media-object' src='/static/images/no-avatar.png' alt='' width='40' height='40' />
-                          </a>
-                        </div>
-                        <div className='media-body'>
-                          <div className='media-body-inner'>
-                            <h4 className='media-heading'>
-                              <span className="topic-worth">JS </span>
+                        </li>
+                        <li className='items-topics'>
+                          <div className='directional-user'>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-line'>
+                              <div className='case-line-side'></div>
+                            </div>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                          </div>
+                          <div className='media media-share'>
+                            <div className='media-left'>
+                              <a href=''>
+                                <img className='media-object' src='https://avatars2.githubusercontent.com/u/1335026?v=3&s=400' alt='' width='40' height='40' />
+                              </a>
+                            </div>
+                            <div className='media-body'>
+                              <div className='media-body-inner'>
+                                <h4 className='media-heading'>
+                                  <span className='text-ellipsis'>Buttons - Material Components for the Web (16119)</span>
+                                </h4>
+                                <div className='share-with'>
+                                  <div className='tags-topic'>
+                                    <a href=''><span className="tags tags-color-2" rel="tag"><span className="text-tag">YouTube - Broadcast yourself</span></span></a>
+                                    <a href=''><span className="tags tags-color-12" rel="tag"><span className="text-tag">Technology</span></span></a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                        <li className='items-topics'>
+                          <div className='directional-user'>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-line'>
+                              <div className='case-line-side'></div>
+                            </div>
+                            <div className='share-image'>
+                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                            </div>
+                            <div className='share-status'>
                               <a href='' className='btn btn-unfollow'>Unfollow</a>
-                            </h4>
+                            </div>
                           </div>
-                        </div>
-                      </div>
+                          <div className='media media-share'>
+                            <div className='media-left'>
+                              <a href=''>
+                                <img className='media-object' src='https://cdn-images-1.medium.com/max/1200/1*MXL-j6S8fTEd8UFP_foEEw.png' alt='' width='40' height='40' />
+                              </a>
+                            </div>
+                            <div className='media-body'>
+                              <div className='media-body-inner'>
+                                <h4 className='media-heading'>
+                                  <span className='text-ellipsis'>Floating Action Buttons - Material Components for the Web (16121)</span>
+                                </h4>
+                                <div className='share-with'>
+                                  <div className='tags-topic'>
+                                    <a href=''><span className="tags tags-color-7" rel="tag"><span className="text-tag">University of California, Berkeley</span></span></a>
+                                    <a href=''><span className="tags tags-color-6" rel="tag"><span className="text-tag">blog.codeship.com/</span></span></a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                 </Modal>
