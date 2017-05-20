@@ -191,6 +191,7 @@ the modal section
   }
   .ReactModal__Content {
     @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
+    padding: 0 !important; 
     border-color: #e1e2e6;
     background: rgba(242, 242, 242, 0.68) !important;
   }

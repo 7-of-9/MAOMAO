@@ -194,7 +194,7 @@ the home page
   .ReactModal__Content {
     padding: 10px;
     .modal-header {
-      padding: 0 0 10px;
+      padding: 10px 15px;
       border-bottom: 1px solid #e1e2e6;
       .modal-title {
         margin: 0;
@@ -205,11 +205,12 @@ the home page
     .modal-body {
       padding: 0;
       overflow: visible;
+      overflow-y: auto;
+      max-height: 441px;
       .media-share {
-        padding: 10px 0;
+        padding: 10px 15px;
         border-bottom: 1px solid #e1e2e6;
         &:last-child {
-          padding-bottom: 0;
           border-bottom: 0;
         }
       }

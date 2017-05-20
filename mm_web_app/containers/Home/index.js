@@ -48,7 +48,6 @@ const customModalStyles = {
     bottom: 'auto',
     width: '400px',
     overflow: 'hidden',
-    padding: '15px',
     margin: '0 0 0 -200px'
   }
 }
@@ -164,7 +163,7 @@ class Home extends React.Component {
                   contentLabel='Manage sharing'>
                   <div className='share-modal-content'> 
                     <div className="modal-header">
-                      <h4 className='modal-title'>Modal title</h4>
+                      <h4 className='modal-title'>List share topic</h4>
                     </div>
                     <div className='modal-body'>
                       <div className='media media-share'>
