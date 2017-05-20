@@ -31,7 +31,6 @@ the modal section
   -webkit-backface-visibility: hidden;
 }
 
-
 .QuestionModal {
   .ReactModal__Content {
     @include border-radius(6px);
@@ -185,6 +184,20 @@ the modal section
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
+
+.ShareModal {
+  .ReactModal__Overlay {
+    background: none !important;
+  }
+  .ReactModal__Content {
+    @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
+    border-color: #e1e2e6;
+    background: rgba(242, 242, 242, 0.68) !important;
+  }
+}
+
+
+/*-----animation------*/
 
 @keyframes vex-fadein {
   0% {

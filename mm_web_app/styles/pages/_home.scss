@@ -195,6 +195,7 @@ the home page
     padding: 10px;
     .modal-header {
       padding: 0 0 10px;
+      border-bottom: 1px solid #e1e2e6;
       .modal-title {
         margin: 0;
         font-size: 1rem;
@@ -203,9 +204,10 @@ the home page
     }
     .modal-body {
       padding: 0;
+      overflow: visible;
       .media-share {
         padding: 10px 0;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #e1e2e6;
         &:last-child {
           padding-bottom: 0;
           border-bottom: 0;
