@@ -172,9 +172,7 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line'>
-                              <div className='case-line-side'></div>
-                            </div>
+                            <div className='share-line'></div>
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
@@ -205,11 +203,9 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line'>
-                              <div className='case-line-side'></div>
-                            </div>
+                            <div className='share-line share-line-left'></div>
                             <div className='share-image'>
-                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                              <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='30' height='30' /></a>
                             </div>
                             <div className='share-status'>
                               <a href='#' className="btn btn-related">Unshare</a>
@@ -235,11 +231,9 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line'>
-                              <div className='case-line-side'></div>
-                            </div>
+                            <div className='share-line share-line-right'></div>
                             <div className='share-image'>
-                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                              <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
                             </div>
                           </div>
                           <div className='media media-share'>
@@ -268,11 +262,9 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line'>
-                              <div className='case-line-side'></div>
-                            </div>
+                            <div className='share-line share-line-left share-line-right'></div>
                             <div className='share-image'>
-                              <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
+                              <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
                             </div>
                             <div className='share-status'>
                               <a href='' className='btn btn-unfollow'>Unfollow</a>

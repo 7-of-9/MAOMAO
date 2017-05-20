@@ -225,7 +225,7 @@ the home page
         @include equal_height();
         align-items: center;
         flex-wrap: wrap;
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
         font-weight: bold;
         line-height: 1rem;
         margin-bottom: 0;
@@ -337,6 +337,30 @@ the home page
     }
     &:after {
       @include abs-pos ($top: -2px, $right: -2px, $bottom: auto, $left: auto);
+    }
+    &.share-line-right {
+      &:before {
+        @include border-radius(0);
+        @include abs-pos ($top: -6px, $right: auto, $bottom: auto, $left: -2px);
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-right: 10px solid #02ceff;
+        background: none;
+      }
+    }
+    &.share-line-left {
+      &:after {
+        @include border-radius(0);
+        @include abs-pos ($top: -6px, $right: -2px, $bottom: auto, $left: auto);
+        width: 0;
+        height: 0;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-left: 10px solid #02ceff;
+        background: none;
+      }
     }
   }
 }
