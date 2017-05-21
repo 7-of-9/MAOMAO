@@ -31,9 +31,17 @@ function urlOwner (id, users, onSelectUser) {
   const items = []
   _.forEach(owners, owner => {
     items.push(<div key={guid()} className='panel-user-img'>
-      <a onClick={() => { onSelectUser(owner) }} className='tooltip-user' title={owner.fullname}>
+      <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
         <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-        <span className='full-name'>{owner.fullname}</span>
+        <span className='panel-user-cnt'>
+          <span className='full-name'>{owner.fullname}</span>
+          <span className='date-time'>
+            <i className='fa fa-clock-o' /> Time on page: a few seconds
+          </span>
+          <span className='date-time'>
+            <i className='fa fa-calendar-o' /> Last visited: a day ago
+          </span>
+        </span>
       </a>
     </div>)
   })
@@ -132,7 +140,7 @@ class Streams extends React.PureComponent {
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>
-                <p className='para-date'>
+                {/*<p className='para-date'>
                   <span className='date-time'>
                     <i className='fa fa-clock-o' /> Time on page: {moment.duration(time_on_tab).humanize()}
                   </span>
@@ -141,7 +149,7 @@ class Streams extends React.PureComponent {
                   <span className='date-time'>
                     <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hit_utc).fromNow()}
                   </span>
-                </p>
+                </p>*/}
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
