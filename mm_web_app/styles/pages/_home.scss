@@ -209,11 +209,11 @@ the home page
       @include border-radius(4px);
       -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-      width: 40px;
-      height: 40px;
+      width: 46px;
+      height: 46px;
     }
     .media-left {
-      width: 50px;
+      width: 56px;
       a {
         padding-right: 10px;
         display: block;
@@ -233,7 +233,7 @@ the home page
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
-          max-width: 317px;
+          max-width: 507px;
         }
       }
       .media-body-inner {
@@ -253,7 +253,26 @@ the home page
       float: left;
       width: 95px;
     }
-    .list-member-share {}
+    .tags-topic {
+      margin-top: 0;
+      .tags {
+        padding: 3px 4px 3px 10px;
+        margin: 0 10px 0 0;
+        font-size: 0.625rem;
+        vertical-align: middle;
+        .text-tag {
+          padding-right: 4px;
+          max-width: 168px;
+        }
+        .btn-box-remove {
+          color: #222;
+        }
+        .text-tag,
+        .btn-box-remove {
+          vertical-align: middle;
+        }
+      }
+    }
   }
   .list-member-share {
     @include clearfix();
@@ -269,15 +288,6 @@ the home page
         border: 2px solid #fff;
         background-color: #fff;
       }
-    }
-  }
-  .tags-topic {
-    margin-top: 0;
-    .tags {
-      margin: 0 10px 0 0;
-      font-size: 0.625rem;
-      padding: 1px 10px;
-      vertical-align: middle;
     }
   }
   .list-topics {
