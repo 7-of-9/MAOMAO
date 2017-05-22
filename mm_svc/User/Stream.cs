@@ -12,6 +12,7 @@ namespace mm_svc
 {
     public static class UserStream
     {
+        const double MIN_S_NORM = 0.7;
         public static UserStreamReturn GetAllStreams(long user_id)
         {
             using (var db = mm02Entities.Create())
@@ -81,6 +82,7 @@ namespace mm_svc
                                .Include("term").Include("url")
                                .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                                .Where(p => p.term_id == term_id)
+                               .Where(p => p.S_norm > MIN_S_NORM)
                                .Where(p => my_url_ids.Contains(p.url_id));
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
@@ -116,6 +118,7 @@ namespace mm_svc
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                                .Include("term").Include("url")
                                .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                               .Where(p => p.S_norm > MIN_S_NORM)
                                .Where(p => my_url_ids.Contains(p.url_id));
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
@@ -142,6 +145,7 @@ namespace mm_svc
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                                .Include("term").Include("url")
                                .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                               .Where(p => p.S_norm > MIN_S_NORM)
                                .Where(p => my_url_ids.Contains(p.url_id));
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
@@ -169,6 +173,7 @@ namespace mm_svc
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
                                .Include("term").Include("url")
                                .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                               .Where(p => p.S_norm > MIN_S_NORM)
                                .Where(p => my_url_ids.Contains(p.url_id));
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
 

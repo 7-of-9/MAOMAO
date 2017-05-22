@@ -198,6 +198,7 @@ namespace mm_svc
                 var top_parents_dynamic = new ConcurrentDictionary<long, List<gt_parent>>();
                 var top_parents_topics = new ConcurrentDictionary<long, List<gt_parent>>();
                 const double MIN_TSS_NORM = 0.1;
+                const double MIN_S_NORM = 0.7;
                 Parallel.ForEach(wiki_url_terms.Where(p => p.tss_norm > MIN_TSS_NORM), p => {
 
                     // perf: taking quite some time here...
@@ -205,7 +206,7 @@ namespace mm_svc
 
                     if (term_parents != null) {
                         var parents_dynamic = term_parents.Where(p2 => p2.is_topic == false).ToList();
-                        var parents_topics = term_parents.Where(p2 => p2.is_topic == true).ToList();
+                        var parents_topics = term_parents.Where(p2 => p2.is_topic == true && p2.S_norm > MIN_S_NORM).OrderByDescending(p2 => p2.S_norm).Take(2).ToList();
 
                         // dynamic parents: remove long tail - for better common parent finding
                         var filtered_dynamic = parents_dynamic.OrderByDescending(p2 => p2.S_norm).Take(10).ToList();
