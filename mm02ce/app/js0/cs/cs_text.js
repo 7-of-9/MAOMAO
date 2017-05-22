@@ -285,13 +285,11 @@ function process_text(page_meta) {
   logger().info("ALL_TEXT (len = " + t.length + "): [" + t + "]");
   dispatchDataToBg({ type: 'PROCESS_TEXT_RESULT', payload: { status: t.length > 200 ? true : false, url: remove_hash_url(document.location.href), text: t, } });
   var detectLang = franc(t);
-  var detectTitleLang = franc(page_meta.html_title);
   var detectDescriptionLang = franc(page_meta.ip_description || page_meta.description || page_meta.og_description || page_meta.tw_description);
   if (t.length > 200) {
     logger().warn('detectLang', detectLang);
-    logger().warn('detectTitleLang', detectTitleLang);
     logger().warn('detectDescriptionLang', detectDescriptionLang);
-    if (detectLang === 'eng' || detectTitleLang === 'eng' || detectDescriptionLang === 'eng') {
+    if (detectLang === 'eng' || detectDescriptionLang === 'eng') {
       var document_head_hash = md5(document.head.innerHTML);
       logger().warn('document_head_hash', document_head_hash);
       ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), document_head_hash, function (data) {
