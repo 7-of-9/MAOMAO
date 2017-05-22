@@ -86,11 +86,17 @@ function MaomaoShare() {
       document.body.scrollTop;
     top = (position.top + DOCUMENT_SCROLLTOP + position.height) - iconSize;
     // HOTFIX: when top positio is too far with text selection
-    const textDistance = (textPosition.bottom + DOCUMENT_SCROLLTOP) - iconSize;
+    const textDistance = (textPosition.top + DOCUMENT_SCROLLTOP) - iconSize;
     if (top > textDistance) {
       top = textDistance;
     }
     left = position.left - iconSize - 10;
+
+    // TODO: find a suitable position, left or right depend on distance of select text
+    // align right in case the blue dog is out screen
+    if (left < 0) {
+      left = position.right + 10;
+    }
     // detect position left or right of paragraph
     logger.info('left top', left, top, containterSize);
   }
