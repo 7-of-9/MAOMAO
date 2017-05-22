@@ -49,7 +49,7 @@ export function saveImScore(sessionObservable, apiSaveImScore, store, rawUrl, us
   }
 
   const urlOnSession = window.sessionObservable.urls.get(window.bglib_remove_hash_url(url));
-  if (urlOnSession) {
+  if (urlOnSession && urlOnSession.document_head_hash) {
     data.document_head_hash = urlOnSession.document_head_hash;
     logger.info('saveImScore data', data);
     // Only save when im_score change

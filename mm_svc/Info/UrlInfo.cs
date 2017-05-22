@@ -53,7 +53,9 @@ namespace mm_svc
                 var parents = db.url_parent_term.AsNoTracking().Include("term").Where(p => p.url_id == url_id).ToListNoLock();
 
                 // topics: take top 3 max by S desc
-                var topics = parents.Where(p => p.found_topic).OrderByDescending(p => p.S).Take(3).ToList();
+                const double MIN_S_NORM = 0.7;
+
+                var topics = parents.Where(p => p.found_topic).Where(p => p.S_norm > MIN_S_NORM).OrderByDescending(p => p.S).Take(3).ToList();
 
                 // suggested: take top 3 max by S desc
                 var suggested = parents.Where(p => p.suggested_dynamic).OrderByDescending(p => p.S).Take(3).ToList();
