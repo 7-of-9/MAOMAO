@@ -25,7 +25,7 @@ const masonryOptions = {
   transitionDuration: '0.4s'
 }
 
-function urlOwner (id, users, onSelectUser) {
+function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
   // TODO: click on name to filter by user
   const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
@@ -36,10 +36,10 @@ function urlOwner (id, users, onSelectUser) {
         <span className='panel-user-cnt'>
           <span className='full-name'>{owner.fullname}</span>
           <span className='date-time'>
-            <i className='fa fa-clock-o' /> Time on page: a few seconds
+            <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
           </span>
           <span className='date-time'>
-            <i className='fa fa-calendar-o' /> Last visited: a day ago
+            <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
           </span>
         </span>
       </a>
@@ -140,20 +140,10 @@ class Streams extends React.PureComponent {
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>
-                {/*<p className='para-date'>
-                  <span className='date-time'>
-                    <i className='fa fa-clock-o' /> Time on page: {moment.duration(time_on_tab).humanize()}
-                  </span>
-                </p>
-                <p className='para-date'>
-                  <span className='date-time'>
-                    <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hit_utc).fromNow()}
-                  </span>
-                </p>*/}
                 <div className='rating'>
                   <ReactStars edit={false} size={22} count={5} value={rate} />
                 </div>
-                {urlOwner(id, users, (user) => this.props.ui.selectUser(user))}
+                {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
                 {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic))}
               </div>
             </div>

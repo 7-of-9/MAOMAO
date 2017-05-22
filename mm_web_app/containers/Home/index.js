@@ -161,8 +161,8 @@ class Home extends React.Component {
                   portalClassName='ShareModal'
                   style={customModalStyles}
                   contentLabel='Manage sharing'>
-                  <div className='share-modal-content'> 
-                    <div className="modal-header">
+                  <div className='share-modal-content'>
+                    <div className='modal-header'>
                       <h4 className='modal-title'>List share topic</h4>
                     </div>
                     <div className='modal-body'>
@@ -172,7 +172,7 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line'></div>
+                            <div className='share-line' />
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
@@ -190,13 +190,13 @@ class Home extends React.Component {
                                 </h4>
                                 <div className='share-with'>
                                   <div className='tags-topic'>
-                                    <span className="tags tags-color-4" rel="tag">
-                                      <span class="text-tag">JavaScript</span>
-                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true'></i></a>
+                                    <span className='tags tags-color-4' rel='tag'>
+                                      <span class='text-tag'>JavaScript</span>
+                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
                                     </span>
-                                    <span className="tags tags-color-1" rel="tag">
-                                      <span class="text-tag">Television</span>
-                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true'></i></a>
+                                    <span className='tags tags-color-1' rel='tag'>
+                                      <span class='text-tag'>Television</span>
+                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
                                     </span>
                                   </div>
                                 </div>
@@ -209,7 +209,7 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line share-line-left'></div>
+                            <div className='share-line share-line-left' />
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='30' height='30' /></a>
                             </div>
@@ -227,9 +227,9 @@ class Home extends React.Component {
                                 </h4>
                                 <div className='share-with'>
                                   <div className='tags-topic'>
-                                    <span className="tags tags-color-1" rel="tag">
+                                    <span className='tags tags-color-1' rel='tag'>
                                       <span className='text-tag'>Television</span>
-                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true'></i></a>
+                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
                                     </span>
                                   </div>
                                 </div>
@@ -242,7 +242,7 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line share-line-right'></div>
+                            <div className='share-line share-line-right' />
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
                             </div>
@@ -260,13 +260,13 @@ class Home extends React.Component {
                                 </h4>
                                 <div className='share-with'>
                                   <div className='tags-topic'>
-                                    <span className="tags tags-color-2" rel="tag">
-                                      <span className="text-tag">YouTube - Broadcast yourself</span>
-                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true'></i></a>
+                                    <span className='tags tags-color-2' rel='tag'>
+                                      <span className='text-tag'>YouTube - Broadcast yourself</span>
+                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
                                     </span>
-                                    <span className="tags tags-color-12" rel="tag">
-                                      <span className="text-tag">Technology</span>
-                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true'></i></a>
+                                    <span className='tags tags-color-12' rel='tag'>
+                                      <span className='text-tag'>Technology</span>
+                                      <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
                                     </span>
                                   </div>
                                 </div>
@@ -279,7 +279,7 @@ class Home extends React.Component {
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                             </div>
-                            <div className='share-line share-line-left share-line-right'></div>
+                            <div className='share-line share-line-left share-line-right' />
                             <div className='share-image'>
                               <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
                             </div>
@@ -297,12 +297,12 @@ class Home extends React.Component {
                                 </h4>
                                 <div className='share-with'>
                                   <div className='tags-topic'>
-                                    <span className="tags tags-color-7" rel="tag">
-                                      <span className="text-tag">University of California, Berkeley</span>
-                                      <a className='btn-box-remove' title='Unfollow'><i className='fa fa-user-times' aria-hidden='true'></i></a>
+                                    <span className='tags tags-color-7' rel='tag'>
+                                      <span className='text-tag'>University of California, Berkeley</span>
+                                      <a className='btn-box-remove' title='Unfollow'><i className='fa fa-user-times' aria-hidden='true' /></a>
                                     </span>
-                                    <span className="tags tags-color-6" rel="tag">
-                                      <span className="text-tag">blog.codeship.com/</span>
+                                    <span className='tags tags-color-6' rel='tag'>
+                                      <span className='text-tag'>blog.codeship.com/</span>
                                     </span>
                                   </div>
                                 </div>
