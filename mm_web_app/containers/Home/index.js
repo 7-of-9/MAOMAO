@@ -140,14 +140,24 @@ class Home extends React.Component {
         </Head>
         <Navbar className='header-nav animated fadeInDown' brand={brand}>
           <NavItem>
-            <Link prefetch href='/hiring' className='nav-link'>
-              <a href='/hiring'>
-                <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-                <span className='notifications-number notifications-hiring'>
-                  <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
-                </span>
-              </a>
-            </Link>
+            <a data-toggle='dropdown'>
+              <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
+              <span className='notifications-number notifications-hiring'>
+                <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
+              </span>
+            </a>
+            <ul className='dropdown-menu pull-right'>
+              <li key={guid()}>
+                <Link prefetch href='/hiring-js' className='nav-link'>
+                  <a href='/hiring-js'>JavaScript / Node.JS Developer</a>
+                </Link>
+              </li>
+              <li key={guid()}>
+                <Link prefetch href='/hiring-vp' className='nav-link'>
+                  <a href='/hiring-vp'>Server & Platform Engineer / VP Engineering</a>
+                </Link>
+              </li>
+            </ul>
           </NavItem>
           {
               this.props.store.isLogin &&
@@ -321,10 +331,6 @@ class Home extends React.Component {
               <NavItem>
                 <a data-toggle='dropdown'>
                   <i className='fa fa-list fa-2x' aria-hidden='true' />
-                  {
-                    topics.length > 0 &&
-                    <span className='notifications-number notifications-topic'>{topics.length}</span>
-                  }
                 </a>
                 <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
                   {topics.map(topic => (
@@ -338,10 +344,6 @@ class Home extends React.Component {
               <NavItem>
                 <a data-toggle='dropdown'>
                   <i className='fa fa-users fa-2x' aria-hidden='true' />
-                  {
-                    users.length > 0 &&
-                    <span className='notifications-number notifications-topic'>{users.length}</span>
-                  }
                 </a>
                 <ul className='dropdown-menu dropdown-modifier  pull-right'>
                   {users.map(user =>

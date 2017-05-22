@@ -61,7 +61,7 @@ app.prepare().then(() => {
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
-    if (pathname === '/' || pathname === '/hiring' ||
+    if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
      pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1
     ) {
