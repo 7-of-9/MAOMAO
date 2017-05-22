@@ -1427,18 +1427,6 @@ a.btn-box-remove {
   animation-iteration-count: infinite;
 }
 
-.notifications-topic,
-.notifications-hiring {
-  -webkit-animation-delay: 2s;
-  animation-delay: 2s;
-  -webkit-animation-duration: 3s;
-  -webkit-animation-name: shakeIt;
-  -webkit-animation-iteration-count: infinite;
-  animation-duration: 3s;
-  animation-name: shakeIt;
-  animation-iteration-count: infinite;
-}
-
 .notifications-hiring {
   @include border-radius(10px);
   @include abs-pos ($top: -21px, $right: 50%, $bottom: auto, $left: auto);
@@ -1614,74 +1602,5 @@ a.btn-box-remove {
     top: 0;
     -webkit-transform: rotate(0);
     transform: rotate(0);
-  }
-}
-
-
-/*----- animation bell -----*/
-
-@-webkit-keyframes shakeIt {
-  0% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  10% {
-    -webkit-transform: translate(2px, 0) rotate(-10deg);
-    -ms-transform: translate(2px, 0) rotate(-10deg);
-    transform: translate(2px, 0) rotate(-10deg);
-  }
-  20% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  30% {
-    -webkit-transform: translate(2px, 0) rotate(-10deg);
-    -ms-transform: translate(2px, 0) rotate(-10deg);
-    transform: translate(2px, 0) rotate(-10deg);
-  }
-  40% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  100% {
-    -webkit-transform: translate(0, 0) rotate(0deg);
-    -ms-transform: translate(0, 0) rotate(0deg);
-    transform: translate(0, 0) rotate(0deg);
-  }
-}
-
-@keyframes shakeIt {
-  0% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  10% {
-    -webkit-transform: translate(2px, 0) rotate(-10deg);
-    -ms-transform: translate(2px, 0) rotate(-10deg);
-    transform: translate(2px, 0) rotate(-10deg);
-  }
-  20% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  30% {
-    -webkit-transform: translate(2px, 0) rotate(-10deg);
-    -ms-transform: translate(2px, 0) rotate(-10deg);
-    transform: translate(2px, 0) rotate(-10deg);
-  }
-  40% {
-    -webkit-transform: translate(-2px, 0) rotate(10deg);
-    -ms-transform: translate(-2px, 0) rotate(10deg);
-    transform: translate(-2px, 0) rotate(10deg);
-  }
-  100% {
-    -webkit-transform: translate(0, 0) rotate(0deg);
-    -ms-transform: translate(0, 0) rotate(0deg);
-    transform: translate(0, 0) rotate(0deg);
   }
 }

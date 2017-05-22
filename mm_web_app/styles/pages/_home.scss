@@ -214,8 +214,8 @@ the home page
     }
     .media-left {
       width: 56px;
+      padding-right: 10px;
       a {
-        padding-right: 10px;
         display: block;
       }
     }
@@ -233,7 +233,7 @@ the home page
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
-          max-width: 507px;
+          max-width: 494px;
         }
       }
       .media-body-inner {
@@ -262,7 +262,7 @@ the home page
         vertical-align: middle;
         .text-tag {
           padding-right: 4px;
-          max-width: 168px;
+          max-width: 186px;
         }
         .btn-box-remove {
           color: #222;
@@ -294,10 +294,8 @@ the home page
     list-style: none;
     padding: 0;
     margin: 0;
-    overflow-y: auto;
-    max-height: 434px;
     .items-topics {
-      padding: 10px 15px;
+      padding: 0.625rem 0.9375rem;
       border-bottom: 1px solid #e1e2e6;
       &:last-child {
         border-bottom: 0;
@@ -306,10 +304,24 @@ the home page
   }
 }
 
+.card-topic {
+  border: 0;
+  .card-header {
+    padding: 0.625rem 0.9375rem;
+  }
+  .card-block {
+    padding: 0;
+  }
+  &:last-child {
+    .card-header {
+      border-bottom: 0;
+    }
+  }
+}
+
 .directional-user {
   @include clearfix();
-  margin-bottom: 5px;
-  padding-left: 8px;
+  cursor: pointer;
   .share-image,
   .share-line {
     float: left;
@@ -332,7 +344,7 @@ the home page
     position: relative;
     margin: 12px 10px 0 0;
     height: 2px;
-    width: 100px;
+    width: 200px;
     background-color: #02ceff;
     &:before,
     &:after {

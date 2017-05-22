@@ -194,6 +194,12 @@ the modal section
     padding: 0 !important; 
     border-color: #e1e2e6;
     background: rgba(242, 242, 242, 0.75) !important;
+    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
+  }
+  .modal-body{
+    overflow-y: auto;
+    max-height: 444px;
   }
 }
 
