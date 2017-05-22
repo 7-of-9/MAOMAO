@@ -16,7 +16,7 @@ $(document).ready(function () {
   logger().info("%c > document.location.href=" + document.location.href, cs_log_style_info);
   logger().info("%c > mm_app_uuid " + app_uuid, cs_log_style_info);
   if (sessionStorage['mm_app_uuid'] !== app_uuid) {
-    logger().warn('reInjectScript');
+    logger().warn('inject js from context script');
     reInjectScript();
   }
   //document.addEventListener("DOMContentLoaded", function (event)
