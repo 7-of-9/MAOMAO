@@ -68,8 +68,6 @@ the modal section
   }
 }
 
-.ReactModal__Content--after-open {}
-
 
 /*modal bootstrap*/
 
@@ -188,18 +186,31 @@ the modal section
 .ShareModal {
   .ReactModal__Overlay {
     background: none !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
   }
   .ReactModal__Content {
     @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
-    padding: 0 !important; 
+    @include transform(translateY(none));
+    margin: 0 auto;
+    padding: 0 !important;
     border-color: #e1e2e6;
     background: rgba(242, 242, 242, 0.75) !important;
-    -webkit-overflow-scrolling: touch;
-    overflow: hidden;
+    overflow-y: auto !important;
+    width: 100%;
+    max-height: calc(100% - 100px);
+    max-width: calc(100% - 50px);
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: -ms-fit-content;
+    width: -o-fit-content;
+    width: fit-content;
+    
   }
-  .modal-body{
-    overflow-y: auto;
-    max-height: 444px;
+  .modal-body {
+    overflow-y: auto !important;
+    max-height: calc(100% - 100px);
   }
 }
 

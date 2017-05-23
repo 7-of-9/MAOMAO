@@ -217,6 +217,7 @@ the home page
       padding-right: 10px;
       a {
         display: block;
+        width: 46px;
       }
     }
     .media-body {
@@ -233,7 +234,8 @@ the home page
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
-          max-width: 494px;
+          max-width: calc(90% - 60px);
+          display: inline-block;
         }
       }
       .media-body-inner {

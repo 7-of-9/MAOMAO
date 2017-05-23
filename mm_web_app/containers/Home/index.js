@@ -43,13 +43,11 @@ const businessAddress = (
 
 const customModalStyles = {
   content: {
-    top: '72px',
-    left: '50%',
+    top: '82px',
+    left: 'auto',
     right: 'auto',
     bottom: 'auto',
-    width: '600px',
-    overflow: 'hidden',
-    margin: '0 0 0 -300px'
+    overflow: 'hidden'
   }
 }
 
@@ -255,7 +253,7 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseTwo" className="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                          <div id="collapseTwo" className="collapse show" role="tabpanel" aria-labelledby="headingTwo">
                             <div className="card-block">
                               <ul className='list-topics'>
                                 <li className='items-topics'>
@@ -290,7 +288,7 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseThree" className="collapse" role="tabpanel" aria-labelledby="headingThree">
+                          <div id="collapseThree" className="collapse show" role="tabpanel" aria-labelledby="headingThree">
                             <div className="card-block">
                               <ul className='list-topics'>
                                 <li className='items-topics'>
@@ -333,7 +331,7 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseFour" className="collapse" role="tabpanel" aria-labelledby="headingFour">
+                          <div id="collapseFour" className="collapse show" role="tabpanel" aria-labelledby="headingFour">
                             <div className="card-block">
                               <ul className='list-topics'>
                                 <li className='items-topics'>
@@ -376,7 +374,7 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseFive" className="collapse" role="tabpanel" aria-labelledby="headingFive">
+                          <div id="collapseFive" className="collapse show" role="tabpanel" aria-labelledby="headingFive">
                             <div className="card-block">
                               <ul className='list-topics'>
                                 <li className='items-topics'>
