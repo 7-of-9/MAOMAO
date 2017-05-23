@@ -60,6 +60,17 @@ the header section
         overflow: hidden;
         overflow-y: auto;
       }
+      &.dropdown-hiring {
+        min-width: 320px;
+        li {
+          a {
+            padding: 7px 10px;
+            display: block;
+            text-align: left;
+            font-size: 0.875rem;
+          }
+        }
+      }
     }
     .navbar-toggler {
       cursor: pointer;

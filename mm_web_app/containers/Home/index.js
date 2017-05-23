@@ -144,15 +144,15 @@ class Home extends React.Component {
                 <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
               </span>
             </a>
-            <ul className='dropdown-menu pull-right'>
+            <ul className='dropdown-menu dropdown-hiring pull-right'>
               <li key={guid()}>
                 <Link prefetch href='/hiring-js' className='nav-link'>
-                  <a href='/hiring-js'>JavaScript / Node.JS Developer</a>
+                  <a href='/hiring-js'><i className="fa fa-angle-right" aria-hidden="true"></i> JavaScript / Node.JS Developer</a>
                 </Link>
               </li>
               <li key={guid()}>
                 <Link prefetch href='/hiring-vp' className='nav-link'>
-                  <a href='/hiring-vp'>Server & Platform Engineer / VP Engineering</a>
+                  <a href='/hiring-vp'><i className="fa fa-angle-right" aria-hidden="true"></i> Server & Platform Engineer / VP Engineering</a>
                 </Link>
               </li>
             </ul>
