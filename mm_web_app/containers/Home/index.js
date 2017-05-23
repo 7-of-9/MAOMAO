@@ -26,7 +26,6 @@ import LogoIcon from '../../components/LogoIcon'
 import Slogan from '../../components/Slogan'
 import { guid } from '../../utils/hash'
 
-
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
 }
@@ -175,9 +174,9 @@ class Home extends React.Component {
                       <h4 className='modal-title'>List share topic</h4>
                     </div>
                     <div className='modal-body'>
-                      <div id="accordion" role="tablist" aria-multiselectable="true">
-                        <div className="card card-topic">
-                          <div className="card-header" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <div id='accordion' role='tablist' aria-multiselectable='true'>
+                        <div className='card card-topic'>
+                          <div className='card-header' role='tab' id='headingOne' data-toggle='collapse' data-parent='#accordion' href='#collapseOne' aria-expanded='true' aria-controls='collapseOne'>
                             <div className='directional-user'>
                               <div className='share-image'>
                                 <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
@@ -188,8 +187,8 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseOne" className="collapse show" role="tabpanel" aria-labelledby="headingOne">
-                            <div className="card-block">
+                          <div id='collapseOne' className='collapse show' role='tabpanel' aria-labelledby='headingOne'>
+                            <div className='card-block'>
                               <ul className='list-topics'>
                                 <li className='items-topics'>
                                   <div className='media media-share'>
@@ -241,9 +240,9 @@ class Home extends React.Component {
                             </div>
                           </div>
                         </div>
-                        <div className="card card-topic">
-                          <div className="card-header" role="tab" id="headingTwo">
-                            <div className='directional-user collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <div className='card card-topic'>
+                          <div className='card-header' role='tab' id='headingTwo'>
+                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo'>
                               <div className='share-image'>
                                 <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                               </div>
@@ -253,8 +252,8 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseTwo" className="collapse show" role="tabpanel" aria-labelledby="headingTwo">
-                            <div className="card-block">
+                          <div id='collapseTwo' className='collapse show' role='tabpanel' aria-labelledby='headingTwo'>
+                            <div className='card-block'>
                               <ul className='list-topics'>
                                 <li className='items-topics'>
                                   <div className='media media-share'>
@@ -276,9 +275,9 @@ class Home extends React.Component {
                             </div>
                           </div>
                         </div>
-                        <div className="card card-topic">
-                          <div className="card-header" role="tab" id="headingThree">
-                            <div className='directional-user collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <div className='card card-topic'>
+                          <div className='card-header' role='tab' id='headingThree'>
+                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseThree'>
                               <div className='share-image'>
                                 <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                               </div>
@@ -288,8 +287,8 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseThree" className="collapse show" role="tabpanel" aria-labelledby="headingThree">
-                            <div className="card-block">
+                          <div id='collapseThree' className='collapse show' role='tabpanel' aria-labelledby='headingThree'>
+                            <div className='card-block'>
                               <ul className='list-topics'>
                                 <li className='items-topics'>
                                   <div className='media media-share'>
@@ -319,9 +318,9 @@ class Home extends React.Component {
                             </div>
                           </div>
                         </div>
-                        <div className="card card-topic">
-                          <div className="card-header" role="tab" id="headingFour">
-                            <div className='directional-user collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseFour">
+                        <div className='card card-topic'>
+                          <div className='card-header' role='tab' id='headingFour'>
+                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseFour'>
                               <div className='share-image'>
                                 <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                               </div>
@@ -331,8 +330,8 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseFour" className="collapse show" role="tabpanel" aria-labelledby="headingFour">
-                            <div className="card-block">
+                          <div id='collapseFour' className='collapse show' role='tabpanel' aria-labelledby='headingFour'>
+                            <div className='card-block'>
                               <ul className='list-topics'>
                                 <li className='items-topics'>
                                   <div className='media media-share'>
@@ -362,9 +361,9 @@ class Home extends React.Component {
                             </div>
                           </div>
                         </div>
-                        <div className="card card-topic">
-                          <div className="card-header" role="tab" id="headingFive">
-                            <div className='directional-user collapsed' data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseFour">
+                        <div className='card card-topic'>
+                          <div className='card-header' role='tab' id='headingFive'>
+                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseFour'>
                               <div className='share-image'>
                                 <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
                               </div>
@@ -374,8 +373,8 @@ class Home extends React.Component {
                               </div>
                             </div>
                           </div>
-                          <div id="collapseFive" className="collapse show" role="tabpanel" aria-labelledby="headingFive">
-                            <div className="card-block">
+                          <div id='collapseFive' className='collapse show' role='tabpanel' aria-labelledby='headingFive'>
+                            <div className='card-block'>
                               <ul className='list-topics'>
                                 <li className='items-topics'>
                                   <div className='media media-share'>

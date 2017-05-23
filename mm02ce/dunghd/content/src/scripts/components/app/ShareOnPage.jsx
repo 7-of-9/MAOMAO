@@ -94,11 +94,12 @@ function MaomaoShare() {
 
     // TODO: find a suitable position, left or right depend on distance of select text
     // align right in case the blue dog is out screen
-    if (left < 0) {
+    if (left < 0 ||
+      Math.abs(textPosition.left - left) > Math.abs(position.right - textPosition.left)) {
       left = position.right + 10;
     }
     // detect position left or right of paragraph
-    logger.info('left top', left, top, containterSize);
+    logger.info('left top', left, top);
   }
 
   function moveTooltip() {

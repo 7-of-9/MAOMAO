@@ -106,7 +106,7 @@
     "sass-loader": "^6.0.5",
     "style-loader": "^0.18.0",
     "tape": "^4.6.0",
-    "webpack": "^2.5.1",
+    "webpack": "^2.6.0",
     "webpack-env-loader": "^0.1.1",
     "why-did-you-update": "^0.0.8"
   },

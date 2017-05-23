@@ -257,6 +257,8 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
 
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   const idleState = window.idleState;
+  log.info('active url - change url', window.sessionObservable.activeUrl);
+
   // TODO: reset setting for experimental topics when change url
   chrome.tabs.query({
     active: true,
@@ -309,6 +311,9 @@ setInterval(() => {
     });
   }
 }, ROUND_CLOCK * 1000);
+
+// try to download new google contacts on 30 mins
+
 
 // firebase auth
 // init firebase
