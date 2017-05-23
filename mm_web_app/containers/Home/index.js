@@ -179,249 +179,88 @@ class Home extends React.Component {
                           <div className='card-header' role='tab' id='headingOne' data-toggle='collapse' data-parent='#accordion' href='#collapseOne' aria-expanded='true' aria-controls='collapseOne'>
                             <div className='directional-user'>
                               <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='40' height='40' /></a>
                               </div>
-                              <div className='share-line' />
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='30' height='30' /></a>
-                              </div>
+                              <div className='share-name'> Huỳnh Đức Dũng</div>
                             </div>
                           </div>
                           <div id='collapseOne' className='collapse show' role='tabpanel' aria-labelledby='headingOne'>
                             <div className='card-block'>
-                              <ul className='list-topics'>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://avatars0.githubusercontent.com/u/6412038?v=3&s=400' alt='' width='46' height='46' />
+                              <ul className="timeline timeline-horizontal">
+                                  <li className="timeline-item">
+                                    <div className="timeline-badge">
+                                      <a href='#'>
+                                        <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
                                       </a>
                                     </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>facebook.github.io/react/</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-4' rel='tag'>
-                                              <span className='text-tag'>JavaScript</span>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
+                                    <div className="timeline-panel">
+                                      <a href='#' className='btn btn-related'>Unshare</a>
                                     </div>
-                                  </div>
-                                </li>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://i.ytimg.com/vi/XWlFjQrc5kc/maxresdefault.jpg' alt='' width='46' height='46' />
+                                  </li>
+                                  <li className="timeline-item">
+                                    <div className="timeline-badge">
+                                      <i className="fa fa-share-alt" aria-hidden="true"></i>
+                                    </div>
+                                    <div className="timeline-panel">
+                                      <span className='name-url'>github.com</span>
+                                    </div>
+                                  </li>
+                                  <li className="timeline-item share-line-left">
+                                    <div className="timeline-badge">
+                                      <a href='#'>
+                                        <img className='object-badge' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='51' height='51' />
                                       </a>
                                     </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>youTube.com</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-1' rel='tag'>
-                                              <span className='text-tag'>Television</span>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
+                                    <div className="timeline-panel">
+                                      <a href='#' className='btn btn-unfollow'>Unfollow</a>
                                     </div>
-                                  </div>
-                                </li>
-                              </ul>
+                                  </li>
+                                </ul>
                             </div>
                           </div>
                         </div>
                         <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingTwo'>
-                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseTwo' aria-expanded='false' aria-controls='collapseTwo'>
+                          <div className='card-header' role='tab' id='headingOne' data-toggle='collapse' data-parent='#accordion' href='#collapseOne' aria-expanded='true' aria-controls='collapseOne'>
+                            <div className='directional-user'>
                               <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
+                                <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='40' height='40' /></a>
                               </div>
-                              <div className='share-line share-line-left' />
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='30' height='30' /></a>
-                              </div>
+                              <div className='share-name'> Dominic Morris</div>
                             </div>
                           </div>
                           <div id='collapseTwo' className='collapse show' role='tabpanel' aria-labelledby='headingTwo'>
                             <div className='card-block'>
-                              <ul className='list-topics'>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='http://cdn.tutorialzine.com/wp-content/uploads/2017/05/js-animations.png' alt='' width='46' height='46' />
-                                      </a>
-                                    </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>reactjs/react-modal: Accessible modal dialog component for React (7839)</span>
-                                        </h4>
-                                      </div>
+                              <ul className="timeline timeline-horizontal">
+                                <li className="timeline-item share-line-right">
+                                  <div className="timeline-badge">
+                                    <a href='#'>
+                                      <img className='object-badge' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='51' height='51' />
+                                    </a>
+                                  </div>
+                                  <div className="timeline-panel">
+                                    <a href='#' className='btn btn-related'>Unshare</a>
+                                  </div>
+                                </li>
+                                <li className="timeline-item">
+                                  <div className="timeline-badge">
+                                    <i className="fa fa-list" aria-hidden="true"></i>
+                                  </div>
+                                  <div className="timeline-panel">
+                                    <div className='tags-topic'>
+                                      <span className='tags tags-color-7' rel='tag'>
+                                        <span className='text-tag'>University of California, Berkeley</span>
+                                      </span>
                                     </div>
                                   </div>
                                 </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingThree'>
-                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseThree'>
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
-                              </div>
-                              <div className='share-line share-line-left' />
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='30' height='30' /></a>
-                              </div>
-                            </div>
-                          </div>
-                          <div id='collapseThree' className='collapse show' role='tabpanel' aria-labelledby='headingThree'>
-                            <div className='card-block'>
-                              <ul className='list-topics'>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://avatars3.githubusercontent.com/u/1778935?v=3&s=400' alt='' width='46' height='46' />
-                                      </a>
-                                    </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>GoogleChrome/workbox: Workbox is a collection of JavaScript libraries for Progressive Web Apps (16103)</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-6' rel='tag'>
-                                              <span className='text-tag'>Mathematics</span>
-                                              <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
+                                <li className="timeline-item">
+                                  <div className="timeline-badge">
+                                    <a href='#'>
+                                      <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
+                                    </a>
                                   </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingFour'>
-                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseFour'>
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
-                              </div>
-                              <div className='share-line share-line-right' />
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
-                              </div>
-                            </div>
-                          </div>
-                          <div id='collapseFour' className='collapse show' role='tabpanel' aria-labelledby='headingFour'>
-                            <div className='card-block'>
-                              <ul className='list-topics'>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://avatars2.githubusercontent.com/u/1335026?v=3&s=400' alt='' width='46' height='46' />
-                                      </a>
-                                    </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>Releases · firebase/firebase-js-sdk (15997)</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-7' rel='tag'>
-                                              <span className='text-tag'>University of California, Berkeley</span>
-                                              <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingFive'>
-                            <div className='directional-user collapsed' data-toggle='collapse' data-parent='#accordion' href='#collapseThree' aria-expanded='false' aria-controls='collapseFour'>
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='30' height='30' /></a>
-                              </div>
-                              <div className='share-line share-line-left share-line-right' />
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='/static/images/no-image.png' alt='' width='30' height='30' /></a>
-                              </div>
-                            </div>
-                          </div>
-                          <div id='collapseFive' className='collapse show' role='tabpanel' aria-labelledby='headingFive'>
-                            <div className='card-block'>
-                              <ul className='list-topics'>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://cdn-images-1.medium.com/max/1200/1*MXL-j6S8fTEd8UFP_foEEw.png' alt='' width='46' height='46' />
-                                      </a>
-                                    </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>Composing Software: An Introduction – JavaScript Scene – Medium (15967)</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-2' rel='tag'>
-                                              <span className='text-tag'>YouTube - Broadcast yourself</span>
-                                              <a className='btn-box-remove' title='Unfollow'><i className='fa fa-user-times' aria-hidden='true' /></a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li className='items-topics'>
-                                  <div className='media media-share'>
-                                    <div className='media-left'>
-                                      <a href=''>
-                                        <img className='media-object' src='https://cdn.dribbble.com/users/108547/screenshots/1448519/projectbox.png' alt='' width='46' height='46' />
-                                      </a>
-                                    </div>
-                                    <div className='media-body'>
-                                      <div className='media-body-inner'>
-                                        <h4 className='media-heading'>
-                                          <span className='text-ellipsis'>ChronoPod by Cesar Zeppini - Dribbble (16161)</span>
-                                        </h4>
-                                        <div className='share-with'>
-                                          <div className='tags-topic'>
-                                            <span className='tags tags-color-12' rel='tag'>
-                                              <span className='text-tag'>Technology</span>
-                                              <a className='btn-box-remove' title='Unshare'><i className='fa fa-share' aria-hidden='true' /></a>
-                                            </span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
+                                  <div className="timeline-panel">
+                                    <a href='#' className='btn btn-unfollow'>Unfollow</a>
                                   </div>
                                 </li>
                               </ul>
