@@ -37,6 +37,7 @@ function getSuggestions(contacts, value) {
   };
   const fuse = new Fuse(contacts, options);
   const result = fuse.search(value);
+  logger.info('getSuggestions value, result, contacts', value, result, contacts);
   return result.slice(0, 5);
 }
 
@@ -95,24 +96,39 @@ const enhance = compose(
       props.handleChange(sources);
       props.changeSelectedContacts(sources);
     },
+    onSubmit: props => (event) => {
+      event.preventDefault();
+      logger.info('onSubmit value', props.value);
+      const emails = props.selectedContacts.map(item => item.email);
+      const sources = props.contacts.filter(item => emails.indexOf(item.email) === -1);
+      const selected = getSuggestions(sources, props.value);
+      logger.info('onSubmit selected', selected);
+      const result = [].concat(props.selectedContacts, (selected && selected[0]) || []);
+      logger.info('onSubmit result', result);
+      const isEmail = validate.single(props.value, { presence: true, email: true });
+      const isExist = props.selectedContacts.find(item => item.email === props.value);
+      logger.info('onSubmit props.value, isEmail', props.value, isEmail);
+      if (selected.length === 0 && !isEmail && !isExist) {
+        // validate email
+        result.push({
+          key: guid(),
+          name: props.value,
+          email: props.value,
+          image: '',
+        });
+      }
+      logger.info('result', result);
+      props.handleChange(result);
+      props.changeSelectedContacts(result);
+      props.changeValue('');
+    },
     onChange: props => (event, { newValue, method }) => {
-      logger.warn('event', event);
-      logger.warn('onChange', newValue, method);
-      if (method === 'click' || method === 'enter') {
+      logger.info('onChange event', event);
+      logger.info('onChange', newValue, method);
+      if (method === 'click') {
         const selected = getSuggestions(props.suggestions, newValue);
         const result = [].concat(props.selectedContacts, (selected && selected[0]) || []);
-        logger.warn('onChange result', result);
-        const isEmail = validate.single(newValue, { presence: true, email: true });
-        if (result.length === 0 && !isEmail) {
-          // validate email
-          result.push({
-            key: guid(),
-            name: newValue,
-            email: newValue,
-            image: '',
-          });
-        }
-        logger.warn('result', result);
+        logger.info('onChange result', result);
         props.handleChange(result);
         props.changeSelectedContacts(result);
         props.changeValue('');
@@ -125,7 +141,7 @@ const enhance = compose(
 );
 
 const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addContact,
-  removeContact, onChange, suggestions, onSuggestionsFetchRequested,
+  removeContact, onChange, suggestions, onSuggestionsFetchRequested, onSubmit,
   onSuggestionsClearRequested }) =>
   (<div>
     <div style={{ display: 'inline-block', width: '100%' }}>
@@ -147,19 +163,21 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
       }
     </div>
     <div className="panel-autocomplete">
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        highlightFirstSuggestion
-        inputProps={{
-          placeholder: 'To: type name to search...',
-          value,
-          onChange,
-        }}
-      />
+      <form onSubmit={onSubmit}>
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          highlightFirstSuggestion
+          inputProps={{
+            placeholder: 'To: type name to search...',
+            value,
+            onChange,
+          }}
+        />
+      </form>
     </div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
