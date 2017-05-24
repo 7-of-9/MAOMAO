@@ -14,7 +14,7 @@ require('expose-loader?log!loglevel');
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
   whyDidYouUpdate(React, {
-    exclude: /^(Connect|StyleRoot|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState)/
+    exclude: /^(Connect|StyleRoot|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
   });
 }
 /* eslint-enable */

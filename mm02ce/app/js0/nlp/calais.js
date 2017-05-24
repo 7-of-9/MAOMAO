@@ -319,6 +319,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, document_head_hash
   var nlp = null;
   var millis = new Date().getTime();
   var content_lang = "?";
+  dispatchDataToBg({ type: 'NLP_PROCESS', payload: { url: remove_hash_url(url.href), document_head_hash: document_head_hash } });
   $.ajax({
     type: "POST",
     url: "https://api.thomsonreuters.com/permid/calais",
@@ -415,7 +416,7 @@ function nlp_calais(page_meta, test_data, url, user_id, hash, document_head_hash
           logger().info("Disable youtube test");
         }
       }, function (error) {
-        dispatchDataToBg({ type: 'NLP_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), error: error, } });
+        dispatchDataToBg({ type: 'NLP_CALAIS_ERROR', payload: { url: remove_hash_url(document.location.href), document_head_hash: document_head_hash, error: error, } });
       });
 
       // post-process nlp data -- // this then becomes the reference output for the server

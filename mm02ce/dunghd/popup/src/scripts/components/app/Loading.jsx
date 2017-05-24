@@ -6,8 +6,8 @@ const Loading = styled.img`
   background-image: url(${icon});
   background-repeat: no-repeat;
   background-size: contain;
-  width: 120px;
-  height: 120px;
+  width: 50px;
+  height: 50px;
 `;
 
 export default Loading;

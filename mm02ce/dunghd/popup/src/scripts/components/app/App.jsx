@@ -72,6 +72,15 @@ const isAllowToShare = (url, records) => {
   return false;
 };
 
+const nlpStatus = (url, terms) => {
+  if (terms && terms.length) {
+    const isExist = terms.find(item => item.url === url);
+    return isExist && (isExist.status === 'unknow' || isExist.status === 'pending');
+  }
+
+  return false;
+};
+
 const getCurrentTopics = (url, records, terms, isEnableXpInfo) => {
   const topics = [];
   if (records.length) {
@@ -177,6 +186,7 @@ const render = (
       logger.warn('url', shareUrl);
       const currentTopics = getCurrentTopics(url, nlp.records, nlp.terms, icon.isEnableXpInfo);
       logger.warn('currentTopics', currentTopics);
+      const isProcessingNlp = currentTopics.length === 1 && nlpStatus(url, nlp.terms);
       return (
         <div className="popup-browser">
           <div className="map-browser">
@@ -194,6 +204,7 @@ const render = (
               url={url}
               active={shareOption || (currentTopics[0] && currentTopics[0].id)}
               topics={topics}
+              isProcessingNlp={isProcessingNlp}
               onChange={changeShareOption}
             />
           </div>

@@ -27,6 +27,26 @@ export default (nlp = initialState, action, auth) => {
         document_head_hash: action.payload.document_head_hash,
         topics: [],
         suggestions: [],
+        status: 'unknow',
+      });
+      return Object.assign({}, nlp, { terms });
+    }
+    case 'NLP_PROCESS': {
+      const url = action.payload.url;
+      let terms = [];
+      if (nlp.terms.length) {
+        terms = nlp.terms.filter(item => item.url !== url);
+      }
+      const urlOnSession = window.sessionObservable.urls.get(window.bglib_remove_hash_url(url));
+      if (urlOnSession) {
+        urlOnSession.document_head_hash = action.payload.document_head_hash;
+      }
+      terms = terms.concat({
+        url,
+        status: 'pending',
+        document_head_hash: action.payload.document_head_hash,
+        topics: [],
+        suggestions: [],
       });
       return Object.assign({}, nlp, { terms });
     }
@@ -46,6 +66,27 @@ export default (nlp = initialState, action, auth) => {
         document_head_hash: action.payload.document_head_hash,
         topics: action.payload.topics,
         suggestions: action.payload.suggestions,
+        status: 'done',
+      });
+      return Object.assign({}, nlp, { terms });
+    }
+
+    case 'NLP_CALAIS_ERROR': {
+      const url = action.payload.url;
+      let terms = [];
+      if (nlp.terms.length) {
+        terms = nlp.terms.filter(item => item.url !== url);
+      }
+      const urlOnSession = window.sessionObservable.urls.get(window.bglib_remove_hash_url(url));
+      if (urlOnSession) {
+        urlOnSession.document_head_hash = action.payload.document_head_hash;
+      }
+      terms = terms.concat({
+        url,
+        document_head_hash: action.payload.document_head_hash,
+        topics: [],
+        suggestions: [],
+        status: 'error',
       });
       return Object.assign({}, nlp, { terms });
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import styled from 'styled-components';
 import ToggleButton from 'react-toggle-button'; // https://gdowens.github.io/react-toggle-button/
+import Loading from './Loading';
 import logger from './logger';
 import { guid } from './utils';
 
@@ -22,10 +23,10 @@ const style = {
 };
 
 const enhance = compose(
-  onlyUpdateForKeys(['topic', 'active']),
+  onlyUpdateForKeys(['topics', 'active', 'isProcessingNlp']),
 );
 
-const ShareOptions = enhance(({ url, topics, active, onChange }) => {
+const ShareOptions = enhance(({ url, isProcessingNlp, topics, active, onChange }) => {
   const tld = topics.find(item => item.id.indexOf('tld') !== -1);
   const experimentalTopics = topics.filter(item => item.id.indexOf('beta') !== -1);
   const isToggleTopic = !!topics.find(item => item.id === active);
@@ -78,9 +79,12 @@ const ShareOptions = enhance(({ url, topics, active, onChange }) => {
                 </label>
               </div>
             }
+            {isProcessingNlp &&
+              <div style={{ margin: '0 auto', textAlign: 'center' }}><Loading /></div>
+            }
             {isToggleTopic && experimentalTopics.length > 0 &&
               experimentalTopics.map(topic =>
-                <div key={guid()} className="radio__regular">
+                (<div key={guid()} className="radio__regular">
                   <input
                     type="radio"
                     onChange={() => { onChange(topic.id); }}
@@ -95,7 +99,7 @@ const ShareOptions = enhance(({ url, topics, active, onChange }) => {
                       {topic.name.toUpperCase()} <span className="icons-labs" />
                     </span>
                   </label>
-                </div>,
+                </div>),
               )
             }
           </div>
