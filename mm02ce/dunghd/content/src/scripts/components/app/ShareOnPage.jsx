@@ -84,10 +84,10 @@ function MaomaoShare() {
     const DOCUMENT_SCROLLTOP = window.pageXOffset ||
       document.documentElement.scrollTop ||
       document.body.scrollTop;
-    top = (position.top + DOCUMENT_SCROLLTOP + position.height) - iconSize;
+    top = position.top + DOCUMENT_SCROLLTOP;
     // HOTFIX: when top positio is too far with text selection
-    const textDistance = (textPosition.top + DOCUMENT_SCROLLTOP) - iconSize;
-    if (top > textDistance) {
+    const textDistance = textPosition.top + DOCUMENT_SCROLLTOP;
+    if (top < textDistance) {
       top = textDistance;
     }
     left = position.left - iconSize - 10;

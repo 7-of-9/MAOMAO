@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import validate from 'validate.js';
 import Fuse from 'fuse.js';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
@@ -8,6 +9,7 @@ import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
 import noImage from './images/no-image.png';
 import Contact from './Contact';
 import guid from '../utils/guid';
+import logger from '../utils/logger';
 
 function getSuggestionValue(suggestion) {
   return suggestion.email;
@@ -71,14 +73,19 @@ function renderSuggestion(suggestion, { query }) {
 
 const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
   removeContact, onChange, suggestions, onSuggestionsFetchRequested,
-  onSuggestionsClearRequested }) => <div>
+  onSuggestionsClearRequested }) =>
+  (<div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
         mostRecentUses.map((contact) => {
           if (!selectedContacts.map(item => item.email).includes(contact.email)) {
             return (
               <Contact
-                onClick={() => { addContact(contact); }} key={`MRC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image}
+                onClick={() => { addContact(contact); }}
+                key={`MRC-${contact.key}`}
+                name={contact.name}
+                email={contact.email}
+                image={contact.image}
               />
             );
           }
@@ -108,12 +115,11 @@ const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
         ))
       }
     </div>
-  </div>;
+  </div>);
 
 
 GoogleShare.propTypes = {
   value: PropTypes.string,
-  contacts: PropTypes.array.isRequired,
   mostRecentUses: PropTypes.array.isRequired,
   selectedContacts: PropTypes.array,
   suggestions: PropTypes.array,
@@ -164,9 +170,23 @@ const enhance = compose(
       props.changeSelectedContacts(sources);
     },
     onChange: props => (event, { newValue, method }) => {
+      logger.warn('event', event);
+      logger.warn('onChange', newValue, method);
       if (method === 'click' || method === 'enter') {
         const selected = getSuggestions(props.suggestions, newValue);
         const result = [].concat(props.selectedContacts, (selected && selected[0]) || []);
+        logger.warn('onChange result', result);
+        const isEmail = validate.single(newValue, { presence: true, email: true });
+        if (result.length === 0 && !isEmail) {
+          // validate email
+          result.push({
+            key: guid(),
+            name: newValue,
+            email: newValue,
+            image: '',
+          });
+        }
+        logger.warn('result', result);
         props.handleChange(result);
         props.changeSelectedContacts(result);
         props.changeValue('');

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose, withHandlers } from 'recompose';
+import { compose, onlyUpdateForKeys, withHandlers } from 'recompose';
 import { StyleRoot } from 'radium';
 import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
@@ -428,7 +428,10 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           }
         >
           <Xp
-            terms={xpTopics} shareTopics={openShare} closeXp={closeXp} isEnableExperimentalTopics
+            terms={xpTopics}
+            shareTopics={openShare}
+            closeXp={closeXp}
+            isEnableExperimentalTopics
           />
         </ToggleDisplay>
       </div>
@@ -546,6 +549,7 @@ const enhance = compose(
       });
     },
   }),
+  onlyUpdateForKeys(['auth', 'isOpen', 'score', 'terms', 'tld', 'xpTopics', 'topics', 'code', 'icon']),
 );
 
 const mapStateToProps = state => ({

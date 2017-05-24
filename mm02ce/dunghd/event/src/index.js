@@ -312,8 +312,7 @@ setInterval(() => {
   }
 }, ROUND_CLOCK * 1000);
 
-// try to download new google contacts on 30 mins
-
+// TODO: try to download new google contacts on 30 mins
 
 // firebase auth
 // init firebase

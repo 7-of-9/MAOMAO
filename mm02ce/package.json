@@ -26,7 +26,7 @@
     "loglevel": "^1.4.1",
     "mailgun": "shz/node-mailgun",
     "material-ui": "^0.18.1",
-    "mobx": "^3.1.9",
+    "mobx": "^3.1.10",
     "moment": "^2.18.1",
     "postcss-loader": "^2.0.5",
     "prop-types": "^15.5.10",
@@ -64,7 +64,8 @@
     "styled-components": "^1.4.6",
     "throttled-queue": "^1.0.4",
     "underscore": "^1.8.3",
-    "url-loader": "^0.5.8"
+    "url-loader": "^0.5.8",
+    "validate.js": "^0.11.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -104,7 +105,7 @@
     "react-addons-test-utils": "^15.3.1",
     "rimraf": "^2.5.0",
     "sass-loader": "^6.0.5",
-    "style-loader": "^0.18.0",
+    "style-loader": "^0.18.1",
     "tape": "^4.6.0",
     "webpack": "^2.6.0",
     "webpack-env-loader": "^0.1.1",

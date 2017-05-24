@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
-import { onlyUpdateForKeys, lifecycle, compose } from 'recompose';
+import { pure, withProps, shallowEqual, flattenProp, shouldUpdate, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
+import logger from '../utils/logger';
 
 const customStyles = {
   title: {
@@ -77,28 +78,25 @@ const customStyles = {
 };
 
 const propTypes = {
-  auth: PropTypes.object,
   onFacebookLogin: PropTypes.func.isRequired,
+  isLogin: PropTypes.bool.isRequired,
+  info: PropTypes.object.isRequired,
   onLogout: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };
 
 const defaultProps = {
-  auth: {
-    isLogin: false,
-    googleToken: '',
-    facebookToken: '',
-    info: {},
-  },
-  isShareOpen: false,
+  isLogin: false,
+  info: {},
   isOpen: false,
 };
 
 function WelcomeModal({
-  auth, isOpen,
+  isLogin, info, isOpen,
   onFacebookLogin,
   onClose, onLogout }) {
+  logger.info('isLogin, info, isOpen', isLogin, info, isOpen);
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
@@ -110,20 +108,20 @@ function WelcomeModal({
           <h1 className="welcome-heading">
             <span className="logo-bg" />
           </h1>
-          <ToggleDisplay hide={auth.isLogin} className="position-normal">
+          <ToggleDisplay hide={isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join maomao now!</h2>
             <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>
               <span><i className="icons-facebook" /></span> Sign in with Facebook
             </a>
           </ToggleDisplay>
-          <ToggleDisplay show={auth.isLogin} className="position-normal">
+          <ToggleDisplay show={isLogin} className="position-normal">
             <Card style={customStyles.card}>
               <CardHeader
                 className="card-header"
                 style={customStyles.cardHeader}
-                title={auth.info.name}
-                subtitle={auth.info.email}
-                avatar={auth.info.picture}
+                title={info.name}
+                subtitle={info.email}
+                avatar={info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
                 <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
@@ -150,7 +148,17 @@ const enhance = compose(
       $('.tlt').fitText(0.5).textillate();
     },
   }),
-  onlyUpdateForKeys(['auth', 'isOpen']),
+  withProps({
+    auth: {
+      isLogin: false,
+      info: {},
+      contacts: [],
+    },
+    isOpen: false,
+  }),
+  flattenProp('auth'),
+  shouldUpdate((props, nextProps) => shallowEqual(props) !== shallowEqual(nextProps)),
+  pure,
 );
 
 export default Radium(enhance(WelcomeModal));
