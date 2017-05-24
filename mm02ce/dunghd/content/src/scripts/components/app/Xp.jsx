@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { withState, withHandlers, lifecycle, compose } from 'recompose';
 import CountUp from 'react-countup';
 import { bounceInUp, zoomInUp, bounceOutUp } from 'react-animations';
@@ -87,10 +86,10 @@ const enhance = compose(
 const Xp = enhance(({
   show, text, score, counter, isEnableExperimentalTopics,
   closePopup, openShare, playNextItem }) => {
-  logger.info('XP');
+  logger.info('XP show, text, score, counter, isEnableExperimentalTopics', show, text, score, counter, isEnableExperimentalTopics);
   return (
     <div className="blurred" style={{ display: show && score > 0 ? 'block' : 'none' }}>
-      <a className="close_popup" onClick={closePopup}><i className="icons-close" /></a>
+      <a role="button" tabIndex="0" className="close_popup" onClick={closePopup}><i className="icons-close" /></a>
       <div className="inner_bg">
         {dummies}
         <div
@@ -116,11 +115,5 @@ const Xp = enhance(({
     </div >
   );
 });
-
-Xp.propTypes = {
-  shareTopics: PropTypes.func.isRequired,
-  closeXp: PropTypes.func.isRequired,
-  isEnableExperimentalTopics: PropTypes.bool,
-};
 
 export default Radium(Xp);

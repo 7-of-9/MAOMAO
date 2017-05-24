@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
-import { pure, shallowEqual, flattenProp, shouldUpdate, lifecycle, compose } from 'recompose';
+import { onlyUpdateForKeys, flattenProp, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
@@ -102,12 +102,12 @@ function WelcomeModal({
   isLogin, info, isOpen,
   onFacebookLogin,
   onClose, onLogout }) {
-  logger.info('isLogin, info, isOpen', isLogin, info, isOpen);
+  logger.info('WelcomeModal isLogin, info, isOpen', isLogin, info, isOpen);
   return (
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
-          <a className="close_popup" onClick={onClose}><i className="icons-close" /></a>
+          <a tabIndex="0" role="button" className="close_popup" onClick={onClose}><i className="icons-close" /></a>
           <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
             <div className="maomao-logo" />
           </a>
@@ -116,7 +116,7 @@ function WelcomeModal({
           </h1>
           <ToggleDisplay hide={isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join maomao now!</h2>
-            <a className="btn btn-block btn-social btn-facebook" onClick={onFacebookLogin}>
+            <a tabIndex="0" role="button" className="btn btn-block btn-social btn-facebook" onClick={onFacebookLogin}>
               <span><i className="icons-facebook" /></span> Sign in with Facebook
             </a>
           </ToggleDisplay>
@@ -130,7 +130,7 @@ function WelcomeModal({
                 avatar={info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
-                <a className="btn btn-block btn-social btn-logout" onClick={onLogout}>
+                <a tabIndex="0" role="button" className="btn btn-block btn-social btn-logout" onClick={onLogout}>
                   <span><i className="icons_signout" /></span> Logout
                   </a>
               </CardActions>
@@ -155,8 +155,7 @@ const enhance = compose(
     },
   }),
   flattenProp('auth'),
-  shouldUpdate((props, nextProps) => shallowEqual(props) !== shallowEqual(nextProps)),
-  pure,
+  onlyUpdateForKeys(['isLogin', 'info', 'isOpen']),
 );
 
 export default Radium(enhance(WelcomeModal));

@@ -13,7 +13,9 @@ require('expose-loader?log!loglevel');
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
-  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ });
+  whyDidYouUpdate(React, {
+    exclude: /^(Connect|StyleRoot|Autosuggest|ItemsList|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState)/
+  });
 }
 /* eslint-enable */
 

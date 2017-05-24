@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import validate from 'validate.js';
 import Fuse from 'fuse.js';
 import Autosuggest from 'react-autosuggest';
@@ -71,79 +70,6 @@ function renderSuggestion(suggestion, { query }) {
   );
 }
 
-const GoogleShare = ({ value, mostRecentUses, selectedContacts, addContact,
-  removeContact, onChange, suggestions, onSuggestionsFetchRequested,
-  onSuggestionsClearRequested }) =>
-  (<div>
-    <div style={{ display: 'inline-block', width: '100%' }}>
-      {
-        mostRecentUses.map((contact) => {
-          if (!selectedContacts.map(item => item.email).includes(contact.email)) {
-            return (
-              <Contact
-                onClick={() => { addContact(contact); }}
-                key={`MRC-${contact.key}`}
-                name={contact.name}
-                email={contact.email}
-                image={contact.image}
-              />
-            );
-          }
-          return '';
-        })
-      }
-    </div>
-    <div className="panel-autocomplete">
-      <Autosuggest
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        highlightFirstSuggestion
-        inputProps={{
-          placeholder: 'To: type name to search...',
-          value,
-          onChange,
-        }}
-      />
-    </div>
-    <div style={{ display: 'inline-block', width: '100%' }}>
-      {
-        selectedContacts.map(contact => (
-          <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
-        ))
-      }
-    </div>
-  </div>);
-
-
-GoogleShare.propTypes = {
-  value: PropTypes.string,
-  mostRecentUses: PropTypes.array.isRequired,
-  selectedContacts: PropTypes.array,
-  suggestions: PropTypes.array,
-  addContact: PropTypes.func,
-  removeContact: PropTypes.func,
-  onChange: PropTypes.func,
-  onSuggestionsFetchRequested: PropTypes.func,
-  onSuggestionsClearRequested: PropTypes.func,
-};
-
-GoogleShare.defaultProps = {
-  value: '',
-  contacts: [],
-  mostRecentUses: [],
-  selectedContacts: [],
-  suggestions: [],
-  addContact: () => { },
-  removeContact: () => { },
-  onChange: () => { },
-  onSuggestionsFetchRequested: () => { },
-  onSuggestionsClearRequested: () => { },
-};
-
-
 const enhance = compose(
   withState('suggestions', 'changeSuggestions', []),
   withState('selectedContacts', 'changeSelectedContacts', []),
@@ -198,4 +124,50 @@ const enhance = compose(
   onlyUpdateForKeys(['value', 'contacts', 'suggestions']),
 );
 
-export default enhance(GoogleShare);
+const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addContact,
+  removeContact, onChange, suggestions, onSuggestionsFetchRequested,
+  onSuggestionsClearRequested }) =>
+  (<div>
+    <div style={{ display: 'inline-block', width: '100%' }}>
+      {
+        mostRecentUses.map((contact) => {
+          if (!selectedContacts.map(item => item.email).includes(contact.email)) {
+            return (
+              <Contact
+                onClick={() => { addContact(contact); }}
+                key={`MRC-${contact.key}`}
+                name={contact.name}
+                email={contact.email}
+                image={contact.image}
+              />
+            );
+          }
+          return '';
+        })
+      }
+    </div>
+    <div className="panel-autocomplete">
+      <Autosuggest
+        suggestions={suggestions}
+        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+        onSuggestionsClearRequested={onSuggestionsClearRequested}
+        getSuggestionValue={getSuggestionValue}
+        renderSuggestion={renderSuggestion}
+        highlightFirstSuggestion
+        inputProps={{
+          placeholder: 'To: type name to search...',
+          value,
+          onChange,
+        }}
+      />
+    </div>
+    <div style={{ display: 'inline-block', width: '100%' }}>
+      {
+        selectedContacts.map(contact => (
+          <Contact isEdit onRemove={() => { removeContact(contact); }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+        ))
+      }
+    </div>
+  </div>));
+
+export default GoogleShare;

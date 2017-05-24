@@ -221,10 +221,10 @@ const ShareTopicStepThree = enhance2(({
   ));
 
 const ShareTopic = enhance(({
-   enable, type, topics, contacts, code, shareOption, currentStep,
+  enable, type, topics, contacts, code, shareOption, currentStep,
   handleChange, shareUrl, sendMsgUrl, changeShareType,
   sendEmails, closeShare, accessGoogleContacts }) => {
-  logger.info('ShareTopic');
+  logger.info('ShareTopic enable, type, topics, contacts, code, shareOption, currentStep', enable, type, topics, contacts, code, shareOption, currentStep);
   const steps = [
     { title: 'Select your content', description: 'Share this page or topics with your friends.' },
     { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
