@@ -187,36 +187,36 @@ class Home extends React.Component {
                           </div>
                           <div id='collapseOne' className='collapse show' role='tabpanel' aria-labelledby='headingOne'>
                             <div className='card-block'>
-                              <ul className="timeline timeline-horizontal">
-                                  <li className="timeline-item">
-                                    <div className="timeline-badge">
-                                      <a href='#'>
-                                        <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
-                                      </a>
-                                    </div>
-                                    <div className="timeline-panel">
-                                      <a href='#' className='btn btn-related'>Unshare</a>
-                                    </div>
-                                  </li>
-                                  <li className="timeline-item">
-                                    <div className="timeline-badge">
-                                      <i className="fa fa-share-alt" aria-hidden="true"></i>
-                                    </div>
-                                    <div className="timeline-panel">
-                                      <span className='name-url'>github.com</span>
-                                    </div>
-                                  </li>
-                                  <li className="timeline-item share-line-left">
-                                    <div className="timeline-badge">
-                                      <a href='#'>
-                                        <img className='object-badge' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='51' height='51' />
-                                      </a>
-                                    </div>
-                                    <div className="timeline-panel">
-                                      <a href='#' className='btn btn-unfollow'>Unfollow</a>
-                                    </div>
-                                  </li>
-                                </ul>
+                              <ul className='timeline timeline-horizontal'>
+                                <li className='timeline-item'>
+                                  <div className='timeline-badge'>
+                                    <a href='#'>
+                                      <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
+                                    </a>
+                                  </div>
+                                  <div className='timeline-panel'>
+                                    <a href='#' className='btn btn-related'>Unshare</a>
+                                  </div>
+                                </li>
+                                <li className='timeline-item'>
+                                  <div className='timeline-badge'>
+                                    <i className='fa fa-share-alt' aria-hidden='true' />
+                                  </div>
+                                  <div className='timeline-panel'>
+                                    <span className='name-url'>github.com</span>
+                                  </div>
+                                </li>
+                                <li className='timeline-item share-line-left'>
+                                  <div className='timeline-badge'>
+                                    <a href='#'>
+                                      <img className='object-badge' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='51' height='51' />
+                                    </a>
+                                  </div>
+                                  <div className='timeline-panel'>
+                                    <a href='#' className='btn btn-unfollow'>Unfollow</a>
+                                  </div>
+                                </li>
+                              </ul>
                             </div>
                           </div>
                         </div>
@@ -231,22 +231,22 @@ class Home extends React.Component {
                           </div>
                           <div id='collapseTwo' className='collapse show' role='tabpanel' aria-labelledby='headingTwo'>
                             <div className='card-block'>
-                              <ul className="timeline timeline-horizontal">
-                                <li className="timeline-item share-line-right">
-                                  <div className="timeline-badge">
+                              <ul className='timeline timeline-horizontal'>
+                                <li className='timeline-item share-line-right'>
+                                  <div className='timeline-badge'>
                                     <a href='#'>
                                       <img className='object-badge' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='51' height='51' />
                                     </a>
                                   </div>
-                                  <div className="timeline-panel">
+                                  <div className='timeline-panel'>
                                     <a href='#' className='btn btn-related'>Unshare</a>
                                   </div>
                                 </li>
-                                <li className="timeline-item">
-                                  <div className="timeline-badge">
-                                    <i className="fa fa-list" aria-hidden="true"></i>
+                                <li className='timeline-item'>
+                                  <div className='timeline-badge'>
+                                    <i className='fa fa-list' aria-hidden='true' />
                                   </div>
-                                  <div className="timeline-panel">
+                                  <div className='timeline-panel'>
                                     <div className='tags-topic'>
                                       <span className='tags tags-color-7' rel='tag'>
                                         <span className='text-tag'>University of California, Berkeley</span>
@@ -254,13 +254,13 @@ class Home extends React.Component {
                                     </div>
                                   </div>
                                 </li>
-                                <li className="timeline-item">
-                                  <div className="timeline-badge">
+                                <li className='timeline-item'>
+                                  <div className='timeline-badge'>
                                     <a href='#'>
                                       <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
                                     </a>
                                   </div>
-                                  <div className="timeline-panel">
+                                  <div className='timeline-panel'>
                                     <a href='#' className='btn btn-unfollow'>Unfollow</a>
                                   </div>
                                 </li>

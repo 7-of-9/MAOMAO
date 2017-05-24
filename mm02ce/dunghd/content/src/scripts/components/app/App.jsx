@@ -18,12 +18,7 @@ import shareOnUrl from '../../selectors/share';
 import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
 import logger from '../utils/logger';
 
-window.jQuery = $;
-
 require('../../stylesheets/main.scss');
-require('../../vendors/jquery.fittext');
-require('../../vendors/jquery.lettering');
-require('../../vendors/jquery.textillate');
 
 const MAILGUN_KEY = 'key-6acu-fqm4j325jes59jc31rq557e83l6';
 const mailgun = new Mailgun.Mailgun(MAILGUN_KEY);

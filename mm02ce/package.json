@@ -3,7 +3,9 @@
   "version": "0.2.1",
   "description": "maomao extension",
   "scripts": {
-    "test-app": "tape -r babel-register -r ./dunghd/content/src/scripts/test/setup-jsdom.js ./dunghd/content/src/scripts/test/*-test.js | faucet"
+    "test-app": "tape -r babel-register -r ./dunghd/content/src/scripts/test/setup-jsdom.js ./dunghd/content/src/scripts/test/*-test.js | faucet",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "keywords": [
     "maomao"
@@ -68,6 +70,7 @@
     "validate.js": "^0.11.1"
   },
   "devDependencies": {
+    "@kadira/storybook": "^2.21.0",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.0.20",
     "babel-eslint": "^7.2.3",

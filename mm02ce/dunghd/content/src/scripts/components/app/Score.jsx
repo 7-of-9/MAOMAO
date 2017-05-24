@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import { onlyUpdateForKeys, compose } from 'recompose';
+import { onlyUpdateForKeys, flattenProp, compose } from 'recompose';
 import moment from 'moment';
 import logger from '../utils/logger';
 
@@ -27,17 +27,19 @@ const style = {
 };
 
 const propTypes = {
-  score: PropTypes.object,
+  url: PropTypes.string,
+  histories: PropTypes.array,
+  time_on_tab: PropTypes.number,
+  audible_pings: PropTypes.number,
+  im_score: PropTypes.number,
 };
 
 const defaultProps = {
-  score: {
-    url: '',
-    histories: [],
-    time_on_tab: 0,
-    audible_pings: 0,
-    im_score: 0,
-  },
+  url: '',
+  histories: [],
+  time_on_tab: 0,
+  audible_pings: 0,
+  im_score: 0,
 };
 
 function lastSave(url, histories) {
@@ -53,8 +55,8 @@ function lastSave(url, histories) {
 }
 
 /* eslint-disable camelcase */
-function Score({ score: { url, histories, im_score, time_on_tab, audible_pings } }) {
-  logger.info('Score render');
+function Score({ url, histories, im_score, time_on_tab, audible_pings }) {
+  logger.info('Score render', url, histories, im_score, time_on_tab, audible_pings);
   return (
     <Card className="blur" style={style.card}>
       <CardHeader
@@ -76,7 +78,8 @@ Score.propTypes = propTypes;
 Score.defaultProps = defaultProps;
 
 const enhance = compose(
-  onlyUpdateForKeys(['score']),
+  flattenProp('score'),
+  onlyUpdateForKeys(['url', 'im_score', 'time_on_tab', 'audible_pings']),
 );
 
 export default enhance(Score);

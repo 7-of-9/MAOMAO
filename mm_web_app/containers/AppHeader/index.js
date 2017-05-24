@@ -157,7 +157,7 @@ class AppHeader extends React.Component {
               <img className='image-account' src={this.props.store.avatar} alt={this.props.store.userId} width='33' height='33' />
             </a>
             <a className='link-logout-res' onClick={this.onLogout}>
-              <i className='fa fa-sign-out' /> 
+              <i className='fa fa-sign-out' />
               <span className='nav-text'>Sign Out</span>
             </a>
             <ul className='dropdown-menu pull-right'>

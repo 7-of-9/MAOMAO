@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
-import { pure, withProps, shallowEqual, flattenProp, shouldUpdate, lifecycle, compose } from 'recompose';
+import { pure, shallowEqual, flattenProp, shouldUpdate, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
 import logger from '../utils/logger';
+
+window.jQuery = $;
+
+require('../../vendors/jquery.fittext');
+require('../../vendors/jquery.lettering');
+require('../../vendors/jquery.textillate');
 
 const customStyles = {
   title: {
@@ -101,7 +107,7 @@ function WelcomeModal({
     <ToggleDisplay if={isOpen}>
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
-          <a className="close_popup" onTouchTap={onClose}><i className="icons-close" /></a>
+          <a className="close_popup" onClick={onClose}><i className="icons-close" /></a>
           <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
             <div className="maomao-logo" />
           </a>
@@ -110,7 +116,7 @@ function WelcomeModal({
           </h1>
           <ToggleDisplay hide={isLogin} className="position-normal">
             <h2 style={customStyles.cardTitle}>Join maomao now!</h2>
-            <a className="btn btn-block btn-social btn-facebook" onTouchTap={onFacebookLogin}>
+            <a className="btn btn-block btn-social btn-facebook" onClick={onFacebookLogin}>
               <span><i className="icons-facebook" /></span> Sign in with Facebook
             </a>
           </ToggleDisplay>
@@ -124,7 +130,7 @@ function WelcomeModal({
                 avatar={info.picture}
               />
               <CardActions style={customStyles.cardAction} className="position-normal">
-                <a className="btn btn-block btn-social btn-logout" onTouchTap={onLogout}>
+                <a className="btn btn-block btn-social btn-logout" onClick={onLogout}>
                   <span><i className="icons_signout" /></span> Logout
                   </a>
               </CardActions>
@@ -147,14 +153,6 @@ const enhance = compose(
     componentDidUpdate() {
       $('.tlt').fitText(0.5).textillate();
     },
-  }),
-  withProps({
-    auth: {
-      isLogin: false,
-      info: {},
-      contacts: [],
-    },
-    isOpen: false,
   }),
   flattenProp('auth'),
   shouldUpdate((props, nextProps) => shallowEqual(props) !== shallowEqual(nextProps)),
