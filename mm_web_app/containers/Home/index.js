@@ -147,12 +147,12 @@ class Home extends React.Component {
             <ul className='dropdown-menu dropdown-hiring pull-right'>
               <li key={guid()}>
                 <Link prefetch href='/hiring-js' className='nav-link'>
-                  <a href='/hiring-js'><i className="fa fa-angle-right" aria-hidden="true"></i> JavaScript / Node.JS Developer</a>
+                  <a href='/hiring-js'>JavaScript / Node.JS Developer</a>
                 </Link>
               </li>
               <li key={guid()}>
                 <Link prefetch href='/hiring-vp' className='nav-link'>
-                  <a href='/hiring-vp'><i className="fa fa-angle-right" aria-hidden="true"></i> Server & Platform Engineer / VP Engineering</a>
+                  <a href='/hiring-vp'>Server & Platform Engineer / VP Engineering</a>
                 </Link>
               </li>
             </ul>
@@ -162,6 +162,7 @@ class Home extends React.Component {
               <NavItem>
                 <a onClick={() => { this.props.ui.openShareModal() }}>
                   <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
+                  <span className='nav-text'>Share</span>
                 </a>
                 <Modal
                   isOpen={this.props.ui.showShareModal}
@@ -278,6 +279,7 @@ class Home extends React.Component {
               <NavItem>
                 <a data-toggle='dropdown'>
                   <i className='fa fa-list fa-2x' aria-hidden='true' />
+                  <span className='nav-text'>List Topic</span>
                 </a>
                 <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
                   {topics.map(topic => (
@@ -291,6 +293,7 @@ class Home extends React.Component {
               <NavItem>
                 <a data-toggle='dropdown'>
                   <i className='fa fa-users fa-2x' aria-hidden='true' />
+                  <span className='nav-text'>Friend Streams</span>
                 </a>
                 <ul className='dropdown-menu dropdown-modifier  pull-right'>
                   {users.map(user =>

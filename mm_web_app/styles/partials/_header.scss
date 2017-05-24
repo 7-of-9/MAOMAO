@@ -7,7 +7,7 @@ the header section
 
 .neal-navbar-wrapper {
   position: relative;
-  z-index: 2000;
+  z-index: 99999;
   .header-nav {
     padding: 0;
     height: 72px;
@@ -31,6 +31,7 @@ the header section
       }
     }
     .dropdown-menu {
+      min-width: 180px;
       .topic-name {
         padding: 7px 10px;
         display: block;
@@ -42,9 +43,12 @@ the header section
           background-color: #e6e6e6;
         }
       }
-      a {
-        padding: 0;
-        white-space: normal;
+      a,
+      span {
+        color: #666;
+        @media (max-width: 767px) {
+          white-space: normal;
+        }
       }
       a.btn-unshare {
         color: #11c759;
@@ -56,7 +60,6 @@ the header section
       }
       &.dropdown-modifier {
         padding: 5px 0;
-        max-height: 423px;
         overflow: hidden;
         overflow-y: auto;
       }
@@ -69,6 +72,9 @@ the header section
             text-align: left;
             font-size: 0.875rem;
           }
+        }
+        @media (max-width: 767px) {
+          min-width: inherit;
         }
       }
     }
@@ -93,13 +99,15 @@ the header section
       float: right;
       .nav {
         > .nav-item {
-          padding: 0 1rem;
           position: relative;
           z-index: 10;
+          padding: 0;
+          margin-left: 10px;
           white-space: nowrap;
           > a {
             position: relative;
-            margin: 1.3rem 0 0.3rem;
+            padding: 1.3rem 1.3rem 0.5rem;
+            min-height: 69px;
             color: #222;
             font-weight: 700;
             font-size: 0.875rem;
@@ -131,13 +139,36 @@ the header section
             &:focus {
               @include transition(all 0.2s ease-out 0s);
             }
+            .fa {
+              @media (max-width: 767px) {
+                font-size: 1rem;
+                min-width: 26px;
+              }
+            }
+            .nav-text {
+              @include opacity(0);
+              display: none;
+              visibility: hidden;
+              @media (max-width: 767px) {
+                @include opacity(1);
+                display: inline-block;
+                visibility: visible;
+              }
+            }
             @media (max-width: 768px) {
               margin: 0.4375rem 0;
             }
+            @media (max-width: 767px) {
+              min-height: inherit;
+              padding: 0;
+              margin: 0;
+            }
           }
-          &.active {
-            a {
+          &.active,
+          &.show {
+            > a {
               color: #2db7f5;
+              background-color: #f8f8f8;
             }
           }
           &::after {
@@ -155,7 +186,8 @@ the header section
             }
           }
           &:hover:after,
-          &.active:after {
+          &.active:after,
+          &.show:after {
             width: 100%;
             background-color: #2db7f5;
             @media (max-width: 767px) {
@@ -182,6 +214,16 @@ the header section
           }
           @media (max-width: 990px) {
             padding: 0 1rem;
+          }
+          @media (max-width: 767px) {
+            margin: 0;
+            padding: 0.5rem 1rem;
+          }
+        }
+        .show {
+          > a {
+            color: #2db7f5;
+            background-color: #f8f8f8;
           }
         }
       }
@@ -262,7 +304,7 @@ the header section
       &::after,
       &::before {
         bottom: 100%;
-        left: 126px;
+        right: 14px;
         border: solid transparent;
         content: " ";
         height: 0;
@@ -303,13 +345,16 @@ the header section
           color: #2db7f5;
         }
       }
+      @media (max-width: 767px) {
+        left: 15px;
+      }
     }
     .account-dropdown {
       .account-dropdown__segment {
         padding: 0.5rem;
       }
       .dropdown-toggle {
-        padding: 1.1875rem 0 1.125rem;
+        padding: 1.1875rem 0.4rem 1.125rem;
         display: block;
         color: #222;
         text-decoration: none;
@@ -339,6 +384,12 @@ the header section
         font-size: 0.875rem;
         line-height: 1rem;
         text-transform: uppercase;
+        .fa-sign-out {
+          @media (max-width: 767px) {
+            font-size: 1rem;
+            min-width: 26px;
+          }
+        }
         &:hover,
         &:focus {
           @include transition(all 0.2s ease-out 0s);
@@ -346,7 +397,6 @@ the header section
           text-decoration: none;
         }
         @media (max-width: 767px) {
-          margin: 0.4375rem 0;
           opacity: 1;
           display: block;
           visibility: visible;
@@ -358,6 +408,9 @@ the header section
         }
         a {
           white-space: nowrap;
+          @media (max-width: 767px) {
+            white-space: normal;
+          }
         }
         a,
         .btn-logout {
