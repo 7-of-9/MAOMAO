@@ -156,7 +156,10 @@ class AppHeader extends React.Component {
             <a className='dropdown-toggle' data-toggle='dropdown'>
               <img className='image-account' src={this.props.store.avatar} alt={this.props.store.userId} width='33' height='33' />
             </a>
-            <a className='link-logout-res' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</a>
+            <a className='link-logout-res' onClick={this.onLogout}>
+              <i className='fa fa-sign-out' /> 
+              <span className='nav-text'>Sign Out</span>
+            </a>
             <ul className='dropdown-menu pull-right'>
               { this.props.store.user && this.props.store.user.name &&
                 <div className='account-dropdown__identity account-dropdown__segment'>

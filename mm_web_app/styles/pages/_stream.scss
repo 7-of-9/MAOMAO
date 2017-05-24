@@ -4,9 +4,11 @@ These are the styles for
 the stream page
 **************************************
 **************************************/
-a{
+
+a {
   cursor: pointer;
 }
+
 img {
   width: auto\9;
   height: auto;
@@ -1428,15 +1430,34 @@ a.btn-box-remove {
 }
 
 .notifications-hiring {
-  @include border-radius(10px);
-  @include abs-pos ($top: -21px, $right: 50%, $bottom: auto, $left: auto);
-  margin-right: -47px;
+  @include border-radius(8px);
+  @include abs-pos ($top: 3px, $right: 50%, $bottom: auto, $left: auto);
+  margin-right: -44px;
   padding: 0 5px;
   height: auto;
   width: auto;
-  min-height: 20px;
+  min-height: 16px;
+  line-height: 15px;
   min-width: 20px;
   font-size: 0.5625rem;
+  .fa-bullhorn {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+  @media (max-width: 767px) {
+    @include border-radius(0);
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    margin: 0;
+    padding: 0;
+    font-size: 0.875rem;
+    color: #222;
+    background: none;
+  }
 }
 
 
