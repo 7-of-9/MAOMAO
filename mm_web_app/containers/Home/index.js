@@ -140,6 +140,7 @@ class Home extends React.Component {
               <span className='notifications-number notifications-hiring'>
                 <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
               </span>
+              <i className='fa fa-chevron-circle-down' aria-hidden='true' />
             </a>
             <ul className='dropdown-menu dropdown-hiring pull-right'>
               <li key={guid()}>
@@ -277,6 +278,7 @@ class Home extends React.Component {
                 <a data-toggle='dropdown'>
                   <i className='fa fa-list fa-2x' aria-hidden='true' />
                   <span className='nav-text'>List Topic</span>
+                   <i className='fa fa-chevron-circle-down' aria-hidden='true' />
                 </a>
                 <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
                   {topics.map(topic => (
@@ -291,6 +293,7 @@ class Home extends React.Component {
                 <a data-toggle='dropdown'>
                   <i className='fa fa-users fa-2x' aria-hidden='true' />
                   <span className='nav-text'>Friend Streams</span>
+                   <i className='fa fa-chevron-circle-down' aria-hidden='true' />
                 </a>
                 <ul className='dropdown-menu dropdown-modifier  pull-right'>
                   {users.map(user =>
