@@ -181,8 +181,16 @@ const AppHeader = enhance(({
         >
       <h2 ref='subtitle'>SIGN IN</h2>
       <div className='justify-content-md-center social-action'>
-        <a className='btn btn-facebook' onClick={onFacebookLogin}> Sign in with Facebook</a>
-        <a className='btn btn-google' onClick={onGoogleLogin}>Sign in with Google</a>
+        <div className='block-button'>
+          <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+            <i className='fa fa-facebook' /> Sign in with Facebook
+              </a>
+        </div>
+        <div className='block-button'>
+          <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+            <i className='fa fa-google' /> Sign in with Google
+              </a>
+        </div>
       </div>
     </Modal>
   </NavItem>

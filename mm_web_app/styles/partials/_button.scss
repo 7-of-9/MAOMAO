@@ -485,30 +485,6 @@ button.btn-link {
   padding: 0;
 }
 
-
-/*social*/
-
-.social-action {
-  @include clearfix();
-  .btn-google {
-    float: left;
-  }
-  .btn-facebook {
-    float: right;
-  }
-  @media (max-width: 590px) {
-    .btn-facebook {
-      margin-bottom: 20px;
-    }
-    .btn-google,
-    .btn-facebook {
-      float: none;
-      width: 100%;
-    }
-  }
-}
-
-
 /*-----verical-slow-----*/
 
 @-webkit-keyframes verical-slow {

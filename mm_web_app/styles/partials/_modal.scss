@@ -22,7 +22,7 @@ the modal section
 .ReactModal__Overlay--after-open {}
 
 .ReactModal__Content {
-  width: 500px;
+  width: 280px;
   animation: vex-flyin 0.5s;
   -webkit-animation: vex-flyin 0.5s;
   -moz-animation: vex-flyin 0.5s;
@@ -41,30 +41,93 @@ the modal section
   }
 }
 
-.SignInModal .ReactModal__Content {
-  left: 50% !important;
-  margin-left: -250px;
-  @include border-radius(6px);
-  @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
-  padding: 30px 40px !important;
-  border: 0 none;
-  max-width: 100%;
-  width: 500px;
-  h2 {
-    margin-bottom: 1.7rem;
-    text-align: center;
-  }
-  @media (max-width: 590px) {
-    left: 50%;
-    margin-left: -150px;
-    padding: 20px 25px !important;
-    width: 300px;
-  }
-  @media (max-width: 500px) {
-    top: 40px !important;
-  }
-  @media (max-width: 390px) {
-    top: 90px !important;
+.SignInModal {
+  .ReactModal__Content {
+    left: 50% !important;
+    margin-left: -200px;
+    @include border-radius(6px);
+    @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+    padding: 30px 40px !important;
+    border: 0 none;
+    max-width: 100%;
+    width: 400px;
+    h2 {
+      margin-bottom: 1.7rem;
+      text-align: center;
+    }
+    .block-button {
+      @include clearfix();
+      .btn-social {
+        position: relative;
+        padding-left: 56px;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        width: 100%;
+        >:first-child {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 42px;
+          line-height: 39px;
+          font-size: 1.6em;
+          text-align: center;
+          border-right: 1px solid rgba(0, 0, 0, 0.2)
+        }
+      }
+      .btn-facebook {
+        color: #fff;
+        background-color: #3b5998;
+        border-color: rgba(0, 0, 0, 0.2);
+        &:focus,
+        &:hover,
+        &:active {
+          color: #fff;
+          background-color: #2d4373;
+          border-color: rgba(0, 0, 0, 0.2);
+        }
+      }
+      .btn-facebook:active,
+      .btn-facebook.active,
+      .open>.dropdown-toggle.btn-facebook {
+        background-image: none
+      }
+      .btn-google {
+        color: #fff;
+        background-color: #dd4b39;
+        border-color: rgba(0, 0, 0, 0.2);
+        &:focus,
+        &:hover,
+        &:active {
+          color: #fff;
+          background-color: #c23321;
+          border-color: rgba(0, 0, 0, 0.2);
+        }
+      }
+      .btn-google:active,
+      .btn-google.active,
+      .open>.dropdown-toggle.btn-google {
+        background-image: none
+      }
+      &:last-child {
+        margin-top: 15px;
+      }
+    }
+    @media (max-width: 590px) {
+      left: 50%;
+      margin-left: -150px;
+      padding: 20px 25px !important;
+      width: 300px;
+    }
+    @media (max-width: 500px) {
+      top: 40px !important;
+    }
+    @media (max-width: 390px) {
+      top: 90px !important;
+    }
   }
 }
 
@@ -210,8 +273,8 @@ the modal section
       max-width: calc(100% - 20px);
     }
     @media (max-width: 690px) {
-    min-width: 560px;
-  }
+      min-width: 560px;
+    }
     @media (max-width: 500px) {
       min-width: 380px;
     }
