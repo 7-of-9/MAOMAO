@@ -80,7 +80,7 @@ const ShareOptions = enhance(({ url, isProcessingNlp, topics, active, onChange }
               </div>
             }
             {isProcessingNlp &&
-              <div style={{ margin: '0 auto', textAlign: 'center' }}><Loading /></div>
+              <div className='global-Loading' style={{ margin: '0 auto', textAlign: 'center' }}><Loading /></div>
             }
             {isToggleTopic && experimentalTopics.length > 0 &&
               experimentalTopics.map(topic =>

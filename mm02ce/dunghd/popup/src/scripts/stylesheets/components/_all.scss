@@ -927,7 +927,6 @@ $facebook-icons: './images/facebook_icon.svg';
         }
         &::before {
           background: #fa943e;
-          border: 1px solid #fcb173;
         }
       }
     }
@@ -964,7 +963,6 @@ $facebook-icons: './images/facebook_icon.svg';
       height: 30px;
       border-radius: 2px;
       background: #fff;
-      border: 1px solid #ccc;
     }
     &:empty::before {
       margin-right: 0;
@@ -1033,6 +1031,17 @@ $facebook-icons: './images/facebook_icon.svg';
     + .radio__regular__label:empty::before {
       margin-right: 0;
     }
+  }
+}
+
+
+/*reset border loading page*/
+
+.global-Loading {
+  width: 100%;
+  text-align: center;
+  span {
+    display: inline-block;
   }
 }
 
