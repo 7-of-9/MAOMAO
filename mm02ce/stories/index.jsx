@@ -8,6 +8,7 @@ import WelcomeModal from '../dunghd/content/src/scripts/components/app/WelcomeMo
 import Score from '../dunghd/content/src/scripts/components/app/Score';
 import Xp from '../dunghd/content/src/scripts/components/app/Xp';
 import GoogleShare from '../dunghd/content/src/scripts/components/share/GoogleShare';
+import Loading from '../dunghd/popup/src/scripts/components/app/Loading';
 
 require('../dunghd/content/src/scripts/stylesheets/main.scss');
 
@@ -123,6 +124,14 @@ storiesOf('GoogleShare', module).add('with default props', () => (
         contacts={[]}
         handleChange={action('handleChange')}
       />
+    </MuiThemeProvider>
+  </div>
+));
+
+storiesOf('Loading', module).add('for share popup', () => (
+  <div id="maomao-extension-anchor">
+    <MuiThemeProvider>
+      <Loading />
     </MuiThemeProvider>
   </div>
 ));
