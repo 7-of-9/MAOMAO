@@ -206,7 +206,18 @@ the modal section
     width: -ms-fit-content;
     width: -o-fit-content;
     width: fit-content;
-    
+    @media (max-width: 590px) {
+      max-width: calc(100% - 20px);
+    }
+    @media (max-width: 690px) {
+    min-width: 560px;
+  }
+    @media (max-width: 500px) {
+      min-width: 380px;
+    }
+    @media (max-width: 390px) {
+      min-width: inherit;
+    }
   }
   .modal-body {
     overflow-y: auto !important;

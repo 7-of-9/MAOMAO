@@ -183,6 +183,11 @@ the header section
               color: #2db7f5;
               background-color: #ebebeb;
             }
+            .notifications-hiring {
+              @media (max-width: 767px) {
+                color: #2db7f5;
+              }
+            }
           }
           &::after {
             @include abs-pos ($top: auto, $right: 0, $bottom: 0, $left: 0);

@@ -310,6 +310,9 @@ the home page
         margin: 0;
         .text-tag {
           max-width: 220px;
+          @media (max-width: 590px) {
+            max-width: 79px;
+          }
         }
       }
     }
@@ -342,6 +345,12 @@ the home page
       text-align: left;
       .timeline-badge {
         margin-left: 14px;
+        @media (max-width: 390px) {
+          margin-left: 12px;
+        }
+      }
+      @media (max-width: 590px) {
+        width: 28%;
       }
     }
     &:nth-child(2) {
@@ -351,14 +360,27 @@ the home page
       .timeline-panel {
         padding: 0 10px;
       }
+      @media (max-width: 590px) {
+        width: 44%;
+        min-width: 100px;
+      }
     }
     &:nth-child(3) {
       width: 25%;
       text-align: right;
       .timeline-badge {
         margin-right: 14px;
+        @media (max-width: 390px) {
+          margin-right: 12px;
+        }
+      }
+      @media (max-width: 590px) {
+        width: 28%;
       }
     }
+  }
+  @media (max-width: 690px) {
+    min-width: inherit;
   }
 }
 
