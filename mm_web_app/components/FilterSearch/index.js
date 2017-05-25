@@ -6,6 +6,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { compose, withHandlers, withState, onlyUpdateForKeys } from 'recompose'
 import Fuse from 'fuse.js'
 import Autosuggest from 'react-autosuggest'
 import ReactStars from 'react-stars'
@@ -15,185 +16,159 @@ import { guid } from '../../utils/hash'
 
 const MAX_COLORS = 12
 
-class FilterSearch extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      suggestions: [],
-      value: ''
-    }
-    this.onChange = this.onChange.bind(this)
-    this.renderSuggestion = this.renderSuggestion.bind(this)
-    this.getSectionSuggestions = this.getSectionSuggestions.bind(this)
-    this.renderInputComponent = this.renderInputComponent.bind(this)
-    this.renderSectionTitle = this.renderSectionTitle.bind(this)
-    this.getSuggestions = this.getSuggestions.bind(this)
-    this.getSuggestionValue = this.getSuggestionValue.bind(this)
-    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
-    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
-  }
-
-  getSuggestions (value) {
-    if (value === '' || value.length === 0) {
-      return []
-    }
-
-    const { users, topics } = this.props
-    const userOptions = {
-      include: ['matches', 'score'],
-      shouldSort: true,
-      tokenize: true,
-      matchAllTokens: true,
-      findAllMatches: true,
-      threshold: 0.1,
-      location: 0,
-      distance: 100,
-      maxPatternLength: 32,
-      minMatchCharLength: 1,
-      keys: [
-        'fullname'
-      ]
-    }
-
-    const sections = []
-    const fuseUser = new Fuse(users, userOptions)
-    sections.push({
-      title: 'User',
-      data: fuseUser.search(value)
-    })
-
-    const topicOtions = {
-      include: ['matches', 'score'],
-      shouldSort: true,
-      tokenize: true,
-      matchAllTokens: true,
-      findAllMatches: true,
-      threshold: 0.1,
-      location: 0,
-      distance: 100,
-      maxPatternLength: 32,
-      minMatchCharLength: 1,
-      keys: [
-        'name'
-      ]
-    }
-    const fuseTopic = new Fuse(topics, topicOtions)
-    sections.push({
-      title: 'Stream',
-      data: fuseTopic.search(value)
-    })
-
-    return sections.filter(section => section.data.length > 0)
-  }
-
-  getSectionSuggestions (section) {
-    return section.data
-  }
-
-  getSuggestionValue (suggestion) {
-    return suggestion.name || suggestion.fullname || suggestion.title
-  }
-
-  renderSuggestion (suggestion) {
-    if (suggestion.name) {
-      /* topic html */
-      return (<div>
-        {suggestion.name}
-      </div>)
-    }
-    /* user html */
-    return (
-      <div className='search-media'>
-        <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
-        <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
-      </div>
-    )
-  }
-
-  renderInputComponent (inputProps) {
-    return (
-      <DebounceInput
-        className='search-box-list'
-        minLength={2}
-        debounceTimeout={200}
-        {...inputProps}
-        />
-    )
-  }
-
-  onSuggestionsFetchRequested ({ value }) {
-    this.setState({
-      suggestions: this.getSuggestions(value)
-    })
-  }
-
-  onSuggestionsClearRequested () {
-    this.setState({
-      suggestions: []
-    })
-  }
-
-  renderSectionTitle (section) {
-    return (
-      <p className='search-box-title'>{section.title}</p>
-    )
-  }
-
-  onChange (event, { newValue, method }) {
-    if (method === 'click' || method === 'enter') {
-      const selected = this.getSuggestions(newValue)
-      logger.warn('selected', selected)
-      if (selected && selected.length > 0) {
-        if (selected[0].title === 'User') {
-          this.props.onSelectUser(selected[0].data[0])
-        } else {
-          this.props.onSelectTopic(selected[0].data[0])
-        }
+const enhance = compose(
+  withState('suggestions', 'changeSuggestions', []),
+  withState('value', 'changeValue', ''),
+  withHandlers({
+    getSuggestions: props => (value) => {
+      if (value === '' || value.length === 0) {
+        return []
       }
-      this.setState({
-        value: ''
-      })
-    } else {
-      this.setState({
-        value: newValue
-      })
-    }
-  }
 
-  render () {
-    const { value, suggestions } = this.state
-    const { filterByTopic, filterByUser, topics } = this.props
-    const inputProps = {
-      placeholder: 'Search...',
-      value,
-      onChange: this.onChange
+      const { users, topics } = props
+      const userOptions = {
+        include: ['matches', 'score'],
+        shouldSort: true,
+        tokenize: true,
+        matchAllTokens: true,
+        findAllMatches: true,
+        threshold: 0.1,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [
+          'fullname'
+        ]
+      }
+
+      const sections = []
+      const fuseUser = new Fuse(users, userOptions)
+      sections.push({
+        title: 'User',
+        data: fuseUser.search(value)
+      })
+
+      const topicOtions = {
+        include: ['matches', 'score'],
+        shouldSort: true,
+        tokenize: true,
+        matchAllTokens: true,
+        findAllMatches: true,
+        threshold: 0.1,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [
+          'name'
+        ]
+      }
+      const fuseTopic = new Fuse(topics, topicOtions)
+      sections.push({
+        title: 'Stream',
+        data: fuseTopic.search(value)
+      })
+
+      return sections.filter(section => section.data.length > 0)
+    },
+    getSectionSuggestions: props => (section) => {
+      return section.data
+    },
+    getSuggestionValue: props => (suggestion) => {
+      return suggestion.name || suggestion.fullname || suggestion.title
+    },
+    renderSuggestion: props => (suggestion) => {
+      if (suggestion.name) {
+      /* topic html */
+        return (<div>
+          {suggestion.name}
+        </div>)
+      }
+    /* user html */
+      return (
+        <div className='search-media'>
+          <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
+          <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
+        </div>
+      )
+    },
+    renderInputComponent: props => (inputProps) => {
+      return (
+        <DebounceInput
+          className='search-box-list'
+          minLength={2}
+          debounceTimeout={200}
+          {...inputProps}
+        />
+      )
+    },
+    onSuggestionsFetchRequested: props => ({ value }) => {
+      props.changeSuggestions(props.getSuggestions(value))
+    },
+    onSuggestionsClearRequested: props => () => {
+      props.changeSuggestions([])
+    },
+    renderSectionTitle: props => (section) => {
+      return (
+        <p className='search-box-title'>{section.title}</p>
+      )
+    },
+    onChange: props => (event, { newValue, method }) => {
+      if (method === 'click' || method === 'enter') {
+        const selected = props.getSuggestions(newValue)
+        logger.warn('selected', selected)
+        if (selected && selected.length > 0) {
+          if (selected[0].title === 'User') {
+            props.onSelectTopic(selected[0].data[0])
+          }
+        }
+        props.changeValue('')
+      } else {
+        props.changeValue(newValue)
+      }
     }
-    return (
-      <div className='input-group'>
-        <div className='input-group-suggest'>
-          <div className='filter-rating'>
-            <ReactStars
-              count={5}
-              value={this.props.rating}
-              onChange={this.props.onChangeRate}
-              size={24}
-              half={false}
-              color2={'#ffd700'}
+  }),
+  onlyUpdateForKeys([ 'value', 'rating', 'filterByTopic', 'filterByUser' ])
+)
+
+const FilterSearch = enhance(({
+  value, rating, suggestions, filterByTopic, filterByUser, topics,
+  onSuggestionsFetchRequested, onSuggestionsClearRequested, getSuggestionValue,
+  getSectionSuggestions, renderSectionTitle, renderSuggestion,
+  onChange, onChangeRate, onRemoveTopic, onRemoveUser, renderInputComponent
+}) => {
+  const inputProps = {
+    placeholder: 'Search...',
+    value,
+    onChange: onChange
+  }
+  return (
+    <div className='input-group'>
+      <div className='input-group-suggest'>
+        <div className='filter-rating'>
+          <ReactStars
+            count={5}
+            value={rating}
+            onChange={onChangeRate}
+            size={24}
+            half={false}
+            color2={'#ffd700'}
               />
-          </div>
-          <div className='search-box-drop'>
-            <ul className='search-box-list'>
-              {
+        </div>
+        <div className='search-box-drop'>
+          <ul className='search-box-list'>
+            {
                 filterByTopic.map(item => (
                   <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={guid()}>
                     <span className='text-topic'>{item.label}</span>
-                    <a className='btn-box-remove' onClick={() => { this.props.onRemoveTopic(item) }}>
+                    <a className='btn-box-remove' onClick={() => { onRemoveTopic(item) }}>
                       <i className='fa fa-remove' aria-hidden='true' />
                     </a>
                   </li>
                 ))
               }
-              {
+            {
                 filterByUser.map(item => (
                   <li key={guid()} className='search-item tags-color-1'>
                     <div className='search-media'>
@@ -202,7 +177,7 @@ class FilterSearch extends React.Component {
                       </div>
                       <div className='search-media-body'>
                         <span className='full-name'>{item.label}</span>
-                        <a className='btn-box-remove' onClick={() => { this.props.onRemoveUser(item) }}>
+                        <a className='btn-box-remove' onClick={() => { onRemoveUser(item) }}>
                           <i className='fa fa-remove' aria-hidden='true' />
                         </a>
                       </div>
@@ -210,27 +185,26 @@ class FilterSearch extends React.Component {
                   </li>
                 ))
               }
-            </ul>
-          </div>
-          <Autosuggest
-            multiSection
-            highlightFirstSuggestion
-            focusInputOnSuggestionClick={false}
-            suggestions={suggestions}
-            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-            getSuggestionValue={this.getSuggestionValue}
-            getSectionSuggestions={this.getSectionSuggestions}
-            renderSectionTitle={this.renderSectionTitle}
-            renderSuggestion={this.renderSuggestion}
-            inputProps={inputProps}
-            renderInputComponent={this.renderInputComponent}
-          />
+          </ul>
         </div>
+        <Autosuggest
+          multiSection
+          highlightFirstSuggestion
+          focusInputOnSuggestionClick={false}
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          getSectionSuggestions={getSectionSuggestions}
+          renderSectionTitle={renderSectionTitle}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputProps}
+          renderInputComponent={renderInputComponent}
+          />
       </div>
-    )
-  }
-}
+    </div>
+  )
+})
 
 FilterSearch.propTypes = {
   urls: PropTypes.array.isRequired,

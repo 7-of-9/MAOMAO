@@ -6,6 +6,11 @@ import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
+if (process.env.NODE_ENV !== 'production') {
+  const { whyDidYouUpdate } = require('why-did-you-update')
+  whyDidYouUpdate(React, { exclude: /^(Connect|NoSSR|Page|Head|Navbar|NavItem|Notification|styled|withState|withHandlers|onlyUpdateForKeys)/ })
+}
+
 export default class HomePage extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req

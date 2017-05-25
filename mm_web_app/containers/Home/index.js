@@ -16,6 +16,7 @@ import Modal from 'react-modal'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
+import NoSSR from 'react-no-ssr'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import Streams from '../../containers/Streams'
@@ -95,10 +96,6 @@ class Home extends React.Component {
     if (this.props.store.shareInfo) {
       // TODO: add user to filer result
     }
-    // re-check install MM extenion by timeout
-    setTimeout(() => {
-      this.props.store.checkEnvironment()
-    }, 100)
   }
 
   render () {
@@ -315,7 +312,7 @@ class Home extends React.Component {
                 </ul>
               </NavItem>
           }
-          <AppHeader notify={this.addNotification} />
+          <AppHeader ui={this.props.ui} store={this.props.store} notify={this.addNotification} />
         </Navbar>
         <NotificationStack
           notifications={this.props.ui.notifications.toArray()}
@@ -323,19 +320,23 @@ class Home extends React.Component {
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />
         <ToggleDisplay if={!this.props.store.isLogin}>
-          <ChromeInstall
-            description={description}
-            title='Unlock YOUR FRIEND STREAM Now'
-            install={this.inlineInstall}
-          />
-        </ToggleDisplay>
-        <ToggleDisplay if={this.props.store.isLogin}>
-          { !this.props.store.isMobile &&
+          <NoSSR>
             <ChromeInstall
               description={description}
               title='Unlock YOUR FRIEND STREAM Now'
               install={this.inlineInstall}
-            />
+           />
+          </NoSSR>
+        </ToggleDisplay>
+        <ToggleDisplay if={this.props.store.isLogin}>
+          { !this.props.store.isMobile &&
+            <NoSSR>
+              <ChromeInstall
+                description={description}
+                title='Unlock YOUR FRIEND STREAM Now'
+                install={this.inlineInstall}
+              />
+            </NoSSR>
             }
           <Streams />
           <Loading isLoading={this.props.store.isProcessing} />

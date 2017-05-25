@@ -6,9 +6,9 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { compose, withHandlers, lifecycle, pure } from 'recompose'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
-import { inject, observer } from 'mobx-react'
 import { NavItem } from 'neal-react'
 import Modal from 'react-modal'
 import { sendMsgToChromeExtension, actionCreator } from '../../utils/chrome'
@@ -23,29 +23,51 @@ const customStyles = {
   }
 }
 
-@inject('store')
-@inject('ui')
-@observer
-class AppHeader extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onLogout = this.onLogout.bind(this)
-    this.onClose = this.onClose.bind(this)
-    this.onGoogleLogin = this.onGoogleLogin.bind(this)
-    this.onSignInOpen = this.onSignInOpen.bind(this)
-  }
-
-  componentDidMount () {
-    logger.warn('AppHeader componentDidMount')
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(clientCredentials)
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          logger.warn('user', user)
-          return user.getIdToken()
+const enhance = compose(
+  withHandlers({
+    onGoogleLogin: props => () => {
+      const provider = new firebase.auth.GoogleAuthProvider()
+      provider.addScope('https://www.googleapis.com/auth/plus.me')
+      provider.addScope('https://www.googleapis.com/auth/userinfo.email')
+      provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+      firebase.auth().signInWithPopup(provider)
+    },
+    onFacebookLogin: props => () => {
+      const provider = new firebase.auth.FacebookAuthProvider()
+      provider.addScope('email')
+      firebase.auth().signInWithPopup(provider)
+    },
+    onSignInOpen: props => () => {
+      props.ui.showSignIn()
+    },
+    onClose: props => () => {
+      props.ui.closeModal()
+    },
+    onLogout: props => () => {
+      firebase.auth().signOut().then(() => {
+        fetch('/api/logout', {
+          method: 'POST',
+          credentials: 'same-origin'
+        }).then(() => {
+          props.store.logoutUser()
+        })
+        props.notify('You have successfully signed out.')
+      }).catch((error) => {
+        logger.warn(error)
+      })
+    }
+  }),
+  lifecycle({
+    componentDidMount () {
+      logger.warn('AppHeader componentDidMount')
+      if (firebase.apps.length === 0) {
+        firebase.initializeApp(clientCredentials)
+        firebase.auth().onAuthStateChanged(user => {
+          if (user) {
+            logger.warn('user', user)
+            return user.getIdToken()
           .then((token) => {
             /* global fetch */
-            this.props.ui.closeModal()
             this.props.notify(`Welcome, ${user.displayName}!`)
             return fetch('/api/login', {
               method: 'POST',
@@ -98,99 +120,69 @@ class AppHeader extends React.Component {
               }
             })
           })
-        }
-      })
+          }
+        })
+      }
+
+      if (this.props.store.isInstalledOnChromeDesktop) {
+        sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
+          if (error) {
+          } else {
+            this.props.store.autoLogin(data.payload)
+          }
+        })
+      }
     }
+  }),
+  pure
+)
 
-    if (this.props.store.isInstalledOnChromeDesktop) {
-      sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
-        if (error) {
-        } else {
-          this.props.store.autoLogin(data.payload)
-        }
-      })
-    }
-  }
-
-  onGoogleLogin () {
-    const provider = new firebase.auth.GoogleAuthProvider()
-    provider.addScope('https://www.googleapis.com/auth/plus.me')
-    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-    firebase.auth().signInWithPopup(provider)
-  }
-
-  onFacebookLogin () {
-    const provider = new firebase.auth.FacebookAuthProvider()
-    provider.addScope('email')
-    firebase.auth().signInWithPopup(provider)
-  }
-
-  onSignInOpen () {
-    this.props.ui.showSignIn()
-  }
-
-  onClose () {
-    this.props.ui.closeModal()
-  }
-
-  onLogout () {
-    firebase.auth().signOut().then(() => {
-      fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'same-origin'
-      }).then(() => {
-        this.props.store.logoutUser()
-      })
-      this.props.notify('You have successfully signed out.')
-    }).catch((error) => {
-      logger.warn(error)
-    })
-  }
-
-  render () {
-    return (
-      <NavItem>
-        { this.props.store.isLogin &&
-          <div className='dropdown account-dropdown'>
-            <a className='dropdown-toggle' data-toggle='dropdown'>
-              <img className='image-account' src={this.props.store.avatar} alt={this.props.store.userId} width='33' height='33' />
-            </a>
-            <a className='link-logout-res' onClick={this.onLogout}>
-              <i className='fa fa-sign-out' />
-              <span className='nav-text'>Sign Out</span>
-            </a>
-            <ul className='dropdown-menu pull-right'>
-              { this.props.store.user && this.props.store.user.name &&
-                <div className='account-dropdown__identity account-dropdown__segment'>
-                Signed in as <strong>{this.props.store.user.name}</strong>
-                </div>
+const AppHeader = enhance(({
+  store, ui,
+  onLogout, onSignInOpen, onClose,
+  onFacebookLogin, onGoogleLogin
+}) => (
+  <NavItem>
+    { store.isLogin &&
+    <div className='dropdown account-dropdown'>
+      <a className='dropdown-toggle' data-toggle='dropdown'>
+        <img className='image-account' src={store.avatar} alt={store.userId} width='33' height='33' />
+      </a>
+      <a className='link-logout-res' onClick={onLogout}>
+        <i className='fa fa-sign-out' />
+        <span className='nav-text'>Sign Out</span>
+      </a>
+      <ul className='dropdown-menu pull-right'>
+        { store.user && store.user.name &&
+        <div className='account-dropdown__identity account-dropdown__segment'>
+                Signed in as <strong>{store.user.name}</strong>
+        </div>
               }
-              <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
-            </ul>
-          </div>
+        <li><button className='btn btn-logout' onClick={onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
+      </ul>
+    </div>
         }
-        { !this.props.store.isLogin && <button className='btn btn-login' onClick={this.onSignInOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
-        <Modal
-          isOpen={this.props.ui.showSignInModal}
-          onRequestClose={this.onClose}
-          style={customStyles}
-          portalClassName='SignInModal'
-          contentLabel='Sign In Modal'
+    { !store.isLogin && <button className='btn btn-login' onClick={onSignInOpen}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button> }
+    <Modal
+      isOpen={ui.showSignInModal}
+      onRequestClose={onClose}
+      style={customStyles}
+      portalClassName='SignInModal'
+      contentLabel='Sign In Modal'
         >
-          <h2 ref='subtitle'>SIGN IN</h2>
-          <div className='justify-content-md-center social-action'>
-            <a className='btn btn-facebook' onClick={this.onFacebookLogin}> Sign in with Facebook</a>
-            <a className='btn btn-google' onClick={this.onGoogleLogin}>Sign in with Google</a>
-          </div>
-        </Modal>
-      </NavItem>
-    )
-  }
-}
+      <h2 ref='subtitle'>SIGN IN</h2>
+      <div className='justify-content-md-center social-action'>
+        <a className='btn btn-facebook' onClick={onFacebookLogin}> Sign in with Facebook</a>
+        <a className='btn btn-google' onClick={onGoogleLogin}>Sign in with Google</a>
+      </div>
+    </Modal>
+  </NavItem>
+))
 
 AppHeader.propTypes = {
-  notify: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired,
+  store: PropTypes.object.isRequired,
+  ui: PropTypes.object.isRequired
 }
 
 export default AppHeader
