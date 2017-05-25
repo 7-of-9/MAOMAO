@@ -130,21 +130,53 @@ the header section
             .fa-list {
               font-size: 2.1rem;
             }
+            .fa-chevron-circle-down {
+              @include abs-pos ($top: 12px, $right: 16px, $bottom: auto, $left: auto);
+              @include opacity(0);
+              display: none;
+              visibility: hidden;
+              @media (max-width: 767px) {
+                @include opacity(1);
+                display: inline-block;
+                visibility: visible;
+              }
+            }
             &::before {
               content: '';
               height: 100%;
+            }
+            &::after {
+              @include opacity(0);
+              @include transform(scale(.2));
+              @include transition(all .25s ease-out);
+              @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+              display: block;
+              width: 100%;
+              height: 100%;
+              content: "";
+              background-color: #fff;
+              z-index: -1;
+            }
+            &:active::after {
+              -webkit-animation: scale-in-center-alt .5s cubic-bezier(.25, .46, .45, .94) both;
+              animation: scale-in-center-alt .5s cubic-bezier(.25, .46, .45, .94) both
             }
             &:hover,
             &:focus {
               color: #2db7f5;
               text-decoration: none;
               color: #2db7f5;
-              background-color: #eaeaea;
               .notifications-number {
                 -moz-animation: none;
                 -webkit-animation: none;
                 -moz-animation-play-state: paused;
                 -webkit-animation-play-state: paused;
+              }
+              &::after {
+                @include opacity(1);
+                @include transform(scale(1));
+                @include transition(all .25s ease-out);
+                background-color: #eaeaea;
               }
             }
             &,
@@ -153,6 +185,14 @@ the header section
               @include transition(all 0.2s ease-out 0s);
             }
             .fa {
+              @include transition(all 0.4s ease);
+            }
+            .fa-briefcase,
+            .fa-share-alt,
+            .fa-list,
+            .fa-users,
+            .fa-sign-out,
+            .fa-sign-in {
               @media (max-width: 767px) {
                 font-size: 1rem;
                 min-width: 26px;
@@ -182,6 +222,16 @@ the header section
             > a {
               color: #2db7f5;
               background-color: #ebebeb;
+              .fa-chevron-circle-down {
+                @include transform(rotate(180deg));
+                @include transition(all 0.4s ease);
+              }
+              &::after {
+                @include opacity(1);
+                @include transform(scale(1));
+                @include transition(all .25s ease-out);
+                background-color: #eaeaea;
+              }
             }
             .notifications-hiring {
               @media (max-width: 767px) {
@@ -620,5 +670,31 @@ the header section
     -webkit-transform: translate(0, 0) rotate(0deg);
     -ms-transform: translate(0, 0) rotate(0deg);
     transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+@-webkit-keyframes scale-in-center-alt {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    opacity: .2
+  }
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0
+  }
+}
+
+@keyframes scale-in-center-alt {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    opacity: .2
+  }
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0
   }
 }
