@@ -8,10 +8,10 @@ import logger from '../utils/logger'
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { exclude: /^(Connect|NoSSR|Page|Head|Navbar|NavItem|Notification|styled|withState|withHandlers|onlyUpdateForKeys)/ })
+  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|App|NoSSR|Page|Head|Footer|Navbar|NavItem|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
 }
 
-export default class HomePage extends React.Component {
+export default class Index extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''
@@ -39,7 +39,7 @@ export default class HomePage extends React.Component {
       <Provider store={this.store} ui={this.uiStore}>
         <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home />
+          <Home store={this.store} ui={this.uiStore} />
         </div>
       </Provider>
     )

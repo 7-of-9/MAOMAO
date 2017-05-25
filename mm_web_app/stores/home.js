@@ -173,6 +173,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action getUserHistory () {
+    logger.warn('getUserHistory')
     this.isProcessing = true
     const userHistoryResult = getUserHistory(this.userId, this.userHash)
     when(
