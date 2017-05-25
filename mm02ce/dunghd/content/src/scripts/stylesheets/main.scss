@@ -50,6 +50,11 @@ body {
     letter-spacing: normal;
     text-transform: none;
   }
+  .toolbar-button {
+    button {
+      background-color: transparent;
+    }
+  }
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
