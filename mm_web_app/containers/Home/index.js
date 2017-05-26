@@ -10,12 +10,9 @@ import { observer, inject } from 'mobx-react'
 import { compose, withHandlers, lifecycle } from 'recompose'
 import Head from 'next/head'
 import Router from 'next/router'
-import Link from 'next/link'
 import NoSSR from 'react-no-ssr'
-import { toJS } from 'mobx'
 import { NotificationStack } from 'react-notification'
-import Modal from 'react-modal'
-import { Footer, Navbar, NavItem, Page } from 'neal-react'
+import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
@@ -23,10 +20,6 @@ import AppHeader from '../AppHeader'
 import Streams from '../Streams'
 import ChromeInstall from '../ChromeInstall'
 import Loading from '../../components/Loading'
-import Header from '../../components/Header'
-import LogoIcon from '../../components/LogoIcon'
-import Slogan from '../../components/Slogan'
-import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
@@ -36,22 +29,11 @@ Router.onRouteChangeComplete = () => NProgress.done()
 Router.onRouteChangeError = () => NProgress.done()
 
 const brandName = 'maomao'
-const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
   </address>
 )
-
-const customModalStyles = {
-  content: {
-    top: '82px',
-    left: 'auto',
-    right: 'auto',
-    bottom: 'auto',
-    overflow: 'hidden'
-  }
-}
 
 const enhance = compose(
   withHandlers({
@@ -107,9 +89,6 @@ const Home = inject('ui', 'store')(observer(enhance(({
       description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
     }
   }
-
-  const { users, topics } = toJS(store)
-
   return (
     <Page>
       <Head>
@@ -129,203 +108,45 @@ const Home = inject('ui', 'store')(observer(enhance(({
         <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
         <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
       </Head>
-      <Navbar className='header-nav animated fadeInDown' brand={brand}>
-        <NavItem>
-          <a data-toggle='dropdown'>
-            <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-            <span className='notifications-number notifications-hiring'>
-              <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
-              </span>
-            <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-          </a>
-          <ul className='dropdown-menu dropdown-hiring pull-right'>
-            <li key={guid()}>
-              <Link prefetch href='/hiring-js' className='nav-link'>
-                <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
-              </Link>
-            </li>
-            <li key={guid()}>
-              <Link prefetch href='/hiring-vp' className='nav-link'>
-                <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
-              </Link>
-            </li>
-          </ul>
-        </NavItem>
-        {
-              store.isLogin &&
-              <NavItem>
-                <a onClick={() => { ui.openShareModal() }}>
-                  <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
-                  <span className='nav-text'>Share</span>
-                </a>
-                <Modal
-                  isOpen={ui.showShareModal}
-                  onRequestClose={() => ui.closeShareModal()}
-                  portalClassName='ShareModal'
-                  style={customModalStyles}
-                  contentLabel='Manage sharing'>
-                  <div className='share-modal-content'>
-                    <div className='modal-header'>
-                      <h4 className='modal-title'>List share topic</h4>
-                    </div>
-                    <div className='modal-body'>
-                      <div id='accordion' role='tablist' aria-multiselectable='true'>
-                        <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingOne' data-toggle='collapse' data-parent='#accordion' href='#collapseOne' aria-expanded='true' aria-controls='collapseOne'>
-                            <div className='directional-user'>
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='40' height='40' /></a>
-                              </div>
-                              <div className='share-name'> Huỳnh Đức Dũng</div>
-                            </div>
-                          </div>
-                          <div id='collapseOne' className='collapse show' role='tabpanel' aria-labelledby='headingOne'>
-                            <div className='card-block'>
-                              <ul className='timeline timeline-horizontal'>
-                                <li className='timeline-item'>
-                                  <div className='timeline-badge'>
-                                    <a href='#'>
-                                      <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
-                                    </a>
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <a href='#' className='btn btn-related'>Unshare</a>
-                                  </div>
-                                </li>
-                                <li className='timeline-item'>
-                                  <div className='timeline-badge'>
-                                    <i className='fa fa-share-alt' aria-hidden='true' />
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <span className='name-url'>github.com</span>
-                                  </div>
-                                </li>
-                                <li className='timeline-item share-line-left'>
-                                  <div className='timeline-badge'>
-                                    <a href='#'>
-                                      <img className='object-badge' src='https://lh4.googleusercontent.com/-ZkXKKEWALHg/AAAAAAAAAAI/AAAAAAAAATI/3U8fKfpcXqs/photo.jpg' alt='' width='51' height='51' />
-                                    </a>
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <a href='#' className='btn btn-unfollow'>Unfollow</a>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='card card-topic'>
-                          <div className='card-header' role='tab' id='headingOne' data-toggle='collapse' data-parent='#accordion' href='#collapseOne' aria-expanded='true' aria-controls='collapseOne'>
-                            <div className='directional-user'>
-                              <div className='share-image'>
-                                <a href='#'><img className='share-object' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='40' height='40' /></a>
-                              </div>
-                              <div className='share-name'> Dominic Morris</div>
-                            </div>
-                          </div>
-                          <div id='collapseTwo' className='collapse show' role='tabpanel' aria-labelledby='headingTwo'>
-                            <div className='card-block'>
-                              <ul className='timeline timeline-horizontal'>
-                                <li className='timeline-item share-line-right'>
-                                  <div className='timeline-badge'>
-                                    <a href='#'>
-                                      <img className='object-badge' src='https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&oe=5957A4E8' alt='' width='51' height='51' />
-                                    </a>
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <a href='#' className='btn btn-related'>Unshare</a>
-                                  </div>
-                                </li>
-                                <li className='timeline-item'>
-                                  <div className='timeline-badge'>
-                                    <i className='fa fa-list' aria-hidden='true' />
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <div className='tags-topic'>
-                                      <span className='tags tags-color-7' rel='tag'>
-                                        <span className='text-tag'>University of California, Berkeley</span>
-                                      </span>
-                                    </div>
-                                  </div>
-                                </li>
-                                <li className='timeline-item'>
-                                  <div className='timeline-badge'>
-                                    <a href='#'>
-                                      <img className='object-badge' src='https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg' alt='' width='51' height='51' />
-                                    </a>
-                                  </div>
-                                  <div className='timeline-panel'>
-                                    <a href='#' className='btn btn-unfollow'>Unfollow</a>
-                                  </div>
-                                </li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Modal>
-              </NavItem>
-          }
-        {
-              store.isLogin &&
-              <NavItem>
-                <a data-toggle='dropdown'>
-                  <i className='fa fa-list fa-2x' aria-hidden='true' />
-                  <span className='nav-text'>List Topic</span>
-                  <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-                </a>
-                <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
-                  {topics.map(topic => (
-                    <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
-                  ))}
-                </ul>
-              </NavItem>
-          }
-        {
-              store.isLogin &&
-              <NavItem>
-                <a data-toggle='dropdown'>
-                  <i className='fa fa-users fa-2x' aria-hidden='true' />
-                  <span className='nav-text'>Friend Streams</span>
-                  <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-                </a>
-                <ul className='dropdown-menu dropdown-modifier  pull-right'>
-                  {users.map(user =>
-                    (<li key={guid()}>
-                      <div className='user-share'>
-                        <div className='user-share-img'>
-                          <img width='24' height='24' src={user.avatar || '/static/images/no-avatar.png'} alt='' />
-                        </div>
-                        <div className='user-share-cnt'>
-                          <div className='user-share-inner'>
-                            <p className='user-info'>
-                              <span className='share-fullname'>{user.fullname}</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </NavItem>
-          }
-        <AppHeader notify={addNotification} />
-      </Navbar>
+      <AppHeader notify={addNotification} />
       <NotificationStack
         notifications={ui.notifications.toArray()}
         dismissAfter={5000}
         onDismiss={(notification) => ui.notifications.remove(notification)}
         />
       <ToggleDisplay if={!store.isLogin}>
-        <NoSSR onSSR={<Loading isLoading />}>
-          <ChromeInstall
-            description={description}
-            title='Unlock YOUR FRIEND STREAM Now'
-            install={inlineInstall}
-          />
-        </NoSSR>
+        {
+          !store.isMobile &&
+          <NoSSR onSSR={<Loading isLoading />}>
+            <ChromeInstall
+              description={description}
+              title='Unlock YOUR FRIEND STREAM Now'
+              install={inlineInstall}
+            />
+          </NoSSR>
+        }
+        <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
+          <div className='section-item'>
+            <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
+            <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
+            <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> social graph.</p>
+            <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
+            <p>It’s a radical reimagining of what sharing can be, always in the complete control of users: it’s safe, automatic and intelligent, highlighting only the best and most relevant content to friends.</p>
+            <p>Because <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
+          </div>
+          <div className='section-item'>
+            <h3 className='lead'>How does it work?</h3>
+            <p>We use natural language processing, correlation analysis and a real time learning engine to categorise web content as it is browsed. We suggest and then setup real time topic sharing between users on the platform, so users can view each others topic streams - both past and future content is automatically shared once both users accept the shared stream.</p>
+          </div>
+          <div className='section-item'>
+            <h3 className='lead'>What stage are we at?</h3>
+            <p>We are in stealth mode, and developing towards private alpha testing phase. We have and end-to-end technical proof of concept in place, working on desktop web.</p>
+          </div>
+          <div className='section-item'>
+            <h3 className='lead'>Who are we?</h3>
+            <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
+          </div>
+        </Section>
       </ToggleDisplay>
       <ToggleDisplay if={store.isLogin}>
         { !store.isMobile &&
