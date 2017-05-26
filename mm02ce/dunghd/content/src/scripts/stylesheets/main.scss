@@ -55,6 +55,14 @@ body {
       background-color: transparent;
     }
   }
+  button {
+    &,
+    &:hover,
+    &:focus {
+      box-shadow: none;
+      text-shadow: none;
+    }
+  }
   @import 'rc-steps/index';
   @import 'rc-steps/iconfont';
   @import 'animate.min';
