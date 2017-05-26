@@ -44,6 +44,10 @@ class ChromeInstall extends React.Component {
     }, 100)
   }
 
+  componentWillReact () {
+    logger.warn('ChromeInstall componentWillReact')
+  }
+
   onClose () {
     this.setState({ showModal: false })
     if (this.props.store.isInstall && !this.props.store.isLogin) {

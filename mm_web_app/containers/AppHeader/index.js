@@ -6,7 +6,6 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withHandlers, lifecycle, flattenProp } from 'recompose'
 import Link from 'next/link'
 import Modal from 'react-modal'
 import { inject, observer } from 'mobx-react'
@@ -40,128 +39,6 @@ const customModalStyles = {
   }
 }
 
-const enhance = compose(
-  withHandlers({
-    onGoogleLogin: props => () => {
-      logger.warn('onGoogleLogin', props)
-      const provider = new firebase.auth.GoogleAuthProvider()
-      provider.addScope('https://www.googleapis.com/auth/plus.me')
-      provider.addScope('https://www.googleapis.com/auth/userinfo.email')
-      provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-      firebase.auth().signInWithPopup(provider)
-    },
-    onFacebookLogin: props => () => {
-      logger.warn('onFacebookLogin', props)
-      const provider = new firebase.auth.FacebookAuthProvider()
-      provider.addScope('email')
-      firebase.auth().signInWithPopup(provider)
-    },
-    onSignInOpen: props => () => {
-      logger.warn('onSignInOpen', props)
-      props.ui.showSignIn()
-    },
-    onClose: props => () => {
-      logger.warn('onClose', props)
-      props.ui.closeModal()
-    },
-    openShareModal: props => () => {
-      logger.warn('openShareModal', props)
-      props.ui.openShareModal()
-    },
-    closeShareModal: props => () => {
-      logger.warn('closeShareModal', props)
-      props.ui.closeShareModal()
-    },
-    onLogout: props => () => {
-      logger.warn('onLogout', props)
-      firebase.auth().signOut().then(() => {
-        fetch('/api/logout', {
-          method: 'POST',
-          credentials: 'same-origin'
-        }).then(() => {
-          props.store.logoutUser()
-        })
-        props.notify('You have successfully signed out.')
-      }).catch((error) => {
-        logger.warn(error)
-      })
-    }
-  }),
-  lifecycle({
-    componentDidMount () {
-      logger.warn('AppHeader componentDidMount')
-      if (firebase.apps.length === 0) {
-        firebase.initializeApp(clientCredentials)
-        firebase.auth().onAuthStateChanged(user => {
-          if (user) {
-            logger.warn('user', user)
-            return user.getIdToken()
-              .then((token) => {
-                /* global fetch */
-                this.props.notify(`Welcome, ${user.displayName}!`)
-                return fetch('/api/login', {
-                  method: 'POST',
-                  // eslint-disable-next-line no-undef
-                  headers: new Headers({ 'Content-Type': 'application/json' }),
-                  credentials: 'same-origin',
-                  body: JSON.stringify({ token })
-                }).then((res) => {
-                  // register for new user
-                  if (this.props.store.userId < 0) {
-                    res.json().then(json => {
-                      // register new user
-                      logger.warn('user', json)
-                      const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
-                      /* eslint-disable camelcase */
-                      logger.warn('sign_in_provider', sign_in_provider)
-                      logger.warn('identities', identities)
-                      let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
-                      let google_user_id = identities['google.com'] && identities['google.com'][0]
-                      if (sign_in_provider === 'google.com') {
-                        if (!email) {
-                          user.providerData.forEach(item => {
-                            if (item.providerId === sign_in_provider) {
-                              this.props.store.googleConnect({
-                                email: item.email, name, picture, google_user_id
-                              })
-                            }
-                          })
-                        } else {
-                          this.props.store.googleConnect({
-                            email, name, picture, google_user_id
-                          })
-                        }
-                      } else if (sign_in_provider === 'facebook.com') {
-                        if (!email) {
-                          user.providerData.forEach(item => {
-                            if (item.providerId === sign_in_provider) {
-                              this.props.store.facebookConnect({
-                                email: item.email, name, picture, fb_user_id
-                              })
-                            }
-                          })
-                        } else {
-                          this.props.store.facebookConnect({
-                            email, name, picture, fb_user_id
-                          })
-                        }
-                      }
-                    })
-                  }
-                })
-              })
-          }
-        })
-      }
-    },
-    componentWillReact () {
-      logger.warn('AppHeader componentWillReact')
-    }
-  }),
-  flattenProp('store'),
-  flattenProp('ui')
-)
-
 const avatar = (user) => {
   if (user && user.picture) {
     return user.picture
@@ -169,45 +46,167 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
-const AppHeader = inject('ui', 'store')(observer(enhance(({
-  userId, isLogin, user, showSignInModal, showShareModal,
-  users, topics,
-  onLogout, onSignInOpen, onClose, openShareModal, closeShareModal,
-  onFacebookLogin, onGoogleLogin
-}) => {
-  return (
-    <Navbar className='header-nav animated fadeInDown' brand={brand}>
-      <NavItem>
-        <a data-toggle='dropdown'>
-          <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-          <span className='notifications-number notifications-hiring'>
-            <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
+@inject('store')
+@inject('ui')
+@observer
+class AppHeader extends React.Component {
+  constructor (props) {
+    super(props)
+    this.onGoogleLogin = this.onGoogleLogin.bind(this)
+    this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.onSignInOpen = this.onSignInOpen.bind(this)
+    this.onClose = this.onClose.bind(this)
+    this.onLogout = this.onLogout.bind(this)
+  }
+
+  componentDidMount () {
+    logger.warn('AppHeader componentDidMount')
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(clientCredentials)
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          logger.warn('user', user)
+          return user.getIdToken()
+            .then((token) => {
+              /* global fetch */
+              this.props.notify(`Welcome, ${user.displayName}!`)
+              return fetch('/api/login', {
+                method: 'POST',
+                // eslint-disable-next-line no-undef
+                headers: new Headers({ 'Content-Type': 'application/json' }),
+                credentials: 'same-origin',
+                body: JSON.stringify({ token })
+              }).then((res) => {
+                // register for new user
+                if (this.props.store.userId < 0) {
+                  res.json().then(json => {
+                    // register new user
+                    logger.warn('user', json)
+                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                    /* eslint-disable camelcase */
+                    logger.warn('sign_in_provider', sign_in_provider)
+                    logger.warn('identities', identities)
+                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                    let google_user_id = identities['google.com'] && identities['google.com'][0]
+                    if (sign_in_provider === 'google.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.googleConnect({
+                              email: item.email, name, picture, google_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.googleConnect({
+                          email, name, picture, google_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'facebook.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.facebookConnect({
+                              email: item.email, name, picture, fb_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.facebookConnect({
+                          email, name, picture, fb_user_id
+                        })
+                      }
+                    }
+                  })
+                }
+              })
+            })
+        }
+      })
+    }
+  }
+
+  componentWillReact () {
+    logger.warn('AppHeader componentWillReact')
+  }
+
+  onGoogleLogin () {
+    logger.warn('onGoogleLogin', this.props)
+    const provider = new firebase.auth.GoogleAuthProvider()
+    provider.addScope('https://www.googleapis.com/auth/plus.me')
+    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+    firebase.auth().signInWithPopup(provider)
+  }
+
+  onFacebookLogin () {
+    logger.warn('onFacebookLogin', this.props)
+    const provider = new firebase.auth.FacebookAuthProvider()
+    provider.addScope('email')
+    firebase.auth().signInWithPopup(provider)
+  }
+
+  onSignInOpen () {
+    logger.warn('onSignInOpen', this.props)
+    this.props.ui.showSignIn()
+  }
+
+  onClose () {
+    logger.warn('onClose', this.props)
+    this.props.ui.closeModal()
+  }
+
+  onLogout () {
+    logger.warn('onLogout', this.props)
+    firebase.auth().signOut().then(() => {
+      fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'same-origin'
+      }).then(() => {
+        this.props.store.logoutUser()
+      })
+      this.props.notify('You have successfully signed out.')
+    }).catch((error) => {
+      logger.warn(error)
+    })
+  }
+
+  render () {
+    const { isLogin, userId, topics, users, user } = this.props.store
+    const { showShareModal, showSignInModal } = this.props.ui
+    return (
+      <Navbar className='header-nav animated fadeInDown' brand={brand}>
+        <NavItem>
+          <a data-toggle='dropdown'>
+            <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
+            <span className='notifications-number notifications-hiring'>
+              <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
               </span>
-          <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-        </a>
-        <ul className='dropdown-menu dropdown-hiring pull-right'>
-          <li key={guid()}>
-            <Link prefetch href='/hiring-js' className='nav-link'>
-              <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
-            </Link>
-          </li>
-          <li key={guid()}>
-            <Link prefetch href='/hiring-vp' className='nav-link'>
-              <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
-            </Link>
-          </li>
-        </ul>
-      </NavItem>
-      {
+            <i className='fa fa-chevron-circle-down' aria-hidden='true' />
+          </a>
+          <ul className='dropdown-menu dropdown-hiring pull-right'>
+            <li key={guid()}>
+              <Link prefetch href='/hiring-js' className='nav-link'>
+                <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
+              </Link>
+            </li>
+            <li key={guid()}>
+              <Link prefetch href='/hiring-vp' className='nav-link'>
+                <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
+              </Link>
+            </li>
+          </ul>
+        </NavItem>
+        {
           isLogin &&
           <NavItem>
-            <a onClick={() => { openShareModal() }}>
+            <a onClick={() => this.props.ui.openShareModal()}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
               <span className='nav-text'>Share</span>
             </a>
             <Modal
               isOpen={showShareModal}
-              onRequestClose={() => closeShareModal()}
+              onRequestClose={this.props.ui.closeShareModal}
               portalClassName='ShareModal'
               style={customModalStyles}
               contentLabel='Manage sharing'>
@@ -314,8 +313,8 @@ const AppHeader = inject('ui', 'store')(observer(enhance(({
               </div>
             </Modal>
           </NavItem>
-      }
-      {
+        }
+        {
           isLogin &&
           <NavItem>
             <a data-toggle='dropdown'>
@@ -326,11 +325,11 @@ const AppHeader = inject('ui', 'store')(observer(enhance(({
             <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
               {topics.map(topic => (
                 <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
-                  ))}
+              ))}
             </ul>
           </NavItem>
-      }
-      {
+        }
+        {
           isLogin &&
           <NavItem>
             <a data-toggle='dropdown'>
@@ -340,71 +339,71 @@ const AppHeader = inject('ui', 'store')(observer(enhance(({
             </a>
             <ul className='dropdown-menu dropdown-modifier  pull-right'>
               {users.map(user =>
-              (<li key={guid()}>
-                <div className='user-share'>
-                  <div className='user-share-img'>
-                    <img width='24' height='24' src={user.avatar || '/static/images/no-avatar.png'} alt='' />
-                  </div>
-                  <div className='user-share-cnt'>
-                    <div className='user-share-inner'>
-                      <p className='user-info'>
-                        <span className='share-fullname'>{user.fullname}</span>
-                      </p>
+                (<li key={guid()}>
+                  <div className='user-share'>
+                    <div className='user-share-img'>
+                      <img width='24' height='24' src={user.avatar || '/static/images/no-avatar.png'} alt='' />
+                    </div>
+                    <div className='user-share-cnt'>
+                      <div className='user-share-inner'>
+                        <p className='user-info'>
+                          <span className='share-fullname'>{user.fullname}</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+                ))}
             </ul>
           </NavItem>
-      }
-      <NavItem>
-        {isLogin &&
-        <div className='dropdown account-dropdown'>
-          <a className='dropdown-toggle' data-toggle='dropdown'>
-            <img className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
-          </a>
-          <a className='link-logout-res' onClick={() => { onLogout() }}>
-            <i className='fa fa-sign-out' />
-            <span className='nav-text'>Sign Out</span>
-          </a>
-          <ul className='dropdown-menu pull-right'>
-            {user && user.name &&
-              <div className='account-dropdown__identity account-dropdown__segment'>
-                Signed in as <strong>{user.name}</strong>
+        }
+        <NavItem>
+          {isLogin &&
+            <div className='dropdown account-dropdown'>
+              <a className='dropdown-toggle' data-toggle='dropdown'>
+                <img className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
+              </a>
+              <a className='link-logout-res' onClick={this.onLogout}>
+                <i className='fa fa-sign-out' />
+                <span className='nav-text'>Sign Out</span>
+              </a>
+              <ul className='dropdown-menu pull-right'>
+                {user && user.name &&
+                  <div className='account-dropdown__identity account-dropdown__segment'>
+                    Signed in as <strong>{user.name}</strong>
+                  </div>
+                }
+                <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
+              </ul>
+            </div>
+          }
+          {!isLogin && <button className='btn btn-login' onClick={() => this.props.ui.showSignIn()}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
+          <Modal
+            isOpen={showSignInModal}
+            onRequestClose={this.onClose}
+            style={customStyles}
+            portalClassName='SignInModal'
+            contentLabel='Sign In Modal'
+          >
+            <h2 ref='subtitle'>SIGN IN</h2>
+            <div className='justify-content-md-center social-action'>
+              <div className='block-button'>
+                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                  <i className='fa fa-facebook' /> Sign in with Facebook
+              </a>
               </div>
-            }
-            <li><button className='btn btn-logout' onClick={() => { onLogout() }}><i className='fa fa-sign-out' /> Sign Out</button></li>
-          </ul>
-        </div>
-      }
-        {!isLogin && <button className='btn btn-login' onClick={() => { onSignInOpen() }}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
-        <Modal
-          isOpen={showSignInModal}
-          onRequestClose={() => { onClose() }}
-          style={customStyles}
-          portalClassName='SignInModal'
-          contentLabel='Sign In Modal'
-      >
-          <h2 ref='subtitle'>SIGN IN</h2>
-          <div className='justify-content-md-center social-action'>
-            <div className='block-button'>
-              <a className='btn btn-social btn-facebook' onClick={() => { onFacebookLogin() }}>
-                <i className='fa fa-facebook' /> Sign in with Facebook
+              <div className='block-button'>
+                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+                  <i className='fa fa-google' /> Sign in with Google
               </a>
+              </div>
             </div>
-            <div className='block-button'>
-              <a className='btn btn-social btn-google' onClick={() => { onGoogleLogin() }}>
-                <i className='fa fa-google' /> Sign in with Google
-              </a>
-            </div>
-          </div>
-        </Modal>
-      </NavItem>
-    </Navbar>
-  )
+          </Modal>
+        </NavItem>
+      </Navbar>
+    )
+  }
 }
-)))
 
 AppHeader.propTypes = {
   notify: PropTypes.func.isRequired
