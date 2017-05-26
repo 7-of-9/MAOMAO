@@ -63,7 +63,8 @@ app.prepare().then(() => {
     const { pathname, query } = parsedUrl
     if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
      pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
-     pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1
+     pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
+     pathname.indexOf('.png') !== -1
     ) {
       return handle(req, res, parsedUrl)
     } else {

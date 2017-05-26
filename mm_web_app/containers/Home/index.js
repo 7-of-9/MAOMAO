@@ -11,6 +11,7 @@ import { compose, withHandlers, lifecycle } from 'recompose'
 import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
+import NoSSR from 'react-no-ssr'
 import { toJS } from 'mobx'
 import { NotificationStack } from 'react-notification'
 import Modal from 'react-modal'
@@ -318,19 +319,23 @@ const Home = inject('ui', 'store')(observer(enhance(({
         onDismiss={(notification) => ui.notifications.remove(notification)}
         />
       <ToggleDisplay if={!store.isLogin}>
-        <ChromeInstall
-          description={description}
-          title='Unlock YOUR FRIEND STREAM Now'
-          install={inlineInstall}
-          />
-      </ToggleDisplay>
-      <ToggleDisplay if={store.isLogin}>
-        { !store.isMobile &&
+        <NoSSR onSSR={<Loading isLoading />}>
           <ChromeInstall
             description={description}
             title='Unlock YOUR FRIEND STREAM Now'
             install={inlineInstall}
-            />
+          />
+        </NoSSR>
+      </ToggleDisplay>
+      <ToggleDisplay if={store.isLogin}>
+        { !store.isMobile &&
+        <NoSSR onSSR={<Loading isLoading />}>
+          <ChromeInstall
+            description={description}
+            title='Unlock YOUR FRIEND STREAM Now'
+            install={inlineInstall}
+          />
+        </NoSSR>
         }
         <Streams />
         <Loading isLoading={store.isProcessing} />
