@@ -61,73 +61,74 @@ class AppHeader extends React.Component {
 
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(clientCredentials)
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          logger.warn('user', user)
-          return user.getIdToken()
-            .then((token) => {
-              /* global fetch */
-              this.props.notify(`Welcome, ${user.displayName}!`)
-              return fetch('/api/login', {
-                method: 'POST',
-                // eslint-disable-next-line no-undef
-                headers: new Headers({ 'Content-Type': 'application/json' }),
-                credentials: 'same-origin',
-                body: JSON.stringify({ token })
-              }).then((res) => {
-                // register for new user
-                if (this.props.store.userId < 0) {
-                  res.json().then(json => {
-                    // register new user
-                    logger.warn('user', json)
-                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
-                    /* eslint-disable camelcase */
-                    logger.warn('sign_in_provider', sign_in_provider)
-                    logger.warn('identities', identities)
-                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
-                    let google_user_id = identities['google.com'] && identities['google.com'][0]
-                    if (sign_in_provider === 'google.com') {
-                      if (!email) {
-                        user.providerData.forEach(item => {
-                          if (item.providerId === sign_in_provider) {
-                            this.props.store.googleConnect({
-                              email: item.email, name, picture, google_user_id
-                            })
-                          }
-                        })
-                      } else {
-                        this.props.store.googleConnect({
-                          email, name, picture, google_user_id
-                        })
-                      }
-                    } else if (sign_in_provider === 'facebook.com') {
-                      if (!email) {
-                        user.providerData.forEach(item => {
-                          if (item.providerId === sign_in_provider) {
-                            this.props.store.facebookConnect({
-                              email: item.email, name, picture, fb_user_id
-                            })
-                          }
-                        })
-                      } else {
-                        this.props.store.facebookConnect({
-                          email, name, picture, fb_user_id
-                        })
-                      }
+    firebase.initializeApp(clientCredentials)
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        logger.warn('user', user)
+        return user.getIdToken()
+          .then((token) => {
+            /* global fetch */
+            this.props.notify(`Welcome, ${user.displayName}!`)
+            return fetch('/api/login', {
+              method: 'POST',
+              // eslint-disable-next-line no-undef
+              headers: new Headers({ 'Content-Type': 'application/json' }),
+              credentials: 'same-origin',
+              body: JSON.stringify({ token })
+            }).then((res) => {
+              // register for new user
+              if (this.props.store.userId < 0) {
+                res.json().then(json => {
+                  // register new user
+                  logger.warn('user', json)
+                  const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                  /* eslint-disable camelcase */
+                  logger.warn('sign_in_provider', sign_in_provider)
+                  logger.warn('identities', identities)
+                  let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                  let google_user_id = identities['google.com'] && identities['google.com'][0]
+                  if (sign_in_provider === 'google.com') {
+                    if (!email) {
+                      user.providerData.forEach(item => {
+                        if (item.providerId === sign_in_provider) {
+                          this.props.store.googleConnect({
+                            email: item.email, name, picture, google_user_id
+                          })
+                        }
+                      })
+                    } else {
+                      this.props.store.googleConnect({
+                        email, name, picture, google_user_id
+                      })
                     }
-                  })
-                }
-              })
+                  } else if (sign_in_provider === 'facebook.com') {
+                    if (!email) {
+                      user.providerData.forEach(item => {
+                        if (item.providerId === sign_in_provider) {
+                          this.props.store.facebookConnect({
+                            email: item.email, name, picture, fb_user_id
+                          })
+                        }
+                      })
+                    } else {
+                      this.props.store.facebookConnect({
+                        email, name, picture, fb_user_id
+                      })
+                    }
+                  }
+                })
+              }
             })
-        }
-      })
-    }
+          })
+      }
+    })
   }
 
   componentWillReact () {
     logger.warn('AppHeader componentWillReact')
+    if (this.props.store.isLogin) {
+      this.onClose()
+    }
   }
 
   onGoogleLogin () {
@@ -206,7 +207,7 @@ class AppHeader extends React.Component {
             </a>
             <Modal
               isOpen={showShareModal}
-              onRequestClose={this.props.ui.closeShareModal}
+              onRequestClose={() => this.props.ui.closeShareModal()}
               portalClassName='ShareModal'
               style={customModalStyles}
               contentLabel='Manage sharing'>
