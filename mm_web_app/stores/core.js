@@ -49,6 +49,15 @@ export class CoreStore {
   @action checkInstall () {
     if (this.isChrome && !this.isMobile) {
       this.isInstall = !!hasInstalledExtension()
+      if (this.isInstalledOnChromeDesktop) {
+        sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
+          if (error) {
+            logger.warn('WEB_CHECK_AUTH error', error)
+          } else {
+            this.autoLogin(data.payload)
+          }
+        })
+      }
     }
   }
 
@@ -65,9 +74,9 @@ export class CoreStore {
   }
 
   @action autoLogin (auth) {
-    const { isLogin, userId, userHash, info } = auth
+    const { userId, userHash, info } = auth
     if (userId > 0) {
-      this.isLogin = isLogin
+      this.isLogin = true
       this.user = info
       this.login(userId, userHash)
     }

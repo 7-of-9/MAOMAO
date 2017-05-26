@@ -7,7 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
-import { compose, withHandlers, lifecycle } from 'recompose'
+import { compose, withHandlers, lifecycle, flattenProp } from 'recompose'
 import Head from 'next/head'
 import Router from 'next/router'
 import NoSSR from 'react-no-ssr'
@@ -70,17 +70,20 @@ const enhance = compose(
     componentWillReact () {
       logger.warn('Home componentWillReact')
     }
-  })
+  }),
+  flattenProp('ui'),
+  flattenProp('store')
 )
 
 const Home = inject('ui', 'store')(observer(enhance(({
-  store, ui,
+  shareInfo, bgImage, isLogin, isMobile, isProcessing,
+  notifications,
   addNotification, removeNotification, inlineInstall
 }) => {
   const title = 'maomao - peer-to-peer real time content sharing network'
   let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-  if (store.shareInfo) {
-    const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = store.shareInfo
+  if (shareInfo) {
+    const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
     if (shareAll) {
       description = `${fullname} would like to share all maomao stream with you`
     } else if (urlTitle && urlTitle.length) {
@@ -98,7 +101,7 @@ const Home = inject('ui', 'store')(observer(enhance(({
         <meta name='description' content={description} />
         <meta name='og:title' content={title} />
         <meta name='og:description' content={description} />
-        <meta name='og:image' content={store.bgImage && store.bgImage.length > 0 ? store.bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
+        <meta name='og:image' content={bgImage && bgImage.length > 0 ? bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
         <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
         <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
         <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
@@ -110,13 +113,13 @@ const Home = inject('ui', 'store')(observer(enhance(({
       </Head>
       <AppHeader notify={addNotification} />
       <NotificationStack
-        notifications={ui.notifications.toArray()}
+        notifications={notifications || []}
         dismissAfter={5000}
-        onDismiss={(notification) => ui.notifications.remove(notification)}
+        onDismiss={(notification) => notifications.remove(notification)}
         />
-      <ToggleDisplay if={!store.isLogin}>
+      <ToggleDisplay if={!isLogin}>
         {
-          !store.isMobile &&
+          !isMobile &&
           <NoSSR onSSR={<Loading isLoading />}>
             <ChromeInstall
               description={description}
@@ -148,8 +151,8 @@ const Home = inject('ui', 'store')(observer(enhance(({
           </div>
         </Section>
       </ToggleDisplay>
-      <ToggleDisplay if={store.isLogin}>
-        { !store.isMobile &&
+      <ToggleDisplay if={isLogin}>
+        { !isMobile &&
         <NoSSR onSSR={<Loading isLoading />}>
           <ChromeInstall
             description={description}
@@ -159,7 +162,7 @@ const Home = inject('ui', 'store')(observer(enhance(({
         </NoSSR>
         }
         <Streams />
-        <Loading isLoading={store.isProcessing} />
+        <Loading isLoading={isProcessing} />
       </ToggleDisplay>
       <div className='footer-area'>
         <Footer brandName={brandName}
