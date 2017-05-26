@@ -48,7 +48,7 @@ const manifest = {
 const reducerKey = 'app';
 const migration = createMigration(manifest, reducerKey);
 
-const composeEnhancers = composeWithDevTools({ realtime: true });
+const composeEnhancers = composeWithDevTools({ realtime: dev });
 const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
   migration,
   autoRehydrate(),

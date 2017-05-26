@@ -17,7 +17,7 @@ if (process.env.NODE_ENV === 'production') {
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
   whyDidYouUpdate(React, {
-    exclude: /^(Connect|StyleRoot|Dropdown|DropdownTrigger|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|styled|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
+    exclude: /^(Connect|Styled|StyleRoot|Dropdown|DropdownTrigger|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|styled|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
   });
 }
 /* eslint-enable */

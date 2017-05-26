@@ -294,7 +294,7 @@ function process_text(page_meta) {
       logger().warn('document_head_hash', document_head_hash);
       ajax_get_UrlNlpInfo(remove_hash_url(document.location.href), document_head_hash, function (data) {
         logger().info("%c /url_nlpinfo ... got: " + JSON.stringify(data, null, 2), cs_log_style);
-        if (data.is_known == true && data.has_calais_info == true) {
+        if (data.is_known == true && data.has_calais_info == true && data.topics.length > 0) {
           // no need to text process, no need for calais
           dispatchDataToBg({ type: 'NLP_INFO_KNOWN', payload: { lang: detectLang, url: remove_hash_url(document.location.href), status: true, document_head_hash: document_head_hash, page_meta: page_meta, topics: data.topics, suggestions: data.suggestions } });
           dispatchDataToBg({ type: 'GENERATE_SHARE_TOPICS', payload: { lang: detectLang, url: remove_hash_url(document.location.href), topics: data.topics } });

@@ -61,7 +61,7 @@
     "recompose": "^0.23.4",
     "request": "^2.81.0",
     "session-file-store": "^1.0.0",
-    "styled-components": "^1.4.6"
+    "styled-components": "^2.0.0"
   },
   "standard": {
     "parser": "babel-eslint",
