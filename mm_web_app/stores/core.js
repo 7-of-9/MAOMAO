@@ -28,7 +28,9 @@ export class CoreStore {
     if (this.user) {
       this.isLogin = true
     }
-    this.isMobile = isMobileBrowser(userAgent)
+    if (!isServer) {
+      this.isMobile = isMobileBrowser(userAgent)
+    }
   }
 
   @computed get isInstalledOnChromeDesktop () {

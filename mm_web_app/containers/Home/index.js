@@ -6,7 +6,8 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withHandlers, lifecycle, pure } from 'recompose'
+import { observer, inject } from 'mobx-react'
+import { compose, withHandlers, lifecycle } from 'recompose'
 import Head from 'next/head'
 import Router from 'next/router'
 import Link from 'next/link'
@@ -16,7 +17,6 @@ import Modal from 'react-modal'
 import { Footer, Navbar, NavItem, Page } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
-import NoSSR from 'react-no-ssr'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
 import Streams from '../Streams'
@@ -83,12 +83,14 @@ const enhance = compose(
     componentDidMount () {
       // TODO: filter by invite user
       logger.warn('Home componentDidMount')
+    },
+    componentWillReact () {
+      logger.warn('Home componentWillReact')
     }
-  }),
-  pure
+  })
 )
 
-const Home = enhance(({
+const Home = inject('ui', 'store')(observer(enhance(({
   store, ui,
   addNotification, removeNotification, inlineInstall
 }) => {
@@ -308,7 +310,7 @@ const Home = enhance(({
                 </ul>
               </NavItem>
           }
-        <AppHeader ui={ui} store={store} notify={addNotification} />
+        <AppHeader notify={addNotification} />
       </Navbar>
       <NotificationStack
         notifications={ui.notifications.toArray()}
@@ -316,23 +318,19 @@ const Home = enhance(({
         onDismiss={(notification) => ui.notifications.remove(notification)}
         />
       <ToggleDisplay if={!store.isLogin}>
-        <NoSSR>
-          <ChromeInstall
-            description={description}
-            title='Unlock YOUR FRIEND STREAM Now'
-            install={inlineInstall}
-           />
-        </NoSSR>
+        <ChromeInstall
+          description={description}
+          title='Unlock YOUR FRIEND STREAM Now'
+          install={inlineInstall}
+          />
       </ToggleDisplay>
       <ToggleDisplay if={store.isLogin}>
         { !store.isMobile &&
-        <NoSSR>
           <ChromeInstall
             description={description}
             title='Unlock YOUR FRIEND STREAM Now'
             install={inlineInstall}
-              />
-        </NoSSR>
+            />
         }
         <Streams />
         <Loading isLoading={store.isProcessing} />
@@ -345,7 +343,7 @@ const Home = enhance(({
       </div>
     </Page>
   )
-})
+})))
 
 Home.propTypes = {
   history: PropTypes.object,
