@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
+import { toJS } from 'mobx'
 import logger from '../../utils/logger'
 
 @inject('store')
@@ -21,10 +22,12 @@ class ShareList extends React.Component {
   }
 
   render () {
+    const { users, topics } = toJS(this.props.store)
+    logger.warn('users, topics', users, topics)
     return (
       <div className='share-modal-content'>
         <div className='modal-header'>
-          <h4 className='modal-title'>List share topic</h4>
+          <h4 className='modal-title'>Share management</h4>
         </div>
         <div className='modal-body'>
           <div id='accordion' role='tablist' aria-multiselectable='true'>

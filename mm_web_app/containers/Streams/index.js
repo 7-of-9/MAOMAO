@@ -17,7 +17,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
-import logger from '../../utils/logger'
+// import logger from '../../utils/logger'
 
 const LIMIT = 10
 const MAX_COLORS = 12

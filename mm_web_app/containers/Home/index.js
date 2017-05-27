@@ -106,7 +106,7 @@ class Home extends React.Component {
   render () {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isProcessing, shareInfo, bgImage } = this.props.store
+    const { isLogin, isProcessing, shareInfo, bgImage, urls } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
@@ -183,7 +183,10 @@ class Home extends React.Component {
             />
           </NoSSR>
           <Loading isLoading={isProcessing} />
-          <Streams />
+          {
+            urls.length > 0 &&
+            <Streams />
+          }
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}

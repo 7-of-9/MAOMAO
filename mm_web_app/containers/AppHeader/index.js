@@ -169,7 +169,7 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, topics, users, user, shareInfo } = this.props.store
-    const { showShareModal, showSignInModal } = this.props.ui
+    const { showSignInModal } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
