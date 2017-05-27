@@ -44,7 +44,7 @@ export class CoreStore {
   @action checkInstall () {
     if (this.isChrome && !this.isMobile) {
       this.isInstall = !!hasInstalledExtension()
-      if (this.isInstalledOnChromeDesktop) {
+      if (this.isInstalledOnChromeDesktop && this.userId > 0) {
         sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
           if (error) {
             logger.warn('WEB_CHECK_AUTH error', error)

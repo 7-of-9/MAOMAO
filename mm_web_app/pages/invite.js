@@ -41,7 +41,6 @@ export default class Invite extends React.Component {
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
     this.store.bgImage = props.bgImage
     this.store.checkEnvironment()
-    this.store.checkInstall()
   }
 
   render () {

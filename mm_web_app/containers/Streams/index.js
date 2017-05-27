@@ -17,6 +17,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
+import logger from '../../utils/logger'
 
 const LIMIT = 10
 const MAX_COLORS = 12
@@ -118,9 +119,12 @@ class Streams extends React.PureComponent {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, time_on_tab, hit_utc, rate } = item
         let discoveryKeys = []
+        const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
+        discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
         }
+        logger.warn('discoveryKeys', discoveryKeys)
         items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}

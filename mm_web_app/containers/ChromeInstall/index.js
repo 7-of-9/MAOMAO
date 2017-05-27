@@ -21,6 +21,7 @@ class ChromeInstall extends React.Component {
   componentDidMount () {
     logger.warn('ChromeInstall componentDidMount')
     this.props.store.checkInstall()
+    setTimeout(() => this.props.store.checkInstall(), 500)
   }
 
   componentWillReact () {

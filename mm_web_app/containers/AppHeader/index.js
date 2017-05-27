@@ -76,7 +76,7 @@ class AppHeader extends React.Component {
           .then((token) => {
             this.props.notify(`Welcome, ${user.displayName}!`)
             this.props.ui.closeModal()
-            if (!this.props.store.isLogin && this.props.store.userId < 0) {
+            if (this.props.store.userId < 0) {
               return fetch('/api/login', {
                 method: 'POST',
                 // eslint-disable-next-line no-undef

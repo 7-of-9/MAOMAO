@@ -86,7 +86,8 @@ class Home extends React.Component {
     logger.warn('Home componentWillReact')
   }
 
-  compomentWillUnmont () {
+  componentWillUnmount () {
+    logger.warn('Home componentWillUnmount')
     this.props.ui.clearNotifications()
   }
 

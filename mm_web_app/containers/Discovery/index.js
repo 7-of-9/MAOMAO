@@ -54,7 +54,7 @@ function mashUp (store) {
     _.forEach(googleKnowledgeResult, (item) => {
       const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
-        urls = urls.insert(urls.size, moreDetailUrl)
+        urls.push(moreDetailUrl)
         graphKnowledges.push(
           <div className='grid-item' key={`GK-${moreDetailUrl}`}>
             <BlockElement
@@ -69,7 +69,7 @@ function mashUp (store) {
     })
     _.forEach(googleNewsResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
-        urls = urls.insert(urls.size, item.url)
+        urls.push(item.url)
         news.push(
           <div className='grid-item' key={`GN-${item.url}`}>
             <BlockElement
@@ -84,7 +84,7 @@ function mashUp (store) {
     })
     _.forEach(googleResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
-        urls = urls.insert(urls.size, item.url)
+        urls.push(item.url)
         search.push(
           <div className='grid-item' key={`GS-${item.url}`}>
             <BlockElement
@@ -100,7 +100,7 @@ function mashUp (store) {
     _.forEach(youtubeResult, (item) => {
       const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`
       if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
-        urls = urls.insert(urls.size, youtubeUrl)
+        urls.push(youtubeUrl)
         videos.push(
           <div className='grid-item' key={`YT-${youtubeUrl}`}>
             <BlockElement
@@ -115,7 +115,7 @@ function mashUp (store) {
     })
     _.forEach(redditResult, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
-        urls = urls.insert(urls.size, item.url)
+        urls.push(item.url)
         reddits.push(
           <div className='grid-item' key={`RD-${item.url}`}>
             <BlockElement
