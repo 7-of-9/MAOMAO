@@ -10,7 +10,6 @@ import Link from 'next/link'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
 import NProgress from 'nprogress'
-import { List } from 'immutable'
 import _ from 'lodash'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import BlockElement from '../../components/BlockElement'
@@ -44,7 +43,7 @@ function mashUp (store) {
   if (store.terms.length === 0) {
     return []
   }
-  let urls = List([])
+  let urls = []
   const graphKnowledges = []
   const search = []
   const news = []

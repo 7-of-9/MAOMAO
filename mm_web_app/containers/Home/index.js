@@ -56,7 +56,7 @@ class Home extends React.Component {
   }
 
   onInstallFail (error) {
-    this.props.addNotification(error)
+    this.props.ui.addNotification(error)
   }
 
   addNotification (msg) {
@@ -120,7 +120,7 @@ class Home extends React.Component {
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
-          notifications={this.props.ui.notifications.toArray()}
+          notifications={this.props.ui.notifications}
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
         />

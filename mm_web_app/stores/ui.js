@@ -1,4 +1,3 @@
-import { OrderedSet } from 'immutable'
 import { observable, action, toJS } from 'mobx'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
@@ -13,7 +12,7 @@ export class UIStore {
   @observable showSignInModal = false
   @observable showAcceptInvite = false
   @observable showShareModal = false
-  @observable notifications = OrderedSet()
+  @observable notifications = []
 
   @action showSignIn () {
     this.showSignInModal = true
@@ -37,7 +36,7 @@ export class UIStore {
 
   @action addNotification (msg) {
     const uuid = guid()
-    this.notifications = this.notifications.add({
+    this.notifications.push({
       message: msg,
       key: uuid,
       action: 'Dismiss',

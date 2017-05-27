@@ -62,13 +62,15 @@ class AppHeader extends React.Component {
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
-    firebase.initializeApp(clientCredentials)
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        logger.warn('firebase - user', user)
-        return user.getIdToken()
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(clientCredentials)
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          logger.warn('firebase - user', user)
+          return user.getIdToken()
           .then((token) => {
             this.props.notify(`Welcome, ${user.displayName}!`)
+            this.props.ui.closeModal()
             if (!this.props.store.isLogin && this.props.store.userId < 0) {
               return fetch('/api/login', {
                 method: 'POST',
@@ -120,8 +122,9 @@ class AppHeader extends React.Component {
               })
             }
           })
-      }
-    })
+        }
+      })
+    }
   }
 
   componentWillReact () {

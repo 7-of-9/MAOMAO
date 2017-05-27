@@ -24,7 +24,6 @@
     "firebase": "^4.0.0",
     "firebase-admin": "^5.0.0",
     "fuse.js": "^3.0.3",
-    "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "latinize": "^0.4.0",
     "lodash": "^4.17.4",

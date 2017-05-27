@@ -53,13 +53,16 @@ export class HomeStore extends CoreStore {
     const { shares, me } = this.userHistory
     const friends = toJS(shares)
     const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
+    const urls = []
+    let users = []
+    let topics = []
     if (myUrls && myUrls.length) {
       const maxScore = _.maxBy(myUrls, 'im_score')
-      this.urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      this.users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
+      urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+      users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
       _.forEach(myTopics, item => {
         if (item.term_id > 0 && item.url_ids.length > 0) {
-          this.topics.push({ name: item.term_name, urlIds: item.url_ids })
+          topics.push({ name: item.term_name, urlIds: item.url_ids })
         }
       })
     }
@@ -72,20 +75,22 @@ export class HomeStore extends CoreStore {
         userUrls.push(...item.urls)
         urlIds.push(...item.urls.map(item => item.id))
         if (item.topic_name) {
-          const existTopic = this.topics.find(item => item.name === item.topic_name)
+          const existTopic = topics.find(item => item.name === item.topic_name)
           if (existTopic) {
             existTopic.urlIds.push(...item.urls.map(item => item.id))
           } else {
-            this.topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
           }
         }
       })
       const maxScore = _.maxBy(userUrls, 'im_score')
-      this.urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      this.users.push({ user_id, fullname, avatar, urlIds })
+      urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+      users.push({ user_id, fullname, avatar, urlIds })
     })
 
-    this.topics = _.uniqBy(this.topics, (item) => `${item.name}-${item.urlIds.length}`)
+    this.urls = urls
+    this.topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
+    this.users = _.uniqBy(users, (item) => item.user_id)
     return { urls: this.urls, users: this.users, topics: this.topics }
   }
 
