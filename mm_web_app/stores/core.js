@@ -1,6 +1,6 @@
 import { observable, computed, action } from 'mobx'
 import Pusher from 'pusher-js'
-import { isMobileBrowser, isChromeBrowser, browserName } from '../utils/detector'
+import { isMobileBrowser, browserName } from '../utils/detector'
 import { PUSHER_KEY } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 import logger from '../utils/logger'
@@ -28,9 +28,8 @@ export class CoreStore {
     if (this.user) {
       this.isLogin = true
     }
-    if (!isServer) {
-      this.isMobile = isMobileBrowser(userAgent)
-    }
+    this.isMobile = isMobileBrowser(userAgent)
+    this.browserName = browserName()
   }
 
   @computed get isInstalledOnChromeDesktop () {
@@ -38,8 +37,7 @@ export class CoreStore {
   }
 
   @action checkEnvironment () {
-    this.isChrome = !!isChromeBrowser()
-    this.browserName = browserName()
+    this.isChrome = this.browserName === 'chrome'
     logger.warn('browserName', this.browserName)
   }
 

@@ -1436,7 +1436,7 @@ bootstrap@>4.0.0-alpha:
     jquery ">=1.9.1"
     tether "^1.4.0"
 
-bowser@^1.0.0, bowser@^1.7.0:
+bowser@^1.0.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/bowser/-/bowser-1.7.0.tgz#169de4018711f994242bff9a8009e77a1f35e003"
 
@@ -2268,6 +2268,10 @@ desandro-matches-selector@^2.0.0:
 destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
+
+detect-browser@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-1.7.0.tgz#11758cd6aa07d76c25784036d19154ae0392c3b3"
 
 detect-indent@^4.0.0:
   version "4.0.0"

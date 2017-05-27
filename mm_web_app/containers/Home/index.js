@@ -127,8 +127,6 @@ class Home extends React.Component {
           onDismiss={(notification) => this.props.ui.removeNotification(notification)}
         />
         <ToggleDisplay if={!isLogin}>
-          {
-          !isMobile &&
           <NoSSR onSSR={<Loading isLoading />}>
             <ChromeInstall
               description={description}
@@ -136,7 +134,6 @@ class Home extends React.Component {
               install={this.inlineInstall}
             />
           </NoSSR>
-        }
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
               <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
@@ -161,15 +158,13 @@ class Home extends React.Component {
           </Section>
         </ToggleDisplay>
         <ToggleDisplay if={isLogin}>
-          { !isMobile &&
           <NoSSR onSSR={<Loading isLoading />}>
             <ChromeInstall
               description={description}
               title='Unlock YOUR FRIEND STREAM Now'
               install={this.inlineInstall}
-          />
+            />
           </NoSSR>
-        }
           <Loading isLoading={isProcessing} />
           <Streams />
         </ToggleDisplay>

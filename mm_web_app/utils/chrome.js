@@ -2,7 +2,11 @@ import { EXTENSION_ID } from '../containers/App/constants'
 
 /* global chrome */
 export function hasInstalledExtension () {
-  return document.getElementById('maomao-extension-anchor') !== null || (chrome && chrome.app && chrome.app.isInstalled)
+  try {
+    return document.getElementById('maomao-extension-anchor') !== null || (chrome && chrome.app && chrome.app.isInstalled)
+  } catch (error) {
+    return false
+  }
 }
 
 export function sendMsgToChromeExtension (payload, callback = () => { }) {
