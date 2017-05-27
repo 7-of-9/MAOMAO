@@ -5,8 +5,6 @@ the modal section
 **************************************
 **************************************/
 
-.ReactModal__Body--open {}
-
 .ReactModal__Overlay {
   z-index: 99999;
   animation: vex-fadein 0.5s;
@@ -19,8 +17,6 @@ the modal section
   -webkit-overflow-scrolling: touch;
 }
 
-.ReactModal__Overlay--after-open {}
-
 .ReactModal__Content {
   width: 280px;
   animation: vex-flyin 0.5s;
@@ -30,6 +26,69 @@ the modal section
   -o-animation: vex-flyin 0.5s;
   -webkit-backface-visibility: hidden;
 }
+
+
+/*modal bootstrap*/
+
+.modal-body {
+  @include opacity(0);
+  background: transparent;
+  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
+  transition: transform 1.2s, opacity 1.2s;
+  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  -webkit-transform: translate3d(0, 150px, 0);
+  transform: translate3d(0, 150px, 0);
+  overflow: hidden;
+}
+
+.modal-header {
+  @include opacity(0);
+  width: 100%;
+  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
+  transition: transform 1.2s, opacity 1.2s;
+  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  -webkit-transform: translate3d(0, 20px, 0);
+  transform: translate3d(0, 20px, 0);
+}
+
+.modal-footer {
+  @include opacity(0);
+  width: 100%;
+  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
+  transition: transform 1.2s, opacity 1.2s;
+  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+  -webkit-transform: translate3d(0, 20px, 0);
+  transform: translate3d(0, 20px, 0);
+}
+
+.ReactModal__Content--after-open {
+  .modal-header {
+    @include opacity(1);
+    -webkit-transition-delay: 0.35s;
+    transition-delay: 0.35s;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  .modal-body {
+    @include opacity(1);
+    pointer-events: auto;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  .modal-footer {
+    @include opacity(1);
+    -webkit-transition-delay: 0.35s;
+    transition-delay: 0.35s;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+
+/*****Question Modal*****/
 
 .QuestionModal {
   .ReactModal__Content {
@@ -41,28 +100,40 @@ the modal section
   }
 }
 
+
+/*****Sign In Modal*****/
+
 .SignInModal {
   .ReactModal__Overlay {
-    background: none !important;
-    align-items: center;
-    display: flex;
+    /* display: flex;
     justify-content: center;
-    width: 100%;
+    align-items: center;
+    text-align: center; */
+    text-align: center;
+    margin: 0 auto;
+    background: none !important;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      margin-right: -0.25em;
+    }
   }
   .ReactModal__Content {
     @include transform(translateY(none));
     @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
-    left: auto !important;
-    right: auto !important;
-    margin: 0 auto;
+    position: static !important;
     padding: 30px !important;
+    margin: 0 auto;
+    display: inline-block;
+    vertical-align: middle;
     border-color: #e1e2e6;
     background: rgba(242, 242, 242, 0.75) !important;
     overflow-y: auto !important;
     width: 100%;
     max-height: calc(100% - 100px);
     max-width: calc(100% - 50px);
-    min-width: 300px;
     width: -moz-fit-content;
     width: -webkit-fit-content;
     width: -ms-fit-content;
@@ -70,6 +141,9 @@ the modal section
     width: fit-content;
     h2 {
       margin-bottom: 1.7rem;
+      text-align: center;
+    }
+    .paragraph-sign {
       text-align: center;
     }
     .block-button {
@@ -136,134 +210,38 @@ the modal section
     @media (max-width: 590px) {
       padding: 20px 25px !important;
     }
+    @media (max-width: 390px) {
+      padding: 20px !important;
+      max-width: calc(100% - 30px);
+    }
   }
 }
 
 
-/*modal bootstrap*/
-
-.modal.in .modal-dialog,
-.modal.fade .modal-dialog {
-  @include transform(none);
-}
-
-.modal-backdrop.in,
-.modal-backdrop.fade {
-  @include opacity(1);
-}
-
-.modal-backdrop {
-  background: #000;
-  filter: alpha(opacity=50);
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-}
-
-.modal-backdrop.fade {
-  @include transition(none);
-  background: rgba(0, 0, 0, 0.5);
-  animation: vex-fadeout 0.5s;
-  -webkit-animation: vex-fadeout 0.5s;
-  -moz-animation: vex-fadeout 0.5s;
-  -ms-animation: vex-fadeout 0.5s;
-  -o-animation: vex-fadeout 0.5s;
-  -webkit-backface-visibility: hidden;
-}
-
-.modal-backdrop.in {
-  animation: vex-fadein 0.5s;
-  -webkit-animation: vex-fadein 0.5s;
-  -moz-animation: vex-fadein 0.5s;
-  -ms-animation: vex-fadein 0.5s;
-  -o-animation: vex-fadein 0.5s;
-  -webkit-backface-visibility: hidden;
-}
-
-.fade .modal-dialog {
-  @include transition(none);
-  animation: vex-flyout 0.5s;
-  -webkit-animation: vex-flyout 0.5s;
-  -moz-animation: vex-flyout 0.5s;
-  -ms-animation: vex-flyout 0.5s;
-  -o-animation: vex-flyout 0.5s;
-  -webkit-backface-visibility: hidden;
-}
-
-.in .modal-dialog {
-  animation: vex-flyin 0.5s;
-  -webkit-animation: vex-flyin 0.5s;
-  -moz-animation: vex-flyin 0.5s;
-  -ms-animation: vex-flyin 0.5s;
-  -o-animation: vex-flyin 0.5s;
-  -webkit-backface-visibility: hidden;
-}
-
-.modal-body {
-  @include opacity(0);
-  background: transparent;
-  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
-  transition: transform 1.2s, opacity 1.2s;
-  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  -webkit-transform: translate3d(0, 150px, 0);
-  transform: translate3d(0, 150px, 0);
-  overflow: hidden;
-}
-
-.ReactModal__Content--after-open .modal-body {
-  @include opacity(1);
-  pointer-events: auto;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
-
-.modal-header {
-  @include opacity(0);
-  width: 100%;
-  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
-  transition: transform 1.2s, opacity 1.2s;
-  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  -webkit-transform: translate3d(0, 20px, 0);
-  transform: translate3d(0, 20px, 0);
-}
-
-.ReactModal__Content--after-open .modal-header {
-  @include opacity(1);
-  -webkit-transition-delay: 0.35s;
-  transition-delay: 0.35s;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
-
-.modal-footer {
-  @include opacity(0);
-  width: 100%;
-  -webkit-transition: -webkit-transform 1.2s, opacity 1.2s;
-  transition: transform 1.2s, opacity 1.2s;
-  -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
-  -webkit-transform: translate3d(0, 20px, 0);
-  transform: translate3d(0, 20px, 0);
-}
-
-.ReactModal__Content--after-open .modal-footer {
-  @include opacity(1);
-  -webkit-transition-delay: 0.35s;
-  transition-delay: 0.35s;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
+/*****Share Modal*****/
 
 .ShareModal {
   .ReactModal__Overlay {
-    background: none !important;
-    align-items: center;
-    display: flex;
+    /* display: flex;
     justify-content: center;
+    align-items: center; */
+    text-align: center;
+    margin: 0 auto;
+    background: none !important;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      margin-right: -0.25em;
+    }
   }
   .ReactModal__Content {
     @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
     @include transform(translateY(none));
+    position: static !important;
+    display: inline-block;
+    vertical-align: middle;
     margin: 0 auto;
     padding: 0 !important;
     border-color: #e1e2e6;
