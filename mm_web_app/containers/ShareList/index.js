@@ -31,8 +31,8 @@ class ShareList extends React.Component {
 
   render () {
     const { user, userId } = this.props.store
-    const { entities: { friendStreams, urls, topics }, result: { accept_shares } } = this.props.store.normalizedData
-    logger.warn('friendStreams, urls, topics', friendStreams, urls, topics)
+    const { entities: { friendStreams, shareLists, urls, topics }, result: { accept_shares } } = this.props.store.normalizedData
+    logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
     return (
       <div className='share-modal-content'>
         <div className='modal-header'>
@@ -115,7 +115,7 @@ class ShareList extends React.Component {
                 <div id={`#collapse${friend.user_id}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
                     {_.map(friend.list, item => (
-                      <ul className='timeline timeline-horizontal'>
+                      <ul key={guid()} className='timeline timeline-horizontal'>
                         <li className='timeline-item share-line-right'>
                           <div className='timeline-badge'>
                             <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
@@ -123,15 +123,32 @@ class ShareList extends React.Component {
                         </li>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
-                            <i className='fa fa-list' aria-hidden='true' />
+                            <i className={`fa ${shareLists[item].type === 'topic' ? 'fa-list' : 'fa-share-alt'}`} aria-hidden='true' />
                           </div>
-                          <div className='timeline-panel'>
-                            <div className='tags-topic'>
-                              <span className='tags tags-color-1' rel='tag'>
-                                <span className='text-tag'>{item}</span>
-                              </span>
+                          {
+                            shareLists[item].type === 'all' &&
+                            <div className='timeline-panel'>
+                              <span className='share-all'>All browsing history</span>
                             </div>
-                          </div>
+                          }
+                          {
+                            shareLists[item].topic_name &&
+                            <div className='timeline-panel'>
+                              <div className='tags-topic'>
+                                <span className='tags tags-color-1' rel='tag'>
+                                  <span className='text-tag'>
+                                    {shareLists[item].topic_name}
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          }
+                          {
+                            shareLists[item].type === 'url' &&
+                            <div className='timeline-panel'>
+                              <span className='name-url'>{urls[shareLists[item].urls[0]].title}</span>
+                            </div>
+                          }
                         </li>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
