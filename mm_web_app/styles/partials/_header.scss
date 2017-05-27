@@ -553,6 +553,17 @@ the header section
   animation-fill-mode: both;
 }
 
+.fadeInUp {
+  animation-name: fadeInUp;
+  animation-duration: 0.75s;
+  animation-fill-mode: both;
+}
+.fadeIn {
+  animation-name: fadeIn;
+  animation-duration: 0.75s;
+  animation-fill-mode: both;
+}
+
 @media (min-width: 768px) {
   .dropdown-menu {
     @include opacity(0);
@@ -723,5 +734,45 @@ the header section
   }
   to {
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@-webkit-keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

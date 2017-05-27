@@ -400,6 +400,22 @@ the home page
   }
 }
 
+.section-empty-list {
+  padding: 6rem 0 2rem;
+  text-align: center;
+  animation-name: fadeInUp;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  h3 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    line-height: 2.2rem;
+  }
+  p {
+    font-size: 1.125rem;
+  }
+}
+
 
 /*animation download*/
 

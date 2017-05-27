@@ -189,10 +189,11 @@ class Home extends React.Component {
           }
           {
             urls.length === 0 &&
-            <Section className='section-empty-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
+            <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
               {
-                isInstall && <h3>Congratulations for installing maomao!</h3>
+                isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
               }
+              <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
               <p>
                 Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
               </p>
