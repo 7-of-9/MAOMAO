@@ -20,10 +20,11 @@ const replaceMMIcon = (desc) => {
 class ChromeInstall extends React.PureComponent {
   componentDidMount () {
     logger.warn('ChromeInstall componentDidMount')
+    this.props.store.checkInstall()
     setTimeout(() => {
-      logger.warn('ChromeInstall checkInstall')
+      logger.warn('ChromeInstall checkInstall by timeout')
       this.props.store.checkInstall()
-    }, 100)
+    }, 1000)
   }
 
   componentWillReact () {

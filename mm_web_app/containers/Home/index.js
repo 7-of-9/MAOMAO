@@ -50,8 +50,9 @@ class Home extends React.Component {
   onInstallSucess () {
     this.props.ui.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
-      window.location.reload()
       this.props.store.checkEnvironment()
+      this.props.store.checkInstall()
+      window.location.reload()
     }, 1000)
   }
 
@@ -121,7 +122,7 @@ class Home extends React.Component {
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
-          notifications={notifications}
+          notifications={notifications.slice()}
           dismissAfter={5000}
           onDismiss={(notification) => this.props.ui.removeNotification(notification)}
         />

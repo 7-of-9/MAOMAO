@@ -41,9 +41,6 @@ export class CoreStore {
     this.isChrome = !!isChromeBrowser()
     this.browserName = browserName()
     logger.warn('browserName', this.browserName)
-    if (this.isChrome) {
-      this.isInstall = !!hasInstalledExtension()
-    }
   }
 
   @action checkInstall () {
