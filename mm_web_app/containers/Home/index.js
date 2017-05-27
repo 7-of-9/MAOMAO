@@ -13,13 +13,25 @@ import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
+import Modal from 'react-modal'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
+import ShareList from '../ShareList'
 import Streams from '../Streams'
 import ChromeInstall from '../ChromeInstall'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
+
+const customModalStyles = {
+  content: {
+    top: '82px',
+    left: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    overflow: 'hidden'
+  }
+}
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -179,6 +191,15 @@ class Home extends React.Component {
             address={businessAddress}
           />
         </div>
+        {isLogin &&
+        <Modal
+          isOpen={this.props.ui.showShareModal}
+          onRequestClose={() => this.props.ui.closeShareModal()}
+          portalClassName='ShareModal'
+          style={customModalStyles}
+          contentLabel='Manage sharing'>
+          <ShareList />
+        </Modal>}
       </Page>
     )
   }
