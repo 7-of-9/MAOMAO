@@ -124,7 +124,6 @@ class Streams extends React.PureComponent {
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
         }
-        logger.warn('discoveryKeys', discoveryKeys)
         items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
