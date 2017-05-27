@@ -106,7 +106,7 @@ class Home extends React.Component {
   render () {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isProcessing, shareInfo, bgImage, urls } = this.props.store
+    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
@@ -184,8 +184,19 @@ class Home extends React.Component {
           </NoSSR>
           <Loading isLoading={isProcessing} />
           {
-            urls.length > 0 &&
+            urls.length > 0 && users.length > 0 &&
             <Streams />
+          }
+          {
+            urls.length === 0 &&
+            <Section className='section-empty-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
+              {
+                isInstall && <h3>Congratulations for installing maomao!</h3>
+              }
+              <p>
+                Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
+              </p>
+            </Section>
           }
         </ToggleDisplay>
         <div className='footer-area'>

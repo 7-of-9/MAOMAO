@@ -204,7 +204,7 @@ class AppHeader extends React.Component {
           </NavItem>
         }
         {
-          isLogin &&
+          isLogin && topics.length > 0 &&
           <NavItem>
             <a data-toggle='dropdown'>
               <i className='fa fa-list fa-2x' aria-hidden='true' />
@@ -219,7 +219,7 @@ class AppHeader extends React.Component {
           </NavItem>
         }
         {
-          isLogin &&
+          isLogin && users.length > 0 &&
           <NavItem>
             <a data-toggle='dropdown'>
               <i className='fa fa-users fa-2x' aria-hidden='true' />
