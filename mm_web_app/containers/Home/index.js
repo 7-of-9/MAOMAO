@@ -89,6 +89,7 @@ class Home extends React.Component {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     const { isLogin, isProcessing, isMobile, shareInfo, bgImage } = this.props.store
+    const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
       if (shareAll) {
@@ -120,9 +121,9 @@ class Home extends React.Component {
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
-          notifications={this.props.ui.notifications}
+          notifications={notifications}
           dismissAfter={5000}
-          onDismiss={(notification) => this.props.ui.notifications.remove(notification)}
+          onDismiss={(notification) => this.props.ui.removeNotification(notification)}
         />
         <ToggleDisplay if={!isLogin}>
           {

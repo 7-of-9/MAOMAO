@@ -49,7 +49,7 @@ export default class Invite extends React.Component {
       <Provider store={this.store} ui={this.uiStore}>
         <div className='invite'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home store={this.store} ui={this.uiStore} />
+          <Home />
         </div>
       </Provider>
     )

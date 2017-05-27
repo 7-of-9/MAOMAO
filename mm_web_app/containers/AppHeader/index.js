@@ -62,6 +62,10 @@ class AppHeader extends React.Component {
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
+    if (this.props.store.shareInfo) {
+      this.props.ui.showSignIn()
+    }
+
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
@@ -173,7 +177,7 @@ class AppHeader extends React.Component {
   }
 
   render () {
-    const { isLogin, userId, topics, users, user } = this.props.store
+    const { isLogin, userId, topics, users, user, shareInfo } = this.props.store
     const { showShareModal, showSignInModal } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
@@ -387,6 +391,7 @@ class AppHeader extends React.Component {
             contentLabel='Sign In Modal'
           >
             <h2 ref='subtitle'>SIGN IN</h2>
+            {shareInfo && <p>*Login to view your friend sharing!</p>}
             <div className='justify-content-md-center social-action'>
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
@@ -407,7 +412,13 @@ class AppHeader extends React.Component {
 }
 
 AppHeader.propTypes = {
-  notify: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired,
+  isHome: PropTypes.bool
+}
+
+AppHeader.defaultProps = {
+  notify: () => {},
+  isHome: true
 }
 
 export default AppHeader
