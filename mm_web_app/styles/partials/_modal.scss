@@ -42,15 +42,32 @@ the modal section
 }
 
 .SignInModal {
+  .ReactModal__Overlay {
+    background: none !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
   .ReactModal__Content {
-    left: 50% !important;
-    margin-left: -200px;
-    @include border-radius(6px);
-    @include box-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
-    padding: 30px 40px !important;
-    border: 0 none;
-    max-width: 100%;
-    width: 400px;
+    @include transform(translateY(none));
+    @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
+    left: auto !important;
+    right: auto !important;
+    margin: 0 auto;
+    padding: 30px !important;
+    border-color: #e1e2e6;
+    background: rgba(242, 242, 242, 0.75) !important;
+    overflow-y: auto !important;
+    width: 100%;
+    max-height: calc(100% - 100px);
+    max-width: calc(100% - 50px);
+    min-width: 300px;
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: -ms-fit-content;
+    width: -o-fit-content;
+    width: fit-content;
     h2 {
       margin-bottom: 1.7rem;
       text-align: center;
@@ -117,16 +134,7 @@ the modal section
       }
     }
     @media (max-width: 590px) {
-      left: 50%;
-      margin-left: -150px;
       padding: 20px 25px !important;
-      width: 300px;
-    }
-    @media (max-width: 500px) {
-      top: 40px !important;
-    }
-    @media (max-width: 390px) {
-      top: 90px !important;
     }
   }
 }

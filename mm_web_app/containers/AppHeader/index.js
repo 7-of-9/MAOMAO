@@ -22,6 +22,7 @@ import logger from '../../utils/logger'
 const customStyles = {
   content: {
     top: '90px',
+    left: 'auto',
     right: 'auto',
     bottom: 'auto'
   }
@@ -386,7 +387,7 @@ class AppHeader extends React.Component {
             portalClassName='SignInModal'
             contentLabel='Sign In Modal'
           >
-            <h2 ref='subtitle'>SIGN IN</h2>
+            <h2 ref='subtitle'>Sign In</h2>
             <div className='justify-content-md-center social-action'>
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
