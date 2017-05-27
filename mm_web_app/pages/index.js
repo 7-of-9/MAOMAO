@@ -8,7 +8,7 @@ import logger from '../utils/logger'
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|NoSSR|Page|Section|Head|Footer|Navbar|NavItem|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
+  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|NoSSR|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
 }
 
 @observer

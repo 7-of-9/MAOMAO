@@ -168,8 +168,8 @@ class Home extends React.Component {
           />
           </NoSSR>
         }
-          <Streams />
           <Loading isLoading={isProcessing} />
+          <Streams />
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}

@@ -23,8 +23,4 @@ function LogoIcon () {
   )
 }
 
-LogoIcon.propTypes = {
-
-}
-
 export default LogoIcon

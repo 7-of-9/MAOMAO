@@ -59,25 +59,25 @@ class AppHeader extends React.Component {
     this.onLogout = this.onLogout.bind(this)
   }
 
+  /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
     firebase.initializeApp(clientCredentials)
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        logger.warn('user', user)
+        logger.warn('firebase - user', user)
         return user.getIdToken()
           .then((token) => {
-            /* global fetch */
             this.props.notify(`Welcome, ${user.displayName}!`)
-            return fetch('/api/login', {
-              method: 'POST',
-              // eslint-disable-next-line no-undef
-              headers: new Headers({ 'Content-Type': 'application/json' }),
-              credentials: 'same-origin',
-              body: JSON.stringify({ token })
-            }).then((res) => {
+            if (!this.props.store.isLogin && this.props.store.userId < 0) {
+              return fetch('/api/login', {
+                method: 'POST',
+                // eslint-disable-next-line no-undef
+                headers: new Headers({ 'Content-Type': 'application/json' }),
+                credentials: 'same-origin',
+                body: JSON.stringify({ token })
+              }).then((res) => {
               // register for new user
-              if (this.props.store.userId < 0) {
                 res.json().then(json => {
                   // register new user
                   logger.warn('user', json)
@@ -117,8 +117,8 @@ class AppHeader extends React.Component {
                     }
                   }
                 })
-              }
-            })
+              })
+            }
           })
       }
     })
@@ -126,9 +126,6 @@ class AppHeader extends React.Component {
 
   componentWillReact () {
     logger.warn('AppHeader componentWillReact')
-    if (this.props.store.isLogin) {
-      this.onClose()
-    }
   }
 
   onGoogleLogin () {

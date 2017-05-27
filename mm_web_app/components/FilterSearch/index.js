@@ -16,127 +16,134 @@ import { guid } from '../../utils/hash'
 
 const MAX_COLORS = 12
 
+const getSuggestions = (value, users, topics) => {
+  if (value === '' || value.length === 0) {
+    return []
+  }
+
+  const userOptions = {
+    include: ['matches', 'score'],
+    shouldSort: true,
+    tokenize: true,
+    matchAllTokens: true,
+    findAllMatches: true,
+    threshold: 0.1,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+      'fullname'
+    ]
+  }
+
+  const sections = []
+  const fuseUser = new Fuse(users, userOptions)
+  sections.push({
+    title: 'User',
+    data: fuseUser.search(value)
+  })
+
+  const topicOtions = {
+    include: ['matches', 'score'],
+    shouldSort: true,
+    tokenize: true,
+    matchAllTokens: true,
+    findAllMatches: true,
+    threshold: 0.1,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+      'name'
+    ]
+  }
+  const fuseTopic = new Fuse(topics, topicOtions)
+  sections.push({
+    title: 'Stream',
+    data: fuseTopic.search(value)
+  })
+
+  return sections.filter(section => section.data.length > 0)
+}
+
+const getSectionSuggestions = (section) => {
+  return section.data
+}
+
+const getSuggestionValue = (suggestion) => {
+  return suggestion.name || suggestion.fullname || suggestion.title
+}
+
+const renderSuggestion = (suggestion) => {
+  if (suggestion.name) {
+      /* topic html */
+    return (<div>
+      {suggestion.name}
+    </div>)
+  }
+    /* user html */
+  return (
+    <div className='search-media'>
+      <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
+      <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
+    </div>
+  )
+}
+
+const renderInputComponent = (inputProps) => {
+  return (
+    <DebounceInput
+      className='search-box-list'
+      minLength={2}
+      debounceTimeout={200}
+      {...inputProps}
+        />
+  )
+}
+
+const renderSectionTitle = (section) => {
+  return (
+    <p className='search-box-title'>{section.title}</p>
+  )
+}
+
 const enhance = compose(
   withState('suggestions', 'changeSuggestions', []),
   withState('value', 'changeValue', ''),
   withHandlers({
-    getSuggestions: props => (value) => {
-      if (value === '' || value.length === 0) {
-        return []
-      }
-
-      const { users, topics } = props
-      const userOptions = {
-        include: ['matches', 'score'],
-        shouldSort: true,
-        tokenize: true,
-        matchAllTokens: true,
-        findAllMatches: true,
-        threshold: 0.1,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: [
-          'fullname'
-        ]
-      }
-
-      const sections = []
-      const fuseUser = new Fuse(users, userOptions)
-      sections.push({
-        title: 'User',
-        data: fuseUser.search(value)
-      })
-
-      const topicOtions = {
-        include: ['matches', 'score'],
-        shouldSort: true,
-        tokenize: true,
-        matchAllTokens: true,
-        findAllMatches: true,
-        threshold: 0.1,
-        location: 0,
-        distance: 100,
-        maxPatternLength: 32,
-        minMatchCharLength: 1,
-        keys: [
-          'name'
-        ]
-      }
-      const fuseTopic = new Fuse(topics, topicOtions)
-      sections.push({
-        title: 'Stream',
-        data: fuseTopic.search(value)
-      })
-
-      return sections.filter(section => section.data.length > 0)
-    },
-    getSectionSuggestions: props => (section) => {
-      return section.data
-    },
-    getSuggestionValue: props => (suggestion) => {
-      return suggestion.name || suggestion.fullname || suggestion.title
-    },
-    renderSuggestion: props => (suggestion) => {
-      if (suggestion.name) {
-      /* topic html */
-        return (<div>
-          {suggestion.name}
-        </div>)
-      }
-    /* user html */
-      return (
-        <div className='search-media'>
-          <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
-          <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
-        </div>
-      )
-    },
-    renderInputComponent: props => (inputProps) => {
-      return (
-        <DebounceInput
-          className='search-box-list'
-          minLength={2}
-          debounceTimeout={200}
-          {...inputProps}
-        />
-      )
-    },
     onSuggestionsFetchRequested: props => ({ value }) => {
-      props.changeSuggestions(props.getSuggestions(value))
+      props.changeSuggestions(getSuggestions(value, props.users, props.topics))
     },
     onSuggestionsClearRequested: props => () => {
       props.changeSuggestions([])
     },
-    renderSectionTitle: props => (section) => {
-      return (
-        <p className='search-box-title'>{section.title}</p>
-      )
-    },
     onChange: props => (event, { newValue, method }) => {
+      logger.warn('newValue, method', newValue, method)
       if (method === 'click' || method === 'enter') {
-        const selected = props.getSuggestions(newValue)
+        const selected = getSuggestions(newValue, props.users, props.topics)
         logger.warn('selected', selected)
         if (selected && selected.length > 0) {
           if (selected[0].title === 'User') {
+            props.onSelectUser(selected[0].data[0])
+          } else {
             props.onSelectTopic(selected[0].data[0])
           }
+          props.changeValue('')
         }
-        props.changeValue('')
       } else {
         props.changeValue(newValue)
       }
     }
   }),
-  onlyUpdateForKeys([ 'value', 'rating', 'filterByTopic', 'filterByUser' ])
+  onlyUpdateForKeys([ 'value', 'suggestions', 'rating', 'filterByTopic', 'filterByUser' ])
 )
 
 const FilterSearch = enhance(({
   value, rating, suggestions, filterByTopic, filterByUser, topics,
-  onSuggestionsFetchRequested, onSuggestionsClearRequested, getSuggestionValue,
-  getSectionSuggestions, renderSectionTitle, renderSuggestion,
-  onChange, onChangeRate, onRemoveTopic, onRemoveUser, renderInputComponent
+  onSuggestionsFetchRequested, onSuggestionsClearRequested,
+  onChange, onChangeRate, onRemoveTopic, onRemoveUser
 }) => {
   const inputProps = {
     placeholder: 'Search...',

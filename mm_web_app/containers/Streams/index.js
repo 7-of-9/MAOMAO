@@ -157,30 +157,30 @@ class Streams extends React.PureComponent {
       <StickyContainer className='streams'>
         <Sticky>
           {
-              ({style}) => {
-                return (
-                  <div style={{...style, margin: '0', zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
-                    <nav className='navbar'>
-                      <ul className='nav navbar-nav' >
-                        <FilterSearch
-                          urls={urls}
-                          topics={topics}
-                          users={users}
-                          rating={rating}
-                          filterByTopic={toJS(filterByTopic)}
-                          filterByUser={toJS(filterByUser)}
-                          onChangeRate={(rate) => this.props.ui.changeRate(rate)}
-                          onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
-                          onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
-                          onSelectUser={(user) => this.props.ui.selectUser(user)}
-                          onRemoveUser={(user) => this.props.ui.removeUser(user)}
-                        />
-                      </ul>
-                    </nav>
-                  </div>
-                )
-              }
+            ({ style }) => {
+              return (
+                <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
+                  <nav className='navbar'>
+                    <ul className='nav navbar-nav' >
+                      <FilterSearch
+                        urls={urls}
+                        topics={topics}
+                        users={users}
+                        rating={rating}
+                        filterByTopic={toJS(filterByTopic)}
+                        filterByUser={toJS(filterByUser)}
+                        onChangeRate={(rate) => this.props.ui.changeRate(rate)}
+                        onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
+                        onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
+                        onSelectUser={(user) => this.props.ui.selectUser(user)}
+                        onRemoveUser={(user) => this.props.ui.removeUser(user)}
+                      />
+                    </ul>
+                  </nav>
+                </div>
+              )
             }
+          }
         </Sticky>
         <InfiniteScroll
           pageStart={this.props.ui.page}
@@ -188,7 +188,7 @@ class Streams extends React.PureComponent {
           hasMore={hasMoreItems}
           loader={<Loading isLoading />}
           threshold={600}
-          >
+        >
           <div className='main-inner'>
             <Masonry className='container-masonry' options={masonryOptions}>
               <div className='grid-row'>
