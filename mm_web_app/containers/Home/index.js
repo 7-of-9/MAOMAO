@@ -86,10 +86,14 @@ class Home extends React.Component {
     logger.warn('Home componentWillReact')
   }
 
+  compomentWillUnmont () {
+    this.props.ui.clearNotifications()
+  }
+
   render () {
     const title = 'maomao - peer-to-peer real time content sharing network'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isProcessing, isMobile, shareInfo, bgImage } = this.props.store
+    const { isLogin, isProcessing, shareInfo, bgImage } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo

@@ -34,6 +34,10 @@ export class UIStore {
     this.notifications = this.notifications.filter((item) => item.key !== uuid)
   }
 
+  @action clearNotifications () {
+    this.notifications = []
+  }
+
   @action addNotification (msg) {
     const uuid = guid()
     this.notifications.push({

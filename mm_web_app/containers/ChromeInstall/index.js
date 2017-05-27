@@ -29,7 +29,7 @@ class ChromeInstall extends React.Component {
 
   render () {
     const { title, description, install, store: { isChrome, browserName, isMobile, isInstall, isLogin, shareInfo } } = this.props
-    let joinMsg = shareInfo ? 'JOIN NOW TO UNLOCK YOUR FRIEND STREAM' : 'JOIN NOW'
+    let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
         {isLogin && browserName.length > 0 && isChrome && !isInstall &&

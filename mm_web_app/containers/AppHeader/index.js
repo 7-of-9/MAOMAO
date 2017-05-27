@@ -62,7 +62,8 @@ class AppHeader extends React.Component {
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
-    if (this.props.store.shareInfo) {
+    const isChromeOnPc = this.props.store.isChrome && !this.props.store.isMobile
+    if (this.props.store.shareInfo && !isChromeOnPc) {
       this.props.ui.showSignIn()
     }
 
