@@ -231,7 +231,7 @@ class AppHeader extends React.Component {
                 (<li key={guid()}>
                   <div className='user-share'>
                     <div className='user-share-img'>
-                      <img width='24' height='24' src={user.avatar || '/static/images/no-avatar.png'} alt='' />
+                      <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
                     </div>
                     <div className='user-share-cnt'>
                       <div className='user-share-inner'>
