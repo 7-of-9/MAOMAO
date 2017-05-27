@@ -275,7 +275,7 @@ class AppHeader extends React.Component {
             contentLabel='Sign In Modal'
           >
             <h2 ref='subtitle'>Sign In</h2>
-            {shareInfo && <p>*Login to view your friend sharing!</p>}
+            {shareInfo && <p className='paragraph-sign'>Login to view your friend sharing !</p>}
             <div className='justify-content-md-center social-action'>
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>

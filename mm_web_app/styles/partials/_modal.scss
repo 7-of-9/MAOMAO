@@ -140,11 +140,17 @@ the modal section
     width: -o-fit-content;
     width: fit-content;
     h2 {
-      margin-bottom: 1.7rem;
+      margin-bottom: 0.5rem;
+      line-height: 2.1rem;
       text-align: center;
     }
     .paragraph-sign {
+      margin-bottom: 1rem;
+      font-size: 1rem;
       text-align: center;
+    }
+    .social-action{
+      margin-top: 1.7rem;
     }
     .block-button {
       @include clearfix();

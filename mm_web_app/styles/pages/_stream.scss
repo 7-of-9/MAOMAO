@@ -839,6 +839,7 @@ img {
     .rating {
       span {
         line-height: 18px;
+        cursor: default !important;
       }
     }
     &:hover .thumbnail-image {
