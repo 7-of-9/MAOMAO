@@ -547,6 +547,12 @@ the header section
   }
 }
 
+.slideInDown {
+  animation-name: slideInDown;
+  animation-duration: 0.75s;
+  animation-fill-mode: both;
+}
+
 @media (min-width: 768px) {
   .dropdown-menu {
     @include opacity(0);
@@ -697,5 +703,25 @@ the header section
     -webkit-transform: scale(1);
     transform: scale(1);
     opacity: 0
+  }
+}
+
+@-webkit-keyframes slideInDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+    visibility: visible;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
   }
 }
