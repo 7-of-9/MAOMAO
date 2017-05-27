@@ -1223,10 +1223,7 @@ img {
 
 .react-autosuggest__section-container {
   @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0,
-  0,
-  0,
-  .175));
+  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
   width: 100%;
   min-height: 94px;

@@ -41,13 +41,15 @@ class ShareList extends React.Component {
         <div className='modal-body'>
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
-              <div className='card-header' role='tab' id={`heading${userId}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
-                <div className='directional-user'>
-                  <div className='share-image'>
-                    <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
-                  </div>
-                  <div className='share-name'> Your sharing</div>
-                </div>
+              <div className='card-header' role='tab' id={`heading${userId}`}>
+                <a data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
+                  <span className='directional-user'>
+                    <span className='share-image'>
+                      <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
+                    </span>
+                    <span className='share-name'> Your sharing</span>
+                  </span>
+                </a>
               </div>
               {/* Your sharing */}
               <div id={`collapse${userId}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${userId}`}>
@@ -104,13 +106,15 @@ class ShareList extends React.Component {
             </div>
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
-                <div className='card-header' role='tab' id={`heading${friend.user_id}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='true' aria-controls={`collapse${friend.user_id}`}>
-                  <div className='directional-user'>
-                    <div className='share-image'>
-                      <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
-                    </div>
-                    <div className='share-name'> {friend.fullname} </div>
-                  </div>
+                <div className='card-header' role='tab' id={`heading${friend.user_id}`}>
+                  <a className='collapsed' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='true' aria-controls={`collapse${friend.user_id}`}>
+                    <span className='directional-user'>
+                      <span className='share-image'>
+                        <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
+                      </span>
+                      <span className='share-name'> {friend.fullname} </span>
+                    </span>
+                  </a>
                 </div>
                 <div id={`#collapse${friend.user_id}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>

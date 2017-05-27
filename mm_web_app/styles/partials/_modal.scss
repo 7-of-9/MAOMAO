@@ -254,6 +254,7 @@ the modal section
     background: rgba(242, 242, 242, 0.75) !important;
     overflow-y: auto !important;
     width: 100%;
+    min-width: 400px;
     max-height: calc(100% - 100px);
     max-width: calc(100% - 50px);
     width: -moz-fit-content;
