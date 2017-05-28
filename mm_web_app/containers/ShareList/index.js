@@ -107,7 +107,7 @@ class ShareList extends React.Component {
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
                 <div className='card-header' role='tab' id={`heading${friend.user_id}`}>
-                  <a className='collapsed' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='true' aria-controls={`collapse${friend.user_id}`}>
+                  <a class='collapsed' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                     <span className='directional-user'>
                       <span className='share-image'>
                         <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
@@ -116,7 +116,7 @@ class ShareList extends React.Component {
                     </span>
                   </a>
                 </div>
-                <div id={`#collapse${friend.user_id}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
+                <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
                     {_.map(friend.list, item => (
                       <ul key={guid()} className='timeline timeline-horizontal'>
