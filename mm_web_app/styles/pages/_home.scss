@@ -190,6 +190,32 @@ the home page
   }
 }
 
+.share-line-left {
+  &::after {
+    @include abs-pos ($top: 19px, $right: 60px, $bottom: auto, $left: auto);
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid #2db7f5;
+    background: none;
+  }
+}
+
+.share-line-right {
+  &::before {
+    @include abs-pos ($top: 19px, $right: auto, $bottom: auto, $left: 60px);
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 10px solid #2db7f5;
+    background: none;
+  }
+}
+
 .share-modal-content {
   .modal-header {
     padding: 15px;
@@ -208,6 +234,7 @@ the home page
 .card-topic {
   border: 0;
   .card-header {
+    @include clearfix();
     padding: 0.625rem 0.9375rem;
     a {
       &,
@@ -218,7 +245,47 @@ the home page
       &.collapsed {
         .share-name {
           color: #404040;
+          min-width: 110px;
+          text-align: left;
         }
+      }
+    }
+    .collapse-title,
+    .line-direct,
+    .mix-detail {
+      float: left;
+    }
+    .line-direct {
+      position: relative;
+      margin: 19px 0 10px 10px;
+      height: 3px;
+      min-width: 200px;
+      background-color: #2db7f5;
+      &.share-line-left {
+        &::after {
+          right: -3px;
+          top: -6px;
+        }
+      }
+      &.share-line-right {
+        &::before {
+          left: -3px;
+          top: -6px;
+        }
+      }
+    }
+    .mix-detail {
+      margin-left: 10px;
+      height: 40px;
+      .three-dots {
+        margin-top: 3px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        display: inline-block;
+      }
+      .topic-value{
+        margin-top: 7px;
+        display: inline-block;
       }
     }
   }
@@ -330,30 +397,6 @@ the home page
             max-width: 79px;
           }
         }
-      }
-    }
-    &.share-line-left {
-      &:after {
-        @include abs-pos ($top: 19px, $right: 60px, $bottom: auto, $left: auto);
-        content: '';
-        width: 0;
-        height: 0;
-        border-top: 7px solid transparent;
-        border-bottom: 7px solid transparent;
-        border-left: 10px solid #02ceff;
-        background: none;
-      }
-    }
-    &.share-line-right {
-      &:before {
-        @include abs-pos ($top: 19px, $right: auto, $bottom: auto, $left: 60px);
-        content: '';
-        width: 0;
-        height: 0;
-        border-top: 7px solid transparent;
-        border-bottom: 7px solid transparent;
-        border-right: 10px solid #02ceff;
-        background: none;
       }
     }
     &:nth-child(1) {
