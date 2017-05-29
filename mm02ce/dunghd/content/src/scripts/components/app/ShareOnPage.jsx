@@ -206,9 +206,7 @@ function ShareOnPage({ isReady, openShare }) {
     onShare: openShare,
     isReady,
   }).init();
-  return (
-    <div />
-  );
+  return null;
 }
 
 ShareOnPage.propTypes = propTypes;

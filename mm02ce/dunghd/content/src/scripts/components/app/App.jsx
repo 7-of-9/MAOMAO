@@ -350,14 +350,21 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
-        <ShareOnPage
-          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
-          openShare={openShare}
-        />
-        <ShareOnHoverImage
-          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
-          openShare={openShare}
-        />
+        <ToggleDisplay
+          if={
+            auth.isLogin
+            && icon.isEnable
+          }
+        >
+          <ShareOnPage
+            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+            openShare={openShare}
+          />
+          <ShareOnHoverImage
+            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+            openShare={openShare}
+          />
+        </ToggleDisplay>
         <ToggleDisplay if={icon.isEnable && isOpen}>
           <WelcomeModal
             auth={auth}

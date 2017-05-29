@@ -113,7 +113,9 @@ function MaoMaoImgPin() {
       const MIN_WIDTH = 100;
       const MIN_HEIGHT = 100;
       // only show hover image if their demension > 100x100
+      logger.warn('all imgs', imgs);
       forEach.call(imgs, (img) => {
+        logger.warn('img', img);
         if (img.width > MIN_WIDTH && img.height > MIN_HEIGHT && img.className !== 'mm-share-icon' && img.parentNode.className.indexOf('pin') === -1) {
           const wrapper = document.createElement('div');
           wrapper.style = `width: ${img.width}px; height: ${img.height}px;`;
@@ -139,26 +141,28 @@ function MaoMaoImgPin() {
 
 const share = new MaoMaoImgPin();
 
-function ShareOnHoverImage({ isReady, openShare }) {
-  logger.info('ShareOnHoverImage isReady', isReady);
+function ShareOnHoverImage({ isReady, openShare, position }) {
+  logger.info('ShareOnHoverImage isReady', isReady, position);
   // TODO: allow to change position base on debug menu
-  share.config({
-    position: 1,
-    onShare: openShare,
-    isReady,
-  }).init();
-  return (
-    <div />
-  );
+  if (isReady) {
+    share.config({
+      onShare: openShare,
+      position,
+      isReady,
+    }).init();
+  }
+  return null;
 }
 
 const propTypes = {
   isReady: PropTypes.bool.isRequired,
   openShare: PropTypes.func.isRequired,
+  position: PropTypes.number,
 };
 
 const defaultProps = {
   isReady: false,
+  position: 1,
   openShare: () => { },
 };
 
