@@ -60,6 +60,9 @@ class ShareList extends React.Component {
                         <div className='timeline-badge'>
                           <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                         </div>
+                        <div className='timeline-panel'>
+                          <a href='#' className='btn btn-related'>Unshare</a>
+                        </div>
                       </li>
                       <li className='timeline-item'>
                         <div className='timeline-badge'>
@@ -93,10 +96,7 @@ class ShareList extends React.Component {
                           <img className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
                         </div>
                         <div className='timeline-panel'>
-                          <a href='#' className='btn btn-related'>Unshare</a>
-                        </div>
-                        <div className='timeline-panel'>
-                          with {receiver.fullname}
+                          {receiver.fullname}
                         </div>
                       </li>
                     </ul>
@@ -107,7 +107,7 @@ class ShareList extends React.Component {
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
                 <div className='card-header' role='tab' id={`heading${friend.user_id}`}>
-                  <a class='collapsed' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
+                  <a className='collapsed' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                     <span className='directional-user'>
                       <span className='share-image'>
                         <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
