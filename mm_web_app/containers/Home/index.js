@@ -193,7 +193,6 @@ class Home extends React.Component {
               {
                 isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
               }
-              <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
               <p>
                 Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
               </p>
