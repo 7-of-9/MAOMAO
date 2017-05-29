@@ -10,6 +10,7 @@ import Config from './config';
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
 require('expose-loader?log!loglevel');
+require('expose-loader?Perf!react-addons-perf');
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');

@@ -31,8 +31,8 @@ const customStyles = {
 const brand = <Header><LogoIcon /><Slogan /></Header>
 
 const avatar = (user) => {
-  if (user && user.picture) {
-    return user.picture
+  if (user && (user.picture || user.avatar)) {
+    return user.picture || user.avatar
   }
   return '/static/images/no-avatar.png'
 }
@@ -54,7 +54,7 @@ class AppHeader extends React.Component {
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
     const isChromeOnPc = this.props.store.isChrome && !this.props.store.isMobile
-    if (this.props.store.shareInfo && !isChromeOnPc) {
+    if (this.props.store.shareInfo && (!isChromeOnPc || this.props.store.isInstalledOnChromeDesktop)) {
       this.props.ui.showSignIn()
     }
 

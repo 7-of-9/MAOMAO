@@ -14,6 +14,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 /* eslint-disable */
+require('expose-loader?Perf!react-addons-perf');
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
   whyDidYouUpdate(React, {

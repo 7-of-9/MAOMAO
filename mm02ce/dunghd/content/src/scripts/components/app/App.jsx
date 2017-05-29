@@ -8,6 +8,7 @@ import Mailgun from 'mailgun';
 import Score from './Score';
 import ShareTopic from './ShareTopic';
 import ShareOnPage from './ShareOnPage';
+import ShareOnHoverImage from './ShareOnHoverImage';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
 import { getCurrentTerms, getCurrentXPTopics } from '../../selectors/term';
@@ -349,12 +350,14 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
-        <ToggleDisplay if={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}>
-          <ShareOnPage
-            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
-            openShare={openShare}
-          />
-        </ToggleDisplay>
+        <ShareOnPage
+          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+          openShare={openShare}
+        />
+        <ShareOnHoverImage
+          isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+          openShare={openShare}
+        />
         <ToggleDisplay if={icon.isEnable && isOpen}>
           <WelcomeModal
             auth={auth}

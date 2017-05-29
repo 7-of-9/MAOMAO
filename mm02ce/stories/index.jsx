@@ -7,6 +7,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import WelcomeModal from '../dunghd/content/src/scripts/components/app/WelcomeModal';
 import Score from '../dunghd/content/src/scripts/components/app/Score';
 import Xp from '../dunghd/content/src/scripts/components/app/Xp';
+import ShareOnHoverImage from '../dunghd/content/src/scripts/components/app/ShareOnHoverImage';
 import GoogleShare from '../dunghd/content/src/scripts/components/share/GoogleShare';
 import Loading from '../dunghd/popup/src/scripts/components/app/Loading';
 
@@ -132,6 +133,19 @@ storiesOf('Loading', module).add('for share popup', () => (
   <div id="maomao-extension-anchor">
     <MuiThemeProvider>
       <Loading />
+    </MuiThemeProvider>
+  </div>
+));
+
+
+storiesOf('Share On Hover Image', module).add('with default props', () => (
+  <div id="maomao-extension-anchor">
+    <MuiThemeProvider>
+      <div>
+        <img src="http://lorempixel.com/600/400/nature" alt="nature" />
+        <img src="http://lorempixel.com/600/400/city" alt="city" />
+        <ShareOnHoverImage openShare={action('openShare')} isReady />
+      </div>
     </MuiThemeProvider>
   </div>
 ));
