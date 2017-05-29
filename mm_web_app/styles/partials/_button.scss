@@ -180,15 +180,29 @@ the button section
 }
 
 .btn-effect {
+  position: relative;
+  overflow: visible;
   margin-left: 20px;
-  animation-delay: 4s;
-  animation-duration: 10000ms;
-  animation-iteration-count: infinite;
-  animation-name: verical-slow;
-  animation-timing-function: ease-in-out;
-  transform-origin: center center 0;
-  &:hover {
-    animation-play-state: paused;
+  &::before,
+  &::after {
+    content: "";
+    @include border-radius(2px);
+    position: absolute;
+    top:-5px;
+    left: 0;
+    right:0;
+    bottom: -5px;
+    background-color: #1b8ff2;
+    opacity: 0.3;
+    -webkit-animation: ripple 3.0s ease-out infinite;
+    -moz-animation: ripple 3.0s ease-out infinite;
+    animation: ripple 3.0s ease-out infinite;
+    z-index: -1;
+  }
+  &::after {
+    -webkit-animation-delay: 0.1s;
+    -moz-animation-delay: 0.1s;
+    animation-delay: 0.1s;
   }
 }
 
@@ -460,6 +474,7 @@ a.btn-unfollow,
     color: #656d77;
   }
 }
+
 .btn-related {
   padding: 6px 12px;
   background-color: #51c04e;
@@ -478,12 +493,14 @@ a.btn-unfollow,
   }
 }
 
+
 /*-----btn for tag a link-----*/
 
 button.btn-link {
   border: 0;
   padding: 0;
 }
+
 
 /*-----verical-slow-----*/
 
@@ -792,5 +809,29 @@ button.btn-link {
   0%,
   100% {
     transform: translate(0, 0) rotate(0);
+  }
+}
+
+@-webkit-keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50%,
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  50%,
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
   }
 }
