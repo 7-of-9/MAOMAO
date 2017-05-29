@@ -153,16 +153,6 @@ const FilterSearch = enhance(({
   return (
     <div className='input-group'>
       <div className='input-group-suggest'>
-        <div className='filter-rating'>
-          <ReactStars
-            count={5}
-            value={rating}
-            onChange={onChangeRate}
-            size={24}
-            half={false}
-            color2={'#ffd700'}
-              />
-        </div>
         <div className='search-box-drop'>
           <ul className='search-box-list'>
             {
@@ -208,6 +198,16 @@ const FilterSearch = enhance(({
           inputProps={inputProps}
           renderInputComponent={renderInputComponent}
           />
+      </div>
+      <div className='filter-rating'>
+        <ReactStars
+          count={5}
+          value={rating}
+          onChange={onChangeRate}
+          size={24}
+          half={false}
+          color2={'#ffd700'}
+            />
       </div>
     </div>
   )

@@ -153,6 +153,7 @@ img {
   background: -ms-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
   background: linear-gradient(to bottom, #ffffff 0%, #f4f4f4 100%);
   .navbar {
+    @include clearfix();
     margin: 0;
     padding: 11px 15px 10px;
     min-height: inherit;
@@ -895,8 +896,10 @@ img {
 /*-----filter rating-----*/
 
 .filter-rating {
-  @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
-  z-index: 100;
+  /* @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
+  z-index: 100; */
+  padding: 10px 10px 0;
+  float: left;
   span {
     line-height: 20px;
   }
@@ -1038,7 +1041,8 @@ img {
   .input-group-suggest {
     @include border-radius(25px);
     position: relative;
-    padding: 0 119px 0 36px;
+    padding: 0 20px 0 36px;
+    float: left;
     min-height: 42px;
     display: block;
     width: -moz-fit-content;
