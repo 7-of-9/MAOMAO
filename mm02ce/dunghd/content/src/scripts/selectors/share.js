@@ -1,7 +1,8 @@
 import { createSelector } from 'reselect';
+import removeHashOnUrl from '../components/utils/url';
 
+const getActiveUrl = () => removeHashOnUrl(window.location.href);
 const getShareUrls = state => state.share;
-const getActiveUrl = state => state.score.url;
 
 const shareOnUrl = createSelector(
   [getActiveUrl, getShareUrls],

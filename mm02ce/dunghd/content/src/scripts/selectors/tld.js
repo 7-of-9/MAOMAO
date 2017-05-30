@@ -1,9 +1,10 @@
 import moment from 'moment';
 import { createSelector } from 'reselect';
+import removeHashOnUrl from '../components/utils/url';
 
+const getActiveUrl = () => removeHashOnUrl(window.location.href);
 const getRecords = state => state.nlp.records;
 const getTimers = state => state.icon.tldTimers;
-const getActiveUrl = state => state.score.url;
 
 const getCurrentTLD = createSelector(
   [getActiveUrl, getRecords, getTimers],

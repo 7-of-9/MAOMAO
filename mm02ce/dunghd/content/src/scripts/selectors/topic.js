@@ -1,8 +1,9 @@
 import { createSelector } from 'reselect';
+import removeHashOnUrl from '../components/utils/url';
 
+const getActiveUrl = () => removeHashOnUrl(window.location.href);
 const getRecords = state => state.nlp.records;
 const getTerms = state => state.nlp.terms;
-const getActiveUrl = state => state.score.url;
 
 const getCurrentTopics = createSelector(
   [getActiveUrl, getRecords, getTerms],

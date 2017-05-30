@@ -348,7 +348,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
   changeShareType, accessGoogleContacts, openShare, closeShare,
   closeXp, sendEmail, onClose, notifyMsg, tld, xpTopics, closeTLD,
   }) {
-  logger.info('App render');
+  logger.info('App render', tld, xpTopics);
   return (
     <StyleRoot>
       <div className="maomao-ext-component">
@@ -358,7 +358,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           }
         >
           <PulseDog
-            isReady
+            isReady={auth.isLogin && icon.isEnable && xpTopics.length > 0}
             openShare={openShare}
             hideOnTimer={5000}
           />
