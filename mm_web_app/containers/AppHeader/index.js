@@ -48,7 +48,6 @@ class AppHeader extends React.Component {
           return user.getIdToken()
           .then((token) => {
             this.props.notify(`Welcome, ${user.displayName}!`)
-            this.props.ui.closeModal()
             if (this.props.store.userId < 0) {
               return fetch('/api/login', {
                 method: 'POST',
