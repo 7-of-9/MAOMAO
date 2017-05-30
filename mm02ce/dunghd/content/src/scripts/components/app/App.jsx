@@ -360,7 +360,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           <PulseDog
             isReady
             openShare={openShare}
-            hideOnTimer={10000}
+            hideOnTimer={5000}
           />
           <ShareOnTextSelection
             isReady

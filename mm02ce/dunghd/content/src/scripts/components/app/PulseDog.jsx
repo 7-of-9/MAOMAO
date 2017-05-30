@@ -5,12 +5,12 @@ import Radium from 'radium';
 import iconImage from './images/dog_blue.png';
 import logger from '../utils/logger';
 
-function PulseDog({ show, isReady, hideOnTimer, openShare }) {
+function PulseDog({ show, isReady, hideOnTimer, openShare, changeShow }) {
   logger.info('PulseDog isReady, hideOnTimer', isReady, hideOnTimer);
   return (
-    <div style={{ zIndex: 1000, top: '150px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
+    <div style={{ zIndex: 1000, cursor: 'pointer', bottom: '50px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
       <div className="pulse-blue-dog">
-        <button onClick={openShare}>
+        <button onClick={() => { openShare(); changeShow(false); }}>
           <img src={iconImage} width="75" height="75" alt="pulse dog" />
         </button>
       </div>
@@ -23,6 +23,7 @@ const propTypes = {
   show: PropTypes.bool.isRequired,
   isReady: PropTypes.bool.isRequired,
   openShare: PropTypes.func.isRequired,
+  changeShow: PropTypes.func,
 };
 
 const defaultProps = {
@@ -30,6 +31,7 @@ const defaultProps = {
   show: false,
   isReady: false,
   openShare: () => { },
+  changeShow: () => { },
 };
 
 PulseDog.propTypes = propTypes;
