@@ -1,4 +1,3 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { onlyUpdateForKeys, compose } from 'recompose';
 import iconImage from './images/dog_blue.png';

@@ -354,6 +354,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           if={
             auth.isLogin
             && icon.isEnable
+            && (tld.length > 0 || xpTopics.length > 0)
           }
         >
           <ShareOnPage

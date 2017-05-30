@@ -76,8 +76,9 @@ const enhance = compose(
     },
     componentWillUnmount() {
       logger.info('XP componentWillUnmount');
-      if (this.timer > 0) {
-        clearTimeout(this.timer);
+      this.props.changeShow(false);
+      if (this.props.timer) {
+        clearTimeout(this.props.timer);
       }
     },
   }),
