@@ -820,9 +820,27 @@ img {
         margin-bottom: 0.4rem;
         font-size: 0.75rem;
       }
-      .filter-rating{
-        float: none;
-        padding: 2px 0 8px;
+      .filter-box {
+        @include clearfix();
+        .filter-rating {
+          padding: 0;
+          float: left;
+          width: 64px;
+        }
+        .parameter-item {
+          overflow: hidden;
+        }
+        .caption-title {
+          margin-bottom: 0.2rem;
+          line-height: 1rem;
+          max-width: 170px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        p {
+          margin-bottom: 0;
+        }
       }
       .credit-info {
         font-size: 0.75rem;

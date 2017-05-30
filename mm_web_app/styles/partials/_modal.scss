@@ -295,8 +295,6 @@ the modal section
     }
     .modal-body {
       padding: 0;
-      overflow-y: auto !important;
-      max-height: calc(100% - 100px);
       background-color: #fff;
     }
   }
