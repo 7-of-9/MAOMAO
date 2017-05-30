@@ -11,7 +11,7 @@ function PulseDog({ show, isReady, hideOnTimer, openShare }) {
     <div style={{ zIndex: 1000, top: '150px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
       <div className="pulse-blue-dog">
         <button onClick={openShare}>
-          <img src={iconImage} width="128" height="128" alt="pulse dog" />
+          <img src={iconImage} width="75" height="75" alt="pulse dog" />
         </button>
       </div>
     </div>

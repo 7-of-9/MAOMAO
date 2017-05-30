@@ -196,9 +196,9 @@ const defaultProps = {
 };
 
 const share = new MaomaoShare();
-/* ShareOnPage pure component */
-function ShareOnPage({ isReady, openShare }) {
-  logger.info('ShareOnPage isReady', isReady);
+/* ShareOnTextSelection pure component */
+function ShareOnTextSelection({ isReady, openShare }) {
+  logger.info('ShareOnTextSelection isReady', isReady);
   share.config({
     backgroundColor: 'rgba(242, 242, 242, 0.7)',
     arrowSize: 10,
@@ -208,11 +208,11 @@ function ShareOnPage({ isReady, openShare }) {
   return null;
 }
 
-ShareOnPage.propTypes = propTypes;
-ShareOnPage.defaultProps = defaultProps;
+ShareOnTextSelection.propTypes = propTypes;
+ShareOnTextSelection.defaultProps = defaultProps;
 
 const enhance = compose(
   onlyUpdateForKeys(['isReady']),
 );
 
-export default enhance(ShareOnPage);
+export default enhance(ShareOnTextSelection);

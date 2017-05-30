@@ -112,10 +112,9 @@ function MaoMaoImgPin() {
       const MIN_WIDTH = 100;
       const MIN_HEIGHT = 100;
       // only show hover image if their demension > 100x100
-      logger.warn('all imgs', imgs);
       forEach.call(imgs, (img) => {
-        logger.warn('img', img);
         if (img.width > MIN_WIDTH && img.height > MIN_HEIGHT && img.className !== 'mm-share-icon' && img.parentNode.className.indexOf('pin') === -1) {
+          logger.info('img', img);
           const wrapper = document.createElement('div');
           wrapper.style = `width: ${img.width}px; height: ${img.height}px;`;
           wrapper.className = 'MaomaoImgPinWrap';

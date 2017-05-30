@@ -345,6 +345,7 @@ function after_logout() {
   window.userHash = '';
   window.BG_APP_UUID = new_guid();
   window.enableTestYoutube = false;
+  window.enableRealtime = false;
   window.enableImscore = false;
   window.enableXpInfo = false;
   window.enableIconText = false;

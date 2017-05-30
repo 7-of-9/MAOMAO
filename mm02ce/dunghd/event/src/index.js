@@ -184,6 +184,22 @@ function onClickHandler(info) {
         store.dispatch(data);
         break;
       }
+    case 'mm-btn-switch-realtime':
+      {
+        if (window.enableRealtime) {
+          window.enableRealtime = false;
+        } else {
+          window.enableRealtime = true;
+        }
+        const data = {
+          type: 'SWITCH_REALTIME',
+          payload: {
+            isRealtime: window.enableRealtime,
+          },
+        };
+        store.dispatch(data);
+        break;
+      }
     case 'mm-btn-login':
     case 'mm-btn-show':
       {
@@ -359,6 +375,7 @@ window.onload = () => {
         isEnableXP: window.enableXP,
         isEnableXpInfo: window.enableXpInfo,
         isYoutubeTest: window.enableTestYoutube,
+        isRealtime: window.enableRealtime,
         isEnableIconText: window.enableIconText,
       },
     });

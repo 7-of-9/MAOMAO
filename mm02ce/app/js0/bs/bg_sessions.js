@@ -7,6 +7,7 @@
 // handle authentication
 var isGuest = true;
 var enableTestYoutube = false;
+var enableRealtime = false;
 var enableImscore = false;
 var enableXpInfo = false;
 var enableIconText = false;

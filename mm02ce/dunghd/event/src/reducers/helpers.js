@@ -28,6 +28,7 @@ function createShareCtxMenu(records) {
 function ctxMenu() {
   const parentId = chrome.contextMenus.create({ contexts: ['browser_action'], id: 'mm-btn-dev-menu', title: 'Dev menu' });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-youtube', title: 'Youtube Crawler', type: 'checkbox', checked: window.enableTestYoutube });
+  chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-realtime', title: 'Realtime notification', type: 'checkbox', checked: window.enableRealtime });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], type: 'separator' });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-imscore', title: 'IM Score', type: 'checkbox', checked: window.enableImscore });
   chrome.contextMenus.create({ parentId, contexts: ['browser_action'], id: 'mm-btn-switch-icon-text', title: 'Browser icon tooltip', type: 'checkbox', checked: window.enableIconText });

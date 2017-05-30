@@ -11,6 +11,7 @@ const initialState = {
   isEnableIconText: false,
   isEnableIM: false,
   isYoutubeTest: false,
+  isRealtime: false,
   urls: [],
   tldTimers: [],
   xpTimers: [],
@@ -104,6 +105,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'SWITCH_IM_XP_INFO':
     case 'SWITCH_ICON_TEXT':
     case 'SWITCH_XP':
+    case 'SWITCH_REALTIME':
     case 'YOUTUBE_TEST':
       if (auth.isLogin) {
         ctxMenuLogin(auth.info, nlp.records);

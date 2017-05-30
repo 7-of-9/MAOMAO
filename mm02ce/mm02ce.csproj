@@ -113,7 +113,7 @@
     <Content Include="app\pages\options.html" />
     <Content Include="app\pages\options.js" />
     <Content Include="dunghd\content\src\scripts\components\app\images\dog_blue.png" />
-    <Content Include="dunghd\content\src\scripts\components\app\ShareOnPage.jsx" />
+    <Content Include="dunghd\content\src\scripts\components\app\ShareOnTextSelection.jsx" />
     <Content Include="dunghd\content\src\scripts\components\app\ShareTopic.jsx" />
     <Content Include="dunghd\content\src\scripts\components\app\WelcomeModal.jsx" />
     <Content Include="dunghd\content\src\scripts\components\share\Button.jsx" />

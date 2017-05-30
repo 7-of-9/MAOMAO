@@ -8,7 +8,7 @@ import Mailgun from 'mailgun';
 import Score from './Score';
 import PulseDog from './PulseDog';
 import ShareTopic from './ShareTopic';
-import ShareOnPage from './ShareOnPage';
+import ShareOnTextSelection from './ShareOnTextSelection';
 import ShareOnHoverImage from './ShareOnHoverImage';
 import Xp from './Xp';
 import WelcomeModal from './WelcomeModal';
@@ -70,6 +70,7 @@ const defaultProps = {
     isEnableXP: false,
     isEnableXpInfo: false,
     isYoutubeTest: false,
+    isRealtime: false,
     isEnableIM: false,
   },
   topics: [],
@@ -353,21 +354,20 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
       <div className="maomao-ext-component">
         <ToggleDisplay
           if={
-            auth.isLogin
-            && icon.isEnable
-            && (tld.length > 0 || xpTopics.length > 0)
+            auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)
           }
         >
           <PulseDog
-            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+            isReady
             openShare={openShare}
+            hideOnTimer={10000}
           />
-          <ShareOnPage
-            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+          <ShareOnTextSelection
+            isReady
             openShare={openShare}
           />
           <ShareOnHoverImage
-            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+            isReady
             openShare={openShare}
           />
         </ToggleDisplay>
