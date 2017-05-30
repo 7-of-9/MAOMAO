@@ -283,7 +283,7 @@ the home page
         font-weight: bold;
         display: inline-block;
       }
-      .topic-value{
+      .topic-value {
         margin-top: 7px;
         display: inline-block;
       }
@@ -433,7 +433,7 @@ the home page
           margin-right: 12px;
         }
       }
-      .timeline-panel{
+      .timeline-panel {
         font-size: 0.8125rem;
         font-weight: bold;
       }
@@ -499,5 +499,35 @@ the home page
   }
   to {
     opacity: 1;
+  }
+}
+
+@-webkit-keyframes dog-pulse {
+  0% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dog-pulse {
+  0% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
   }
 }

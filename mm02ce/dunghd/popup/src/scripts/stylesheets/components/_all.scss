@@ -1067,6 +1067,17 @@ $facebook-icons: './images/facebook_icon.svg';
   }
 }
 
+.pulse-blue-dog {
+  button {
+    border: 0;
+    padding: 0;
+  }
+  img {
+    -webkit-animation: dog-pulse 1.5s ease-in-out infinite;
+    animation: dog-pulse 1.5s ease-in-out infinite;
+  }
+}
+
 
 /*animation rotate circle*/
 
@@ -1123,5 +1134,38 @@ $facebook-icons: './images/facebook_icon.svg';
   }
   50% {
     opacity: 1;
+  }
+}
+
+
+/*animation dog pulse*/
+
+@-webkit-keyframes dog-pulse {
+  0% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes dog-pulse {
+  0% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.1, 1.1);
+    transform: scale(1.1, 1.1);
+  }
+  100% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
   }
 }

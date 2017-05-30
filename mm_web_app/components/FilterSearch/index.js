@@ -207,6 +207,7 @@ const FilterSearch = enhance(({
           size={24}
           half={false}
           color2={'#ffd700'}
+          backgroundColor={'#ffd700'}
             />
       </div>
     </div>
