@@ -149,7 +149,7 @@ the modal section
       font-size: 1rem;
       text-align: center;
     }
-    .social-action{
+    .social-action {
       margin-top: 1.7rem;
     }
     .block-button {
@@ -278,6 +278,46 @@ the modal section
   .modal-body {
     overflow-y: auto !important;
     max-height: calc(100% - 100px);
+  }
+}
+
+
+/*****Install Modal*****/
+
+.InstallModal {
+  @include border-radius(10px);
+  @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
+  margin: 30px auto;
+  max-width: 900px;
+  border: 1px solid #cacaca;
+  .install-modal-content {
+    padding: 1rem 2.5rem 2rem;
+  }
+  .install-image {
+    height: 25rem;
+    background: url('/static/images/welcome-maomao.jpg') no-repeat center center;
+  }
+  .install-description {
+    padding: 6.3rem 0 0;
+    h3 {
+      color: #222;
+      font-family: proxima-nova, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
+      font-size: 2rem;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 1.2125em;
+      margin: 0.2rem 0 1rem;
+      text-rendering: optimizeLegibility;
+    }
+    p {
+      color: #3a2e2e;
+      font-size: 1.125rem;
+      line-height: 1.2;
+      max-width: 25rem;
+      font-weight: 400;
+      margin-bottom: 1.125rem;
+      text-rendering: optimizeLegibility;
+    }
   }
 }
 
