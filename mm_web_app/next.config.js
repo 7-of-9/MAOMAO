@@ -29,6 +29,13 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: require.resolve('react-addons-perf'),
+        use: [{
+          loader: 'expose-loader',
+          options: 'Perf'
+        }]
       }
     )
 

@@ -866,16 +866,7 @@ var selectedWindowId = -1;
 function windowFocusChanged(windowId) {
   // Fix for edge case: user change google chrome window
   // check active url on current window
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (tabs != null && tabs.length > 0) {
-      const url = tabs[0].url;
-      sessionObservable.activeUrl = url;
-    }
-  });
-  if (windowId == selectedWindowId) return false;
-  selectedWindowId = windowId;
-
-  log.info('%c >windowFocusChanged: [' + selectedWindowId + ']', 'color: gray;');
+  log.warn('%c >windowFocusChanged: [windowId=' + windowId + ']');
 
   if (TOT_active_tab != null) {
 
@@ -886,11 +877,6 @@ function windowFocusChanged(windowId) {
     // stop TOT for previously focused
     session_stop_TOT(prev_session);
   }
-
-  // update TOT active tab
-  TOT_start_current_focused();
-
-  return true;
 }
 
 function TOT_start_current_focused() {
@@ -898,12 +884,13 @@ function TOT_start_current_focused() {
     active: true,
     currentWindow: true
   }, function (tabs) {
-    if (chrome.runtime.lastError)
+    if (chrome.runtime.lastError) {
       log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+    }
     else {
       if (tabs.length > 0) {
         TOT_active_tab = tabs[0];
-
+        sessionObservable.activeUrl = tabs[0].url;
         // start TOT for newly focused
         var new_session = session_get_by_tab(TOT_active_tab, true); //***
         if (new_session != null) {

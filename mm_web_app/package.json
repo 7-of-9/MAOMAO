@@ -19,6 +19,7 @@
     "blueimp-md5": "^2.7.0",
     "body-parser": "^1.17.2",
     "detect-browser": "^1.7.0",
+    "expose-loader": "^0.7.3",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
     "firebase": "^4.0.0",

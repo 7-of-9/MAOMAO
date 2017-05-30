@@ -5,16 +5,9 @@ import Radium from 'radium';
 import iconImage from './images/dog_blue.png';
 import logger from '../utils/logger';
 
-function PulseDog({ show, isReady, hideOnTimer, openShare, changeTimer, changeShow }) {
+function PulseDog({ show, isReady, hideOnTimer, openShare, changeShow }) {
   logger.info('PulseDog isReady, hideOnTimer', isReady, hideOnTimer);
-  if (isReady) {
-    logger.info('animate and close popup in', hideOnTimer);
-    changeTimer(() => setTimeout(() => {
-      changeShow(false);
-    }, hideOnTimer));
-  }
   return (
-
     <div style={{ zIndex: 1000, cursor: 'pointer', bottom: '50px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
       <div className="pulse-blue-dog">
         <button onClick={() => { openShare(); changeShow(false); }}>
@@ -31,7 +24,6 @@ const propTypes = {
   isReady: PropTypes.bool.isRequired,
   openShare: PropTypes.func.isRequired,
   changeShow: PropTypes.func,
-  changeTimer: PropTypes.func,
 };
 
 const defaultProps = {
@@ -40,7 +32,6 @@ const defaultProps = {
   isReady: false,
   openShare: () => { },
   changeShow: () => { },
-  changeTimer: () => { },
 };
 
 PulseDog.propTypes = propTypes;
@@ -50,6 +41,15 @@ const enhance = compose(
   withState('show', 'changeShow', true),
   withState('timer', 'changeTimer', null),
   lifecycle({
+    componentWillReceiveProps(nextProps) {
+      logger.info('PulseDog componentWillReceiveProps', nextProps);
+      if (nextProps.isReady && nextProps.isReady !== this.props.isReady) {
+        logger.info('animate and close popup in', this.props.hideOnTimer);
+        this.props.changeTimer(() => setTimeout(() => {
+          this.props.changeShow(false);
+        }, this.props.hideOnTimer));
+      }
+    },
     componentWillUnmount() {
       logger.info('PulseDog componentWillUnmount');
       this.props.changeShow(false);

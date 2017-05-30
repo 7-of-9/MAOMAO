@@ -15,7 +15,7 @@ require('expose-loader?Perf!react-addons-perf');
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update');
   whyDidYouUpdate(React, {
-    exclude: /^(Connect|Styled|StyleRoot|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
+    exclude: /^(Connect|Styled|StyleRoot|SvgIcon|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
   });
 }
 /* eslint-enable */

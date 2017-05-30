@@ -9,7 +9,6 @@ import PropTypes from 'prop-types'
 import { compose, withHandlers, withState, onlyUpdateForKeys } from 'recompose'
 import Fuse from 'fuse.js'
 import Autosuggest from 'react-autosuggest'
-import ReactStars from 'react-stars'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
@@ -200,23 +199,16 @@ const FilterSearch = enhance(({
           />
       </div>
       <div className='filter-rating'>
-        {/*<ReactStars
-          count={5}
-          value={rating}
-          onChange={onChangeRate}
-          size={24}
-          half={false}
-          color2={'#ffd700'}
-            />*/}
-            <span className='active' />
-            <span className='active' />
-            <span className='active' />
-            <span />
-            <span />
+        <span className={rating >= 1 ? 'active' : ''} onClick={() => onChangeRate(1)} />
+        <span className={rating >= 2 ? 'active' : ''} onClick={() => onChangeRate(2)} />
+        <span className={rating >= 3 ? 'active' : ''} onClick={() => onChangeRate(3)} />
+        <span className={rating >= 4 ? 'active' : ''} onClick={() => onChangeRate(4)} />
+        <span className={rating >= 5 ? 'active' : ''} onClick={() => onChangeRate(5)} />
       </div>
-      <div className='rating-number'>
+      { /* <div className='rating-number'>
         <span className='label-rating-number'>7</span>
       </div>
+      */ }
     </div>
   )
 })
