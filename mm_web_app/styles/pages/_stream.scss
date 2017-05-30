@@ -820,6 +820,10 @@ img {
         margin-bottom: 0.4rem;
         font-size: 0.75rem;
       }
+      .filter-rating{
+        float: none;
+        padding: 2px 0 8px;
+      }
       .credit-info {
         font-size: 0.75rem;
         margin: 0;
@@ -898,6 +902,7 @@ img {
 .filter-rating {
   /* @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
   z-index: 100; */
+  @include clearfix();
   padding: 3px 5px 0 20px;
   float: left;
   span {

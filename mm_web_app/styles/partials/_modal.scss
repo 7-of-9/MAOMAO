@@ -152,67 +152,6 @@ the modal section
     .social-action {
       margin-top: 1.7rem;
     }
-    .block-button {
-      @include clearfix();
-      .btn-social {
-        position: relative;
-        padding-left: 56px;
-        text-align: left;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-        width: 100%;
-        >:first-child {
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 42px;
-          line-height: 39px;
-          font-size: 1.6em;
-          text-align: center;
-          border-right: 1px solid rgba(0, 0, 0, 0.2)
-        }
-      }
-      .btn-facebook {
-        color: #fff;
-        background-color: #3b5998;
-        border-color: rgba(0, 0, 0, 0.2);
-        &:focus,
-        &:hover,
-        &:active {
-          color: #fff;
-          background-color: #2d4373;
-          border-color: rgba(0, 0, 0, 0.2);
-        }
-      }
-      .btn-facebook:active,
-      .btn-facebook.active,
-      .open>.dropdown-toggle.btn-facebook {
-        background-image: none
-      }
-      .btn-google {
-        color: #fff;
-        background-color: #dd4b39;
-        border-color: rgba(0, 0, 0, 0.2);
-        &:focus,
-        &:hover,
-        &:active {
-          color: #fff;
-          background-color: #c23321;
-          border-color: rgba(0, 0, 0, 0.2);
-        }
-      }
-      .btn-google:active,
-      .btn-google.active,
-      .open>.dropdown-toggle.btn-google {
-        background-image: none
-      }
-      &:last-child {
-        margin-top: 15px;
-      }
-    }
     @media (max-width: 590px) {
       padding: 20px 25px !important;
     }
@@ -275,6 +214,20 @@ the modal section
       min-width: inherit;
     }
   }
+  .share-modal-content {
+    .modal-header {
+      padding: 15px;
+      border-bottom: 1px solid #e1e2e6;
+      .modal-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+    }
+    .modal-body {
+      padding: 0;
+    }
+  }
   .modal-body {
     overflow-y: auto !important;
     max-height: calc(100% - 100px);
@@ -285,20 +238,75 @@ the modal section
 /*****Install Modal*****/
 
 .InstallModal {
-  @include border-radius(10px);
-  @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
-  margin: 30px auto;
-  max-width: 900px;
-  border: 1px solid #cacaca;
+  .ReactModal__Overlay {
+    text-align: center;
+    margin: 0 auto;
+    background: none !important;
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+      margin-right: -0.25em;
+    }
+  }
+  .ReactModal__Content {
+    @include box-shadow(rgba(0, 0, 0, 0.15) 3px 3px 11px 1px);
+    @include transform(translateY(none));
+    position: static !important;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 auto;
+    padding: 0 !important;
+    border-color: #e1e2e6;
+    background: rgba(242, 242, 242, 0.75) !important;
+    overflow-y: auto !important;
+    width: 100%;
+    min-width: 800px;
+    max-height: calc(100% - 100px);
+    max-width: calc(100% - 50px);
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: -ms-fit-content;
+    width: -o-fit-content;
+    width: fit-content;
+    @media (max-width: 590px) {
+      max-width: calc(100% - 20px);
+    }
+    @media (max-width: 690px) {
+      min-width: 560px;
+    }
+    @media (max-width: 500px) {
+      min-width: 380px;
+    }
+    @media (max-width: 390px) {
+      min-width: inherit;
+    }
+  }
   .install-modal-content {
-    padding: 1rem 2.5rem 2rem;
+    .modal-header {
+      padding: 15px;
+      border-bottom: 1px solid #e1e2e6;
+      .modal-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+    }
+    .modal-body {
+      padding: 0;
+      overflow-y: auto !important;
+      max-height: calc(100% - 100px);
+      background-color: #fff;
+    }
   }
   .install-image {
-    height: 25rem;
+    height: 350px;
     background: url('/static/images/welcome-maomao.jpg') no-repeat center center;
   }
   .install-description {
-    padding: 6.3rem 0 0;
+    padding: 4rem 2.5rem 0 0;
+    text-align: left;
     h3 {
       color: #222;
       font-family: proxima-nova, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
@@ -308,6 +316,9 @@ the modal section
       line-height: 1.2125em;
       margin: 0.2rem 0 1rem;
       text-rendering: optimizeLegibility;
+      img {
+        max-width: 140px;
+      }
     }
     p {
       color: #3a2e2e;
@@ -317,6 +328,9 @@ the modal section
       font-weight: 400;
       margin-bottom: 1.125rem;
       text-rendering: optimizeLegibility;
+      img {
+        max-width: 90px;
+      }
     }
   }
 }

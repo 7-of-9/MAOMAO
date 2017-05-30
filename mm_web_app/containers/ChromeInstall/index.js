@@ -107,7 +107,10 @@ class ChromeInstall extends React.Component {
           style={customModalStyles}
           contentLabel='Manage sharing'>
           <div className='install-modal-content'>
-            <div className='modal-bodys'>
+            <div className='modal-header'>
+              <h4 className='modal-title'>Install Extension</h4>
+            </div>
+            <div className='modal-body'>
               <div className='row'>
                 <div className='col-sm-6'>
                   <div className='install-image' />

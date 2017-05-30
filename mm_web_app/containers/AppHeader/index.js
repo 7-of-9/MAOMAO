@@ -230,11 +230,9 @@ class AppHeader extends React.Component {
           {
             !isLogin &&
             <div className='block-button'>
-              <div className='block-button'>
-                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                  <i className='fa fa-facebook' /> Sign in with Facebook
+              <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                <i className='fa fa-facebook' /> Sign in with Facebook
               </a>
-              </div>
             </div>
           }
         </NavItem>

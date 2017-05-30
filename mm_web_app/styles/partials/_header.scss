@@ -115,6 +115,18 @@ the header section
           padding: 0;
           margin-left: 10px;
           white-space: nowrap;
+          .block-button {
+            margin-left: 10px;
+            @media (max-width: 767px) {
+              margin: 0;
+              padding: 0.8rem 1rem 0.4rem;
+            }
+            .btn-facebook {
+              @media (max-width: 767px) {
+                width: 100%;
+              }
+            }
+          }
           > a {
             position: relative;
             padding: 1.3rem 1.3rem 0.5rem;
@@ -558,6 +570,7 @@ the header section
   animation-duration: 0.75s;
   animation-fill-mode: both;
 }
+
 .fadeIn {
   animation-name: fadeIn;
   animation-duration: 0.75s;
