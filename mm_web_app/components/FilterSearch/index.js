@@ -210,6 +210,9 @@ const FilterSearch = enhance(({
           backgroundColor={'#ffd700'}
             />
       </div>
+      <div className='rating-number'>
+        <span className='label-rating-number'>7</span>
+      </div>
     </div>
   )
 })

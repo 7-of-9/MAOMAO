@@ -1560,12 +1560,19 @@ fieldset[disabled] .btn-logout.focus {
   button {
     border: 0;
     padding: 0;
+    background: none;
+    &:hover,
+    &:focus {
+      background: none;
+      box-shadow: none;
+    }
   }
   img {
     -webkit-animation: dog-pulse 1.5s ease-in-out infinite;
     animation: dog-pulse 1.5s ease-in-out infinite;
   }
 }
+
 
 
 /*animation logo*/
@@ -1668,30 +1675,30 @@ fieldset[disabled] .btn-logout.focus {
 
 @-webkit-keyframes dog-pulse {
   0% {
-    -webkit-transform: scale(1, 1);
-    transform: scale(1, 1);
+    -webkit-transform: scale(0.7, 0.7);
+    transform: scale(0.7, 0.7);
   }
   50% {
     -webkit-transform: scale(1.1, 1.1);
     transform: scale(1.1, 1.1);
   }
   100% {
-    -webkit-transform: scale(1, 1);
-    transform: scale(1, 1);
+    -webkit-transform: scale(0.7, 0.7);
+    transform: scale(0.7, 0.7);
   }
 }
 
 @keyframes dog-pulse {
   0% {
-    -webkit-transform: scale(1, 1);
-    transform: scale(1, 1);
+    -webkit-transform: scale(0.7, 0.7);
+    transform: scale(0.7, 0.7);
   }
   50% {
     -webkit-transform: scale(1.1, 1.1);
     transform: scale(1.1, 1.1);
   }
   100% {
-    -webkit-transform: scale(1, 1);
-    transform: scale(1, 1);
+    -webkit-transform: scale(0.7, 0.7);
+    transform: scale(0.7, 0.7);
   }
 }

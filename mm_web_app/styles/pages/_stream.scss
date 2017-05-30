@@ -137,7 +137,7 @@ img {
 }
 
 .standand-sort {
-  @include box-shadow(0 2px 6px rgba(0,0,0,0.15));
+  @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   @include transition(all 0.5s);
   position: relative;
   z-index: 500;
@@ -898,34 +898,39 @@ img {
 .filter-rating {
   /* @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
   z-index: 100; */
-  padding: 8px 10px 0;
+  padding: 3px 5px 0 20px;
   float: left;
   span {
+    @include border-radius(2px 2px 0 0);
     line-height: 20px;
     text-indent: -1987em;
-    width: 5px;
-    margin-right: 3px;
-    border: 1px solid #1c923a;
-    background-color: #b3bfa9;
-    &:nth-child(1){
-      margin-top: 20px;
-      height: 5px;
+    width: 7px;
+    margin-right: 4px;
+    border: 1px solid #2db7f5;
+    background-color: #fff;
+    &.active {
+      @include border-radius(3px 3px 0 0);
+      background-color: #2db7f5;
     }
-    &:nth-child(2){
-      margin-top: 15px;
-      height: 10px;
+    &:nth-child(1) {
+      margin-top: 28px;
+      height: 7px;
     }
-    &:nth-child(3){
-      margin-top: 10px;
-      height: 15px;
+    &:nth-child(2) {
+      margin-top: 21px;
+      height: 14px;
     }
-    &:nth-child(4){
-      margin-top: 5px;
-      height: 20px;
+    &:nth-child(3) {
+      margin-top: 14px;
+      height: 21px;
     }
-    &:nth-child(5){
+    &:nth-child(4) {
+      margin-top: 7px;
+      height: 28px;
+    }
+    &:nth-child(5) {
       margin-top: 0;
-      height: 25px;
+      height: 35px;
     }
   }
   @media (max-width: 750px) {
@@ -934,6 +939,23 @@ img {
     top: auto;
     right: auto;
     bottom: auto;
+  }
+}
+
+.rating-number {
+  padding: 10px 0 0 10px;
+  float: left;
+  .label-rating-number {
+    @include border-radius(50%);
+    color: #fff;
+    background-color: #2db7f5;
+    width: 27px;
+    height: 27px;
+    line-height: 26px;
+    font-size: 0.875rem;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block;
   }
 }
 
@@ -1252,7 +1274,10 @@ img {
 
 .react-autosuggest__section-container {
   @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+  @include box-shadow(0 6px 12px rgba(0,
+  0,
+  0,
+  .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
   width: 100%;
   min-height: 94px;
