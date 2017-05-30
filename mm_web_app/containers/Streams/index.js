@@ -10,7 +10,6 @@ import { toJS } from 'mobx'
 import { StickyContainer, Sticky } from 'react-sticky'
 import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
-import ReactStars from 'react-stars'
 import moment from 'moment'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
@@ -140,12 +139,16 @@ class Streams extends React.PureComponent {
                   </a>
                 </h4>
                 <h5 className='caption-title'>{parseDomain(href)}</h5>
+                <div className='filter-rating'>
+                  <span className={rate >= 1 ? 'active' : ''} />
+                  <span className={rate >= 2 ? 'active' : ''} />
+                  <span className={rate >= 3 ? 'active' : ''} />
+                  <span className={rate >= 4 ? 'active' : ''} />
+                  <span className={rate >= 5 ? 'active' : ''} />
+                </div>
                 <p>
                   <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
                 </p>
-                <div className='rating'>
-                  <ReactStars edit={false} size={22} count={5} value={rate} />
-                </div>
                 {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
                 {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic))}
               </div>
