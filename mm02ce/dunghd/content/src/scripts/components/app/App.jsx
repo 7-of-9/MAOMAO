@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import ToggleDisplay from 'react-toggle-display';
 import Mailgun from 'mailgun';
 import Score from './Score';
+import PulseDog from './PulseDog';
 import ShareTopic from './ShareTopic';
 import ShareOnPage from './ShareOnPage';
 import ShareOnHoverImage from './ShareOnHoverImage';
@@ -357,6 +358,10 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
             && (tld.length > 0 || xpTopics.length > 0)
           }
         >
+          <PulseDog
+            isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
+            openShare={openShare}
+          />
           <ShareOnPage
             isReady={auth.isLogin && icon.isEnable && (tld.length > 0 || xpTopics.length > 0)}
             openShare={openShare}

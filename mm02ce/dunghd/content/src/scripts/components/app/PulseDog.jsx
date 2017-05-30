@@ -5,50 +5,10 @@ import Radium from 'radium';
 import iconImage from './images/dog_blue.png';
 import logger from '../utils/logger';
 
-function appendPulseStyle() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .pulse {
-        animation: pulse 3s infinite;
-        margin: 0 auto;
-        display: table;
-        margin-top: 50px;
-        animation-direction: alternate;
-        -webkit-animation-name: pulse;
-        animation-name: pulse;
-      }
-
-      @-webkit-keyframes pulse {
-        0% {
-          -webkit-transform: scale(1);
-        }
-        50% {
-          -webkit-transform: scale(1.1);
-        }
-        100% {
-          -webkit-transform: scale(1);
-        }
-      }
-
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-    `;
-    document.body.appendChild(style);
-  }
-
 function PulseDog({ show, isReady, hideOnTimer, openShare }) {
   logger.info('PulseDog isReady, hideOnTimer', isReady, hideOnTimer);
   return (
-    <div style={{ display: show && isReady ? 'block' : 'none' }}>
+    <div style={{ zIndex: 1000, top: '150px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
       <div className="pulse-blue-dog">
         <button onClick={openShare}>
           <img src={iconImage} width="128" height="128" alt="pulse dog" />
@@ -82,7 +42,6 @@ const enhance = compose(
     componentDidMount() {
       logger.info('PulseDog componentDidMount');
       logger.info('animate and close popup in', this.props.hideOnTimer);
-      appendPulseStyle();
       this.props.changeTimer(() => setTimeout(() => {
         this.props.changeShow(false);
       }, this.props.hideOnTimer));
