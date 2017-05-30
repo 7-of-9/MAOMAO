@@ -242,11 +242,13 @@ the home page
       &:focus {
         text-decoration: none;
       }
+      .share-name {
+        min-width: 110px;
+        text-align: left;
+      }
       &.collapsed {
         .share-name {
           color: #404040;
-          min-width: 110px;
-          text-align: left;
         }
       }
     }

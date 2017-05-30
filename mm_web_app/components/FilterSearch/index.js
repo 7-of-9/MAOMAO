@@ -200,15 +200,19 @@ const FilterSearch = enhance(({
           />
       </div>
       <div className='filter-rating'>
-        <ReactStars
+        {/*<ReactStars
           count={5}
           value={rating}
           onChange={onChangeRate}
           size={24}
           half={false}
           color2={'#ffd700'}
-          backgroundColor={'#ffd700'}
-            />
+            />*/}
+            <span className='active' />
+            <span className='active' />
+            <span className='active' />
+            <span />
+            <span />
       </div>
       <div className='rating-number'>
         <span className='label-rating-number'>7</span>

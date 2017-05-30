@@ -904,11 +904,16 @@ img {
     @include border-radius(2px 2px 0 0);
     line-height: 20px;
     text-indent: -1987em;
+    font-size: 0;
+    line-height: normal;
+    float: left;
     width: 7px;
     margin-right: 4px;
     border: 1px solid #2db7f5;
     background-color: #fff;
+    cursor: pointer;
     &.active {
+      width: 7px;
       @include border-radius(3px 3px 0 0);
       background-color: #2db7f5;
     }
