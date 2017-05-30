@@ -83,6 +83,7 @@ function onClickHandler(info) {
           type: 'OPEN_SHARE_MODAL',
           payload: {
             url: window.sessionObservable.activeUrl,
+            enable: true,
             type: 'Google',
           },
         });

@@ -10,7 +10,7 @@ const shareOnUrl = createSelector(
     if (shareOnUrls.length) {
       const exist = shareOnUrls.find(item => item && item.url === url);
       if (exist) {
-        share = Object.assign({}, share, exist, { enable: true });
+        share = Object.assign({}, share, exist);
       }
     }
     return share;

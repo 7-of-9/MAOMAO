@@ -533,6 +533,7 @@ const enhance = compose(
         type: 'OPEN_SHARE_MODAL',
         payload: {
           url: window.location.href,
+          enable: true,
         },
       });
     },
@@ -541,6 +542,7 @@ const enhance = compose(
         type: 'CLOSE_SHARE_MODAL',
         payload: {
           url: window.location.href,
+          enable: false,
         },
       });
     },
@@ -549,6 +551,7 @@ const enhance = compose(
         type: 'OPEN_SHARE_MODAL',
         payload: {
           url: window.location.href,
+          enable: true,
           type,
           shareOption,
           currentStep,

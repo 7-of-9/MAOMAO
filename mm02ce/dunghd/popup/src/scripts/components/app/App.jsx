@@ -213,7 +213,7 @@ const render = (
             <GoogleButton
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Google' } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, enable: true, shareOption, currentStep: 3, type: 'Google' } });
               }}
             >
               <span title="Share with Google" className="tooltip" />
@@ -239,7 +239,7 @@ const render = (
             <LinkButton
               onClick={() => {
                 dispatch({ type: 'MAOMAO_ENABLE', payload: { url } });
-                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, currentStep: 3, type: 'Link' } });
+                dispatch({ type: 'OPEN_SHARE_MODAL', payload: { url, shareOption, enable: true, currentStep: 3, type: 'Link' } });
               }}
             >
               <span title="Share with Link" className="tooltip" />
