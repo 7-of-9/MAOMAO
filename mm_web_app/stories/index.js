@@ -17,7 +17,6 @@ const uiStore = {
   filterByUser: [],
   page: 0,
   rating: 1,
-  showSignInModal: false,
   showAcceptInvite: false,
   showShareModal: false,
   notifications: []

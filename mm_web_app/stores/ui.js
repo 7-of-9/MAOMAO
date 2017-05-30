@@ -9,21 +9,12 @@ export class UIStore {
   @observable filterByUser = []
   @observable page = 0
   @observable rating = 1
-  @observable showSignInModal = false
   @observable showAcceptInvite = false
   @observable showShareModal = false
   @observable notifications = []
 
-  @action showSignIn () {
-    this.showSignInModal = true
-  }
-
   @action openShareModal () {
     this.showShareModal = true
-  }
-
-  @action closeModal () {
-    this.showSignInModal = false
   }
 
   @action closeShareModal () {

@@ -7,7 +7,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
-import Modal from 'react-modal'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
@@ -18,15 +17,6 @@ import Slogan from '../../components/Slogan'
 import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
-
-const customStyles = {
-  content: {
-    top: '90px',
-    left: 'auto',
-    right: 'auto',
-    bottom: 'auto'
-  }
-}
 
 const brand = <Header><LogoIcon /><Slogan /></Header>
 
@@ -43,21 +33,13 @@ const avatar = (user) => {
 class AppHeader extends React.Component {
   constructor (props) {
     super(props)
-    this.onGoogleLogin = this.onGoogleLogin.bind(this)
     this.onFacebookLogin = this.onFacebookLogin.bind(this)
-    this.onSignInOpen = this.onSignInOpen.bind(this)
-    this.onClose = this.onClose.bind(this)
     this.onLogout = this.onLogout.bind(this)
   }
 
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
-    const isChromeOnPc = this.props.store.isChrome && !this.props.store.isMobile
-    if (this.props.store.shareInfo && (!isChromeOnPc || this.props.store.isInstalledOnChromeDesktop)) {
-      this.props.ui.showSignIn()
-    }
-
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
@@ -127,30 +109,11 @@ class AppHeader extends React.Component {
     logger.warn('AppHeader componentWillReact')
   }
 
-  onGoogleLogin () {
-    logger.warn('onGoogleLogin', this.props)
-    const provider = new firebase.auth.GoogleAuthProvider()
-    provider.addScope('https://www.googleapis.com/auth/plus.me')
-    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-    firebase.auth().signInWithPopup(provider)
-  }
-
   onFacebookLogin () {
     logger.warn('onFacebookLogin', this.props)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
     firebase.auth().signInWithPopup(provider)
-  }
-
-  onSignInOpen () {
-    logger.warn('onSignInOpen', this.props)
-    this.props.ui.showSignIn()
-  }
-
-  onClose () {
-    logger.warn('onClose', this.props)
-    this.props.ui.closeModal()
   }
 
   onLogout () {
@@ -169,8 +132,7 @@ class AppHeader extends React.Component {
   }
 
   render () {
-    const { isLogin, userId, topics, users, user, shareInfo } = this.props.store
-    const { showSignInModal } = this.props.ui
+    const { isLogin, userId, topics, users, user } = this.props.store
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
@@ -266,29 +228,16 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {!isLogin && <button className='btn btn-login' onClick={() => this.props.ui.showSignIn()}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
-          <Modal
-            isOpen={showSignInModal}
-            onRequestClose={this.onClose}
-            style={customStyles}
-            portalClassName='SignInModal'
-            contentLabel='Sign In Modal'
-          >
-            <h2 ref='subtitle'>Sign In</h2>
-            {shareInfo && <p className='paragraph-sign'>Login to view your friend sharing !</p>}
-            <div className='justify-content-md-center social-action'>
+          {
+            !isLogin &&
+            <div className='block-button'>
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
                   <i className='fa fa-facebook' /> Sign in with Facebook
               </a>
               </div>
-              <div className='block-button'>
-                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
-                  <i className='fa fa-google' /> Sign in with Google
-              </a>
-              </div>
             </div>
-          </Modal>
+          }
         </NavItem>
       </Navbar>
     )

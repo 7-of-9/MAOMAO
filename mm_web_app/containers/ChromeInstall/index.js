@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
+import firebase from 'firebase'
 import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
 
@@ -18,6 +19,11 @@ const replaceMMIcon = (desc) => {
 @inject('ui')
 @observer
 class ChromeInstall extends React.Component {
+  constructor (props) {
+    super(props)
+    this.onFacebookLogin = this.onFacebookLogin.bind(this)
+  }
+
   componentDidMount () {
     logger.warn('ChromeInstall componentDidMount')
     this.props.store.checkInstall()
@@ -26,6 +32,13 @@ class ChromeInstall extends React.Component {
 
   componentWillReact () {
     logger.warn('ChromeInstall componentWillReact')
+  }
+
+  onFacebookLogin () {
+    logger.warn('onFacebookLogin', this.props)
+    const provider = new firebase.auth.FacebookAuthProvider()
+    provider.addScope('email')
+    firebase.auth().signInWithPopup(provider)
   }
 
   render () {
@@ -64,9 +77,13 @@ class ChromeInstall extends React.Component {
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} />}
             {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
-              (isMobile || !isChrome) && !isLogin &&
-              <div className='switch-browser'>
-                <button className='btn btn-login btn-effect' onClick={() => { this.props.ui.showSignIn() }}>{joinMsg}</button>
+              (isMobile || !isChrome) &&
+              <div className='block-button'>
+                <div className='block-button'>
+                  <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                    <i className='fa fa-facebook' /> {joinMsg}
+                  </a>
+                </div>
               </div>
             }
           </div>
