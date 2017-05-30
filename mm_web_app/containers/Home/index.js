@@ -151,24 +151,6 @@ class Home extends React.Component {
               install={this.inlineInstall}
             />
           </NoSSR>
-          <div className='InstallModal'>
-            <div className='install-modal-content'>
-              <div className='modal-bodys'>
-                  <div className='row'>
-                  <div className='col-sm-6'>
-                    <div className='install-image' />
-                  </div>
-                  <div className='col-sm-6'>
-                    <div className='install-description'>
-                      <h3>MaoMao <em>for</em> Chrome</h3>
-                      <p>maomao browser extension lets you share topics easily with friends! maomao only shares what you tell it, when you tell it.</p>
-                      <button className='btn btn-install' type='button'>Install</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
               <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>

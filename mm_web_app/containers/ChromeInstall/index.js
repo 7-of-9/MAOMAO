@@ -8,11 +8,22 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
+import Modal from 'react-modal'
 import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
   return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
+}
+
+const customModalStyles = {
+  content: {
+    top: '82px',
+    left: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    overflow: 'hidden'
+  }
 }
 
 @inject('store')
@@ -57,8 +68,8 @@ class ChromeInstall extends React.Component {
             </h1>
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
+            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> CHROME EXTENSION</button>}
           </div>
         </div>
           }
@@ -74,8 +85,8 @@ class ChromeInstall extends React.Component {
                 { !isMobile && <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p> }
               </div>
             }
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={install} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={install}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
+            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
               (isMobile || !isChrome) &&
               <div className='block-button'>
@@ -89,6 +100,29 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
           }
+        <Modal
+          isOpen={this.props.ui.showExtensionModal}
+          onRequestClose={() => this.props.ui.closeExtensionModal()}
+          portalClassName='InstallModal'
+          style={customModalStyles}
+          contentLabel='Manage sharing'>
+          <div className='install-modal-content'>
+            <div className='modal-bodys'>
+              <div className='row'>
+                <div className='col-sm-6'>
+                  <div className='install-image' />
+                </div>
+                <div className='col-sm-6'>
+                  <div className='install-description'>
+                    <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> <em>for</em> Chrome</h3>
+                    <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> browser extension lets you share topics easily with friends! <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it.</p>
+                    <button className='btn btn-install' type='button' onClick={install}>Install</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </div>
     )
   }

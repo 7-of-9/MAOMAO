@@ -11,14 +11,23 @@ export class UIStore {
   @observable rating = 1
   @observable showAcceptInvite = false
   @observable showShareModal = false
+  @observable showExtensionModal = false
   @observable notifications = []
 
   @action openShareModal () {
     this.showShareModal = true
   }
 
+  @action openExtensionModal () {
+    this.showExtensionModal = true
+  }
+
   @action closeShareModal () {
     this.showShareModal = false
+  }
+
+  @action closeExtensionModal () {
+    this.showExtensionModal = false
   }
 
   @action removeNotification (uuid) {
