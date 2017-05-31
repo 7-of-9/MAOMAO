@@ -163,6 +163,7 @@ img {
     }
   }
   .navbar-nav {
+    @include clearfix();
     @include border-radius(0);
     display: block;
     > li {
@@ -702,6 +703,9 @@ img {
       line-height: 20px;
       color: #413f3c;
       font-size: 0.75rem;
+      .share-fullname {
+        padding: 0;
+      }
     }
   }
 }
@@ -1345,6 +1349,102 @@ a.btn-box-remove {
   &:hover,
   &:focus {
     color: #222;
+  }
+}
+
+.widget-dropdown {
+  padding-top: 4px;
+  float: right;
+  .widget-topic {
+    padding-top: 2px;
+  }
+  .widget-topic,
+  .widget-user {
+    position: relative;
+    padding: 0 0 4px 20px;
+    float: left;
+    .fa {
+      vertical-align: middle;
+    }
+    .nav-text {
+      padding-left: 5px;
+      display: none;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .dropdown-menu {
+      margin-top: 0;
+      min-width: 180px;
+      .topic-name {
+        display: block;
+        text-align: left;
+        font-family: 'Orbitron-Light';
+        font-size: 0.75rem;
+        &:hover,
+        &:focus {
+          background-color: #e6e6e6;
+        }
+      }
+      a,
+      span {
+        padding: 7px 10px;
+        color: #666;
+        .fa-angle-right {
+          margin: 2px 4px 0 0;
+          font-size: 1.1rem;
+          vertical-align: top;
+        }
+        @media (max-width: 767px) {
+          white-space: normal;
+          padding: 7px 20px;
+        }
+      }
+      a.btn-unshare {
+        color: #11c759;
+        &:hover,
+        &:focus,
+        &:active {
+          color: #018e39;
+        }
+      }
+      &.dropdown-modifier {
+        padding: 5px 0;
+        overflow: hidden;
+        overflow-y: auto;
+      }
+      &.dropdown-hiring {
+        min-width: 320px;
+        li {
+          a {
+            display: block;
+            text-align: left;
+            font-size: 0.875rem;
+          }
+        }
+        @media (max-width: 767px) {
+          min-width: inherit;
+        }
+      }
+      @media (max-width: 767px) {
+        @include box-shadow(none);
+        margin: 0;
+        border: 0;
+      }
+    }
+    > a {
+      @include transition(all 0.2s ease-out 0s);
+      &:hover,
+      &:focus {
+        @include transition(all 0.2s ease-out 0s);
+        color: #2db7f5;
+      }
+    }
+    &.show {
+      .fa-users,
+      .fa-list {
+        color: #2db7f5;
+      }
+    }
   }
 }
 

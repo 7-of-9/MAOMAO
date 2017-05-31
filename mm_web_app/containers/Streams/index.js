@@ -171,7 +171,7 @@ class Streams extends React.PureComponent {
               return (
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <nav className='navbar'>
-                    <ul className='nav navbar-nav' >
+                    <div className='nav navbar-nav' >
                       <FilterSearch
                         urls={urls}
                         topics={topics}
@@ -185,7 +185,115 @@ class Streams extends React.PureComponent {
                         onSelectUser={(user) => this.props.ui.selectUser(user)}
                         onRemoveUser={(user) => this.props.ui.removeUser(user)}
                       />
-                    </ul>
+                      <div className='widget-dropdown'>
+                        <div className='widget-topic'>
+                          <a data-toggle='dropdown'>
+                            <i className='fa fa-list fa-2x' aria-hidden='true' />
+                            <span className='nav-text'>List Topic</span>
+                          </a>
+                          <ul className="dropdown-menu dropdown-modifier stream-list pull-right">
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Arts
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Economy
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Family
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Fashion
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Food and drink
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Games
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> History
+                              </span>
+                            </li>
+                            <li>
+                              <span className="topic-name">
+                                <i className="fa fa-angle-right" aria-hidden="true"></i> Mathematics
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className='widget-user'>
+                          <a data-toggle='dropdown'>
+                            <i className='fa fa-users fa-2x' aria-hidden='true' />
+                            <span className='nav-text'>Friend Streams</span>
+                          </a>
+                          <ul className="dropdown-menu dropdown-modifier  pull-right">
+                            <li>
+                              <div className="user-share">
+                                <div className="user-share-img">
+                                  <img width="24" height="24" src="https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1098332_526239880830644_611792346_n.jpg?oh=a8613e2896f4ad275da640f36bc72ac1&amp;oe=599AC622" alt="Đại Quang Minh" />
+                                </div>
+                                <div className="user-share-cnt">
+                                  <div className="user-share-inner">
+                                    <p className="user-info"><span className="share-fullname">Đại Quang Minh</span></p>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="user-share">
+                                <div className="user-share-img">
+                                  <img width="24" height="24" src="https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&amp;oe=5957A4E8" alt="Dominic Morris" />
+                                </div>
+                                <div className="user-share-cnt">
+                                  <div className="user-share-inner">
+                                    <p className="user-info"><span className="share-fullname">Dominic Morris</span></p>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="user-share">
+                                <div className="user-share-img">
+                                  <img width="24" height="24" src="/static/images/no-avatar.png" alt="Jack Son" />
+                                </div>
+                                <div className="user-share-cnt">
+                                  <div className="user-share-inner">
+                                    <p className="user-info"><span className="share-fullname">Jack Son</span></p>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div className="user-share">
+                                <div className="user-share-img">
+                                  <img width="24" height="24" src="https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg" alt="Đức Dũng Huỳnh" />
+                                </div>
+                                <div className="user-share-cnt">
+                                  <div className="user-share-inner">
+                                    <p className="user-info">
+                                      <span className="share-fullname">Đức Dũng Huỳnh</span>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </nav>
                 </div>
               )
