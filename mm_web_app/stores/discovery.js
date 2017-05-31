@@ -62,7 +62,7 @@ class DiscoveryStore extends CoreStore {
         () => googleSearch.state !== 'pending',
         () => {
           const { result } = googleSearch.value.data
-          this.googleResult.push(...result || [])
+          this.googleResult.push(...(result || []))
           this.pendings.splice(0, 1)
         }
       )
@@ -71,7 +71,7 @@ class DiscoveryStore extends CoreStore {
         () => googleNewsSearch.state !== 'pending',
         () => {
           const { result } = googleNewsSearch.value.data
-          this.googleNewsResult.push(...result || [])
+          this.googleNewsResult.push(...(result || []))
           this.pendings.splice(0, 1)
         }
       )
@@ -80,7 +80,7 @@ class DiscoveryStore extends CoreStore {
         () => googleKnowldge.state !== 'pending',
         () => {
           const { itemListElement } = googleKnowldge.value.data
-          this.googleKnowledgeResult.push(...itemListElement || [])
+          this.googleKnowledgeResult.push(...(itemListElement || []))
           this.pendings.splice(0, 1)
         }
       )
@@ -89,7 +89,7 @@ class DiscoveryStore extends CoreStore {
         () => youtubeVideo.state !== 'pending',
         () => {
           const { items, nextPageToken } = youtubeVideo.value.data
-          this.youtubeResult.push(...items || [])
+          this.youtubeResult.push(...(items || []))
           this.youtubePageToken = nextPageToken
           this.pendings.splice(0, 1)
         }
@@ -98,7 +98,7 @@ class DiscoveryStore extends CoreStore {
       when(
         () => reddit.state !== 'pending',
         () => {
-          this.redditResult.push(...reddit.value || [])
+          this.redditResult.push(...(reddit.value || []))
           this.pendings.splice(0, 1)
         }
       )

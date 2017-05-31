@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleRoot } from 'radium';
 /* eslint-disable */
-import { storiesOf, action } from '@kadira/storybook';
+import { storiesOf } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 /* eslint-enable */
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';

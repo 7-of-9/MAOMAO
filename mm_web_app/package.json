@@ -22,7 +22,7 @@
     "expose-loader": "^0.7.3",
     "express": "^4.15.3",
     "express-session": "^1.15.3",
-    "firebase": "^4.0.0",
+    "firebase": "^4.1.0",
     "firebase-admin": "^5.0.0",
     "fuse.js": "^3.0.4",
     "isomorphic-fetch": "^2.2.1",
@@ -86,7 +86,6 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
-    "@kadira/storybook": "^2.21.0",
     "autoprefixer": "^7.1.1",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",
@@ -108,6 +107,7 @@
     "react-test-renderer": "^15.5.4",
     "sass-loader": "^6.0.5",
     "standard": "^10.0.2",
-    "why-did-you-update": "^0.0.8"
+    "why-did-you-update": "^0.0.8",
+    "@storybook/react": "3.0.0"
   }
 }

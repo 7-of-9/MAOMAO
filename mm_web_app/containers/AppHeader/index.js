@@ -131,7 +131,7 @@ class AppHeader extends React.Component {
   }
 
   render () {
-    const { isLogin, userId, topics, users, user } = this.props.store
+    const { isLogin, userId, user } = this.props.store
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
@@ -162,49 +162,6 @@ class AppHeader extends React.Component {
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
               <span className='nav-text'>Share</span>
             </a>
-          </NavItem>
-        }
-        {
-          isLogin && topics.length > 0 &&
-          <NavItem>
-            <a data-toggle='dropdown'>
-              <i className='fa fa-list fa-2x' aria-hidden='true' />
-              <span className='nav-text'>List Topic</span>
-              <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-            </a>
-            <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
-              {topics.map(topic => (
-                <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
-              ))}
-            </ul>
-          </NavItem>
-        }
-        {
-          isLogin && users.length > 0 &&
-          <NavItem>
-            <a data-toggle='dropdown'>
-              <i className='fa fa-users fa-2x' aria-hidden='true' />
-              <span className='nav-text'>Friend Streams</span>
-              <i className='fa fa-chevron-circle-down' aria-hidden='true' />
-            </a>
-            <ul className='dropdown-menu dropdown-modifier  pull-right'>
-              {users.map(user =>
-                (<li key={guid()}>
-                  <div className='user-share'>
-                    <div className='user-share-img'>
-                      <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
-                    </div>
-                    <div className='user-share-cnt'>
-                      <div className='user-share-inner'>
-                        <p className='user-info'>
-                          <span className='share-fullname'>{user.fullname}</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                ))}
-            </ul>
           </NavItem>
         }
         <NavItem>

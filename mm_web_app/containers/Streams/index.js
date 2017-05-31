@@ -25,6 +25,13 @@ const masonryOptions = {
   transitionDuration: '0.4s'
 }
 
+const avatar = (user) => {
+  if (user && (user.picture || user.avatar)) {
+    return user.picture || user.avatar
+  }
+  return '/static/images/no-avatar.png'
+}
+
 function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
   // TODO: click on name to filter by user
   const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
@@ -191,47 +198,10 @@ class Streams extends React.PureComponent {
                             <i className='fa fa-list fa-2x' aria-hidden='true' />
                             <span className='nav-text'>List Topic</span>
                           </a>
-                          <ul className="dropdown-menu dropdown-modifier stream-list pull-right">
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Arts
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Economy
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Family
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Fashion
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Food and drink
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Games
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> History
-                              </span>
-                            </li>
-                            <li>
-                              <span className="topic-name">
-                                <i className="fa fa-angle-right" aria-hidden="true"></i> Mathematics
-                              </span>
-                            </li>
+                          <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
+                            {topics.map(topic => (
+                              <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
+                            ))}
                           </ul>
                         </div>
                         <div className='widget-user'>
@@ -239,57 +209,23 @@ class Streams extends React.PureComponent {
                             <i className='fa fa-users fa-2x' aria-hidden='true' />
                             <span className='nav-text'>Friend Streams</span>
                           </a>
-                          <ul className="dropdown-menu dropdown-modifier  pull-right">
-                            <li>
-                              <div className="user-share">
-                                <div className="user-share-img">
-                                  <img width="24" height="24" src="https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/1098332_526239880830644_611792346_n.jpg?oh=a8613e2896f4ad275da640f36bc72ac1&amp;oe=599AC622" alt="Đại Quang Minh" />
-                                </div>
-                                <div className="user-share-cnt">
-                                  <div className="user-share-inner">
-                                    <p className="user-info"><span className="share-fullname">Đại Quang Minh</span></p>
+                          <ul className='dropdown-menu dropdown-modifier  pull-right'>
+                            {users.map(user =>
+                              (<li key={guid()}>
+                                <div className='user-share'>
+                                  <div className='user-share-img'>
+                                    <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
+                                  </div>
+                                  <div className='user-share-cnt'>
+                                    <div className='user-share-inner'>
+                                      <p className='user-info'>
+                                        <span className='share-fullname'>{user.fullname}</span>
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="user-share">
-                                <div className="user-share-img">
-                                  <img width="24" height="24" src="https://scontent.xx.fbcdn.net/v/t1.0-1/s100x100/14702240_10207386391686714_2875182266540735639_n.jpg?oh=3fe0b8f61f0774ca75120127cd640154&amp;oe=5957A4E8" alt="Dominic Morris" />
-                                </div>
-                                <div className="user-share-cnt">
-                                  <div className="user-share-inner">
-                                    <p className="user-info"><span className="share-fullname">Dominic Morris</span></p>
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="user-share">
-                                <div className="user-share-img">
-                                  <img width="24" height="24" src="/static/images/no-avatar.png" alt="Jack Son" />
-                                </div>
-                                <div className="user-share-cnt">
-                                  <div className="user-share-inner">
-                                    <p className="user-info"><span className="share-fullname">Jack Son</span></p>
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <div className="user-share">
-                                <div className="user-share-img">
-                                  <img width="24" height="24" src="https://lh6.googleusercontent.com/-WLGCOsPN58Q/AAAAAAAAAAI/AAAAAAAAABc/pJzt8KW6Pxg/photo.jpg" alt="Đức Dũng Huỳnh" />
-                                </div>
-                                <div className="user-share-cnt">
-                                  <div className="user-share-inner">
-                                    <p className="user-info">
-                                      <span className="share-fullname">Đức Dũng Huỳnh</span>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
+                              </li>
+                              ))}
                           </ul>
                         </div>
                       </div>

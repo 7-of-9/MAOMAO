@@ -41,6 +41,15 @@ const enhance = compose(
   withState('show', 'changeShow', true),
   withState('timer', 'changeTimer', null),
   lifecycle({
+    componentDidMount() {
+      logger.info('PulseDog componentDidMount');
+      if (this.props.isReady) {
+        logger.info('animate and close popup in', this.props.hideOnTimer);
+        this.props.changeTimer(() => setTimeout(() => {
+          this.props.changeShow(false);
+        }, this.props.hideOnTimer));
+      }
+    },
     componentWillReceiveProps(nextProps) {
       logger.info('PulseDog componentWillReceiveProps', nextProps);
       if (nextProps.isReady && nextProps.isReady !== this.props.isReady) {

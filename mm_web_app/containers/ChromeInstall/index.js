@@ -69,7 +69,7 @@ class ChromeInstall extends React.Component {
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> CHROME EXTENSION</button>}
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }
@@ -105,22 +105,18 @@ class ChromeInstall extends React.Component {
           onRequestClose={() => this.props.ui.closeExtensionModal()}
           portalClassName='InstallModal'
           style={customModalStyles}
-          contentLabel='Manage sharing'>
+          contentLabel='Install maomao'>
           <div className='install-modal-content'>
             <div className='modal-header'>
-              <h4 className='modal-title'>Install Extension</h4>
+              <h4 className='modal-title'>Install maomao</h4>
             </div>
             <div className='modal-body'>
               <div className='row'>
-                <div className='col-sm-6'>
-                  <div className='install-image' />
-                </div>
-                <div className='col-sm-6'>
-                  <div className='install-description'>
-                    <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> <em>for</em> Chrome</h3>
-                    <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> browser extension lets you share topics easily with friends! <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it.</p>
-                    <button className='btn btn-install' type='button' onClick={install}>Install</button>
-                  </div>
+                <div className='install-description'>
+                  <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
+                  <br />
+                  <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it.</p>
+                  <button className='btn btn-install' type='button' onClick={install}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
                 </div>
               </div>
             </div>
