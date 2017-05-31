@@ -65,11 +65,14 @@ function urlTopic (id, topics, onSelectTopic) {
   const items = []
   _.forEach(currentTopics, (topic) => {
     items.push(
-      <a key={guid()} onClick={() => { onSelectTopic(topic) }}>
+      <div className='mix-tag-topic' key={guid()} onClick={() => { onSelectTopic(topic) }}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span className='text-tag'>{topic.name}</span>
+          <span className='share-topic'>
+            <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
+          </span>
         </span>
-      </a>)
+      </div>)
   })
   return (
     <div className='mix-tag'>
