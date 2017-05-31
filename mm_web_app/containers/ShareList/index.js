@@ -59,13 +59,11 @@ class ShareList extends React.Component {
               <div id={`collapse${userId}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${userId}`}>
                 <div className='card-block'>
                   {accept_shares.map(receiver => (
+                    (receiver.share_all || receiver.topic_id) &&
                     <ul key={guid()} className='timeline timeline-horizontal'>
                       <li className='timeline-item'>
                         <div className='timeline-badge'>
                           <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
-                        </div>
-                        <div className='timeline-panel'>
-                          <a href='#' className='btn btn-related'>Unshare</a>
                         </div>
                       </li>
                       <li className='timeline-item'>
@@ -76,12 +74,6 @@ class ShareList extends React.Component {
                           receiver.share_all &&
                           <div className='timeline-panel'>
                             <span className='share-all'>All browsing history</span>
-                          </div>
-                        }
-                        {
-                          receiver.url_id &&
-                          <div className='timeline-panel'>
-                            <span className='name-url'>{urls[receiver.url_id].title}</span>
                           </div>
                         }
                         {
@@ -100,6 +92,9 @@ class ShareList extends React.Component {
                           <img className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
                         </div>
                         <div className='timeline-panel'>
+                          <div className='timeline-panel'>
+                            <a href='#' className='btn btn-related'>Unshare</a>
+                          </div>
                           {receiver.fullname}
                         </div>
                       </li>
@@ -121,12 +116,13 @@ class ShareList extends React.Component {
                   </a>
                   <div className='line-direct share-line-right' />
                   <div className='mix-detail'>
-                    <span className='topic-value'>(Topic 1), (Topic 2)</span>
+                    <span className='topic-value'>({friend.list.filter(item => shareLists[item].type === 'topic').length} topics)</span>
                   </div>
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
                     {_.map(friend.list, item => (
+                      shareLists[item].type !== 'url' &&
                       <ul key={guid()} className='timeline timeline-horizontal'>
                         <li className='timeline-item share-line-right'>
                           <div className='timeline-badge'>

@@ -188,7 +188,7 @@ class Home extends React.Component {
             <Streams />
           }
           {
-            urls.length === 0 &&
+            urls.length === 0 && !isProcessing &&
             <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
               {
                 isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
