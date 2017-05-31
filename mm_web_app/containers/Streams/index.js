@@ -236,18 +236,19 @@ class Streams extends React.PureComponent {
                         </div>
                       </div>
                       <div className='widget-dropdown'>
-                        <div className='widget-calendar'>
+                        <div className='widget-calendar active'>
                           <a href='#'>
                             <i className='fa fa-calendar fa-2x' aria-hidden='true' />
                             <span className='nav-text'>Order by calendar</span>
                           </a>
-                          <a className='order-calendar' href='#'>
-                            <i className='fa fa-unsorted' aria-hidden='true' />
-                          </a>
+                          <span className='order-calendar'>
+                            <a className='order-asc active' href='#'><i className='fa fa-sort-up' aria-hidden='true' /></a>
+                            <a className='order-desc' href='#'><i className='fa fa-sort-desc' aria-hidden='true' /></a>
+                          </span>
                         </div>
                       </div>
                       <div className='sort-case'>
-                        <div className='sort-case-item'>
+                        <div className='sort-case-item active'>
                           <a href='#' className='filter-rating'>
                             <span className='active' />
                             <span />
