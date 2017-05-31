@@ -96,7 +96,6 @@ $search-icons: url('./images/icons-search.png');
   background-position: 20px center;
   background-size: 32px;
   animation: vex-flyin 0.5s;
-  overflow-scrolling: touch;
   box-shadow: rgba(0, 0, 0, 0.188235) 0px 10px 30px, rgba(0, 0, 0, 0.227451) 0px 6px 10px;
   animation-name: fadeIn;
   animation-duration: 1s;
@@ -1570,6 +1569,24 @@ fieldset[disabled] .btn-logout.focus {
   }
 }
 
+.maomao-enter {
+  opacity: 0.01;
+  transition: opacity 500ms ease-in;
+}
+
+.maomao-enter.maomao-enter-active {
+  opacity: 1;
+}
+
+.maomao-leave {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.maomao-leave.maomao-leave-active {
+  opacity: 0.01;
+}
+
 .pulse-blue-dog {
   button {
     border: 0;
@@ -1586,7 +1603,6 @@ fieldset[disabled] .btn-logout.focus {
     animation: dog-pulse 1.5s ease-in-out infinite;
   }
 }
-
 
 
 /*animation logo*/

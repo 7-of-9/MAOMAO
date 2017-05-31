@@ -71,6 +71,7 @@
     "validate.js": "^0.11.1"
   },
   "devDependencies": {
+    "@storybook/react": "3.0.0",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.0.20",
     "babel-eslint": "^7.2.3",
@@ -112,8 +113,7 @@
     "tape": "^4.6.0",
     "webpack": "^2.6.1",
     "webpack-env-loader": "^0.1.1",
-    "why-did-you-update": "^0.0.8",
-    "@storybook/react": "3.0.0"
+    "why-did-you-update": "^0.0.8"
   },
   "license": "ISC"
 }

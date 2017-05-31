@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransitionGroup } from 'react-transition-group';
 import { onlyUpdateForKeys, withState, lifecycle, compose } from 'recompose';
 import Radium from 'radium';
 import iconImage from './images/dog_blue.png';
@@ -7,14 +8,26 @@ import logger from '../utils/logger';
 
 function PulseDog({ show, isReady, hideOnTimer, openShare, changeShow }) {
   logger.info('PulseDog isReady, hideOnTimer', isReady, hideOnTimer);
+  let component = null;
+  if (show && isReady) {
+      component = (
+        <div style={{ zIndex: 1000, cursor: 'pointer', bottom: '50px', right: '25px', position: 'fixed' }}>
+          <div className="pulse-blue-dog">
+            <button onClick={() => { openShare(); changeShow(false); }}>
+              <img src={iconImage} width="75" height="75" alt="pulse dog" />
+            </button>
+          </div>
+        </div>
+    );
+  }
   return (
-    <div style={{ zIndex: 1000, cursor: 'pointer', bottom: '50px', right: '25px', position: 'fixed', display: show && isReady ? 'block' : 'none' }}>
-      <div className="pulse-blue-dog">
-        <button onClick={() => { openShare(); changeShow(false); }}>
-          <img src={iconImage} width="75" height="75" alt="pulse dog" />
-        </button>
-      </div>
-    </div>
+    <CSSTransitionGroup
+      transitionName="maomao"
+      transitionEnterTimeout={500}
+      transitionLeaveTimeout={300}
+    >
+      {component}
+    </CSSTransitionGroup>
   );
 }
 

@@ -179,9 +179,9 @@ class Streams extends React.PureComponent {
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <nav className='navbar'>
                     <div className='nav navbar-nav' >
-                      <div className="checkbox__styled">
-                        <input type="checkbox" className="checkbox__styled__input" id="checkbox-list-1" name="checkbox" value="1" />
-                        <label className="checkbox__styled__label" htmlFor="checkbox-list-1">Only me</label>
+                      <div className='checkbox__styled'>
+                        <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
+                        <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
                       </div>
                       <FilterSearch
                         urls={urls}

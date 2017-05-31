@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
+import { CSSTransitionGroup } from 'react-transition-group';
 import { onlyUpdateForKeys, flattenProp, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
@@ -103,8 +104,9 @@ function WelcomeModal({
   onFacebookLogin,
   onClose, onLogout }) {
   logger.info('WelcomeModal isLogin, info, isOpen', isLogin, info, isOpen);
-  return (
-    <ToggleDisplay if={isOpen}>
+  let component = null;
+  if (isOpen) {
+    component = (
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
           <a tabIndex="0" role="button" className="close_popup" onClick={onClose}><i className="icons-close" /></a>
@@ -138,7 +140,16 @@ function WelcomeModal({
           </ToggleDisplay>
         </div>
       </div>
-    </ToggleDisplay>
+    );
+  }
+  return (
+    <CSSTransitionGroup
+      transitionName="maomao"
+      transitionEnterTimeout={500}
+      transitionLeaveTimeout={300}
+    >
+      {component}
+    </CSSTransitionGroup>
   );
 }
 

@@ -8,7 +8,7 @@ import logger from '../utils/logger';
 function ShareButton(position, isReady, clickFn) {
   const btn = document.createElement('a');
   btn.style = `display:${isReady ? 'block' : 'none'};`;
-  const icon = `<img class="mm-share-icon" src="${iconImage}" alt="maomao share" />`;
+  const icon = `<img class="mm-share-icon" src="${iconImage}" width="50" height="50" alt="maomao share" />`;
   btn.className = `pin ${position}`;
   btn.innerHTML = icon;
   btn.onclick = clickFn;

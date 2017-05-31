@@ -1,5 +1,6 @@
 import React from 'react';
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
+import { CSSTransitionGroup } from 'react-transition-group';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -237,51 +238,65 @@ const ShareTopic = enhance(({
       description={item.description}
     />
   ));
-  return (<div style={Object.assign({}, style.container, { display: enable && type.indexOf('Facebook') === -1 ? '' : 'none' })}>
-    <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
-      <div className="maomao-logo" />
-    </a>
-    <a className="close_popup" onTouchTap={closeShare}><i className="icons-close" /></a>
-    <Steps className="share-steps" current={currentStep - 1} direction="vertical" size="small">
-      {steps}
-    </Steps>
-    <h3 className="share-title">
-      Share
-          <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-      {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
-    </h3>
-    {currentStep && currentStep === 1 &&
-      <ShareTopicStepOne
-        shareOption={shareOption}
-        type={type}
-        code={code}
-        currentStep={currentStep}
-        changeShareType={changeShareType}
-        topics={topics}
-      />
-    }
-    {currentStep && currentStep === 2 &&
-      <ShareTopicStepTwo
-        shareOption={shareOption}
-        type={type}
-        changeShareType={changeShareType}
-        shareUrl={shareUrl}
-        sendMsgUrl={sendMsgUrl}
-      />
-    }
-    {currentStep && currentStep === 3 &&
-      <ShareTopicStepThree
-        shareOption={shareOption}
-        type={type}
-        contacts={contacts}
-        changeShareType={changeShareType}
-        code={code}
-        handleChange={handleChange}
-        sendEmails={sendEmails}
-        accessGoogleContacts={accessGoogleContacts}
-      />
-    }
-  </div>);
+  let component = null;
+  if (enable && type.indexOf('Facebook') === -1) {
+    component = (
+      <div style={style.container}>
+        <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+          <div className="maomao-logo" />
+        </a>
+        <a className="close_popup" onTouchTap={closeShare}><i className="icons-close" /></a>
+        <Steps className="share-steps" current={currentStep - 1} direction="vertical" size="small">
+          {steps}
+        </Steps>
+        <h3 className="share-title">
+          Share
+              <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
+          {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
+        </h3>
+        {currentStep && currentStep === 1 &&
+          <ShareTopicStepOne
+            shareOption={shareOption}
+            type={type}
+            code={code}
+            currentStep={currentStep}
+            changeShareType={changeShareType}
+            topics={topics}
+          />
+        }
+        {currentStep && currentStep === 2 &&
+          <ShareTopicStepTwo
+            shareOption={shareOption}
+            type={type}
+            changeShareType={changeShareType}
+            shareUrl={shareUrl}
+            sendMsgUrl={sendMsgUrl}
+          />
+        }
+        {currentStep && currentStep === 3 &&
+          <ShareTopicStepThree
+            shareOption={shareOption}
+            type={type}
+            contacts={contacts}
+            changeShareType={changeShareType}
+            code={code}
+            handleChange={handleChange}
+            sendEmails={sendEmails}
+            accessGoogleContacts={accessGoogleContacts}
+          />
+        }
+      </div>
+    );
+  }
+  return (
+    <CSSTransitionGroup
+      transitionName="maomao"
+      transitionEnterTimeout={500}
+      transitionLeaveTimeout={300}
+    >
+      {component}
+    </CSSTransitionGroup>
+  );
 },
 );
 export default ShareTopic;
