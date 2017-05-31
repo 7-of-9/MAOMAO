@@ -118,6 +118,7 @@ class Home extends React.Component {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
+    logger.warn('Home urls, users', urls, users)
     return (
       <Page>
         <Head>

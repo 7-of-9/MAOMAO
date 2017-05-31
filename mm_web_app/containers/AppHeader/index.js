@@ -97,6 +97,8 @@ class AppHeader extends React.Component {
                   }
                 })
               })
+            } else {
+              this.props.store.isLogin = true
             }
           })
         }

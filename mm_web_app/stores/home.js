@@ -10,14 +10,15 @@ import logger from '../utils/logger'
 let store = null
 
 export class HomeStore extends CoreStore {
-  @observable isProcessing = false
+  @observable isProcessingRegister = false
+  @observable isProcessingHistory = false
   @observable googleUser = {}
   @observable facebookUser = {}
   @observable urls = []
   @observable users = []
   @observable topics = []
-  userHistory = {me: {}, shares: []}
   normalizedData = {}
+  userHistory = {me: {}, shares: []}
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
@@ -27,6 +28,10 @@ export class HomeStore extends CoreStore {
          this.getUserHistory()
        }
      })
+  }
+
+  @computed get isProcessing () {
+    return this.isProcessingRegister || this.isProcessingRegister
   }
 
   @computed get myStream () {
@@ -97,11 +102,11 @@ export class HomeStore extends CoreStore {
   @action googleConnect (info) {
     logger.warn('googleConnect', info)
     const googleConnectResult = loginWithGoogle(info)
-    this.isProcessing = true
+    this.isProcessingRegister = true
     when(
       () => googleConnectResult.state !== 'pending',
       () => {
-        this.isProcessing = false
+        this.isProcessingRegister = false
         const { data } = googleConnectResult.value
         const userHash = md5hash(info.google_user_id)
         this.isLogin = true
@@ -139,11 +144,11 @@ export class HomeStore extends CoreStore {
   @action facebookConnect (info) {
     logger.warn('facebookConnect', info)
     const facebookConnectResult = loginWithFacebook(info)
-    this.isProcessing = true
+    this.isProcessingRegister = true
     when(
       () => facebookConnectResult.state !== 'pending',
       () => {
-        this.isProcessing = false
+        this.isProcessingRegister = false
         const { data } = facebookConnectResult.value
         const userHash = md5hash(info.fb_user_id)
         this.userId = data.id
@@ -179,19 +184,21 @@ export class HomeStore extends CoreStore {
 
   @action getUserHistory () {
     logger.warn('getUserHistory')
-    this.isProcessing = true
-    const userHistoryResult = getUserHistory(this.userId, this.userHash)
-    when(
-      () => userHistoryResult.state !== 'pending',
-      () => {
-        this.isProcessing = false
-        this.userHistory = userHistoryResult.value.data
-        const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-        logger.warn('normalizedData', normalizedData)
-        this.normalizedData = normalizedData
-        this.findAllUrlsAndTopics()
-      }
-    )
+    if (!this.isProcessingHistory) {
+      this.isProcessingHistory = true
+      const userHistoryResult = getUserHistory(this.userId, this.userHash)
+      when(
+        () => userHistoryResult.state !== 'pending',
+        () => {
+          this.isProcessingHistory = false
+          this.userHistory = userHistoryResult.value.data
+          const normalizedData = normalizedHistoryData(toJS(this.userHistory))
+          logger.warn('normalizedData', normalizedData)
+          this.normalizedData = normalizedData
+          this.findAllUrlsAndTopics()
+        }
+      )
+    }
   }
 }
 

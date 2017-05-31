@@ -33,16 +33,35 @@ class ChromeInstall extends React.Component {
   constructor (props) {
     super(props)
     this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.state = {
+      isHide: false
+    }
   }
 
   componentDidMount () {
     logger.warn('ChromeInstall componentDidMount')
     this.props.store.checkInstall()
-    setTimeout(() => this.props.store.checkInstall(), 500)
+    this.timer = setInterval(() => {
+      logger.warn('ChromeInstall componentDidMount setInterval')
+      this.props.store.checkInstall()
+      if (this.props.store.isInstalledOnChromeDesktop) {
+        logger.warn('ChromeInstall clearInterval')
+        this.setState({isHide: true})
+        clearInterval(this.timer)
+      }
+    }, 2 * 1000) // check mm extension has installed on every 2s
   }
 
   componentWillReact () {
     logger.warn('ChromeInstall componentWillReact')
+  }
+
+  componentWillUnmount () {
+    logger.warn('ChromeInstall componentWillUnmount')
+    if (this.timer) {
+      logger.warn('ChromeInstall clearInterval')
+      clearInterval(this.timer)
+    }
   }
 
   onFacebookLogin () {
@@ -54,6 +73,7 @@ class ChromeInstall extends React.Component {
 
   render () {
     const { title, description, install, store: { isChrome, browserName, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    logger.warn('ChromeInstall isChrome, browserName, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, isMobile, isInstall, isLogin, shareInfo)
     let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
