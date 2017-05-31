@@ -111,14 +111,12 @@ class ChromeInstall extends React.Component {
               <h4 className='modal-title'>Install maomao</h4>
             </div>
             <div className='modal-body'>
-              <div className='row'>
                 <div className='install-description'>
                   <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
                   <br />
-                  <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it.</p>
+                  <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
                   <button className='btn btn-install' type='button' onClick={install}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
                 </div>
-              </div>
             </div>
           </div>
         </Modal>

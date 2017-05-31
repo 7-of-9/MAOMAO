@@ -158,6 +158,11 @@ img {
     padding: 11px 15px 10px;
     min-height: inherit;
     display: block;
+    .checkbox__styled {
+      float: left;
+      padding: 5px 0;
+      margin-right: 15px;
+    }
     @media (max-width: 750px) {
       float: none;
     }
@@ -705,6 +710,7 @@ img {
       font-size: 0.75rem;
       .share-fullname {
         padding: 0;
+        white-space: nowrap;
       }
     }
   }
@@ -925,7 +931,7 @@ img {
   /* @include abs-pos ($top: 9px, $right: 8px, $bottom: auto, $left: auto);
   z-index: 100; */
   @include clearfix();
-  padding: 3px 5px 0 20px;
+  padding: 3px 0 0 25px;
   float: left;
   span {
     @include border-radius(2px 2px 0 0);
@@ -963,6 +969,9 @@ img {
     &:nth-child(5) {
       margin-top: 0;
       height: 35px;
+    }
+    &:last-child {
+      margin-right: 0;
     }
   }
   @media (max-width: 750px) {
@@ -1159,17 +1168,18 @@ img {
     }
     @media (max-width: 750px) {
       @include border-radius(5px);
-      padding: 3px 20px 4px 36px;
+      padding: 0 20px 0 36px;
+      min-height: 38px;
     }
   }
   .react-autosuggest__container {
-    margin-top: 4px;
     display: inline-block;
     width: -moz-fit-content;
     width: -webkit-fit-content;
     width: fit-content;
   }
   .react-autosuggest__input {
+    margin-top: 4px;
     display: inline-block;
     background: transparent;
     border: 0;
@@ -1178,6 +1188,9 @@ img {
     outline: none;
     padding: 5px;
     width: 100%;
+    @media (max-width: 750px) {
+      margin-top: 0;
+    }
   }
   .search-box-title {
     @include border-radius(4px);
@@ -1353,33 +1366,40 @@ a.btn-box-remove {
 }
 
 .widget-dropdown {
-  padding-top: 4px;
-  float: right;
+  padding: 4px 0 0 25px;
+  float: left;
+  .nav-text {
+    padding-left: 5px;
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+  }
   .widget-topic {
     padding-top: 2px;
   }
-  .widget-topic,
   .widget-user {
+    padding-bottom: 4px;
+  }
+  .widget-topic,
+  .widget-user,
+  .widget-calendar {
     position: relative;
-    padding: 0 0 4px 20px;
     float: left;
     .fa {
       vertical-align: middle;
     }
-    .nav-text {
-      padding-left: 5px;
-      display: none;
-      visibility: hidden;
-      opacity: 0;
-    }
     .dropdown-menu {
+      top: 48px;
       margin-top: 0;
-      min-width: 180px;
+      width: -moz-fit-content;
+      width: -webkit-fit-content;
+      width: fit-content;
       .topic-name {
         display: block;
         text-align: left;
         font-family: 'Orbitron-Light';
         font-size: 0.75rem;
+        white-space: nowrap;
         &:hover,
         &:focus {
           background-color: #e6e6e6;
@@ -1425,6 +1445,30 @@ a.btn-box-remove {
           min-width: inherit;
         }
       }
+      &::after,
+      &::before {
+        bottom: 100%;
+        left: auto;
+        right: 7px;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      &::after {
+        border-color: rgba(255, 255, 255, 0);
+        border-bottom-color: #fff;
+        border-width: 8px;
+        margin-left: -8px;
+      }
+      &::before {
+        border-color: rgba(192, 192, 192, 0);
+        border-bottom-color: #c0c0c0;
+        border-width: 9px;
+        margin-left: -9px;
+      }
       @media (max-width: 767px) {
         @include box-shadow(none);
         margin: 0;
@@ -1433,6 +1477,7 @@ a.btn-box-remove {
     }
     > a {
       @include transition(all 0.2s ease-out 0s);
+      color: #404040;
       &:hover,
       &:focus {
         @include transition(all 0.2s ease-out 0s);
@@ -1445,6 +1490,35 @@ a.btn-box-remove {
         color: #2db7f5;
       }
     }
+    .order-calendar {
+      margin-left: 7px;
+      display: inline-block;
+      .fa-unsorted {
+        margin-top: 5px;
+        font-size: 1.5rem;
+        vertical-align: top;
+      }
+    }
+  }
+}
+
+.sort-case {
+  @include clearfix();
+  float: left;
+  .sort-case-item {
+    float: left;
+    &:first-child {
+      .filter-rating {
+        @media (max-width: 767px) {
+          padding-top: 10px;
+          padding-left: 0;
+        }
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    clear: both;
+    float: none;
   }
 }
 

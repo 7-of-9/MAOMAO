@@ -179,6 +179,10 @@ class Streams extends React.PureComponent {
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <nav className='navbar'>
                     <div className='nav navbar-nav' >
+                      <div className="checkbox__styled">
+                        <input type="checkbox" className="checkbox__styled__input" id="checkbox-list-1" name="checkbox" value="1" />
+                        <label className="checkbox__styled__label" htmlFor="checkbox-list-1">Only me</label>
+                      </div>
                       <FilterSearch
                         urls={urls}
                         topics={topics}
@@ -198,18 +202,20 @@ class Streams extends React.PureComponent {
                             <i className='fa fa-list fa-2x' aria-hidden='true' />
                             <span className='nav-text'>List Topic</span>
                           </a>
-                          <ul className='dropdown-menu dropdown-modifier stream-list pull-right'>
+                          <ul className='dropdown-menu pull-right'>
                             {topics.map(topic => (
                               <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
                             ))}
                           </ul>
                         </div>
+                      </div>
+                      <div className='widget-dropdown'>
                         <div className='widget-user'>
                           <a data-toggle='dropdown'>
                             <i className='fa fa-users fa-2x' aria-hidden='true' />
                             <span className='nav-text'>Friend Streams</span>
                           </a>
-                          <ul className='dropdown-menu dropdown-modifier  pull-right'>
+                          <ul className='dropdown-menu  pull-right'>
                             {users.map(user =>
                               (<li key={guid()}>
                                 <div className='user-share'>
@@ -227,6 +233,79 @@ class Streams extends React.PureComponent {
                               </li>
                               ))}
                           </ul>
+                        </div>
+                      </div>
+                      <div className='widget-dropdown'>
+                        <div className='widget-calendar'>
+                          <a href='#'>
+                            <i className='fa fa-calendar fa-2x' aria-hidden='true' />
+                            <span className='nav-text'>Order by calendar</span>
+                          </a>
+                          <a className='order-calendar' href='#'>
+                            <i className='fa fa-unsorted' aria-hidden='true' />
+                          </a>
+                        </div>
+                      </div>
+                      <div className='sort-case'>
+                        <div className='sort-case-item'>
+                          <a href='#' className='filter-rating'>
+                            <span className='active' />
+                            <span />
+                            <span />
+                            <span />
+                            <span />
+                          </a>
+                          <div className='rating-number'>
+                            <div className='label-rating-number'>10</div>
+                          </div>
+                        </div>
+                        <div className='sort-case-item'>
+                          <a href='#' className='filter-rating'>
+                            <span className='active' />
+                            <span className='active' />
+                            <span />
+                            <span />
+                            <span />
+                          </a>
+                          <div className='rating-number'>
+                            <div className='label-rating-number'>10</div>
+                          </div>
+                        </div>
+                        <div className='sort-case-item'>
+                          <a href='#' className='filter-rating'>
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                            <span />
+                            <span />
+                          </a>
+                          <div className='rating-number'>
+                            <div className='label-rating-number'>10</div>
+                          </div>
+                        </div>
+                        <div className='sort-case-item'>
+                          <a href='#' className='filter-rating'>
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                            <span />
+                          </a>
+                          <div className='rating-number'>
+                            <div className='label-rating-number'>10</div>
+                          </div>
+                        </div>
+                        <div className='sort-case-item'>
+                          <a href='#' className='filter-rating'>
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                            <span className='active' />
+                          </a>
+                          <div className='rating-number'>
+                            <div className='label-rating-number'>10</div>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -198,13 +198,13 @@ const FilterSearch = enhance(({
           renderInputComponent={renderInputComponent}
           />
       </div>
-      <div className='filter-rating'>
+      {/*<div className='filter-rating'>
         <span className={rating >= 1 ? 'active' : ''} onClick={() => onChangeRate(1)} />
         <span className={rating >= 2 ? 'active' : ''} onClick={() => onChangeRate(2)} />
         <span className={rating >= 3 ? 'active' : ''} onClick={() => onChangeRate(3)} />
         <span className={rating >= 4 ? 'active' : ''} onClick={() => onChangeRate(4)} />
         <span className={rating >= 5 ? 'active' : ''} onClick={() => onChangeRate(5)} />
-      </div>
+      </div>*/}
       { /* <div className='rating-number'>
         <span className='label-rating-number'>7</span>
       </div>

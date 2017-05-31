@@ -298,13 +298,9 @@ the modal section
       background-color: #fff;
     }
   }
-  .install-image {
-    height: 350px;
-    background: url('/static/images/welcome-maomao.jpg') no-repeat center center;
-  }
   .install-description {
-    padding: 4rem 2.5rem 0 0;
-    text-align: left;
+    padding: 3rem 2rem;
+    text-align: center;
     h3 {
       color: #222;
       font-family: proxima-nova, "Helvetica Neue", Helvetica, Helvetica, Arial, sans-serif;
@@ -315,17 +311,19 @@ the modal section
       margin: 0.2rem 0 1rem;
       text-rendering: optimizeLegibility;
       img {
-        max-width: 140px;
+        max-width: 120px;
       }
     }
     p {
       color: #3a2e2e;
       font-size: 1.125rem;
       line-height: 1.2;
-      max-width: 25rem;
       font-weight: 400;
       margin-bottom: 1.125rem;
       text-rendering: optimizeLegibility;
+    }
+    p,
+    .btn-install {
       img {
         max-width: 90px;
       }
