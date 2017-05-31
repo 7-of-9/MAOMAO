@@ -274,7 +274,7 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
 
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   const idleState = window.idleState;
-  log.info('active url - change url', window.sessionObservable.activeUrl);
+  log.warn('active url - change url', window.sessionObservable.activeUrl);
 
   // TODO: reset setting for experimental topics when change url
   chrome.tabs.query({

@@ -9,6 +9,7 @@ $share-icons: './images/icons-share.png';
 $success-icons: './images/icons-success.png';
 $logo-mao: './images/maomao.png';
 $lab-icons: url('./images/icons-lab.png');
+$search-icons: url('./images/icons-search.png');
 
 /*distance box*/
 
@@ -968,6 +969,14 @@ fieldset[disabled] a.btn {
   background: $lab-icons no-repeat right center;
 }
 
+.icons-search {
+  display: none;
+  width: 32px;
+  height: 32px;
+  line-height: 18px;
+  background: $search-icons no-repeat right center;
+}
+
 .btn-facebook {
   color: #fff !important;
   background: #3b5998;
@@ -1486,6 +1495,11 @@ fieldset[disabled] .btn-logout.focus {
       .labs {
         display: inline-block;
         .icons-labs {
+          margin-left: 9px;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        .icons-search {
           margin-left: 9px;
           display: inline-block;
           vertical-align: middle;

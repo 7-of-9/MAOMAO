@@ -866,17 +866,41 @@ var selectedWindowId = -1;
 function windowFocusChanged(windowId) {
   // Fix for edge case: user change google chrome window
   // check active url on current window
-  log.warn('%c >windowFocusChanged: [windowId=' + windowId + ']');
-
+  log.warn('windowFocusChanged: [windowId=' + windowId + ']');
+  var prev_session;
   if (TOT_active_tab != null) {
-
-    var prev_session = session_get_by_tab(TOT_active_tab, false);
+    prev_session = session_get_by_tab(TOT_active_tab, false);
     if (prev_session != null)
       log.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
 
     // stop TOT for previously focused
     session_stop_TOT(prev_session);
   }
+
+  // fallback to session by url
+  if (sessionObservable.activeUrl) {
+    prev_session = session_get_by_url(sessionObservable.activeUrl);
+    if (prev_session != null)
+      log.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
+    session_stop_TOT(prev_session);
+  }
+
+  // set active url base on window changes
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+    }
+    else {
+      if (tabs.length > 0) {
+        sessionObservable.activeUrl = tabs[0].url;
+      } else {
+        sessionObservable.activeUrl = 'N/A';
+      }
+    }
+  });
 }
 
 function TOT_start_current_focused() {
@@ -897,6 +921,8 @@ function TOT_start_current_focused() {
           log.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
           session_start_TOT(new_session);
         }
+      } else {
+        sessionObservable.activeUrl = 'N/A';
       }
     }
   });

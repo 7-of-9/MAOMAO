@@ -2,6 +2,7 @@ $logo-img: url('./images/dog_blue.png');
 $close-btn-img: url('./images/close_button.png');
 $logo-mao: './images/maomao.png';
 $lab-icons: url('./images/icons-lab.png');
+$search-icons: url('./images/icons-search.png');
 $facebook-icons: './images/facebook_icon.svg';
 
 /*distance box*/
@@ -276,6 +277,14 @@ $facebook-icons: './images/facebook_icon.svg';
   height: 20px;
   line-height: 20px;
   background: $lab-icons no-repeat right center;
+}
+
+.icons-search {
+  display: none;
+  width: 32px;
+  height: 32px;
+  line-height: 20px;
+  background: $search-icons no-repeat right center;
 }
 
 
@@ -997,6 +1006,11 @@ $facebook-icons: './images/facebook_icon.svg';
       .labs {
         display: inline-block;
         .icons-labs {
+          margin-left: 5px;
+          display: inline-block;
+          vertical-align: middle;
+        }
+        .icons-search {
           margin-left: 5px;
           display: inline-block;
           vertical-align: middle;

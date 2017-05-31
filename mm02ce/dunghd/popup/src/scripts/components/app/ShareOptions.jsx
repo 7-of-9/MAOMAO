@@ -80,7 +80,7 @@ const ShareOptions = enhance(({ url, isProcessingNlp, topics, active, onChange }
               </div>
             }
             {isProcessingNlp &&
-              <div className='global-Loading' style={{ margin: '0 auto', textAlign: 'center' }}><Loading /></div>
+              <div className="global-Loading" style={{ margin: '0 auto', textAlign: 'center' }}><Loading /></div>
             }
             {isToggleTopic && experimentalTopics.length > 0 &&
               experimentalTopics.map(topic =>
@@ -96,7 +96,14 @@ const ShareOptions = enhance(({ url, isProcessingNlp, topics, active, onChange }
                   />
                   <label className="radio__regular__label" htmlFor={topic.id}>
                     <span className="labs">
-                      {topic.name.toUpperCase()} <span className="icons-labs" />
+                      {topic.name.toUpperCase()}
+                      <span className="icons-labs" />
+                      <a
+                        className="icons-search"
+                        href={`http://maomaoweb.azurewebsites.net/discovery?search=${topic.name.substr(0, topic.name.indexOf('['))}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
                     </span>
                   </label>
                 </div>),

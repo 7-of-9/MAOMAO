@@ -78,7 +78,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
           }
           {isToggleTopic && experimentalTopics.length > 0 &&
             experimentalTopics.map(topic =>
-              <div key={guid()} className="radio__regular">
+              (<div key={guid()} className="radio__regular">
                 <input
                   type="radio"
                   onChange={() => { onChange(topic.id); }}
@@ -90,10 +90,12 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 />
                 <label className="radio__regular__label" htmlFor={topic.id}>
                   <span className="labs">
-                    {topic.name.toUpperCase()} <span className="icons-labs" />
+                    {topic.name.toUpperCase()}
+                    <span className="icons-labs" />
+                    <a className="icons-search" href={`http://maomaoweb.azurewebsites.net/discovery?search=${topic.name}`} target="_blank" rel="noopener noreferrer" />
                   </span>
                 </label>
-              </div>,
+              </div>),
             )
           }
         </div>
