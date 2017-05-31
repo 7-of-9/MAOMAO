@@ -43,10 +43,15 @@ class ChromeInstall extends React.Component {
     this.props.store.checkInstall()
     this.timer = setInterval(() => {
       logger.warn('ChromeInstall componentDidMount setInterval')
-      this.props.store.checkInstall()
-      if (this.props.store.isInstalledOnChromeDesktop) {
+      if (this.props.store.isChrome && !this.props.store.isMobile) {
+        this.props.store.checkInstall()
+        if (this.props.store.isInstalledOnChromeDesktop) {
+          logger.warn('ChromeInstall clearInterval')
+          this.setState({isHide: true})
+          clearInterval(this.timer)
+        }
+      } else {
         logger.warn('ChromeInstall clearInterval')
-        this.setState({isHide: true})
         clearInterval(this.timer)
       }
     }, 2 * 1000) // check mm extension has installed on every 2s

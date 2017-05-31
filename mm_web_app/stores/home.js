@@ -31,7 +31,7 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get isProcessing () {
-    return this.isProcessingRegister || this.isProcessingRegister
+    return this.isProcessingRegister || this.isProcessingHistory
   }
 
   @computed get myStream () {
@@ -52,51 +52,6 @@ export class HomeStore extends CoreStore {
       })
     }
     return shares
-  }
-
-  @action findAllUrlsAndTopics () {
-    const { shares, me } = this.userHistory
-    const friends = toJS(shares)
-    const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
-    const urls = []
-    let users = []
-    let topics = []
-    if (myUrls && myUrls.length) {
-      const maxScore = _.maxBy(myUrls, 'im_score')
-      urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
-      _.forEach(myTopics, item => {
-        if (item.term_id > 0 && item.url_ids.length > 0) {
-          topics.push({ name: item.term_name, urlIds: item.url_ids })
-        }
-      })
-    }
-
-    _.forEach(friends, friend => {
-      const { user_id, fullname, avatar, list } = friend
-      const urlIds = []
-      const userUrls = []
-      _.forEach(list, item => {
-        userUrls.push(...item.urls)
-        urlIds.push(...item.urls.map(item => item.id))
-        if (item.topic_name) {
-          const existTopic = topics.find(item => item.name === item.topic_name)
-          if (existTopic) {
-            existTopic.urlIds.push(...item.urls.map(item => item.id))
-          } else {
-            topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
-          }
-        }
-      })
-      const maxScore = _.maxBy(userUrls, 'im_score')
-      urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
-      users.push({ user_id, fullname, avatar, urlIds })
-    })
-
-    this.urls = urls
-    this.topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
-    this.users = _.uniqBy(users, (item) => item.user_id)
-    return { urls: this.urls, users: this.users, topics: this.topics }
   }
 
   @action googleConnect (info) {
@@ -190,12 +145,57 @@ export class HomeStore extends CoreStore {
       when(
         () => userHistoryResult.state !== 'pending',
         () => {
-          this.isProcessingHistory = false
           this.userHistory = userHistoryResult.value.data
           const normalizedData = normalizedHistoryData(toJS(this.userHistory))
           logger.warn('normalizedData', normalizedData)
           this.normalizedData = normalizedData
-          this.findAllUrlsAndTopics()
+
+          const { shares, me } = this.userHistory
+          logger.warn('findAllUrlsAndTopics shares, me', shares, me)
+          const friends = toJS(shares)
+          const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
+          const urls = []
+          let users = []
+          let topics = []
+          if (myUrls && myUrls.length) {
+            const maxScore = _.maxBy(myUrls, 'im_score')
+            urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
+            _.forEach(myTopics, item => {
+              if (item.term_id > 0 && item.url_ids.length > 0) {
+                topics.push({ name: item.term_name, urlIds: item.url_ids })
+              }
+            })
+          }
+
+          _.forEach(friends, friend => {
+            const { user_id, fullname, avatar, list } = friend
+            const urlIds = []
+            const userUrls = []
+            _.forEach(list, item => {
+              userUrls.push(...item.urls)
+              urlIds.push(...item.urls.map(item => item.id))
+              if (item.topic_name) {
+                const existTopic = topics.find(item => item.name === item.topic_name)
+                if (existTopic) {
+                  existTopic.urlIds.push(...item.urls.map(item => item.id))
+                } else {
+                  topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+                }
+              }
+            })
+            const maxScore = _.maxBy(userUrls, 'im_score')
+            urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+            users.push({ user_id, fullname, avatar, urlIds })
+          })
+
+          topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
+          users = _.uniqBy(users, (item) => item.user_id)
+          this.urls = urls
+          this.topics = topics
+          this.users = users
+          logger.warn('findAllUrlsAndTopics urls, users, topics', urls, users, topics)
+          this.isProcessingHistory = false
         }
       )
     }

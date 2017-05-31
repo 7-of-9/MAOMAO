@@ -251,66 +251,22 @@ class Streams extends React.PureComponent {
                         </div>
                       </div>
                       <div className='sort-case'>
-                        <div className='sort-case-item active'>
-                          <a href='#' className='filter-rating'>
-                            <span className='active' />
-                            <span />
-                            <span />
-                            <span />
-                            <span />
-                          </a>
-                          <div className='rating-number'>
-                            <div className='label-rating-number'>10</div>
-                          </div>
-                        </div>
-                        <div className='sort-case-item'>
-                          <a href='#' className='filter-rating'>
-                            <span className='active' />
-                            <span className='active' />
-                            <span />
-                            <span />
-                            <span />
-                          </a>
-                          <div className='rating-number'>
-                            <div className='label-rating-number'>10</div>
-                          </div>
-                        </div>
-                        <div className='sort-case-item'>
-                          <a href='#' className='filter-rating'>
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                            <span />
-                            <span />
-                          </a>
-                          <div className='rating-number'>
-                            <div className='label-rating-number'>10</div>
-                          </div>
-                        </div>
-                        <div className='sort-case-item'>
-                          <a href='#' className='filter-rating'>
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                            <span />
-                          </a>
-                          <div className='rating-number'>
-                            <div className='label-rating-number'>10</div>
-                          </div>
-                        </div>
-                        <div className='sort-case-item'>
-                          <a href='#' className='filter-rating'>
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                            <span className='active' />
-                          </a>
-                          <div className='rating-number'>
-                            <div className='label-rating-number'>10</div>
-                          </div>
-                        </div>
+                        {
+                          [1, 2, 3, 4, 5].map((rate) => (
+                            <div className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                              <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
+                                {
+                                  [1, 2, 3, 4, 5].map((star) => (
+                                    <span className={star <= rate ? 'active' : ''} key={guid()} />
+                                 ))
+                                }
+                              </a>
+                              <div className='rating-number'>
+                                <div className='label-rating-number'>{rate}</div>
+                              </div>
+                            </div>
+                          ))
+                        }
                       </div>
                     </div>
                   </nav>
