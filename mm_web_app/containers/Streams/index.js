@@ -16,7 +16,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
-// import logger from '../../utils/logger'
+import logger from '../../utils/logger'
 
 const LIMIT = 10
 const MAX_COLORS = 12
@@ -112,14 +112,15 @@ function parseDomain (link) {
 @inject('store')
 @inject('ui')
 @observer
-class Streams extends React.PureComponent {
+class Streams extends React.Component {
   render () {
     // populate urls and users
-    const { urls, users, topics } = toJS(this.props.store)
+    const { urls, users, topics, userId } = toJS(this.props.store)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating } = this.props.ui
+    logger.warn('filterByTopic, filterByUser, rating', filterByTopic, filterByUser, rating)
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
     const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
     /* eslint-disable camelcase */
@@ -185,8 +186,8 @@ class Streams extends React.PureComponent {
                       <div className='switch-responsive'>
                         <div className='switch-item'>
                           <div className='checkbox__styled'>
-                            <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
-                            <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
+                            <input onChange={() => this.props.ui.toggleOnlyMe()} type='checkbox' className='checkbox__styled__input' id='checkbox-mobile-only-me' name='only-me-mobile' value={userId} checked={this.props.ui.onlyMe} />
+                            <label className='checkbox__styled__label' htmlFor='checkbox-mobile-only-me'>Only me</label>
                           </div>
                         </div>
                         <div className='switch-item'>
@@ -202,8 +203,8 @@ class Streams extends React.PureComponent {
                       </div>
                       <div id='toolbar-search' className='widget-form collapse' aria-expanded='false'>
                         <div className='checkbox__styled'>
-                          <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
-                          <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
+                          <input onChange={() => this.props.ui.toggleOnlyMe(userId, users)} type='checkbox' className='checkbox__styled__input' id='checkbox-only-me' name='only-me' value={userId} checked={this.props.ui.onlyMe} />
+                          <label className='checkbox__styled__label' htmlFor='checkbox-only-me'>Only me</label>
                         </div>
                         <FilterSearch
                           urls={urls}

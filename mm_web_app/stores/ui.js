@@ -5,6 +5,7 @@ import logger from '../utils/logger'
 let store = null
 
 export class UIStore {
+  @observable onlyMe = false
   @observable filterByTopic = []
   @observable filterByUser = []
   @observable page = 0
@@ -13,6 +14,19 @@ export class UIStore {
   @observable showShareManageMent = false
   @observable showExtensionModal = false
   @observable notifications = []
+
+  @action toggleOnlyMe (userId, users) {
+    this.onlyMe = !this.onlyMe
+    logger.warn('toggleOnlyMe', this.onlyMe, userId, users)
+    if (this.onlyMe) {
+      const user = users.find(item => item.user_id === userId)
+      if (user) {
+        this.filterByUser = [{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }]
+      }
+    } else {
+      this.filterByUser = this.filterByUser.filter(item => item.user_id !== userId)
+    }
+  }
 
   @action displayShareManagement () {
     this.showShareManageMent = true
