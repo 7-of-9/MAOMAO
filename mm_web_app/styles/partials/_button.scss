@@ -612,6 +612,55 @@ a.btn-unfollow,
   }
 }
 
+.btn-search {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  color: #404040;
+  img {
+    margin-top: 5px;
+    max-width: 85px;
+    vertical-align: top;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: #2db7f5;
+    border: 1px solid #2db7f5;
+  }
+}
+
+.btn-navicon {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  color: #404040;
+  img {
+    margin-top: 5px;
+    max-width: 85px;
+    vertical-align: top;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: #2db7f5;
+    border: 1px solid #2db7f5;
+  }
+  @media (max-width: 767px) {
+    float: right;
+  }
+}
+
+.btn-search,
+.btn-navicon {
+  .fa {
+    font-size: 1.3rem;
+    vertical-align: middle;
+  }
+}
+
 
 /*-----btn for tag a link-----*/
 

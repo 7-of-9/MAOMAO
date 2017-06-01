@@ -182,91 +182,113 @@ class Streams extends React.PureComponent {
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <nav className='navbar'>
                     <div className='nav navbar-nav' >
-                      <div className='checkbox__styled'>
-                        <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
-                        <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
+                      <div className="switch-responsive">
+                          <div className="switch-item">
+                            <div className='checkbox__styled'>
+                              <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
+                              <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
+                            </div>
+                          </div>
+                          <div className="switch-item">
+                            <button className="btn btn-search navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#toolbar-search" aria-expanded="false">
+                              <i className='fa fa-search' />
+                            </button>
+                          </div>
+                          <div className="switch-item">
+                            <button className="btn btn-navicon navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#toolbar-sort" aria-expanded="false">
+                              <i className='fa fa-navicon' />
+                            </button>
+                          </div>
                       </div>
-                      <FilterSearch
-                        urls={urls}
-                        topics={topics}
-                        users={users}
-                        rating={rating}
-                        filterByTopic={toJS(filterByTopic)}
-                        filterByUser={toJS(filterByUser)}
-                        onChangeRate={(rate) => this.props.ui.changeRate(rate)}
-                        onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
-                        onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
-                        onSelectUser={(user) => this.props.ui.selectUser(user)}
-                        onRemoveUser={(user) => this.props.ui.removeUser(user)}
-                      />
-                      <div className='widget-dropdown'>
-                        <div className='widget-topic'>
-                          <a data-toggle='dropdown'>
-                            <i className='fa fa-list fa-2x' aria-hidden='true' />
-                            <span className='nav-text'>List Topic</span>
-                          </a>
-                          <ul className='dropdown-menu pull-right'>
-                            {topics.map(topic => (
-                              <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
-                            ))}
-                          </ul>
+                      <div id='toolbar-search' className='widget-form collapse' aria-expanded='false'>
+                        <div className='checkbox__styled'>
+                          <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
+                          <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
                         </div>
+                        <FilterSearch
+                          urls={urls}
+                          topics={topics}
+                          users={users}
+                          rating={rating}
+                          filterByTopic={toJS(filterByTopic)}
+                          filterByUser={toJS(filterByUser)}
+                          onChangeRate={(rate) => this.props.ui.changeRate(rate)}
+                          onSelectTopic={(topic) => this.props.ui.selectTopic(topic)}
+                          onRemoveTopic={(topic) => this.props.ui.removeTopic(topic)}
+                          onSelectUser={(user) => this.props.ui.selectUser(user)}
+                          onRemoveUser={(user) => this.props.ui.removeUser(user)}
+                        />
                       </div>
-                      <div className='widget-dropdown'>
-                        <div className='widget-user'>
-                          <a data-toggle='dropdown'>
-                            <i className='fa fa-users fa-2x' aria-hidden='true' />
-                            <span className='nav-text'>Friend Streams</span>
-                          </a>
-                          <ul className='dropdown-menu  pull-right'>
-                            {users.map(user =>
-                              (<li key={guid()}>
-                                <div className='user-share'>
-                                  <div className='user-share-img'>
-                                    <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
-                                  </div>
-                                  <div className='user-share-cnt'>
-                                    <div className='user-share-inner'>
-                                      <p className='user-info'>
-                                        <span className='share-fullname'>{user.fullname}</span>
-                                      </p>
+                      <div  id='toolbar-sort' className='widget-row collapse' aria-expanded='false'>
+                        <div className='widget-dropdown'>
+                          <div className='widget-topic'>
+                            <a data-toggle='dropdown'>
+                              <span className='nav-symbol'><i className='fa fa-list fa-2x' aria-hidden='true' /></span>
+                              <span className='nav-text'>List Topic</span>
+                            </a>
+                            <ul className='dropdown-menu'>
+                              {topics.map(topic => (
+                                <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                        <div className='widget-dropdown'>
+                          <div className='widget-user'>
+                            <a data-toggle='dropdown'>
+                              <span className='nav-symbol'><i className='fa fa-users fa-2x' aria-hidden='true' /></span>
+                              <span className='nav-text'>Friend Streams</span>
+                            </a>
+                            <ul className='dropdown-menu'>
+                              {users.map(user =>
+                                (<li key={guid()}>
+                                  <div className='user-share'>
+                                    <div className='user-share-img'>
+                                      <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
+                                    </div>
+                                    <div className='user-share-cnt'>
+                                      <div className='user-share-inner'>
+                                        <p className='user-info'>
+                                          <span className='share-fullname'>{user.fullname}</span>
+                                        </p>
+                                      </div>
                                     </div>
                                   </div>
+                                </li>
+                                ))}
+                            </ul>
+                          </div>
+                        </div>
+                        <div className='widget-dropdown'>
+                          <div className='widget-calendar active'>
+                            <a href='#'>
+                              <span className='nav-symbol'><i className='fa fa-calendar fa-2x' aria-hidden='true' /></span>
+                              <span className='nav-text'>Order by calendar</span>
+                            </a>
+                            <span className='order-calendar'>
+                              <a className='order-asc active' href='#'><i className='fa fa-sort-up' aria-hidden='true' /></a>
+                              <a className='order-desc' href='#'><i className='fa fa-sort-desc' aria-hidden='true' /></a>
+                            </span>
+                          </div>
+                        </div>
+                        <div className='sort-case'>
+                          {
+                            [1, 2, 3, 4, 5].map((rate) => (
+                              <div className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                                <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
+                                  {
+                                    [1, 2, 3, 4, 5].map((star) => (
+                                      <span className={star <= rate ? 'active' : ''} key={guid()} />
+                                   ))
+                                  }
+                                </a>
+                                <div className='rating-number'>
+                                  <div className='label-rating-number'>{rate}</div>
                                 </div>
-                              </li>
-                              ))}
-                          </ul>
-                        </div>
-                      </div>
-                      <div className='widget-dropdown'>
-                        <div className='widget-calendar active'>
-                          <a href='#'>
-                            <i className='fa fa-calendar fa-2x' aria-hidden='true' />
-                            <span className='nav-text'>Order by calendar</span>
-                          </a>
-                          <span className='order-calendar'>
-                            <a className='order-asc active' href='#'><i className='fa fa-sort-up' aria-hidden='true' /></a>
-                            <a className='order-desc' href='#'><i className='fa fa-sort-desc' aria-hidden='true' /></a>
-                          </span>
-                        </div>
-                      </div>
-                      <div className='sort-case'>
-                        {
-                          [1, 2, 3, 4, 5].map((rate) => (
-                            <div className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
-                              <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
-                                {
-                                  [1, 2, 3, 4, 5].map((star) => (
-                                    <span className={star <= rate ? 'active' : ''} key={guid()} />
-                                 ))
-                                }
-                              </a>
-                              <div className='rating-number'>
-                                <div className='label-rating-number'>{rate}</div>
                               </div>
-                            </div>
-                          ))
-                        }
+                            ))
+                          }
+                        </div>
                       </div>
                     </div>
                   </nav>

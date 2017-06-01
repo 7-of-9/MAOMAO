@@ -577,42 +577,6 @@ the header section
   animation-fill-mode: both;
 }
 
-@media (min-width: 768px) {
-  .dropdown-menu {
-    @include opacity(0);
-    display: block !important;
-    visibility: hidden;
-    -webkit-transform: translateX(0);
-    -moz-transform: translateX(0);
-    -ms-transform: translateX(0);
-    -o-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-transform: translateY(30px);
-    -moz-transform: translateY(30px);
-    -ms-transform: translateY(30px);
-    -o-transform: translateY(30px);
-    transform: translateY(30px);
-    -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s, -webkit-transform 0.3s 0s;
-    -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, -moz-transform 0.3s 0s;
-    transition: opacity 0.3s 0s, visibility 0s 0.3s, transform 0.3s 0s;
-    z-index: -100;
-  }
-  .show .dropdown-menu {
-    @include opacity(1);
-    display: block;
-    visibility: visible;
-    -webkit-transform: translateY(0);
-    -moz-transform: translateY(0);
-    -ms-transform: translateY(0);
-    -o-transform: translateY(0);
-    transform: translateY(0);
-    -webkit-transition: opacity 0.3s 0s, visibility 0.3s 0s, -webkit-transform 0.3s 0s;
-    -moz-transition: opacity 0.3s 0s, visibility 0.3s 0s, -moz-transform 0.3s 0s;
-    transition: opacity 0.3s 0s, visibility 0.3s 0s, transform 0.3s 0s;
-    z-index: 1500;
-  }
-}
-
 
 /*animation logo*/
 

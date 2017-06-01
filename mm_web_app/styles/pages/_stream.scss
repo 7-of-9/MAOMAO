@@ -20,122 +20,6 @@ img {
   animation: smooth-image 1.2s;
 }
 
-
-/* dropdown-menu */
-
-.fade {
-  opacity: 0;
-  -webkit-transition: opacity .15s linear;
-  -o-transition: opacity .15s linear;
-  transition: opacity .15s linear;
-}
-
-.fade.in {
-  opacity: 1;
-}
-
-.dropup,
-.dropdown {
-  position: relative;
-}
-
-.dropdown-toggle:focus {
-  outline: 0;
-}
-
-.dropdown-menu {
-  @include border-radius(0);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  float: left;
-  min-width: 160px;
-  padding: 5px 0;
-  margin: 2px 0 0;
-  font-size: 14px;
-  text-align: left;
-  list-style: none;
-  background-color: #fff;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, .15);
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-}
-
-.dropdown-menu.pull-right {
-  right: 0;
-  left: auto;
-}
-
-.dropdown-menu .divider {
-  height: 1px;
-  margin: 9px 0;
-  overflow: hidden;
-  background-color: #e5e5e5;
-}
-
-.dropdown-menu > li > a {
-  display: block;
-  padding: 3px 20px;
-  clear: both;
-  font-weight: normal;
-  line-height: 1.42857143;
-  color: #333;
-  white-space: nowrap;
-}
-
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
-  color: #262626;
-  text-decoration: none;
-  background-color: #f5f5f5;
-}
-
-.dropdown-menu > .active > a,
-.dropdown-menu > .active > a:hover,
-.dropdown-menu > .active > a:focus {
-  color: #fff;
-  text-decoration: none;
-  background-color: #337ab7;
-  outline: 0;
-}
-
-.dropdown-menu > .disabled > a,
-.dropdown-menu > .disabled > a:hover,
-.dropdown-menu > .disabled > a:focus {
-  color: #777;
-}
-
-.dropdown-menu > .disabled > a:hover,
-.dropdown-menu > .disabled > a:focus {
-  text-decoration: none;
-  cursor: not-allowed;
-  background-color: transparent;
-  background-image: none;
-}
-
-.open > .dropdown-menu {
-  display: block;
-}
-
-.open > a {
-  outline: 0;
-}
-
-.dropdown-menu-right {
-  right: 0;
-  left: auto;
-}
-
-.dropdown-menu-left {
-  right: auto;
-  left: 0;
-}
-
 .standand-sort {
   @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   @include transition(all 0.5s);
@@ -155,7 +39,7 @@ img {
   .navbar {
     @include clearfix();
     margin: 0;
-    padding: 11px 15px 10px;
+    padding: 0 15px 10px;
     min-height: inherit;
     display: block;
     .checkbox__styled {
@@ -880,6 +764,9 @@ img {
           padding: 0;
           float: left;
           width: 64px;
+          span {
+            cursor: default;
+          }
         }
         .parameter-item {
           overflow: hidden;
@@ -1159,6 +1046,8 @@ img {
 .input-group {
   position: relative;
   display: block;
+  float: left;
+  width: auto;
   .btn {
     @include border-radius(0);
     @include box-shadow(none);
@@ -1210,7 +1099,7 @@ img {
       background-color: transparent;
       border: 0;
     }
-    @media (max-width: 750px) {
+    @media (max-width: 767px) {
       @include border-radius(5px);
       padding: 0 20px 0 36px;
       min-height: 38px;
@@ -1349,6 +1238,12 @@ img {
       }
     }
   }
+  @media (max-width: 767px) {
+    margin-top: 10px;
+    padding-top: 10px;
+    width: 100%;
+    border-top: 1px solid #ccc;
+  }
 }
 
 .search-box-drop {
@@ -1368,6 +1263,7 @@ img {
   0,
   .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
+  z-index: 100;
   width: 100%;
   min-height: 94px;
   margin: 3px 0 0;
@@ -1409,6 +1305,44 @@ a.btn-box-remove {
   }
 }
 
+.widget-form,
+.widget-row {
+  @include clearfix();
+  padding-top: 11px;
+  float: left;
+  &.collapse {
+    display: block;
+    @media (max-width: 767px) {
+      display: none;
+    }
+    &.show {
+      display: block;
+    }
+  }
+  @media (max-width: 850px) {
+    float: none;
+    clear: both;
+  }
+}
+
+.widget-form {
+  .checkbox__styled {
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+}
+
+.widget-row {
+  margin-top: -3px;
+  padding-left: 3px;
+  @media (max-width: 850px) {
+    margin-top: 0;
+    padding-top: 10px;
+    padding-bottom: 7px;
+  }
+}
+
 .widget-dropdown {
   padding: 4px 0 0 25px;
   float: left;
@@ -1417,12 +1351,30 @@ a.btn-box-remove {
     display: none;
     visibility: hidden;
     opacity: 0;
+    vertical-align: middle;
+    @media (max-width: 767px) {
+      display: inline-block;
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+  .nav-symbol {
+    @media (max-width: 767px) {
+      display: inline-block;
+      width: 40px;
+    }
   }
   .widget-topic {
-    padding-top: 2px;
+    padding-top: 4px;
+    @media (max-width: 767px) {
+      padding-top: 0;
+    }
   }
   .widget-user {
-    padding-bottom: 4px;
+    padding-top: 3px;
+    @media (max-width: 767px) {
+      padding-top: 0;
+    }
   }
   .widget-topic,
   .widget-user,
@@ -1447,6 +1399,9 @@ a.btn-box-remove {
         &:hover,
         &:focus {
           background-color: #e6e6e6;
+        }
+        @media (max-width: 767px) {
+          white-space: normal;
         }
       }
       a,
@@ -1492,14 +1447,17 @@ a.btn-box-remove {
       &::after,
       &::before {
         bottom: 100%;
-        left: auto;
-        right: 7px;
+        left: 16px;
+        right: auto;
         border: solid transparent;
         content: " ";
         height: 0;
         width: 0;
         position: absolute;
         pointer-events: none;
+        @media (max-width: 767px) {
+          display: none;
+        }
       }
       &::after {
         border-color: rgba(255, 255, 255, 0);
@@ -1515,8 +1473,13 @@ a.btn-box-remove {
       }
       @media (max-width: 767px) {
         @include box-shadow(none);
-        margin: 0;
+        border-top: 1px solid #ccc !important;
+        position: static;
+        margin: 10px 0 0;
         border: 0;
+        width: 100%;
+        max-height: 240px;
+        overflow-y: auto;
       }
     }
     > a {
@@ -1573,8 +1536,22 @@ a.btn-box-remove {
       }
     }
   }
+  &:first-child {
+    @media (max-width: 850px) {
+      padding-left: 0;
+    }
+    @media (max-width: 767px) {
+      border-top: 1px solid #ccc;
+    }
+  }
   @media (max-width: 1150px) {
     padding-left: 10px;
+  }
+  @media (max-width: 767px) {
+    @include clearfix();
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+    float: none;
   }
 }
 
@@ -1585,13 +1562,6 @@ a.btn-box-remove {
     position: relative;
     margin-left: 25px;
     float: left;
-    &:first-child {
-      .filter-rating {
-        @media (max-width: 767px) {
-          padding-top: 10px;
-        }
-      }
-    }
     &::after {
       @include abs-pos ($top: auto, $right: 0, $bottom: -9px, $left: 0);
       content: '';
@@ -1608,13 +1578,89 @@ a.btn-box-remove {
       width: 100%;
       background-color: #2db7f5;
     }
+    .filter-rating {
+      @media (max-width: 500px) {
+        span {
+          margin-right: 2px;
+          width: 4px;
+          &:nth-child(1) {
+            margin-top: 16px;
+            height: 4px;
+          }
+          &:nth-child(2) {
+            margin-top: 12px;
+            height: 8px;
+          }
+          &:nth-child(3) {
+            margin-top: 8px;
+            height: 12px;
+          }
+          &:nth-child(4) {
+            margin-top: 4px;
+            height: 16px;
+          }
+          &:nth-child(5) {
+            margin-top: 0;
+            height: 20px;
+          }
+        }
+      }
+    }
+    .rating-number {
+      .label-rating-number {
+        width: 20px;
+        height: 20px;
+        font-size: 0.625rem;
+        line-height: 19px;
+        font-weight: normal;
+      }
+      @media (max-width: 500px) {
+        padding: 0 0 0 3px;
+      }
+    }
     @media (max-width: 1150px) {
       margin-left: 10px;
     }
+    @media (max-width: 500px) {
+      margin: 0 2px;
+      float: none;
+      display: inline-block;
+    }
   }
   @media (max-width: 767px) {
+    padding-top: 5px;
     clear: both;
     float: none;
+  }
+  @media (max-width: 500px) {
+    text-align: center;
+  }
+}
+
+.switch-responsive {
+  @include opacity(0);
+  @include clearfix();
+  display: none;
+  visibility: hidden;
+  .switch-item {
+    text-align: center;
+    float: left;
+    width: 33.33%;
+    .checkbox__styled {
+      padding: 7px 0 3px;
+      .checkbox__styled__label {
+        @media (max-width: 390px) {
+          padding-left: 2rem;
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    @include opacity(1);
+    padding-top: 11px;
+    display: block;
+    visibility: visible;
   }
 }
 
