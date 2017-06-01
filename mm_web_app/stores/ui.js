@@ -10,20 +10,20 @@ export class UIStore {
   @observable page = 0
   @observable rating = 1
   @observable showAcceptInvite = false
-  @observable showShareModal = false
+  @observable showShareManageMent = false
   @observable showExtensionModal = false
   @observable notifications = []
 
-  @action openShareModal () {
-    this.showShareModal = true
+  @action displayShareManagement () {
+    this.showShareManageMent = true
   }
 
   @action openExtensionModal () {
     this.showExtensionModal = true
   }
 
-  @action closeShareModal () {
-    this.showShareModal = false
+  @action closeShareManagement () {
+    this.showShareManageMent = false
   }
 
   @action closeExtensionModal () {

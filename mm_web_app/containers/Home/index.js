@@ -7,13 +7,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
+import { CSSTransitionGroup } from 'react-transition-group'
 import Head from 'next/head'
 import Router from 'next/router'
 import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
-import Modal from 'react-modal'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
@@ -22,16 +22,6 @@ import Streams from '../Streams'
 import ChromeInstall from '../ChromeInstall'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
-
-const customModalStyles = {
-  content: {
-    top: '82px',
-    left: 'auto',
-    right: 'auto',
-    bottom: 'auto',
-    overflow: 'hidden'
-  }
-}
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -184,11 +174,20 @@ class Home extends React.Component {
             />
           </NoSSR>
           <Loading isLoading={isProcessing} />
-          {
-            urls.length > 0 && users.length > 0 &&
+          <CSSTransitionGroup
+            transitionName='maomao'
+            transitionEnterTimeout={500}
+            transitionLeaveTimeout={300}
+          >
+            {
+              this.props.ui.showShareManageMent &&
+              <ShareList />
+            }
+            {
+            urls.length > 0 && users.length > 0 && !this.props.ui.showShareManageMent &&
             <Streams />
-          }
-          {
+            }
+            {
             urls.length === 0 && !isProcessing &&
             <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
               {
@@ -198,7 +197,9 @@ class Home extends React.Component {
                 Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
               </p>
             </Section>
-          }
+            }
+          </CSSTransitionGroup>
+
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}
@@ -206,15 +207,6 @@ class Home extends React.Component {
             address={businessAddress}
           />
         </div>
-        {isLogin &&
-        <Modal
-          isOpen={this.props.ui.showShareModal}
-          onRequestClose={() => this.props.ui.closeShareModal()}
-          portalClassName='ShareModal'
-          style={customModalStyles}
-          contentLabel='Manage sharing'>
-          <ShareList />
-        </Modal>}
       </Page>
     )
   }

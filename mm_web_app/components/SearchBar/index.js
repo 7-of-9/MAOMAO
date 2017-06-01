@@ -4,7 +4,8 @@
 *
 */
 
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
 import { WithContext as ReactTags } from 'react-tag-input'
 import Form from './Form'

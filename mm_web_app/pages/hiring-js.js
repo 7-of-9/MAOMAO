@@ -9,6 +9,11 @@ import LogoIcon from '../components/LogoIcon'
 import Slogan from '../components/Slogan'
 import stylesheet from '../styles/index.scss'
 
+if (process.env.NODE_ENV !== 'production') {
+  const { whyDidYouUpdate } = require('why-did-you-update')
+  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|CSSTransitionGroup|NoSSR|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
+}
+
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
 }

@@ -182,23 +182,23 @@ class Streams extends React.PureComponent {
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <nav className='navbar'>
                     <div className='nav navbar-nav' >
-                      <div className="switch-responsive">
-                          <div className="switch-item">
-                            <div className='checkbox__styled'>
-                              <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
-                              <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
-                            </div>
+                      <div className='switch-responsive'>
+                        <div className='switch-item'>
+                          <div className='checkbox__styled'>
+                            <input type='checkbox' className='checkbox__styled__input' id='checkbox-list-1' name='checkbox' value='1' />
+                            <label className='checkbox__styled__label' htmlFor='checkbox-list-1'>Only me</label>
                           </div>
-                          <div className="switch-item">
-                            <button className="btn btn-search navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#toolbar-search" aria-expanded="false">
-                              <i className='fa fa-search' />
-                            </button>
-                          </div>
-                          <div className="switch-item">
-                            <button className="btn btn-navicon navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#toolbar-sort" aria-expanded="false">
-                              <i className='fa fa-navicon' />
-                            </button>
-                          </div>
+                        </div>
+                        <div className='switch-item'>
+                          <button className='btn btn-search navbar-toggler collapsed' type='button' data-toggle='collapse' data-target='#toolbar-search' aria-expanded='false'>
+                            <i className='fa fa-search' />
+                          </button>
+                        </div>
+                        <div className='switch-item'>
+                          <button className='btn btn-navicon navbar-toggler collapsed' type='button' data-toggle='collapse' data-target='#toolbar-sort' aria-expanded='false'>
+                            <i className='fa fa-navicon' />
+                          </button>
+                        </div>
                       </div>
                       <div id='toolbar-search' className='widget-form collapse' aria-expanded='false'>
                         <div className='checkbox__styled'>
@@ -219,7 +219,7 @@ class Streams extends React.PureComponent {
                           onRemoveUser={(user) => this.props.ui.removeUser(user)}
                         />
                       </div>
-                      <div  id='toolbar-sort' className='widget-row collapse' aria-expanded='false'>
+                      <div id='toolbar-sort' className='widget-row collapse' aria-expanded='false'>
                         <div className='widget-dropdown'>
                           <div className='widget-topic'>
                             <a data-toggle='dropdown'>

@@ -86,3 +86,21 @@ div.ReactTags__selected a.ReactTags__remove {
   margin-left: 5px;
   cursor: pointer;
 }
+
+.maomao-enter {
+  opacity: 0.01;
+}
+
+.maomao-enter.maomao-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.maomao-leave {
+  opacity: 1;
+}
+
+.maomao-leave.maomao-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}

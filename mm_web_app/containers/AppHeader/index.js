@@ -160,7 +160,7 @@ class AppHeader extends React.Component {
         {
           isLogin &&
           <NavItem>
-            <a onClick={() => this.props.ui.openShareModal()}>
+            <a onClick={() => this.props.ui.displayShareManagement()}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
               <span className='nav-text'>Share</span>
             </a>
