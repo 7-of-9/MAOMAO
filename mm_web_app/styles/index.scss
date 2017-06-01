@@ -104,3 +104,12 @@ div.ReactTags__selected a.ReactTags__remove {
   opacity: 0.01;
   transition: opacity 300ms ease-in;
 }
+
+.maomao-appear {
+  opacity: 0.01;
+}
+
+.maomao-appear.maomao-appear-active {
+  opacity: 1;
+  transition: opacity .5s ease-in;
+}

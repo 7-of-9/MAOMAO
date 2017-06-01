@@ -178,7 +178,9 @@ class Home extends React.Component {
             transitionName='maomao'
             transitionEnterTimeout={500}
             transitionLeaveTimeout={300}
-          >
+            transitionAppear
+            transitionAppearTimeout={500}
+            >
             {
               this.props.ui.showShareManageMent &&
               <ShareList />
