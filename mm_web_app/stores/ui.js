@@ -41,7 +41,6 @@ export class UIStore {
 
   @action displayShareManagement () {
     this.showShareManager = true
-    this.discoveryTerms = []
   }
 
   @action openExtensionModal () {

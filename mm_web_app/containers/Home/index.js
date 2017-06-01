@@ -152,7 +152,7 @@ class Home extends React.Component {
             transitionAppearTimeout={500}
             >
             {
-              this.props.ui.discoveryTerms.length > 0 &&
+              this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
               <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
           </CSSTransitionGroup>
@@ -200,7 +200,7 @@ class Home extends React.Component {
               <ShareList />
             }
             {
-              this.props.ui.discoveryTerms.length > 0 &&
+              this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
               <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
             {
