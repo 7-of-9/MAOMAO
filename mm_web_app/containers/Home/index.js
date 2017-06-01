@@ -188,37 +188,39 @@ class Home extends React.Component {
             />
           </NoSSR>
           <Loading isLoading={isProcessing} />
-          <CSSTransitionGroup
-            transitionName='maomao'
-            transitionEnterTimeout={500}
-            transitionLeaveTimeout={300}
-            transitionAppear
-            transitionAppearTimeout={500}
-            >
-            {
-              this.props.ui.showShareManager &&
-              <ShareList />
-            }
-            {
-              this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
-              <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
-            }
-            {
-            urls.length > 0 && users.length > 0 && !this.props.ui.showShareManager && this.props.ui.discoveryTerms.length === 0 &&
-            <Streams />
-            }
-            {
-            urls.length === 0 && !isProcessing &&
-            <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
+          <div className='wrapper-slide'>
+            <CSSTransitionGroup
+              transitionName='maomao'
+              transitionEnterTimeout={500}
+              transitionLeaveTimeout={300}
+              transitionAppear
+              transitionAppearTimeout={500}
+              >
               {
-                isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
+                this.props.ui.showShareManager &&
+                <ShareList />
               }
-              <p>
-                Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
-              </p>
-            </Section>
-            }
-          </CSSTransitionGroup>
+              {
+                this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
+                <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+              }
+              {
+              urls.length > 0 && users.length > 0 && !this.props.ui.showShareManager && this.props.ui.discoveryTerms.length === 0 &&
+              <Streams />
+              }
+              {
+              urls.length === 0 && !isProcessing &&
+              <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
+                {
+                  isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
+                }
+                <p>
+                  Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
+                </p>
+              </Section>
+              }
+            </CSSTransitionGroup>
+          </div>
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}

@@ -174,9 +174,10 @@ class Discovery extends React.Component {
   render () {
     logger.warn('Discovery render', this.props)
     return (
-      <div>
+      <div className='fadeInLeft'>
         <div className='back'>
-          <button onClick={this.props.onGoBack}> Close discovery mode
+          <button className='btn btn-back' onClick={this.props.onGoBack}>
+            <i className='fa fa-angle-left' aria-hidden='true' />
           </button>
         </div>
         <StickyContainer className='container'>

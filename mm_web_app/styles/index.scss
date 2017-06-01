@@ -113,3 +113,19 @@ div.ReactTags__selected a.ReactTags__remove {
   opacity: 1;
   transition: opacity .5s ease-in;
 }
+
+.share-management,
+.streams {
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.share-management.maomao-leave.maomao-leave-active,
+.streams.maomao-leave.maomao-leave-active {
+  @include transition(all 6s ease-out 0s);
+  animation-name: fadeInRight;
+  animation-duration: 9s;
+  animation-fill-mode: both;
+}

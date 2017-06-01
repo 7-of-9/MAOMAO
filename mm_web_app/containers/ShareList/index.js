@@ -34,10 +34,11 @@ class ShareList extends React.Component {
     const { entities: { friendStreams, shareLists, urls, topics }, result: { accept_shares } } = this.props.store.normalizedData
     logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
     return (
-      <div className='share-management'>
-        <div className='back'>
-          <button onClick={() => { this.props.ui.closeShareManagement() }}> Back
-          </button>
+      <div className='share-management fadeInLeft'>
+        <button className='btn btn-back' onClick={() => { this.props.ui.closeShareManagement() }}>
+          <i className='fa fa-angle-left' aria-hidden='true' />
+        </button>
+        <div className='block-back'>
           <h1> Share Management </h1>
         </div>
         <div id='accordion' role='tablist' aria-multiselectable='true'>

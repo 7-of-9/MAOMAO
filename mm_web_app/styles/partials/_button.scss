@@ -663,6 +663,28 @@ a.btn-unfollow,
   }
 }
 
+.btn-back {
+  @include border-radius(0 50% 50% 0);
+  position: fixed;
+  left: 0;
+  top: 150px;
+  padding: 5px 20px 5px 11px;
+  z-index: 5000;
+  text-align: right;
+  font-size: 3rem;
+  color: #fff;
+  background: rgba(0, 0, 0, .65);
+  .fa {
+    margin-top: 7px;
+    vertical-align: top;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: rgba(0, 0, 0, .45);
+  }
+}
+
 
 /*-----btn for tag a link-----*/
 
