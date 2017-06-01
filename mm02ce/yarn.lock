@@ -2961,9 +2961,9 @@ fined@^1.0.1:
     lodash.pick "^4.2.1"
     parse-filepath "^1.0.1"
 
-firebase@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/firebase/-/firebase-4.1.0.tgz#2fcabb7f84f552295f9f51fc38f1138eb85f39e2"
+firebase@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/firebase/-/firebase-4.1.1.tgz#2c6a07c550e13b9404e38666b646395b1af6d792"
   dependencies:
     dom-storage "^2.0.2"
     faye-websocket "0.9.3"
@@ -4557,9 +4557,9 @@ mobx@^2.3.4:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/mobx/-/mobx-2.7.0.tgz#cf3d82d18c0ca7f458d8f2a240817b3dc7e54a01"
 
-mobx@^3.1.10:
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.1.10.tgz#61171f8b347e6c15e8a671100f6ef887fe52e80e"
+mobx@^3.1.11:
+  version "3.1.11"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.1.11.tgz#400b1e3c00a4249dfe36e9bca28ef36f057d4a28"
 
 moment@2.x.x, moment@^2.18.1:
   version "2.18.1"
@@ -5683,11 +5683,12 @@ react-komposer@^2.0.0:
     react-stubber "^1.0.0"
     shallowequal "^0.2.2"
 
-react-mfb@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/react-mfb/-/react-mfb-0.4.1.tgz#d80b846b4c122b83479b9bb0726e7ecd30c66da9"
+react-mfb@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-mfb/-/react-mfb-0.5.0.tgz#5a95b2711c4dd0eaa46f93d2686aa91c59569f28"
   dependencies:
     classnames "^1.2.0"
+    prop-types "^15.5.10"
     react-dom "^15.3.1"
 
 react-modal@^1.7.6, react-modal@^1.7.7:

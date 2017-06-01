@@ -79,21 +79,21 @@ function iconType (type) {
   }
 }
 
-function BlockElement (props) {
+function BlockElement ({url, image, name, description, type}) {
   return (
     <Wrapper className='thumbnail-box'>
       <div className='thumbnail'>
         <div className='thumbnail-image'>
-          <Anchor href={props.url} target='_blank'>
-            <Image src={props.image} alt={props.name} />
+          <Anchor href={url} target='_blank'>
+            <Image src={image} alt={name} />
           </Anchor>
         </div>
         <div className='caption'>
-          {props.name && <Title className='caption-title'>{props.name}</Title>}
-          {props.description && <Description>{truncate(props.description, { length: 100, separator: /,? +/ })}</Description>}
+          {name && <Title className='caption-title'>{name}</Title>}
+          {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
           <Source className='credit-info'>
-            <Icon src={iconType(props.type)} />
-            {props.type}
+            <Icon src={iconType(type)} />
+            {type}
           </Source>
         </div>
       </div>
