@@ -14,6 +14,7 @@ export class UIStore {
   @observable rating = 1
   @observable showAcceptInvite = false
   @observable showDiscoveryMode = false
+  @observable showShareManager = false
   @observable showExtensionModal = false
   @observable notifications = []
 
@@ -39,7 +40,8 @@ export class UIStore {
   }
 
   @action displayShareManagement () {
-    this.showShareManageMent = true
+    this.showShareManager = true
+    this.discoveryTerms = []
   }
 
   @action openExtensionModal () {
@@ -47,7 +49,7 @@ export class UIStore {
   }
 
   @action closeShareManagement () {
-    this.showShareManageMent = false
+    this.showShareManager = false
   }
 
   @action closeExtensionModal () {
