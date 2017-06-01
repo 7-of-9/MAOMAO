@@ -613,11 +613,11 @@ a.btn-unfollow,
 }
 
 .btn-search {
-  padding: 10px 20px;
+  padding: 6px 12px;
   font-size: 1rem;
-  background: #fff;
-  border: 1px solid #ccc;
-  color: #404040;
+  background: #00b5ad;
+  border: 1px solid #00b5ad;
+  color: #fff;
   img {
     margin-top: 5px;
     max-width: 85px;
@@ -626,13 +626,13 @@ a.btn-unfollow,
   &:hover,
   &:focus {
     color: #fff;
-    background: #2db7f5;
-    border: 1px solid #2db7f5;
+    background: #009c95;
+    border: 1px solid #009c95;
   }
 }
 
 .btn-navicon {
-  padding: 10px 20px;
+  padding: 6px 12px;
   font-size: 1rem;
   background: #fff;
   border: 1px solid #ccc;
@@ -644,8 +644,8 @@ a.btn-unfollow,
   }
   &:hover,
   &:focus {
-    color: #fff;
-    background: #2db7f5;
+    color: #2db7f5;
+    background: #fff;
     border: 1px solid #2db7f5;
   }
   @media (max-width: 767px) {
@@ -655,9 +655,11 @@ a.btn-unfollow,
 
 .btn-search,
 .btn-navicon {
+  margin-top: 2px;
   .fa {
-    font-size: 1.3rem;
-    vertical-align: middle;
+    margin-top: 3px;
+    font-size: 1rem;
+    vertical-align: top;
   }
 }
 

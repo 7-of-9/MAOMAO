@@ -260,6 +260,9 @@ the home page
           top: -6px;
         }
       }
+      @media (max-width: 500px) {
+        min-width: 86px;
+      }
     }
     .mix-detail {
       margin-left: 10px;
