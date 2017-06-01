@@ -189,10 +189,8 @@ export class HomeStore extends CoreStore {
             users.push({ user_id, fullname, avatar, urlIds })
           })
 
-          topics = _.uniqBy(topics, (item) => `${item.name}-${item.urlIds.length}`)
-          users = _.uniqBy(users, (item) => item.user_id)
           this.urls = urls
-          this.topics = topics
+          this.topics = topics.filter(item => item.urlIds.length > 0)
           this.users = users
           logger.warn('findAllUrlsAndTopics urls, users, topics', urls, users, topics)
           this.isProcessingHistory = false

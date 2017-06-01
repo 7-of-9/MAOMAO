@@ -229,7 +229,7 @@ class Streams extends React.Component {
                             </a>
                             <ul className='dropdown-menu'>
                               {topics.map(topic => (
-                                <li key={guid()}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
+                                <li key={guid()} onClick={() => this.props.ui.selectTopic(topic)}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
                               ))}
                             </ul>
                           </div>
@@ -242,7 +242,7 @@ class Streams extends React.Component {
                             </a>
                             <ul className='dropdown-menu'>
                               {users.map(user =>
-                                (<li key={guid()}>
+                                (<li onClick={() => this.props.ui.selectUser(user)} key={guid()}>
                                   <div className='user-share'>
                                     <div className='user-share-img'>
                                       <img width='24' height='24' src={avatar(user)} alt={user.fullname} />

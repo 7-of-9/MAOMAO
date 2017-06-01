@@ -115,7 +115,7 @@ class ShareList extends React.Component {
                     <span className='share-name'> {friend.fullname} </span>
                   </span>
                 </a>
-                <div className='line-direct share-line-right' />
+                <div className='line-direct share-line-left' />
                 <div className='mix-detail'>
                   <span className='topic-value'>({friend.list.filter(item => shareLists[item].type === 'topic').length} topics)</span>
                 </div>
@@ -125,9 +125,12 @@ class ShareList extends React.Component {
                   {_.map(friend.list, item => (
                       shareLists[item].type !== 'url' &&
                       <ul key={guid()} className='timeline timeline-horizontal'>
-                        <li className='timeline-item share-line-right'>
+                        <li className='timeline-item'>
                           <div className='timeline-badge'>
-                            <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
+                            <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
+                          </div>
+                          <div className='timeline-panel'>
+                            <a href='#' className='btn btn-unfollow'>Unfollow</a>
                           </div>
                         </li>
                         <li className='timeline-item'>
@@ -159,12 +162,9 @@ class ShareList extends React.Component {
                             </div>
                           }
                         </li>
-                        <li className='timeline-item'>
+                        <li className='timeline-item share-line-left'>
                           <div className='timeline-badge'>
-                            <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
-                          </div>
-                          <div className='timeline-panel'>
-                            <a href='#' className='btn btn-unfollow'>Unfollow</a>
+                            <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
                           </div>
                         </li>
                       </ul>
