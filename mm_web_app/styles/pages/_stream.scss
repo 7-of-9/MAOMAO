@@ -1608,11 +1608,13 @@ a.btn-box-remove {
     }
     .rating-number {
       .label-rating-number {
-        width: 20px;
-        height: 20px;
-        font-size: 0.625rem;
-        line-height: 19px;
-        font-weight: normal;
+        @media (max-width: 500px) {
+          width: 20px;
+          height: 20px;
+          font-size: 0.625rem;
+          line-height: 19px;
+          font-weight: normal;
+        }
       }
       @media (max-width: 500px) {
         padding: 0 0 0 3px;
