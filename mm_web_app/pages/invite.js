@@ -2,13 +2,14 @@ import React from 'react'
 import { Provider } from 'mobx-react'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
+import { initDiscoveryStore } from '../stores/discovery'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|CSSTransitionGroup|NoSSR|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
+  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|CSSTransitionGroup|NoSSR|BlockElement|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|ReactTags|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
 }
 
 export default class Invite extends React.Component {
@@ -36,13 +37,15 @@ export default class Invite extends React.Component {
     } catch (err) {
       store.bgImage = ''
     }
-    return { isServer, ...store, ...uiStore }
+    const discovery = initDiscoveryStore(isServer, userAgent, user, [])
+    return { isServer, ...store, ...uiStore, ...discovery }
   }
 
   constructor (props) {
     super(props)
     logger.warn('Invite', props)
     this.uiStore = initUIStore(props.isServer)
+    this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
     this.store.bgImage = props.bgImage
     this.store.checkEnvironment()
@@ -50,7 +53,7 @@ export default class Invite extends React.Component {
 
   render () {
     return (
-      <Provider store={this.store} ui={this.uiStore}>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='invite'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home />

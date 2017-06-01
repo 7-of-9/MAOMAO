@@ -16,7 +16,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
-import logger from '../../utils/logger'
+// import logger from '../../utils/logger'
 
 const LIMIT = 10
 const MAX_COLORS = 12
@@ -120,7 +120,6 @@ class Streams extends React.Component {
     const items = []
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating, sortByDate } = this.props.ui
-    logger.warn('filterByTopic, filterByUser, rating', filterByTopic, filterByUser, rating)
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
     const sortedUrlsByHitUTC = sortByDate === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc])) : _.sortBy(sortedUrls, [(url) => url.hit_utc])
     /* eslint-disable camelcase */
@@ -136,7 +135,7 @@ class Streams extends React.Component {
         }
         items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
-            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton keys={discoveryKeys.join(',')} />}
+            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys)} />}
             <div className='thumbnail'>
               <a href={href} target='_blank'>
                 <div className='thumbnail-image'>
@@ -225,7 +224,7 @@ class Streams extends React.Component {
                           <div className='widget-topic'>
                             <a data-toggle='dropdown'>
                               <span className='nav-symbol'><i className='fa fa-list fa-2x' aria-hidden='true' /></span>
-                              <span className='nav-text'>List Topic</span>
+                              <span className='nav-text'>List Streams</span>
                             </a>
                             <ul className='dropdown-menu'>
                               {topics.map(topic => (
@@ -238,7 +237,7 @@ class Streams extends React.Component {
                           <div className='widget-user'>
                             <a data-toggle='dropdown'>
                               <span className='nav-symbol'><i className='fa fa-users fa-2x' aria-hidden='true' /></span>
-                              <span className='nav-text'>Friend Streams</span>
+                              <span className='nav-text'>List Users</span>
                             </a>
                             <ul className='dropdown-menu'>
                               {users.map(user =>

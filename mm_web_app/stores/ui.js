@@ -9,10 +9,11 @@ export class UIStore {
   @observable sortByDate = 'desc'
   @observable filterByTopic = []
   @observable filterByUser = []
+  @observable discoveryTerms = []
   @observable page = 0
   @observable rating = 1
   @observable showAcceptInvite = false
-  @observable showShareManageMent = false
+  @observable showDiscoveryMode = false
   @observable showExtensionModal = false
   @observable notifications = []
 
@@ -27,6 +28,10 @@ export class UIStore {
     } else {
       this.filterByUser = this.filterByUser.filter(item => item.user_id !== userId)
     }
+  }
+
+  @action openDiscoveryMode (terms) {
+    this.discoveryTerms = terms
   }
 
   @action changeSortOrder (type) {

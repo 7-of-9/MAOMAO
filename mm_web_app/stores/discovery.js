@@ -106,7 +106,7 @@ class DiscoveryStore extends CoreStore {
   }
 }
 
-export function initStore (isServer, userAgent = '', user = null, terms = []) {
+export function initDiscoveryStore (isServer, userAgent = '', user = null, terms = []) {
   if (isServer && typeof window === 'undefined') {
     return new DiscoveryStore(isServer, userAgent, user, terms)
   } else {

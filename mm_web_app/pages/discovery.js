@@ -1,7 +1,7 @@
 import React from 'react'
 import { Provider } from 'mobx-react'
 import Discovery from '../containers/Discovery'
-import { initStore } from '../stores/discovery'
+import { initDiscoveryStore } from '../stores/discovery'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
@@ -26,21 +26,21 @@ export default class DiscoveryPage extends React.Component {
     }
     logger.warn('terms', terms)
 
-    const store = initStore(isServer, userAgent, user, terms)
-    return { isServer, ...store }
+    const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
+    return { isServer, ...discovery }
   }
 
   constructor (props) {
     super(props)
-    this.store = initStore(props.isServer, props.userAgent, props.user, props.terms)
+    this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
   }
 
   render () {
     return (
-      <Provider store={this.store}>
+      <Provider discovery={this.discovery}>
         <div className='discovery'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Discovery />
+          <Discovery terms={this.props.terms} />
         </div>
       </Provider>
     )

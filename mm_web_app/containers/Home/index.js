@@ -17,6 +17,7 @@ import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
+import Discovery from '../Discovery'
 import ShareList from '../ShareList'
 import Streams from '../Streams'
 import ChromeInstall from '../ChromeInstall'
@@ -127,6 +128,7 @@ class Home extends React.Component {
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
+          <script src='/static/vendors/js/snoowrap-v1.min.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
@@ -186,7 +188,11 @@ class Home extends React.Component {
               <ShareList />
             }
             {
-            urls.length > 0 && users.length > 0 && !this.props.ui.showShareManageMent &&
+              this.props.ui.discoveryTerms.length > 0 &&
+              <Discovery terms={this.props.ui.discoveryTerms.slice()} />
+            }
+            {
+            urls.length > 0 && users.length > 0 && !this.props.ui.showShareManageMent && this.props.ui.discoveryTerms.length === 0 &&
             <Streams />
             }
             {
