@@ -1,13 +1,15 @@
 import React from 'react'
 import { Provider } from 'mobx-react'
-import Discovery from '../containers/Discovery'
+import Home from '../containers/Home'
+import { initStore } from '../stores/home'
+import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
 if (process.env.NODE_ENV !== 'production') {
   const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|CSSTransitionGroup|NoSSR|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
+  whyDidYouUpdate(React, { exclude: /^(Connect|Provider|Index|App|CSSTransitionGroup|NoSSR|BlockElement|Form|Input|DropTarget|DragDropContext|Logo|Page|Section|Head|Footer|Navbar|NavItem|ItemsList|Item|StackedNotification|Notification|AppContainer|Container|ReactStars|ReactTags|DebounceInput|Autosuggest|inject|styled|lifecycle|withState|withHandlers|onlyUpdateForKeys|pure)/ })
 }
 
 export default class DiscoveryPage extends React.Component {
@@ -19,6 +21,8 @@ export default class DiscoveryPage extends React.Component {
     }
     const user = req && req.session ? req.session.decodedToken : null
     logger.warn('user', user)
+    const store = initStore(isServer, userAgent, user)
+    const uiStore = initUIStore(isServer)
     let terms = []
     const { search } = query
     if (search) {
@@ -27,20 +31,24 @@ export default class DiscoveryPage extends React.Component {
     logger.warn('terms', terms)
 
     const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
-    return { isServer, ...discovery }
+    return { isServer, ...store, ...uiStore, ...discovery }
   }
 
   constructor (props) {
     super(props)
+    this.store = initStore(props.isServer, props.userAgent, props.user)
+    this.uiStore = initUIStore(props.isServer)
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
+    this.store.checkEnvironment()
+    this.uiStore.openDiscoveryMode(props.terms)
   }
 
   render () {
     return (
-      <Provider discovery={this.discovery}>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='discovery'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Discovery terms={this.props.terms} />
+          <Home />
         </div>
       </Provider>
     )

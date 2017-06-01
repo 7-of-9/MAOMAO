@@ -144,6 +144,18 @@ class Home extends React.Component {
               install={this.inlineInstall}
             />
           </NoSSR>
+          <CSSTransitionGroup
+            transitionName='maomao'
+            transitionEnterTimeout={500}
+            transitionLeaveTimeout={300}
+            transitionAppear
+            transitionAppearTimeout={500}
+            >
+            {
+              this.props.ui.discoveryTerms.length > 0 &&
+              <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+            }
+          </CSSTransitionGroup>
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
               <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
@@ -189,7 +201,7 @@ class Home extends React.Component {
             }
             {
               this.props.ui.discoveryTerms.length > 0 &&
-              <Discovery terms={this.props.ui.discoveryTerms.slice()} />
+              <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
             {
             urls.length > 0 && users.length > 0 && !this.props.ui.showShareManageMent && this.props.ui.discoveryTerms.length === 0 &&
@@ -207,7 +219,6 @@ class Home extends React.Component {
             </Section>
             }
           </CSSTransitionGroup>
-
         </ToggleDisplay>
         <div className='footer-area'>
           <Footer brandName={brandName}

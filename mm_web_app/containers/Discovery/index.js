@@ -176,9 +176,8 @@ class Discovery extends React.Component {
     return (
       <div>
         <div className='back'>
-          <button onClick={() => { this.props.ui.openDiscoveryMode([]) }}> Back
+          <button onClick={this.props.onGoBack}> Close discovery mode
           </button>
-          <h1> Discovery mode </h1>
         </div>
         <StickyContainer className='container'>
           <Sticky>
@@ -210,7 +209,8 @@ class Discovery extends React.Component {
 }
 
 Discovery.propTypes = {
-  terms: PropTypes.array.isRequired
+  terms: PropTypes.array.isRequired,
+  onGoBack: PropTypes.func.isRequired
 }
 
 export default Discovery
