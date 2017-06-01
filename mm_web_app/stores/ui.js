@@ -6,6 +6,7 @@ let store = null
 
 export class UIStore {
   @observable onlyMe = false
+  @observable sortByDate = 'desc'
   @observable filterByTopic = []
   @observable filterByUser = []
   @observable page = 0
@@ -26,6 +27,10 @@ export class UIStore {
     } else {
       this.filterByUser = this.filterByUser.filter(item => item.user_id !== userId)
     }
+  }
+
+  @action changeSortOrder (type) {
+    this.sortByDate = type
   }
 
   @action displayShareManagement () {

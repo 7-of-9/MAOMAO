@@ -119,10 +119,10 @@ class Streams extends React.Component {
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
-    const { filterByTopic, filterByUser, rating } = this.props.ui
+    const { filterByTopic, filterByUser, rating, sortByDate } = this.props.ui
     logger.warn('filterByTopic, filterByUser, rating', filterByTopic, filterByUser, rating)
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
-    const sortedUrlsByHitUTC = _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc]))
+    const sortedUrlsByHitUTC = sortByDate === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc])) : _.sortBy(sortedUrls, [(url) => url.hit_utc])
     /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     if (currentUrls && currentUrls.length) {
@@ -262,13 +262,20 @@ class Streams extends React.Component {
                         </div>
                         <div className='widget-dropdown'>
                           <div className='widget-calendar active'>
-                            <a href='#'>
-                              <span className='nav-symbol'><i className='fa fa-calendar fa-2x' aria-hidden='true' /></span>
-                              <span className='nav-text'>Order by calendar</span>
-                            </a>
+                            <span className='nav-symbol'><i className='fa fa-calendar fa-2x' aria-hidden='true' /></span>
+                            <span className='nav-text'>Order by date</span>
                             <span className='order-calendar'>
-                              <a className='order-asc active' href='#'><i className='fa fa-sort-up' aria-hidden='true' /></a>
-                              <a className='order-desc' href='#'><i className='fa fa-sort-desc' aria-hidden='true' /></a>
+                              <a
+                                className={this.props.ui.sortByDate === 'asc' ? 'order-asc active' : 'order-asc'}
+                                onClick={() => this.props.ui.changeSortOrder('asc')}
+                                ><i className='fa fa-sort-up' aria-hidden='true' />
+                              </a>
+                              <a
+                                className={this.props.ui.sortByDate !== 'asc' ? 'order-desc active' : 'order-desc'}
+                                onClick={() => this.props.ui.changeSortOrder('desc')}
+                                >
+                                <i className='fa fa-sort-desc' aria-hidden='true' />
+                              </a>
                             </span>
                           </div>
                         </div>
