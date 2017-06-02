@@ -1,13 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose'
 import { CSSTransitionGroup } from 'react-transition-group'
 import ToggleDisplay from 'react-toggle-display'
 import Steps, { Step } from 'rc-steps'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import { GoogleShare, ShareOptions, Toolbar } from '../../components/Share'
-import logger from '../utils/logger'
-import openUrl from '../utils/popup'
-import fbScrapeShareUrl from '../utils/fb'
+import { GoogleShare, Toolbar } from '../../components/Share'
+import logger from '../../utils/logger'
+import openUrl from '../../utils/popup'
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net'
 const FB_APP_ID = '386694335037120'
@@ -112,30 +112,6 @@ const enhance = compose(
 )
 
 const ShareTopicStepOne = compose(({
-   type, code, shareOption, currentStep, topics, changeShareType
-  }) => (
-    <div>
-      <ShareOptions
-        active={shareOption}
-        topics={topics}
-        onChange={(value) => { changeShareType(type, value, currentStep) }}
-      />
-      <div className='share-footer'>
-        <button
-          className='btn btn-slide-next'
-          onClick={() => {
-            const url = `${SITE_URL}/${selectUrl(code, shareOption)}`
-            fbScrapeShareUrl(url)
-            changeShareType(type, shareOption, 2)
-          }}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  ))
-
-const ShareTopicStepTwo = compose(({
   type, shareOption, shareUrl, sendMsgUrl, changeShareType
  }) =>
   (<div className='share-social'>
@@ -145,25 +121,17 @@ const ShareTopicStepTwo = compose(({
     <div className='toolbar-button'>
       <Toolbar
         active={type}
-        onChange={(value) => { changeShareType(value, shareOption, 3) }}
+        onChange={(value) => { changeShareType(value, shareOption, 2) }}
         onShare={shareUrl}
         onSendMsg={sendMsgUrl}
         style={style.toolbar}
       />
     </div>
-    <div className='share-footer'>
-      <button
-        className='btn btn-slide-prev'
-        onClick={() => changeShareType(type, shareOption, 1)}
-      >
-        Previous
-      </button>
-    </div>
   </div>
   ))
 
 const enhance2 = withState('copied', 'setCopied', false)
-const ShareTopicStepThree = enhance2(({
+const ShareTopicStepTwo = enhance2(({
   type, contacts, code, shareOption, copied,
   accessGoogleContacts, handleChange, sendEmails, changeShareType, setCopied }) => (
     <div>
@@ -202,7 +170,7 @@ const ShareTopicStepThree = enhance2(({
       <div className='share-footer'>
         <button
           className='btn btn-slide-prev'
-          onClick={() => changeShareType(type, shareOption, 2)}
+          onClick={() => changeShareType(type, shareOption, 1)}
         >
           Previous
         </button>
@@ -227,7 +195,6 @@ const ShareTopic = enhance(({
   sendEmails, closeShare, accessGoogleContacts }) => {
   logger.info('ShareTopic enable, type, topics, contacts, code, shareOption, currentStep', enable, type, topics, contacts, code, shareOption, currentStep)
   const steps = [
-    { title: 'Select your content', description: 'Share this page or topics with your friends.' },
     { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
     { title: 'Finish', description: 'Ready to share' }
   ].map(item => (
@@ -245,7 +212,7 @@ const ShareTopic = enhance(({
         <a href='http://maomao.rocks' target='_blank' rel='noopener noreferrer'>
           <div className='maomao-logo' />
         </a>
-        <a className='close_popup' onTouchTap={closeShare}><i className='icons-close' /></a>
+        <a className='close_popup' onClick={closeShare}><i className='icons-close' /></a>
         <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
           {steps}
         </Steps>
@@ -258,23 +225,13 @@ const ShareTopic = enhance(({
           <ShareTopicStepOne
             shareOption={shareOption}
             type={type}
-            code={code}
-            currentStep={currentStep}
-            changeShareType={changeShareType}
-            topics={topics}
-          />
-        }
-        {currentStep && currentStep === 2 &&
-          <ShareTopicStepTwo
-            shareOption={shareOption}
-            type={type}
             changeShareType={changeShareType}
             shareUrl={shareUrl}
             sendMsgUrl={sendMsgUrl}
           />
         }
-        {currentStep && currentStep === 3 &&
-          <ShareTopicStepThree
+        {currentStep && currentStep === 2 &&
+          <ShareTopicStepTwo
             shareOption={shareOption}
             type={type}
             contacts={contacts}
@@ -299,4 +256,20 @@ const ShareTopic = enhance(({
   )
 }
 )
+
+ShareTopic.propTypes = {
+  enable: PropTypes.bool.isRequired,
+  type: PropTypes.string.isRequired,
+  shareOption: PropTypes.string.isRequired,
+  code: PropTypes.string.isRequired,
+  contacts: PropTypes.array.isRequired,
+  topics: PropTypes.array.isRequired,
+  terms: PropTypes.array.isRequired,
+  currentStep: PropTypes.number.isRequired,
+  sendEmail: PropTypes.func.isRequired,
+  changeShareType: PropTypes.func.isRequired,
+  accessGoogleContacts: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
+  closeShare: PropTypes.func.isRequired
+}
 export default ShareTopic

@@ -1,8 +1,10 @@
 import React from 'react'
-import { storiesOf, action } from '@storybook/react'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 import BlockElement from '../components/BlockElement'
 import DiscoveryButton from '../components/DiscoveryButton'
 import { GoogleShare, Toolbar, ShareOptions } from '../components/Share'
+import ShareTopic from '../components/ShareTopic'
 import FilterSearch from '../components/FilterSearch'
 import Header from '../components/Header'
 import LogoIcon from '../components/LogoIcon'
@@ -20,6 +22,25 @@ storiesOf('Header', module)
 storiesOf('Footer', module)
   .add('default props', () => (
     <Footer />
+  ))
+
+storiesOf('ShareTopic', module)
+  .add('default props', () => (
+    <ShareTopic
+      enable
+      type='Google'
+      shareOption='all'
+      currentStep={1}
+      topics={[]}
+      terms={[]}
+      code=''
+      sendEmail={action('sendEmail')}
+      changeShareType={action('changeShareType')}
+      accessGoogleContacts={action('accessGoogleContacts')}
+      contacts={[]}
+      notify={action('notify')}
+      closeShare={action('closeShare')}
+      />
   ))
 
 storiesOf('Share', module)

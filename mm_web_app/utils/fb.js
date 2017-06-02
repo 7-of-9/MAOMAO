@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from 'axios'
 
-export default function fbScrapeShareUrl(url) {
+export default function fbScrapeShareUrl (url) {
   return axios({
     method: 'post',
-    url: `https://graph.facebook.com?scrape=true&id=${url}`,
-  });
+    url: `https://graph.facebook.com?scrape=true&id=${url}`
+  })
 }
