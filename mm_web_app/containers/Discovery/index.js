@@ -174,7 +174,7 @@ class Discovery extends React.Component {
   render () {
     logger.warn('Discovery render', this.props)
     return (
-      <div className='fadeInLeft'>
+      <div className='bounceInLeft animated'>
         <div className='back'>
           <button className='btn btn-back' onClick={this.props.onGoBack}>
             <i className='fa fa-angle-left' aria-hidden='true' />

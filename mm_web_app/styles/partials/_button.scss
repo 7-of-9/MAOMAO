@@ -661,6 +661,9 @@ a.btn-unfollow,
     font-size: 1rem;
     vertical-align: top;
   }
+  .fa-link{
+    margin-top: 4px;
+  }
 }
 
 .btn-back {
@@ -668,6 +671,7 @@ a.btn-unfollow,
   position: fixed;
   left: 0;
   top: 150px;
+  margin-top: -42px;
   padding: 5px 20px 5px 11px;
   z-index: 5000;
   text-align: right;

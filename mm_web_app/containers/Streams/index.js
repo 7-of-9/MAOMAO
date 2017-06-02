@@ -196,7 +196,7 @@ class Streams extends React.Component {
                         </div>
                         <div className='switch-item'>
                           <button className='btn btn-navicon navbar-toggler collapsed' type='button' data-toggle='collapse' data-target='#toolbar-sort' aria-expanded='false'>
-                            <i className='fa fa-navicon' />
+                            <i className='fa fa-link' />
                           </button>
                         </div>
                       </div>

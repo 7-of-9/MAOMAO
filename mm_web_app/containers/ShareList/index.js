@@ -34,7 +34,7 @@ class ShareList extends React.Component {
     const { entities: { friendStreams, shareLists, urls, topics }, result: { accept_shares } } = this.props.store.normalizedData
     logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
     return (
-      <div className='share-management fadeInLeft'>
+      <div className='share-management bounceInLeft animated'>
         <button className='btn btn-back' onClick={() => { this.props.ui.closeShareManagement() }}>
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
@@ -95,9 +95,10 @@ class ShareList extends React.Component {
                         </div>
                         <div className='timeline-panel'>
                           <div className='timeline-panel'>
+                            <span className='user-info-share'>{receiver.fullname}</span>
                             <a href='#' className='btn btn-related'>Unshare</a>
                           </div>
-                          {receiver.fullname}
+                          
                         </div>
                       </li>
                     </ul>
