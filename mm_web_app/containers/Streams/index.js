@@ -59,16 +59,16 @@ function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
   )
 }
 
-function urlTopic (id, topics, onSelectTopic) {
+function urlTopic (id, topics, onSelectTopic, onShareTopic) {
   // TODO: click on name to filter by topic
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   _.forEach(currentTopics, (topic) => {
     items.push(
-      <div className='mix-tag-topic' key={guid()} onClick={() => { onSelectTopic(topic) }}>
+      <div className='mix-tag-topic' key={guid()}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
-          <span className='text-tag'>{topic.name}</span>
-          <span className='share-topic'>
+          <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
+          <span onClick={() => { onShareTopic(topic) }} className='share-topic'>
             <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
           </span>
         </span>
@@ -164,7 +164,7 @@ class Streams extends React.Component {
                   </div>
                 </div>
                 {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic))}
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => {})}
               </div>
             </div>
           </div>

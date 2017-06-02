@@ -2,6 +2,7 @@ import React from 'react'
 import { storiesOf, action } from '@storybook/react'
 import BlockElement from '../components/BlockElement'
 import DiscoveryButton from '../components/DiscoveryButton'
+import { GoogleShare, Toolbar, ShareOptions } from '../components/Share'
 import FilterSearch from '../components/FilterSearch'
 import Header from '../components/Header'
 import LogoIcon from '../components/LogoIcon'
@@ -19,6 +20,17 @@ storiesOf('Header', module)
 storiesOf('Footer', module)
   .add('default props', () => (
     <Footer />
+  ))
+
+storiesOf('Share', module)
+  .add('GoogleShare - empty contacts', () => (
+    <GoogleShare contacts={[]} mostRecentUses={[]} handleChange={action('handleChange')} />
+  ))
+  .add('Toolbar - active google share', () => (
+    <Toolbar active='Google' onChange={action('onChange')} onShare={action('onShare')} onSendMsg={action('onSendMsg')} />
+  ))
+  .add('ShareOptions - empty topics', () => (
+    <ShareOptions active='all' topics={[]} onChange={action('onChange')} />
   ))
 
 storiesOf('DiscoveryButton', module)
