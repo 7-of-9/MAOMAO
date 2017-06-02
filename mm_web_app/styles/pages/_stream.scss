@@ -337,7 +337,7 @@ img {
   padding-left: 13px;
   text-align: right;
   .mix-tag-topic {
-    .share-topic {
+    .share-topic-ex {
       @include opacity(0);
       @include border-radius(5px);
       @include transition(all 0.2s ease-in-out);
@@ -347,6 +347,7 @@ img {
       z-index: 100;
       width: 34px;
       height: 34px;
+      overflow: hidden;
       cursor: pointer;
       -webkit-animation: topic-flyin 0.5s;
       animation: topic-flyin 0.5s;
@@ -373,7 +374,7 @@ img {
     }
     &:hover,
     &:focus {
-      .share-topic {
+      .share-topic-ex {
         @include opacity(1);
         visibility: visible;
         display: block;

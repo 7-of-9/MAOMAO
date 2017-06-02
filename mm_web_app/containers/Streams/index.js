@@ -68,7 +68,7 @@ function urlTopic (id, topics, onSelectTopic, onShareTopic) {
       <div className='mix-tag-topic' key={guid()}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
-          <span onClick={() => { onShareTopic(topic) }} className='share-topic'>
+          <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
             <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
           </span>
         </span>
