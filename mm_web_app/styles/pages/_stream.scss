@@ -951,9 +951,8 @@ img {
   background: -o-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
   background: -ms-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
   background: linear-gradient(to bottom, #ffffff 0%, #f4f4f4 100%);
-  .Input__InputContainer-s178rcnj-1 {
+  > div {
     @include clearfix();
-    padding: 10px 15px;
     height: auto;
   }
   &,
@@ -961,9 +960,9 @@ img {
     height: auto;
   }
   .ReactTags__tags {
-    text-align: left;
     @include clearfix();
-    padding: 0;
+    padding: 10px 15px;
+    text-align: left;
   }
   .ReactTags__selected {
     span.ReactTags__tag {
