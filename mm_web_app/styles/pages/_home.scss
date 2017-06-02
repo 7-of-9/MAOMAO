@@ -192,7 +192,7 @@ the home page
 
 .share-line-left {
   &::after {
-    @include abs-pos ($top: 19px, $right: 60px, $bottom: auto, $left: auto);
+    @include abs-pos ($top: 19px, $right: 44px, $bottom: auto, $left: auto);
     content: '';
     width: 0;
     height: 0;
@@ -205,7 +205,7 @@ the home page
 
 .share-line-right {
   &::before {
-    @include abs-pos ($top: 19px, $right: auto, $bottom: auto, $left: 60px);
+    @include abs-pos ($top: 19px, $right: auto, $bottom: auto, $left: 44px);
     content: '';
     width: 0;
     height: 0;
@@ -332,9 +332,9 @@ the home page
     height: 3px;
     top: 25px;
     bottom: 0;
-    left: 5%;
-    right: 5%;
-    width: 90%;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
   .timeline-item {
     position: relative;
@@ -377,6 +377,17 @@ the home page
         font-weight: bold;
         line-height: 1rem;
       }
+      .user-info-share {
+        margin-right: 10px;
+        display: inline-block;
+        vertical-align: middle;
+        @media (max-width: 890px) {
+          font-size: 11px;
+        }
+        @media (max-width: 767px) {
+          margin: 0 0 5px;
+        }
+      }
     }
     .tags-topic {
       .tags {
@@ -393,10 +404,10 @@ the home page
       width: 25%;
       text-align: left;
       .timeline-badge {
-        margin-left: 14px;
+        /* margin-left: 14px;
         @media (max-width: 390px) {
           margin-left: 12px;
-        }
+        } */
       }
       @media (max-width: 590px) {
         width: 28%;
@@ -418,10 +429,10 @@ the home page
       width: 25%;
       text-align: right;
       .timeline-badge {
-        margin-right: 14px;
+        /* margin-right: 14px;
         @media (max-width: 390px) {
           margin-right: 12px;
-        }
+        } */
       }
       .timeline-panel {
         font-size: 0.8125rem;
@@ -468,48 +479,6 @@ the home page
     -webkit-animation: dog-pulse 1.5s ease-in-out infinite;
     animation: dog-pulse 1.5s ease-in-out infinite;
   }
-}
-
-.slideInLeft {
-  animation-name: slideInLeft;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-.slideInRight {
-  animation-name: slideInRight;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-.fadeInLeft {
-  animation-name: fadeInLeft;
-  animation-duration: 4s;
-  animation-fill-mode: both;
-}
-
-.fadeInRight {
-  animation-name: fadeInRight;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-.fadeOutLeft {
-  animation-name: fadeOutLeft;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-.slideOutLeft {
-  animation-name: slideOutLeft;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-.fadeOutRight {
-  animation-name: fadeOutRight;
-  animation-duration: 1s;
-  animation-fill-mode: both;
 }
 
 
@@ -581,77 +550,5 @@ the home page
   100% {
     -webkit-transform: scale(0.7, 0.7);
     transform: scale(0.7, 0.7);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translate3d(-100%, 0, 0);
-    visibility: visible;
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes slideOutLeft {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    visibility: hidden;
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translate3d(100%, 0, 0);
-    visibility: visible;
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translate3d(-100%, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translate3d(100%, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fadeOutLeft {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-
-@keyframes fadeOutRight {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-    transform: translate3d(100%, 0, 0);
   }
 }
