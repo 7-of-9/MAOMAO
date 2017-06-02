@@ -87,33 +87,6 @@ div.ReactTags__selected a.ReactTags__remove {
   cursor: pointer;
 }
 
-.maomao-enter {
-  opacity: 0.01;
-}
-
-.maomao-enter.maomao-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
-
-.maomao-leave {
-  opacity: 1;
-}
-
-.maomao-leave.maomao-leave-active {
-  opacity: 0.01;
-  transition: opacity 300ms ease-in;
-}
-
-.maomao-appear {
-  opacity: 0.01;
-}
-
-.maomao-appear.maomao-appear-active {
-  opacity: 1;
-  transition: opacity .5s ease-in;
-}
-
 .share-management,
 .streams {
   -webkit-transform-style: preserve-3d;

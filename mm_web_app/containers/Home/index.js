@@ -7,7 +7,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
-import { CSSTransitionGroup } from 'react-transition-group'
 import Head from 'next/head'
 import Router from 'next/router'
 import NoSSR from 'react-no-ssr'
@@ -144,18 +143,10 @@ class Home extends React.Component {
               install={this.inlineInstall}
             />
           </NoSSR>
-          <CSSTransitionGroup
-            transitionName='maomao'
-            transitionEnterTimeout={500}
-            transitionLeaveTimeout={300}
-            transitionAppear
-            transitionAppearTimeout={500}
-            >
-            {
+          {
               this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
               <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
-          </CSSTransitionGroup>
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
               <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
@@ -189,26 +180,19 @@ class Home extends React.Component {
           </NoSSR>
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
-            <CSSTransitionGroup
-              transitionName='maomao'
-              transitionEnterTimeout={500}
-              transitionLeaveTimeout={300}
-              transitionAppear
-              transitionAppearTimeout={500}
-              >
-              {
+            {
                 this.props.ui.showShareManager &&
                 <ShareList />
               }
-              {
+            {
                 this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
                 <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
               }
-              {
+            {
               urls.length > 0 && users.length > 0 && !this.props.ui.showShareManager && this.props.ui.discoveryTerms.length === 0 &&
               <Streams />
               }
-              {
+            {
               urls.length === 0 && !isProcessing &&
               <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
                 {
@@ -219,7 +203,6 @@ class Home extends React.Component {
                 </p>
               </Section>
               }
-            </CSSTransitionGroup>
           </div>
         </ToggleDisplay>
         <div className='footer-area'>
