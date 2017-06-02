@@ -75,7 +75,7 @@
   "standard": {
     "parser": "babel-eslint",
     "ignore": [
-      "/static/vendors",
+      "/static",
       "/html",
       "/build",
       "/.next",
@@ -89,7 +89,7 @@
     "start": "NODE_ENV=production node server.js",
     "lint": "standard",
     "deploy:azure": "npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -s . -p 6006",
     "build-storybook": "build-storybook"
   },
   "devDependencies": {

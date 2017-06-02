@@ -64,7 +64,7 @@ app.prepare().then(() => {
     if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
      pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
-     pathname.indexOf('.png') !== -1
+     pathname.indexOf('.png') !== -1 || pathname.indexOf('.css') !== -1 || pathname.indexOf('.scss') !== -1
     ) {
       return handle(req, res, parsedUrl)
     } else {
