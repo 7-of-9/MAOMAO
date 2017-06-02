@@ -6,6 +6,10 @@ the header section
 **************************************/
 
 .neal-navbar-wrapper {
+  @include opacity(1);
+  @include transition(all 1s ease);
+  @include transform(translate3d(0, 0, 0));
+  visibility: visible;
   position: relative;
   z-index: 99999;
   .header-nav {
@@ -557,6 +561,21 @@ the header section
       }
     }
   }
+}
+
+.sticky {
+  .neal-navbar-wrapper {
+    @include transform(translateY(-71px));
+    @include opacity(0);
+    visibility: hidden;
+  }
+  /* @media(max-width: 767px) {
+    .neal-navbar-wrapper {
+      @include opacity(1);
+      @include transform(none);
+      visibility: visible;
+    }
+  } */
 }
 
 .slideInDown {
