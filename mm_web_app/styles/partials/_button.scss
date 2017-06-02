@@ -670,7 +670,7 @@ a.btn-unfollow,
   @include border-radius(0 50% 50% 0);
   position: fixed;
   left: 0;
-  top: 150px;
+  top: 50%;
   margin-top: -42px;
   padding: 5px 20px 5px 11px;
   z-index: 5000;
@@ -678,6 +678,9 @@ a.btn-unfollow,
   font-size: 3rem;
   color: #fff;
   background: rgba(0, 0, 0, .65);
+  animation-name: fadeInLeft;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
   .fa {
     margin-top: 7px;
     vertical-align: top;

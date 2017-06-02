@@ -25,7 +25,6 @@ img {
   @include transition(all 0.5s);
   position: relative;
   z-index: 500;
-  margin: 30px 0 15px;
   clear: both;
   background: #fff;
   text-align: left;
@@ -935,26 +934,55 @@ img {
 /*-----search-bar-----*/
 
 .search-bar {
-  @include border-radius(5px);
-  padding: 15px 10px;
-  background: #efefef;
+  @include clearfix();
+  @include transition(all 0.5s);
+  @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+  position: relative;
+  z-index: 500;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  text-align: left;
+  border-bottom: 1px solid #e1e5eb;
+  background: -moz-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffffff), color-stop(100%, #f4f4f4));
+  background: -webkit-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
+  background: -o-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
+  background: -ms-linear-gradient(top, #ffffff 0%, #f4f4f4 100%);
+  background: linear-gradient(to bottom, #ffffff 0%, #f4f4f4 100%);
+  .Input__InputContainer-s178rcnj-1 {
+    @include clearfix();
+    padding: 10px 15px;
+    height: auto;
+  }
   &,
   .kYyjtp {
     height: auto;
   }
   .ReactTags__tags {
+    text-align: left;
+    @include clearfix();
     padding: 0;
   }
   .ReactTags__selected {
-    text-align: center;
     span.ReactTags__tag {
-      margin-bottom: 10px;
+      margin: 6px 5px;
+      padding: 3px 10px 5px;
       border: 0;
+      font-size: 0.875rem;
+      .ReactTags__remove {
+        font-size: 1.3rem;
+        font-weight: bold;
+        line-height: 1.3rem;
+        display: inline-block;
+        vertical-align: middle;
+      }
     }
   }
   .ReactTags__tagInput {
     vertical-align: middle;
     width: 250px;
+    float: left;
   }
   .ReactTags__tagInputField {
     @include border-radius(25px);

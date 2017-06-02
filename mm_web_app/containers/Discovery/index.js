@@ -180,7 +180,7 @@ class Discovery extends React.Component {
             <i className='fa fa-angle-left' aria-hidden='true' />
           </button>
         </div>
-        <StickyContainer className='container'>
+        <StickyContainer>
           <Sticky>
             {
               ({style}) => {

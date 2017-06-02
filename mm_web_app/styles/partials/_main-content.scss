@@ -16,8 +16,17 @@ body {
   position: relative;
   min-height: 750px;
   padding-bottom: 68px;
-  @media (min-width: 1800px) {
-    min-height: 917px;
+  @media (min-width: 1550px) {
+    min-height: 861px;
+  }
+  @media (min-width: 1650px) {
+    min-height: 887px;
+  }
+  @media (min-width: 1750px) {
+    min-height: 829px;
+  }
+  @media (min-width: 1850px) {
+    min-height: 950px;
   }
 }
 
