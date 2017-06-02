@@ -16,6 +16,21 @@ body {
   position: relative;
   min-height: 750px;
   padding-bottom: 68px;
+  @media (min-width: 320px) {
+    min-height: 568px;
+  }
+  @media (min-width: 350px) {
+    min-height: 640px;
+  }
+  @media (min-width: 400px) {
+    min-height: 736px;
+  }
+  @media (min-width: 650px) {
+    min-height: 800px;
+  }
+  @media (min-width: 750px) {
+    min-height: 1024px;
+  }
   @media (min-width: 1550px) {
     min-height: 861px;
   }

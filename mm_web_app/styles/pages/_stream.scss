@@ -1700,6 +1700,11 @@ a.btn-box-remove {
 
 .block-back {
   padding: 20px 15px;
+  h1 {
+    @media (max-width: 390px) {
+      font-size: 1.875rem;
+    }
+  }
 }
 
 
