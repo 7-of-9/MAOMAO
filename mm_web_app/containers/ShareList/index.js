@@ -98,7 +98,7 @@ class ShareList extends React.Component {
                             <span className='user-info-share'>{receiver.fullname}</span>
                             <a href='#' className='btn btn-related'>Unshare</a>
                           </div>
-                          
+
                         </div>
                       </li>
                     </ul>

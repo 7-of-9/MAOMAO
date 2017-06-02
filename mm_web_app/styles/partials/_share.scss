@@ -1,3 +1,15 @@
+$logo-img: url('./images/dog_blue.png');
+$close-btn-img: url('./images/close_button.png');
+$facebook-icons: './images/facebook_icon.svg';
+$google-icons: './images/googleplus_icon.svg';
+$signout-icons: './images/signout_icon.svg';
+$close-icons: './images/close_icon.svg';
+$content-icons: './images/icons-content.png';
+$share-icons: './images/icons-share.png';
+$success-icons: './images/icons-success.png';
+$logo-mao: './images/maomao.png';
+$lab-icons: url('./images/icons-lab.png');
+$search-icons: url('./images/icons-search.png');
 
 .share-steps {
   @include clearfix();
