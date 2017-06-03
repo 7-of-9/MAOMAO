@@ -236,6 +236,11 @@ the header section
               margin: 0;
             }
           }
+          .notifications-hiring {
+            @media (max-width: 767px) {
+              color: #222;
+            }
+          }
           &.active,
           &.show {
             > a {

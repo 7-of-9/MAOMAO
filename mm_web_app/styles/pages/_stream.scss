@@ -1563,6 +1563,10 @@ a.btn-box-remove {
         }
       }
     }
+    @media (max-width: 767px) {
+      width: 100%;
+      float: none;
+    }
   }
   &:first-child {
     @media (max-width: 850px) {
