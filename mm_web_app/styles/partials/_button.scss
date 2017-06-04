@@ -670,13 +670,12 @@ a.btn-unfollow,
   @include border-radius(0 50% 50% 0);
   position: fixed;
   left: 0;
-  top: 86px;
+  top: 65px;
   padding: 3px 10px 5px 3px;
   z-index: 9999;
   text-align: center;
   font-size: 2rem;
   color: #fff;
-  border: 1px solid #ccc;
   background: rgba(0, 0, 0, .65);
   animation-name: fadeInLeft;
   animation-duration: 1.5s;
@@ -691,7 +690,8 @@ a.btn-unfollow,
     background: rgba(0, 0, 0, .45);
   }
   @media (max-width: 490px) {
-    top: 79px;
+    border: 1px solid #ccc;
+    top: 59px;
   }
 }
 
