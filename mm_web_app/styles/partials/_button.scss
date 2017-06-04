@@ -670,7 +670,7 @@ a.btn-unfollow,
   @include border-radius(0 50% 50% 0);
   position: fixed;
   left: 0;
-  top: 65px;
+  top: 85px;
   padding: 3px 10px 5px 3px;
   z-index: 9999;
   text-align: center;
@@ -691,7 +691,7 @@ a.btn-unfollow,
   }
   @media (max-width: 490px) {
     border: 1px solid #ccc;
-    top: 59px;
+    top: 79px;
   }
 }
 
