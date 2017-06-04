@@ -11,7 +11,7 @@ the footer section
   width: 100%;
   min-height: 68px;
   footer.neal-footer {
-    margin-top: 1rem;
+    margin-top: 0;
     padding: 0.625rem 0;
     .neal-footer-copyright,
     address {
@@ -26,6 +26,7 @@ the footer section
       margin-top: 5px;
     }
     .neal-footer-social {
+      list-style: none;
       flex-direction: row;
       .neal-footer-social-icon {
         margin-left: 0.625rem;
