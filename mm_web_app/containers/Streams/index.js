@@ -190,7 +190,7 @@ class Streams extends React.Component {
                           </div>
                         </div>
                         <div className='switch-item'>
-                          <button className='btn btn-search navbar-toggler collapsed' type='button' data-toggle='collapse' data-target='#toolbar-search' aria-expanded='false'>
+                          <button className='btn btn-search navbar-toggler' type='button' data-toggle='collapse' data-target='#toolbar-search' aria-expanded='true'>
                             <i className='fa fa-search' />
                           </button>
                         </div>
@@ -200,7 +200,7 @@ class Streams extends React.Component {
                           </button>
                         </div>
                       </div>
-                      <div id='toolbar-search' className='widget-form collapse' aria-expanded='false'>
+                      <div id='toolbar-search' className='widget-form collapse' aria-expanded='true'>
                         <div className='checkbox__styled'>
                           <input onChange={() => this.props.ui.toggleOnlyMe(userId, users)} type='checkbox' className='checkbox__styled__input' id='checkbox-only-me' name='only-me' value={userId} checked={this.props.ui.onlyMe} />
                           <label className='checkbox__styled__label' htmlFor='checkbox-only-me'>Only me</label>

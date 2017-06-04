@@ -39,7 +39,7 @@ class ShareList extends React.Component {
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
         <div className='share-management bounceInLeft animated'>
-          
+
           <div className='block-back'>
             <h1> Share Management </h1>
           </div>

@@ -125,9 +125,9 @@ class Home extends React.Component {
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-          <script src='static/js/sticky.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
+          <script src='/static/js/sticky.js' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
