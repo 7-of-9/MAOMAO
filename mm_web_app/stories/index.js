@@ -3,7 +3,6 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import BlockElement from '../components/BlockElement'
 import DiscoveryButton from '../components/DiscoveryButton'
-import { GoogleShare, Toolbar, ShareOptions } from '../components/Share'
 import ShareTopic from '../components/ShareTopic'
 import FilterSearch from '../components/FilterSearch'
 import Header from '../components/Header'
@@ -41,17 +40,6 @@ storiesOf('ShareTopic', module)
       notify={action('notify')}
       closeShare={action('closeShare')}
       />
-  ))
-
-storiesOf('Share', module)
-  .add('GoogleShare - empty contacts', () => (
-    <GoogleShare contacts={[]} mostRecentUses={[]} handleChange={action('handleChange')} />
-  ))
-  .add('Toolbar - active google share', () => (
-    <Toolbar active='Google' onChange={action('onChange')} onShare={action('onShare')} onSendMsg={action('onSendMsg')} />
-  ))
-  .add('ShareOptions - empty topics', () => (
-    <ShareOptions active='all' topics={[]} onChange={action('onChange')} />
   ))
 
 storiesOf('DiscoveryButton', module)
