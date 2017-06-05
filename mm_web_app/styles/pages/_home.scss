@@ -220,7 +220,7 @@ the home page
   border: 0;
   .card-header {
     @include clearfix();
-    padding: 0.625rem 0.9375rem;
+    padding: 0.625rem 1.5rem;
     a {
       &,
       &:hover,
@@ -229,7 +229,15 @@ the home page
       }
       .share-name {
         min-width: 110px;
+        max-width: 125px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: inline-block;
         text-align: left;
+        @media (max-width: 390px) {
+          max-width: 115px;
+        }
       }
       &.collapsed {
         .share-name {
@@ -242,11 +250,23 @@ the home page
     .mix-detail {
       float: left;
     }
+    .collapse-title {
+      width: 180px;
+      @media (max-width: 390px) {
+        width: 170px;
+      }
+    }
+    .line-card {
+      margin-left: 180px;
+      @media (max-width: 390px) {
+        margin-left: 170px;
+      }
+    }
     .line-direct {
       position: relative;
-      margin: 19px 0 10px 10px;
+      margin: 19px 0 10px;
       height: 3px;
-      min-width: 200px;
+      width: 100%;
       background-color: #2db7f5;
       &.share-line-left {
         &::after {
@@ -268,8 +288,10 @@ the home page
       }
     }
     .mix-detail {
-      margin-left: 10px;
+      padding-left: 14px;
       height: 40px;
+      float: right;
+      width: 90px;
       .three-dots {
         margin-top: 3px;
         font-size: 1.2rem;
@@ -283,14 +305,40 @@ the home page
           font-size: 0.875rem;
         }
       }
+      @media (max-width: 390px) {
+        padding-left: 7px;
+        width: 75px;
+      }
+    }
+    .card-header-cnt {
+      @include clearfix();
+      width: 100%;
+      float: left;
+      margin-right: -90px;
+      .card-header-inner {
+        @include clearfix();
+        margin-right: 90px;
+      }
+      @media (max-width: 390px) {
+        margin-right: -75px;
+      }
+    }
+    @media (max-width: 767px) {
+      padding: 0.625rem 0.9375rem;
     }
   }
   .card-block {
-    padding: 10px 15px;
+    padding: 10px 68px;
+    @media (max-width: 767px) {
+      padding: 10px 15px;
+    }
   }
   &:last-child {
     .card-header {
       border-bottom: 0;
+      @media (max-width: 590px) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+      }
     }
   }
 }
@@ -449,7 +497,7 @@ the home page
       }
     }
   }
-  @media (max-width: 690px) {
+  @media (max-width: 1050px) {
     min-width: inherit;
   }
 }

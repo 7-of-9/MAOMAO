@@ -45,21 +45,27 @@ class ShareList extends React.Component {
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
               <div className='card-header' role='tab' id={`heading${userId}`}>
-                <a className='collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
-                  <span className='directional-user'>
-                    <span className='share-image'>
+                <div className='card-header-cnt'>
+                  <div className='card-header-inner'>
+                    <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
+                      <span className='directional-user'>
+                        <span className='share-image'>
                       <amp-img layout='fixed' className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
-                    </span>
-                    <span className='share-name'> Your sharing</span>
-                  </span>
-                </a>
-                <div className='line-direct share-line-left' />
+                        </span>
+                        <span className='share-name'> Your sharing</span>
+                      </span>
+                    </a>
+                    <div className='line-card'>
+                      <div className='line-direct share-line-left' />
+                    </div>
+                  </div>
+                </div>
                 <div className='mix-detail'>
                   <span className='three-dots'>...</span>
                 </div>
               </div>
               {/* Your sharing */}
-              <div id={`collapse${userId}`} className='collapse show' role='tabpanel' aria-labelledby={`heading${userId}`}>
+              <div id={`collapse${userId}`} className='collapse' role='tabpanel' aria-labelledby={`heading${userId}`}>
                 <div className='card-block'>
                   {accept_shares.map(receiver => (
                       (receiver.share_all || receiver.topic_id) &&
@@ -110,15 +116,21 @@ class ShareList extends React.Component {
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
                 <div className='card-header' role='tab' id={`heading${friend.user_id}`}>
-                  <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
-                    <span className='directional-user'>
-                      <span className='share-image'>
+                  <div className='card-header-cnt'>
+                    <div className='card-header-inner'>
+                      <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
+                        <span className='directional-user'>
+                          <span className='share-image'>
                         <amp-img layout='fixed' className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
-                      </span>
-                      <span className='share-name'> {friend.fullname} </span>
-                    </span>
-                  </a>
-                  <div className='line-direct share-line-left' />
+                          </span>
+                          <span className='share-name'> {friend.fullname} </span>
+                        </span>
+                      </a>
+                      <div className='line-card'>
+                        <div className='line-direct share-line-left' />
+                      </div>
+                    </div>
+                  </div>
                   <div className='mix-detail'>
                     <span className='topic-value'>({friend.list.filter(item => shareLists[item].type === 'topic').length} topics)</span>
                   </div>
