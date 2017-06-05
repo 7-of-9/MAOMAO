@@ -10,7 +10,6 @@ import { observer, inject } from 'mobx-react'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Router from 'next/router'
-import NoSSR from 'react-no-ssr'
 import { NotificationStack } from 'react-notification'
 import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
@@ -167,13 +166,11 @@ class Home extends React.Component {
           onDismiss={(notification) => this.props.ui.removeNotification(notification)}
         />
         <ToggleDisplay if={!isLogin}>
-          <NoSSR onSSR={<Loading isLoading />}>
-            <ChromeInstall
-              description={description}
-              title='Unlock YOUR FRIEND STREAM Now'
-              install={this.inlineInstall}
+          <ChromeInstall
+            description={description}
+            title='Unlock YOUR FRIEND STREAM Now'
+            install={this.inlineInstall}
             />
-          </NoSSR>
           {
               this.props.ui.currentViewer === 'discovery' &&
               <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
@@ -202,13 +199,11 @@ class Home extends React.Component {
           </Section>
         </ToggleDisplay>
         <ToggleDisplay if={isLogin}>
-          <NoSSR onSSR={<Loading isLoading />}>
-            <ChromeInstall
-              description={description}
-              title='Unlock YOUR FRIEND STREAM Now'
-              install={this.inlineInstall}
+          <ChromeInstall
+            description={description}
+            title='Unlock YOUR FRIEND STREAM Now'
+            install={this.inlineInstall}
             />
-          </NoSSR>
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             {
