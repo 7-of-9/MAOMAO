@@ -31,21 +31,21 @@ class Share extends React.Component {
           <div className='block-back'>
             <h1> Share your streams with friend </h1>
           </div>
+          <ShareTopic
+            type='Google'
+            shareOption='all'
+            currentStep={1}
+            topics={[]}
+            terms={[]}
+            code=''
+            sendEmail={() => {}}
+            changeShareType={() => {}}
+            accessGoogleContacts={() => {}}
+            contacts={[]}
+            notify={() => {}}
+            closeShare={() => {}}
+          />
         </div>
-        <ShareTopic
-          type='Google'
-          shareOption='all'
-          currentStep={1}
-          topics={[]}
-          terms={[]}
-          code=''
-          sendEmail={() => {}}
-          changeShareType={() => {}}
-          accessGoogleContacts={() => {}}
-          contacts={[]}
-          notify={() => {}}
-          closeShare={() => {}}
-        />
       </div>
     )
   }

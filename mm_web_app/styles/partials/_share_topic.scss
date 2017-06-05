@@ -1,15 +1,15 @@
-$logo-img: url('./images/dog_blue.png');
-$close-btn-img: url('./images/close_button.png');
-$facebook-icons: './images/facebook_icon.svg';
-$google-icons: './images/googleplus_icon.svg';
-$signout-icons: './images/signout_icon.svg';
-$close-icons: './images/close_icon.svg';
-$content-icons: './images/icons-content.png';
-$share-icons: './images/icons-share.png';
-$success-icons: './images/icons-success.png';
-$logo-mao: './images/maomao.png';
-$lab-icons: url('./images/icons-lab.png');
-$search-icons: url('./images/icons-search.png');
+$logo-img: url('./static/images/dog_blue.png');
+$close-btn-img: url('./static/images/close_button.png');
+$facebook-icons: './static/images/facebook_icon.svg';
+$google-icons: './static/images/googleplus_icon.svg';
+$signout-icons: './static/images/signout_icon.svg';
+$close-icons: './static/images/close_icon.svg';
+$content-icons: './static/images/icons-content.png';
+$share-icons: './static/images/icons-share.png';
+$success-icons: './static/images/icons-success.png';
+$logo-mao: './static/images/maomao.png';
+$lab-icons: url('./static/images/icons-lab.png');
+$search-icons: url('./static/images/icons-search.png');
 
 .share-steps {
   @include clearfix();
