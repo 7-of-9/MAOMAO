@@ -83,9 +83,11 @@ function BlockElement ({url, image, name, description, type}) {
           </div>
         </Anchor>
         <div className='caption'>
-          <Anchor href={url} target='_blank'>
-            {name && <Title className='caption-title'>{name}</Title>}
-          </Anchor>
+          <Title className='caption-title'>
+            <Anchor href={url} target='_blank'>
+              {name && <span>{name}</span>}
+            </Anchor>
+          </Title>
           {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
           <div className='panel-user panel-credit'>
             <div className='panel-user-img'>
