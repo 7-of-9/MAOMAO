@@ -29,7 +29,7 @@ class Share extends React.Component {
         </button>
         <div className='share-management bounceInLeft animated'>
           <div className='block-back'>
-            <h1> Share Topic </h1>
+            <h1> Share your streams with friend </h1>
           </div>
         </div>
         <ShareTopic

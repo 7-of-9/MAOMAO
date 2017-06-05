@@ -82,7 +82,7 @@ class ChromeInstall extends React.Component {
     let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
-        {isLogin && browserName.length > 0 && isChrome && !isInstall &&
+        {isLogin && !isMobile && browserName.length > 0 && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}

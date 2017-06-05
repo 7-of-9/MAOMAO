@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Router from 'next/router'
 import NoSSR from 'react-no-ssr'
@@ -16,13 +17,41 @@ import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
-import Discovery from '../Discovery'
-import Share from '../Share'
-import ShareList from '../ShareList'
-import Streams from '../Streams'
-import ChromeInstall from '../ChromeInstall'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
+
+// dynaymic load container component
+const Discovery = dynamic(
+  import('../Discovery'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const Share = dynamic(
+  import('../Share'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+const ShareList = dynamic(
+  import('../ShareList'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+const Streams = dynamic(
+  import('../Streams'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+const ChromeInstall = dynamic(
+  import('../ChromeInstall'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
