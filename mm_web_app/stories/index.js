@@ -26,7 +26,6 @@ storiesOf('Footer', module)
 storiesOf('ShareTopic', module)
   .add('default props', () => (
     <ShareTopic
-      enable
       type='Google'
       shareOption='all'
       currentStep={1}

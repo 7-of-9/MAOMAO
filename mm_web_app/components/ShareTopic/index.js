@@ -13,18 +13,8 @@ const SITE_URL = 'https://maomaoweb.azurewebsites.net'
 const FB_APP_ID = '386694335037120'
 const style = {
   container: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    margin: '-290px 0 0 -400px',
-    zIndex: 9999999999,
-    width: '800px',
     backgroundColor: '#fff',
     border: '1px solid rgb(204, 204, 204)',
-    boxShadow: 'rgba(0, 0, 0, 0.2) 0px 10px 30px, rgba(0, 0, 0, 0.3) 0px 6px 10px',
-    WebkitOverflowScrolling: 'touch',
-    borderRadius: '7px',
-    outline: 'none',
     padding: '20px',
     textAlign: 'center',
     animation: 'vex-flyin 0.5s'
@@ -105,10 +95,10 @@ const enhance = compose(
 )
 
 function ShareTopic ({
-  enable, type, topics, contacts, code, shareOption, currentStep,
+  type, topics, contacts, code, shareOption, currentStep,
   handleChange, shareUrl, sendMsgUrl, changeShareType,
   sendEmails, closeShare, accessGoogleContacts }) {
-  logger.info('ShareTopic enable, type, topics, contacts, code, shareOption, currentStep', enable, type, topics, contacts, code, shareOption, currentStep)
+  logger.info('ShareTopic type, topics, contacts, code, shareOption, currentStep', type, topics, contacts, code, shareOption, currentStep)
   const steps = [
     { title: 'Select your content', description: 'Share this page or topics with your friends.' },
     { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
@@ -122,7 +112,7 @@ function ShareTopic ({
     />
   ))
   let component = null
-  if (enable && type.indexOf('Facebook') === -1) {
+  if (type.indexOf('Facebook') === -1) {
     component = (
       <div style={style.container}>
         <a href='http://maomao.rocks' target='_blank' rel='noopener noreferrer'>
@@ -182,7 +172,6 @@ function ShareTopic ({
 }
 
 ShareTopic.propTypes = {
-  enable: PropTypes.bool.isRequired,
   type: PropTypes.string.isRequired,
   shareOption: PropTypes.string.isRequired,
   code: PropTypes.string.isRequired,

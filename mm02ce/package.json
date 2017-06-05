@@ -71,7 +71,7 @@
     "validate.js": "^0.11.1"
   },
   "devDependencies": {
-    "@storybook/react": "3.0.0",
+    "@storybook/react": "^3.0.1",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.0.20",
     "babel-eslint": "^7.2.3",

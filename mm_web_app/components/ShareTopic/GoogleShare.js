@@ -6,7 +6,6 @@ import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose'
-import noImage from './images/no-image.png'
 import Contact from './Contact'
 import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
@@ -51,7 +50,7 @@ function renderSuggestion (suggestion, { query }) {
     <span className='suggestion-content'>
       <span className='photo'>
         <img
-          onError={(ev) => { ev.target.src = noImage }}
+          onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
           src={suggestion.image}
           alt={suggestion.name || suggestion.email}
           height='40'

@@ -6,6 +6,7 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
+import ShareTopic from '../../components/ShareTopic'
 import logger from '../../utils/logger'
 
 @inject('store')
@@ -31,6 +32,20 @@ class Share extends React.Component {
             <h1> Share Topic </h1>
           </div>
         </div>
+        <ShareTopic
+          type='Google'
+          shareOption='all'
+          currentStep={1}
+          topics={[]}
+          terms={[]}
+          code=''
+          sendEmail={() => {}}
+          changeShareType={() => {}}
+          accessGoogleContacts={() => {}}
+          contacts={[]}
+          notify={() => {}}
+          closeShare={() => {}}
+        />
       </div>
     )
   }

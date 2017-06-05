@@ -2,8 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, onlyUpdateForKeys } from 'recompose'
 import styled from 'styled-components'
-import noImage from './images/no-image.png'
-import removeIcon from './images/minus.png'
 
 const Wrapper = styled.div`
   height: 40px;
@@ -48,7 +46,7 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
   <Wrapper onClick={onClick} className='share-contact'>
     <Image className='share-contact-img'>
       <img
-        onError={(ev) => { ev.target.src = noImage }}
+        onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
         src={image}
         alt={name || email}
         height='40'
@@ -61,7 +59,7 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
       }
       <Item>{email}</Item>
       {
-        isEdit && <Remove className='account-remove' onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt='Remove' /></Remove>
+        isEdit && <Remove className='account-remove' onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src='/static/images/minus.png' alt='Remove' /></Remove>
       }
     </Info>
   </Wrapper>
