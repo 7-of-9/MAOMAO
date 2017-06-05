@@ -146,7 +146,6 @@ class Discovery extends React.Component {
     super(props)
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
-    this.onSearch = this.onSearch.bind(this)
   }
 
   componentDidMount () {
@@ -157,53 +156,53 @@ class Discovery extends React.Component {
   }
 
   loadMore () {
+    logger.warn('loadMore')
     this.props.discovery.loadMore()
   }
 
   onChange (terms) {
+    logger.warn('onChange terms', terms)
     this.props.discovery.changeTerms(terms)
-  }
-
-  onSearch (evt) {
-    if (evt !== undefined && evt.preventDefault) {
-      evt.preventDefault()
-    }
-    this.props.discovery.loadMore()
   }
 
   render () {
     logger.warn('Discovery render', this.props)
     return (
-      <div className='bounceInLeft animated'>
+      <div>
         <div className='back'>
           <button className='btn btn-back' onClick={this.props.onGoBack}>
             <i className='fa fa-angle-left' aria-hidden='true' />
           </button>
         </div>
-        <StickyContainer>
-          <Sticky>
-            {
+        <div className='bounceInLeft animated'>
+          <div className='block-back'>
+            <h1> Discovery mode </h1>
+          </div>
+          <StickyContainer>
+            <Sticky>
+              {
               ({style}) => {
                 return (
                   <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}}>
-                    <SearchBar terms={this.props.terms} onChange={this.onChange} onSearch={this.onSearch} />
+                    <SearchBar terms={this.props.terms} onChange={this.onChange} />
                   </div>
                 )
               }
             }
-          </Sticky>
-          <InfiniteScroll
-            pageStart={0}
-            loadMore={this.loadMore}
-            hasMore={this.props.discovery.hasMore}
-            className='container-fluid'
+            </Sticky>
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={this.loadMore}
+              hasMore={this.props.discovery.hasMore}
+              className='container-fluid'
               >
-            <Masonry className='container-masonry' options={masonryOptions}>
-              <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
-            </Masonry>
-            <Loading isLoading={this.props.discovery.pendings.length > 0} />
-          </InfiniteScroll>
-        </StickyContainer>
+              <Masonry className='container-masonry' options={masonryOptions}>
+                <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
+              </Masonry>
+              <Loading isLoading={this.props.discovery.pendings.length > 0} />
+            </InfiniteScroll>
+          </StickyContainer>
+        </div>
       </div>
     )
   }

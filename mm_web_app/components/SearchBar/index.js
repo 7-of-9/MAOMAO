@@ -7,41 +7,57 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
-import { WithContext as ReactTags } from 'react-tag-input'
+import DebounceInput from 'react-debounce-input'
 import Form from './Form'
-import { InputWrapper, InputContainer } from './Input'
-// import A from './A'
+import { guid } from '../../utils/hash'
+import logger from '../../utils/logger'
 
-// const TEST_SET_1 = ['Classical music', 'Musical', 'Musical compositions', 'Musical history', '1840s', 'Arts']
-// const TEST_SET_2 = ['Hanna-Barbera', 'Warner Bros', 'Cartoon Network', 'Rivalry', 'Anthropomorphism']
-// const TEST_SET_3 = ['Chess', 'Traditional games', 'Games', 'Board games', 'Game theory']
-// const TEST_SET_4 = ['Human sexuality', 'Auctions', 'Human reproduction', 'Sex', 'Human behavior']
+const MAX_COLORS = 12
 
-const SearchBar = ({ tags, onSearch, changeTags, handleDelete, handleAddition }) => (
-  <Form onSubmit={onSearch}>
-    {/* <div className='stream-list'>
-      <A className='stream-item' onClick={() => { changeTags(TEST_SET_1) }} > <span>Test Set 1</span> </A> |
-        <A className='stream-item' onClick={() => { changeTags(TEST_SET_2) }} > <span>Test Set 2</span> </A> |
-        <A className='stream-item' onClick={() => { changeTags(TEST_SET_3) }} > <span>Test Set 3</span> </A> |
-        <A className='stream-item' onClick={() => { changeTags(TEST_SET_4) }} > <span>Test Set 4</span> </A> |
-      </div>
-      */}
-    <InputWrapper className='search-bar'>
-      <InputContainer>
-        <ReactTags
-          className='form-control'
-          tags={tags}
-          handleDelete={handleDelete}
-          handleAddition={handleAddition}
-          placeholder='Search:'
-          />
-      </InputContainer>
-    </InputWrapper>
-  </Form>
+const SearchBar = ({ tags, value, onInput, onSearch, handleDelete }) => {
+  logger.warn('SearchBar tags', tags)
+  const inputProps = {
+    placeholder: 'Search...',
+    value,
+    onChange: onInput
+  }
+  return (
+    <Form onSubmit={onSearch}>
+      <nav className='navbar'>
+        <div className='nav navbar-nav' >
+          <div id='toolbar-search' className='widget-form'>
+            <div className='input-group'>
+              <div className='input-group-suggest'>
+                <DebounceInput
+                  className='search-box-list'
+                  minLength={2}
+                  debounceTimeout={200}
+                  {...inputProps}
+                />
+                <div className='search-box-drop'>
+                  <ul className='search-box-list'>
+                    {
+                      tags.map((item, index) => (
+                        <li className={`tags-color-${(index % MAX_COLORS) + 1}`} key={guid()}>
+                          <span className='text-topic'>{item}</span>
+                          <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
+                            <i className='fa fa-remove' aria-hidden='true' />
+                          </a>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </Form>
   )
+}
 
 SearchBar.propTypes = {
-  onSearch: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   terms: PropTypes.array.isRequired,
   handleDelete: PropTypes.func,
@@ -51,39 +67,29 @@ SearchBar.propTypes = {
 
 const enhance = compose(
   withState('tags', 'updateTags', []),
+  withState('value', 'changeValue', ''),
   withHandlers({
+    onInput: (props) => (event) => {
+      logger.warn('onInput', event)
+      props.changeValue(event.target.value)
+    },
+    onSearch: (props) => (event) => {
+      logger.warn('onSearch', event)
+      const tag = props.value
+      props.tags.push(tag)
+      props.updateTags(props.tags)
+      props.onChange(props.tags)
+      props.changeValue('')
+    },
     changeTags: (props) => (newTags) => {
-      props.updateTags(() => {
-        const tags = []
-        for (let counter = 0; counter < newTags.length; counter += 1) {
-          tags.push({
-            id: counter + 1,
-            text: newTags[counter]
-          })
-        }
-        const selectedTags = tags.map((item) => item.text)
-        props.onChange(selectedTags)
-        return tags
-      })
+      logger.warn('changeTags', newTags)
+      props.updateTags(newTags)
     },
     handleDelete: (props) => (index) => {
-      props.updateTags((tags) => {
-        tags.splice(index, 1)
-        const selectedTags = tags.map((item) => item.text)
-        props.onChange(selectedTags)
-        return tags
-      })
-    },
-    handleAddition: (props) => (tag) => {
-      props.updateTags((tags) => {
-        tags.push({
-          id: tags.length + 1,
-          text: tag
-        })
-        const selectedTags = tags.map((item) => item.text)
-        props.onChange(selectedTags)
-        return tags
-      })
+      logger.warn('handleDelete', index, props.tags)
+      const tags = props.tags.splice(index, 1)
+      props.onChange(tags)
+      props.updateTags(tags)
     }
   }),
   lifecycle({
