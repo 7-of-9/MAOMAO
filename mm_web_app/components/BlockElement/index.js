@@ -77,15 +77,16 @@ function BlockElement ({url, image, name, description, type}) {
   return (
     <Wrapper className='thumbnail-box'>
       <div className='thumbnail'>
-        <div className='thumbnail-image'>
-          <Anchor href={url} target='_blank'>
+        <Anchor href={url} target='_blank'>
+          <div className='thumbnail-image'>
             <Image src={image} alt={name} />
-          </Anchor>
-        </div>
+          </div>
+        </Anchor>
         <div className='caption'>
-          {name && <Title className='caption-title'>{name}</Title>}
+          <Anchor href={url} target='_blank'>
+            {name && <Title className='caption-title'>{name}</Title>}
+          </Anchor>
           {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-
           <div className='panel-user panel-credit'>
             <div className='panel-user-img'>
               <span className='credit-user'>
