@@ -52,13 +52,6 @@ const Description = styled.p`
   text-align: left;
 `
 
-const Source = styled.span`
-  font-size: 12px;
-  margin: 0;
-  padding: 0 8px 3px;
-  text-align: left;
-`
-
 const Icon = styled.img`
   float: left;
   width: 32px;
@@ -92,14 +85,14 @@ function BlockElement ({url, image, name, description, type}) {
         <div className='caption'>
           {name && <Title className='caption-title'>{name}</Title>}
           {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-         
+
           <div className='panel-user panel-credit'>
             <div className='panel-user-img'>
               <span className='credit-user'>
-              <Icon src={iconType(type)} />
-              <span className='panel-user-cnt'>
-                <span className='full-name'>{type}</span>
-              </span>
+                <Icon src={iconType(type)} />
+                <span className='panel-user-cnt'>
+                  <span className='full-name'>{type}</span>
+                </span>
               </span>
             </div>
           </div>

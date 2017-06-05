@@ -17,6 +17,7 @@ import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
 import Discovery from '../Discovery'
+import Share from '../Share'
 import ShareList from '../ShareList'
 import Streams from '../Streams'
 import ChromeInstall from '../ChromeInstall'
@@ -184,6 +185,10 @@ class Home extends React.Component {
             {
                 this.props.ui.currentViewer === 'share' &&
                 <ShareList />
+              }
+            {
+                this.props.ui.currentViewer === 'sharetopic' &&
+                <Share />
               }
             {
                 this.props.ui.currentViewer === 'discovery' &&

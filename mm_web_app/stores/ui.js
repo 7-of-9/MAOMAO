@@ -38,11 +38,16 @@ export class UIStore {
     }
   }
 
+  @action openShareTopic (topic) {
+    logger.warn('share topic', topic)
+    this.currentViewer = 'sharetopic'
+  }
+
   @action displayShareManagement () {
     this.currentViewer = 'share'
   }
 
-  @action closeShareManagement () {
+  @action backToStreams () {
     this.currentViewer = 'streams'
   }
 

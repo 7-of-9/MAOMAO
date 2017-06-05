@@ -164,7 +164,7 @@ class Streams extends React.Component {
                   </div>
                 </div>
                 {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => {})}
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => this.props.ui.openShareTopic(topic))}
               </div>
             </div>
           </div>

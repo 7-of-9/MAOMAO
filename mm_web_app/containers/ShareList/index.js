@@ -35,7 +35,7 @@ class ShareList extends React.Component {
     logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
     return (
       <div>
-        <button className='btn btn-back' onClick={() => { this.props.ui.closeShareManagement() }}>
+        <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
         <div className='share-management bounceInLeft animated'>
