@@ -32,7 +32,14 @@ Router.onRouteChangeError = () => NProgress.done()
 const brandName = 'maomao'
 const businessAddress = (
   <address>
-    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
+    <amp-img
+      layout='fixed'
+      width='165'
+      height='24'
+      src='/static/images/maomao.png'
+      className='logo-image'
+      alt='maomao'
+      />
   </address>
 )
 
@@ -120,15 +127,6 @@ class Home extends React.Component {
           <meta name='og:description' content={description} />
           <meta name='og:image' content={bgImage && bgImage.length > 0 ? bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
-          <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
-          <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-          <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
-          <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-          <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-          <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
-          <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-          <script src='/static/js/sticky.js' />
-          <script src='/static/vendors/js/snoowrap-v1.min.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
@@ -150,12 +148,12 @@ class Home extends React.Component {
             }
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
-              <h3 className='lead'>What is <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
-              <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
-              <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> social graph.</p>
-              <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
+              <h3 className='lead'>What is <amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' />?</h3>
+              <p><amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is a solution for friends to automatically share content with each other on a specific topic of shared interest.</p>
+              <p>For example, I might share <strong>US Politics</strong> and <strong>Global Tech > Startups</strong> with one work colleague, <strong>Software > Agile</strong> and <strong>Music > Kpop</strong> with a different work colleague; <strong>Medical Music > Classical Music</strong> with an elderly parent. The permutations are uniquely personalised between peers in the <amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> social graph.</p>
+              <p><amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> overcomes distance and communication barriers: it amplifies enjoyment and consumption of high quality web content, using AI to let friends rediscover and enjoy content from each other in real time, no matter where they are and <strong>without any effort or input</strong> from each other.</p>
               <p>It’s a radical reimagining of what sharing can be, always in the complete control of users: it’s safe, automatic and intelligent, highlighting only the best and most relevant content to friends.</p>
-              <p>Because <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
+              <p>Because <amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> learns intimately each user’s unique preferences and likes, it also surfaces new and contextually related parts of the internet for users. It’s like a smart, <strong>personalised and proactive search engine.</strong></p>
             </div>
             <div className='section-item'>
               <h3 className='lead'>How does it work?</h3>
@@ -167,7 +165,7 @@ class Home extends React.Component {
             </div>
             <div className='section-item'>
               <h3 className='lead'>Who are we?</h3>
-              <p><img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
+              <p><amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> is founded by a lifelong technologist with twenty years experience: from global tech and finance giants through to most recently an fin-tech startup that attracted several rounds of tier-one Silicon Valley VC investment. Our distributed development team is in APAC region.</p>
             </div>
           </Section>
         </ToggleDisplay>
@@ -197,7 +195,7 @@ class Home extends React.Component {
               urls.length === 0 && !isProcessing &&
               <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
                 {
-                  isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
+                  isInstall && <h3>Congratulations for installing <amp-img width='165' height='24' layout='fixed' src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
                 }
                 <p>
                   Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.

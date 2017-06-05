@@ -25,7 +25,12 @@ const brand = <Header><LogoIcon /><Slogan /></Header>
 
 const businessAddress = (
   <address>
-    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
+    <amp-img
+      layout='fixed'
+      src='/static/images/maomao.png'
+      className='logo-image'
+      alt='maomao'
+      />
   </address>
 )
 
@@ -38,18 +43,12 @@ export default class Hiring extends React.PureComponent {
           <Head>
             <title>Maomao is coming, and we're hiring...</title>
             <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
-            <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-            <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
-            <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-            <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-            <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
-            <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
           </Head>
           <Navbar className='header-nav animated fadeInDown' brand={brand}>
             <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
           </Navbar>
           <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
-            <img src='/static/images/logo.png' alt='logo' />
+            <amp-img layout='fixed' src='/static/images/logo.png' alt='logo' />
             <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
               <b>maomao</b> is coming, and we're hiring...<br />
             </div>

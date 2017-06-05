@@ -47,12 +47,13 @@ const Remove = styled.a`
 const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
   <Wrapper onClick={onClick} className='share-contact'>
     <Image className='share-contact-img'>
-      <img
+      <amp-img
         onError={(ev) => { ev.target.src = noImage }}
         src={image}
         alt={name || email}
         height='40'
         width='40'
+        layout='fixed'
       />
     </Image>
     <Info className='share-info'>
@@ -61,7 +62,7 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
       }
       <Item>{email}</Item>
       {
-        isEdit && <Remove className='account-remove' onClick={onRemove} ><img style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt='Remove' /></Remove>
+        isEdit && <Remove className='account-remove' onClick={onRemove} ><amp-img layout='fixed' style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt='Remove' /></Remove>
       }
     </Info>
   </Wrapper>

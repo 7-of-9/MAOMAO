@@ -170,7 +170,14 @@ class AppHeader extends React.Component {
           {isLogin &&
             <div className='dropdown account-dropdown'>
               <a className='dropdown-toggle' data-toggle='dropdown'>
-                <img className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
+                <amp-img
+                  layout='fixed'
+                  className='image-account'
+                  src={avatar(user)}
+                  alt={userId}
+                  width='33'
+                  height='33'
+                  />
               </a>
               <a className='link-logout-res' onClick={this.onLogout}>
                 <i className='fa fa-sign-out' />

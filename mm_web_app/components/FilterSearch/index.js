@@ -85,7 +85,7 @@ const renderSuggestion = (suggestion) => {
     /* user html */
   return (
     <div className='search-media'>
-      <div className='search-media-left'><img src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
+      <div className='search-media-left'><amp-img layout='fixed' src={suggestion.avatar} className='img-object' alt='' width='40' height='40' /></div>
       <div className='search-media-body'><span className='full-name'>{suggestion.fullname}</span></div>
     </div>
   )
@@ -169,7 +169,7 @@ const FilterSearch = enhance(({
                   <li key={guid()} className='search-item tags-color-1'>
                     <div className='search-media'>
                       <div className='search-media-left'>
-                        <img src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
+                        <amp-img layout='fixed' src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
                       </div>
                       <div className='search-media-body'>
                         <span className='full-name'>{item.label}</span>

@@ -50,7 +50,7 @@ function renderSuggestion (suggestion, { query }) {
   return (
     <span className='suggestion-content'>
       <span className='photo'>
-        <img
+        <amp-img
           onError={(ev) => { ev.target.src = noImage }}
           src={suggestion.image}
           alt={suggestion.name || suggestion.email}
