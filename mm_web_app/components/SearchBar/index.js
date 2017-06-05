@@ -26,15 +26,17 @@ const enhance = compose(
       if (event !== undefined && event.preventDefault) {
         event.preventDefault()
       }
-      props.changeValue('')
       const tag = props.value
       props.terms.push(tag)
+      props.changeValue('')
       props.onChange(props.terms)
     },
     handleDelete: (props) => (index) => {
       logger.warn('handleDelete', index, props.terms)
       props.terms.splice(index, 1)
+      props.changeValue(props.terms.length)
       props.onChange(props.terms)
+      props.changeValue('')
     }
   })
 )
@@ -70,7 +72,7 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
                 <div className='react-autosuggest__container'>
                   <DebounceInput
                     className='react-autosuggest__input'
-                    debounceTimeout={300}
+                    debounceTimeout={200}
                     {...inputProps}
                   />
                 </div>
