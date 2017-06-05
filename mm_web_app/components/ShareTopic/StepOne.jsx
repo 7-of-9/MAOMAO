@@ -1,38 +1,41 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { compose } from 'recompose'
-import Toolbar from './Toolbar'
+import ShareOptions from './ShareOptions'
+import fbScrapeShareUrl from '../../utils/fb'
 
-const style = {
-  toolbar: {
-    display: 'inline-block'
-  }
-}
+const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const selectUrl = (code, shareOption) => code[shareOption]
 
 const StepOne = compose(({
-  type, shareOption, shareUrl, sendMsgUrl, changeShareType
- }) =>
-  (<div className='share-social'>
-    <h3 className='share-social-title'>
-      Click on button below to select.
-      </h3>
-    <div className='toolbar-button'>
-      <Toolbar
-        active={type}
-        onChange={(value) => { changeShareType(value, shareOption, 2) }}
-        onShare={shareUrl}
-        onSendMsg={sendMsgUrl}
-        style={style.toolbar}
+   type, code, shareOption, topics, changeShareType
+  }) => (
+    <div>
+      <ShareOptions
+        active={shareOption}
+        topics={topics}
+        onChange={(value) => { changeShareType(type, value, 1) }}
       />
+      <div className='share-footer'>
+        <button
+          className='btn btn-slide-next'
+          onClick={() => {
+            const url = `${SITE_URL}/${selectUrl(code, shareOption)}`
+            fbScrapeShareUrl(url)
+            changeShareType(type, shareOption, 2)
+          }}
+        >
+          Next
+        </button>
+      </div>
     </div>
-  </div>
   ))
 
 StepOne.propTypes = {
   type: PropTypes.string.isRequired,
+  code: PropTypes.string.isRequired,
+  topics: PropTypes.array.isRequired,
   shareOption: PropTypes.string.isRequired,
-  sendMsgUrl: PropTypes.func.isRequired,
-  shareUrl: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired
 }
 

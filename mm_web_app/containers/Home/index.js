@@ -145,7 +145,7 @@ class Home extends React.Component {
             />
           </NoSSR>
           {
-              this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
+              this.props.ui.currentViewer === 'discovery' &&
               <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
@@ -182,15 +182,15 @@ class Home extends React.Component {
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             {
-                this.props.ui.showShareManager &&
+                this.props.ui.currentViewer === 'share' &&
                 <ShareList />
               }
             {
-                this.props.ui.discoveryTerms.length > 0 && !this.props.ui.showShareManager &&
+                this.props.ui.currentViewer === 'discovery' &&
                 <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
               }
             {
-              urls.length > 0 && users.length > 0 && !this.props.ui.showShareManager && this.props.ui.discoveryTerms.length === 0 &&
+              urls.length > 0 && users.length > 0 && this.props.ui.currentViewer === 'streams' &&
               <Streams />
               }
             {

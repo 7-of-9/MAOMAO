@@ -12,9 +12,7 @@ export class UIStore {
   @observable discoveryTerms = []
   @observable page = 0
   @observable rating = 1
-  @observable showAcceptInvite = false
-  @observable showDiscoveryMode = false
-  @observable showShareManager = false
+  @observable currentViewer = 'streams'
   @observable showExtensionModal = false
   @observable notifications = []
 
@@ -33,22 +31,27 @@ export class UIStore {
 
   @action openDiscoveryMode (terms) {
     this.discoveryTerms = terms
+    if (terms.length > 0) {
+      this.currentViewer = 'discovery'
+    } else {
+      this.currentViewer = 'streams'
+    }
+  }
+
+  @action displayShareManagement () {
+    this.currentViewer = 'share'
+  }
+
+  @action closeShareManagement () {
+    this.currentViewer = 'streams'
   }
 
   @action changeSortOrder (type) {
     this.sortByDate = type
   }
 
-  @action displayShareManagement () {
-    this.showShareManager = true
-  }
-
   @action openExtensionModal () {
     this.showExtensionModal = true
-  }
-
-  @action closeShareManagement () {
-    this.showShareManager = false
   }
 
   @action closeExtensionModal () {

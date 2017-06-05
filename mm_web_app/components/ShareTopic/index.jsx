@@ -5,6 +5,7 @@ import { CSSTransitionGroup } from 'react-transition-group'
 import Steps, { Step } from 'rc-steps'
 import StepOne from './StepOne'
 import StepTwo from './StepTwo'
+import StepThree from './StepThree'
 import logger from '../../utils/logger'
 import openUrl from '../../utils/popup'
 
@@ -109,6 +110,7 @@ function ShareTopic ({
   sendEmails, closeShare, accessGoogleContacts }) {
   logger.info('ShareTopic enable, type, topics, contacts, code, shareOption, currentStep', enable, type, topics, contacts, code, shareOption, currentStep)
   const steps = [
+    { title: 'Select your content', description: 'Share this page or topics with your friends.' },
     { title: 'Choose the way to sharing with friends', description: 'Use Facebook, Gmail or get direct link.' },
     { title: 'Finish', description: 'Ready to share' }
   ].map(item => (
@@ -139,13 +141,22 @@ function ShareTopic ({
           <StepOne
             shareOption={shareOption}
             type={type}
+            code={code}
+            topics={topics}
+            changeShareType={changeShareType}
+          />
+        }
+        {currentStep && currentStep === 2 &&
+          <StepTwo
+            shareOption={shareOption}
+            type={type}
             changeShareType={changeShareType}
             shareUrl={shareUrl}
             sendMsgUrl={sendMsgUrl}
           />
         }
-        {currentStep && currentStep === 2 &&
-          <StepTwo
+        {currentStep && currentStep === 3 &&
+          <StepThree
             shareOption={shareOption}
             type={type}
             contacts={contacts}

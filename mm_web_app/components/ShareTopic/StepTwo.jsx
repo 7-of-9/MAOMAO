@@ -1,87 +1,46 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withState } from 'recompose'
-import ToggleDisplay from 'react-toggle-display'
-import CopyToClipboard from 'react-copy-to-clipboard'
-import GoogleShare from './GoogleShare'
+import { compose } from 'recompose'
+import Toolbar from './Toolbar'
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net'
 const style = {
-  button: {
-    float: 'right',
-    textAlign: 'center'
+  toolbar: {
+    display: 'inline-block'
   }
 }
 
-const selectUrl = (code, shareOption) => code[shareOption]
-
-const enhance = withState('copied', 'setCopied', false)
-const StepTwo = enhance(({
-  type, contacts, code, shareOption, copied,
-  accessGoogleContacts, handleChange, sendEmails, changeShareType, setCopied }) => (
-    <div>
-      <ToggleDisplay className='link-share-option' show={type === 'Google' && contacts.length === 0}>
-        You have no google contacts. Click
-        <button className='btn-copy' onClick={accessGoogleContacts}> here </button>
-        to grant permissions to access google contacts.
-      </ToggleDisplay>
-      <ToggleDisplay show={type === 'Google' && contacts.length > 0}>
-        <div className='panel-account'>
-          <GoogleShare
-            mostRecentUses={contacts.slice(0, 3)}
-            contacts={contacts}
-            handleChange={handleChange}
-          />
-        </div>
-      </ToggleDisplay>
-      <ToggleDisplay className='link-share-option' show={type === 'Link'}>
-        <div className='input-group'>
-          <input
-            className='form-control'
-            value={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-            readOnly
-          />
-          <CopyToClipboard
-            text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-            onCopy={() => setCopied(true)}
-          >
-            <div className='input-group-btn'>
-              <button className='btn-copy'>Copy</button>
-              {copied ? <span style={{ color: '#014cd6' }}>Copied.</span> : null}
-            </div>
-          </CopyToClipboard>
-        </div>
-      </ToggleDisplay>
-      <div className='share-footer'>
-        <button
-          className='btn btn-slide-prev'
-          onClick={() => changeShareType(type, shareOption, 1)}
-        >
-          Previous
-        </button>
-        {type === 'Google' && contacts.length > 0 &&
-          <div className='share-now'>
-            <button
-              style={style.button}
-              className='share-button'
-              onClick={sendEmails}
-            >
-              Share Now !
-          </button>
-          </div>
-        }
-      </div>
+const StepTwo = compose(({
+  type, shareOption, shareUrl, sendMsgUrl, changeShareType
+ }) =>
+  (<div className='share-social'>
+    <h3 className='share-social-title'>
+      Click on button below to select.
+      </h3>
+    <div className='toolbar-button'>
+      <Toolbar
+        active={type}
+        onChange={(value) => { changeShareType(value, shareOption, 3) }}
+        onShare={shareUrl}
+        onSendMsg={sendMsgUrl}
+        style={style.toolbar}
+      />
     </div>
+    <div className='share-footer'>
+      <button
+        className='btn btn-slide-prev'
+        onClick={() => changeShareType(type, shareOption, 1)}
+      >
+        Previous
+      </button>
+    </div>
+  </div>
   ))
 
 StepTwo.propTypes = {
   type: PropTypes.string.isRequired,
-  code: PropTypes.string.isRequired,
-  contacts: PropTypes.array.isRequired,
   shareOption: PropTypes.string.isRequired,
-  accessGoogleContacts: PropTypes.func.isRequired,
-  handleChange: PropTypes.func.isRequired,
-  sendEmails: PropTypes.func.isRequired,
+  sendMsgUrl: PropTypes.func.isRequired,
+  shareUrl: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired
 }
 
