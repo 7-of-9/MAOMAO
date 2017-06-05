@@ -54,8 +54,8 @@ function renderSuggestion (suggestion, { query }) {
           onError={(ev) => { ev.target.src = noImage }}
           src={suggestion.image}
           alt={suggestion.name || suggestion.email}
-          height='40'
-          width='40'
+          height={40}
+          width={40}
         />
       </span>
       <span className='name'>

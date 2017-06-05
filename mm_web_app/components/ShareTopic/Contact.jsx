@@ -51,9 +51,9 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
         onError={(ev) => { ev.target.src = noImage }}
         src={image}
         alt={name || email}
-        height='40'
-        width='40'
-        layout='fixed'
+        height={40}
+        width={40}
+        layout='responsive'
       />
     </Image>
     <Info className='share-info'>
@@ -62,7 +62,7 @@ const Contact = ({ onClick, name, email, image, isEdit, onRemove }) =>
       }
       <Item>{email}</Item>
       {
-        isEdit && <Remove className='account-remove' onClick={onRemove} ><amp-img layout='fixed' style={{ width: '20px', height: '20px', float: 'right' }} src={removeIcon} alt='Remove' /></Remove>
+        isEdit && <Remove className='account-remove' onClick={onRemove} ><amp-img layout='responsive' width={20} height={20} style={{ float: 'right' }} src={removeIcon} alt='Remove' /></Remove>
       }
     </Info>
   </Wrapper>

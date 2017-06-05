@@ -11,13 +11,13 @@ function Slogan () {
     <div style={{margin: '0 16px'}}>
       <span className='stamp-logo' />
       <amp-img
-        layout='fixed'
+        layout='responsive'
         className='logo-image'
         onClick={() => { window.location.href = '/' }}
         src='/static/images/maomao.png'
         alt='maomao'
-        width='165'
-        height='24'
+        width={165}
+        height={24}
         />
       <span className='paragraph-smarter'> get smarter </span>
     </div>

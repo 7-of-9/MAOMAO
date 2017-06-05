@@ -14,6 +14,8 @@ function Loading (props) {
         layout='fixed'
         src='/static/images/balls.svg'
         alt='loading'
+        width={120}
+        height={120}
         />
     </div>
   )

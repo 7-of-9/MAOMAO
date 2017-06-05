@@ -13,7 +13,7 @@ import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<amp-img layout='fixed' width='165' height='24' className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
+  return desc.replace('maomao', "<amp-img layout='responsive' width='165' height='24' className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
 }
 
 const customModalStyles = {
@@ -89,12 +89,12 @@ class ChromeInstall extends React.Component {
             >
           <h1 className='animated fadeInUp'>
                 Install &nbsp;
-              <amp-img layout='fixed' src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension!
+              <amp-img layout='responsive' src='/static/images/maomao.png' className='logo-image' alt='maomao' /> extension!
             </h1>
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <amp-img layout='fixed' src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <amp-img layout='responsive' src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }
@@ -106,7 +106,7 @@ class ChromeInstall extends React.Component {
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
             {!isChrome &&
-              <div className='panel-extention'><p> <amp-img layout='fixed' src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p>
+              <div className='panel-extention'><p> <amp-img layout='responsive' src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p>
                 { !isMobile && <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p> }
               </div>
             }
@@ -137,10 +137,10 @@ class ChromeInstall extends React.Component {
             </div>
             <div className='modal-body'>
               <div className='install-description'>
-                <h3><amp-img layout='fixed' className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
+                <h3><amp-img layout='responsive' className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
                 <br />
-                <p><amp-img layout='fixed' className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
-                <button className='btn btn-install' type='button' onClick={install}>Ok! Give me <amp-img layout='fixed' className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
+                <p><amp-img layout='responsive' className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
+                <button className='btn btn-install' type='button' onClick={install}>Ok! Give me <amp-img layout='responsive' className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
               </div>
             </div>
           </div>

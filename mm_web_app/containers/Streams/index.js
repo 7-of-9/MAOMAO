@@ -39,7 +39,7 @@ function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
   _.forEach(owners, owner => {
     items.push(<div key={guid()} className='panel-user-img'>
       <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
-        <amp-img layout='fixed' src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+        <amp-img layout='responsive' src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
         <span className='panel-user-cnt'>
           <span className='full-name'>{owner.fullname}</span>
           <span className='date-time'>
@@ -69,7 +69,7 @@ function urlTopic (id, topics, onSelectTopic, onShareTopic) {
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
-            <amp-img layout='fixed' src='/static/images/logo.png' width='25' height='25' alt='share topics' />
+            <amp-img layout='responsive' src='/static/images/logo.png' width='25' height='25' alt='share topics' />
           </span>
         </span>
       </div>)
@@ -139,7 +139,7 @@ class Streams extends React.Component {
             <div className='thumbnail'>
               <a href={href} target='_blank'>
                 <div className='thumbnail-image'>
-                  <amp-img layout='fixed' src={img || '/static/images/no-image.png'} alt={title} />
+                  <amp-img layout='responsive' src={img || '/static/images/no-image.png'} alt={title} />
                 </div>
               </a>
               <div className='caption'>
@@ -245,7 +245,7 @@ class Streams extends React.Component {
                                   <div className='user-share'>
                                     <div className='user-share-img'>
                                       <amp-img
-                                        layout='fixed'
+                                        layout='responsive'
                                         width='24'
                                         height='24'
                                         src={avatar(user)}

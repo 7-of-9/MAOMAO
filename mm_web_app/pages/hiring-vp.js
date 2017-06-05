@@ -26,7 +26,7 @@ const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
     <amp-img
-      layout='fixed'
+      layout='responsive'
       src='/static/images/maomao.png'
       className='logo-image'
       alt='maomao'
@@ -48,7 +48,7 @@ export default class Hiring extends React.PureComponent {
             <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
           </Navbar>
           <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
-            <amp-img layout='fixed' src='/static/images/logo.png' alt='logo' />
+            <amp-img layout='responsive' src='/static/images/logo.png' alt='logo' />
             <div style={{ fontFamily: 'Calibri', fontSize: 'xx-large' }}>
               <b>maomao</b> is coming, and we're hiring...<br />
             </div>

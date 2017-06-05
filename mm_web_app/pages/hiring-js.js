@@ -26,7 +26,7 @@ const brand = <Header><LogoIcon /><Slogan /></Header>
 const businessAddress = (
   <address>
     <amp-img
-      layout='fixed'
+      layout='responsive'
       src='/static/images/maomao.png'
       className='logo-image'
       alt='maomao'
@@ -49,7 +49,7 @@ export default class Hiring extends React.PureComponent {
           </Navbar>
           <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
             <amp-img
-              layout='fixed'
+              layout='responsive'
               src='/static/images/logo.png'
               alt='logo'
             />

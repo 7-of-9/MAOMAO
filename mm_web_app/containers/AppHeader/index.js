@@ -171,12 +171,12 @@ class AppHeader extends React.Component {
             <div className='dropdown account-dropdown'>
               <a className='dropdown-toggle' data-toggle='dropdown'>
                 <amp-img
-                  layout='fixed'
+                  layout='responsive'
                   className='image-account'
                   src={avatar(user)}
                   alt={userId}
-                  width='33'
-                  height='33'
+                  width={33}
+                  height={33}
                   />
               </a>
               <a className='link-logout-res' onClick={this.onLogout}>

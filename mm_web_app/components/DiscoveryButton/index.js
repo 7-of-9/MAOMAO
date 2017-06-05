@@ -11,9 +11,9 @@ function DiscoveryButton ({ openDiscoveryMode }) {
   return (
     <a className='btn-discovery' onClick={openDiscoveryMode}>
       <amp-img
-        layout='fixed'
-        width='16'
-        height='16'
+        layout='responsive'
+        width={16}
+        height={16}
         src='/static/images/search-input.png'
         alt='Discovery'
         />

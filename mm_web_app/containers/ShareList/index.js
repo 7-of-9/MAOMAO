@@ -50,7 +50,7 @@ class ShareList extends React.Component {
                     <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
                       <span className='directional-user'>
                         <span className='share-image'>
-                      <amp-img layout='fixed' className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
+                          <amp-img layout='responsive' className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                         </span>
                         <span className='share-name'> Your sharing</span>
                       </span>
@@ -72,7 +72,7 @@ class ShareList extends React.Component {
                       <ul key={guid()} className='timeline timeline-horizontal'>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
-                            <amp-img layout='fixed' className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
+                            <amp-img layout='responsive' className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                           </div>
                         </li>
                         <li className='timeline-item'>
@@ -98,7 +98,7 @@ class ShareList extends React.Component {
                         </li>
                         <li className='timeline-item share-line-left'>
                           <div className='timeline-badge'>
-                            <amp-img layout='fixed' className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
+                            <amp-img layout='responsive' className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
                           </div>
                           <div className='timeline-panel'>
                             <div className='timeline-panel'>
@@ -121,7 +121,7 @@ class ShareList extends React.Component {
                       <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                         <span className='directional-user'>
                           <span className='share-image'>
-                        <amp-img layout='fixed' className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
+                            <amp-img layout='responsive' className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
                           </span>
                           <span className='share-name'> {friend.fullname} </span>
                         </span>
@@ -142,7 +142,7 @@ class ShareList extends React.Component {
                         <ul key={guid()} className='timeline timeline-horizontal'>
                           <li className='timeline-item'>
                             <div className='timeline-badge'>
-                              <amp-img layout='fixed' className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
+                              <amp-img layout='responsive' className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
                             </div>
                             <div className='timeline-panel'>
                               <a href='#' className='btn btn-unfollow'>Unfollow</a>
@@ -179,7 +179,7 @@ class ShareList extends React.Component {
                           </li>
                           <li className='timeline-item share-line-left'>
                             <div className='timeline-badge'>
-                              <amp-img layout='fixed' className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
+                              <amp-img layout='responsive' className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
                             </div>
                           </li>
                         </ul>
