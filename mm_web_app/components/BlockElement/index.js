@@ -92,10 +92,17 @@ function BlockElement ({url, image, name, description, type}) {
         <div className='caption'>
           {name && <Title className='caption-title'>{name}</Title>}
           {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-          <Source className='credit-info'>
-            <Icon src={iconType(type)} />
-            {type}
-          </Source>
+         
+          <div className='panel-user panel-credit'>
+            <div className='panel-user-img'>
+              <span className='credit-user'>
+              <Icon src={iconType(type)} />
+              <span className='panel-user-cnt'>
+                <span className='full-name'>{type}</span>
+              </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </Wrapper>

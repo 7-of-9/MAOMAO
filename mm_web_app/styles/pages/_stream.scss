@@ -227,6 +227,7 @@ img {
       }
     }
     .credit-user {
+      //@include clearfix();
       position: relative;
       display: block;
       font-size: 0.75rem;
@@ -255,7 +256,19 @@ img {
     }
   }
 }
-
+.panel-credit{
+  .panel-user-img{
+    .credit-user{
+      min-height: 31px;
+    }
+    img {
+      margin-top: 0;
+    }
+  }
+  .panel-user-cnt{
+    padding-top: 6px;
+  }
+}
 .tooltip-user {
   display: block;
   position: relative;

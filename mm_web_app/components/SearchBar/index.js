@@ -53,11 +53,6 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
           <div id='toolbar-search' className='widget-form'>
             <div className='input-group'>
               <div className='input-group-suggest'>
-                <DebounceInput
-                  className='search-box-list'
-                  debounceTimeout={300}
-                  {...inputProps}
-                />
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
@@ -71,6 +66,13 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
                       ))
                     }
                   </ul>
+                </div>
+                <div className='react-autosuggest__container'>
+                  <DebounceInput
+                    className='react-autosuggest__input'
+                    debounceTimeout={300}
+                    {...inputProps}
+                  />
                 </div>
               </div>
             </div>

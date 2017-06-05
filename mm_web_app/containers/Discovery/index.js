@@ -183,7 +183,7 @@ class Discovery extends React.Component {
               {
               ({style}) => {
                 return (
-                  <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}}>
+                  <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
                     <SearchBar terms={this.props.terms} onChange={this.onChange} />
                   </div>
                 )
