@@ -61,45 +61,55 @@ class DiscoveryStore extends CoreStore {
       when(
         () => googleSearch.state !== 'pending',
         () => {
-          const { result } = googleSearch.value.data
-          this.googleResult.push(...(result || []))
-          this.pendings.splice(0, 1)
+          if (googleSearch.value && googleSearch.value.data) {
+            const { result } = googleSearch.value.data
+            this.googleResult.push(...(result || []))
+            this.pendings.splice(0, 1)
+          }
         }
       )
 
       when(
         () => googleNewsSearch.state !== 'pending',
         () => {
-          const { result } = googleNewsSearch.value.data
-          this.googleNewsResult.push(...(result || []))
-          this.pendings.splice(0, 1)
+          if (googleNewsSearch.value && googleNewsSearch.value.data) {
+            const { result } = googleNewsSearch.value.data
+            this.googleNewsResult.push(...(result || []))
+            this.pendings.splice(0, 1)
+          }
         }
       )
 
       when(
         () => googleKnowldge.state !== 'pending',
         () => {
-          const { itemListElement } = googleKnowldge.value.data
-          this.googleKnowledgeResult.push(...(itemListElement || []))
-          this.pendings.splice(0, 1)
+          if (googleKnowldge.value && googleKnowldge.value.data) {
+            const { itemListElement } = googleKnowldge.value.data
+            this.googleKnowledgeResult.push(...(itemListElement || []))
+            this.pendings.splice(0, 1)
+          }
         }
       )
 
       when(
         () => youtubeVideo.state !== 'pending',
         () => {
-          const { items, nextPageToken } = youtubeVideo.value.data
-          this.youtubeResult.push(...(items || []))
-          this.youtubePageToken = nextPageToken
-          this.pendings.splice(0, 1)
+          if (youtubeVideo.value && youtubeVideo.value.data) {
+            const { items, nextPageToken } = youtubeVideo.value.data
+            this.youtubeResult.push(...(items || []))
+            this.youtubePageToken = nextPageToken
+            this.pendings.splice(0, 1)
+          }
         }
       )
 
       when(
         () => reddit.state !== 'pending',
         () => {
-          this.redditResult.push(...(reddit.value || []))
-          this.pendings.splice(0, 1)
+          if (reddit.value) {
+            this.redditResult.push(...(reddit.value || []))
+            this.pendings.splice(0, 1)
+          }
         }
       )
     })

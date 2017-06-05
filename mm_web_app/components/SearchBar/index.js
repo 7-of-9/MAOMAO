@@ -6,7 +6,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withState, withHandlers, onlyUpdateForKeys, lifecycle } from 'recompose'
+import { compose, withState, withHandlers } from 'recompose'
 import DebounceInput from 'react-debounce-input'
 import Form from './Form'
 import { guid } from '../../utils/hash'
@@ -14,8 +14,33 @@ import logger from '../../utils/logger'
 
 const MAX_COLORS = 12
 
-const SearchBar = ({ tags, value, onInput, onSearch, handleDelete }) => {
-  logger.warn('SearchBar tags', tags)
+const enhance = compose(
+  withState('value', 'changeValue', ''),
+  withHandlers({
+    onInput: (props) => (event) => {
+      logger.warn('onInput', event)
+      props.changeValue(event.target.value)
+    },
+    onSearch: (props) => (event) => {
+      logger.warn('onSearch', event)
+      if (event !== undefined && event.preventDefault) {
+        event.preventDefault()
+      }
+      props.changeValue('')
+      const tag = props.value
+      props.terms.push(tag)
+      props.onChange(props.terms)
+    },
+    handleDelete: (props) => (index) => {
+      logger.warn('handleDelete', index, props.terms)
+      props.terms.splice(index, 1)
+      props.onChange(props.terms)
+    }
+  })
+)
+
+const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) => {
+  logger.warn('SearchBar render', terms, value)
   const inputProps = {
     placeholder: 'Search...',
     value,
@@ -30,14 +55,13 @@ const SearchBar = ({ tags, value, onInput, onSearch, handleDelete }) => {
               <div className='input-group-suggest'>
                 <DebounceInput
                   className='search-box-list'
-                  minLength={2}
-                  debounceTimeout={200}
+                  debounceTimeout={300}
                   {...inputProps}
                 />
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
-                      tags.map((item, index) => (
+                      terms.map((item, index) => (
                         <li className={`tags-color-${(index % MAX_COLORS) + 1}`} key={guid()}>
                           <span className='text-topic'>{item}</span>
                           <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
@@ -55,51 +79,12 @@ const SearchBar = ({ tags, value, onInput, onSearch, handleDelete }) => {
       </nav>
     </Form>
   )
-}
+})
 
 SearchBar.propTypes = {
   onChange: PropTypes.func.isRequired,
   terms: PropTypes.array.isRequired,
-  handleDelete: PropTypes.func,
-  handleAddition: PropTypes.func,
-  changeTags: PropTypes.func
+  value: PropTypes.string
 }
 
-const enhance = compose(
-  withState('tags', 'updateTags', []),
-  withState('value', 'changeValue', ''),
-  withHandlers({
-    onInput: (props) => (event) => {
-      logger.warn('onInput', event)
-      props.changeValue(event.target.value)
-    },
-    onSearch: (props) => (event) => {
-      logger.warn('onSearch', event)
-      const tag = props.value
-      props.tags.push(tag)
-      props.updateTags(props.tags)
-      props.onChange(props.tags)
-      props.changeValue('')
-    },
-    changeTags: (props) => (newTags) => {
-      logger.warn('changeTags', newTags)
-      props.updateTags(newTags)
-    },
-    handleDelete: (props) => (index) => {
-      logger.warn('handleDelete', index, props.tags)
-      const tags = props.tags.splice(index, 1)
-      props.onChange(tags)
-      props.updateTags(tags)
-    }
-  }),
-  lifecycle({
-    componentDidMount () {
-      if (this.props.terms.length > 0 && this.props.tags.length === 0) {
-        this.props.changeTags(this.props.terms)
-      }
-    }
-  }),
-  onlyUpdateForKeys(['terms', 'tags'])
-)
-
-export default enhance(SearchBar)
+export default SearchBar
