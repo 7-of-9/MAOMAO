@@ -256,19 +256,21 @@ img {
     }
   }
 }
-.panel-credit{
-  .panel-user-img{
-    .credit-user{
+
+.panel-credit {
+  .panel-user-img {
+    .credit-user {
       min-height: 31px;
     }
     img {
       margin-top: 0;
     }
   }
-  .panel-user-cnt{
+  .panel-user-cnt {
     padding-top: 6px;
   }
 }
+
 .tooltip-user {
   display: block;
   position: relative;
@@ -1297,21 +1299,28 @@ img {
   /* @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: 0); */
 }
 
-.react-autosuggest__section-container {
+.react-autosuggest__suggestions-container {
   @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0,
-  0,
-  0,
-  .175));
+  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
   z-index: 100;
   width: 100%;
   min-height: 94px;
   margin: 3px 0 0;
+  display: none;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, .15);
+  background-color: #fff;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
+}
+
+.react-autosuggest__suggestions-container--open {
+  display: block;
+}
+
+.react-autosuggest__section-container {
+  @include border-radius(0 0 4px 4px);
 }
 
 .search-box-drop .search-box-list,
