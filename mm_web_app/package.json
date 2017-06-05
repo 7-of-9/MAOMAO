@@ -38,7 +38,7 @@
     "mobx-utils": "^2.0.1",
     "moment": "^2.18.1",
     "neal-react": "^0.2.5",
-    "next": "2.4.0",
+    "next": "beta",
     "normalize.css": "^7.0.0",
     "normalizr": "^3.2.3",
     "nprogress": "^0.2.0",
