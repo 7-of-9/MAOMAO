@@ -278,23 +278,31 @@ class Streams extends React.Component {
                             </span>
                           </div>
                         </div>
-                        <div className='sort-case'>
-                          {
-                            [1, 2, 3, 4, 5].map((rate) => (
-                              <div className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
-                                <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
-                                  {
-                                    [1, 2, 3, 4, 5].map((star) => (
-                                      <span className={star <= rate ? 'active' : ''} key={guid()} />
-                                   ))
-                                  }
-                                </a>
-                                <div className='rating-number'>
-                                  <div className='label-rating-number'>{rate}</div>
-                                </div>
-                              </div>
-                            ))
-                          }
+                        <div className='widget-dropdown'>
+                          <div className='widget-user'>
+                            <a data-toggle='dropdown'>
+                              <span className='nav-symbol'><i className='fa fa-signal fa-2x' aria-hidden='true' /></span>
+                              <span className='nav-text'>Rating</span>
+                            </a>
+                            <ul className='dropdown-menu sort-case'>
+                              {
+                                [1, 2, 3, 4, 5].map((rate) => (
+                                  <li className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                                    <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
+                                      {
+                                        [1, 2, 3, 4, 5].map((star) => (
+                                          <span className={star <= rate ? 'active' : ''} key={guid()} />
+                                       ))
+                                      }
+                                    </a>
+                                    <div className='rating-number'>
+                                      <div className='label-rating-number'>{rate}</div>
+                                    </div>
+                                  </li>
+                                ))
+                              }
+                            </ul>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -1302,7 +1302,10 @@ img {
 .react-autosuggest__suggestions-container {
   @include opacity(0);
   @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+  @include box-shadow(0 6px 12px rgba(0,
+  0,
+  0,
+  .175));
   @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
   z-index: 100;
   width: 100%;
@@ -1505,7 +1508,7 @@ a.btn-box-remove {
       }
       &.dropdown-modifier {
         padding: 5px 0;
-        overflow: hidden;
+        overflow-x: hidden;
         overflow-y: auto;
       }
       &.dropdown-hiring {
@@ -1555,7 +1558,8 @@ a.btn-box-remove {
         margin: 10px 0 0;
         border: 0;
         width: 100%;
-        max-height: 240px;
+        max-height: 265px;
+        overflow-x: hidden;
         overflow-y: auto;
       }
     }
@@ -1572,7 +1576,8 @@ a.btn-box-remove {
     &.active {
       .fa-users,
       .fa-list,
-      .fa-calendar {
+      .fa-calendar,
+      .fa-signal {
         color: #2db7f5;
       }
     }
@@ -1638,13 +1643,15 @@ a.btn-box-remove {
 
 .sort-case {
   @include clearfix();
-  float: left;
+  padding: 0;
+  min-width: 115px;
   .sort-case-item {
     position: relative;
-    margin-left: 25px;
+    margin-bottom: 3px;
     float: left;
+    width: 100%;
     &::after {
-      @include abs-pos ($top: auto, $right: 0, $bottom: -9px, $left: 0);
+      @include abs-pos ($top: auto, $right: 0, $bottom: 0, $left: 0);
       content: '';
       display: block;
       margin: auto;
@@ -1660,6 +1667,14 @@ a.btn-box-remove {
       background-color: #2db7f5;
     }
     .filter-rating {
+      &,
+      &:hover,
+      &:focus {
+        background: none;
+      }
+      span {
+        padding: 0;
+      }
       @media (max-width: 500px) {
         span {
           margin-right: 2px;
@@ -1700,6 +1715,9 @@ a.btn-box-remove {
       @media (max-width: 500px) {
         padding: 0 0 0 3px;
       }
+    }
+    &:last-child {
+      margin-bottom: 0;
     }
     @media (max-width: 1150px) {
       margin-left: 10px;
