@@ -15,7 +15,7 @@ $search-icons: url('./static/images/icons-search.png');
   @include clearfix();
   margin-top: 20px;
   .rc-steps-item {
-    width: 33%;
+    width: 33.33%;
     float: left;
     .rc-steps-tail {
       left: 0;
@@ -121,6 +121,7 @@ $search-icons: url('./static/images/icons-search.png');
   text-transform: uppercase;
   em {
     color: #2db7f5;
+    font-style: normal;
   }
 }
 
@@ -132,7 +133,6 @@ $search-icons: url('./static/images/icons-search.png');
   .share-experiment-title {
     padding-right: 5px;
     font-size: 17px;
-    line-height: 19px;
     color: #2db7f5;
     display: inline-block;
     vertical-align: middle;

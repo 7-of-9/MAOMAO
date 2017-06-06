@@ -14,10 +14,7 @@ const FB_APP_ID = '386694335037120'
 const style = {
   container: {
     backgroundColor: '#fff',
-    borderTop: '1px solid #e1e5eb',
-    padding: '20px',
-    textAlign: 'center',
-    animation: 'vex-flyin 0.5s'
+    textAlign: 'center'
   },
   topic: {
     fontWeight: 'bolder'
