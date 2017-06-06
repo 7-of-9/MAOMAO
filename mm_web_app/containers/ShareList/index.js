@@ -38,7 +38,7 @@ class ShareList extends React.Component {
         <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
-        <div className='share-management bounceInLeft animated'>
+        <div className='share-management bounceInRight animated'>
           <div className='block-back'>
             <h1> Share Management </h1>
           </div>

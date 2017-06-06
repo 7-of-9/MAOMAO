@@ -174,7 +174,7 @@ class Discovery extends React.Component {
             <i className='fa fa-angle-left' aria-hidden='true' />
           </button>
         </div>
-        <div className='bounceInLeft animated'>
+        <div className='bounceInRight animated'>
           <div className='block-back'>
             <h1> Discovery mode </h1>
           </div>
