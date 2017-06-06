@@ -44,10 +44,10 @@ class ShareList extends React.Component {
           </div>
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
-              <div className='card-header' role='tab' id={`heading${userId}`}>
+              <div className='card-header collapsed' role='tab' id={`heading${userId}`}  data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
                 <div className='card-header-cnt'>
                   <div className='card-header-inner'>
-                    <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
+                    <a className='collapse-title'>
                       <span className='directional-user'>
                         <span className='share-image'>
                           <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
@@ -115,10 +115,10 @@ class ShareList extends React.Component {
             </div>
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
-                <div className='card-header' role='tab' id={`heading${friend.user_id}`}>
+                <div className='card-header collapsed' role='tab' id={`heading${friend.user_id}`}  data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                   <div className='card-header-cnt'>
                     <div className='card-header-inner'>
-                      <a className='collapsed collapse-title' data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
+                      <a className='collapse-title'>
                         <span className='directional-user'>
                           <span className='share-image'>
                             <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />

@@ -221,6 +221,7 @@ the home page
   .card-header {
     @include clearfix();
     padding: 0.625rem 1.5rem;
+    cursor: pointer;
     a {
       &,
       &:hover,
@@ -237,11 +238,6 @@ the home page
         text-align: left;
         @media (max-width: 390px) {
           max-width: 115px;
-        }
-      }
-      &.collapsed {
-        .share-name {
-          color: #404040;
         }
       }
     }
@@ -321,6 +317,11 @@ the home page
       }
       @media (max-width: 390px) {
         margin-right: -75px;
+      }
+    }
+    &.collapsed {
+      .share-name {
+        color: #404040;
       }
     }
     @media (max-width: 767px) {
