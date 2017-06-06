@@ -316,17 +316,24 @@ class Streams extends React.Component {
                             </span>
                             <ul className='dropdown-menu sort-case'>
                               {
-                                [1, 2, 3, 4, 5].map((rate) => (
-                                  <li className={rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
-                                    <a onClick={() => this.props.ui.changeRate(rate)} className='filter-rating'>
+                                [
+                                  { rate: 1, label: 'Low' },
+                                  { rate: 2, label: 'Poor' },
+                                  { rate: 3, label: 'Average' },
+                                  { rate: 4, label: 'Good' },
+                                  { rate: 5, label: 'Excellent' }
+                                ].map((item) => (
+                                  <li className={item.rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                                    <a onClick={() => this.props.ui.changeRate(item.rate)} className='filter-rating'>
                                       {
                                         [1, 2, 3, 4, 5].map((star) => (
-                                          <span className={star <= rate ? 'active' : ''} key={guid()} />
+                                          <span className={star <= item.rate ? 'active' : ''} key={guid()} />
                                        ))
                                       }
                                     </a>
                                     <div className='rating-number'>
-                                      <div className='label-rating-number'>{sortedUrls.filter(item => item.rate === rate).length}</div>
+                                      {item.label}
+                                      <div className='label-rating-number'>{sortedUrls.filter(url => item.rate === url.rate).length}</div>
                                     </div>
                                   </li>
                                 ))
