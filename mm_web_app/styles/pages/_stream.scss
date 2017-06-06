@@ -784,10 +784,36 @@ img {
         @include clearfix();
         .filter-rating {
           padding: 0;
+          margin-top: 3px;
           float: left;
           width: 64px;
           span {
             cursor: default;
+            &.active {
+              width: 7px;
+              @include border-radius(3px 3px 0 0);
+              background-color: #2db7f5;
+            }
+            &:nth-child(1) {
+              margin-top: 40px;
+              height: 10px;
+            }
+            &:nth-child(2) {
+              margin-top: 30px;
+              height: 20px;
+            }
+            &:nth-child(3) {
+              margin-top: 20px;
+              height: 30px;
+            }
+            &:nth-child(4) {
+              margin-top: 10px;
+              height: 40px;
+            }
+            &:nth-child(5) {
+              margin-top: 0;
+              height: 50px;
+            }
           }
         }
         .parameter-item {
