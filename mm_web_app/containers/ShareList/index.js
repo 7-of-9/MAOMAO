@@ -44,7 +44,7 @@ class ShareList extends React.Component {
           </div>
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
-              <div className='card-header collapsed' role='tab' id={`heading${userId}`}  data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
+              <div className='card-header collapsed' role='tab' id={`heading${userId}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
                 <div className='card-header-cnt'>
                   <div className='card-header-inner'>
                     <a className='collapse-title'>
@@ -115,7 +115,7 @@ class ShareList extends React.Component {
             </div>
             {_.map(friendStreams, friend => (
               <div key={guid()} className='card card-topic'>
-                <div className='card-header collapsed' role='tab' id={`heading${friend.user_id}`}  data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
+                <div className='card-header collapsed' role='tab' id={`heading${friend.user_id}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                   <div className='card-header-cnt'>
                     <div className='card-header-inner'>
                       <a className='collapse-title'>

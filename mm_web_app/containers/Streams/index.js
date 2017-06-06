@@ -16,7 +16,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import { guid } from '../../utils/hash'
-// import logger from '../../utils/logger'
+import logger from '../../utils/logger'
 
 const LIMIT = 10
 const MAX_COLORS = 12
@@ -113,15 +113,27 @@ function parseDomain (link) {
 @inject('ui')
 @observer
 class Streams extends React.Component {
+  componentDidMount () {
+    logger.warn('Streams componentDidMount')
+  }
+
+  componentWillReact () {
+    logger.warn('Streams componentWillReact')
+  }
   render () {
     // populate urls and users
     const { urls, users, topics, userId } = toJS(this.props.store)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
-    const { filterByTopic, filterByUser, rating, sortByDate } = this.props.ui
+    const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
-    const sortedUrlsByHitUTC = sortByDate === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc])) : _.sortBy(sortedUrls, [(url) => url.hit_utc])
+    let sortedUrlsByHitUTC = sortedUrls
+    if (sortBy === 'date') {
+      sortedUrlsByHitUTC = sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc])) : _.sortBy(sortedUrls, [(url) => url.hit_utc])
+    } else {
+      sortedUrlsByHitUTC = sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.rate])) : _.sortBy(sortedUrls, [(url) => url.rate])
+    }
     /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     if (currentUrls && currentUrls.length) {
