@@ -77,11 +77,11 @@ function BlockElement ({url, image, name, description, type}) {
   return (
     <Wrapper className='thumbnail-box'>
       <div className='thumbnail'>
-        <Anchor href={url} target='_blank'>
-          <div className='thumbnail-image'>
+        <div className='thumbnail-image'>
+          <Anchor className='thumbnail-overlay' href={url} target='_blank'>
             <Image src={image} alt={name} />
-          </div>
-        </Anchor>
+          </Anchor>
+        </div>
         <div className='caption'>
           <Title className='caption-title'>
             <Anchor href={url} target='_blank'>
