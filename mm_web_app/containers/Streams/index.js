@@ -126,7 +126,7 @@ class Streams extends React.Component {
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
-        const { id, href, img, title, time_on_tab, hit_utc, rate } = item
+        const { id, href, img, title, time_on_tab, hit_utc, rate, im_score } = item
         let discoveryKeys = []
         const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
         discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
@@ -160,6 +160,9 @@ class Streams extends React.Component {
                     <h5 className='caption-title'>{parseDomain(href)}</h5>
                     <p>
                       <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
+                    </p>
+                    <p>
+                      <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{im_score}</span>
                     </p>
                   </div>
                 </div>
@@ -265,13 +268,13 @@ class Streams extends React.Component {
                             <span className='nav-text'>Order by date</span>
                             <span className='order-calendar'>
                               <a
-                                className={this.props.ui.sortByDate === 'asc' ? 'order-asc active' : 'order-asc'}
-                                onClick={() => this.props.ui.changeSortOrder('asc')}
+                                className={this.props.ui.sortBy === 'date' && this.props.ui.sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
+                                onClick={() => this.props.ui.changeSortOrder('date', 'asc')}
                                 ><i className='fa fa-sort-up' aria-hidden='true' />
                               </a>
                               <a
-                                className={this.props.ui.sortByDate !== 'asc' ? 'order-desc active' : 'order-desc'}
-                                onClick={() => this.props.ui.changeSortOrder('desc')}
+                                className={this.props.ui.sortBy === 'date' && this.props.ui.sortDirection !== 'asc' ? 'order-desc active' : 'order-desc'}
+                                onClick={() => this.props.ui.changeSortOrder('date', 'desc')}
                                 >
                                 <i className='fa fa-sort-desc' aria-hidden='true' />
                               </a>
@@ -284,6 +287,19 @@ class Streams extends React.Component {
                               <span className='nav-symbol'><i className='fa fa-signal fa-2x' aria-hidden='true' /></span>
                               <span className='nav-text'>Rating</span>
                             </a>
+                            <span className='order-rating'>
+                              <a
+                                className={this.props.ui.sortBy === 'rating' && this.props.ui.sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
+                                onClick={() => this.props.ui.changeSortOrder('rating', 'asc')}
+                                ><i className='fa fa-sort-up' aria-hidden='true' />
+                              </a>
+                              <a
+                                className={this.props.ui.sortBy === 'rating' && this.props.ui.sortDirection !== 'asc' ? 'order-desc active' : 'order-desc'}
+                                onClick={() => this.props.ui.changeSortOrder('rating', 'desc')}
+                                >
+                                <i className='fa fa-sort-desc' aria-hidden='true' />
+                              </a>
+                            </span>
                             <ul className='dropdown-menu sort-case'>
                               {
                                 [1, 2, 3, 4, 5].map((rate) => (
@@ -296,7 +312,7 @@ class Streams extends React.Component {
                                       }
                                     </a>
                                     <div className='rating-number'>
-                                      <div className='label-rating-number'>{rate}</div>
+                                      <div className='label-rating-number'>{sortedUrls.filter(item => item.rate === rate).length}</div>
                                     </div>
                                   </li>
                                 ))

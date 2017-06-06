@@ -6,7 +6,8 @@ let store = null
 
 export class UIStore {
   @observable onlyMe = false
-  @observable sortByDate = 'desc'
+  @observable sortBy = 'date'
+  @observable sortDirection = 'desc'
   @observable filterByTopic = []
   @observable filterByUser = []
   @observable discoveryTerms = []
@@ -51,8 +52,9 @@ export class UIStore {
     this.currentViewer = 'streams'
   }
 
-  @action changeSortOrder (type) {
-    this.sortByDate = type
+  @action changeSortOrder (type, direction) {
+    this.sortBy = type
+    this.sortDirection = direction
   }
 
   @action openExtensionModal () {
