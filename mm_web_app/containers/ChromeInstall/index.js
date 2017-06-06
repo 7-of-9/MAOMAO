@@ -116,7 +116,7 @@ class ChromeInstall extends React.Component {
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
             {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
-              (isMobile || !isChrome) &&
+              (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>
                 <div className='block-button'>
                   <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>

@@ -37,7 +37,7 @@ const style = {
 
 const selectTopics = (topics, type) => {
   if (type === 'site') {
-    return 'just this page'
+    return 'just this url'
   }
   if (type === 'all') {
     return 'My browsing history'

@@ -13,12 +13,28 @@ import logger from '../../utils/logger'
 @inject('ui')
 @observer
 class Share extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      type: 'Google',
+      shareOption: 'site',
+      currentStep: 1
+    }
+    this.changeShareType = this.changeShareType.bind(this)
+  }
+
   componentDidMount () {
     logger.warn('Share componentDidMount')
   }
 
   componentWillReact () {
     logger.warn('Share componentWillReact')
+  }
+
+  changeShareType (type, shareOption, currentStep) {
+    this.setState({
+      type, shareOption, currentStep
+    })
   }
 
   render () {
@@ -33,14 +49,14 @@ class Share extends React.Component {
           </div>
           <div className='container'>
             <ShareTopic
-              type='Google'
-              shareOption='all'
-              currentStep={1}
+              type={this.state.type}
+              shareOption={this.state.shareOption}
+              currentStep={this.state.currentStep}
               topics={[]}
               terms={[]}
               code=''
               sendEmail={() => {}}
-              changeShareType={() => {}}
+              changeShareType={this.changeShareType}
               accessGoogleContacts={() => {}}
               contacts={[]}
               notify={() => {}}

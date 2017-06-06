@@ -36,7 +36,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
           <div className='set-size-button'>
             <Option key={guid()} value={active === 'site'} onToggle={() => { onChange('site') }} />
           </div>
-          <span className='share-topic-title'>Just this page</span>
+          <span className='share-topic-title'>Just this url</span>
         </div>
       </div>
     </div>
