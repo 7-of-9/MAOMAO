@@ -332,7 +332,7 @@ class Streams extends React.Component {
                                       }
                                     </a>
                                     <div className='rating-number'>
-                                      {item.label}
+                                      <span className='label-priority'>{item.label}</span>
                                       <div className='label-rating-number'>{sortedUrls.filter(url => item.rate === url.rate).length}</div>
                                     </div>
                                   </li>
