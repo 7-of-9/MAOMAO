@@ -24,11 +24,43 @@ storiesOf('Footer', module)
   ))
 
 storiesOf('ShareTopic', module)
-  .add('default props', () => (
+  .add('step 1 - all browsing', () => (
     <ShareTopic
       type='Google'
       shareOption='all'
       currentStep={1}
+      topics={[{ id: 'tld', name: 'Maomao' }]}
+      terms={[]}
+      code=''
+      sendEmail={action('sendEmail')}
+      changeShareType={action('changeShareType')}
+      accessGoogleContacts={action('accessGoogleContacts')}
+      contacts={[]}
+      notify={action('notify')}
+      closeShare={action('closeShare')}
+      />
+  ))
+  .add('step 1 - active tld', () => (
+    <ShareTopic
+      type='Google'
+      shareOption='tld'
+      currentStep={1}
+      topics={[{ id: 'tld', name: 'Maomao' }, { id: 'beta-1', name: 'Technology' }]}
+      terms={[]}
+      code=''
+      sendEmail={action('sendEmail')}
+      changeShareType={action('changeShareType')}
+      accessGoogleContacts={action('accessGoogleContacts')}
+      contacts={[]}
+      notify={action('notify')}
+      closeShare={action('closeShare')}
+      />
+  ))
+  .add('step 2 - Only share this site with google', () => (
+    <ShareTopic
+      type='Google'
+      shareOption='site'
+      currentStep={2}
       topics={[]}
       terms={[]}
       code=''
@@ -36,6 +68,38 @@ storiesOf('ShareTopic', module)
       changeShareType={action('changeShareType')}
       accessGoogleContacts={action('accessGoogleContacts')}
       contacts={[]}
+      notify={action('notify')}
+      closeShare={action('closeShare')}
+      />
+  ))
+  .add('step 3 - share with google - no contacts', () => (
+    <ShareTopic
+      type='Google'
+      shareOption='tld'
+      currentStep={3}
+      topics={[{ id: 'tld', name: 'Maomao' }, { id: 'beta-1', name: 'Technology' }]}
+      terms={[]}
+      code=''
+      sendEmail={action('sendEmail')}
+      changeShareType={action('changeShareType')}
+      accessGoogleContacts={action('accessGoogleContacts')}
+      contacts={[]}
+      notify={action('notify')}
+      closeShare={action('closeShare')}
+      />
+  ))
+  .add('step 3 - share with google contacts', () => (
+    <ShareTopic
+      type='Google'
+      shareOption='tld'
+      currentStep={3}
+      topics={[{ id: 'tld', name: 'Maomao' }, { id: 'beta-1', name: 'Technology' }]}
+      terms={[]}
+      code=''
+      sendEmail={action('sendEmail')}
+      changeShareType={action('changeShareType')}
+      accessGoogleContacts={action('accessGoogleContacts')}
+      contacts={[{name: 'Dung', email: 'dunghd.it@gmail.com', picture: 'no-image.png'}]}
       notify={action('notify')}
       closeShare={action('closeShare')}
       />
