@@ -55,7 +55,7 @@ const StepThree = enhance(({
       <div className='share-footer'>
         <button
           className='btn btn-slide-prev'
-          onClick={() => changeShareType(type, shareOption, 1)}
+          onClick={() => changeShareType(type, shareOption, 2)}
         >
           Previous
         </button>

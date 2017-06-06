@@ -112,10 +112,6 @@ function ShareTopic ({
   if (type.indexOf('Facebook') === -1) {
     component = (
       <div style={style.container}>
-        <a href='http://maomao.rocks' target='_blank' rel='noopener noreferrer'>
-          <div className='maomao-logo' />
-        </a>
-        <a className='close_popup' onClick={closeShare}><i className='icons-close' /></a>
         <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
           {steps}
         </Steps>

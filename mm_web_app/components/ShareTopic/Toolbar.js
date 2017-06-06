@@ -1,25 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { onlyUpdateForKeys, compose } from 'recompose'
-import styled from 'styled-components'
 import Button from './Button'
 
-const GoogleButton = styled(Button)`
-  float: left;
-  background-image: url('/static/images/google.svg');
-`
-const FacebookButton = styled(Button)`
-  float: left;
-  background-image: url('/static/images/facebook.svg');
-`
-const FacebookMessengerButton = styled(Button)`
-  float: left;
-  background-image: url('/static/images/facebook-messenger.svg');
-`
-const LinkButton = styled(Button)`
-  float: left;
-  background-image: url('/static/images/link.svg');
-`
+const button = (img, active, onClick) => (
+  <Button primary={active} onClick={onClick}>
+    <img src={img} width={35} height={35} />
+  </Button>
+)
 
 const style = {
   toolbar: {
@@ -34,10 +22,10 @@ const enhance = compose(
 
 const Toolbar = enhance(({ active, onChange, onShare, onSendMsg }) =>
   <div style={style.toolbar}>
-    <GoogleButton primary={active === 'Google'} onClick={() => onChange('Google')} />
-    <FacebookButton primary={active === 'Facebook'} onClick={onShare} />
-    <FacebookMessengerButton primary={active === 'FacebookMessenger'} onClick={onSendMsg} />
-    <LinkButton primary={active === 'Link'} onClick={() => onChange('Link')} />
+    {button('/static/images/google.svg', active === 'Google', () => onChange('Google'))}
+    {button('/static/images/facebook.svg', active === 'Facebook', () => onChange('Facebook'))}
+    {button('/static/images/facebook-messenger.svg', active === 'FacebookMessenger', () => onChange('FacebookMessenger'))}
+    {button('/static/images/link.svg', active === 'Link', () => onChange('Link'))}
   </div>
 )
 

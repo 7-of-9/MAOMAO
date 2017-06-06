@@ -4,6 +4,7 @@
     ],
   "plugins": [
     "transform-decorators-legacy",
+    "inline-react-svg",
     [
       "module-resolver",
       {

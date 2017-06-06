@@ -6,7 +6,7 @@ let store = null
 
 export class UIStore {
   @observable onlyMe = false
-  @observable sortBy = 'date'
+  @observable sortBy = 'rating'
   @observable sortDirection = 'desc'
   @observable filterByTopic = []
   @observable filterByUser = []
@@ -53,6 +53,7 @@ export class UIStore {
   }
 
   @action changeSortOrder (type, direction) {
+    logger.warn('changeSortOrder', type, direction)
     this.sortBy = type
     this.sortDirection = direction
   }

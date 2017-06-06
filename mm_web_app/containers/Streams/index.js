@@ -263,8 +263,10 @@ class Streams extends React.Component {
                           </div>
                         </div>
                         <div className='widget-dropdown'>
-                          <div className='widget-calendar active'>
-                            <span className='nav-symbol'><i className='fa fa-calendar fa-2x' aria-hidden='true' /></span>
+                          <div className={this.props.ui.sortBy === 'date' ? 'widget-calendar active' : 'widget-calendar'}>
+                            <span className='nav-symbol' onClick={() => this.props.ui.changeSortOrder('date', this.props.ui.sortDirection === 'asc' ? 'desc' : 'asc')}>
+                              <i className='fa fa-calendar fa-2x' aria-hidden='true' />
+                            </span>
                             <span className='nav-text'>Order by date</span>
                             <span className='order-calendar'>
                               <a
@@ -273,7 +275,7 @@ class Streams extends React.Component {
                                 ><i className='fa fa-sort-up' aria-hidden='true' />
                               </a>
                               <a
-                                className={this.props.ui.sortBy === 'date' && this.props.ui.sortDirection !== 'asc' ? 'order-desc active' : 'order-desc'}
+                                className={this.props.ui.sortBy === 'date' && this.props.ui.sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                                 onClick={() => this.props.ui.changeSortOrder('date', 'desc')}
                                 >
                                 <i className='fa fa-sort-desc' aria-hidden='true' />
@@ -282,7 +284,7 @@ class Streams extends React.Component {
                           </div>
                         </div>
                         <div className='widget-dropdown'>
-                          <div className='widget-user'>
+                          <div className={this.props.ui.sortBy === 'rating' ? 'widget-user active' : 'widget-user'}>
                             <a data-toggle='dropdown'>
                               <span className='nav-symbol'><i className='fa fa-signal fa-2x' aria-hidden='true' /></span>
                               <span className='nav-text'>Rating</span>
@@ -294,7 +296,7 @@ class Streams extends React.Component {
                                 ><i className='fa fa-sort-up' aria-hidden='true' />
                               </a>
                               <a
-                                className={this.props.ui.sortBy === 'rating' && this.props.ui.sortDirection !== 'asc' ? 'order-desc active' : 'order-desc'}
+                                className={this.props.ui.sortBy === 'rating' && this.props.ui.sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                                 onClick={() => this.props.ui.changeSortOrder('rating', 'desc')}
                                 >
                                 <i className='fa fa-sort-desc' aria-hidden='true' />
