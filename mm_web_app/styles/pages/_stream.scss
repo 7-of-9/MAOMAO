@@ -364,6 +364,7 @@ img {
       height: 34px;
       overflow: hidden;
       cursor: pointer;
+      background: rgba(255, 255, 255, 0.5);
       -webkit-animation: topic-flyin 0.5s;
       animation: topic-flyin 0.5s;
       -webkit-box-shadow: 0 0px 3px rgba(0, 0, 0, 0.2), 0 1px 8px rgba(0, 0, 0, 0.3);
@@ -696,28 +697,51 @@ img {
       position: relative;
       min-height: 120px;
       overflow: hidden;
-      > a {
+      display: block;
+      .thumbnail-overlay {
         @include border-radius(4px);
+        position: relative;
         display: block;
         overflow: hidden;
-      }
-      img {
-        @include border-radius(8px);
-        object-fit: contain;
-        margin: 0 auto;
-        display: block;
-        max-width: 335px;
-        @media (max-width: 1450px) {
-          max-width: 270px;
+        img {
+          @include border-radius(8px);
+          object-fit: contain;
+          margin: 0 auto;
+          display: block;
+          max-width: 335px;
+          @media (max-width: 1450px) {
+            max-width: 270px;
+          }
+          @media (max-width: 1050px) {
+            max-width: 225px;
+          }
+          @media (max-width: 690px) {
+            max-width: 250px;
+          }
+          @media (max-width: 490px) {
+            max-width: 260px;
+          }
         }
-        @media (max-width: 1050px) {
-          max-width: 225px;
+        &::after,
+        &::before {
+          @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+          @include transition(background 0.7s linear);
+          @include border-radius(8px);
+          content: " ";
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
         }
-        @media (max-width: 690px) {
-          max-width: 250px;
+        &::after {
+          background: rgba(0, 0, 0, 0.02);
+          bottom: 0;
+          z-index: 5;
         }
-        @media (max-width: 490px) {
-          max-width: 260px;
+        &::before {
+          z-index: 101;
+          visibility: hidden;
+          background: -webkit-linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
+          background: linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
         }
       }
       .btn-discovery {
@@ -727,26 +751,9 @@ img {
           height: 20px;
         }
       }
-      &::after,
-      &::before {
-        @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
-        @include transition(background 0.3s linear);
-        @include border-radius(8px);
-        content: " ";
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-      }
-      &::after {
-        background: rgba(0, 0, 0, 0.02);
-        bottom: 0;
-        z-index: 5;
-      }
-      &::before {
-        z-index: 101;
-        visibility: hidden;
-        background: -webkit-linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
-        background: linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
+      .mix-tag {
+        @include abs-pos ($top: 0, $right: 15px, $bottom: auto, $left: auto);
+        z-index: 1000;
       }
     }
     .caption {
@@ -821,10 +828,13 @@ img {
         cursor: default !important;
       }
     }
-    &:hover .thumbnail-image {
+    &:hover .thumbnail-overlay {
       &::before,
       &::after {
-        @include transition(background 0.3s linear);
+        @include transition(background 0.9s linear);
+        animation-name: pulse;
+        animation-duration: 2s;
+        animation-fill-mode: both;
       }
       &::before {
         visibility: visible;
@@ -1581,7 +1591,8 @@ a.btn-box-remove {
         color: #2db7f5;
       }
     }
-    .order-calendar {
+    .order-calendar,
+    .order-rating {
       position: relative;
       margin-left: 7px;
       display: inline-block;

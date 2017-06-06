@@ -137,11 +137,12 @@ class Streams extends React.Component {
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys)} />}
             <div className='thumbnail'>
-              <a href={href} target='_blank'>
-                <div className='thumbnail-image'>
+              <div className='thumbnail-image'>
+                <a className='thumbnail-overlay' href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
-                </div>
-              </a>
+                </a>
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => this.props.ui.openShareTopic(topic))}
+              </div>
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>
@@ -167,7 +168,6 @@ class Streams extends React.Component {
                   </div>
                 </div>
                 {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => this.props.ui.openShareTopic(topic))}
               </div>
             </div>
           </div>
