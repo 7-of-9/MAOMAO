@@ -101,7 +101,7 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
           }
-        {!isLogin &&
+        {!isLogin && browserName.length > 0 && browserName !== 'node' &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}

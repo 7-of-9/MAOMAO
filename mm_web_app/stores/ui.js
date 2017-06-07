@@ -39,8 +39,8 @@ export class UIStore {
     }
   }
 
-  @action openShareTopic (topic) {
-    logger.warn('share topic', topic)
+  @action openShareTopic (urlId, topic) {
+    logger.warn('share topic', urlId, topic)
     this.currentViewer = 'sharetopic'
   }
 

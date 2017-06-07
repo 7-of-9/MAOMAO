@@ -146,12 +146,12 @@ class AppHeader extends React.Component {
           </a>
           <ul className='dropdown-menu dropdown-hiring pull-right'>
             <li key={guid()}>
-              <Link prefetch href='/hiring-js' className='nav-link'>
+              <Link prefetch href='/hiring/?type=js' as='/hiring-js' className='nav-link'>
                 <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
               </Link>
             </li>
             <li key={guid()}>
-              <Link prefetch href='/hiring-vp' className='nav-link'>
+              <Link prefetch href='/hiring/?type=vp' as='/hiring-vp' className='nav-link'>
                 <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
               </Link>
             </li>

@@ -159,7 +159,7 @@ class Streams extends React.Component {
                 <a className='thumbnail-overlay' href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(topic))}
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(id, topic))}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>

@@ -25,6 +25,7 @@ class Share extends React.Component {
 
   componentDidMount () {
     logger.warn('Share componentDidMount')
+    // TODO: get contacts from extension
   }
 
   componentWillReact () {
