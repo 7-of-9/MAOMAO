@@ -151,7 +151,7 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
             return (
               <Contact
                 onClick={() => { addContact(contact) }}
-                key={`MRC-${contact.key}`}
+                key={`MRC-${contact.email}`}
                 name={contact.name}
                 email={contact.email}
                 image={contact.image}
@@ -182,7 +182,7 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
         selectedContacts.map(contact => (
-          <Contact isEdit onRemove={() => { removeContact(contact) }} key={`SC-${contact.key}`} name={contact.name} email={contact.email} image={contact.image} />
+          <Contact isEdit onRemove={() => { removeContact(contact) }} key={`SC-${contact.email}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
       }
     </div>

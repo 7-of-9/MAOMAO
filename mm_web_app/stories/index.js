@@ -99,7 +99,7 @@ storiesOf('ShareTopic', module)
       sendEmail={action('sendEmail')}
       changeShareType={action('changeShareType')}
       accessGoogleContacts={action('accessGoogleContacts')}
-      contacts={[{name: 'Dung', email: 'dunghd.it@gmail.com', picture: 'no-image.png'}]}
+      contacts={[{'name': 'Quoc Phi', 'email': 'nguyenbaphi152dn@gmail.com'}, {'name': 'Keith Horwood', 'email': 'keith@stdlib.com'}, {'name': 'chris mitchell', 'email': 'chris.mitchell@jcdsconsulting.com'}, {'name': 'Dang Cong Dao', 'email': 'daoit151@gmail.com'}, {'name': 'ants house', 'email': 'antshousesclub.dn@gmail.com'}]}
       notify={action('notify')}
       closeShare={action('closeShare')}
       />
