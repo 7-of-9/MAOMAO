@@ -53,7 +53,7 @@ class Share extends React.Component {
               type={this.state.type}
               shareOption={this.state.shareOption}
               currentStep={this.state.currentStep}
-              topics={[]}
+              topics={this.props.ui.shareTopics}
               terms={[]}
               code=''
               sendEmail={() => {}}

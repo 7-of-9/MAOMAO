@@ -71,9 +71,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                 name='topics'
               />
               <label className='radio__regular__label' htmlFor={tld.id} >
-                {
-                  window.location.host !== tld.name ? `${tld.name.toUpperCase()} (${window.location.host})` : tld.name.toUpperCase()
-                }
+                {tld.name}
               </label>
             </div>
           }

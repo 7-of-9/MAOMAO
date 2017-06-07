@@ -16,6 +16,8 @@ export class UIStore {
   @observable currentViewer = 'streams'
   @observable showExtensionModal = false
   @observable notifications = []
+  shareTopics = []
+  shareUrlId = -1
 
   @action toggleOnlyMe (userId, users) {
     this.onlyMe = !this.onlyMe
@@ -41,6 +43,8 @@ export class UIStore {
 
   @action openShareTopic (urlId, topic) {
     logger.warn('share topic', urlId, topic)
+    this.shareUrlId = urlId
+    this.shareTopics = [ { id: `${topic.id}-tld-${topic.name}`, name: topic.name } ]
     this.currentViewer = 'sharetopic'
   }
 

@@ -163,7 +163,7 @@ export class HomeStore extends CoreStore {
             users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
             _.forEach(myTopics, item => {
               if (item.term_id > 0 && item.url_ids.length > 0) {
-                topics.push({ name: item.term_name, urlIds: item.url_ids })
+                topics.push({ id: item.term_id, name: item.term_name, urlIds: item.url_ids })
               }
             })
           }
