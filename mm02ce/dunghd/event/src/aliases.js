@@ -317,8 +317,16 @@ const webCheckAuth = () => (
   }
 );
 
+const webGoogleContacts = () => (
+  (dispatch, getState) => {
+    const { auth } = getState();
+    return dispatch(actionCreator('WEB_GOOGLE_CONTACTS_RESULT', auth.contacts || []));
+  }
+);
+
 export default {
   WEB_CHECK_AUTH: webCheckAuth,
+  WEB_GOOGLE_CONTACTS: webGoogleContacts,
   AUTH_LOGIN_GOOGLE: authGoogleLogin,
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
   AUTH_LOGOUT: authLogout,

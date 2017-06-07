@@ -282,8 +282,8 @@ class Streams extends React.Component {
                         </div>
                         <div className='widget-dropdown'>
                           <div className={this.props.ui.sortBy === 'date' ? 'widget-calendar active' : 'widget-calendar'}>
-                            <a>
-                              <span className='nav-symbol' onClick={() => this.props.ui.changeSortOrder('date', this.props.ui.sortDirection === 'asc' ? 'desc' : 'asc')}>
+                            <a onClick={() => this.props.ui.changeSortOrder('date', this.props.ui.sortDirection === 'asc' ? 'desc' : 'asc')}>
+                              <span className='nav-symbol'>
                                 <i className='fa fa-calendar fa-2x' aria-hidden='true' />
                               </span>
                               <span className='nav-text'>Order by date</span>

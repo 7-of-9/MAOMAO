@@ -14,6 +14,7 @@ export class CoreStore {
   isMobile = false
   userAgent = {}
   channels = []
+  contacts = []
   user = null
   pusher = null
   browserName = ''
@@ -55,6 +56,20 @@ export class CoreStore {
       }
     }
     logger.warn('checkInstall isChrome, isMobile, isInstalledOnChromeDesktop', this.isChrome, this.isMobile, this.isInstalledOnChromeDesktop)
+  }
+
+  @action checkGoogleContacts () {
+    logger.warn('checkGoogleContacts')
+    if (this.isInstall && this.userId > 0) {
+      sendMsgToChromeExtension(actionCreator('WEB_GOOGLE_CONTACTS', {}), (error, data) => {
+        if (error) {
+          logger.warn('WEB_GOOGLE_CONTACTS error', error)
+        } else {
+          this.contacts = data.payload
+          logger.warn('contacts', this.contacts)
+        }
+      })
+    }
   }
 
   @action login (userId, userHash) {

@@ -21,10 +21,16 @@ class Share extends React.Component {
       currentStep: 1
     }
     this.changeShareType = this.changeShareType.bind(this)
+    this.fetchGoogleContacts = this.fetchGoogleContacts.bind(this)
   }
 
   componentDidMount () {
-    logger.warn('Share componentDidMount')
+    this.props.store.checkGoogleContacts()
+    logger.warn('Share componentDidMount', this.props.ui.shareTopics)
+    this.setState({
+      shareOption: this.props.ui.shareTopics[0].id,
+      currentStep: 2
+    })
     // TODO: get contacts from extension
   }
 
@@ -36,6 +42,10 @@ class Share extends React.Component {
     this.setState({
       type, shareOption, currentStep
     })
+  }
+
+  fetchGoogleContacts () {
+
   }
 
   render () {
@@ -58,10 +68,10 @@ class Share extends React.Component {
               code=''
               sendEmail={() => {}}
               changeShareType={this.changeShareType}
-              accessGoogleContacts={() => {}}
-              contacts={[]}
+              accessGoogleContacts={this.fetchGoogleContacts}
+              contacts={this.props.store.contacts}
               notify={() => {}}
-              closeShare={() => {}}
+              closeShare={() => this.props.ui.backToStreams()}
             />
           </div>
         </div>
