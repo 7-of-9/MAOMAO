@@ -57,7 +57,8 @@ namespace mm_svc
                 //    goto ret1;
 
                 // get or add URL title term 
-                //var tld_title_term_id = GetOrAdd_TldTitleTerm(db, url.id);
+                var tld_title_term_id = GetOrAdd_TldTitleTerm(db, url.id);
+                var tld_title_term = db.terms.Find(tld_title_term_id);
 
                 // load - extract meta
                 dynamic meta_all = null;
@@ -99,6 +100,8 @@ namespace mm_svc
                 //
                 // MAP WIKI : map & store wiki golden_terms
                 //
+                // (remove any calais terms that match TLD title term first; avoids pollution of topic terms from website names)
+                calais_terms.RemoveAll(p => tld_title_term.name.ltrim().Contains(p.term.name.ltrim())); 
                 if (existing_wiki_terms.Count == 0 || reprocess_all || reprocess_map_wiki) {
                     if (reprocess_all || reprocess_map_wiki) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));

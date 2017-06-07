@@ -13,18 +13,20 @@ namespace mm_svc
     public static class UserStream
     {
         const double MIN_S_NORM = 0.7;
+
         public static UserStreamReturn GetAllStreams(long user_id)
         {
             using (var db = mm02Entities.Create())
             {
                 // current user histories base on user_id
                 var me = db.users.Find(user_id);
-                var urls_list = FindUserUrls(user_id);
+                var my_urls = FindUserUrls(user_id);
+
                 // find all accepted share base on user_id
-                var share_urls = db.share_active.Include("share").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                var friends_urls = db.share_active.Include("share").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
+                
                 // 3 types of sharing: url, topic or all
-                var shares_list = share_urls.Select(p => new ShareActiveInput()
-                {
+                var shares_list = friends_urls.Select(p => new ShareActiveInput() {
                     share_id = p.share_id,
                     share_code = p.share.share_code,
                     url_id = p.share.url_id,
@@ -33,7 +35,8 @@ namespace mm_svc
                     share_all = p.share.share_all,
                     user_id = p.share.source_user_id
                 }).ToList();
-                return ClassifyUrlSetForUser(me, urls_list, shares_list);
+
+                return ClassifyUrlSetForUser(me, my_urls, shares_list);
             }
         }
 
@@ -53,8 +56,7 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 var user_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id && p.time_on_tab > 0).Distinct().ToListNoLock();
-                return user_urls.Select(p => new ClassifyUrlInput()
-                {
+                return user_urls.Select(p => new ClassifyUrlInput() {
                     url_id = p.url_id,
                     hit_utc = p.nav_utc,
                     user_id = p.user_id,
@@ -143,14 +145,19 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
-                               .Include("term").Include("url")
-                               .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
-                               .Where(p => p.S_norm > MIN_S_NORM)
-                               .Where(p => my_url_ids.Contains(p.url_id));
+                                             .Include("term")
+                                             .Include("url")
+                                             .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                                             .Where(p => p.S_norm > MIN_S_NORM)
+                                             .Where(p => my_url_ids.Contains(p.url_id));
+                Debug.WriteLine(url_parent_terms_qry.ToString());
+
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
-                var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
-                return urls.Select(p => new UserStreamUrlInfo()
+
+                var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).OrderBy(p => p.id).ToList();
+
+                var ret = urls.Select(p => new UserStreamUrlInfo()
                 {
                     id = p.id,
                     href = p.url1,
@@ -161,6 +168,8 @@ namespace mm_svc
                     im_score = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).im_score,
                     time_on_tab = urls_list.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab,
                 }).ToList();
+
+                return ret;
             }
         }
 
@@ -181,7 +190,7 @@ namespace mm_svc
                 var url_topics = url_parent_terms.Where(p => p.found_topic && p.S_norm > 0.8).ToList();
 
                 // get topic link chains - regular topics & url title topics
-                var topic_chains = new Dictionary<long, List<UserStreamTopicInfo>>();
+                var topic_chains = new Dictionary<long, List<UserStreamTopicInfo>>(); // term_id, chain
                 foreach (var topic in url_topics.Union(url_title_topics) // regular topics & url title topics
                                                 .DistinctBy(p => p.term_id))
                 {
@@ -245,13 +254,15 @@ namespace mm_svc
             }
         }
 
-        private static UserStreamReturn ClassifyUrlSetForUser(user me, List<ClassifyUrlInput> urls_list, List<ShareActiveInput> shares_list)
+        public static UserStreamReturn ClassifyUrlSetForUser(user me, List<ClassifyUrlInput> users_urls, List<ShareActiveInput> shares_list)
         {
             // get all topics, urls for user
             // json output
             // { me: { owner: 'me', urls: [], accept_shared: []} , { shares: [ { owner: 'demo',{ urls: []} }]}
             // borrow code from ClassifyUrlSet()
-            var url_infos = FindUserUrlInfos(urls_list);
+
+            var url_infos = FindUserUrlInfos(users_urls);
+
             var ret = new UserStreamReturn()
             {
                 shares = ClassifyUrlSetShares(shares_list),
@@ -262,7 +273,7 @@ namespace mm_svc
                     avatar = me.avatar ?? "",
                     fullname = me.firstname + " " + me.lastname,
                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
-                    topics = FindUserTopicInfos(urls_list, url_infos),
+                    topics = FindUserTopicInfos(users_urls.OrderBy(p => p.url_id).ToList(), url_infos),
                     accept_shares = FindAcceptSharedFromUser(me)
                 }
             };
@@ -294,6 +305,10 @@ namespace mm_svc
             var shares = new List<UserShareStreamInfo>();
             var user_share_all = new List<long>();
             var user_share_lists = new Hashtable();
+
+            if (shares_list == null)
+                return null;
+
             // we only get share urls if user accept share all
             // or group all share by user 
             // e.g: [ { id: 1, user: 'abc', list: [ { type: 'all', share_code: 'uniq_code', urls: []} ] ]
@@ -381,9 +396,7 @@ namespace mm_svc
         {
             public UserStreamInfo me;
             public List<UserShareStreamInfo> shares;
-
         }
-
 
         public class UserStreamInfo
         {

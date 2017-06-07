@@ -53,6 +53,7 @@ namespace mmapi00.Controllers
             var history_id = mm_svc.UserHistory.TrackUrl(url, (string)nlp_info.document_head_hash, user_id, 0, 0, 0);
 
             var db_url = mm_svc.UrlInfo.GetUrl(url, (string)nlp_info.document_head_hash);
+            
             // push notification to client
             var options = new PusherOptions();
             options.Cluster = "ap1";

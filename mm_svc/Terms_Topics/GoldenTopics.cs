@@ -27,6 +27,7 @@ namespace mm_svc.Terms
             RecurseTopicLinkChain(chain, child_term_id);
             return chain;
         }
+
         private static void RecurseTopicLinkChain(List<topic_link> chain, long child_term_id) {
             using (var db = mm02Entities.Create()) {
                 //Debug.WriteLine($"getting parent_single for {child_term_id}...");

@@ -87,7 +87,7 @@ namespace wowmao
                 pnlTopLeftInner.BackColor = Color.Red;
             }
             else {
-                mm02Entities.con_str = @"metadata=res://*/mmdb.csdl|res://*/mmdb.ssdl|res://*/mmdb.msl;provider=System.Data.SqlClient;provider connection string=""data source=.;initial catalog=mm02_local;persist security info=True;Integrated Security = true;MultipleActiveResultSets=True;App=EntityFramework""";
+                mm02Entities.con_str = @"metadata=res://*/mmdb.csdl|res://*/mmdb.ssdl|res://*/mmdb.msl;provider=System.Data.SqlClient;provider connection string=""data source=.;initial catalog=mm02_local2;persist security info=True;Integrated Security = true;MultipleActiveResultSets=True;App=EntityFramework""";
                 pnlTopLeftInner.BackColor = Color.Green;
             }
             using (var db = mm02Entities.Create()) { this.db_name = db.Database.Connection.Database; }
