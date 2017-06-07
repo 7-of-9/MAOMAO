@@ -38,7 +38,7 @@ function mashUp (store) {
   const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult } = store
   if (googleKnowledgeResult && googleKnowledgeResult.length) {
     _.forEach(googleKnowledgeResult, (item) => {
-      const moreDetailUrl = (item.result.detailedDescription && item.result.detailedDescription.url) || item.result.url
+      const moreDetailUrl = (item.result && item.result.detailedDescription && item.result.detailedDescription.url) || (item.result && item.result.url)
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
         urls.push(moreDetailUrl)
         graphKnowledges.push(
@@ -110,12 +110,13 @@ function mashUp (store) {
     _.forEach(redditResult, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
         urls.push(item.url)
+        const img = item.preview.images[0].resolutions.length ? item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url : '/static/images/no-image.png'
         reddits.push(
           <div className='grid-item' key={`RD-${item.url}`}>
             <BlockElement
               name={item.title}
               description={item.selftext || item.title}
-              image={item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url}
+              image={img}
               url={item.url}
               type={'Reddit'}
             />
