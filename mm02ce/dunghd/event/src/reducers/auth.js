@@ -23,10 +23,13 @@ export default (state = initialState, action, nlp) => {
     }
     case 'DOWNLOAD_PHOTO_DONE': {
       const contacts = [];
-      state.contacts.forEach((contact) => {
-        contacts.push(action.payload.photos.find(item => item.email === contact.email));
-      });
-      return Object.assign({}, state, { contacts });
+      if (action.payload.photos && action.payload.photos.length) {
+        state.contacts.forEach((contact) => {
+          contacts.push(action.payload.photos.find(item => item.email === contact.email));
+        });
+        return Object.assign({}, state, { contacts });
+      }
+      return state;
     }
     case 'AUTO_LOGIN': {
       window.userId = state.userId;

@@ -73,11 +73,11 @@ export class CoreStore {
     }
   }
 
-  @action saveGoogleContacts (contacts) {
-    logger.warn('saveGoogleContacts', contacts)
+  @action saveGoogleContacts (contacts, googleToken, googleUserId) {
+    logger.warn('saveGoogleContacts', contacts, googleToken, googleUserId)
     this.contacts = contacts
     if (this.isInstall) {
-      downloadPhoto(contacts)
+      downloadPhoto(googleToken, googleUserId)
     }
   }
 

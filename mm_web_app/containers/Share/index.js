@@ -7,6 +7,7 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import ShareTopic from '../../components/ShareTopic'
+import { toJS } from 'mobx'
 import logger from '../../utils/logger'
 import { checkGoogleAuth, fetchContacts } from '../../utils/google'
 
@@ -48,12 +49,12 @@ class Share extends React.Component {
     checkGoogleAuth()
     .then((data) => {
       // download data
-      const { googleToken } = data
+      const { googleToken, googleUserId } = data
       logger.warn('checkGoogleAuth result', googleToken, data)
       this.props.ui.addNotification('Loading google contacts')
       return fetchContacts(googleToken, 1000).then((result) => {
         result.json().then(resp => {
-          this.props.store.saveGoogleContacts(resp.contacts)
+          this.props.store.saveGoogleContacts(resp.contacts, googleToken, googleUserId)
         })
       })
     }).catch((error) => {
@@ -84,7 +85,7 @@ class Share extends React.Component {
               sendEmail={() => {}}
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
-              contacts={this.props.store.contacts}
+              contacts={toJS(this.props.store.contacts)}
               notify={() => {}}
               closeShare={() => this.props.ui.backToStreams()}
             />
