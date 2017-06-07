@@ -368,6 +368,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           />
           <ShareOnHoverImage
             isReady
+            position={3}
             openShare={openShare}
           />
         </ToggleDisplay>

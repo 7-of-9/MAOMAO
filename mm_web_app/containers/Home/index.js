@@ -48,6 +48,7 @@ const Streams = dynamic(
 const ChromeInstall = dynamic(
   import('../ChromeInstall'),
   {
+    ssr: false,
     loading: () => (<Loading isLoading />)
   }
 )
