@@ -59,18 +59,22 @@ function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
   )
 }
 
-function urlTopic (id, topics, onSelectTopic, onShareTopic) {
+function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
   // TODO: click on name to filter by topic
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
+  const isOwner = myUrlIds.indexOf(id) !== -1
   _.forEach(currentTopics, (topic) => {
     items.push(
       <div className='mix-tag-topic' key={guid()}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
-          <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
-            <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
-          </span>
+          {
+            isOwner &&
+            <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
+              <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
+            </span>
+          }
         </span>
       </div>)
   })
@@ -123,6 +127,7 @@ class Streams extends React.Component {
   render () {
     // populate urls and users
     const { urls, users, topics, userId } = toJS(this.props.store)
+    const { urls: myUrls } = toJS(this.props.myStream)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
@@ -136,6 +141,7 @@ class Streams extends React.Component {
     }
     /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
+    const myUrlIds = myUrls.map(item => item.id)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, time_on_tab, hit_utc, rate, im_score } = item
@@ -153,7 +159,7 @@ class Streams extends React.Component {
                 <a className='thumbnail-overlay' href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), (topic) => this.props.ui.openShareTopic(topic))}
+                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(topic))}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
