@@ -22,7 +22,7 @@ const StepThree = enhance(({
     <div>
       <ToggleDisplay className='link-share-option' show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
-        <button className='btn-copy' onClick={accessGoogleContacts}> here </button>
+        <button type='button' className='btn btn-copy mr7 ml7' onClick={accessGoogleContacts}> here </button>
         to grant permissions to access google contacts.
       </ToggleDisplay>
       <ToggleDisplay show={type === 'Google' && contacts.length > 0}>
@@ -46,7 +46,7 @@ const StepThree = enhance(({
             onCopy={() => setCopied(true)}
           >
             <div className='input-group-btn'>
-              <button className='btn-copy'>Copy</button>
+              <button type='button' className='btn btn-copy'>Copy</button>
               {copied ? <span style={{ color: '#014cd6' }}>Copied.</span> : null}
             </div>
           </CopyToClipboard>

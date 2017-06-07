@@ -4,9 +4,7 @@ import { onlyUpdateForKeys, compose } from 'recompose'
 import Button from './Button'
 
 const button = (img, active, onClick) => (
-  <Button primary={active} onClick={onClick}>
-    <img src={img} width={35} height={35} />
-  </Button>
+  <Button primary={active} onClick={onClick} />
 )
 
 const style = {

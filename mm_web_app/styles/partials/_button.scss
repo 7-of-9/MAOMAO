@@ -56,7 +56,6 @@ the button section
   user-select: none;
   background-image: none;
   border: 1px solid transparent;
-  border-radius: 4px;
   &:focus,
   &:active:focus,
   &.active:focus,
@@ -692,6 +691,28 @@ a.btn-unfollow,
   @media (max-width: 490px) {
     border: 1px solid #ccc;
     top: 79px;
+  }
+}
+
+.btn-copy {
+  @include border-radius(4px);
+  padding: 6px 12px;
+  z-index: 2;
+  display: inline-block;
+  font-size: 0.875rem;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ccc;
+  &:hover,
+  &:focus {
+    color: #333;
+    background: #e6e6e6;
+    border-color: #bdbdbd;
+  }
+  &,
+  &:hover,
+  &:focus {
+    transition: all 0.2s ease-in-out;
   }
 }
 
