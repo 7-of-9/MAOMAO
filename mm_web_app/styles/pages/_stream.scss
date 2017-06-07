@@ -1537,6 +1537,9 @@ a.btn-box-remove {
           font-size: 1.1rem;
           vertical-align: top;
         }
+        &.topic-name{
+          padding-right: 0;
+        }
         @media (max-width: 767px) {
           white-space: normal;
           padding: 7px 20px;
@@ -1795,6 +1798,26 @@ a.btn-box-remove {
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
     float: none;
+  }
+}
+
+.widget-topic {
+  .dropdown-menu {
+    min-width: 482px;
+    li {
+      display: -moz-inline-stack;
+      display: inline-block;
+      vertical-align: top;
+      *display: inline;
+      zoom: 1;
+      min-width: 160px;
+      max-width: 160px;
+      span {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
   }
 }
 
