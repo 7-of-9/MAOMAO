@@ -38,6 +38,7 @@ export class UIStore {
       this.currentViewer = 'discovery'
     } else {
       this.currentViewer = 'streams'
+      this.page = 1
     }
   }
 
@@ -54,12 +55,14 @@ export class UIStore {
 
   @action backToStreams () {
     this.currentViewer = 'streams'
+    this.page = 1
   }
 
   @action changeSortOrder (type, direction) {
     logger.warn('changeSortOrder', type, direction)
     this.sortBy = type
     this.sortDirection = direction
+    this.page = 1
   }
 
   @action openExtensionModal () {

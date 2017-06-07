@@ -15,10 +15,10 @@ export class CoreStore {
   isMobile = false
   userAgent = {}
   channels = []
-  contacts = []
   user = null
   pusher = null
   browserName = ''
+  @observable contacts = []
   @observable isChrome = false
   @observable userHash = ''
   @observable userId = -1
@@ -74,7 +74,7 @@ export class CoreStore {
   }
 
   @action saveGoogleContacts (contacts) {
-    logger.warn('saveGoogleContacts')
+    logger.warn('saveGoogleContacts', contacts)
     this.contacts = contacts
     if (this.isInstall) {
       downloadPhoto(contacts)

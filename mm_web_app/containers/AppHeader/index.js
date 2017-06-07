@@ -47,8 +47,8 @@ class AppHeader extends React.Component {
           logger.warn('firebase - user', user)
           return user.getIdToken()
           .then((token) => {
-            this.props.notify(`Welcome, ${user.displayName}!`)
             if (this.props.store.userId < 0) {
+              this.props.notify(`Welcome, ${user.displayName}!`)
               return fetch('/api/login', {
                 method: 'POST',
                 // eslint-disable-next-line no-undef

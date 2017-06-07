@@ -49,15 +49,15 @@ class Share extends React.Component {
     .then((data) => {
       // download data
       const { googleToken } = data
+      logger.warn('checkGoogleAuth result', googleToken, data)
       this.props.ui.addNotification('Loading google contacts')
-      fetchContacts(googleToken, 1, 1000).then((result) => {
-        this.props.store.saveGoogleContacts(result.data)
-      }).catch((error) => {
-        this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
-        logger.warn(error)
+      return fetchContacts(googleToken, 1000).then((result) => {
+        result.json().then(resp => {
+          this.props.store.saveGoogleContacts(resp.contacts)
+        })
       })
     }).catch((error) => {
-      // Try to logout and remove cache token
+        // Try to logout and remove cache token
       this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
       logger.warn(error)
     })
