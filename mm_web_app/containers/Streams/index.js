@@ -127,7 +127,7 @@ class Streams extends React.Component {
   render () {
     // populate urls and users
     const { urls, users, topics, userId } = toJS(this.props.store)
-    const { urls: myUrls } = toJS(this.props.myStream)
+    const { urls: myUrls } = toJS(this.props.store.myStream)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
