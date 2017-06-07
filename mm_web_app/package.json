@@ -38,7 +38,7 @@
     "mobx-utils": "^2.0.1",
     "moment": "^2.18.1",
     "neal-react": "^0.2.5",
-    "next": "beta",
+    "next": "3.0.0-beta11",
     "normalize.css": "^7.0.0",
     "normalizr": "^3.2.3",
     "nprogress": "^0.2.0",
@@ -70,6 +70,7 @@
     "request": "^2.81.0",
     "session-file-store": "^1.0.0",
     "styled-components": "^2.0.0",
+    "throttled-queue": "^1.0.4",
     "validate.js": "^0.11.1"
   },
   "standard": {

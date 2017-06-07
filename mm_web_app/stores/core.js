@@ -4,6 +4,7 @@ import { isMobileBrowser, browserName } from '../utils/detector'
 import { PUSHER_KEY } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 import logger from '../utils/logger'
+import { downloadPhoto } from '../utils/google'
 
 let store = null
 
@@ -69,6 +70,14 @@ export class CoreStore {
           logger.warn('contacts', this.contacts)
         }
       })
+    }
+  }
+
+  @action saveGoogleContacts (contacts) {
+    logger.warn('saveGoogleContacts')
+    this.contacts = contacts
+    if (this.isInstall) {
+      downloadPhoto(contacts)
     }
   }
 

@@ -8,6 +8,7 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import ShareTopic from '../../components/ShareTopic'
 import logger from '../../utils/logger'
+import { checkGoogleAuth, fetchContacts } from '../../utils/google'
 
 @inject('store')
 @inject('ui')
@@ -31,7 +32,6 @@ class Share extends React.Component {
       shareOption: this.props.ui.shareTopics[0].id,
       currentStep: 2
     })
-    // TODO: get contacts from extension
   }
 
   componentWillReact () {
@@ -45,7 +45,22 @@ class Share extends React.Component {
   }
 
   fetchGoogleContacts () {
-
+    checkGoogleAuth()
+    .then((data) => {
+      // download data
+      const { googleToken } = data
+      this.props.ui.addNotification('Loading google contacts')
+      fetchContacts(googleToken, 1, 1000).then((result) => {
+        this.props.store.saveGoogleContacts(result.data)
+      }).catch((error) => {
+        this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
+        logger.warn(error)
+      })
+    }).catch((error) => {
+      // Try to logout and remove cache token
+      this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
+      logger.warn(error)
+    })
   }
 
   render () {
