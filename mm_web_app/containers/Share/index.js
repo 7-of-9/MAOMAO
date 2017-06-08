@@ -15,6 +15,25 @@ import fbScrapeShareUrl from '../../utils/fb'
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net/'
 
+const parseShareCode = (codes, urlId, shareTopics) => {
+  logger.warn('parseShareCode', codes, urlId, shareTopics)
+  const findUrlCode = codes.sites.find(item => item && item.url_id === urlId)
+  const topics = {}
+  if (shareTopics && shareTopics.length) {
+    shareTopics.forEach(topic => {
+      const findCode = codes.topics.find(item => item && item.id === topic.topic_id)
+      if (findCode) {
+        topics[topic.id] = findCode.share_code
+      }
+    })
+  }
+  return {
+    all: codes.all,
+    site: (findUrlCode && findUrlCode.share_code) || '',
+    ...topics
+  }
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -103,6 +122,7 @@ class Share extends React.Component {
   }
 
   render () {
+    const { shareUrlId, shareTopics } = this.props.ui
     return (
       <div>
         <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
@@ -118,7 +138,7 @@ class Share extends React.Component {
               shareOption={this.state.shareOption}
               currentStep={this.state.currentStep}
               topics={this.props.ui.shareTopics}
-              code={toJS(this.props.store.codes)}
+              code={parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)}
               sendEmail={() => {}}
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
