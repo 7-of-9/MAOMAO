@@ -137,7 +137,7 @@ const enhance = compose(
       }
     }
   }),
-  onlyUpdateForKeys(['value', 'contacts', 'suggestions'])
+  onlyUpdateForKeys(['value', 'contacts', 'suggestions', 'selectedContacts'])
 )
 
 const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addContact,

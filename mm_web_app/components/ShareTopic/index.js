@@ -77,7 +77,7 @@ const enhance = compose(
 
 function ShareTopic ({
   type, topics, contacts, code, shareOption, currentStep,
-  handleChange, shareUrl, sendMsgUrl, changeShareType,
+  handleChange, shareUrl, sendMsgUrl, changeShareType, notify,
   sendEmails, closeShare, accessGoogleContacts }) {
   logger.info('ShareTopic type, topics, contacts, code, shareOption, currentStep', type, topics, contacts, code, shareOption, currentStep)
   const steps = [
@@ -120,6 +120,7 @@ function ShareTopic ({
         }
       {currentStep && currentStep === 3 &&
       <StepThree
+        notify={notify}
         shareOption={shareOption}
         type={type}
         contacts={contacts}

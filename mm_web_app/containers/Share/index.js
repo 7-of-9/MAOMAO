@@ -98,21 +98,6 @@ class Share extends React.Component {
     logger.warn('Share componentWillReact')
   }
 
-  // shareUrl: props => () => {
-  //     const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
-  //     const closePopupUrl = `${SITE_URL}/static/success.html`
-  //     const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
-  //     logger.warn('shareUrl', src)
-  //     openUrl(src)
-  //   },
-  //   sendMsgUrl: props => () => {
-  //     const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
-  //     const closePopupUrl = `${SITE_URL}/static/success.html`
-  //     const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
-  //     logger.warn('shareUrl', src)
-  //     openUrl(src)
-  //   },
-
   changeShareType (type, shareOption, currentStep) {
     if (type.indexOf('Facebook') !== -1) {
       const { shareUrlId, shareTopics } = this.props.ui
@@ -176,7 +161,7 @@ class Share extends React.Component {
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
               contacts={toJS(this.props.store.contacts)}
-              notify={() => {}}
+              notify={(msg) => this.props.ui.addNotification(msg)}
               closeShare={() => this.props.ui.backToStreams()}
             />
           </div>

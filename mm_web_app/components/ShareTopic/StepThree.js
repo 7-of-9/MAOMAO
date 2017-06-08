@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { withState } from 'recompose'
 import ToggleDisplay from 'react-toggle-display'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import GoogleShare from './GoogleShare'
@@ -15,10 +14,9 @@ const style = {
 
 const selectUrl = (code, shareOption) => code[shareOption]
 
-const enhance = withState('copied', 'setCopied', false)
-const StepThree = enhance(({
-  type, contacts, code, shareOption, copied,
-  accessGoogleContacts, handleChange, sendEmails, changeShareType, setCopied }) => (
+const StepThree = ({
+  type, contacts, code, shareOption,
+  accessGoogleContacts, handleChange, sendEmails, changeShareType, notify }) => (
     <div className='modifier-autosuggest'>
       <ToggleDisplay className='link-share-option' show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
@@ -43,11 +41,10 @@ const StepThree = enhance(({
           />
           <CopyToClipboard
             text={`${SITE_URL}/${selectUrl(code, shareOption)}`}
-            onCopy={() => setCopied(true)}
+            onCopy={() => notify(`You've just copied the link ${SITE_URL}/${selectUrl(code, shareOption)}`)}
           >
             <div className='input-group-btn'>
               <button type='button' className='btn btn-copy'>Copy</button>
-              {copied ? <span style={{ color: '#014cd6' }}>Copied.</span> : null}
             </div>
           </CopyToClipboard>
         </div>
@@ -72,7 +69,7 @@ const StepThree = enhance(({
         }
       </div>
     </div>
-  ))
+  )
 
 StepThree.propTypes = {
   type: PropTypes.string.isRequired,
@@ -81,6 +78,7 @@ StepThree.propTypes = {
   shareOption: PropTypes.string.isRequired,
   accessGoogleContacts: PropTypes.func.isRequired,
   handleChange: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
   sendEmails: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired
 }
