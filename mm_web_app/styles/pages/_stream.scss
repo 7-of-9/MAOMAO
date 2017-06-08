@@ -138,6 +138,60 @@ img {
       }
     }
   }
+  .react-autosuggest__suggestions-container {
+    @include opacity(0);
+    @include border-radius(4px);
+    @include box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+    @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
+    z-index: 100;
+    width: 100%;
+    min-height: 94px;
+    margin: 3px 0 0;
+    display: block;
+    visibility: hidden;
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    -o-transform: translateX(0);
+    transform: translateX(0);
+    -webkit-transform: translateY(30px);
+    -moz-transform: translateY(30px);
+    -ms-transform: translateY(30px);
+    -o-transform: translateY(30px);
+    transform: translateY(30px);
+    -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s, -webkit-transform 0.3s 0s;
+    -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, -moz-transform 0.3s 0s;
+    transition: opacity 0.3s 0s, visibility 0s 0.3s, transform 0.3s 0s;
+    z-index: -100;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+  .react-autosuggest__suggestions-container--open {
+    @include opacity(1);
+    display: block;
+    visibility: visible;
+    -webkit-transform: translateY(0);
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -o-transform: translateY(0);
+    transform: translateY(0);
+    -webkit-transition: opacity 0.3s 0s, visibility 0.3s 0s, -webkit-transform 0.3s 0s;
+    -moz-transition: opacity 0.3s 0s, visibility 0.3s 0s, -moz-transform 0.3s 0s;
+    transition: opacity 0.3s 0s, visibility 0.3s 0s, transform 0.3s 0s;
+    z-index: 1500;
+    @media (max-width: 767px) {
+      display: block;
+    }
+  }
+  .react-autosuggest__section-container {
+    @include border-radius(0 0 4px 4px);
+  }
 }
 
 .scope-brand {
@@ -1338,68 +1392,8 @@ img {
   /* @include abs-pos ($top: 0, $right: auto, $bottom: auto, $left: 0); */
 }
 
-.react-autosuggest__suggestions-container {
-  @include opacity(0);
-  @include border-radius(4px);
-  @include box-shadow(0 6px 12px rgba(0,
-  0,
-  0,
-  .175));
-  @include abs-pos ($top: 100%, $right: auto, $bottom: auto, $left: 0);
-  z-index: 100;
-  width: 100%;
-  min-height: 94px;
-  margin: 3px 0 0;
-  display: block;
-  visibility: hidden;
-  -webkit-transform: translateX(0);
-  -moz-transform: translateX(0);
-  -ms-transform: translateX(0);
-  -o-transform: translateX(0);
-  transform: translateX(0);
-  -webkit-transform: translateY(30px);
-  -moz-transform: translateY(30px);
-  -ms-transform: translateY(30px);
-  -o-transform: translateY(30px);
-  transform: translateY(30px);
-  -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s, -webkit-transform 0.3s 0s;
-  -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, -moz-transform 0.3s 0s;
-  transition: opacity 0.3s 0s, visibility 0s 0.3s, transform 0.3s 0s;
-  z-index: -100;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, .15);
-  background-color: #fff;
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  @media (max-width: 767px) {
-    display: none;
-  }
-}
-
-.react-autosuggest__suggestions-container--open {
-  @include opacity(1);
-  display: block;
-  visibility: visible;
-  -webkit-transform: translateY(0);
-  -moz-transform: translateY(0);
-  -ms-transform: translateY(0);
-  -o-transform: translateY(0);
-  transform: translateY(0);
-  -webkit-transition: opacity 0.3s 0s, visibility 0.3s 0s, -webkit-transform 0.3s 0s;
-  -moz-transition: opacity 0.3s 0s, visibility 0.3s 0s, -moz-transform 0.3s 0s;
-  transition: opacity 0.3s 0s, visibility 0.3s 0s, transform 0.3s 0s;
-  z-index: 1500;
-  @media (max-width: 767px) {
-    display: block;
-  }
-}
-
-.react-autosuggest__section-container {
-  @include border-radius(0 0 4px 4px);
-}
-
 .search-box-drop .search-box-list,
-.react-autosuggest__section-container {
+.standand-sort .react-autosuggest__section-container {
   font-size: 0.875rem;
   text-align: left;
   list-style: none;
@@ -1537,7 +1531,7 @@ a.btn-box-remove {
           font-size: 1.1rem;
           vertical-align: top;
         }
-        &.topic-name{
+        &.topic-name {
           padding-right: 0;
         }
         @media (max-width: 767px) {
@@ -1852,6 +1846,7 @@ a.btn-box-remove {
 .wrapper-slide {
   margin-bottom: 15px;
   overflow: hidden;
+  height: 100%;
 }
 
 .block-back {

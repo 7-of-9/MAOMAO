@@ -452,3 +452,167 @@ $search-icons: url('/static/images/icons-search.png');
     }
   }
 }
+
+.share-contact {
+  position: relative;
+  border-radius: 0;
+  box-shadow: none;
+  width: 176px;
+  margin: 10px 8px !important;
+  transition: all 0.2s ease-in-out;
+  .share-contact-img {
+    text-align: left;
+    width: 45px;
+    img {
+      vertical-align: top;
+      width: 40px;
+      height: 40px;
+    }
+  }
+  .share-info {
+    position: static;
+    padding: 5px 5px 5px 0;
+    height: 40px;
+  }
+  .account-remove {
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    border-radius: 50%;
+  }
+  &:hover,
+  &:focus {
+    transition: all 0.2s ease-in-out;
+    box-shadow: none;
+  }
+}
+
+
+/*autocomplete*/
+
+.panel-autocomplete {
+  .react-autosuggest__container {
+    position: relative;
+    margin: 0 auto;
+    padding: 10px 0;
+    width: 100%;
+  }
+  .react-autosuggest__input {
+    @include border-radius(4px);
+    font-family: 'Roboto';
+    letter-spacing: normal;
+    text-transform: none;
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    &:focus {
+      border-color: #66afe9;
+      outline: 0;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    }
+  }
+  .react-autosuggest__input::-webkit-input-placeholder {
+    color: #999;
+    font-family: 'Roboto';
+    letter-spacing: normal;
+    font-weight: normal;
+    text-transform: none;
+    font-size: 14px;
+  }
+  .react-autosuggest__input[disabled],
+  .react-autosuggest__input[readonly],
+  fieldset[disabled] .react-autosuggest__input {
+    background-color: #eee;
+    opacity: 1;
+  }
+  .react-autosuggest__input[disabled],
+  fieldset[disabled] .react-autosuggest__input {
+    cursor: not-allowed;
+  }
+  .react-autosuggest__container--open .react-autosuggest__input {
+    width: 100%;
+  }
+  .react-autosuggest__suggestions-container {
+    display: none;
+  }
+  .react-autosuggest__suggestions-list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .react-autosuggest__suggestion {
+    cursor: pointer;
+    padding: 0px;
+  }
+  .react-autosuggest__suggestion:not(:first-child) {
+    border-top: 1px solid #ddd;
+  }
+  .react-autosuggest__suggestion--focused {
+    background-color: #0C7EAF;
+    color: #fff;
+  }
+  .suggestion-content {
+    display: flex;
+    align-items: center;
+    background-repeat: no-repeat;
+  }
+  .suggestion-content .name {
+    margin-left: 5px;
+    line-height: 30px;
+  }
+  .suggestion-content .highlight {
+    color: #ee0000;
+    font-weight: bold;
+  }
+  .react-autosuggest__suggestion--focused .highlight {
+    color: #120000;
+  }
+  .card-header {
+    img {
+      vertical-align: middle;
+    }
+    div {
+      line-height: normal;
+    }
+  }
+  .react-autosuggest__suggestions-container {
+    z-index: 99999999999;
+    max-height: 248px;
+    overflow-y: auto;
+    width: 100%;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, .175);
+    .suggestion-content {
+      font-size: 14px;
+      .photo {
+        width: 50px;
+        text-align: left;
+        img {
+          vertical-align: top;
+        }
+      }
+    }
+  }
+  .react-autosuggest__container--open .react-autosuggest__suggestions-container {
+    display: block;
+    position: absolute;
+    top: 51px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 16px;
+    z-index: 2;
+  }
+}

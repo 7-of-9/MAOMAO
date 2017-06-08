@@ -712,7 +712,43 @@ a.btn-unfollow,
   &,
   &:hover,
   &:focus {
-    transition: all 0.2s ease-in-out;
+    @include transition(all 0.2s ease-in-out);
+  }
+}
+
+.share-button {
+  margin-top: 3px;
+  padding: 6px 12px;
+  float: left;
+  color: #fff;
+  border-color: #11c759;
+  background-color: #11c759;
+  &:active {
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  }
+  &:hover,
+  &:focus,
+  &:active {
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    border-color: #2de475;
+    background-color: #2de475;
+  }
+  &,
+  &:hover,
+  &:focus,
+  &:active {
+    @include transition(all 0.2s ease-in-out);
+  }
+}
+
+.share-now {
+  @include clearfix();
+  text-align: center;
+  .share-button {
+    float: none !important;
   }
 }
 

@@ -63,7 +63,7 @@ const StepThree = enhance(({
           <div className='share-now'>
             <button
               style={style.button}
-              className='share-button'
+              className='btn share-button'
               onClick={sendEmails}
             >
               Share Now !
