@@ -17,6 +17,11 @@ export class HomeStore extends CoreStore {
   @observable urls = []
   @observable users = []
   @observable topics = []
+  @observable codes = {
+    all: null,
+    sites: [],
+    topics: []
+  }
   normalizedData = {}
   userHistory = {me: {}, shares: []}
 
@@ -196,6 +201,30 @@ export class HomeStore extends CoreStore {
           this.isProcessingHistory = false
         }
       )
+    }
+  }
+
+  @action saveShareCode (type, code) {
+    switch (type) {
+      case 'all':
+        this.codes.all = code
+        if (this.isInstall) {
+          sendMsgToChromeExtension(actionCreator('SHARE_ALL_SUCCESS', code))
+        }
+        break
+      case 'site':
+        this.codes.sites.push(code)
+        if (this.isInstall) {
+          sendMsgToChromeExtension(actionCreator('SHARE_URL_SUCCESS', code))
+        }
+        break
+      case 'topic':
+        this.codes.topics.push(code)
+        if (this.isInstall) {
+          sendMsgToChromeExtension(actionCreator('SHARE_TOPIC_SUCCESS', code))
+        }
+        break
+      default:
     }
   }
 }

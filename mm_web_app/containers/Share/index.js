@@ -10,6 +10,10 @@ import ShareTopic from '../../components/ShareTopic'
 import { toJS } from 'mobx'
 import logger from '../../utils/logger'
 import { checkGoogleAuth, fetchContacts } from '../../utils/google'
+import { shareAll, shareThisSite, shareTheTopic } from '../../utils/share'
+import fbScrapeShareUrl from '../../utils/fb'
+
+const SITE_URL = 'https://maomaoweb.azurewebsites.net/'
 
 @inject('store')
 @inject('ui')
@@ -28,7 +32,41 @@ class Share extends React.Component {
 
   componentDidMount () {
     this.props.store.checkGoogleContacts()
-    logger.warn('Share componentDidMount', this.props.ui.shareTopics)
+    const { userId, userHash, codes: { sites, topics, all } } = this.props.store
+    const { shareUrlId, shareTopics } = this.props.ui
+    logger.warn('Share componentDidMount')
+
+    const findUrlCode = sites.find(item => item && item.url_id === shareUrlId)
+
+    if (!findUrlCode) {
+      shareThisSite(userId, userHash, shareUrlId).then(result => {
+        const { share_code: code } = result.data
+        fbScrapeShareUrl(`${SITE_URL}${code}`)
+        this.props.store.saveShareCode('site', { ...result.data, url_id: shareUrlId })
+      })
+    }
+
+    if (!all) {
+      shareAll(userId, userHash).then(result => {
+        const { share_code: code } = result.data
+        fbScrapeShareUrl(`${SITE_URL}${code}`)
+        this.props.store.saveShareCode('all', code)
+      })
+    }
+
+    if (shareTopics && shareTopics.length) {
+      shareTopics.forEach(topic => {
+        const findTopicCode = topics.find(item => item && item.id === topic.topic_id)
+        if (!findTopicCode) {
+          shareTheTopic(userId, userHash, topic.topic_id).then(result => {
+            const { share_code: code } = result.data
+            fbScrapeShareUrl(`${SITE_URL}${code}`)
+            this.props.store.saveShareCode('topic', { ...result.data, id: topic.topic_id, name: topic.name })
+          })
+        }
+      })
+    }
+
     this.setState({
       shareOption: this.props.ui.shareTopics[0].id,
       currentStep: 2
@@ -80,8 +118,7 @@ class Share extends React.Component {
               shareOption={this.state.shareOption}
               currentStep={this.state.currentStep}
               topics={this.props.ui.shareTopics}
-              terms={[]}
-              code=''
+              code={toJS(this.props.store.codes)}
               sendEmail={() => {}}
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}

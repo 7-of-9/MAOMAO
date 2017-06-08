@@ -24,6 +24,7 @@ export class CoreStore {
   @observable userId = -1
   @observable isInstall = false
   @observable isLogin = false
+
   constructor (isServer, userAgent, user) {
     this.userAgent = userAgent
     this.user = user

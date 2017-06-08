@@ -33,7 +33,7 @@ const StepOne = compose(({
 
 StepOne.propTypes = {
   type: PropTypes.string.isRequired,
-  code: PropTypes.string.isRequired,
+  code: PropTypes.object.isRequired,
   topics: PropTypes.array.isRequired,
   shareOption: PropTypes.string.isRequired,
   changeShareType: PropTypes.func.isRequired

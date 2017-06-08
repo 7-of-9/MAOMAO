@@ -76,7 +76,7 @@ const StepThree = enhance(({
 
 StepThree.propTypes = {
   type: PropTypes.string.isRequired,
-  code: PropTypes.string.isRequired,
+  code: PropTypes.object.isRequired,
   contacts: PropTypes.array.isRequired,
   shareOption: PropTypes.string.isRequired,
   accessGoogleContacts: PropTypes.func.isRequired,

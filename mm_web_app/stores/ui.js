@@ -45,7 +45,7 @@ export class UIStore {
   @action openShareTopic (urlId, topic) {
     logger.warn('share topic', urlId, topic)
     this.shareUrlId = urlId
-    this.shareTopics = [ { id: `${topic.id}-tld-${topic.name}`, name: topic.name } ]
+    this.shareTopics = [ { id: `${topic.id}-tld-${topic.name}`, topic_id: topic.id, name: topic.name } ]
     this.currentViewer = 'sharetopic'
   }
 

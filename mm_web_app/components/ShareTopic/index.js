@@ -167,10 +167,9 @@ function ShareTopic ({
 ShareTopic.propTypes = {
   type: PropTypes.string.isRequired,
   shareOption: PropTypes.string.isRequired,
-  code: PropTypes.string.isRequired,
+  code: PropTypes.object.isRequired,
   contacts: PropTypes.array.isRequired,
   topics: PropTypes.array.isRequired,
-  terms: PropTypes.array.isRequired,
   currentStep: PropTypes.number.isRequired,
   sendEmail: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired,
