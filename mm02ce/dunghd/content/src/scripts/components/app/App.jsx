@@ -17,6 +17,7 @@ import getCurrentTLD from '../../selectors/tld';
 import getCurrentTopics from '../../selectors/topic';
 import shareOnUrl from '../../selectors/share';
 import { getShareAllCode, getShareUrlCode, getShareTopicCodes } from '../../selectors/code';
+import removeHashOnUrl from '../utils/url';
 import logger from '../utils/logger';
 
 require('../../stylesheets/main.scss');
@@ -522,7 +523,7 @@ const enhance = compose(
       props.dispatch({
         type: 'TIMER_XP',
         payload: {
-          url: window.location.href,
+          url: removeHashOnUrl(window.location.href),
         },
       });
     },
@@ -530,7 +531,7 @@ const enhance = compose(
       props.dispatch({
         type: 'TIMER_TLD',
         payload: {
-          url: window.location.href,
+          url: removeHashOnUrl(window.location.href),
         },
       });
     },
@@ -538,7 +539,7 @@ const enhance = compose(
       props.dispatch({
         type: 'OPEN_SHARE_MODAL',
         payload: {
-          url: window.location.href,
+          url: removeHashOnUrl(window.location.href),
           enable: true,
         },
       });
@@ -547,7 +548,7 @@ const enhance = compose(
       props.dispatch({
         type: 'CLOSE_SHARE_MODAL',
         payload: {
-          url: window.location.href,
+          url: removeHashOnUrl(window.location.href),
           enable: false,
         },
       });
@@ -556,7 +557,7 @@ const enhance = compose(
       props.dispatch({
         type: 'OPEN_SHARE_MODAL',
         payload: {
-          url: window.location.href,
+          url: removeHashOnUrl(window.location.href),
           enable: true,
           type,
           shareOption,
