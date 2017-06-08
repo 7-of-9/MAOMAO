@@ -19,7 +19,7 @@ const enhance = withState('copied', 'setCopied', false)
 const StepThree = enhance(({
   type, contacts, code, shareOption, copied,
   accessGoogleContacts, handleChange, sendEmails, changeShareType, setCopied }) => (
-    <div>
+    <div className='modifier-autosuggest'>
       <ToggleDisplay className='link-share-option' show={type === 'Google' && contacts.length === 0}>
         You have no google contacts. Click
         <button type='button' className='btn btn-copy mr7 ml7' onClick={accessGoogleContacts}> here </button>
