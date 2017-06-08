@@ -10,6 +10,9 @@ $success-icons: '/static/images/icons-success.png';
 $logo-mao: '/static/images/maomao.png';
 $lab-icons: url('/static/images/icons-lab.png');
 $search-icons: url('/static/images/icons-search.png');
+
+/*timeline steps*/
+
 .share-steps {
   @include clearfix();
   margin-top: 50px;
@@ -25,14 +28,30 @@ $search-icons: url('/static/images/icons-search.png');
       i {
         width: 100%;
         height: 5px;
+        @media (max-width: 790px) {
+          width: 5px;
+          height: 100%;
+        }
+      }
+      @media (max-width: 790px) {
+        top: 0;
+        left: 21px;
+        height: 100%;
+        width: 5px;
       }
     }
     .rc-steps-step {
       .rc-steps-head {
         float: none;
         .rc-steps-head-inner {
+          @include border-radius(50%);
+          @include box-shadow(0 2px 5px rgba(0,
+          0,
+          0,
+          0.4));
           position: relative;
           z-index: 999;
+          margin: 5px auto 10px;
           width: 48px;
           height: 48px;
           line-height: 48px;
@@ -41,14 +60,11 @@ $search-icons: url('/static/images/icons-search.png');
           font-weight: bold;
           color: #333;
           background-color: #ddd;
-          border-radius: 50%;
-          margin: 5px auto 10px;
           text-align: center;
           line-height: normal;
           display: flex;
           justify-content: center;
           align-items: center;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
           .rcicon-check::before {
             content: "";
           }
@@ -60,6 +76,9 @@ $search-icons: url('/static/images/icons-search.png');
             height: 24px;
             display: inline-block;
           }
+          @media (max-width: 790px) {
+            margin: 5px auto;
+          }
         }
       }
       .rc-steps-main {
@@ -68,11 +87,34 @@ $search-icons: url('/static/images/icons-search.png');
           margin: 0 0 5px;
           font-size: 1rem;
           color: #808080;
+          background: none;
+          @media (max-width: 790px) {
+            /* margin-top: 14px; */
+          }
         }
         .rc-steps-description {
           font-size: 0.875rem;
           color: #808080;
         }
+        @media (max-width: 790px) {
+          margin: 16px 0 0 12px;
+        }
+        @media (max-width: 500px) {
+          max-width: 320px;
+        }
+        @media (max-width: 400px) {
+          max-width: 281px;
+        }
+        @media (max-width: 350px) {
+          max-width: 228px;
+        }
+      }
+      @media (max-width: 790px) {
+        @include flexbox();
+        -webkit-flex-flow: row wrap;
+        flex-flow: row wrap;
+        align-items: center;
+        min-height: 120px;
       }
     }
     &:nth-child(1) .rc-steps-head-inner .rc-steps-icon {
@@ -108,6 +150,14 @@ $search-icons: url('/static/images/icons-search.png');
         display: block;
       }
     }
+    @media (max-width: 790px) {
+      float: left;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  @media (max-width: 790px) {
+    text-align: left;
   }
 }
 
@@ -429,6 +479,9 @@ $search-icons: url('/static/images/icons-search.png');
       outline: 0;
       background-color: transparent !important;
     }
+    @media (max-width: 350px) {
+      margin: 0 7px;
+    }
   }
 }
 
@@ -508,8 +561,11 @@ $search-icons: url('/static/images/icons-search.png');
 
 .modifier-autosuggest {
   min-height: 345px;
-  @media (max-width: 390px) {
+  @media (max-width: 600px) {
     min-height: 405px;
+  }
+  @media (max-width: 350px) {
+    min-height: 470px;
   }
 }
 
@@ -584,11 +640,15 @@ $search-icons: url('/static/images/icons-search.png');
   .suggestion-content {
     display: flex;
     align-items: center;
+    text-align: left;
     background-repeat: no-repeat;
   }
   .suggestion-content .name {
     margin-left: 5px;
     line-height: 30px;
+    @media (max-width: 350px) {
+      line-height: normal;
+    }
   }
   .suggestion-content .highlight {
     color: #ee0000;
