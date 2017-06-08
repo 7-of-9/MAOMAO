@@ -454,15 +454,20 @@ $search-icons: url('/static/images/icons-search.png');
 }
 
 .share-contact {
+  @include transition(all 0.2s ease-in-out);
+  @include border-radius(0);
+  @include box-shadow(none);
   position: relative;
-  border-radius: 0;
-  box-shadow: none;
-  width: 176px;
   margin: 10px 8px !important;
-  transition: all 0.2s ease-in-out;
+  float: left;
+  height: 40px;
+  width: 176px;
+  cursor: pointer;
+  background-color: #fff;
   .share-contact-img {
     text-align: left;
     width: 45px;
+    float: left;
     img {
       vertical-align: top;
       width: 40px;
@@ -472,7 +477,18 @@ $search-icons: url('/static/images/icons-search.png');
   .share-info {
     position: static;
     padding: 5px 5px 5px 0;
+    margin: 0;
+    float: right;
+    width: 120px;
+    list-style: none;
     height: 40px;
+    li {
+      font-size: 11px;
+      overflow: hidden;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
   .account-remove {
     position: absolute;
@@ -489,6 +505,13 @@ $search-icons: url('/static/images/icons-search.png');
 
 
 /*autocomplete*/
+
+.modifier-autosuggest {
+  min-height: 345px;
+  @media (max-width: 390px) {
+    min-height: 405px;
+  }
+}
 
 .panel-autocomplete {
   .react-autosuggest__container {
@@ -542,9 +565,6 @@ $search-icons: url('/static/images/icons-search.png');
   .react-autosuggest__container--open .react-autosuggest__input {
     width: 100%;
   }
-  .react-autosuggest__suggestions-container {
-    display: none;
-  }
   .react-autosuggest__suggestions-list {
     margin: 0;
     padding: 0;
@@ -586,13 +606,9 @@ $search-icons: url('/static/images/icons-search.png');
     }
   }
   .react-autosuggest__suggestions-container {
-    z-index: 99999999999;
     max-height: 248px;
     overflow-y: auto;
     width: 100%;
-    border: 1px solid #ccc;
-    border: 1px solid rgba(0, 0, 0, .15);
-    box-shadow: 0 -3px 12px rgba(0, 0, 0, .175);
     .suggestion-content {
       font-size: 14px;
       .photo {
@@ -605,7 +621,6 @@ $search-icons: url('/static/images/icons-search.png');
     }
   }
   .react-autosuggest__container--open .react-autosuggest__suggestions-container {
-    display: block;
     position: absolute;
     top: 51px;
     border: 1px solid #aaa;
