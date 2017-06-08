@@ -406,6 +406,9 @@ img {
       border-right-color: transparent;
     }
   }
+  @media (max-width: 767px) {
+    margin-top: 17px;
+  }
 }
 
 .mix-tag {
@@ -962,6 +965,47 @@ img {
       @include transition(all 0.3s ease);
       opacity: 1;
       visibility: visible;
+    }
+    .share-topic-ex {
+      @include opacity(1);
+      visibility: visible;
+      display: block;
+    }
+    .tags-color-1 {
+      background-color: #00d833;
+    }
+    .tags-color-2 {
+      background-color: #02ecd6;
+    }
+    .tags-color-3 {
+      background-color: #FDD835;
+    }
+    .tags-color-4 {
+      background-color: #e6bc01;
+    }
+    .tags-color-5 {
+      background-color: #a5634c;
+    }
+    .tags-color-6 {
+      background-color: #b8afaf;
+    }
+    .tags-color-7 {
+      background-color: #fa0707;
+    }
+    .tags-color-8 {
+      background-color: #fe1c6e;
+    }
+    .tags-color-9 {
+      background-color: #bb0bea;
+    }
+    .tags-color-10 {
+      background-color: #306076;
+    }
+    .tags-color-11 {
+      background-color: #38b642;
+    }
+    .tags-color-12 {
+      background-color: #3f1811;
     }
   }
 }
@@ -1876,8 +1920,32 @@ a.btn-box-remove {
     margin: 0 0 0 35px;
     padding: 0;
     @media (max-width: 490px) {
-      font-size: 1.625rem;
+      margin-left: 27px;
+      font-size: 1.375rem;
     }
+  }
+}
+
+.suggestion-topic {
+  display: inline-block;
+  margin: 0 0 3px 10px;
+  .suggestion-topic-item {
+    @include border-radius(20px);
+    display: inline-block;
+    margin: 4px 5px 3px 0;
+    padding: 4px 5px 4px 7px;
+    vertical-align: middle;
+  }
+  .text-topic {
+    color: #fff;
+    display: inline-block;
+    font-size: 12px;
+    margin-top: -3px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 }
 

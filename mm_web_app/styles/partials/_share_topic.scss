@@ -105,6 +105,9 @@ $search-icons: url('/static/images/icons-search.png');
         @media (max-width: 400px) {
           max-width: 281px;
         }
+        @media (max-width: 370px) {
+          max-width: 267px;
+        }
         @media (max-width: 350px) {
           max-width: 228px;
         }
@@ -230,7 +233,7 @@ $search-icons: url('/static/images/icons-search.png');
 
 .share-footer {
   @include clearfix();
-  margin-top: 15px;
+  margin: 15px 0;
   .share-now {
     float: right;
     .share-button {
@@ -480,7 +483,7 @@ $search-icons: url('/static/images/icons-search.png');
       outline: 0;
       background-color: transparent !important;
     }
-    @media (max-width: 350px) {
+    @media (max-width: 390px) {
       margin: 0 7px;
     }
   }
@@ -564,6 +567,9 @@ $search-icons: url('/static/images/icons-search.png');
   min-height: 345px;
   @media (max-width: 600px) {
     min-height: 405px;
+  }
+  @media (max-width: 430px) {
+    min-height: 450px;
   }
   @media (max-width: 350px) {
     min-height: 470px;
