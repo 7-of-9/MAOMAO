@@ -300,13 +300,25 @@ namespace wowmao
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
-            if (lvwUrls.SelectedItems.Count == 0) return; var item = lvwUrls.SelectedItems[0]; var url = item.Tag as url;
+            if (lvwUrls.SelectedItems.Count == 0) return; var item = lvwUrls.SelectedItems[0]; var url_id = (item.Tag as url).id;
 
-            mnuAwisSite.Text = $"{url.awis_site.TLD} [{url.awis_site.id}]";
-            if (url.awis_site.hard_disallow ?? false)
-                mnuAwisSite_DisallowToggle.Text = "REMOVE hard_disallow";
-            else
-                mnuAwisSite_DisallowToggle.Text = "SET hard_disallow";
+            using (var db = mm02Entities.Create()) {
+                var url = db.urls.Include("awis_site").Single(p => p.id == url_id);
+                var tld_title_term_id = UrlProcessor.GetOrAdd_TldTitleTerm(db, url.id);
+                var tld_title_term = db.terms.Find(tld_title_term_id);
+                var tld_simple_name = mm_svc.Util.Utils.TldTitle.GetSimpleTldName(tld_title_term.name);
+
+                mnuAwisSite.Text = $"{url.awis_site.TLD} [{url.awis_site.id}] (simple_name={tld_simple_name})";
+                if (url.awis_site.hard_disallow ?? false)
+                    mnuAwisSite_DisallowToggle.Text = "REMOVE hard_disallow";
+                else
+                    mnuAwisSite_DisallowToggle.Text = "SET hard_disallow";
+
+                if (url.awis_site.exclude_terms_like_site_title)
+                    mnuAwisSite_ExcludeTermsToggle.Text = "REMOVE exclude_terms_like_site_title";
+                else
+                    mnuAwisSite_ExcludeTermsToggle.Text = "SET exclude_terms_like_site_title";
+            }
         }
 
         private void mnuAwisSite_DisallowToggle_Click(object sender, EventArgs e) {
@@ -314,6 +326,15 @@ namespace wowmao
             using (var db = mm02Entities.Create()) {
                 var awis_site = db.awis_site.Find(url.awis_site_id);
                 awis_site.hard_disallow = !(awis_site.hard_disallow ?? false);
+                db.SaveChangesTraceValidationErrors();
+            }
+        }
+
+        private void mnuAwisSite_ExcludeTermsToggle_Click(object sender, EventArgs e) {
+            if (lvwUrls.SelectedItems.Count == 0) return; var item = lvwUrls.SelectedItems[0]; var url = item.Tag as url;
+            using (var db = mm02Entities.Create()) {
+                var awis_site = db.awis_site.Find(url.awis_site_id);
+                awis_site.exclude_terms_like_site_title = !awis_site.exclude_terms_like_site_title;
                 db.SaveChangesTraceValidationErrors();
             }
         }
@@ -761,5 +782,6 @@ namespace wowmao
         {
 
         }
+
     }
 }

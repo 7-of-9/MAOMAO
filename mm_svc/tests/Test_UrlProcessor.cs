@@ -19,7 +19,7 @@ namespace tests
         [TestMethod]
         public void CalcAndStoreUrlParentTerms_Dynamic_Test1()
         {
-            using (var db = mm02Entities.Create()) {
+            using (var db = mm02Entities.Create()) {    
                 var test_url_id = 55;
 
                 var url = db.urls.Include("url_term").Where(p => p.id == test_url_id).ToListNoLock().First();

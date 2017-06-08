@@ -23,6 +23,8 @@ namespace mm_svc
             public double S;
         }
 
+
+
         public static url GetUrl(string url, string document_head_hash)
         {
             using (var db = mm02Entities.Create()) {

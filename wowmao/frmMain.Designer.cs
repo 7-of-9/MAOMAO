@@ -83,6 +83,7 @@
             this.lvwUrls = new System.Windows.Forms.ListView();
             this.columnHeader26 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader27 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -92,7 +93,6 @@
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader25 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader22 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader24 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mnuReprocess = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,6 +101,7 @@
             this.mnuAwisSite_DisallowToggle = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.cmdSearchURLs = new System.Windows.Forms.Button();
+            this.mnuAwisSite_ExcludeTermsToggle = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlLeft.SuspendLayout();
             this.pnlGoldenTree.SuspendLayout();
             this.tabTrees.SuspendLayout();
@@ -735,6 +736,10 @@
             // 
             this.columnHeader27.Text = "W";
             // 
+            // columnHeader22
+            // 
+            this.columnHeader22.Text = "proc-#";
+            // 
             // columnHeader10
             // 
             this.columnHeader10.Text = "id";
@@ -775,10 +780,6 @@
             // 
             this.columnHeader25.Text = "proc-utc";
             // 
-            // columnHeader22
-            // 
-            this.columnHeader22.Text = "proc-#";
-            // 
             // columnHeader24
             // 
             this.columnHeader24.Text = "img_url";
@@ -790,33 +791,34 @@
             this.toolStripSeparator1,
             this.mnuAwisSite});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(137, 54);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 76);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // mnuReprocess
             // 
             this.mnuReprocess.Name = "mnuReprocess";
-            this.mnuReprocess.Size = new System.Drawing.Size(136, 22);
+            this.mnuReprocess.Size = new System.Drawing.Size(152, 22);
             this.mnuReprocess.Text = "Reprocess...";
             this.mnuReprocess.Click += new System.EventHandler(this.mnuReprocess_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(133, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // mnuAwisSite
             // 
             this.mnuAwisSite.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuAwisSite_DisallowToggle});
+            this.mnuAwisSite_DisallowToggle,
+            this.mnuAwisSite_ExcludeTermsToggle});
             this.mnuAwisSite.Name = "mnuAwisSite";
-            this.mnuAwisSite.Size = new System.Drawing.Size(136, 22);
+            this.mnuAwisSite.Size = new System.Drawing.Size(152, 22);
             this.mnuAwisSite.Text = "AWIS_SITE";
             // 
             // mnuAwisSite_DisallowToggle
             // 
             this.mnuAwisSite_DisallowToggle.Name = "mnuAwisSite_DisallowToggle";
-            this.mnuAwisSite_DisallowToggle.Size = new System.Drawing.Size(187, 22);
+            this.mnuAwisSite_DisallowToggle.Size = new System.Drawing.Size(245, 22);
             this.mnuAwisSite_DisallowToggle.Text = "Set HARD_DISSALOW";
             this.mnuAwisSite_DisallowToggle.Click += new System.EventHandler(this.mnuAwisSite_DisallowToggle_Click);
             // 
@@ -851,6 +853,13 @@
             this.cmdSearchURLs.Text = "Search:";
             this.cmdSearchURLs.UseVisualStyleBackColor = true;
             this.cmdSearchURLs.Click += new System.EventHandler(this.cmdSearchURLs_Click);
+            // 
+            // mnuAwisSite_ExcludeTermsToggle
+            // 
+            this.mnuAwisSite_ExcludeTermsToggle.Name = "mnuAwisSite_ExcludeTermsToggle";
+            this.mnuAwisSite_ExcludeTermsToggle.Size = new System.Drawing.Size(245, 22);
+            this.mnuAwisSite_ExcludeTermsToggle.Text = "Set EXCLUDE_TERMS_LIKE_TITLE";
+            this.mnuAwisSite_ExcludeTermsToggle.Click += new System.EventHandler(this.mnuAwisSite_ExcludeTermsToggle_Click);
             // 
             // frmMain
             // 
@@ -974,6 +983,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuAwisSite_DisallowToggle;
         private System.Windows.Forms.ColumnHeader columnHeader16;
         private System.Windows.Forms.ColumnHeader columnHeader17;
+        private System.Windows.Forms.ToolStripMenuItem mnuAwisSite_ExcludeTermsToggle;
     }
 }
 

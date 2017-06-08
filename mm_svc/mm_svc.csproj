@@ -74,6 +74,8 @@
     <Compile Include="User\Stream.cs" />
     <Compile Include="Util\Hashing.cs" />
     <Compile Include="Util\Porter2_English.cs" />
+    <Compile Include="Util\Utils\TldSuffixes.cs" />
+    <Compile Include="Util\Utils\TldTitle.cs" />
     <Compile Include="Util\Utils\Words.cs" />
     <Compile Include="Util\Utils\Word.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

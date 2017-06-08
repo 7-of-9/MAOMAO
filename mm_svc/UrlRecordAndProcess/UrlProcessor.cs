@@ -49,7 +49,7 @@ namespace mm_svc
                 var sw = new Stopwatch(); sw.Start();
 
                 // get url - tracking ref
-                var url = db.urls.Include("url_term").Where(p => p.id == url_id).SingleOrDefault();
+                var url = db.urls.Include("awis_site").Include("url_term").Where(p => p.id == url_id).SingleOrDefault();
                 if (url == null) return null;
 
                 // url already processed? return unless reprocessing
@@ -100,9 +100,16 @@ namespace mm_svc
                 //
                 // MAP WIKI : map & store wiki golden_terms
                 //
-                // (remove any calais terms that match TLD title term first; avoids pollution of topic terms from website names)
-                calais_terms.RemoveAll(p => tld_title_term.name.ltrim().Contains(p.term.name.ltrim())); 
                 if (existing_wiki_terms.Count == 0 || reprocess_all || reprocess_map_wiki) {
+
+                    // REMOVE CALAIS TERMS: if set by admin on [awis_site], remove any source Calais terms that are like the site's title
+                    // e.g. bbc.co.uk we want to remove any Calais terms containing "bbc" - exclude_terms_like_site_title manually set by admin tool; 
+                    //      but for chess.com, we don't want to remove "chess" - default bit (0) [exclude_terms_like_site_title] prevents any removal
+                    if (url.awis_site.exclude_terms_like_site_title) {
+                        var tld_simple_name = mm_svc.Util.Utils.TldTitle.GetSimpleTldName(tld_title_term.name);
+                        calais_terms.RemoveAll(p => p.term.name.ltrim().Contains(tld_simple_name.ltrim()));
+                    }
+
                     if (reprocess_all || reprocess_map_wiki) {
                         db.url_term.RemoveRange(db.url_term.Where(p => p.url_id == url_id && (p.term.term_type_id == (int)g.TT.WIKI_NS_0 || p.term.term_type_id == (int)g.TT.WIKI_NS_14)));
                         db.SaveChangesTraceValidationErrors();
