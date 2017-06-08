@@ -162,7 +162,7 @@ class AppHeader extends React.Component {
           <NavItem>
             <a onClick={() => this.props.ui.displayShareManagement()}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
-              <span className='nav-text'>Share</span>
+              <span className='nav-text'>Share Management</span>
             </a>
           </NavItem>
         }

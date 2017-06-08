@@ -48,6 +48,7 @@ class Share extends React.Component {
       currentStep: 1
     }
     this.changeShareType = this.changeShareType.bind(this)
+    this.sendInvitations = this.sendInvitations.bind(this)
     this.fetchGoogleContacts = this.fetchGoogleContacts.bind(this)
   }
 
@@ -139,6 +140,20 @@ class Share extends React.Component {
     })
   }
 
+  sendInvitations (name, email, topic, url) {
+    const { name: fullName, email: fromEmail } = this.props.store.user
+    logger.warn('sendInvitations', fullName, fromEmail, name, email, topic, url)
+     /* global fetch */
+    fetch('/api/email', {
+      method: 'POST',
+    // eslint-disable-next-line no-undef
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+      credentials: 'same-origin',
+      body: JSON.stringify({ fromEmail, fullName, name, email, topic, url })
+    }).then(() => this.props.ui.addNotification(`Sent invitation to: ${email}`))
+    .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
+  }
+
   render () {
     const { shareUrlId, shareTopics } = this.props.ui
     return (
@@ -157,7 +172,7 @@ class Share extends React.Component {
               currentStep={this.state.currentStep}
               topics={this.props.ui.shareTopics}
               code={parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)}
-              sendEmail={() => {}}
+              sendEmail={this.sendInvitations}
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
               contacts={toJS(this.props.store.contacts)}

@@ -63,7 +63,6 @@ const enhance = compose(
           // TODO: validate email addr
           props.sendEmail(item.name, item.email, topic, url)
         })
-        props.closeShare()
       } else {
         props.notify({
           title: 'Please choose your friends to send invitations!',
