@@ -27,12 +27,14 @@ require('expose-loader?log!loglevel');
 /* eslint-enable */
 
 const dev = process.env.NODE_ENV !== 'production';
-if (!dev) {
-  // This disables all logging below the given level
-  log.setLevel('error');
-} else {
-  log.setLevel('debug');
-}
+log.setLevel('debug');
+
+// if (!dev) {
+//   // This disables all logging below the given level
+//   log.setLevel('error');
+// } else {
+//   log.setLevel('debug');
+// }
 
 const logger = createLogger();
 const config = new Config();

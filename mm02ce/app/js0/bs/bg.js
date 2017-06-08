@@ -108,7 +108,7 @@ function setIconApp(rawUrl, image, msg, color) {
     tabId: currentTab && currentTab.id,
   });
 
-  if (window.enableIconText) {
+  if (window.enableIconText || color === BG_EXCEPTION_COLOR) {
     setIconText(msg, color, currentTab && currentTab.id);
   } else {
     setIconText('', color, currentTab && currentTab.id);

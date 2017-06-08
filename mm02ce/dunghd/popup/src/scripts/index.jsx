@@ -6,12 +6,14 @@ import StackTrace from 'stacktrace-js';
 import * as logger from 'loglevel';
 import App from './components/app/App';
 
-if (process.env.NODE_ENV === 'production') {
-  // This disables all logging below the given level
-  logger.setLevel('error');
-} else {
-  logger.setLevel('debug');
-}
+// if (process.env.NODE_ENV === 'production') {
+//   // This disables all logging below the given level
+//   logger.setLevel('error');
+// } else {
+//   logger.setLevel('debug');
+// }
+logger.setLevel('debug');
+
 
 /* eslint-disable */
 require('expose-loader?Perf!react-addons-perf');
