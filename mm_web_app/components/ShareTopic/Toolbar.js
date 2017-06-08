@@ -18,7 +18,7 @@ const enhance = compose(
   onlyUpdateForKeys(['active'])
 )
 
-const Toolbar = enhance(({ active, onChange, onShare, onSendMsg }) =>
+const Toolbar = enhance(({ active, onChange }) =>
   <div style={style.toolbar}>
     {button('/static/images/google.svg', active === 'Google', () => onChange('Google'))}
     {button('/static/images/facebook.svg', active === 'Facebook', () => onChange('Facebook'))}
@@ -29,9 +29,7 @@ const Toolbar = enhance(({ active, onChange, onShare, onSendMsg }) =>
 
 Toolbar.propTypes = {
   active: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onShare: PropTypes.func.isRequired,
-  onSendMsg: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired
 }
 
 export default Toolbar

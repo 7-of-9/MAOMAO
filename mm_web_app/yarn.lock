@@ -6268,9 +6268,9 @@ react-masonry-component@^5.0.7:
     masonry-layout "^4.2.0"
     prop-types "^15.5.8"
 
-react-modal@^1.7.6, react-modal@^1.7.7:
-  version "1.7.7"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.7.7.tgz#70205f51c58708c487aff681ba3fed7946e391d9"
+react-modal@^1.7.6, react-modal@^1.7.7, react-modal@^1.7.8:
+  version "1.7.8"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.7.8.tgz#952f30cf7d4dd584e96c1c82c144d10e3155c95e"
   dependencies:
     create-react-class "^15.5.2"
     element-class "^0.2.0"

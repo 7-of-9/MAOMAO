@@ -20,8 +20,6 @@ const StepTwo = compose(({
       <Toolbar
         active={type}
         onChange={(value) => { changeShareType(value, shareOption, 3) }}
-        onShare={shareUrl}
-        onSendMsg={sendMsgUrl}
         style={style.toolbar}
       />
     </div>
@@ -39,8 +37,6 @@ const StepTwo = compose(({
 StepTwo.propTypes = {
   type: PropTypes.string.isRequired,
   shareOption: PropTypes.string.isRequired,
-  sendMsgUrl: PropTypes.func.isRequired,
-  shareUrl: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired
 }
 

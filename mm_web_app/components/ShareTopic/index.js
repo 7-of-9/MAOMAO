@@ -7,10 +7,8 @@ import StepOne from './StepOne'
 import StepTwo from './StepTwo'
 import StepThree from './StepThree'
 import logger from '../../utils/logger'
-import openUrl from '../../utils/popup'
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net'
-const FB_APP_ID = '386694335037120'
 const style = {
   container: {
     backgroundColor: '#fff',
@@ -51,20 +49,6 @@ const selectUrl = (code, shareOption) => code[shareOption]
 const enhance = compose(
   withState('recipients', 'updateRecipients', []),
   withHandlers({
-    shareUrl: props => () => {
-      const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
-      const closePopupUrl = `${SITE_URL}/static/success.html`
-      const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
-      openUrl(src)
-      props.closeShare()
-    },
-    sendMsgUrl: props => () => {
-      const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
-      const closePopupUrl = `${SITE_URL}/static/success.html`
-      const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
-      openUrl(src)
-      props.closeShare()
-    },
     handleChange: props => (emails) => {
       props.updateRecipients(emails)
     },
@@ -108,51 +92,46 @@ function ShareTopic ({
       description={item.description}
     />
   ))
-  let component = null
-  if (type.indexOf('Facebook') === -1) {
-    component = (
-      <div style={style.container}>
-        <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
-          {steps}
-        </Steps>
-        <h3 className='share-title'>
+  const component = (
+    <div style={style.container}>
+      <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
+        {steps}
+      </Steps>
+      <h3 className='share-title'>
           Share
               <em style={style.topic}> {selectTopics(topics, shareOption)} </em>
-          {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
-        </h3>
-        {currentStep && currentStep === 1 &&
-          <StepOne
-            shareOption={shareOption}
-            type={type}
-            code={code}
-            topics={topics}
-            changeShareType={changeShareType}
+        {type && type.length > 0 && currentStep > 2 && `with friends by ${type}`}
+      </h3>
+      {currentStep && currentStep === 1 &&
+      <StepOne
+        shareOption={shareOption}
+        type={type}
+        code={code}
+        topics={topics}
+        changeShareType={changeShareType}
           />
         }
-        {currentStep && currentStep === 2 &&
-          <StepTwo
-            shareOption={shareOption}
-            type={type}
-            changeShareType={changeShareType}
-            shareUrl={shareUrl}
-            sendMsgUrl={sendMsgUrl}
+      {currentStep && currentStep === 2 &&
+      <StepTwo
+        shareOption={shareOption}
+        type={type}
+        changeShareType={changeShareType}
+        />
+        }
+      {currentStep && currentStep === 3 &&
+      <StepThree
+        shareOption={shareOption}
+        type={type}
+        contacts={contacts}
+        changeShareType={changeShareType}
+        code={code}
+        handleChange={handleChange}
+        sendEmails={sendEmails}
+        accessGoogleContacts={accessGoogleContacts}
           />
         }
-        {currentStep && currentStep === 3 &&
-          <StepThree
-            shareOption={shareOption}
-            type={type}
-            contacts={contacts}
-            changeShareType={changeShareType}
-            code={code}
-            handleChange={handleChange}
-            sendEmails={sendEmails}
-            accessGoogleContacts={accessGoogleContacts}
-          />
-        }
-      </div>
+    </div>
     )
-  }
   return (
     <CSSTransitionGroup
       transitionName='maomao'

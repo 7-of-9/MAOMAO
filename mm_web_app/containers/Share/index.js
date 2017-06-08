@@ -13,7 +13,9 @@ import { checkGoogleAuth, fetchContacts } from '../../utils/google'
 import { shareAll, shareThisSite, shareTheTopic } from '../../utils/share'
 import fbScrapeShareUrl from '../../utils/fb'
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net/'
+import openUrl from '../../utils/popup'
+const SITE_URL = 'https://maomaoweb.azurewebsites.net'
+const FB_APP_ID = '386694335037120'
 
 const parseShareCode = (codes, urlId, shareTopics) => {
   logger.warn('parseShareCode', codes, urlId, shareTopics)
@@ -60,7 +62,7 @@ class Share extends React.Component {
     if (!findUrlCode) {
       shareThisSite(userId, userHash, shareUrlId).then(result => {
         const { share_code: code } = result.data
-        fbScrapeShareUrl(`${SITE_URL}${code}`)
+        fbScrapeShareUrl(`${SITE_URL}/${code}`)
         this.props.store.saveShareCode('site', { ...result.data, url_id: shareUrlId })
       })
     }
@@ -68,7 +70,7 @@ class Share extends React.Component {
     if (!all) {
       shareAll(userId, userHash).then(result => {
         const { share_code: code } = result.data
-        fbScrapeShareUrl(`${SITE_URL}${code}`)
+        fbScrapeShareUrl(`${SITE_URL}/${code}`)
         this.props.store.saveShareCode('all', code)
       })
     }
@@ -79,7 +81,7 @@ class Share extends React.Component {
         if (!findTopicCode) {
           shareTheTopic(userId, userHash, topic.topic_id).then(result => {
             const { share_code: code } = result.data
-            fbScrapeShareUrl(`${SITE_URL}${code}`)
+            fbScrapeShareUrl(`${SITE_URL}/${code}`)
             this.props.store.saveShareCode('topic', { ...result.data, id: topic.topic_id, name: topic.name })
           })
         }
@@ -96,10 +98,41 @@ class Share extends React.Component {
     logger.warn('Share componentWillReact')
   }
 
+  // shareUrl: props => () => {
+  //     const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
+  //     const closePopupUrl = `${SITE_URL}/static/success.html`
+  //     const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
+  //     logger.warn('shareUrl', src)
+  //     openUrl(src)
+  //   },
+  //   sendMsgUrl: props => () => {
+  //     const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
+  //     const closePopupUrl = `${SITE_URL}/static/success.html`
+  //     const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
+  //     logger.warn('shareUrl', src)
+  //     openUrl(src)
+  //   },
+
   changeShareType (type, shareOption, currentStep) {
-    this.setState({
-      type, shareOption, currentStep
-    })
+    if (type.indexOf('Facebook') !== -1) {
+      const { shareUrlId, shareTopics } = this.props.ui
+      const code = parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)
+      const url = `${SITE_URL}/${code[shareOption]}`
+      const closePopupUrl = `${SITE_URL}/static/success.html`
+      if (type === 'Facebook') {
+        const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
+        logger.warn('shareUrl', src)
+        openUrl(src)
+      } else {
+        const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
+        logger.warn('shareUrl', src)
+        openUrl(src)
+      }
+    } else {
+      this.setState({
+        type, shareOption, currentStep
+      })
+    }
   }
 
   fetchGoogleContacts () {
