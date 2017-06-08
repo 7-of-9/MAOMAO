@@ -1523,9 +1523,6 @@ a.btn-box-remove {
         &:focus {
           background-color: #e6e6e6;
         }
-        @media (max-width: 767px) {
-          white-space: normal;
-        }
       }
       a,
       span {
@@ -1816,6 +1813,24 @@ a.btn-box-remove {
         white-space: nowrap;
         overflow: hidden;
       }
+      &:nth-child(even) {
+        @media (max-width: 767px) {
+          float: right;
+        }
+      }
+      @media (max-width: 767px) {
+        width: 49%;
+        float: left;
+        min-width: inherit;
+        max-width: inherit;
+      }
+      @media (max-width: 350px) {
+        width: 100%;
+        float: none;
+      }
+    }
+    @media (max-width: 767px) {
+      min-width: inherit;
     }
   }
 }
