@@ -560,21 +560,24 @@ $search-icons: url('/static/images/icons-search.png');
   }
 }
 
-
-/*autocomplete*/
-
-.modifier-autosuggest {
-  min-height: 345px;
-  @media (max-width: 600px) {
-    min-height: 405px;
+.centering-element {
+  @include flexbox();
+  flex-direction: column;
+  justify-content: center;
+  min-height: 679px;
+  @media (max-width: 1790px) {
+    min-height: 590px;
   }
-  @media (max-width: 430px) {
-    min-height: 450px;
+  @media (max-width: 1440px) {
+    min-height: 445px;
   }
-  @media (max-width: 350px) {
-    min-height: 470px;
+  @media (max-width: 1024px) {
+    min-height: inherit;
   }
 }
+
+
+/*autocomplete*/
 
 .panel-autocomplete {
   .react-autosuggest__container {
@@ -582,6 +585,8 @@ $search-icons: url('/static/images/icons-search.png');
     margin: 0 auto;
     padding: 10px 0;
     width: 100%;
+    min-height: 54px;
+    @include transition(all 0.5s);
   }
   .react-autosuggest__input {
     @include border-radius(4px);
@@ -687,14 +692,18 @@ $search-icons: url('/static/images/icons-search.png');
       }
     }
   }
-  .react-autosuggest__container--open .react-autosuggest__suggestions-container {
-    position: absolute;
-    top: 51px;
-    border: 1px solid #aaa;
-    background-color: #fff;
-    font-family: 'Roboto';
-    font-weight: 300;
-    font-size: 16px;
-    z-index: 2;
+  .react-autosuggest__container--open {
+    @include transition(all 0.5s);
+    min-height: 270px;
+    .react-autosuggest__suggestions-container {
+      position: absolute;
+      top: 51px;
+      border: 1px solid #aaa;
+      background-color: #fff;
+      font-family: 'Roboto';
+      font-weight: 300;
+      font-size: 16px;
+      z-index: 2;
+    }
   }
 }

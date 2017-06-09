@@ -525,38 +525,6 @@ img {
       width: 100%;
     }
   }
-  &.grid-expend {
-    @include equal_height();
-    .grid-item {
-      width: 33.33%;
-      .thumbnail-image {
-        margin-right: 20px;
-        float: left;
-        width: 50%;
-        > a {
-          img {
-            max-width: inherit;
-            width: auto;
-            max-height: 250px;
-          }
-        }
-        @media (max-width: 550px) {
-          margin-right: 0;
-          width: 100%;
-          float: none;
-        }
-      }
-      .caption {
-        overflow: hidden;
-      }
-      @media (max-width: 1050px) {
-        width: 50%;
-      }
-      @media (max-width: 750px) {
-        width: 100%;
-      }
-    }
-  }
 }
 
 .stream-list {
@@ -817,6 +785,28 @@ img {
       .mix-tag {
         @include abs-pos ($top: 0, $right: 15px, $bottom: auto, $left: auto);
         z-index: 500;
+        .mix-tag-topic {
+          .text-tag {
+            @media (max-width: 1050px) {
+              max-width: 124px;
+            }
+            @media (max-width: 790px) {
+              max-width: 95px;
+            }
+            @media (max-width: 750px) {
+              max-width: 124px;
+            }
+            @media (max-width: 580px) {
+              max-width: 100px;
+            }
+            @media (max-width: 540px) {
+              max-width: 160px;
+            }
+            @media (max-width: 360px) {
+              max-width: 100px;
+            }
+          }
+        }
       }
     }
     .caption {
@@ -885,7 +875,7 @@ img {
         .caption-title {
           margin-bottom: 0.2rem;
           line-height: 1rem;
-          max-width: 170px;
+          max-width: 280px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -917,7 +907,8 @@ img {
         cursor: default !important;
       }
     }
-    &:hover .thumbnail-overlay {
+    &:hover .thumbnail-overlay,
+    &:focus .thumbnail-overlay {
       &::before,
       &::after {
         @include transition(background 0.9s linear);
@@ -967,9 +958,11 @@ img {
       visibility: visible;
     }
     .share-topic-ex {
-      @include opacity(1);
-      visibility: visible;
-      display: block;
+      @media (max-width: 767px) {
+        @include opacity(1);
+        visibility: visible;
+        display: block;
+      }
     }
     .tags-color-1 {
       background-color: #00d833;
@@ -1751,6 +1744,7 @@ a.btn-box-remove {
           padding: 0 0 7px 10px;
         }
         @media (max-width: 500px) {
+          padding: 5px 0 7px 10px;
           span {
             margin-right: 2px;
             width: 4px;
@@ -1788,22 +1782,21 @@ a.btn-box-remove {
         }
         .label-rating-number {
           @media (max-width: 500px) {
-            width: 20px;
-            height: 20px;
-            font-size: 0.625rem;
-            line-height: 19px;
-            font-weight: normal;
+            width: 30px;
+            height: 30px;
+            font-size: 0.8125rem;
+            line-height: 28px;
           }
         }
         @media (max-width: 500px) {
-          padding: 0 0 0 3px;
+          padding: 2px 7px 14px 3px;
+          margin-left: 43px;
         }
       }
       &:last-child {
         margin-bottom: 0;
       }
       @media (max-width: 500px) {
-        margin: 0 2px;
         float: none;
         display: inline-block;
       }

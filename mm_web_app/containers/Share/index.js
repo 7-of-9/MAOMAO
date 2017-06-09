@@ -165,7 +165,7 @@ class Share extends React.Component {
           <div className='block-back'>
             <h1> Share your streams with friend </h1>
           </div>
-          <div className='container'>
+          <div className='container centering-element'>
             <ShareTopic
               type={this.state.type}
               shareOption={this.state.shareOption}
