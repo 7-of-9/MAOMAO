@@ -78,20 +78,22 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
                 </div>
               </div>
             </div>
+            {/*
             <div className='suggestion-topic'>
               <div className='suggestion-topic-item tags-color-1'>
                 <span className='text-topic'>Computing</span>
-                <a className='btn-box-remove'><i className='fa fa-remove'></i></a>
+                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
               </div>
               <div className='suggestion-topic-item tags-color-2'>
                 <span className='text-topic'>Javascript</span>
-                <a className='btn-box-remove'><i className='fa fa-remove'></i></a>
+                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
               </div>
               <div className='suggestion-topic-item tags-color-3'>
                 <span className='text-topic'>Technology</span>
-                <a className='btn-box-remove'><i className='fa fa-remove'></i></a>
+                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
               </div>
             </div>
+            */}
           </div>
         </div>
       </nav>

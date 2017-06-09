@@ -9,6 +9,13 @@ import logger from '../utils/logger'
 
 let store = null
 
+const calcRate = (score, timeOnTab) => {
+  const scoreUnit = parseInt(score / 5)
+  const timeUnit = parseInt(timeOnTab / (20 * 1000)) // 20 seconds
+  const rate = Math.ceil(((scoreUnit > 5 ? 5 : scoreUnit) + (timeUnit > 5 ? 5 : timeUnit)) / 2)
+  return rate < 1 ? 1 : rate
+}
+
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingHistory = false
@@ -181,7 +188,7 @@ export class HomeStore extends CoreStore {
               userUrls.push(...item.urls)
               urlIds.push(...item.urls.map(item => item.id))
               if (item.topic_name) {
-                const existTopic = topics.find(item => item.name === item.topic_name)
+                const existTopic = topics.find(topic => topic.name === item.topic_name)
                 if (existTopic) {
                   existTopic.urlIds.push(...item.urls.map(item => item.id))
                 } else {
@@ -189,8 +196,7 @@ export class HomeStore extends CoreStore {
                 }
               }
             })
-            const maxScore = _.maxBy(userUrls, 'im_score')
-            urls.push(...userUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+            urls.push(...userUrls.map(item => ({ ...item, rate: calcRate(item.im_score, item.time_on_tab) })))
             users.push({ user_id, fullname, avatar, urlIds })
           })
 

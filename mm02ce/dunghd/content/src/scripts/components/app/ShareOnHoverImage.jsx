@@ -53,6 +53,8 @@ function MaoMaoImgPin() {
       .MaomaoImgPinWrap {
         position: relative;
         display: inline-block;
+        width: 100%;
+        height: 100%;
       }
 
       .MaomaoImgPinWrap .pin {
@@ -116,7 +118,6 @@ function MaoMaoImgPin() {
         if (img.width > MIN_WIDTH && img.height > MIN_HEIGHT && img.className !== 'mm-share-icon' && img.parentNode.className.indexOf('pin') === -1) {
           logger.info('img', img);
           const wrapper = document.createElement('div');
-          wrapper.style = `width: ${img.width}px; height: ${img.height}px;`;
           wrapper.className = 'MaomaoImgPinWrap';
           wrapElement(img, wrapper);
           wrapper.appendChild(maomaoShareButton());

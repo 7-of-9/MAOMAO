@@ -70,11 +70,14 @@ function calais_process(nlp) {
   if (topics.length > 0) {
     nlp.topic_general = topics[0].name;
     topics.forEach(function (a) { logger().info("%c" + a.type + " '" + a.name + "' score=" + a.score, "background:black; color:white; font-weight:bold;") });
-  } else
+  } else {
+    // TODO: fixe edge case
     logger().warn("%c ** NO CALAIS TOPICS RETURNED **", "background:black; color:red; font-weight:bold;");
+  }
 
   // no social tags? can't do much for now!
   if (social_tags.length == 0) {
+    // TODO: fixe edge case
     logger().warn("%c ** NO SOCIAL TAGS RETURNED: NOP/EXITING -- TODO: need a different way of handling these cases?... **", "background:black; color:red; font-weight:bold;");
     return nlp;
   }

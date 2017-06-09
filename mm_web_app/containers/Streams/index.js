@@ -102,9 +102,9 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
       }
     }
     const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= rating)
-    return _.uniqBy(result, 'title')
+    return _.uniqBy(result, 'id')
   }
-  return _.uniqBy(urls.filter(item => item.rate >= rating), 'title')
+  return _.uniqBy(urls.filter(item => item.rate >= rating), 'id')
 }
 
 function parseDomain (link) {
