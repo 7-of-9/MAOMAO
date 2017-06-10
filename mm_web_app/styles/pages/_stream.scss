@@ -76,6 +76,13 @@ img {
   }
 }
 
+.streams {
+  min-height: 335px;
+  @media (max-width: 767px) {
+    min-height: inherit;
+  }
+}
+
 .standand-sort {
   @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   @include transition(all 0.5s);
@@ -1301,7 +1308,7 @@ img {
     padding: 5px;
     width: 100%;
     @media (max-width: 750px) {
-      margin-top: 0;
+      margin-top: 2px;
     }
   }
   .search-box-title {
