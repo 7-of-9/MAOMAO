@@ -16,6 +16,25 @@ const calcRate = (score, timeOnTab) => {
   return rate < 1 ? 1 : rate
 }
 
+const customizer = (objValue, srcValue) => {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue)
+  }
+}
+
+const mergeUrls = (urls, newUrls) => {
+  const result = urls
+  _.forEach(newUrls, newUrl => {
+    const existItem = result.find(item => item.id === newUrl.id)
+    if (existItem) {
+      result.push(_.mergeWith(existItem, newUrl, customizer))
+    } else {
+      result.push(newUrl)
+    }
+  })
+  return result
+}
+
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingHistory = false
@@ -30,16 +49,16 @@ export class HomeStore extends CoreStore {
     topics: []
   }
   normalizedData = {}
-  userHistory = {me: {}, shares: []}
+  userHistory = { me: {}, shares: [] }
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
     reaction(() => this.userHash.length,
-     (userHash) => {
-       if (userHash > 0) {
-         this.getUserHistory()
-       }
-     })
+      (userHash) => {
+        if (userHash > 0) {
+          this.getUserHistory()
+        }
+      })
   }
 
   @computed get isProcessing () {
@@ -99,7 +118,7 @@ export class HomeStore extends CoreStore {
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
-          sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', { }))
+          sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', {}))
         } else {
           this.login(this.userId, this.userHash)
           this.getUserHistory()
@@ -166,12 +185,27 @@ export class HomeStore extends CoreStore {
           logger.warn('findAllUrlsAndTopics shares, me', shares, me)
           const friends = toJS(shares)
           const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
-          const urls = []
+          let urls = []
           let users = []
           let topics = []
           if (myUrls && myUrls.length) {
-            const maxScore = _.maxBy(myUrls, 'im_score')
-            urls.push(...myUrls.map(item => ({...item, rate: Math.floor(item.im_score * 4 / maxScore.im_score) + 1})))
+            urls.push(...myUrls.map(item => ({
+              owners: [
+                {
+                  owner: user_id,
+                  hit_utc: item.hit_utc,
+                  im_score: item.im_score,
+                  time_on_tab: item.time_on_tab,
+                  rate: calcRate(item.im_score, item.time_on_tab)
+                }
+              ],
+              id: item.id,
+              title: item.title,
+              href: item.href,
+              img: item.img,
+              suggestions_for_url: item.suggestions_for_url
+            }
+            )))
             users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
             _.forEach(myTopics, item => {
               if (item.term_id > 0 && item.url_ids.length > 0) {
@@ -185,7 +219,23 @@ export class HomeStore extends CoreStore {
             const urlIds = []
             const userUrls = []
             _.forEach(list, item => {
-              userUrls.push(...item.urls)
+              userUrls.push(...item.urls.map(item => ({
+                owners: [
+                  {
+                    owner: user_id,
+                    hit_utc: item.hit_utc,
+                    im_score: item.im_score,
+                    time_on_tab: item.time_on_tab,
+                    rate: calcRate(item.im_score, item.time_on_tab)
+                  }
+                ],
+                id: item.id,
+                title: item.title,
+                href: item.href,
+                img: item.img,
+                suggestions_for_url: item.suggestions_for_url
+              }
+              )))
               urlIds.push(...item.urls.map(item => item.id))
               if (item.topic_name) {
                 const existTopic = topics.find(topic => topic.name === item.topic_name)
@@ -196,7 +246,7 @@ export class HomeStore extends CoreStore {
                 }
               }
             })
-            urls.push(...userUrls.map(item => ({ ...item, rate: calcRate(item.im_score, item.time_on_tab) })))
+            urls = mergeUrls(urls, userUrls)
             users.push({ user_id, fullname, avatar, urlIds })
           })
 

@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
+import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Router from 'next/router'
@@ -138,7 +139,7 @@ class Home extends React.Component {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
-    logger.warn('Home urls, users', urls, users)
+    logger.warn('Home urls, users', toJS(urls), toJS(users))
     return (
       <Page>
         <Head>

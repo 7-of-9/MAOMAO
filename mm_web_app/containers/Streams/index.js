@@ -32,25 +32,45 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
-function urlOwner (id, timeOnTab, hitUtc, users, onSelectUser) {
+function urlOwner (id, owners, users, onSelectUser) {
   // TODO: click on name to filter by user
-  const owners = users.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
-  _.forEach(owners, owner => {
-    items.push(<div key={guid()} className='panel-user-img'>
-      <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
-        <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-        <span className='panel-user-cnt'>
-          <span className='full-name'>{owner.fullname}</span>
-          <span className='date-time'>
-            <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
+  logger.warn('urlOwner', owners)
+  _.forEach(owners, user => {
+    const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
+    const owner = users.find(item => item.user_id === userId)
+    items.push(
+      <div key={guid()} className='panel-user-img'>
+        <div className='filter-box'>
+          <div className='filter-rating'>
+            <span className={rate >= 1 ? 'active' : ''} />
+            <span className={rate >= 2 ? 'active' : ''} />
+            <span className={rate >= 3 ? 'active' : ''} />
+            <span className={rate >= 4 ? 'active' : ''} />
+            <span className={rate >= 5 ? 'active' : ''} />
+          </div>
+          <div className='parameter-item'>
+            <p>
+              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{IMScore} XP</span>
+            </p>
+            <p>
+              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{timeOnTab / 1000}</span>
+            </p>
+          </div>
+        </div>
+        <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
+          <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+          <span className='panel-user-cnt'>
+            <span className='full-name'>{owner.fullname}</span>
+            <span className='date-time'>
+              <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
+            </span>
+            <span className='date-time'>
+              <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
+            </span>
           </span>
-          <span className='date-time'>
-            <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
-          </span>
-        </span>
-      </a>
-    </div>)
+        </a>
+      </div>)
   })
   return (
     <div className='panel-user'>
@@ -101,10 +121,19 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
         foundIds = userUrlIds
       }
     }
-    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.rate >= rating)
-    return _.uniqBy(result, 'id')
+    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.owners[0].rate >= rating)
+    return result
   }
-  return _.uniqBy(urls.filter(item => item.rate >= rating), 'id')
+  const result = urls.filter(item => item.owners[0].rate >= rating)
+  return result
+}
+
+function sortByOrdering (sortedUrls, sortBy, sortDirection) {
+  if (sortBy === 'date') {
+    return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => _.max(url.owners[0].hit_utc)])) : _.sortBy(sortedUrls, [(url) => url.owners[0].hit_utc])
+  } else {
+    return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.owners[0].rate])) : _.sortBy(sortedUrls, [(url) => url.owners[0].rate])
+  }
 }
 
 function parseDomain (link) {
@@ -133,18 +162,14 @@ class Streams extends React.Component {
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
     const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
-    let sortedUrlsByHitUTC = sortedUrls
-    if (sortBy === 'date') {
-      sortedUrlsByHitUTC = sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.hit_utc])) : _.sortBy(sortedUrls, [(url) => url.hit_utc])
-    } else {
-      sortedUrlsByHitUTC = sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.rate])) : _.sortBy(sortedUrls, [(url) => url.rate])
-    }
+    let sortedUrlsByHitUTC = sortByOrdering(sortedUrls, sortBy, sortDirection)
     /* eslint-disable camelcase */
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.id)
+    logger.warn('currentUrls', currentUrls)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
-        const { id, href, img, title, time_on_tab, hit_utc, rate, im_score } = item
+        const { id, href, img, title, owners } = item
         let discoveryKeys = []
         const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
         discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
@@ -167,25 +192,8 @@ class Streams extends React.Component {
                     {title} ({id})
                   </a>
                 </h4>
-                <div className='filter-box'>
-                  <div className='filter-rating'>
-                    <span className={rate >= 1 ? 'active' : ''} />
-                    <span className={rate >= 2 ? 'active' : ''} />
-                    <span className={rate >= 3 ? 'active' : ''} />
-                    <span className={rate >= 4 ? 'active' : ''} />
-                    <span className={rate >= 5 ? 'active' : ''} />
-                  </div>
-                  <div className='parameter-item'>
-                    <h5 className='caption-title'>{parseDomain(href)}</h5>
-                    <p>
-                      <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{href.length} XP</span>
-                    </p>
-                    <p>
-                      <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{im_score}</span>
-                    </p>
-                  </div>
-                </div>
-                {urlOwner(id, time_on_tab, hit_utc, users, (user) => this.props.ui.selectUser(user))}
+                <h5 className='caption-title'>{parseDomain(href)}</h5>
+                {urlOwner(id, owners, users, (user) => this.props.ui.selectUser(user))}
               </div>
             </div>
           </div>
