@@ -176,9 +176,6 @@ class Discovery extends React.Component {
           </button>
         </div>
         <div className='bounceInRight animated'>
-          <div className='block-back'>
-            <h1> Discovery mode </h1>
-          </div>
           <StickyContainer>
             <Sticky>
               {

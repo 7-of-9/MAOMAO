@@ -21,7 +21,7 @@ const friendStream = new schema.Entity('friendStreams', {
 // Define your article
 const history = new schema.Entity('histories', {
   me: myStream,
-  shares: [ friendStream ]
+  shares_received_from: [ friendStream ]
 }, { idAttribute: 'me' })
 
 export function normalizedHistoryData (data) {

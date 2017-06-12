@@ -10,8 +10,8 @@ import logger from '../utils/logger'
 let store = null
 
 const calcRate = (score, timeOnTab) => {
-  const scoreUnit = parseInt(score / 5)
-  const timeUnit = parseInt(timeOnTab / (20 * 1000)) // 20 seconds
+  const scoreUnit = parseInt(score / 20)
+  const timeUnit = parseInt(timeOnTab / (30 * 1000)) // 30 seconds
   const rate = Math.ceil(((scoreUnit > 5 ? 5 : scoreUnit) + (timeUnit > 5 ? 5 : timeUnit)) / 2)
   return rate < 1 ? 1 : rate
 }
@@ -49,7 +49,7 @@ export class HomeStore extends CoreStore {
     topics: []
   }
   normalizedData = {}
-  userHistory = { me: {}, shares: [] }
+  userHistory = { me: {}, shares_received_from: [] }
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
@@ -71,9 +71,9 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get friendsStream () {
-    const { shares } = this.userHistory
+    const { shares_received_from: sharesReveived } = this.userHistory
     // listen new data and reload all
-    const friends = toJS(shares)
+    const friends = toJS(sharesReveived)
     if (friends.length > 0) {
       friends.forEach(friend => {
         // TODO: Check new data is belong to sharing topics or share all
@@ -82,7 +82,7 @@ export class HomeStore extends CoreStore {
         })
       })
     }
-    return shares
+    return sharesReveived
   }
 
   @action googleConnect (info) {
@@ -181,9 +181,9 @@ export class HomeStore extends CoreStore {
           logger.warn('normalizedData', normalizedData)
           this.normalizedData = normalizedData
 
-          const { shares, me } = this.userHistory
-          logger.warn('findAllUrlsAndTopics shares, me', shares, me)
-          const friends = toJS(shares)
+          const { shares_received_from, me } = this.userHistory
+          logger.warn('findAllUrlsAndTopics shares_received_from, me', shares_received_from, me)
+          const friends = toJS(shares_received_from)
           const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
           let urls = []
           let users = []

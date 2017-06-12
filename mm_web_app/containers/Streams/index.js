@@ -98,6 +98,14 @@ function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
   )
 }
 
+function findUserRating (item, userIds) {
+  if (userIds.length) {
+    const owner = item.owners.find(item => userIds.indexOf(item.owner) !== -1)
+    return owner.rate
+  }
+  return item.owners[0].rate
+}
+
 function filterUrls (urls, filterByTopic, filterByUser, rating) {
   const topics = toJS(filterByTopic)
   const users = toJS(filterByUser)
@@ -114,7 +122,7 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
         foundIds = userUrlIds
       }
     }
-    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && item.owners[0].rate >= rating)
+    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && findUserRating(item, userUrlIds) >= rating)
     return result
   }
   const result = urls.filter(item => item.owners[0].rate >= rating)
@@ -169,7 +177,7 @@ class Streams extends React.Component {
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
         }
-        items.push(<div key={id} className='grid-item shuffle-item'>
+        items.push(<div key={guid()} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys)} />}
             <div className='thumbnail'>
@@ -332,8 +340,8 @@ class Streams extends React.Component {
                                   { rate: 4, label: 'Good' },
                                   { rate: 5, label: 'Excellent' }
                                 ].map((item) => (
-                                  <li className={item.rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
-                                    <a onClick={() => this.props.ui.changeRate(item.rate)} className='filter-rating'>
+                                  <li onClick={() => this.props.ui.changeRate(item.rate)} className={item.rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                                    <a className='filter-rating'>
                                       {
                                         [1, 2, 3, 4, 5].map((star) => (
                                           <span className={star <= item.rate ? 'active' : ''} key={guid()} />
@@ -342,7 +350,7 @@ class Streams extends React.Component {
                                     </a>
                                     <div className='rating-number'>
                                       <span className='label-priority'>{item.label}</span>
-                                      <div className='label-rating-number'>{sortedUrls.filter(url => item.rate === url.rate).length}</div>
+                                      <div className='label-rating-number'>{sortedUrls.filter(url => item.rate === url.owners[0].rate).length}</div>
                                     </div>
                                   </li>
                                 ))

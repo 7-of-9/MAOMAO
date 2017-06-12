@@ -31,7 +31,7 @@ class ShareList extends React.Component {
 
   render () {
     const { user, userId } = this.props.store
-    const { entities: { friendStreams, shareLists, urls, topics }, result: { accept_shares } } = this.props.store.normalizedData
+    const { entities: { friendStreams, shareLists, urls, topics }, result: { shares_issued } } = this.props.store.normalizedData
     logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
     return (
       <div>
@@ -39,9 +39,6 @@ class ShareList extends React.Component {
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
         <div className='share-management bounceInRight animated'>
-          <div className='block-back'>
-            <h1> Share Management </h1>
-          </div>
           <div id='accordion' role='tablist' aria-multiselectable='true'>
             <div className='card card-topic'>
               <div className='card-header collapsed' role='tab' id={`heading${userId}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${userId}`} aria-expanded='true' aria-controls={`collapse${userId}`}>
@@ -67,7 +64,7 @@ class ShareList extends React.Component {
               {/* Your sharing */}
               <div id={`collapse${userId}`} className='collapse' role='tabpanel' aria-labelledby={`heading${userId}`}>
                 <div className='card-block'>
-                  {accept_shares.map(receiver => (
+                  {shares_issued.map(receiver => (
                       (receiver.share_all || receiver.topic_id) &&
                       <ul key={guid()} className='timeline timeline-horizontal'>
                         <li className='timeline-item'>
