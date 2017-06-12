@@ -99,7 +99,7 @@ function mashUp (store) {
               name={item.snippet.title}
               description={item.snippet.description}
               image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-              url={youtubeUrl}
+              url={item.id.videoId}
               type={'Youtube'}
             />
           </div>)

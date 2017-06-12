@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
 
 const Wrapper = styled.section`
@@ -74,33 +75,68 @@ function iconType (type) {
 }
 
 function BlockElement ({url, image, name, description, type}) {
+  const opts = {
+    height: '220',
+    width: '100%',
+    playerVars: {
+      autoplay: 0
+    }
+  }
   return (
     <Wrapper className='thumbnail-box'>
-      <div className='thumbnail'>
-        <div className='thumbnail-image'>
-          <Anchor className='thumbnail-overlay' href={url} target='_blank'>
-            <Image src={image} alt={name} />
-          </Anchor>
-        </div>
-        <div className='caption'>
-          <Title className='caption-title'>
-            <Anchor href={url} target='_blank'>
+      {type === 'Youtube' &&
+        <div className='thumbnail'>
+          <div className='thumbnail-image'>
+            <YouTube
+              videoId={url}
+              opts={opts}
+              />
+          </div>
+          <div className='caption'>
+            <Title className='caption-title'>
               {name && <span>{name}</span>}
-            </Anchor>
-          </Title>
-          {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-          <div className='panel-user panel-credit'>
-            <div className='panel-user-img'>
-              <span className='credit-user'>
-                <Icon src={iconType(type)} />
-                <span className='panel-user-cnt'>
-                  <span className='full-name'>{type}</span>
+            </Title>
+            {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
+            <div className='panel-user panel-credit'>
+              <div className='panel-user-img'>
+                <span className='credit-user'>
+                  <Icon src={iconType(type)} />
+                  <span className='panel-user-cnt'>
+                    <span className='full-name'>{type}</span>
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        }
+      {type !== 'Youtube' &&
+        <div className='thumbnail'>
+          <div className='thumbnail-image'>
+            <Anchor className='thumbnail-overlay' href={url} target='_blank'>
+              <Image src={image} alt={name} />
+            </Anchor>
+          </div>
+          <div className='caption'>
+            <Title className='caption-title'>
+              <Anchor href={url} target='_blank'>
+                {name && <span>{name}</span>}
+              </Anchor>
+            </Title>
+            {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
+            <div className='panel-user panel-credit'>
+              <div className='panel-user-img'>
+                <span className='credit-user'>
+                  <Icon src={iconType(type)} />
+                  <span className='panel-user-cnt'>
+                    <span className='full-name'>{type}</span>
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
     </Wrapper>
   )
 }

@@ -125,7 +125,7 @@ class Home extends React.Component {
   }
 
   render () {
-    const title = 'maomao - peer-to-peer real time content sharing network'
+    const title = 'maomao - discovery & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users } = this.props.store
     const { notifications } = this.props.ui

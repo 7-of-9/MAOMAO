@@ -139,6 +139,15 @@ storiesOf('BlockElement', module)
       url='http://maomao.rocks'
       />
   ))
+  .add('Youtube inline player', () => (
+    <BlockElement
+      image='https://i.ytimg.com/vi/8LVN7WVgx0c/mqdefault.jpg'
+      name='Top 5 - Technology That Has Changed The World'
+      type='Youtube'
+      description='jaw dropping halloween deals(upto 90% off) = http://amzn.to/1jc8At9. Technology has changed the...'
+      url='https://www.youtube.com/watch?v=8LVN7WVgx0c'
+      />
+  ))
 
 storiesOf('FilterSearch', module)
   .add('default props', () => (

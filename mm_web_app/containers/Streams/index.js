@@ -15,7 +15,6 @@ import _ from 'lodash'
 import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
-import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
 
 const LIMIT = 10
@@ -32,15 +31,16 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
-function urlOwner (id, owners, users, onSelectUser) {
+function urlOwner (id, owners, users, filterByUser, onSelectUser) {
   // TODO: click on name to filter by user
   const items = []
-  logger.warn('urlOwner', owners)
-  _.forEach(owners, user => {
+  const userIds = _.flatMap(toJS(filterByUser), item => item.user_id)
+  const ownersFilter = userIds.length > 0 ? owners.filter(item => userIds.indexOf(item.owner) !== -1) : owners
+  _.forEach(ownersFilter, user => {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div key={guid()} className='panel-user-img'>
+      <div key={`user-detail-${owner.fullname}`} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
           <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
           <span className='panel-user-cnt'>
@@ -53,7 +53,7 @@ function urlOwner (id, owners, users, onSelectUser) {
               <span className={rate >= 5 ? 'active' : ''} />
             </div>
             <span className='date-time'>
-              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{IMScore} XP</span>
+              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{parseInt(IMScore)} XP</span>
             </span>
             <span className='date-time'>
               <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{parseInt(timeOnTab / 1000)}</span>
@@ -79,7 +79,7 @@ function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
   const isOwner = myUrlIds.indexOf(id) !== -1
   _.forEach(currentTopics, (topic) => {
     items.push(
-      <div className='mix-tag-topic' key={guid()}>
+      <div className='mix-tag-topic' key={`tag-topic-${topic.name}`}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
@@ -112,6 +112,7 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
   if (topics.length > 0 || users.length > 0) {
     const topicUrlIds = _.flatMap(topics, item => item.value)
     const userUrlIds = _.flatMap(users, item => item.value)
+    const userIds = _.flatMap(users, item => item.user_id)
     let foundIds = []
     if (topicUrlIds.length && userUrlIds.length) {
       foundIds = _.intersection(topicUrlIds, userUrlIds)
@@ -122,7 +123,7 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
         foundIds = userUrlIds
       }
     }
-    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && findUserRating(item, userUrlIds) >= rating)
+    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && findUserRating(item, userIds) >= rating)
     return result
   }
   const result = urls.filter(item => item.owners[0].rate >= rating)
@@ -177,7 +178,7 @@ class Streams extends React.Component {
         if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
           discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
         }
-        items.push(<div key={guid()} className='grid-item shuffle-item'>
+        items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys)} />}
             <div className='thumbnail'>
@@ -194,7 +195,7 @@ class Streams extends React.Component {
                   </a>
                 </h4>
                 <h5 className='caption-title'>{parseDomain(href)}</h5>
-                {urlOwner(id, owners, users, (user) => this.props.ui.selectUser(user))}
+                {urlOwner(id, owners, users, filterByUser, (user) => this.props.ui.selectUser(user))}
               </div>
             </div>
           </div>
@@ -258,7 +259,7 @@ class Streams extends React.Component {
                             </a>
                             <ul className='dropdown-menu'>
                               {topics.map(topic => (
-                                <li key={guid()} onClick={() => this.props.ui.selectTopic(topic)}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
+                                <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}><span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span></li>
                               ))}
                             </ul>
                           </div>
@@ -271,7 +272,7 @@ class Streams extends React.Component {
                             </a>
                             <ul className='dropdown-menu'>
                               {users.map(user =>
-                                (<li onClick={() => this.props.ui.selectUser(user)} key={guid()}>
+                                (<li onClick={() => this.props.ui.selectUser(user)} key={`user-${user.user_id}`}>
                                   <div className='user-share'>
                                     <div className='user-share-img'>
                                       <img width='24' height='24' src={avatar(user)} alt={user.fullname} />
@@ -340,11 +341,11 @@ class Streams extends React.Component {
                                   { rate: 4, label: 'Good' },
                                   { rate: 5, label: 'Excellent' }
                                 ].map((item) => (
-                                  <li onClick={() => this.props.ui.changeRate(item.rate)} className={item.rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={guid()}>
+                                  <li onClick={() => this.props.ui.changeRate(item.rate)} className={item.rate >= rating ? 'sort-case-item active' : 'sort-case-item'} key={`rating-label-${item.label}`}>
                                     <a className='filter-rating'>
                                       {
                                         [1, 2, 3, 4, 5].map((star) => (
-                                          <span className={star <= item.rate ? 'active' : ''} key={guid()} />
+                                          <span className={star <= item.rate ? 'active' : ''} key={`rating-start-${star}`} />
                                        ))
                                       }
                                     </a>
