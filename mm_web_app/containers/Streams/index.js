@@ -40,7 +40,7 @@ function urlOwner (id, owners, users, onSelectUser) {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div key={guid()} className='panel-user-img'>
+      <div>
         <div className='filter-box'>
           <div className='filter-rating'>
             <span className={rate >= 1 ? 'active' : ''} />
@@ -58,18 +58,20 @@ function urlOwner (id, owners, users, onSelectUser) {
             </p>
           </div>
         </div>
-        <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
-          <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-          <span className='panel-user-cnt'>
-            <span className='full-name'>{owner.fullname}</span>
-            <span className='date-time'>
-              <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
+        <div key={guid()} className='panel-user-img'>
+          <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
+            <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+            <span className='panel-user-cnt'>
+              <span className='full-name'>{owner.fullname}</span>
+              <span className='date-time'>
+                <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
+              </span>
+              <span className='date-time'>
+                <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
+              </span>
             </span>
-            <span className='date-time'>
-              <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
-            </span>
-          </span>
-        </a>
+          </a>
+        </div>
       </div>)
   })
   return (
