@@ -40,38 +40,29 @@ function urlOwner (id, owners, users, onSelectUser) {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div>
-        <div className='filter-box'>
-          <div className='filter-rating'>
-            <span className={rate >= 1 ? 'active' : ''} />
-            <span className={rate >= 2 ? 'active' : ''} />
-            <span className={rate >= 3 ? 'active' : ''} />
-            <span className={rate >= 4 ? 'active' : ''} />
-            <span className={rate >= 5 ? 'active' : ''} />
-          </div>
-          <div className='parameter-item'>
-            <p>
+      <div key={guid()} className='panel-user-img'>
+        <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
+          <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+          <span className='panel-user-cnt'>
+            <span className='full-name'>{owner.fullname} visited {moment.utc(hitUtc).fromNow()}</span>
+            <div className='filter-rating'>
+              <span className={rate >= 1 ? 'active' : ''} />
+              <span className={rate >= 2 ? 'active' : ''} />
+              <span className={rate >= 3 ? 'active' : ''} />
+              <span className={rate >= 4 ? 'active' : ''} />
+              <span className={rate >= 5 ? 'active' : ''} />
+            </div>
+            <span className='date-time'>
               <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{IMScore} XP</span>
-            </p>
-            <p>
-              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{timeOnTab / 1000}</span>
-            </p>
-          </div>
-        </div>
-        <div key={guid()} className='panel-user-img'>
-          <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
-            <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-            <span className='panel-user-cnt'>
-              <span className='full-name'>{owner.fullname}</span>
-              <span className='date-time'>
-                <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
-              </span>
-              <span className='date-time'>
-                <i className='fa fa-calendar-o' /> Last visited: {moment.utc(hitUtc).fromNow()}
-              </span>
             </span>
-          </a>
-        </div>
+            <span className='date-time'>
+              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{parseInt(timeOnTab / 1000)}</span>
+            </span>
+            <span className='date-time'>
+              <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
+            </span>
+          </span>
+        </a>
       </div>)
   })
   return (

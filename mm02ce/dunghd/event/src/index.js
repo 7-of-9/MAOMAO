@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import mobx from 'mobx';
+import * as mobx from 'mobx';
 import { wrapStore, alias } from 'react-chrome-redux';
 import thunkMiddleware from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
