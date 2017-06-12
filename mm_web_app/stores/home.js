@@ -48,7 +48,7 @@ export class HomeStore extends CoreStore {
     sites: [],
     topics: []
   }
-  normalizedData = {}
+  normalizedData = {entities: {}, result: {}}
   userHistory = { me: {}, shares_received_from: [] }
 
   constructor (isServer, userAgent, user) {

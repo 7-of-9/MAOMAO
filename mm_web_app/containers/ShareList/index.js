@@ -129,13 +129,13 @@ class ShareList extends React.Component {
                     </div>
                   </div>
                   <div className='mix-detail'>
-                    <span className='topic-value'>({friend.list.filter(item => shareLists[item].type === 'topic').length} topics)</span>
+                    <span className='topic-value'>({friend.shares.filter(item => item.type === 'topic').length} topics)</span>
                   </div>
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
-                    {_.map(friend.list, item => (
-                        shareLists[item].type !== 'url' &&
+                    {_.map(friend.shares, item => (
+                        item.type !== 'url' &&
                         <ul key={guid()} className='timeline timeline-horizontal'>
                           <li className='timeline-item'>
                             <div className='timeline-badge'>
@@ -147,30 +147,30 @@ class ShareList extends React.Component {
                           </li>
                           <li className='timeline-item'>
                             <div className='timeline-badge'>
-                              <i className={`fa ${shareLists[item].type === 'topic' ? 'fa-list' : 'fa-share-alt'}`} aria-hidden='true' />
+                              <i className={`fa ${item.type === 'topic' ? 'fa-list' : 'fa-share-alt'}`} aria-hidden='true' />
                             </div>
                             {
-                              shareLists[item].type === 'all' &&
+                              item.type === 'all' &&
                               <div className='timeline-panel'>
                                 <span className='share-all'>All browsing history</span>
                               </div>
                             }
                             {
-                              shareLists[item].topic_name &&
+                              item.topic_name &&
                               <div className='timeline-panel'>
                                 <div className='tags-topic'>
                                   <span className='tags tags-color-1' rel='tag'>
                                     <span className='text-tag'>
-                                      {shareLists[item].topic_name}
+                                      {item.topic_name}
                                     </span>
                                   </span>
                                 </div>
                               </div>
                             }
                             {
-                              shareLists[item].type === 'url' &&
+                              item.type === 'url' &&
                               <div className='timeline-panel'>
-                                <span className='name-url'>{urls[shareLists[item].urls[0]].title}</span>
+                                <span className='name-url'>{urls[item.urls[0]].title}</span>
                               </div>
                             }
                           </li>
