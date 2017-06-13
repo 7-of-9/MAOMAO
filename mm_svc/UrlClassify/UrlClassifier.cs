@@ -67,7 +67,12 @@ namespace mm_svc
                 var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
                 var url_infos = urls.Select(p => new UserUrlInfo()
                 {
-                    url = p,
+                    //url = p,
+                    url_id = p.id,
+                    href = p.url1, //{ get { return url.url1; } }
+                    img = p.img_url, //{ get { return url.img_url; } }
+                    title = p.meta_title, //{ get { return url.meta_title; } }
+
                     suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
                     hit_utc = inputs.Single(p2 => p2.url_id == p.id).hit_utc,
                     im_score = inputs.Single(p2 => p2.url_id == p.id).im_score,
@@ -105,7 +110,7 @@ namespace mm_svc
                 foreach (var url_info in url_infos)
                 {
                     var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                   .Where(p => p.url_id == url_info.url.id).ToList();
+                                                   .Where(p => p.url_id == url_info.url_id).ToList();
                     foreach (var topic in topics_for_url)
                     {
                         if (topic_chains.ContainsKey(topic.term_id))
@@ -122,7 +127,7 @@ namespace mm_svc
                 {
                     foreach (var topic in topic_chain)
                     {
-                        var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url.id).ToList();
+                        var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url_id).ToList();
                         //.Select(p => new UserUrlInfo() { url = p.url,
                         //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
                         topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
@@ -470,13 +475,13 @@ namespace mm_svc
     public class UserUrlInfo
     {
         // cannot serialize DB EF types
-        [NonSerialized]
-        public url url;
+        //[NonSerialized]
+        //public url url;
 
-        public long id { get { return url.id; } }
-        public string href { get { return url.url1; } }
-        public string img { get { return url.img_url; } }
-        public string title { get { return url.meta_title; } }
+        public long url_id; //{ get { return url.id; } }
+        public string href; //{ get { return url.url1; } }
+        public string img; //{ get { return url.img_url; } }
+        public string title; //{ get { return url.meta_title; } }
 
         public List<SuggestionInfo> suggestions;
         public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();

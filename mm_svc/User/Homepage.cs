@@ -97,7 +97,9 @@ namespace mm_svc
                 }
             };
 
-            // *** not returning topic chains...
+            // TODO: (1) perf (caching)
+            //       (2) is_topic buggy
+            //       (3) produce topic_roots for OthersInfo (not just OwnInfo)
             ret.me.topics = GetTopicInfos_ForUserUrls(users_urls.OrderBy(p => p.url_id).ToList(), url_infos);
 
             return ret;
@@ -213,7 +215,11 @@ namespace mm_svc
                 var url_suggestions = url_suggestions_qry.ToListNoLock(); //url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
 
                 return urls.Select(p => new UserUrlInfo() {
-                    url = p,
+                    //url = p,
+                    url_id = p.id,
+                    href = p.url1, //{ get { return url.url1; } }
+                    img = p.img_url, //{ get { return url.img_url; } }
+                    title = p.meta_title, //{ get { return url.meta_title; } }
 
                     suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
 
@@ -232,21 +238,38 @@ namespace mm_svc
                 var url_ids = user_urls.Select(p => p.url_id).ToList();
 
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
-                                             .Include("term").Include("url")
+                                             //.Include("term").Include("url")
                                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                                              .Where(p => (p.suggested_dynamic == true || p.S_norm > MIN_S_NORM))
-                                             .Where(p => url_ids.Contains(p.url_id));
+                                             .Where(p => url_ids.Contains(p.url_id))
+                                             .Select(p => new {
+                                                 url_id = p.url_id,
+                                                 href = p.url.url1,
+                                                 img_url = p.url.img_url,
+                                                 meta_title = p.url.meta_title,
+                                                 suggested_dynamic = p.suggested_dynamic,
+                                                 S = p.S,
+                                                 term_name = p.term.name,
+                                                 is_topic = p.term.is_topic ?? false,
+                                             });
+                Debug.WriteLine(url_parent_terms_qry.ToString());
 
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
                 var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
-                var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).ToList();
+
+                var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList(); //.Select(p => p.url).DistinctBy(p => p.id).OrderBy(p => p.id).ToList();
                 return urls.Select(p => new UserUrlInfo()
                 {
-                    url = p,
-                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                    hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).nav_utc,
-                    im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).im_score ?? 0,
-                    time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab ?? 0,
+                    //url = p,
+                    url_id = p.url_id,
+                    href = p.href, //{ get { return url.url1; } }
+                    img = p.img_url, //{ get { return url.img_url; } }
+                    title = p.meta_title, //{ get { return url.meta_title; } }
+
+                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+                    hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).nav_utc,
+                    im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).im_score ?? 0,
+                    time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).time_on_tab ?? 0,
                 }).ToList();
             }
         }
@@ -256,26 +279,44 @@ namespace mm_svc
             var url_ids = user_urls.Select(p => p.url_id).ToList();
             using (var db = mm02Entities.Create())
             {
-                var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
-                                             .Include("term")
-                                             .Include("url")
+                var url_parent_terms_qry = db.url_parent_term
                                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
-                                             .Where(p => (p.suggested_dynamic == true || p.S_norm > MIN_S_NORM))
-                                             .Where(p => url_ids.Contains(p.url_id));
+                                             .Where(p => (p.S_norm > MIN_S_NORM))
+                                             .Where(p => url_ids.Contains(p.url_id))
+                                             .Select(p => new {
+                                                 url_id = p.url_id,
+                                                 href = p.url.url1,
+                                                 img_url = p.url.img_url,
+                                                 meta_title = p.url.meta_title,
+                                             });
                 Debug.WriteLine(url_parent_terms_qry.ToString());
-
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-                var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
 
-                var urls = url_parent_terms.Select(p => p.url).DistinctBy(p => p.id).OrderBy(p => p.id).ToList();
+                var url_suggestions_qry = db.url_parent_term.Where(p => url_ids.Contains(p.url_id))
+                                                            .Where(p => p.suggested_dynamic == true)
+                                                            .Select(p => new {
+                                                                url_id = p.url_id,
+                                                                term_name = p.term.name,
+                                                                S = p.S,
+                                                                is_topic = p.term.is_topic ?? false,
+                });
 
+                Debug.WriteLine(url_suggestions_qry.ToString());
+                var url_suggestions = url_suggestions_qry.ToListNoLock(); //url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
+
+                var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList(); //.Select(p => p.url).DistinctBy(p => p.id).OrderBy(p => p.id).ToList();
                 var ret = urls.Select(p => new UserUrlInfo()
                 {
-                    url = p,
-                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
-                    hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).nav_utc,
-                    im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).im_score ?? 0,
-                    time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.id).time_on_tab ?? 0,
+                    //url = p,
+                    url_id = p.url_id,
+                    href = p.href, //{ get { return url.url1; } }
+                    img = p.img_url, //{ get { return url.img_url; } }
+                    title = p.meta_title, //{ get { return url.meta_title; } }
+
+                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+                    hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).nav_utc,
+                    im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).im_score ?? 0,
+                    time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).time_on_tab ?? 0,
                 }).ToList();
 
                 return ret;
@@ -288,10 +329,21 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
-                                             .Include("term").Include("url")
+                                             //.Include("term").Include("url")
                                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                                              .Where(p => p.url_title_topic == true || p.S_norm > MIN_S_NORM)
-                                             .Where(p => url_ids.Contains(p.url_id));
+                                             .Where(p => url_ids.Contains(p.url_id))
+                                             .Select(p => new {
+                                                 url_id = p.url_id,
+                                                 href = p.url.url1,
+                                                 img_url = p.url.img_url,
+                                                 meta_title = p.url.meta_title,
+                                                 url_title_topic = p.url_title_topic,
+                                                 found_topic = p.found_topic,
+                                                 S_norm = p.S_norm,
+                                                 term = p.term,
+                                             });
+                Debug.WriteLine(url_parent_terms_qry.ToString());
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
 
                 var url_title_topics = url_parent_terms.Where(p => p.url_title_topic).ToList();
@@ -300,13 +352,13 @@ namespace mm_svc
                 // get topic link chains - regular topics & url title topics
                 var topic_chains = new Dictionary<long, List<TopicInfo>>(); // term_id, chain
                 foreach (var topic in url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                .DistinctBy(p => p.term_id))
+                                                .DistinctBy(p => p.term.id))
                 {
                     var topic_term = topic.term;
                     var topic_chain = topic.url_title_topic
                                             ? new List<topic_link>() { new topic_link() { term1 = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain) } }
-                                            : GoldenTopics.GetTopicLinkChain(topic_term.id); // todo: cache topic_links in GoldenTopics
-                                                                                            
+                                            : GoldenTopics.GetTopicLinkChain(topic_term.id); // ***TODO*** (perf) -- cache topic_links in GoldenTopics
+
                     var chain = topic_chain.Select(p => new TopicInfo() { term_name = p.parent_term.name, term_id = p.parent_term_id }).ToList();
                     chain.Reverse();
 
@@ -328,12 +380,12 @@ namespace mm_svc
                 foreach (var url_info in url_infos)
                 {
                     var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                   .Where(p => p.url_id == url_info.url.id).ToList();
+                                                   .Where(p => p.url_id == url_info.url_id).ToList();
                     foreach (var topic in topics_for_url)
                     {
-                        if (topic_chains.ContainsKey(topic.term_id))
+                        if (topic_chains.ContainsKey(topic.term.id))
                         {
-                            var topic_chain = topic_chains[topic.term_id];
+                            var topic_chain = topic_chains[topic.term.id];
                             url_info.topic_chains.Add(topic_chain);
                         }
                     }
@@ -345,20 +397,67 @@ namespace mm_svc
                 {
                     foreach (var topic in topic_chain)
                     {
-                        var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url.id).ToList();
+                        var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url_id).ToList();
                         //.Select(p => new UserUserUrlInfo() { url = p.url,
                         //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
                         topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
                     }
                 }
 
-                // clean topic_chain 
-                foreach (var url_info in url_infos)
-                {
-                    url_info.topic_chains.Clear();
-                }
+                // dbg: order & print 
+                var chains = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
+                chains.RemoveAll(p => p.Count == 0);
+                foreach (var topic_chain in chains)
+                    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term_name + $" ({topic.url_ids.Count} urls)"))})");
 
-                return topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).Select(p => p.First()).DistinctBy(p => p.term_id).ToList();
+                // ***
+                // convert flat chains of TopicInfo to tree of TopicInfo
+
+                // (1) link > each TopcInfo to its single child, for each chain, e.g.
+                //      (Television (4 urls) > Film (4 urls) > Animation (1 urls))
+                //      (Science(2 urls) > Anthropology(1 urls))
+                //  ...
+                foreach (var chain in chains)
+                    for (int i = 0; i < chain.Count - 1; i++)
+                        chain[i].child_topics.Add(chain[i + 1]);
+
+                // (2) combine TopicInfo children for identical topics
+                for (int i = 0; i < chains.Count; i++) {
+                    var chain = chains[i];
+
+                    if (chain.Count > 0) {
+                        for (int j = chain.Count - 1; j >= 0; j--) {
+                            var topic = chain[j];
+
+                            var identical_topics = chains.SelectMany(p => p.Where(p2 => p2.term_id == topic.term_id)).Where(p => p != topic).Except(chain).ToList();
+                            foreach (var same_topic in identical_topics) {
+                                // add children to new master TopicInfo
+                                topic.child_topics.AddRange(same_topic.child_topics.Where(p => !topic.child_topics.Select(p2 => p2.term_id).Contains(p.term_id)));
+
+                                // remove from other chain
+                                var other_chain = chains.Single(p => p.Contains(same_topic));
+                                var ndx = other_chain.IndexOf(same_topic);
+                                other_chain.RemoveRange(ndx, other_chain.Count - ndx);
+                            }
+                        }
+                    }
+                }
+                chains.RemoveAll(p => p.Count == 0);
+                chains.ForEach(p => { if (p.Count > 1) p.RemoveRange(1, p.Count - 1); });
+                var tree_roots = chains.Select(p => p.First()).ToList();
+
+                tree_roots.ForEach(p => p.GetSuggestedTermsForTopicAndChildren());
+                return tree_roots;
+
+                // clean topic_chain 
+                //foreach (var url_info in url_infos)
+                //{
+                //    url_info.topic_chains.Clear();
+                //}
+
+                //var a = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name)));
+                //var b = a.Select(p => p.First());
+                //return b.DistinctBy(p => p.term_id).ToList();
             }
         }
 
