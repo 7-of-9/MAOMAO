@@ -6,12 +6,12 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { observer } from 'mobx-react'
 import { compose, withHandlers, withState, onlyUpdateForKeys } from 'recompose'
 import Fuse from 'fuse.js'
 import Autosuggest from 'react-autosuggest'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
 
 const MAX_COLORS = 12
 
@@ -139,7 +139,7 @@ const enhance = compose(
   onlyUpdateForKeys([ 'value', 'suggestions', 'rating', 'filterByTopic', 'filterByUser' ])
 )
 
-const FilterSearch = enhance(({
+const FilterSearch = enhance(observer(({
   value, rating, suggestions, filterByTopic, filterByUser, topics,
   onSuggestionsFetchRequested, onSuggestionsClearRequested,
   onChange, onChangeRate, onRemoveTopic, onRemoveUser
@@ -156,7 +156,7 @@ const FilterSearch = enhance(({
           <ul className='search-box-list'>
             {
                 filterByTopic.map(item => (
-                  <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={guid()}>
+                  <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
                     <span className='text-topic'>{item.label}</span>
                     <a className='btn-box-remove' onClick={() => { onRemoveTopic(item) }}>
                       <i className='fa fa-remove' aria-hidden='true' />
@@ -166,7 +166,7 @@ const FilterSearch = enhance(({
               }
             {
                 filterByUser.map(item => (
-                  <li key={guid()} className='search-item tags-color-1'>
+                  <li key={`filter-user-${item.label}`} className='search-item tags-color-1'>
                     <div className='search-media'>
                       <div className='search-media-left'>
                         <img src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
@@ -200,7 +200,7 @@ const FilterSearch = enhance(({
       </div>
     </div>
   )
-})
+}))
 
 FilterSearch.propTypes = {
   urls: PropTypes.array.isRequired,

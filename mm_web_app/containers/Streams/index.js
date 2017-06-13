@@ -157,6 +157,7 @@ class Streams extends React.Component {
   }
   render () {
     // populate urls and users
+    logger.warn('Streams render')
     const { urls, users, topics, userId } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
     let hasMoreItems = false
@@ -169,6 +170,7 @@ class Streams extends React.Component {
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.id)
     logger.warn('currentUrls', currentUrls)
+    const masterKey = `${filterByUser.map(item => item.label).join(',')}-${filterByTopic.map(item => item.label).join(',')}-${rating}-${sortBy}-${sortDirection}`
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, owners } = item
@@ -179,7 +181,7 @@ class Streams extends React.Component {
         if (item && item.suggestions && item.suggestions.length) {
           suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
         }
-        items.push(<div key={id} className='grid-item shuffle-item'>
+        items.push(<div key={`${id}-${masterKey}`} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
             <div className='thumbnail'>
