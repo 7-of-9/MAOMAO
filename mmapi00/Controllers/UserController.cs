@@ -29,7 +29,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserGoogle([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.Register.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id);
+            var db_user = mm_svc.UserRegister.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id= user.google_user_id, fb_user_id= user.fb_user_id });
         }
@@ -43,7 +43,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserFb([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.Register.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id);
+            var db_user = mm_svc.UserRegister.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id });
         }
@@ -65,7 +65,7 @@ namespace mmapi00.Controllers
             if (account == null) return BadRequest("bad linked account");
             if (account.google_user_id == null && account.fb_user_id == null) return BadRequest("missing google_user_id or fb_user_id");
 
-            var db_user = mm_svc.Register.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
+            var db_user = mm_svc.UserRegister.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }
@@ -102,14 +102,16 @@ namespace mmapi00.Controllers
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
         /// <returns></returns>
-        [Route("user/streams")]
+        [Route("user/homepage")]
         [HttpGet]
-        public IHttpActionResult GetUserStream(
+        public IHttpActionResult GetUserHomepage(
             long user_id, string hash)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
-            var data = mm_svc.UserStream.GetAllStreams(user_id);
-            return Ok( new { me = data.me, shares = data.shares });
+
+            var data = mm_svc.UserHomepage.Get(user_id);
+
+            return Ok( new { me = data.me, shares_received_from = data.shares_received_from });
         }
 
         /// <summary>

@@ -469,7 +469,15 @@ namespace mm_svc
 
     public class UserUrlInfo
     {
+        // cannot serialize DB EF types
+        [NonSerialized]
         public url url;
+
+        public long id { get { return url.id; } }
+        public string href { get { return url.url1; } }
+        public string img { get { return url.img_url; } }
+        public string title { get { return url.meta_title; } }
+
         public List<SuggestionInfo> suggestions;
         public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
         public DateTime hit_utc;
@@ -484,8 +492,8 @@ namespace mm_svc
         public bool url_title_topic;
         public List<long> url_ids = new List<long>();
         public List<TopicInfo> child_topics = new List<TopicInfo>();
-
         public List<SuggestionInfo> suggestions = new List<SuggestionInfo>();
+
         public void GetSuggestedTermsForTopicAndChildren()
         {
             using (var db = mm02Entities.Create())

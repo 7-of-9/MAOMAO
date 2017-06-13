@@ -386,6 +386,7 @@ namespace wowmao.Controls
                 db.SaveChangesTraceValidationErrors();
                 tag.link = db.topic_link.Where(p => p.id == tag.link.id).FirstOrDefaultNoLock();
                 RefreshNode(tvw.SelectedNode, tag.t, tag.link);
+                tvw.SelectedNode.Collapse();
             }
         }
 

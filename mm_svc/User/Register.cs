@@ -4,7 +4,7 @@ using System;
 
 namespace mm_svc
 {
-    public static class Register
+    public static class UserRegister
     {
         public static user CreateGoogleUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string google_user_id)
         {
