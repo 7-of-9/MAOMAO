@@ -215,7 +215,7 @@ export class HomeStore extends CoreStore {
           }
 
           _.forEach(friends, friend => {
-            const { user_id, fullname, avatar, list } = friend
+            const { user_id, fullname, avatar, shares: list } = friend
             const urlIds = []
             const userUrls = []
             _.forEach(list, item => {

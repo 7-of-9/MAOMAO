@@ -117,7 +117,7 @@ function mashUp (store) {
               name={item.title}
               description={item.selftext || item.title}
               image={img}
-              url={item.url}
+              url={`https://www.reddit.com${item.permalink}`}
               type={'Reddit'}
             />
           </div>)
