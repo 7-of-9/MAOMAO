@@ -3,6 +3,7 @@ using mm_global.Extensions;
 using mm_svc.InternalNlp.Utils;
 using mmdb_model;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -15,13 +16,24 @@ namespace mm_svc.Terms
 {
     public static class GoldenParents
     {
+        private static ConcurrentDictionary<long, List<gt_parent>> stored_parents_cache = new ConcurrentDictionary<long, List<gt_parent>>();
+        public static bool use_stored_parents_cache = false;
+
         public static List<gt_parent> GetStoredParents(long term_id)
         {
+            if (use_stored_parents_cache && stored_parents_cache.ContainsKey(term_id))
+                return stored_parents_cache[term_id];
+
             using (var db = mm02Entities.Create()) {
-                return db.gt_parent.AsNoTracking().Include("term").Include("term1")
-                         .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
-                         .DistinctBy(p => p.parent_term_id.ToString() + p.is_topic) // could have concurrent writes to gt_parent table
-                         .ToList(); 
+                var ret =  db.gt_parent.AsNoTracking().Include("term").Include("term1")
+                             .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
+                             .DistinctBy(p => p.parent_term_id.ToString() + p.is_topic) // could have concurrent writes to gt_parent table
+                             .ToList();
+
+                if (use_stored_parents_cache)
+                    stored_parents_cache.AddOrUpdate(term_id, ret, (key, oldValue) => ret);
+
+                return ret;
             }
         }
 
