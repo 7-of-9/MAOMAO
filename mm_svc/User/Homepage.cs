@@ -98,7 +98,7 @@ namespace mm_svc
             };
 
             // *** not returning topic chains...
-            ret.me.topics = GetTopicInfos_ForUserUrls(users_urls.OrderBy(p => p.url_id).ToList(), url_infos),
+            ret.me.topics = GetTopicInfos_ForUserUrls(users_urls.OrderBy(p => p.url_id).ToList(), url_infos);
 
             return ret;
         }
