@@ -9,7 +9,6 @@ import PropTypes from 'prop-types'
 import { compose, withState, withHandlers } from 'recompose'
 import DebounceInput from 'react-debounce-input'
 import Form from './Form'
-import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
 
 const MAX_COLORS = 12
@@ -31,6 +30,10 @@ const enhance = compose(
       props.changeValue('')
       props.onChange(props.terms)
     },
+    handleAdd: (props) => (tag) => {
+      props.terms.push(tag)
+      props.onChange(props.terms)
+    },
     handleDelete: (props) => (index) => {
       logger.warn('handleDelete', index, props.terms)
       props.terms.splice(index, 1)
@@ -41,7 +44,7 @@ const enhance = compose(
   })
 )
 
-const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) => {
+const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handleAdd, handleDelete }) => {
   const inputProps = {
     placeholder: 'Search...',
     value,
@@ -58,7 +61,7 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
                   <ul className='search-box-list'>
                     {
                       terms.map((item, index) => (
-                        <li className={`tags-color-${(index % MAX_COLORS) + 1}`} key={guid()}>
+                        <li className={`tags-color-${(index % MAX_COLORS) + 1}`} key={`topic-${item}`}>
                           <span className='text-topic'>{item}</span>
                           <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
                             <i className='fa fa-remove' aria-hidden='true' />
@@ -77,22 +80,17 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
                 </div>
               </div>
             </div>
-            {/*
-            <div className='suggestion-topic'>
-              <div className='suggestion-topic-item tags-color-1'>
-                <span className='text-topic'>Computing</span>
-                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
+            {
+              suggestions.length > 0 &&
+              <div className='suggestion-topic'>
+                {suggestions.map((item, index) => terms.indexOf(item) === -1 && (
+                  <div key={`suggest-${item}`} className={`suggestion-topic-item tags-color-${(index + terms.length) % MAX_COLORS + 1}`}>
+                    <span className='text-topic'>{item}</span>
+                    <a className='btn-box-remove' onClick={() => handleAdd(item)} ><i className='fa fa-plus' /></a>
+                  </div>
+              ))}
               </div>
-              <div className='suggestion-topic-item tags-color-2'>
-                <span className='text-topic'>Javascript</span>
-                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
-              </div>
-              <div className='suggestion-topic-item tags-color-3'>
-                <span className='text-topic'>Technology</span>
-                <a className='btn-box-remove'><i className='fa fa-remove' /></a>
-              </div>
-            </div>
-            */}
+            }
           </div>
         </div>
       </nav>
@@ -103,6 +101,7 @@ const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) =>
 SearchBar.propTypes = {
   onChange: PropTypes.func.isRequired,
   terms: PropTypes.array.isRequired,
+  suggestions: PropTypes.array,
   value: PropTypes.string
 }
 

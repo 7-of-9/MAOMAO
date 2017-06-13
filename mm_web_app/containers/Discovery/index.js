@@ -182,7 +182,7 @@ class Discovery extends React.Component {
               ({style}) => {
                 return (
                   <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
-                    <SearchBar terms={this.props.terms} onChange={this.onChange} />
+                    <SearchBar terms={this.props.terms} suggestions={this.props.suggestions} onChange={this.onChange} />
                   </div>
                 )
               }
@@ -208,6 +208,7 @@ class Discovery extends React.Component {
 
 Discovery.propTypes = {
   terms: PropTypes.array.isRequired,
+  suggestions: PropTypes.array,
   onGoBack: PropTypes.func.isRequired
 }
 

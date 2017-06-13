@@ -173,14 +173,15 @@ class Streams extends React.Component {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, owners } = item
         let discoveryKeys = []
+        let suggestionKeys = []
         const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
         discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
-        if (item && item.suggestions_for_url && item.suggestions_for_url.length) {
-          discoveryKeys = _.map(item.suggestions_for_url, 'term_name')
+        if (item && item.suggestions && item.suggestions.length) {
+          suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
         }
         items.push(<div key={id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
-            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys)} />}
+            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
             <div className='thumbnail'>
               <div className='thumbnail-image'>
                 <a className='thumbnail-overlay' href={href} target='_blank'>

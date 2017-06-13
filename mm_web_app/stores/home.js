@@ -203,7 +203,7 @@ export class HomeStore extends CoreStore {
               title: item.title,
               href: item.href,
               img: item.img,
-              suggestions_for_url: item.suggestions_for_url
+              suggestions: item.suggestions
             }
             )))
             users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
@@ -233,7 +233,7 @@ export class HomeStore extends CoreStore {
                 title: item.title,
                 href: item.href,
                 img: item.img,
-                suggestions_for_url: item.suggestions_for_url
+                suggestions: item.suggestions
               }
               )))
               urlIds.push(...item.urls.map(item => item.id))

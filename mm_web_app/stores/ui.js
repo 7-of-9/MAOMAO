@@ -11,6 +11,7 @@ export class UIStore {
   @observable filterByTopic = []
   @observable filterByUser = []
   @observable discoveryTerms = []
+  @observable discoverySuggestionTerms = []
   @observable page = 0
   @observable rating = 1
   @observable currentViewer = 'streams'
@@ -32,13 +33,15 @@ export class UIStore {
     }
   }
 
-  @action openDiscoveryMode (terms) {
+  @action openDiscoveryMode (terms, suggestions) {
     this.discoveryTerms = terms
     if (terms.length > 0) {
+      this.discoverySuggestionTerms = suggestions
       this.currentViewer = 'discovery'
     } else {
       this.currentViewer = 'streams'
       this.page = 1
+      this.discoverySuggestionTerms = []
     }
   }
 

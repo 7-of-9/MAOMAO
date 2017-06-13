@@ -175,7 +175,7 @@ class Home extends React.Component {
             />
           {
               this.props.ui.currentViewer === 'discovery' &&
-              <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+              <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
             }
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
@@ -218,7 +218,7 @@ class Home extends React.Component {
               }
             {
                 this.props.ui.currentViewer === 'discovery' &&
-                <Discovery terms={this.props.ui.discoveryTerms.slice()} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+                <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
               }
             {
               urls.length > 0 && users.length > 0 && this.props.ui.currentViewer === 'streams' &&
