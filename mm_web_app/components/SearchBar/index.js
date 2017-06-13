@@ -42,7 +42,6 @@ const enhance = compose(
 )
 
 const SearchBar = enhance(({ terms, value, onInput, onSearch, handleDelete }) => {
-  logger.warn('SearchBar render', terms, value)
   const inputProps = {
     placeholder: 'Search...',
     value,
