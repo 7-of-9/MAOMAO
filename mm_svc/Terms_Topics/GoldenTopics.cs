@@ -1,6 +1,7 @@
 ﻿using mm_global;
 using mmdb_model;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace mm_svc.Terms
 {
     public static class GoldenTopics
     {
+        private static ConcurrentDictionary<long, List<topic_link>> topic_link_cache = new ConcurrentDictionary<long, List<topic_link>>();
+        public static bool use_topic_link_cache = false;
+
         [DebuggerDisplay("{t.name} S={S} S_norm={S_norm}")]
         public class TopicWeighted {
             public term t;
@@ -23,8 +27,14 @@ namespace mm_svc.Terms
         // Gets the topic_link chain up to root topic 
         //
         public static List<topic_link> GetTopicLinkChain(long child_term_id) {
+            if (use_topic_link_cache && topic_link_cache.ContainsKey(child_term_id))
+                return topic_link_cache[child_term_id];
+
             var chain = new List<topic_link>();
             RecurseTopicLinkChain(chain, child_term_id);
+
+            if (use_topic_link_cache)
+                topic_link_cache.AddOrUpdate(child_term_id, chain, (key, oldValue) => chain);
             return chain;
         }
 

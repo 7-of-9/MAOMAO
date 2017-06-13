@@ -501,7 +501,7 @@ namespace mm_svc
 
         public void GetSuggestedTermsForTopicAndChildren()
         {
-            using (var db = mm02Entities.Create())
+            //using (var db = mm02Entities.Create())
             {
                 var parent_terms = GoldenParents.GetStoredParents(this.term_id).Where(p => p.parent_term_id != this.term_id);
                 var distinct = parent_terms.DistinctBy(p => p.parent_term.name);
