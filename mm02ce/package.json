@@ -1,6 +1,6 @@
 {
   "name": "maomao",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "maomao extension",
   "scripts": {
     "test-app": "tape -r babel-register -r ./dunghd/content/src/scripts/test/setup-jsdom.js ./dunghd/content/src/scripts/test/*-test.js | faucet",
@@ -112,8 +112,7 @@
     "style-loader": "^0.18.2",
     "tape": "^4.6.0",
     "webpack": "^2.6.1",
-    "webpack-env-loader": "^0.1.1",
-    "why-did-you-update": "^0.0.8"
+    "webpack-env-loader": "^0.1.1"
   },
   "license": "ISC"
 }

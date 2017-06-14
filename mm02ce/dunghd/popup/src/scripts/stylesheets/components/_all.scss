@@ -52,7 +52,6 @@ $facebook-icons: './images/facebook_icon.svg';
 
 .popup-browser {
   position: relative;
-  //animation: vex-flyin 0.5s;
   animation: vex-fadein 1.4s both;
   .maomao-logo {
     margin-right: 3px;
@@ -506,26 +505,6 @@ $facebook-icons: './images/facebook_icon.svg';
     }
   }
   &.dropdown--active {
-    .dropdown__trigger {
-      /* position: relative;
-      display: inline-block;
-      span {
-        &:nth-child(1) {
-          transform: rotate(45deg);
-          top: 0;
-          left: 0;
-        }
-        &:nth-child(2) {
-          width: 0%;
-          opacity: 0;
-        }
-        &:nth-child(3) {
-          transform: rotate(-45deg);
-          top: 14px;
-          left: 0;
-        }
-      } */
-    }
     .dropdown__content {
       top: 38px;
       opacity: 1;
@@ -1109,17 +1088,6 @@ $facebook-icons: './images/facebook_icon.svg';
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
-  }
-}
-
-@keyframes vex-flyin {
-  0% {
-    opacity: 0;
-    transform: translateY(-40px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

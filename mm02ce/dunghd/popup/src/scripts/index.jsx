@@ -17,12 +17,6 @@ logger.setLevel('debug');
 
 /* eslint-disable */
 require('expose-loader?Perf!react-addons-perf');
-if (process.env.NODE_ENV !== 'production') {
-  const { whyDidYouUpdate } = require('why-did-you-update');
-  whyDidYouUpdate(React, {
-    exclude: /^(Connect|Styled|StyleRoot|Dropdown|DropdownTrigger|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|styled|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
-  });
-}
 /* eslint-enable */
 
 // ERROR handler

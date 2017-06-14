@@ -11,13 +11,6 @@ import Config from './config';
 /* eslint-disable */
 require('expose-loader?log!loglevel');
 require('expose-loader?Perf!react-addons-perf');
-
-if (process.env.NODE_ENV !== 'production') {
-  const { whyDidYouUpdate } = require('why-did-you-update');
-  whyDidYouUpdate(React, {
-    exclude: /^(Connect|Styled|StyleRoot|CSSTransitionGroup|SvgIcon|Autosuggest|ItemsList|Item|Step|CopyToClipboard|TouchRipple|EnhancedButton|IconButton|Card|CardActions|Avatar|CardHeader|Paper|onlyUpdateForKeys|withHandlers|withState|lifecycle)/
-  });
-}
 /* eslint-enable */
 
 const config = new Config();
