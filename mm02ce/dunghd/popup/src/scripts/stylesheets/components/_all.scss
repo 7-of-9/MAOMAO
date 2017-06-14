@@ -52,7 +52,6 @@ $facebook-icons: './images/facebook_icon.svg';
 
 .popup-browser {
   position: relative;
-  animation: vex-fadein 1.4s both;
   .maomao-logo {
     margin-right: 3px;
     width: 35px;
@@ -1088,15 +1087,6 @@ $facebook-icons: './images/facebook_icon.svg';
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
-  }
-}
-
-@keyframes vex-fadein {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
   }
 }
 

@@ -318,7 +318,7 @@ const App = ({
   dispatch, shareOption, changeShareOption,
   getLink, onFacebookLogin,
  }) =>
-  (<div style={{ minWidth: '340px', minHeight: '120px', margin: '0 auto' }}>
+  (<div style={{ minHeight: '100px' }}>
     {render(
       status, auth, nlp, removeHashFromUrl(url), icon,
       dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
