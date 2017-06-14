@@ -10,7 +10,6 @@ import Config from './config';
 // NOTE: Expose global modules for content.js
 /* eslint-disable */
 require('expose-loader?log!loglevel');
-require('expose-loader?Perf!react-addons-perf');
 /* eslint-enable */
 
 const config = new Config();

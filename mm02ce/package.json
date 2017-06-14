@@ -37,7 +37,6 @@
     "radium": "^0.19.1",
     "rc-steps": "^2.5.1",
     "react": "^15.6.0",
-    "react-addons-perf": "^15.4.2",
     "react-addons-shallow-compare": "^15.5.2",
     "react-animations": "^0.1.0",
     "react-autosuggest": "^9.0.1",

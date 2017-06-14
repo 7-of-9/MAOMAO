@@ -14,11 +14,6 @@ import App from './components/app/App';
 // }
 logger.setLevel('debug');
 
-
-/* eslint-disable */
-require('expose-loader?Perf!react-addons-perf');
-/* eslint-enable */
-
 // ERROR handler
 const errBack = (err) => { logger.error(err.message); };
 

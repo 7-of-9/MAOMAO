@@ -140,6 +140,22 @@ const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
   changeShareOption, getLink, onFacebookLogin,
 ) => {
+  if (url && status && isInternalTab(url)) {
+    return (
+      <div className="popup-browser">
+        <h3 className="share-heading">
+          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+            <span className="maomao-logo" />
+            <span className="maomao-text" />
+          </a>
+        </h3>
+        <div className="popup-content">
+          <p className="paragraph-share">maomao thinks this page is boring!</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!url || !status) {
     return (
       <div className="popup-browser">
@@ -157,22 +173,6 @@ const render = (
               maomao is thinking...
             </p>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isInternalTab(url)) {
-    return (
-      <div className="popup-browser">
-        <h3 className="share-heading">
-          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
-            <span className="maomao-logo" />
-            <span className="maomao-text" />
-          </a>
-        </h3>
-        <div className="popup-content">
-          <p className="paragraph-share">maomao thinks this page is boring!</p>
         </div>
       </div>
     );
@@ -318,12 +318,10 @@ const App = ({
   dispatch, shareOption, changeShareOption,
   getLink, onFacebookLogin,
  }) =>
-  (<div style={{ minHeight: '100px' }}>
-    {render(
-      status, auth, nlp, removeHashFromUrl(url), icon,
-      dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
-    )}
-  </div>);
+  render(
+    status, auth, nlp, removeHashFromUrl(url), icon,
+    dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
+  );
 
 App.propTypes = propTypes;
 App.defaultProps = defaultProps;

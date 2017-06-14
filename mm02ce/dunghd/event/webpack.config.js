@@ -17,8 +17,8 @@ if (isProduction) {
   sourceMap = 'source-map';
   plugins = plugins.concat([
     new webpack.LoaderOptionsPlugin({
-        minimize: true,
-        debug: false,
+      minimize: true,
+      debug: false,
     }),
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
@@ -28,8 +28,8 @@ if (isProduction) {
   sourceMap = 'eval';
   plugins = plugins.concat([
     new webpack.LoaderOptionsPlugin({
-        minimize: false,
-        debug: true,
+      minimize: false,
+      debug: true,
     }),
   ]);
 }
@@ -51,8 +51,8 @@ module.exports = {
     extensions: ['.js', '.json'],
     modules: ['node_modules'],
     alias: {
-        jquery: 'jquery/src/jquery',
-        'stacktrace-js': 'stacktrace-js/stacktrace',
+      jquery: 'jquery/src/jquery',
+      'stacktrace-js': 'stacktrace-js/stacktrace',
     },
   },
 
