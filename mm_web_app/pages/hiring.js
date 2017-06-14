@@ -9,11 +9,6 @@ import LogoIcon from '../components/LogoIcon'
 import Slogan from '../components/Slogan'
 import stylesheet from '../styles/index.scss'
 
-if (process.env.NODE_ENV !== 'production') {
-  const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ })
-}
-
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
 }

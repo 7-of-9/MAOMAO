@@ -7,11 +7,6 @@ import { initDiscoveryStore } from '../stores/discovery'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-if (process.env.NODE_ENV !== 'production') {
-  const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ })
-}
-
 export default class DiscoveryPage extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req

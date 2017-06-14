@@ -1,5 +1,6 @@
 import React from 'react'
 import { Provider, observer } from 'mobx-react'
+import dynamic from 'next/dynamic'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
@@ -7,10 +8,8 @@ import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-if (process.env.NODE_ENV !== 'production') {
-  const { whyDidYouUpdate } = require('why-did-you-update')
-  whyDidYouUpdate(React, { include: /^pure/, exclude: /^Connect/ })
-}
+const DevTools = dynamic(import('mobx-react-devtools'))
+const dev = process.env.NODE_ENV !== 'production'
 
 @observer
 export default class Index extends React.Component {
@@ -49,6 +48,7 @@ export default class Index extends React.Component {
         <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home />
+          { dev && <DevTools /> }
         </div>
       </Provider>
     )

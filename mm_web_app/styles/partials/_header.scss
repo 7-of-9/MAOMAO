@@ -11,7 +11,7 @@ the header section
   @include transform(translate3d(0, 0, 0));
   visibility: visible;
   position: relative;
-  z-index: 99999;
+  z-index: 999;
   .header-nav {
     padding: 0;
     height: 72px;
@@ -394,7 +394,7 @@ the header section
       top: 62px;
       left: auto;
       right: 15px;
-      z-index: 1000;
+      z-index: 999;
       padding: 0.4375rem 0;
       margin: 0;
       float: left;
@@ -577,13 +577,6 @@ the header section
     @include opacity(0);
     visibility: hidden;
   }
-  /* @media(max-width: 767px) {
-    .neal-navbar-wrapper {
-      @include opacity(1);
-      @include transform(none);
-      visibility: visible;
-    }
-  } */
 }
 
 .slideInDown {

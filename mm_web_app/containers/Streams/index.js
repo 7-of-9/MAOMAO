@@ -16,6 +16,7 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
+import { guid } from '../../utils/hash'
 
 const LIMIT = 10
 const MAX_COLORS = 12
@@ -32,7 +33,6 @@ const avatar = (user) => {
 }
 
 function urlOwner (id, owners, users, filterByUser, onSelectUser) {
-  // TODO: click on name to filter by user
   const items = []
   const userIds = _.flatMap(toJS(filterByUser), item => item.user_id)
   const ownersFilter = userIds.length > 0 ? owners.filter(item => userIds.indexOf(item.owner) !== -1) : owners
@@ -40,7 +40,7 @@ function urlOwner (id, owners, users, filterByUser, onSelectUser) {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div key={`user-detail-${owner.fullname}`} className='panel-user-img'>
+      <div key={guid()} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
           <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
           <span className='panel-user-cnt'>
@@ -73,13 +73,12 @@ function urlOwner (id, owners, users, filterByUser, onSelectUser) {
 }
 
 function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
-  // TODO: click on name to filter by topic
   const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
   const items = []
   const isOwner = myUrlIds.indexOf(id) !== -1
   _.forEach(currentTopics, (topic) => {
     items.push(
-      <div className='mix-tag-topic' key={`tag-topic-${topic.name}`}>
+      <div className='mix-tag-topic' key={guid()}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
@@ -147,7 +146,7 @@ function parseDomain (link) {
 @inject('store')
 @inject('ui')
 @observer
-class Streams extends React.Component {
+class Streams extends React.PureComponent {
   componentDidMount () {
     logger.warn('Streams componentDidMount')
   }
@@ -170,7 +169,6 @@ class Streams extends React.Component {
     const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.id)
     logger.warn('currentUrls', currentUrls)
-    const masterKey = `${filterByUser.map(item => item.label).join(',')}-${filterByTopic.map(item => item.label).join(',')}-${rating}-${sortBy}-${sortDirection}`
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { id, href, img, title, owners } = item
@@ -181,7 +179,7 @@ class Streams extends React.Component {
         if (item && item.suggestions && item.suggestions.length) {
           suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
         }
-        items.push(<div key={`${id}-${masterKey}`} className='grid-item shuffle-item'>
+        items.push(<div key={guid()} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
             <div className='thumbnail'>

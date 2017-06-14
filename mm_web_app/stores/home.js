@@ -199,14 +199,14 @@ export class HomeStore extends CoreStore {
                   rate: calcRate(item.im_score, item.time_on_tab)
                 }
               ],
-              id: item.id,
+              id: item.url_id,
               title: item.title,
               href: item.href,
               img: item.img,
               suggestions: item.suggestions
             }
             )))
-            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.id) })
+            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
             _.forEach(myTopics, item => {
               if (item.term_id > 0 && item.url_ids.length > 0) {
                 topics.push({ id: item.term_id, name: item.term_name, urlIds: item.url_ids })
@@ -229,20 +229,20 @@ export class HomeStore extends CoreStore {
                     rate: calcRate(item.im_score, item.time_on_tab)
                   }
                 ],
-                id: item.id,
+                id: item.url_id,
                 title: item.title,
                 href: item.href,
                 img: item.img,
                 suggestions: item.suggestions
               }
               )))
-              urlIds.push(...item.urls.map(item => item.id))
+              urlIds.push(...item.urls.map(item => item.url_id))
               if (item.topic_name) {
                 const existTopic = topics.find(topic => topic.name === item.topic_name)
                 if (existTopic) {
-                  existTopic.urlIds.push(...item.urls.map(item => item.id))
+                  existTopic.urlIds.push(...item.urls.map(item => item.url_id))
                 } else {
-                  topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.id) })
+                  topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.url_id) })
                 }
               }
             })

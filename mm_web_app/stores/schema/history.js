@@ -1,7 +1,7 @@
 import { normalize, schema } from 'normalizr'
 
 // Define a users schema
-const url = new schema.Entity('urls')
+const url = new schema.Entity('urls', {}, { idAttribute: 'url_id' })
 const topic = new schema.Entity('topics', {}, { idAttribute: 'term_id' })
 
 // Define your comments schema

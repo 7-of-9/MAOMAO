@@ -4827,10 +4827,6 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@4.12.0:
-  version "4.12.0"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.12.0.tgz#2bd6dc46a040f59e686c972ed21d93dc59053258"
-
 lodash@4.x.x, lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@^4.5.1, lodash@^4.6.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
@@ -5095,9 +5091,9 @@ mobx-react@^4.2.1:
   dependencies:
     hoist-non-react-statics "^1.2.0"
 
-mobx-utils@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/mobx-utils/-/mobx-utils-2.0.1.tgz#6460d6436f991b2d3250d51995cbcae2c5707b67"
+mobx-utils@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/mobx-utils/-/mobx-utils-2.0.2.tgz#c12c9cc69be8020e30c7b6417f14b4ea38ba9723"
 
 mobx@^2.3.4:
   version "2.7.0"
@@ -6403,9 +6399,9 @@ react-docgen@^2.15.0:
     node-dir "^0.1.10"
     recast "^0.11.5"
 
-react-dom@^15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.5.4.tgz#ba0c28786fd52ed7e4f2135fe0288d462aef93da"
+react-dom@^15.6.0:
+  version "15.6.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.0.tgz#8bc23cb0c80e706355b76ca9f8ce47cf7bdfb6d1"
   dependencies:
     fbjs "^0.8.9"
     loose-envify "^1.1.0"
@@ -6469,9 +6465,9 @@ react-masonry-component@^5.0.7:
     masonry-layout "^4.2.0"
     prop-types "^15.5.8"
 
-react-modal@^1.7.6, react-modal@^1.7.7, react-modal@^1.9.2:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.9.2.tgz#a921b027830512bfa50663320266b913ee1b6a81"
+react-modal@^1.7.6, react-modal@^1.7.7, react-modal@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.9.4.tgz#f6823c29ca9ecbecd9cc2a9f019e78e4319bafdd"
   dependencies:
     create-react-class "^15.5.2"
     element-class "^0.2.0"
@@ -6581,10 +6577,11 @@ react-youtube@^7.4.0:
     prop-types "^15.5.3"
     youtube-player "^4.2.3"
 
-react@^15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.5.4.tgz#fa83eb01506ab237cdc1c8c3b1cea8de012bf047"
+react@^15.6.0:
+  version "15.6.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-15.6.0.tgz#c23299b48e30ed302508ce89e1a02c919f826bce"
   dependencies:
+    create-react-class "^15.5.2"
     fbjs "^0.8.9"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
@@ -7956,12 +7953,6 @@ which@1, which@^1.2.12, which@^1.2.9:
   resolved "https://registry.yarnpkg.com/which/-/which-1.2.14.tgz#9a87c4378f03e827cecaf1acdf56c736c01c14e5"
   dependencies:
     isexe "^2.0.0"
-
-why-did-you-update@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/why-did-you-update/-/why-did-you-update-0.0.8.tgz#389d97dd6c147e1edbc9f5d5470d44d985c8ae38"
-  dependencies:
-    lodash "4.12.0"
 
 wide-align@^1.1.0:
   version "1.1.0"
