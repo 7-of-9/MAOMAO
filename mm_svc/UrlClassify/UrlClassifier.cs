@@ -499,10 +499,10 @@ namespace mm_svc
         {
             //using (var db = mm02Entities.Create())
             {
-                var parent_terms = GoldenParents.GetStoredParents(this.term_id).Where(p => p.parent_term_id != this.term_id);
-                var distinct = parent_terms.DistinctBy(p => p.parent_term.name);
-                this.suggestions.AddRange(distinct.Select(p => new SuggestionInfo()
-                {
+                var parent_terms = GoldenParents.GetStoredParents(this.term_id)
+                                                .Where(p => p.parent_term_id != this.term_id && p.S_norm > 0.8)
+                                                .DistinctBy(p => p.parent_term.name);
+                this.suggestions.AddRange(parent_terms.Select(p => new SuggestionInfo() {
                     term_name = p.parent_term.name,
                     S = p.S,
                     is_topic = p.is_topic

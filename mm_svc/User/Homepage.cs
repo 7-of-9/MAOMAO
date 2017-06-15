@@ -201,8 +201,6 @@ namespace mm_svc
 
         private static List<UserUrlInfo> GetUserUrlInfos_ForTopic(long user_id, long? term_id)
         {
-            //return new List<UserUrlInfo>();
-
             using (var db = mm02Entities.Create()) {
 
                 var url_parent_terms_qry = db.url_parent_term
@@ -213,7 +211,7 @@ namespace mm_svc
                                              
                                                  // and top suggestions 
                                                  //|| (p.suggested_dynamic == true && (p.term.is_topic??false) == false && (p.pri == 1 || p.pri == 2))
-                                                 )                    
+                                                 )             
 
                                              .Where(p => p.url.user_url.Any(p2 => p2.user_id == user_id && p2.time_on_tab > 0))
                                              .Select(p => new {
@@ -234,21 +232,20 @@ namespace mm_svc
                 var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList();
                 var topic_matching_url_ids = urls.Select(p => p.url_id).Distinct().ToList();
 
-
                 // seems v slightly faster to get suggestions separately, as compared to trying to get above
-                var url_suggestions_qry = db.url_parent_term//.Include("term")
-                                        .Where(p => topic_matching_url_ids.Contains(p.url_id)
-                                                && p.suggested_dynamic == true && p.term.is_topic == false
-                                                && (p.pri == 1 || p.pri == 2) //p.S > 1
-                                                )
-                                        //.OrderByDescending(p => p.S)
-                                        .Select(p => new {
-                                            url_id = p.url_id,
-                                            term_name = p.term.name,
-                                            S = p.S,
-                                        });
-                //Debug.WriteLine(url_suggestions_qry.ToString());
-                var url_suggestions = url_suggestions_qry.ToListNoLock();
+                //var url_suggestions_qry = db.url_parent_term
+                //                        .Where(p => topic_matching_url_ids.Contains(p.url_id)
+                //                                && p.suggested_dynamic == true && p.term.is_topic == false
+                //                                && (p.pri == 1 || p.pri == 2) //p.S > 1
+                //                                )
+                //                        //.OrderByDescending(p => p.S)
+                //                        .Select(p => new {
+                //                            url_id = p.url_id,
+                //                            term_name = p.term.name,
+                //                            S = p.S,
+                //                        });
+                ////Debug.WriteLine(url_suggestions_qry.ToString());
+                //var url_suggestions = url_suggestions_qry.ToListNoLock();
 
                 //var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic).ToList();
 
@@ -258,11 +255,11 @@ namespace mm_svc
                     img = p.img_url, 
                     title = p.meta_title,
 
-                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() {
-                        term_name = p2.term_name,
-                        S = p2.S ?? 0,
-                        is_topic = false //p2.term.is_topic ?? false
-                    }).ToList()),
+                    //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() {
+                    //    term_name = p2.term_name,
+                    //    S = p2.S ?? 0,
+                    //    is_topic = false //p2.term.is_topic ?? false
+                    //}).ToList()),
 
                     hit_utc = p.hit_utc, 
                     im_score = p.im_score ?? 0, 
@@ -296,18 +293,18 @@ namespace mm_svc
                 //Debug.WriteLine(url_parent_terms_qry.ToString());
 
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-                var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
+                //var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
 
-                var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList(); //.Select(p => p.url).DistinctBy(p => p.id).OrderBy(p => p.id).ToList();
+                var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList(); 
                 return urls.Select(p => new UserUrlInfo()
                 {
-                    //url = p,
                     url_id = p.url_id,
                     href = p.href, //{ get { return url.url1; } }
                     img = p.img_url, //{ get { return url.img_url; } }
                     title = p.meta_title, //{ get { return url.meta_title; } }
 
-                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+                    //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+
                     hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).nav_utc,
                     im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).im_score ?? 0,
                     time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).time_on_tab ?? 0,
@@ -315,16 +312,14 @@ namespace mm_svc
             }
         }
 
-        private static List<UserUrlInfo> GetUserUrlInfos_ForUserUrls(long user_id)//, List<user_url> user_urls)
+        private static List<UserUrlInfo> GetUserUrlInfos_ForUserUrls(long user_id)
         {
-            //var url_ids = user_urls.Select(p => p.url_id).ToList();
             using (var db = mm02Entities.Create())
             {
                 var url_parent_terms_qry = db.url_parent_term
                                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                                              .Where(p => (p.S_norm > MIN_S_NORM))
                                              
-                                             //.Where(p => url_ids.Contains(p.url_id))
                                              .Where(p => p.url.user_url.Any(p2 => p2.user_id == user_id))
                                              
                                              .Select(p => new {
@@ -340,7 +335,6 @@ namespace mm_svc
                                              });
                 Debug.WriteLine(url_parent_terms_qry.ToString());
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
 
                 //var url_suggestions_qry = db.url_parent_term
                 //                          //.Where(p => url_ids.Contains(p.url_id))
