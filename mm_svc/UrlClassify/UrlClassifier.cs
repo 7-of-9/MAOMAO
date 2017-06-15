@@ -73,7 +73,7 @@ namespace mm_svc
                     img = p.img_url, //{ get { return url.img_url; } }
                     title = p.meta_title, //{ get { return url.meta_title; } }
 
-                    suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
+                    //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.id).Select(p2 => new SuggestionInfo() { term_name = p2.term.name, S = p2.S ?? 0, is_topic = p2.term.IS_TOPIC }).ToList()),
                     hit_utc = inputs.Single(p2 => p2.url_id == p.id).hit_utc,
                     im_score = inputs.Single(p2 => p2.url_id == p.id).im_score,
                     time_on_tab = inputs.Single(p2 => p2.url_id == p.id).time_on_tab,
@@ -107,30 +107,22 @@ namespace mm_svc
                 topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
 
                 // urls --> topic chains
-                foreach (var url_info in url_infos)
-                {
+                foreach (var url_info in url_infos) {
                     var topics_for_url = url_topics.Union(url_title_topics) // regular topics & url title topics
                                                    .Where(p => p.url_id == url_info.url_id).ToList();
-                    foreach (var topic in topics_for_url)
-                    {
-                        if (topic_chains.ContainsKey(topic.term_id))
-                        {
+                    foreach (var topic in topics_for_url) {
+                        if (topic_chains.ContainsKey(topic.term_id)) {
                             var topic_chain = topic_chains[topic.term_id];
                             url_info.topic_chains.Add(topic_chain);
                         }
                     }
-                    //url_info.topic_chains = url_info.topic_chains.OrderByDescending(p => p.Max(p2 => p2.topic_S_norm)).ToList();
                 }
 
                 // walk topic chains; add urls that match each topic in chain
-                foreach (var topic_chain in topic_chains.Values)
-                {
-                    foreach (var topic in topic_chain)
-                    {
+                foreach (var topic_chain in topic_chains.Values) {
+                    foreach (var topic in topic_chain) {
                         var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url_id).ToList();
-                        //.Select(p => new UserUrlInfo() { url = p.url,
-                        //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
-                        topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
+                        topic.url_ids.AddRange(urls_ids_matching);
                     }
                 }
 
@@ -483,8 +475,12 @@ namespace mm_svc
         public string img; //{ get { return url.img_url; } }
         public string title; //{ get { return url.meta_title; } }
 
+        [NonSerialized]
         public List<SuggestionInfo> suggestions;
+
+        [NonSerialized]
         public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
+
         public DateTime hit_utc;
         public double im_score, time_on_tab;
     }

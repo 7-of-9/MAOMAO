@@ -111,7 +111,7 @@ namespace mmapi00.Controllers
 
             var data = mm_svc.UserHomepage.Get(user_id);
 
-            return Ok( new { me = data.me, shares_received_from = data.shares_received_from });
+            return Ok( new { me = data.mine, shares_received_from = data.received });
         }
 
         /// <summary>
