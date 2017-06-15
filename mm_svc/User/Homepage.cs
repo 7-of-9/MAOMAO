@@ -224,12 +224,10 @@ namespace mm_svc
                                                  hit_utc = p.url.user_url.FirstOrDefault(p2 => p2.user_id == user_id).nav_utc,
                                                  im_score = p.url.user_url.FirstOrDefault(p2 => p2.user_id == user_id).im_score,
                                                  time_on_tab = p.url.user_url.FirstOrDefault(p2 => p2.user_id == user_id).time_on_tab,
-                                                 term_name = p.term.name,
-                                                 suggested_dynamic = p.suggested_dynamic,
+                                                 //suggested_dynamic = p.suggested_dynamic,
                                                  S = p.S,
-                                                 is_topic = p.term.is_topic ?? false,
 
-                                                 term = p.term //**
+                                                 term = p.term
                                              });
                 //Debug.WriteLine(url_parent_terms_qry.ToString());
                 var url_parent_terms = url_parent_terms_qry.ToListNoLock();
@@ -293,8 +291,6 @@ namespace mm_svc
                                                  meta_title = p.url.meta_title,
                                                  suggested_dynamic = p.suggested_dynamic,
                                                  S = p.S,
-                                                 term_name = p.term.name,
-                                                 is_topic = p.term.is_topic ?? false,
 
                                                  term = p.term //**
                                              });
@@ -322,15 +318,7 @@ namespace mm_svc
                 }).ToList();
             }
         }
-
-        private static void MaintainUrlTermsLookup(long url_id, term term, ConcurrentDictionary<long, List<term>> urls_terms)
-        {
-            if (urls_terms.ContainsKey(url_id))
-                urls_terms[url_id].Add(term);
-            else
-                urls_terms.TryAdd(url_id, new List<term>() { term });
-        }
-
+     
         private static List<UserUrlInfo> GetUserUrlInfos_ForUserUrls(long user_id, ConcurrentDictionary<long, List<term>> urls_terms)
         {
             using (var db = mm02Entities.Create())
@@ -389,6 +377,14 @@ namespace mm_svc
 
                 return ret;
             }
+        }
+
+        private static void MaintainUrlTermsLookup(long url_id, term term, ConcurrentDictionary<long, List<term>> urls_terms)
+        {
+            if (urls_terms.ContainsKey(url_id))
+                urls_terms[url_id].Add(term);
+            else
+                urls_terms.TryAdd(url_id, new List<term>() { term });
         }
 
         private static List<TopicInfo> GetTopicInfos_ForUserUrls(List<long> url_ids, List<UserUrlInfo> url_infos, ConcurrentDictionary<long, List<term>> urls_terms)

@@ -500,12 +500,13 @@ namespace mm_svc
             //using (var db = mm02Entities.Create())
             {
                 var parent_terms = GoldenParents.GetStoredParents(this.term_id)
-                                                .Where(p => p.parent_term_id != this.term_id && p.S_norm > 0.8)
+                                                .Where(p => p.parent_term_id != this.term_id && p.S_norm > 0.6)
                                                 .DistinctBy(p => p.parent_term.name);
                 this.suggestions.AddRange(parent_terms.Select(p => new SuggestionInfo() {
                     term_name = p.parent_term.name,
+                    term_id = p.parent_term_id,
+                    is_topic = p.parent_term.IS_TOPIC,
                     S = p.S,
-                    is_topic = p.is_topic
                 }));
                 Parallel.ForEach(this.child_topics, p => p.GetSuggestedTermsForTopicAndChildren());
             }
@@ -516,6 +517,7 @@ namespace mm_svc
     public class SuggestionInfo
     {
         public string term_name;
+        public long term_id;
         public double S;
         public bool is_topic;
     }
