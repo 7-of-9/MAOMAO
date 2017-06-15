@@ -11,7 +11,7 @@ the header section
   @include transform(translate3d(0, 0, 0));
   visibility: visible;
   position: relative;
-  z-index: 999;
+  z-index: 1001;
   .header-nav {
     padding: 0;
     height: 72px;
@@ -394,7 +394,7 @@ the header section
       top: 62px;
       left: auto;
       right: 15px;
-      z-index: 999;
+      z-index: 1001;
       padding: 0.4375rem 0;
       margin: 0;
       float: left;

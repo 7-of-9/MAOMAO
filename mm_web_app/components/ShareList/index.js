@@ -20,15 +20,7 @@ const avatar = (user) => {
 @inject('store')
 @inject('ui')
 @observer
-class ShareList extends React.Component {
-  componentDidMount () {
-    logger.warn('ShareList componentDidMount')
-  }
-
-  componentWillReact () {
-    logger.warn('ShareList componentWillReact')
-  }
-
+class ShareList extends React.PureComponent {
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls, topics }, result: { shares_issued } } = this.props.store.normalizedData

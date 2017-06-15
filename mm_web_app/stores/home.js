@@ -38,17 +38,17 @@ const mergeUrls = (urls, newUrls) => {
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingHistory = false
-  @observable googleUser = {}
-  @observable facebookUser = {}
-  @observable urls = []
-  @observable users = []
-  @observable topics = []
   @observable codes = {
     all: null,
     sites: [],
     topics: []
   }
-  normalizedData = {entities: {}, result: {}}
+  normalizedData = { entities: {}, result: {} }
+  users = []
+  topics = []
+  urls = []
+  googleUser = {}
+  facebookUser = {}
   userHistory = { me: {}, shares_received_from: [] }
 
   constructor (isServer, userAgent, user) {
@@ -257,6 +257,49 @@ export class HomeStore extends CoreStore {
           this.isProcessingHistory = false
         }
       )
+    }
+  }
+
+  @action findUserRating (item, userIds) {
+    logger.warn('findUserRating')
+    if (userIds.length) {
+      const owner = item.owners.find(item => userIds.indexOf(item.owner) !== -1)
+      return owner.rate
+    }
+    return item.owners[0].rate
+  }
+
+  @action filterUrls (filterByTopic, filterByUser, rating) {
+    logger.warn('filterUrls')
+    const topics = toJS(filterByTopic)
+    const users = toJS(filterByUser)
+    if (topics.length > 0 || users.length > 0) {
+      const topicUrlIds = _.map(topics, item => item.value)
+      const userUrlIds = _.map(users, item => item.value)
+      const userIds = _.map(users, item => item.user_id)
+      let foundIds = []
+      if (topicUrlIds.length && userUrlIds.length) {
+        foundIds = _.intersection(topicUrlIds, userUrlIds)
+      } else {
+        if (topicUrlIds.length) {
+          foundIds = topicUrlIds
+        } else {
+          foundIds = userUrlIds
+        }
+      }
+      const result = this.urls.filter(item => foundIds.indexOf(item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
+      return result
+    }
+    const result = this.urls.filter(item => item.owners[0].rate >= rating)
+    return result
+  }
+
+  @action sortByOrdering (sortedUrls, sortBy, sortDirection) {
+    logger.warn('sortByOrdering')
+    if (sortBy === 'date') {
+      return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => _.max(url.owners[0].hit_utc)])) : _.sortBy(sortedUrls, [(url) => url.owners[0].hit_utc])
+    } else {
+      return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.owners[0].rate])) : _.sortBy(sortedUrls, [(url) => url.owners[0].rate])
     }
   }
 

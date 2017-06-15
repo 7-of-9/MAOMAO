@@ -81,7 +81,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
               </div>
             </div>
             {
-              suggestions.length > 0 &&
+              suggestions && suggestions.length > 0 &&
               <div className='suggestion-topic'>
                 {suggestions.map((item, index) => terms.indexOf(item) === -1 && (
                   <div key={`suggest-${item}`} className={`suggestion-topic-item tags-color-${(index + terms.length) % MAX_COLORS + 1}`}>

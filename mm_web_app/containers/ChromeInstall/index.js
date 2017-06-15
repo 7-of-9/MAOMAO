@@ -41,9 +41,11 @@ class ChromeInstall extends React.Component {
   componentDidMount () {
     logger.warn('ChromeInstall componentDidMount')
     this.props.store.checkInstall()
+    let counter = 0
     this.timer = setInterval(() => {
-      logger.warn('ChromeInstall componentDidMount setInterval')
-      if (this.props.store.isChrome && !this.props.store.isMobile) {
+      logger.info('ChromeInstall componentDidMount setInterval')
+      counter += 1
+      if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
         this.props.store.checkInstall()
         if (this.props.store.isInstalledOnChromeDesktop) {
           logger.warn('ChromeInstall clearInterval')

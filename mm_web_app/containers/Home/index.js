@@ -22,34 +22,37 @@ import logger from '../../utils/logger'
 
 // dynaymic load container component
 const Discovery = dynamic(
-  import('../Discovery'),
+ import('../Discovery'),
   {
     loading: () => (<Loading isLoading />)
   }
 )
 
 const Share = dynamic(
-  import('../Share'),
+ import('../Share'),
   {
     loading: () => (<Loading isLoading />)
   }
 )
-const ShareList = dynamic(
-  import('../ShareList'),
-  {
-    loading: () => (<Loading isLoading />)
-  }
-)
-const Streams = dynamic(
-  import('../Streams'),
-  {
-    loading: () => (<Loading isLoading />)
-  }
-)
+
 const ChromeInstall = dynamic(
-  import('../ChromeInstall'),
+ import('../ChromeInstall'),
   {
     ssr: false,
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const ShareList = dynamic(
+import('../../components/ShareList'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const Streams = dynamic(
+import('../../components/Streams'),
+  {
     loading: () => (<Loading isLoading />)
   }
 )

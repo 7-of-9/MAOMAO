@@ -18,7 +18,7 @@ export class CoreStore {
   user = null
   pusher = null
   browserName = ''
-  @observable contacts = []
+  @observable.ref contacts = []
   @observable isChrome = false
   @observable userHash = ''
   @observable userId = -1
@@ -46,18 +46,21 @@ export class CoreStore {
 
   @action checkInstall () {
     if (this.isChrome && !this.isMobile) {
-      this.isInstall = !!hasInstalledExtension()
-      if (this.isInstall && this.isChrome && !this.isMobile && this.userId < 0) {
-        sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
-          if (error) {
-            logger.warn('WEB_CHECK_AUTH error', error)
-          } else {
-            this.autoLogin(data.payload)
-          }
-        })
+      const checkInstall = !!hasInstalledExtension()
+      if (checkInstall !== this.isInstall) {
+        this.isInstall = checkInstall
+        if (this.isInstall && this.isChrome && !this.isMobile && this.userId < 0) {
+          sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
+            if (error) {
+              logger.warn('WEB_CHECK_AUTH error', error)
+            } else {
+              this.autoLogin(data.payload)
+            }
+          })
+        }
       }
     }
-    logger.warn('checkInstall isChrome, isMobile, isInstalledOnChromeDesktop', this.isChrome, this.isMobile, this.isInstalledOnChromeDesktop)
+    logger.info('checkInstall isChrome, isMobile, isInstalledOnChromeDesktop', this.isChrome, this.isMobile, this.isInstalledOnChromeDesktop)
   }
 
   @action checkGoogleContacts () {

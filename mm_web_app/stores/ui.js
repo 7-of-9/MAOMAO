@@ -12,11 +12,11 @@ export class UIStore {
   @observable filterByUser = []
   @observable discoveryTerms = []
   @observable discoverySuggestionTerms = []
-  @observable page = 0
   @observable rating = 1
   @observable currentViewer = 'streams'
   @observable showExtensionModal = false
   @observable notifications = []
+  @observable page = 1
   shareTopics = []
   shareUrlId = -1
 
@@ -131,6 +131,11 @@ export class UIStore {
   @action changeRate (rating) {
     this.rating = rating
     this.page = 1
+  }
+
+  @action nextPage () {
+    logger.warn('nextPage')
+    this.page += 1
   }
 }
 
