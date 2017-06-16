@@ -174,7 +174,7 @@ class FilterSearch extends React.Component {
       value,
       onChange: this.onChange
     }
-    const { users, firstLevelTopics, userId } = toJS(this.props.store)
+    const { users, firstLevelTopics, topics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
     logger.warn('FilterSearch render', users, firstLevelTopics, userId)
 
@@ -210,7 +210,7 @@ class FilterSearch extends React.Component {
                   <ul className='search-box-list'>
                     {
                       filterByTopic.map(item => (
-                        <li className={`tags-color-${(firstLevelTopics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
+                        <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
                             <i className='fa fa-remove' aria-hidden='true' />
@@ -299,7 +299,7 @@ class FilterSearch extends React.Component {
             </div>
             <div className='widget-dropdown'>
               <div className={sortBy === 'date' ? 'widget-calendar active' : 'widget-calendar'}>
-                <a onClick={() => this.props.ui.changeSortOrder('date', sortDirection === 'asc' ? 'desc' : 'asc')}>
+                <a onClick={() => this.props.ui.changeSortOrder('date', sortDirection)}>
                   <span className='nav-symbol'>
                     <i className='fa fa-calendar fa-2x' aria-hidden='true' />
                   </span>

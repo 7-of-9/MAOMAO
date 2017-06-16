@@ -168,11 +168,15 @@ class Streams extends React.PureComponent {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item
         let discoveryKeys = []
-        let suggestionKeys = []
+        const suggestionKeys = []
         const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
-        discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
-        if (item && item.suggestions && item.suggestions.length) {
-          suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
+        const maxLevel = _.maxBy(currentTopics, 'level')
+        const deepestTopics = currentTopics.filter(item => item.level === maxLevel.level)
+        discoveryKeys = discoveryKeys.concat(_.map(deepestTopics, 'name'))
+        if (deepestTopics.length) {
+          deepestTopics.forEach(item => {
+            suggestionKeys.push(..._.map(item.suggestions.slice(0, 5), 'term_name'))
+          })
         }
         items.push(<div key={url_id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>

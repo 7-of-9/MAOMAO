@@ -7,6 +7,7 @@ const { parse } = require('url')
 const mobxReact = require('mobx-react')
 const request = require('request')
 const admin = require('firebase-admin')
+const helmet = require('helmet')
 const log = require('loglevel')
 const MAILGUN_KEY = 'key-6acu-fqm4j325jes59jc31rq557e83l6'
 const mailgun = require('mailgun-js')({apiKey: MAILGUN_KEY, domain: 'productsway.com'})
@@ -235,6 +236,7 @@ mobxReact.useStaticRendering(true)
 
 app.prepare().then(() => {
   const server = express()
+  server.use(helmet())
   server.use(bodyParser.json())
   server.use(session({
     secret: 'REDACTED_SECRET',
