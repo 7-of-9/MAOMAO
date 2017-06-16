@@ -16,6 +16,17 @@ const calcRate = (score, timeOnTab) => {
   return rate < 1 ? 1 : rate
 }
 
+function flattenTopics (topics, counter = 0) {
+  const result = []
+  topics.forEach(item => {
+    result.push({ level: counter, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions })
+    if (item.child_topics && item.child_topics.length) {
+      result.push(...flattenTopics(item.child_topics, counter + 1))
+    }
+  })
+  return result
+}
+
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingHistory = false
@@ -216,13 +227,12 @@ export class HomeStore extends CoreStore {
             })
             users.push({ user_id, fullname, avatar, urlIds })
           })
-
           this.urls = urls
-          this.topics = topics
+          this.topics = flattenTopics(topics)
           this.firstLevelTopics = topics.map(item => ({ name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
           this.users = users
           this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
-          logger.warn('findAllUrlsAndTopics urls, users, topics', urls, users, topics, owners)
+          logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
           this.isProcessingHistory = false
         }
       )

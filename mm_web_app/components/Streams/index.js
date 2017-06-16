@@ -18,7 +18,7 @@ import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
 import { guid } from '../../utils/hash'
 
-const LIMIT = 10
+const LIMIT = 20
 const MAX_COLORS = 12
 const masonryOptions = {
   itemSelector: '.grid-item',
@@ -27,7 +27,6 @@ const masonryOptions = {
 
 function urlOwner (owners, users, onSelectUser) {
   const items = []
-  logger.warn('urlOwner', owners)
   _.forEach(owners, user => {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
@@ -68,7 +67,9 @@ function urlTopic (urlId, firstLevelTopics, onSelectTopic, myUrlIds, onShareTopi
   const currentTopics = firstLevelTopics.filter(item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
   const items = []
   const isOwner = myUrlIds.indexOf(urlId) !== -1
-  _.forEach(currentTopics, (topic) => {
+  const maxLevel = _.maxBy(currentTopics, 'level')
+  logger.warn('currentTopics', maxLevel, currentTopics)
+  _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
     items.push(
       <div className='mix-tag-topic' key={guid()}>
         <span className={`tags tags-color-${(firstLevelTopics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
@@ -152,9 +153,9 @@ class Streams extends React.PureComponent {
   }
   render () {
     // populate urls and users
-    const { urls, users, firstLevelTopics, owners } = toJS(this.props.store)
+    const { urls, users, topics, owners } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
-    logger.warn('Streams render', urls, users, firstLevelTopics, owners, myUrls)
+    logger.warn('Streams render', urls, users, topics, owners, myUrls)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
@@ -169,7 +170,7 @@ class Streams extends React.PureComponent {
         const { url_id, href, img, title } = item
         let discoveryKeys = []
         let suggestionKeys = []
-        const currentTopics = firstLevelTopics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
+        const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
         discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
         if (item && item.suggestions && item.suggestions.length) {
           suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
@@ -182,7 +183,7 @@ class Streams extends React.PureComponent {
                 <a className='thumbnail-overlay' href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(url_id, firstLevelTopics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic))}
+                {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic))}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>

@@ -709,7 +709,7 @@ img {
       @include border-radius(8px);
       position: relative;
       min-height: 120px;
-      overflow: hidden;
+      /* overflow: hidden; */
       display: block;
       .thumbnail-overlay {
         @include border-radius(4px);
