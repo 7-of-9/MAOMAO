@@ -44,10 +44,10 @@ function urlOwner (owners, users, onSelectUser) {
               <span className={rate >= 5 ? 'active' : ''} />
             </div>
             <span className='date-time'>
-              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{parseInt(IMScore)} XP</span>
+              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{parseInt(timeOnTab / 1000)} XP</span>
             </span>
             <span className='date-time'>
-              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{parseInt(timeOnTab / 1000)}</span>
+              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{parseInt(IMScore)}</span>
             </span>
             <span className='date-time'>
               <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
@@ -63,19 +63,18 @@ function urlOwner (owners, users, onSelectUser) {
   )
 }
 
-function urlTopic (urlId, firstLevelTopics, onSelectTopic, myUrlIds, onShareTopic) {
-  const currentTopics = firstLevelTopics.filter(item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
+function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
+  const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
   const items = []
   const isOwner = myUrlIds.indexOf(urlId) !== -1
   const maxLevel = _.maxBy(currentTopics, 'level')
-  logger.warn('currentTopics', maxLevel, currentTopics)
   _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
     items.push(
       <div className='mix-tag-topic' key={guid()}>
-        <span className={`tags tags-color-${(firstLevelTopics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
+        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
-            isOwner && topic.id &&
+            isOwner &&
             <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
               <img src='/static/images/logo.png' width='25' height='25' alt='share firstLevelTopics' />
             </span>
@@ -175,7 +174,7 @@ class Streams extends React.PureComponent {
         if (item && item.suggestions && item.suggestions.length) {
           suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
         }
-        items.push(<div key={guid()} className='grid-item shuffle-item'>
+        items.push(<div key={url_id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
             <div className='thumbnail'>
