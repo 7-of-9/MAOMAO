@@ -104,6 +104,9 @@ namespace mm_svc
             var ms = sw.ElapsedMilliseconds;
             g.LogInfo($"Homepage/get user_id={user_id} ms={ms}");
 
+            var a = ret.mine.urls.Where(p => p.url_id == 13513).ToList();
+            var b = ret.received.SelectMany(p => p.shares.SelectMany(p2 => p2.urls.Where(p3 => p3.url_id == 13513))).ToList();
+
             return ret;
         }
 
@@ -381,8 +384,13 @@ namespace mm_svc
 
         private static void MaintainUrlTermsLookup(long url_id, term term, ConcurrentDictionary<long, List<term>> urls_terms)
         {
-            if (urls_terms.ContainsKey(url_id))
-                urls_terms[url_id].Add(term);
+            //if (url_id == 13513)
+            //    Debugger.Break(); //***
+
+            if (urls_terms.ContainsKey(url_id)) {
+                if (!urls_terms[url_id].Any(p => p.id == term.id))
+                    urls_terms[url_id].Add(term);
+            }
             else
                 urls_terms.TryAdd(url_id, new List<term>() { term });
         }
@@ -393,26 +401,11 @@ namespace mm_svc
             {
                 var wiki_term_TLD = db.terms.Find((int)g.WIKI_TERM.TopLevelDomain);
 
-                //var url_parent_terms_qry = db.url_parent_term.AsNoTracking()
-                //                             .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
-                //                             .Where(p => p.url_title_topic == true || p.S_norm > MIN_S_NORM)
-                //                             .Where(p => url_ids.Contains(p.url_id))
-                //                             .Select(p => new {
-
-                //                                 url_id = p.url_id,
-                //                                 url_title_topic = p.url_title_topic,
-                //                                 term = p.term,
-                //                             });
-                //Debug.WriteLine(url_parent_terms_qry.ToString());
-                //var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
                 var all_url_terms = urls_terms.SelectMany(p => p.Value);
 
                 // get topic link chains - regular topics & url title topics
                 var topic_chains = new Dictionary<long, List<TopicInfo>>(); // term_id, chain
-                foreach (var topic_term in all_url_terms //url_parent_terms //url_topics.Union(url_title_topics) // regular topics & url title topics
-                                                .DistinctBy(p => p.id))
-                {
+                foreach (var topic_term in all_url_terms.DistinctBy(p => p.id)) {
                     var topic_chain = topic_term.term_type_id == (int)g.TT.TLD_TITLE
                                             ? new List<topic_link>() { new topic_link() { term1 = wiki_term_TLD } }
                                             : GoldenTopics.GetTopicLinkChain(topic_term.id); 
@@ -424,50 +417,46 @@ namespace mm_svc
                     topic_chains.Add(topic_term.id, chain);
                 }
 
-                // dedupe chains -- remove chain if the first topic in the chain is contained in any other chains
-                var topic_ids_to_remove = new List<long>();
-                foreach (var chain_id in topic_chains.Keys)
-                {
-                    var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
-                    if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
-                        topic_ids_to_remove.Add(chain_id);
-                }
-                topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
-
+                //foreach (var topic_chain in topic_chains.Values)
+                //    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term_name + $" ({topic.url_ids.Count} urls)"))})");
+              
                 // urls --> topic chains
-                foreach (var url_info in url_infos)
-                {
+                foreach (var url_info in url_infos) {
+                    //if (url_info.url_id == 13513)
+                    //    Debugger.Break();
+
                     var topics_for_url = urls_terms[url_info.url_id];
-                                         //url_parent_terms // url_topics.Union(url_title_topics) // regular topics & url title topics
-                                         //          .Where(p => p.url_id == url_info.url_id).ToList();
-                    foreach (var topic in topics_for_url)
-                    {
+                    foreach (var topic in topics_for_url) {
                         if (topic_chains.ContainsKey(topic.id))
                         {
                             var topic_chain = topic_chains[topic.id];
                             url_info.topic_chains.Add(topic_chain);
                         }
                     }
-                    //url_info.topic_chains = url_info.topic_chains.OrderByDescending(p => p.Max(p2 => p2.topic_S_norm)).ToList();
                 }
 
+                // dedupe chains -- remove chain if the first topic in the chain is contained in any other chains
+                var topic_ids_to_remove = new List<long>();
+                foreach (var chain_id in topic_chains.Keys) {
+                    var other_chains = topic_chains.Where(p => p.Key != chain_id).Select(p => p.Value);
+                    if (other_chains.Any(p => p.Any(p2 => p2.term_id == chain_id)))
+                        topic_ids_to_remove.Add(chain_id);
+                }
+                topic_ids_to_remove.ForEach(p => topic_chains.Remove(p));
+
                 // walk topic chains; add urls that match each topic in chain
-                foreach (var topic_chain in topic_chains.Values)
-                {
-                    foreach (var topic in topic_chain)
-                    {
+                foreach (var topic_chain in topic_chains.Values) {
+                    foreach (var topic in topic_chain) {
                         var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url_id).ToList();
-                        //.Select(p => new UserUserUrlInfo() { url = p.url,
-                        //                     suggestions = url_infos.Single(p2 => p2.url.id == p.url.id).suggestions } );
-                        topic.url_ids.AddRange(urls_ids_matching);//.Select(p => p.url.id));
+                        topic.url_ids.AddRange(urls_ids_matching);
                     }
                 }
 
                 // dbg: order & print 
                 var chains = topic_chains.Values.OrderBy(p => string.Join("/", p.Select(p2 => p2.term_name))).ToList();
                 chains.RemoveAll(p => p.Count == 0);
-                //foreach (var topic_chain in chains)
-                //    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term_name + $" ({topic.url_ids.Count} urls)"))})");
+                foreach (var topic_chain in chains)
+                    Debug.WriteLine($"\t\t({string.Join(" > ", topic_chain.Select(topic => topic.term_name + $" ({topic.url_ids.Count} urls)"))})");
 
                 // ***
                 // convert flat chains of TopicInfo to tree of TopicInfo
