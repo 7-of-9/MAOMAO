@@ -2,11 +2,11 @@ import { normalize, schema } from 'normalizr'
 
 // Define a users schema
 const url = new schema.Entity('urls', {}, { idAttribute: 'url_id' })
-const topic = new schema.Entity('topics', {}, { idAttribute: 'term_id' })
+const topic = new schema.Entity('topics', {
+}, { idAttribute: 'term_id' })
 
 // Define your comments schema
 const myStream = new schema.Entity('myStreams', {
-  topics: [topic],
   urls: [url]
 }, { idAttribute: 'user_id' })
 
@@ -15,14 +15,15 @@ const sharedList = new schema.Entity('shareLists', {
 }, { idAttribute: 'share_code' })
 
 const friendStream = new schema.Entity('friendStreams', {
-  list: [sharedList]
+  shares: [sharedList]
 }, { idAttribute: 'user_id' })
 
 // Define your article
 const history = new schema.Entity('histories', {
-  me: myStream,
-  shares_received_from: [ friendStream ]
-}, { idAttribute: 'me' })
+  mine: myStream,
+  received: [ friendStream ],
+  topics: [topic]
+}, { idAttribute: 'mine' })
 
 export function normalizedHistoryData (data) {
   return normalize(data, history)

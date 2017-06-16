@@ -50,7 +50,7 @@
     "rc-steps": "^2.5.1",
     "react": "^15.6.1",
     "react-addons-perf": "^15.4.2",
-    "react-autosuggest": "^9.0.1",
+    "react-autosuggest": "^9.1.0",
     "react-copy-to-clipboard": "^5.0.0",
     "react-debounce-input": "^3.0.0",
     "react-dom": "^15.6.1",

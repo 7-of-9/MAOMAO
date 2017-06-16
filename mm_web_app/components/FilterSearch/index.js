@@ -22,7 +22,7 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
-const getSuggestions = (value, users, topics) => {
+const getSuggestions = (value, users, firstLevelTopics) => {
   if (value === '' || value.length === 0) {
     return []
   }
@@ -65,7 +65,7 @@ const getSuggestions = (value, users, topics) => {
       'name'
     ]
   }
-  const fuseTopic = new Fuse(topics, topicOtions)
+  const fuseTopic = new Fuse(firstLevelTopics, topicOtions)
   sections.push({
     title: 'Stream',
     data: fuseTopic.search(value)
@@ -113,6 +113,10 @@ const renderSectionTitle = (section) => {
   )
 }
 
+const ratingCount = (urls, owners, rate) => {
+  return 0
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -130,8 +134,8 @@ class FilterSearch extends React.Component {
 
   onSuggestionsFetchRequested ({ value }) {
     logger.warn('onSuggestionsFetchRequested')
-    const { users, topics } = this.props.store
-    this.setState({ suggestions: getSuggestions(value, users, topics) })
+    const { users, firstLevelTopics } = this.props.store
+    this.setState({ suggestions: getSuggestions(value, users, firstLevelTopics) })
   }
 
   onSuggestionsClearRequested () {
@@ -142,8 +146,8 @@ class FilterSearch extends React.Component {
   onChange (event, { newValue, method }) {
     logger.warn('onChange newValue, method', newValue, method)
     if (method === 'click' || method === 'enter') {
-      const { users, topics } = this.props.store
-      const selected = getSuggestions(newValue, users, topics)
+      const { users, firstLevelTopics } = this.props.store
+      const selected = getSuggestions(newValue, users, firstLevelTopics)
       logger.warn('selected', selected)
       if (selected && selected.length > 0) {
         if (selected[0].title === 'User') {
@@ -163,16 +167,16 @@ class FilterSearch extends React.Component {
   }
 
   render () {
-    logger.warn('FilterSearch render')
     const { value, suggestions } = this.state
-    const { sortedUrls } = this.props
+    const { sortedUrls, owners } = this.props
     const inputProps = {
       placeholder: 'Search...',
       value,
       onChange: this.onChange
     }
-    const { users, topics, userId } = toJS(this.props.store)
+    const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
+    logger.warn('FilterSearch render', users, firstLevelTopics, userId)
 
     return (
       <nav className='navbar'>
@@ -206,7 +210,7 @@ class FilterSearch extends React.Component {
                   <ul className='search-box-list'>
                     {
                       filterByTopic.map(item => (
-                        <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
+                        <li className={`tags-color-${(firstLevelTopics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
                             <i className='fa fa-remove' aria-hidden='true' />
@@ -259,7 +263,7 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Streams</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {topics.map(topic => (
+                  {firstLevelTopics.map(topic => (
                     <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}>
                       <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span>
                     </li>
@@ -355,7 +359,7 @@ class FilterSearch extends React.Component {
                         </a>
                         <div className='rating-number'>
                           <span className='label-priority'>{item.label}</span>
-                          <div className='label-rating-number'>{sortedUrls.filter(url => item.rate === url.owners[0].rate).length}</div>
+                          <div className='label-rating-number'>{ratingCount(sortedUrls, owners, item.rate)}</div>
                         </div>
                       </li>
                     ))
@@ -371,7 +375,8 @@ class FilterSearch extends React.Component {
 }
 
 FilterSearch.propTypes = {
-  sortedUrls: PropTypes.array.isRequired
+  sortedUrls: PropTypes.array.isRequired,
+  owners: PropTypes.array.isRequired
 }
 
 export default FilterSearch

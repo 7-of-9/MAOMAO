@@ -16,25 +16,6 @@ const calcRate = (score, timeOnTab) => {
   return rate < 1 ? 1 : rate
 }
 
-const customizer = (objValue, srcValue) => {
-  if (_.isArray(objValue)) {
-    return objValue.concat(srcValue)
-  }
-}
-
-const mergeUrls = (urls, newUrls) => {
-  const result = urls
-  _.forEach(newUrls, newUrl => {
-    const existItem = result.find(item => item.id === newUrl.id)
-    if (existItem) {
-      result.push(_.mergeWith(existItem, newUrl, customizer))
-    } else {
-      result.push(newUrl)
-    }
-  })
-  return result
-}
-
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingHistory = false
@@ -46,10 +27,12 @@ export class HomeStore extends CoreStore {
   normalizedData = { entities: {}, result: {} }
   users = []
   topics = []
+  firstLevelTopics = []
   urls = []
+  owners = []
   googleUser = {}
   facebookUser = {}
-  userHistory = { me: {}, shares_received_from: [] }
+  userHistory = { mine: {}, received: [], topics: [] }
 
   constructor (isServer, userAgent, user) {
     super(isServer, userAgent, user)
@@ -66,12 +49,12 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get myStream () {
-    const { me } = this.userHistory
+    const { mine: me } = this.userHistory
     return me
   }
 
   @computed get friendsStream () {
-    const { shares_received_from: sharesReveived } = this.userHistory
+    const { received: sharesReveived } = this.userHistory
     // listen new data and reload all
     const friends = toJS(sharesReveived)
     if (friends.length > 0) {
@@ -181,79 +164,65 @@ export class HomeStore extends CoreStore {
           logger.warn('normalizedData', normalizedData)
           this.normalizedData = normalizedData
 
-          const { shares_received_from, me } = this.userHistory
-          logger.warn('findAllUrlsAndTopics shares_received_from, me', shares_received_from, me)
-          const friends = toJS(shares_received_from)
-          const { urls: myUrls, topics: myTopics, user_id, fullname, avatar } = toJS(me)
+          const { received, mine, topics } = this.userHistory
+          const friends = toJS(received)
+          const { urls: myUrls, user_id, fullname, avatar } = toJS(mine)
           let urls = []
           let users = []
-          let topics = []
+          let owners = []
           if (myUrls && myUrls.length) {
             urls.push(...myUrls.map(item => ({
-              owners: [
-                {
-                  owner: user_id,
-                  hit_utc: item.hit_utc,
-                  im_score: item.im_score,
-                  time_on_tab: item.time_on_tab,
-                  rate: calcRate(item.im_score, item.time_on_tab)
-                }
-              ],
-              id: item.url_id,
+              url_id: item.url_id,
               title: item.title,
               href: item.href,
-              img: item.img,
-              suggestions: item.suggestions
+              img: item.img
             }
             )))
-            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
-            _.forEach(myTopics, item => {
-              if (item.term_id > 0 && item.url_ids.length > 0) {
-                topics.push({ id: item.term_id, name: item.term_name, urlIds: item.url_ids })
-              }
+            myUrls.forEach(item => {
+              owners.push({
+                owner: user_id,
+                url_id: item.url_id,
+                hit_utc: item.hit_utc,
+                im_score: item.im_score,
+                time_on_tab: item.time_on_tab,
+                rate: calcRate(item.im_score, item.time_on_tab)
+              })
             })
+            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
           }
 
           _.forEach(friends, friend => {
             const { user_id, fullname, avatar, shares: list } = friend
             const urlIds = []
-            const userUrls = []
             _.forEach(list, item => {
-              userUrls.push(...item.urls.map(item => ({
-                owners: [
-                  {
-                    owner: user_id,
-                    hit_utc: item.hit_utc,
-                    im_score: item.im_score,
-                    time_on_tab: item.time_on_tab,
-                    rate: calcRate(item.im_score, item.time_on_tab)
-                  }
-                ],
-                id: item.url_id,
+              urls.push(...item.urls.map(item => ({
+                url_id: item.url_id,
                 title: item.title,
                 href: item.href,
-                img: item.img,
-                suggestions: item.suggestions
+                img: item.img
               }
               )))
+              item.urls.forEach(item => {
+                owners.push({
+                  owner: user_id,
+                  url_id: item.url_id,
+                  hit_utc: item.hit_utc,
+                  im_score: item.im_score,
+                  time_on_tab: item.time_on_tab,
+                  rate: calcRate(item.im_score, item.time_on_tab)
+                })
+              })
               urlIds.push(...item.urls.map(item => item.url_id))
-              if (item.topic_name) {
-                const existTopic = topics.find(topic => topic.name === item.topic_name)
-                if (existTopic) {
-                  existTopic.urlIds.push(...item.urls.map(item => item.url_id))
-                } else {
-                  topics.push({ name: item.topic_name, urlIds: item.urls.map(item => item.url_id) })
-                }
-              }
             })
-            urls = mergeUrls(urls, userUrls)
             users.push({ user_id, fullname, avatar, urlIds })
           })
 
           this.urls = urls
-          this.topics = topics.filter(item => item.urlIds.length > 0)
+          this.topics = topics
+          this.firstLevelTopics = topics.map(item => ({ name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
           this.users = users
-          logger.warn('findAllUrlsAndTopics urls, users, topics', urls, users, topics)
+          this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
+          logger.warn('findAllUrlsAndTopics urls, users, topics', urls, users, topics, owners)
           this.isProcessingHistory = false
         }
       )

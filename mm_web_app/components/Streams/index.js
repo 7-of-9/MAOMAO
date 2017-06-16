@@ -25,11 +25,10 @@ const masonryOptions = {
   transitionDuration: '0.4s'
 }
 
-function urlOwner (id, owners, users, filterByUser, onSelectUser) {
+function urlOwner (owners, users, onSelectUser) {
   const items = []
-  const userIds = _.flatMap(toJS(filterByUser), item => item.user_id)
-  const ownersFilter = userIds.length > 0 ? owners.filter(item => userIds.indexOf(item.owner) !== -1) : owners
-  _.forEach(ownersFilter, user => {
+  logger.warn('urlOwner', owners)
+  _.forEach(owners, user => {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
@@ -65,19 +64,19 @@ function urlOwner (id, owners, users, filterByUser, onSelectUser) {
   )
 }
 
-function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
-  const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
+function urlTopic (urlId, firstLevelTopics, onSelectTopic, myUrlIds, onShareTopic) {
+  const currentTopics = firstLevelTopics.filter(item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
   const items = []
-  const isOwner = myUrlIds.indexOf(id) !== -1
+  const isOwner = myUrlIds.indexOf(urlId) !== -1
   _.forEach(currentTopics, (topic) => {
     items.push(
       <div className='mix-tag-topic' key={guid()}>
-        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
+        <span className={`tags tags-color-${(firstLevelTopics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
             isOwner && topic.id &&
             <span onClick={() => { onShareTopic(topic) }} className='share-topic-ex'>
-              <img src='/static/images/logo.png' width='25' height='25' alt='share topics' />
+              <img src='/static/images/logo.png' width='25' height='25' alt='share firstLevelTopics' />
             </span>
           }
         </span>
@@ -90,19 +89,31 @@ function urlTopic (id, topics, onSelectTopic, myUrlIds, onShareTopic) {
   )
 }
 
-function findUserRating (item, userIds) {
+function filterbyRating (item, owners, userIds, rating) {
+  const users = owners.filter(user => user.url_id === item.url_id)
   if (userIds.length) {
-    const owner = item.owners.find(item => userIds.indexOf(item.owner) !== -1)
-    return owner.rate
+    return !!users.find(user => userIds.indexOf(user.owner) !== -1 && user.rate >= rating)
   }
-  return item.owners[0].rate
+  return !!users.find(user => user.rate >= rating)
 }
 
-function filterUrls (urls, filterByTopic, filterByUser, rating) {
-  const topics = toJS(filterByTopic)
+function orderBy (result, owners, sortBy, sortDirection) {
+  if (sortBy === 'date') {
+    return sortDirection === 'desc'
+      ? _.reverse(_.sortBy(result, [(url) => _.max(owners.find(item => item.url_id === url.url_id).hit_utc)]))
+       : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).hit_utc])
+  } else {
+    return sortDirection === 'desc'
+     ? _.reverse(_.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate]))
+      : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate])
+  }
+}
+
+function filterUrls (urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection) {
+  const firstLevelTopics = toJS(filterByTopic)
   const users = toJS(filterByUser)
-  if (topics.length > 0 || users.length > 0) {
-    const topicUrlIds = _.flatMap(topics, item => item.value)
+  if (firstLevelTopics.length > 0 || users.length > 0) {
+    const topicUrlIds = _.flatMap(firstLevelTopics, item => item.value)
     const userUrlIds = _.flatMap(users, item => item.value)
     const userIds = _.flatMap(users, item => item.user_id)
     let foundIds = []
@@ -115,19 +126,11 @@ function filterUrls (urls, filterByTopic, filterByUser, rating) {
         foundIds = userUrlIds
       }
     }
-    const result = urls.filter(item => foundIds.indexOf(item.id) !== -1 && findUserRating(item, userIds) >= rating)
-    return result
+    const result = urls.filter(item => foundIds.indexOf(item.url_id) !== -1 && filterbyRating(item, owners, userIds, rating))
+    return orderBy(result, owners, sortBy, sortDirection)
   }
-  const result = urls.filter(item => item.owners[0].rate >= rating)
-  return result
-}
-
-function sortByOrdering (sortedUrls, sortBy, sortDirection) {
-  if (sortBy === 'date') {
-    return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => _.max(url.owners[0].hit_utc)])) : _.sortBy(sortedUrls, [(url) => url.owners[0].hit_utc])
-  } else {
-    return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => url.owners[0].rate])) : _.sortBy(sortedUrls, [(url) => url.owners[0].rate])
-  }
+  const result = urls.filter(item => filterbyRating(item, owners, [], rating))
+  return orderBy(result, owners, sortBy, sortDirection)
 }
 
 function parseDomain (link) {
@@ -149,25 +152,24 @@ class Streams extends React.PureComponent {
   }
   render () {
     // populate urls and users
-    logger.warn('Streams render')
-    const { urls, users, topics } = toJS(this.props.store)
+    const { urls, users, firstLevelTopics, owners } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
+    logger.warn('Streams render', urls, users, firstLevelTopics, owners, myUrls)
     let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
-    const sortedUrls = filterUrls(urls, filterByTopic, filterByUser, rating)
-    let sortedUrlsByHitUTC = sortByOrdering(sortedUrls, sortBy, sortDirection)
+    const sortedUrls = filterUrls(urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection)
     /* eslint-disable camelcase */
-    const currentUrls = sortedUrlsByHitUTC.slice(0, (this.props.ui.page + 1) * LIMIT)
-    const myUrlIds = myUrls.map(item => item.id)
+    const currentUrls = sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
+    const myUrlIds = myUrls.map(item => item.url_id)
     logger.warn('currentUrls', currentUrls)
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
-        const { id, href, img, title, owners } = item
+        const { url_id, href, img, title } = item
         let discoveryKeys = []
         let suggestionKeys = []
-        const currentTopics = topics.filter(item => item.urlIds.indexOf(id) !== -1)
+        const currentTopics = firstLevelTopics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
         discoveryKeys = discoveryKeys.concat(_.map(currentTopics, 'name'))
         if (item && item.suggestions && item.suggestions.length) {
           suggestionKeys = _.map(item.suggestions.slice(0, 5), 'term_name')
@@ -180,16 +182,16 @@ class Streams extends React.PureComponent {
                 <a className='thumbnail-overlay' href={href} target='_blank'>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
-                {urlTopic(id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(id, topic))}
+                {urlTopic(url_id, firstLevelTopics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic))}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
                   <a href={href} target='_blank'>
-                    {title} ({id})
+                    {title} ({url_id})
                   </a>
                 </h4>
                 <h5 className='caption-title'>{parseDomain(href)}</h5>
-                {urlOwner(id, owners, users, filterByUser, (user) => this.props.ui.selectUser(user))}
+                {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
               </div>
             </div>
           </div>
@@ -197,7 +199,7 @@ class Streams extends React.PureComponent {
       })
     }
 
-    hasMoreItems = this.props.ui.page * LIMIT < sortedUrlsByHitUTC.length
+    hasMoreItems = this.props.ui.page * LIMIT < sortedUrls.length
     return (
       <StickyContainer className='streams'>
         <Sticky>
@@ -205,7 +207,7 @@ class Streams extends React.PureComponent {
             ({ style }) => {
               return (
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
-                  <FilterSearch sortedUrls={sortedUrls} />
+                  <FilterSearch sortedUrls={sortedUrls} owners={owners} />
                 </div>
               )
             }
