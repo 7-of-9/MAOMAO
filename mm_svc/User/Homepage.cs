@@ -20,15 +20,20 @@ namespace mm_svc
         public class Homepage
         {
             public class OwnInfo {
-                public class ShareIssuedInfo {
+                public class ShareIssuedInfo { // todo: refactor w/ ShareReceivedInfo
                     public long user_id;
-                    public bool share_all;
                     public string share_code;
-                    public long? url_id;
-                    public long? topic_id;
                     public string email;
                     public string fullname;
                     public string avatar;
+
+                    public long? url_id;
+                    public long? topic_id;
+                    public string topic_name;
+                    public bool share_all;
+
+                    public bool source_user_deactivated; 
+                    public bool target_user_deactivated;
                 }
 
                 public string fullname;
@@ -46,6 +51,9 @@ namespace mm_svc
                     public string topic_name;
                     public string share_code;
                     public List<UserUrlInfo> urls;
+
+                    public bool source_user_deactivated;
+                    public bool target_user_deactivated;
                 }
 
                 public string email;
@@ -146,11 +154,15 @@ namespace mm_svc
                         var url_infos = GetUserUrlInfos_ForUserUrls(source_user_id, urls_terms);
 
                         var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
+
                         urls_share_list.Clear();
+
                         urls_share_list.Add(new ShareReceivedInfo() {
                             share_code = received_share.share.share_code,
                             type = "all",
                             urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
+                            source_user_deactivated = received_share.source_user_deactivated,
+                            target_user_deactivated = received_share.user_deactivated,
                         });
                     }
 
@@ -168,6 +180,8 @@ namespace mm_svc
                                     type = "topic",
                                     topic_name = received_share.share.term.name,
                                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
+                                    source_user_deactivated = received_share.source_user_deactivated,
+                                    target_user_deactivated = received_share.user_deactivated,
                                 });
                             }
 
@@ -182,6 +196,8 @@ namespace mm_svc
                                     share_code = received_share.share.share_code,
                                     type = "url",
                                     urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
+                                    source_user_deactivated = received_share.source_user_deactivated,
+                                    target_user_deactivated = received_share.user_deactivated,
                                 });
                             }
                         }
@@ -511,11 +527,12 @@ namespace mm_svc
 
         private static List<Homepage.OwnInfo.ShareIssuedInfo> FindAcceptSharedFromUser(user me)
         {
-            using (var db = mm02Entities.Create())
-            {
-                var shares = db.share_active.Include("share").Include("user").Where(p => p.share.source_user_id == me.id);
-                return shares.Select(p => new Homepage.OwnInfo.ShareIssuedInfo()
-                {
+            using (var db = mm02Entities.Create()) {
+                var shares = db.share_active.AsNoTracking()
+                               .Include("share").Include("user").Include("share.term")
+                               .Where(p => p.share.source_user_id == me.id)
+                               .ToListNoLock();
+                return shares.Select(p => new Homepage.OwnInfo.ShareIssuedInfo() {
                     user_id = p.user_id,
                     email = p.user.email,
                     avatar = p.user.avatar,
@@ -523,7 +540,10 @@ namespace mm_svc
                     share_code = p.share.share_code,
                     url_id = p.share.url_id,
                     share_all = p.share.share_all,
-                    topic_id = p.share.topic_id
+                    topic_id = p.share.topic_id,
+                    topic_name = p.share.term?.name,
+                    source_user_deactivated = p.source_user_deactivated,
+                    target_user_deactivated = p.user_deactivated,
                 }).ToList();
             }
         }

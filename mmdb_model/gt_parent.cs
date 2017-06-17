@@ -19,7 +19,6 @@ namespace mmdb_model
         public long parent_term_id { get; set; }
         public double S_norm { get; set; }
         public double S { get; set; }
-
         public bool is_topic { get; set; }
     
         public virtual term term { get; set; }

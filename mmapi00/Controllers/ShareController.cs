@@ -1,4 +1,5 @@
 ﻿using mmapi00.Util;
+using mmdb_model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,35 +55,74 @@ namespace mmapi00.Controllers
 
             var share_accepted = mm_svc.ShareAcceptor.AcceptShare(user_id, share_code);
 
-            return Ok(new {
+            return Ok( new {
                 share_accepted = share_accepted
             });
         }
 
         /// <summary>
-        /// Unshare an share code
+        /// Let a share-originator pause or unpause an accepted share.
         /// </summary>
-        /// <param name="user_id"></param>
+        /// <param name="user_id">User ID of the share-originator (source user ID).</param>
         /// <param name="hash"></param>
-        /// <param name="share_code">Share code to accept</param>
-        /// <param name="receiver_id">eceiver id</param>
-        /// <returns>Accepted share or not</returns>
-        [HttpGet] [Route("share/deny")]
-        public IHttpActionResult Deny(
+        /// <param name="share_code">Share code to work on.</param>
+        /// <param name="target_user_id">User ID of the share-receiver (target user ID).</param>
+        /// <returns>New source_user_deactivated status for the accepted share.</returns>
+        [HttpGet] [Route("share/source/toggle")]
+        public IHttpActionResult Source_ToggleShare(
             long user_id, string hash,
-            string share_code, long receiver_id)
+            string share_code, long target_user_id)
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
 
-            var result = mm_svc.ShareAcceptor.Unshare(receiver_id, user_id, share_code);
+            using (var db = mm02Entities.Create()) {
+                var share = db.shares.Where(p => p.share_code == share_code && p.source_user_id == user_id).FirstOrDefaultNoLock();
+                if (share == null) return Unauthorized();
 
-            return Ok(new {
-                deny = result
+                var accepted_share = db.share_active.Where(p => p.share_id == share.id && p.user_id == target_user_id).FirstOrDefaultNoLock();
+                if (accepted_share == null) return Unauthorized();
+            }
+
+            var result = mm_svc.ShareMaintainer.SourceToggleStream(user_id, share_code, target_user_id);
+
+            return Ok (new {
+                source_user_deactivated = result
             });
         }
 
         /// <summary>
-        /// Get a MM share info
+        /// Let a share-receiver pause or unpause an accepted share.
+        /// </summary>
+        /// <param name="user_id">User ID of the share-receiver (target user ID).</param>
+        /// <param name="hash"></param>
+        /// <param name="share_code">Share code to work on.</param>
+        /// <param name="source_user_id">User ID of the share-originator (source user ID).</param>
+        /// <returns>Whether or not share was succesfully paused.</returns>
+        [HttpGet]
+        [Route("share/target/toggle")]
+        public IHttpActionResult Target_ToggleShare(
+            long user_id, string hash,
+            string share_code, long source_user_id)
+        {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+
+            using (var db = mm02Entities.Create()) {
+                var share = db.shares.Where(p => p.share_code == share_code && p.source_user_id == source_user_id).FirstOrDefaultNoLock();
+                if (share == null) return Unauthorized();
+
+                var accepted_share = db.share_active.Where(p => p.share_id == share.id && p.user_id == user_id).FirstOrDefaultNoLock();
+                if (accepted_share == null) return Unauthorized();
+            }
+
+            var result = mm_svc.ShareMaintainer.TargetToggleStream(source_user_id, share_code, user_id);
+
+            return Ok(new {
+                user_deactivated = result
+            });
+        }
+
+        /// <summary>
+        /// Get a MM share info -- anonymous by design: called by new user flow.
         /// </summary>
         /// <param name="share_code">Share code to accept</param>
         /// <returns>share info object</returns>
@@ -92,7 +132,7 @@ namespace mmapi00.Controllers
         {
             var data = mm_svc.ShareInfo.GetShareData(share_code);
 
-            return Ok(new {
+            return Ok ( new {
                 fullname = data.fullname,
                 url_title = data.url_title,
                 topic_title = data.topic_title,

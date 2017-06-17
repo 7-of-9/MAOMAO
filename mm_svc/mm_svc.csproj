@@ -63,6 +63,7 @@
     <Compile Include="Shares\ShareAcceptor.cs" />
     <Compile Include="Shares\ShareCreator.cs" />
     <Compile Include="Shares\ShareInfo.cs" />
+    <Compile Include="Shares\ShareMaintainer.cs" />
     <Compile Include="UrlRecordAndProcess\UrlAutoFlag.cs" />
     <Compile Include="UrlClassify\UrlClassifier.cs" />
     <Compile Include="ExternalNlp\CalaisNlp.cs" />

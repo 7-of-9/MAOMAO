@@ -18,6 +18,8 @@ namespace mmdb_model
         public long share_id { get; set; }
         public long user_id { get; set; }
         public System.DateTime accepted_utc { get; set; }
+        public bool source_user_deactivated { get; set; }
+        public bool user_deactivated { get; set; }
     
         public virtual share share { get; set; }
         public virtual user user { get; set; }
