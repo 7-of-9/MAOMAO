@@ -106,7 +106,7 @@
     "enzyme": "^2.8.2",
     "glob": "^7.1.2",
     "jest-cli": "^20.0.4",
-    "mobx-react-devtools": "^4.2.13",
+    "mobx-react-devtools": "^4.2.14",
     "node-sass": "^4.5.3",
     "nodemon": "^1.11.0",
     "postcss-easy-import": "^2.1.0",

@@ -17,14 +17,23 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
+const topicName = (topics, id) => {
+  const topic = topics.find(item => item.id === id)
+  if (topic) {
+    return topic.name
+  }
+  return id
+}
+
 @inject('store')
 @inject('ui')
 @observer
 class ShareList extends React.PureComponent {
   render () {
-    const { user, userId } = this.props.store
-    const { entities: { friendStreams, shareLists, urls, topics }, result: { shares_issued } } = this.props.store.normalizedData
-    logger.warn('friendStreams, shareLists, urls, topics', friendStreams, shareLists, urls, topics)
+    const { user, userId, topics } = this.props.store
+    const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
+    logger.warn('ShareList friendStreams', friendStreams)
+    logger.warn('ShareList shareLists', shareLists)
     return (
       <div>
         <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
@@ -79,7 +88,7 @@ class ShareList extends React.PureComponent {
                             <div className='timeline-panel'>
                               <div className='tags-topic'>
                                 <span className={`tags tags-color-1`} rel='tag'>
-                                  <span className='text-tag'>TOPIC: {(topics[receiver.topic_id] && topics[receiver.topic_id].term_name) || receiver.topic_id}</span>
+                                  <span className='text-tag'>TOPIC: {topicName(topics, receiver.topic_id)}</span>
                                 </span>
                               </div>
                             </div>
@@ -121,58 +130,61 @@ class ShareList extends React.PureComponent {
                     </div>
                   </div>
                   <div className='mix-detail'>
-                    <span className='topic-value'>({friend.shares.filter(item => item.type === 'topic').length} topics)</span>
+                    <span className='topic-value'>({friend.shares.filter(code => shareLists[code].type === 'topic').length} topics)</span>
                   </div>
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
-                    {_.map(friend.shares, item => (
-                        item.type !== 'url' &&
-                        <ul key={guid()} className='timeline timeline-horizontal'>
-                          <li className='timeline-item'>
-                            <div className='timeline-badge'>
-                              <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
-                            </div>
-                            <div className='timeline-panel'>
-                              <a href='#' className='btn btn-unfollow'>Unfollow</a>
-                            </div>
-                          </li>
-                          <li className='timeline-item'>
-                            <div className='timeline-badge'>
-                              <i className={`fa ${item.type === 'topic' ? 'fa-list' : 'fa-share-alt'}`} aria-hidden='true' />
-                            </div>
-                            {
-                              item.type === 'all' &&
-                              <div className='timeline-panel'>
-                                <span className='share-all'>All browsing history</span>
-                              </div>
-                            }
-                            {
-                              item.topic_name &&
-                              <div className='timeline-panel'>
-                                <div className='tags-topic'>
-                                  <span className='tags tags-color-1' rel='tag'>
-                                    <span className='text-tag'>
-                                      {item.topic_name}
-                                    </span>
-                                  </span>
+                    {_.map(friend.shares, code => {
+                      const item = shareLists[code]
+                      return (
+                            item.type !== 'url' &&
+                            <ul key={guid()} className='timeline timeline-horizontal'>
+                              <li className='timeline-item'>
+                                <div className='timeline-badge'>
+                                  <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
                                 </div>
-                              </div>
-                            }
-                            {
-                              item.type === 'url' &&
-                              <div className='timeline-panel'>
-                                <span className='name-url'>{urls[item.urls[0]].title}</span>
-                              </div>
-                            }
-                          </li>
-                          <li className='timeline-item share-line-left'>
-                            <div className='timeline-badge'>
-                              <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
-                            </div>
-                          </li>
-                        </ul>
-                      ))}
+                                <div className='timeline-panel'>
+                                  <a href='#' className='btn btn-unfollow'>Unfollow</a>
+                                </div>
+                              </li>
+                              <li className='timeline-item'>
+                                <div className='timeline-badge'>
+                                  <i className={`fa ${item.type === 'topic' ? 'fa-list' : 'fa-share-alt'}`} aria-hidden='true' />
+                                </div>
+                                {
+                                  item.type === 'all' &&
+                                  <div className='timeline-panel'>
+                                    <span className='share-all'>All browsing history</span>
+                                  </div>
+                                }
+                                {
+                                  item.topic_name &&
+                                  <div className='timeline-panel'>
+                                    <div className='tags-topic'>
+                                      <span className='tags tags-color-1' rel='tag'>
+                                        <span className='text-tag'>
+                                          {item.topic_name}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  </div>
+                                }
+                                {
+                                  item.type === 'url' &&
+                                  <div className='timeline-panel'>
+                                    <span className='name-url'>{urls[item.urls[0]].title}</span>
+                                  </div>
+                                }
+                              </li>
+                              <li className='timeline-item share-line-left'>
+                                <div className='timeline-badge'>
+                                  <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
+                                </div>
+                              </li>
+                            </ul>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
