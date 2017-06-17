@@ -18,7 +18,7 @@ import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
-const LIMIT = 20
+const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.4s'
@@ -98,13 +98,17 @@ function filterbyRating (item, owners, userIds, rating) {
 
 function orderBy (result, owners, sortBy, sortDirection) {
   if (sortBy === 'date') {
-    return sortDirection === 'desc'
-      ? _.reverse(_.sortBy(result, [(url) => _.max(owners.find(item => item.url_id === url.url_id).hit_utc)]))
-       : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).hit_utc])
+    const sortResult = _.sortBy(result, (url) => {
+      const users = owners.filter(item => item.url_id === url.url_id)
+      return _.max(users.map(item => item.hit_utc))
+    })
+    return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   } else {
-    return sortDirection === 'desc'
-     ? _.reverse(_.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate]))
-      : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate])
+    const sortResult = _.sortBy(result, (url) => {
+      const users = owners.filter(item => item.url_id === url.url_id)
+      return _.max(users.map(item => item.rate))
+    })
+    return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   }
 }
 
