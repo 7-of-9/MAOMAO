@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import { observer, inject } from 'mobx-react'
 import { toJS } from 'mobx'
 import Fuse from 'fuse.js'
+import _ from 'lodash'
 import Autosuggest from 'react-autosuggest'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
@@ -114,7 +115,13 @@ const renderSectionTitle = (section) => {
 }
 
 const ratingCount = (urls, owners, rate) => {
-  return 0
+  let counter = 0
+  _.forEach(urls, url => {
+    if (owners.find(owner => owner.rate === rate && owner.url_id === url.url_id)) {
+      counter += 1
+    }
+  })
+  return counter
 }
 
 @inject('store')
@@ -359,7 +366,7 @@ class FilterSearch extends React.Component {
                         </a>
                         <div className='rating-number'>
                           <span className='label-priority'>{item.label}</span>
-                          <div className='label-rating-number'>{ratingCount(sortedUrls, owners, item.rate)}</div>
+                          <div className='label-rating-number'>{ item.rate >= rating ? ratingCount(sortedUrls, owners, item.rate) : 0}</div>
                         </div>
                       </li>
                     ))

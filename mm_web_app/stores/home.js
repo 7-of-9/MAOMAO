@@ -10,7 +10,7 @@ import logger from '../utils/logger'
 let store = null
 
 const calcRate = (score, timeOnTab) => {
-  const scoreUnit = parseInt(score / 20)
+  const scoreUnit = parseInt(score / 30)
   const timeUnit = parseInt(timeOnTab / (30 * 1000)) // 30 seconds
   const rate = Math.ceil(((scoreUnit > 5 ? 5 : scoreUnit) + (timeUnit > 5 ? 5 : timeUnit)) / 2)
   return rate < 1 ? 1 : rate
