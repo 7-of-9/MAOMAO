@@ -13,8 +13,7 @@ import _ from 'lodash'
 import Autosuggest from 'react-autosuggest'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
-
-const MAX_COLORS = 12
+import { tagColor } from '../../utils/helper'
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -181,7 +180,7 @@ class FilterSearch extends React.Component {
       value,
       onChange: this.onChange
     }
-    const { users, firstLevelTopics, topics, userId } = toJS(this.props.store)
+    const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
     logger.warn('FilterSearch render', users, firstLevelTopics, userId)
 
@@ -217,7 +216,7 @@ class FilterSearch extends React.Component {
                   <ul className='search-box-list'>
                     {
                       filterByTopic.map(item => (
-                        <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
+                        <li className={tagColor(item.label)} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
                             <i className='fa fa-remove' aria-hidden='true' />

@@ -8,6 +8,7 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import _ from 'lodash'
 import logger from '../../utils/logger'
+import { tagColor } from '../../utils/helper'
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -94,7 +95,7 @@ class ShareList extends React.PureComponent {
                             receiver.topic_id &&
                             <div className='timeline-panel'>
                               <div className='tags-topic'>
-                                <span className={`tags tags-color-1`} rel='tag'>
+                                <span className={`tags ${tagColor(receiver.topic_name)}`} rel='tag'>
                                   <span className='text-tag'>{receiver.topic_name}</span>
                                 </span>
                               </div>
@@ -169,7 +170,7 @@ class ShareList extends React.PureComponent {
                                   item.topic_name &&
                                   <div className='timeline-panel'>
                                     <div className='tags-topic'>
-                                      <span className='tags tags-color-1' rel='tag'>
+                                      <span className={`tags ${tagColor(item.topic_name)}`} rel='tag'>
                                         <span className='text-tag'>
                                           {item.topic_name}
                                         </span>

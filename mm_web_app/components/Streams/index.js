@@ -16,9 +16,9 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
+import { tagColor } from '../../utils/helper'
 
 const LIMIT = 20
-const MAX_COLORS = 12
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.4s'
@@ -70,7 +70,7 @@ function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
   _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
     items.push(
       <div className='mix-tag-topic' key={`${urlId}-${topic.name}`}>
-        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
+        <span className={`tags ${tagColor(topic.name)}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
             isOwner &&
