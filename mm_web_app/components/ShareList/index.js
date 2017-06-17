@@ -8,7 +8,6 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import _ from 'lodash'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -17,12 +16,19 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
-const topicName = (topics, id) => {
-  const topic = topics.find(item => item.id === id)
-  if (topic) {
-    return topic.name
+const shareStat = (friend, shareLists) => {
+  const isAll = friend.shares.filter(code => shareLists[code].type === 'all').length
+  const allTopics = friend.shares.filter(code => shareLists[code].type === 'topic').length
+  if (isAll) {
+    return 'All'
   }
-  return id
+  return `${allTopics} topics`
+}
+
+const hasShareTopic = (friend, shareLists) => {
+  const isAll = friend.shares.filter(code => shareLists[code].type === 'all').length
+  const allTopics = friend.shares.filter(code => shareLists[code].type === 'topic').length
+  return isAll || allTopics
 }
 
 @inject('store')
@@ -30,10 +36,11 @@ const topicName = (topics, id) => {
 @observer
 class ShareList extends React.PureComponent {
   render () {
-    const { user, userId, topics } = this.props.store
+    const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
     logger.warn('ShareList friendStreams', friendStreams)
     logger.warn('ShareList shareLists', shareLists)
+    const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
     return (
       <div>
         <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
@@ -67,7 +74,7 @@ class ShareList extends React.PureComponent {
                 <div className='card-block'>
                   {shares_issued.map(receiver => (
                       (receiver.share_all || receiver.topic_id) &&
-                      <ul key={guid()} className='timeline timeline-horizontal'>
+                      <ul key={`share-detail-${receiver.email}-${receiver.share_code}`} className='timeline timeline-horizontal'>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
                             <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
@@ -88,7 +95,7 @@ class ShareList extends React.PureComponent {
                             <div className='timeline-panel'>
                               <div className='tags-topic'>
                                 <span className={`tags tags-color-1`} rel='tag'>
-                                  <span className='text-tag'>TOPIC: {topicName(topics, receiver.topic_id)}</span>
+                                  <span className='text-tag'>{receiver.topic_name}</span>
                                 </span>
                               </div>
                             </div>
@@ -111,8 +118,8 @@ class ShareList extends React.PureComponent {
                 </div>
               </div>
             </div>
-            {_.map(friendStreams, friend => (
-              <div key={guid()} className='card card-topic'>
+            {_.map(friends, friend => (
+              <div key={`friend-${friend.user_id}`} className='card card-topic'>
                 <div className='card-header collapsed' role='tab' id={`heading${friend.user_id}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                   <div className='card-header-cnt'>
                     <div className='card-header-inner'>
@@ -130,7 +137,7 @@ class ShareList extends React.PureComponent {
                     </div>
                   </div>
                   <div className='mix-detail'>
-                    <span className='topic-value'>({friend.shares.filter(code => shareLists[code].type === 'topic').length} topics)</span>
+                    <span className='topic-value'>({shareStat(friend, shareLists)})</span>
                   </div>
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
@@ -139,7 +146,7 @@ class ShareList extends React.PureComponent {
                       const item = shareLists[code]
                       return (
                             item.type !== 'url' &&
-                            <ul key={guid()} className='timeline timeline-horizontal'>
+                            <ul key={`share-${code}-${friend.user_id}`} className='timeline timeline-horizontal'>
                               <li className='timeline-item'>
                                 <div className='timeline-badge'>
                                   <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />

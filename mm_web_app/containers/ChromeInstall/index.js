@@ -98,8 +98,7 @@ class ChromeInstall extends React.Component {
           }
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }

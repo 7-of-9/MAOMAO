@@ -16,7 +16,6 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
 
 const LIMIT = 20
 const MAX_COLORS = 12
@@ -31,7 +30,7 @@ function urlOwner (owners, users, onSelectUser) {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div key={guid()} className='panel-user-img'>
+      <div key={`${owner.fullname}-${hitUtc}`} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
           <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
           <span className='panel-user-cnt'>
@@ -70,7 +69,7 @@ function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
   const maxLevel = _.maxBy(currentTopics, 'level')
   _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
     items.push(
-      <div className='mix-tag-topic' key={guid()}>
+      <div className='mix-tag-topic' key={`${urlId}-${topic.name}`}>
         <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {

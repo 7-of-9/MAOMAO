@@ -1,6 +1,6 @@
 {
   "name": "mm-web-app",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Maomao web app",
   "repository": {
     "type": "git",
@@ -9,8 +9,7 @@
   "main": "server.js",
   "author": "Dung Huynh (dunghd.it@gmail.com)",
   "engines": {
-    "npm": ">=5",
-    "node": ">=8"
+    "node": ">= 8.0.0"
   },
   "license": "MIT",
   "dependencies": {
@@ -41,7 +40,7 @@
     "mobx-utils": "^2.0.2",
     "moment": "^2.18.1",
     "neal-react": "^0.2.5",
-    "next": "3.0.0-beta15",
+    "next": "beta",
     "normalize.css": "^7.0.0",
     "normalizr": "^3.2.3",
     "nprogress": "^0.2.0",
