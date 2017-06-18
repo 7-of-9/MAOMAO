@@ -36,6 +36,7 @@ class AppHeader extends React.Component {
     super(props)
     this.onFacebookLogin = this.onFacebookLogin.bind(this)
     this.onGoogleLogin = this.onGoogleLogin.bind(this)
+    this.onInternalLogin = this.onInternalLogin.bind(this)
     this.onLogout = this.onLogout.bind(this)
     this.onClose = this.onClose.bind(this)
   }
@@ -112,6 +113,10 @@ class AppHeader extends React.Component {
 
   componentWillReact () {
     logger.warn('AppHeader componentWillReact')
+  }
+
+  onInternalLogin () {
+    logger.warn('onInternalLogin', this.props)
   }
 
   onFacebookLogin () {
@@ -213,7 +218,7 @@ class AppHeader extends React.Component {
             contentLabel='Sign In Modal'
           >
             <h2 ref='subtitle'>Sign In</h2>
-            <div className='justify-content-md-center social-action' >
+            <div className='social-action' >
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
                   <i className='fa fa-facebook' /> Sign in with Facebook
@@ -222,6 +227,11 @@ class AppHeader extends React.Component {
               <div className='block-button'>
                 <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
                   <i className='fa fa-google' /> Sign in with Google
+                </a>
+              </div>
+              <div className='block-button'>
+                <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
+                  <i className='fa icon-internal-lab' /> Test Internal: New User
                 </a>
               </div>
             </div>

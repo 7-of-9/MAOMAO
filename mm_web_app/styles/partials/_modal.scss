@@ -105,10 +105,6 @@ the modal section
 
 .SignInModal {
   .ReactModal__Overlay {
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center; */
     text-align: center;
     margin: 0 auto;
     background: none !important;
@@ -151,6 +147,13 @@ the modal section
     }
     .social-action {
       margin-top: 1.7rem;
+      height: 150px;
+      .block-button {
+        margin-bottom: 15px;
+      }
+      .btn-social {
+        width: 270px;
+      }
     }
     @media (max-width: 590px) {
       padding: 20px 25px !important;
@@ -186,7 +189,6 @@ the modal section
     @include transform(translateY(none));
     position: static !important;
     display: inline-block;
-    vertical-align: middle;
     margin: 0 auto;
     padding: 0 !important;
     border-color: #e1e2e6;

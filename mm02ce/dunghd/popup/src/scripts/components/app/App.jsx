@@ -15,7 +15,6 @@ require('../../stylesheets/main.scss');
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
-const dev = process.env.NODE_ENV !== 'production';
 
 const propTypes = {
   status: PropTypes.bool,
@@ -320,15 +319,13 @@ const render = (
           <span><i className="icons-googleplus" /></span>
           SIGN IN WITH FACEBOOK
         </button>
-        {dev &&
-          <button
-            className="btn btn-block btn-social btn-internal-lab"
-            onClick={onInternalLogin}
-          >
-            <span><i className="icons-internal-lab" /></span>
-            Test Internal: New User
-          </button>
-        }
+        <button
+          className="btn btn-block btn-social btn-internal-lab"
+          onClick={onInternalLogin}
+        >
+          <span><i className="icons-internal-lab" /></span>
+          Test Internal: New User
+        </button>
       </div>
     </div>
   );

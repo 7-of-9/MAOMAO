@@ -39,6 +39,11 @@ export class CoreStore {
     return this.isInstall && this.isChrome && !this.isMobile
   }
 
+  @action resetData () {
+    this.contacts = []
+    this.channels = []
+  }
+
   @action checkEnvironment () {
     this.isChrome = this.browserName === 'chrome'
     logger.warn('browserName', this.browserName)
@@ -95,6 +100,7 @@ export class CoreStore {
     this.userId = -1
     this.userHash = ''
     this.isLogin = false
+    this.resetData()
   }
 
   @action autoLogin (auth) {
@@ -107,11 +113,10 @@ export class CoreStore {
   }
 
   @action logoutUser () {
-    this.logout()
-    if (this.isChrome && this.isInstall) {
+    if (this.isInstall && this.isChrome && !this.isMobile) {
       sendMsgToChromeExtension(actionCreator('AUTH_LOGOUT', {}))
     }
-    this.userHistory = null
+    this.logout()
   }
 
   @action onSubscribe (channelName, eventName, callback) {
