@@ -120,6 +120,33 @@ const authLogout = () => (
   }
 );
 
+const authInternal = () => (
+  (dispatch) => {
+    axios({
+      method: 'post',
+      url: `${config.apiUrl}/user/test`,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    }).then((newUser) => {
+      let userId = -1;
+      if (newUser.data && newUser.data.id) {
+        userId = newUser.data.id;
+      }
+      dispatch(actionCreator('AUTH_FULFILLED', {
+        info: {
+          name: `${newUser.data.firstname} ${newUser.data.lastname}`,
+          ...newUser.data,
+          picture: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAAKlBMVEXMzMz////8/Pza2trQ0NDf39/29vbW1tbp6ens7Ozy8vL5+fni4uLm5uZ/0ezOAAAB3UlEQVRo3u2XvUoDURCFE4y6MRY5GzbEoMWCIAhCbAStRFAsk9Y0Bn2A4BNswAeI2FoYxT4g6bW01CeysNAku7Mz99jlfv0c7s+cuecWPB6PZ0FY/XgCsPvQd6w/jPFDeO9SXuril8mxXeALf9kz1x9gmitjfYBZEtsB9DBL3XQMN5hnx9IAMeYJ+6YFUEsoxUgjVJ/CCtK51AoMkE5DWb+ELFrqHXB7+EQWW4Y7IO5hGdm0NQIVQWCsEdgXBGoagTtBYEMjEAsCocaJkFA4ch0Sb/kCZUgM8wXWIPGYL1CERNULLIgA0UhEK7Nm4u3MDxR+pPFDlR/r/MPCP23848o/73zA4CMOH7L4mMcHTT7q8mGbj/v8h6NwOsI0r44/PsDp63eBFF709V2kMtHWHyGDZ139OTK5VZk5FqZ6S9FCAwg08rvpDCLXRhvZHdVBDpHiTZBpcwsAInIB8hI6UBCps4U9ZJxAxbY4x2Tk4RZASSJEExU15XtkjQkB1CTCDog9jKCmKbaxaztXYGAs+cDVDyMYaGqTlSFulWFiKDjR0ZEdmIhUvwTTxwFGxEtwuYYARhJlulUH9yKMVOVhYB8J7zCyKXwRVDRkL9r92IOROtmIgBfwAv8owLfyN0kjHr6c7ddbAAAAAElFTkSuQmCC',
+        },
+      }));
+      dispatch(actionCreator('USER_HASH', { userHash: userId }));
+      dispatch(actionCreator('USER_AFTER_LOGIN', { userId }));
+      return dispatch(actionCreator('PRELOAD_SHARE_ALL', { userId }));
+    }).catch(err => dispatch(actionCreator('AUTH_REJECTED', { err })));
+  }
+);
+
 const authGoogleLogin = data => (
   (dispatch, getState) => {
     const { isLinked } = data.payload;
@@ -357,6 +384,7 @@ export default {
   WEB_GOOGLE_CONTACTS: webGoogleContacts,
   AUTH_LOGIN_GOOGLE: authGoogleLogin,
   AUTH_LOGIN_FACEBOOK: authFacebookLogin,
+  AUTH_LOGIN_INTERNAL: authInternal,
   AUTH_LOGOUT: authLogout,
   FETCH_CONTACTS: getContacts,
   GOOGLE_CONTACTS: googleContacts,

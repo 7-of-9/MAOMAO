@@ -15,6 +15,7 @@ require('../../stylesheets/main.scss');
 
 const SITE_URL = 'https://maomaoweb.azurewebsites.net';
 const FB_APP_ID = '386694335037120';
+const dev = process.env.NODE_ENV !== 'production';
 
 const propTypes = {
   status: PropTypes.bool,
@@ -27,6 +28,7 @@ const propTypes = {
   getLink: PropTypes.func,
   onFacebookLogin: PropTypes.func,
   onGoogleLogin: PropTypes.func,
+  onInternalLogin: PropTypes.func,
   changeShareOption: PropTypes.func,
 };
 
@@ -54,6 +56,7 @@ const defaultProps = {
   getLink: () => { },
   onFacebookLogin: () => { },
   onGoogleLogin: () => { },
+  onInternalLogin: () => { },
   changeShareOption: () => { },
 };
 
@@ -140,7 +143,7 @@ const userMenu = auth =>
 
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
-  changeShareOption, getLink, onFacebookLogin, onGoogleLogin,
+  changeShareOption, getLink, onFacebookLogin, onGoogleLogin, onInternalLogin,
 ) => {
   if (url && status && isInternalTab(url)) {
     return (
@@ -317,6 +320,15 @@ const render = (
           <span><i className="icons-googleplus" /></span>
           SIGN IN WITH FACEBOOK
         </button>
+        {dev &&
+          <button
+            className="btn btn-block btn-social btn-internal-lab"
+            onClick={onInternalLogin}
+          >
+            <span><i className="icons-internal-lab" /></span>
+            Test Internal: New User
+          </button>
+        }
       </div>
     </div>
   );
@@ -325,11 +337,12 @@ const render = (
 const App = ({
   status, auth, nlp, url, icon,
   dispatch, shareOption, changeShareOption,
-  getLink, onFacebookLogin, onGoogleLogin,
+  getLink, onFacebookLogin, onGoogleLogin, onInternalLogin,
  }) =>
   render(
     status, auth, nlp, removeHashFromUrl(url), icon,
-    dispatch, shareOption, changeShareOption, getLink, onFacebookLogin, onGoogleLogin,
+    dispatch, shareOption, changeShareOption, getLink,
+    onFacebookLogin, onGoogleLogin, onInternalLogin,
   );
 
 App.propTypes = propTypes;
@@ -356,6 +369,13 @@ const enhance = compose(
   withState('status', 'isReady', false),
   withState('shareOption', 'updateShareOption', ''),
   withHandlers({
+    onInternalLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Internal Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('INTERNAL'));
+    },
     onFacebookLogin: props => () => {
       props.dispatch(notify({
         title: 'Facebook Login',

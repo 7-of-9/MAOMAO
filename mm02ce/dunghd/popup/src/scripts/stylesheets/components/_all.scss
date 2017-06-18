@@ -53,6 +53,7 @@ $google-icons: './images/googleplus_icon.svg';
 
 .popup-browser {
   position: relative;
+  animation: vex-fadein 0.5s both;
   .maomao-logo {
     margin-right: 3px;
     width: 35px;
@@ -286,10 +287,42 @@ $google-icons: './images/googleplus_icon.svg';
   }
 }
 
+.btn-internal-lab {
+  color: #fff !important;
+  background: #0a6b53;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff !important;
+    background: #0abb53;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  .active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background: #0a6b53;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
+
 
 /*Icons*/
 
-.icons-facebook, .icons-googleplus {
+.icons-facebook, .icons-googleplus, .icon-internal-lab {
   position: absolute;
   display: inline-block;
   vertical-align: middle;
@@ -311,6 +344,16 @@ $google-icons: './images/googleplus_icon.svg';
   height: 35px;
   background-color: #fff;
   -webkit-mask: url($facebook-icons) no-repeat;
+}
+
+.icons-internal-lab {
+  display: block;
+  left: 5px;
+  top: 5px;
+  width: 32px;
+  height: 33px;
+  background-color: #fff;
+  background: $lab-icons no-repeat;
 }
 
 .icons-labs {
