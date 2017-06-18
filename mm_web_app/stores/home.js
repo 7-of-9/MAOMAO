@@ -80,6 +80,31 @@ export class HomeStore extends CoreStore {
   }
 
   @action internalLogin () {
+    const registerNewUser = testInternalUser()
+    this.isProcessingRegister = true
+    when(
+      () => registerNewUser.state !== 'pending',
+      () => {
+        this.isProcessingRegister = false
+        const { data } = registerNewUser.value
+        const userHash = md5hash(data.id)
+        this.isLogin = true
+        this.userId = data.id
+        this.userHash = userHash
+        this.user = {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+        // send data to chrome extension
+        if (this.isInstalledOnChromeDesktop) {
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash }))
+          sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+            info: {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+          }))
+          sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
+          sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+        }
+        this.login(this.userId, this.userHash)
+        this.getUserHistory()
+      }
+    )
   }
 
   @action googleConnect (info) {
@@ -116,10 +141,9 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', {}))
-        } else {
-          this.login(this.userId, this.userHash)
-          this.getUserHistory()
         }
+        this.login(this.userId, this.userHash)
+        this.getUserHistory()
       }
     )
   }
@@ -157,10 +181,9 @@ export class HomeStore extends CoreStore {
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
-        } else {
-          this.login(this.userId, this.userHash)
-          this.getUserHistory()
         }
+        this.login(this.userId, this.userHash)
+        this.getUserHistory()
       }
     )
   }

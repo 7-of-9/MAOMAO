@@ -117,7 +117,9 @@ class AppHeader extends React.Component {
 
   onInternalLogin () {
     logger.warn('onInternalLogin', this.props)
+    this.props.notify('Test Internal: New User')
     this.props.store.internalLogin()
+    this.props.ui.toggleSignIn(false)
   }
 
   onFacebookLogin () {
