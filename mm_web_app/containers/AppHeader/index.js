@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
+import Modal from 'react-modal'
 import { Navbar, NavItem } from 'neal-react'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
@@ -34,7 +35,9 @@ class AppHeader extends React.Component {
   constructor (props) {
     super(props)
     this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.onGoogleLogin = this.onGoogleLogin.bind(this)
     this.onLogout = this.onLogout.bind(this)
+    this.onClose = this.onClose.bind(this)
   }
 
   /* global fetch */
@@ -49,6 +52,7 @@ class AppHeader extends React.Component {
           .then((token) => {
             if (this.props.store.userId < 0) {
               this.props.notify(`Welcome, ${user.displayName}!`)
+              this.props.ui.toggleSignIn(false)
               return fetch('/api/login', {
                 method: 'POST',
                 // eslint-disable-next-line no-undef
@@ -117,6 +121,15 @@ class AppHeader extends React.Component {
     firebase.auth().signInWithPopup(provider)
   }
 
+  onGoogleLogin () {
+    logger.warn('onGoogleLogin', this.props)
+    const provider = new firebase.auth.GoogleAuthProvider()
+    provider.addScope('https://www.googleapis.com/auth/plus.me')
+    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+    firebase.auth().signInWithPopup(provider)
+  }
+
   onLogout () {
     logger.warn('onLogout', this.props)
     firebase.auth().signOut().then(() => {
@@ -132,8 +145,14 @@ class AppHeader extends React.Component {
     })
   }
 
+  onClose () {
+    logger.warn('onClose', this.props)
+    this.props.ui.toggleSignIn(false)
+  }
+
   render () {
     const { isLogin, userId, user } = this.props.store
+    const { showSignInModal } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
@@ -186,14 +205,27 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {
-            !isLogin &&
-            <div className='block-button'>
-              <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                <i className='fa fa-facebook' /> Sign in with Facebook
-              </a>
+          {!isLogin && <button className='btn btn-login' onClick={() => this.props.ui.toggleSignIn(true)}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
+          <Modal
+            isOpen={showSignInModal}
+            onRequestClose={this.onClose}
+            portalClassName='SignInModal'
+            contentLabel='Sign In Modal'
+          >
+            <h2 ref='subtitle'>Sign In</h2>
+            <div className='justify-content-md-center social-action' >
+              <div className='block-button'>
+                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                  <i className='fa fa-facebook' /> Sign in with Facebook
+               </a>
+              </div>
+              <div className='block-button'>
+                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+                  <i className='fa fa-google' /> Sign in with Google
+                </a>
+              </div>
             </div>
-          }
+          </Modal>
         </NavItem>
       </Navbar>
     )

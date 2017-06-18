@@ -5,6 +5,8 @@ import logger from '../utils/logger'
 let store = null
 
 export class UIStore {
+  @observable showSignInModal = false
+  @observable showExtensionModal = false
   @observable onlyMe = false
   @observable sortBy = 'rating'
   @observable sortDirection = 'desc'
@@ -14,7 +16,6 @@ export class UIStore {
   @observable discoverySuggestionTerms = []
   @observable rating = 1
   @observable currentViewer = 'streams'
-  @observable showExtensionModal = false
   @observable notifications = []
   @observable page = 1
   shareTopics = []
@@ -66,6 +67,10 @@ export class UIStore {
     this.sortBy = type
     this.sortDirection = direction
     this.page = 1
+  }
+
+  @action toggleSignIn (isShow) {
+    this.showSignInModal = isShow
   }
 
   @action openExtensionModal () {
