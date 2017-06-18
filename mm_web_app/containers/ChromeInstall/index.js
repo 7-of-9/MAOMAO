@@ -7,7 +7,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
-import firebase from 'firebase'
 import Modal from 'react-modal'
 import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
@@ -32,7 +31,7 @@ const customModalStyles = {
 class ChromeInstall extends React.Component {
   constructor (props) {
     super(props)
-    this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.onClose = this.onClose.bind(this)
     this.state = {
       isHide: false
     }
@@ -71,11 +70,9 @@ class ChromeInstall extends React.Component {
     }
   }
 
-  onFacebookLogin () {
-    logger.warn('onFacebookLogin', this.props)
-    const provider = new firebase.auth.FacebookAuthProvider()
-    provider.addScope('email')
-    firebase.auth().signInWithPopup(provider)
+  onClose () {
+    logger.warn('onClose', this.props)
+    this.props.ui.toggleSignIn(false)
   }
 
   render () {
@@ -119,11 +116,9 @@ class ChromeInstall extends React.Component {
             {
               (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>
-                <div className='block-button'>
-                  <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                    <i className='fa fa-facebook' /> {joinMsg}
-                  </a>
-                </div>
+                <button className='btn btn-login' onClick={() => { this.props.ui.toggleSignIn(true) }}>
+                  <i className='fa fa-sign-in' aria-hidden='true' /> {joinMsg}
+                </button>
               </div>
             }
           </div>
