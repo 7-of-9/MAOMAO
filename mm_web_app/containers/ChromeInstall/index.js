@@ -79,12 +79,12 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, store: { isChrome, browserName, isMobile, isInstall, isLogin, shareInfo } } = this.props
-    logger.warn('ChromeInstall isChrome, browserName, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, isMobile, isInstall, isLogin, shareInfo)
+    const { title, description, install, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
     let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
-        {isLogin && browserName.length > 0 && !isMobile && isChrome && !isInstall &&
+        {isLogin && !isMobile && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
@@ -102,7 +102,7 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
           }
-        {!isLogin && browserName.length > 0 && browserName !== 'node' &&
+        {!isLogin &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
