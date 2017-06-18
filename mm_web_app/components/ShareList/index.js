@@ -73,6 +73,10 @@ class ShareList extends React.PureComponent {
               {/* Your sharing */}
               <div id={`collapse${userId}`} className='collapse' role='tabpanel' aria-labelledby={`heading${userId}`}>
                 <div className='card-block'>
+                  { /* eslint-disable camelcase */
+                    shares_issued && shares_issued.length === 0 &&
+                    <div> You have shared nothing with your friends</div>
+                  }
                   {shares_issued.map(receiver => (
                       (receiver.share_all || receiver.topic_id) &&
                       <ul key={`share-detail-${receiver.email}-${receiver.share_code}`} className='timeline timeline-horizontal'>

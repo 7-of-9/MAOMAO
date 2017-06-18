@@ -47,12 +47,16 @@ class AppHeader extends React.Component {
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
+        logger.warn('firebase - onAuthStateChanged', user)
         if (user) {
           logger.warn('firebase - user', user)
+          const { photoURL } = user
           return user.getIdToken()
           .then((token) => {
             if (this.props.store.userId < 0) {
-              this.props.notify(`Welcome, ${user.displayName}!`)
+              if (!user.isAnonymous) {
+                this.props.notify(`Welcome, ${user.displayName}!`)
+              }
               this.props.ui.toggleSignIn(false)
               return fetch('/api/login', {
                 method: 'POST',
@@ -64,41 +68,56 @@ class AppHeader extends React.Component {
               // register for new user
                 res.json().then(json => {
                   // register new user
-                  logger.warn('user', json)
-                  const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                  logger.warn('logged-in user', json)
+                  if (!user.isAnonymous) {
+                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
                   /* eslint-disable camelcase */
-                  logger.warn('sign_in_provider', sign_in_provider)
-                  logger.warn('identities', identities)
-                  let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
-                  let google_user_id = identities['google.com'] && identities['google.com'][0]
-                  if (sign_in_provider === 'google.com') {
-                    if (!email) {
-                      user.providerData.forEach(item => {
-                        if (item.providerId === sign_in_provider) {
-                          this.props.store.googleConnect({
-                            email: item.email, name, picture, google_user_id
-                          })
-                        }
-                      })
-                    } else {
-                      this.props.store.googleConnect({
-                        email, name, picture, google_user_id
-                      })
+                    logger.warn('sign_in_provider', sign_in_provider)
+                    logger.warn('identities', identities)
+                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                    let google_user_id = identities['google.com'] && identities['google.com'][0]
+                    let user_email = identities['email'] && identities['email'][0]
+                    if (sign_in_provider === 'google.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.googleConnect({
+                              email: item.email, name, picture, google_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.googleConnect({
+                          email, name, picture, google_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'facebook.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.facebookConnect({
+                              email: item.email, name, picture, fb_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.facebookConnect({
+                          email, name, picture, fb_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'password') {
+                      logger.warn('found user email', user_email)
+                      logger.warn('photoURL', photoURL)
+                      // hack here, try to store intenal user
+                      try {
+                        const loggedUser = JSON.parse(photoURL)
+                        this.props.store.retrylLoginForInternalUser(loggedUser)
+                      } catch (error) {
+                        logger.warn(error)
+                      }
                     }
-                  } else if (sign_in_provider === 'facebook.com') {
-                    if (!email) {
-                      user.providerData.forEach(item => {
-                        if (item.providerId === sign_in_provider) {
-                          this.props.store.facebookConnect({
-                            email: item.email, name, picture, fb_user_id
-                          })
-                        }
-                      })
-                    } else {
-                      this.props.store.facebookConnect({
-                        email, name, picture, fb_user_id
-                      })
-                    }
+                  } else {
+                    this.props.store.isLogin = true
                   }
                 })
               })
@@ -118,8 +137,21 @@ class AppHeader extends React.Component {
   onInternalLogin () {
     logger.warn('onInternalLogin', this.props)
     this.props.notify('Test Internal: New User')
-    this.props.store.internalLogin()
     this.props.ui.toggleSignIn(false)
+    this.props.store.internalLogin((user) => {
+      logger.warn('test user', user)
+      const { email, name: displayName } = user
+      firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
+        newUser.updateProfile({
+          displayName,
+          photoURL: JSON.stringify(user)
+        }).catch((error) => {
+          this.props.notify(error.message)
+        })
+      }).catch((error) => {
+        this.props.notify(error.message)
+      })
+    })
   }
 
   onFacebookLogin () {

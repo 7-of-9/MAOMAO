@@ -79,7 +79,7 @@ export class HomeStore extends CoreStore {
     return sharesReveived
   }
 
-  @action internalLogin () {
+  @action internalLogin (callback) {
     const registerNewUser = testInternalUser()
     this.isProcessingRegister = true
     when(
@@ -102,9 +102,28 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
         }
         this.login(this.userId, this.userHash)
+        callback(Object.assign({}, this.user, {userHash}))
         this.getUserHistory()
       }
     )
+  }
+
+  @action retrylLoginForInternalUser (user) {
+    const { id, userHash } = user
+    this.isLogin = true
+    this.userId = id
+    this.userHash = userHash
+    this.user = user
+    if (this.isInstalledOnChromeDesktop) {
+      sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash }))
+      sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+        info: user
+      }))
+      sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: id }))
+      sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: id }))
+    }
+    this.login(this.userId, this.userHash)
+    this.getUserHistory()
   }
 
   @action googleConnect (info) {
