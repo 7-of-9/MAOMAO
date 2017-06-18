@@ -5188,9 +5188,9 @@ mobile-detect@^1.3.6:
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/mobile-detect/-/mobile-detect-1.3.6.tgz#801f520109810f5090a741ced4914f706e7dfbe8"
 
-mobx-react-devtools@^4.2.14:
-  version "4.2.14"
-  resolved "https://registry.yarnpkg.com/mobx-react-devtools/-/mobx-react-devtools-4.2.14.tgz#77811a28e0163910cdba439c4ac4fb466a5148a5"
+mobx-react-devtools@^4.2.15:
+  version "4.2.15"
+  resolved "https://registry.yarnpkg.com/mobx-react-devtools/-/mobx-react-devtools-4.2.15.tgz#881c038fb83db4dffd1e72bbaf5374d26b2fdebb"
 
 mobx-react@^4.2.1:
   version "4.2.1"

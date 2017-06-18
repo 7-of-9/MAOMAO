@@ -133,7 +133,35 @@ const authGoogleLogin = data => (
           if (!isLinked) {
             dispatch(actionCreator('USER_HASH', { userHash: result.googleUserId }));
           }
-          return dispatch(actionCreator('AUTH_FULFILLED', result));
+          dispatch(actionCreator('AUTH_FULFILLED', result));
+          const { info, googleUserId, error } = result;
+          if (error) {
+            return dispatch(actionCreator('AUTH_REJECTED', { error }));
+          }
+          const names = info.name.split(' ');
+          const firstName = names[0];
+          const lastName = names.slice(1, names.length).join(' ');
+          return axios({
+            method: 'post',
+            url: `${config.apiUrl}/user/google`,
+            data: queryString({
+              firstName,
+              lastName,
+              email: info.email,
+              avatar: info.picture,
+              googleg_user_id: googleUserId,
+            }),
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }).then((newUser) => {
+            let userId = -1;
+            if (newUser.data && newUser.data.id) {
+              userId = newUser.data.id;
+            }
+            dispatch(actionCreator('USER_AFTER_LOGIN', { userId }));
+            return dispatch(actionCreator('PRELOAD_SHARE_ALL', { userId }));
+          }).catch(err => logger.warn(err));
         }).catch((error) => {
           // Try to logout and remove cache token
           if (firebase.auth().currentUser) {
