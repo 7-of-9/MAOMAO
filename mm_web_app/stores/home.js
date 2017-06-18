@@ -2,7 +2,7 @@ import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
-import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
+import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -77,6 +77,9 @@ export class HomeStore extends CoreStore {
       })
     }
     return sharesReveived
+  }
+
+  @action internalLogin () {
   }
 
   @action googleConnect (info) {

@@ -128,7 +128,7 @@ the modal section
     background: rgba(242, 242, 242, 0.75) !important;
     overflow-y: auto !important;
     width: 100%;
-    max-height: calc(100% - 100px);
+    height: 300px;
     max-width: calc(100% - 50px);
     width: -moz-fit-content;
     width: -webkit-fit-content;
@@ -196,7 +196,7 @@ the modal section
     overflow-y: auto !important;
     width: 100%;
     min-width: 400px;
-    max-height: calc(100% - 100px);
+    max-height: calc(100% - 50px);
     max-width: calc(100% - 50px);
     width: -moz-fit-content;
     width: -webkit-fit-content;
@@ -232,7 +232,7 @@ the modal section
   }
   .modal-body {
     overflow-y: auto !important;
-    max-height: calc(100% - 100px);
+    max-height: calc(100% - 50px);
   }
 }
 
@@ -265,7 +265,7 @@ the modal section
     overflow-y: auto !important;
     width: 100%;
     min-width: 800px;
-    max-height: calc(100% - 100px);
+    max-height: calc(100% - 50px);
     max-width: calc(100% - 50px);
     width: -moz-fit-content;
     width: -webkit-fit-content;
