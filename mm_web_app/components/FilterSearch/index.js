@@ -123,6 +123,14 @@ const ratingCount = (urls, owners, rate) => {
   return counter
 }
 
+const urlsCount = (topic, filterByUser) => {
+  if (filterByUser.length) {
+    const urlIds = _.flatMap(toJS(filterByUser), 'value')
+    return _.intersection(urlIds, topic.urlIds).length
+  }
+  return topic.urlIds.length
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -182,7 +190,7 @@ class FilterSearch extends React.Component {
     }
     const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
-    logger.warn('FilterSearch render', users, firstLevelTopics, userId)
+    logger.warn('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
 
     return (
       <nav className='navbar'>
@@ -269,9 +277,9 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Streams</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {firstLevelTopics.map(topic => (
+                  {firstLevelTopics.filter(item => urlsCount(item, filterByUser)).map(topic => (
                     <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}>
-                      <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span>
+                      <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name} ({urlsCount(topic, filterByUser)})</span>
                     </li>
                 ))}
                 </ul>
