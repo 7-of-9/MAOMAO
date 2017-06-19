@@ -51,10 +51,15 @@ export class UIStore {
     }
   }
 
-  @action openShareTopic (urlId, topic) {
-    logger.warn('share topic', urlId, topic)
+  @action openShareTopic (urlId, selectedTopic, otherTopics) {
+    logger.warn('share topic', urlId, selectedTopic, otherTopics)
     this.shareUrlId = urlId
-    this.shareTopics = [ { id: `${topic.id}-tld-${topic.name}`, topic_id: topic.id, name: topic.name } ]
+    this.shareTopics = [ { id: `${selectedTopic.id}-tld-${selectedTopic.name}`, topic_id: selectedTopic.id, name: selectedTopic.name } ]
+    otherTopics.forEach((topic) => {
+      if (topic.id !== selectedTopic.id) {
+        this.shareTopics.push({ id: `${topic.id}-beta-${topic.name}`, topic_id: topic.id, name: topic.name })
+      }
+    })
     this.currentViewer = 'sharetopic'
   }
 
