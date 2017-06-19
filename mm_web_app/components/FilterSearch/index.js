@@ -324,13 +324,13 @@ class FilterSearch extends React.Component {
                     className={sortBy === 'date' && sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
                     onClick={() => this.props.ui.changeSortOrder('date', 'asc')}
                   >
-                    <i className='fa fa-sort-up' aria-hidden='true' />
+                    <i className='ar-sort-asc' />
                   </a>
                   <a
                     className={sortBy === 'date' && sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                     onClick={() => this.props.ui.changeSortOrder('date', 'desc')}
                   >
-                    <i className='fa fa-sort-desc' aria-hidden='true' />
+                    <i className='ar-sort-desc' />
                   </a>
                 </span>
               </div>
@@ -345,13 +345,13 @@ class FilterSearch extends React.Component {
                   <a
                     className={sortBy === 'rating' && sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
                     onClick={() => this.props.ui.changeSortOrder('rating', 'asc')}
-                                ><i className='fa fa-sort-up' aria-hidden='true' />
+                                ><i className='ar-sort-asc' />
                   </a>
                   <a
                     className={sortBy === 'rating' && sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                     onClick={() => this.props.ui.changeSortOrder('rating', 'desc')}
                                 >
-                    <i className='fa fa-sort-desc' aria-hidden='true' />
+                    <i className='ar-sort-desc' />
                   </a>
                 </span>
                 <ul className='dropdown-menu sort-case'>
