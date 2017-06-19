@@ -88,11 +88,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                   name='topics'
                 />
                 <label className='radio__regular__label' htmlFor={topic.id}>
-                  <span className='labs'>
-                    {topic.name.toUpperCase()}
-                    <span className='icons-labs' />
-                    <a className='icons-search' href={`http://maomaoweb.azurewebsites.net/discovery?search=${topic.name}`} target='_blank' rel='noopener noreferrer' />
-                  </span>
+                  {topic.name}
                 </label>
               </div>)
             )
