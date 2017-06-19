@@ -205,7 +205,7 @@ class FilterSearch extends React.Component {
               </button>
             </div>
           </div>
-          <div id='toolbar-search' className='widget-form collapse-show collapse show' aria-expanded='true'>
+          <div id='toolbar-search' className='widget-form collapse' aria-expanded='true'>
             <div className='checkbox__styled'>
               <input onChange={() => this.props.ui.toggleOnlyMe(userId, users)} type='checkbox' className='checkbox__styled__input' id='checkbox-only-me' name='only-me' value={userId} checked={onlyMe} />
               <label className='checkbox__styled__label' htmlFor='checkbox-only-me'>Only me</label>

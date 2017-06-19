@@ -1843,6 +1843,15 @@ a.btn-box-remove {
     }
   }
 }
+.sticky {
+  .switch-responsive, #toolbar-search, #toolbar-sort {
+    @media (max-width: 767px) {
+      @include opacity(0);
+      display: none;
+      transition: visibility 0s, opacity 0.5s linear;
+    }
+  }
+}
 .switch-responsive {
   @include opacity(0);
   @include clearfix();

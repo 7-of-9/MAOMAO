@@ -238,7 +238,7 @@ class AppHeader extends React.Component {
               <ul className='dropdown-menu pull-right'>
                 {user && user.name &&
                   <div className='account-dropdown__identity account-dropdown__segment'>
-                    Signed in as <strong>{user.name}</strong>
+                    Signed in as <strong>{user.name} ({user.email})</strong>
                   </div>
                 }
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
