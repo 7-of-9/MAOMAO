@@ -277,46 +277,19 @@ mobx.reaction(() => window.sessionObservable.lastUpdate, () => {
 mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
   const idleState = window.idleState;
   log.warn('active url - change url', window.sessionObservable.activeUrl);
-
   // TODO: reset setting for experimental topics when change url
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true,
-  }, (tabs) => {
-    if (tabs != null && tabs.length > 0) {
-      const activeUrl = tabs[0].url;
-      log.info('case 1 - active url', activeUrl);
-      let session = window.session_get_by_tab(tabs[0]);
-      if (!session) {
-        session = window.session_get_by_url(activeUrl);
-      }
-      if (session) {
-        window.session_stop_TOT(session);
-        syncImScore(activeUrl, true);
-        if (idleState === 'active' || session.audible) {
-          window.session_start_TOT(session);
-        }
-      } else {
-        log.info('case 1 - active url - check im score', activeUrl);
-        syncImScore(activeUrl, false);
-      }
-    }
-  });
-});
-
-// save im_score every 30 seconds
-const ROUND_CLOCK = 30;
-setInterval(() => {
-  if (Number(window.userId) > 0) {
-    const idleState = window.idleState;
+  if (window.selectedWindowId > 0) {
     chrome.tabs.query({
       active: true,
       currentWindow: true,
     }, (tabs) => {
       if (tabs != null && tabs.length > 0) {
         const activeUrl = tabs[0].url;
-        log.info('case 2 - timer - 30s - active url', activeUrl, new Date());
-        const session = window.session_get_by_tab(tabs[0]);
+        log.info('case 1 - active url', activeUrl);
+        let session = window.session_get_by_tab(tabs[0]);
+        if (!session) {
+          session = window.session_get_by_url(activeUrl);
+        }
         if (session) {
           window.session_stop_TOT(session);
           syncImScore(activeUrl, true);
@@ -324,10 +297,40 @@ setInterval(() => {
             window.session_start_TOT(session);
           }
         } else {
-          log.info('case 2 - timer - 30s - Not found session for url', activeUrl);
+          log.info('case 1 - active url - check im score', activeUrl);
+          syncImScore(activeUrl, false);
         }
       }
     });
+  }
+});
+
+// save im_score every 30 seconds
+const ROUND_CLOCK = 30;
+setInterval(() => {
+  if (Number(window.userId) > 0) {
+    const idleState = window.idleState;
+    if (window.selectedWindowId > 0) {
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      }, (tabs) => {
+        if (tabs != null && tabs.length > 0) {
+          const activeUrl = tabs[0].url;
+          log.info('case 2 - timer - 30s - active url', activeUrl, new Date());
+          const session = window.session_get_by_tab(tabs[0]);
+          if (session) {
+            window.session_stop_TOT(session);
+            syncImScore(activeUrl, true);
+            if (idleState === 'active' || session.audible) {
+              window.session_start_TOT(session);
+            }
+          } else {
+            log.info('case 2 - timer - 30s - Not found session for url', activeUrl);
+          }
+        }
+      });
+    }
   }
 }, ROUND_CLOCK * 1000);
 
