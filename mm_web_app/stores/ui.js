@@ -20,10 +20,15 @@ export class UIStore {
   @observable page = 1
   shareTopics = []
   shareUrlId = -1
+  userId = -1
 
   @action toggleOnlyMe (userId, users) {
+    logger.warn('toggleOnlyMe', userId, users)
     this.onlyMe = !this.onlyMe
-    logger.warn('toggleOnlyMe', this.onlyMe, userId, users)
+    if (this.onlyMe) {
+      this.userId = userId
+    }
+
     if (this.onlyMe) {
       const user = users.find(item => item.user_id === userId)
       if (user) {
@@ -122,6 +127,9 @@ export class UIStore {
   @action removeUser (user) {
     logger.info('removeUser', user, this)
     this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id)
+    if (this.filterByUser.length <= 1) {
+      this.onlyMe = !!this.filterByUser.find(item => item.user_id === this.userId)
+    }
     this.page = 1
   }
 
@@ -129,6 +137,9 @@ export class UIStore {
     logger.info('selectUser', user, this)
     if (!this.filterByUser.find(item => item.user_id === user.user_id)) {
       this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
+    }
+    if (this.filterByUser.length > 1) {
+      this.onlyMe = false
     }
     this.page = 1
   }
