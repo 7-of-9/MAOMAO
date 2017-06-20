@@ -80,6 +80,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action internalLogin (callback) {
+    logger.warn('internalLogin')
     const registerNewUser = testInternalUser()
     this.isProcessingRegister = true
     when(
@@ -94,7 +95,7 @@ export class HomeStore extends CoreStore {
         this.user = {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
-          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash }))
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: data.id }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
             info: {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
           }))
@@ -109,13 +110,14 @@ export class HomeStore extends CoreStore {
   }
 
   @action retrylLoginForInternalUser (user) {
+    logger.warn('retrylLoginForInternalUser', user)
     const { id, userHash } = user
     this.isLogin = true
     this.userId = id
     this.userHash = userHash
     this.user = user
     if (this.isInstalledOnChromeDesktop) {
-      sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash }))
+      sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: id }))
       sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
         info: user
       }))

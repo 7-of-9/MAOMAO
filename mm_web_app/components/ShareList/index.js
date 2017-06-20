@@ -85,10 +85,11 @@ class ShareList extends React.PureComponent {
                             <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                           </div>
                           {
-                            receiver.source_user_deactivated &&
+                            /* receiver.source_user_deactivated &&
                             <div className='timeline-panel'>
                               <span className='user-info-share'>Has been paused by {user.name}</span>
                             </div>
+                            */
                           }
                         </li>
                         <li className='timeline-item'>
@@ -198,11 +199,12 @@ class ShareList extends React.PureComponent {
                                 <div className='timeline-badge'>
                                   <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
                                 </div>
-                                {
+                                { /*
                                   item.target_user_deactivated &&
                                   <div className='timeline-panel'>
                                     <span className='user-info-share'>Has been paused by {user.name}</span>
                                   </div>
+                                  */
                                 }
                               </li>
                             </ul>
