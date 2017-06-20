@@ -327,7 +327,11 @@ app.prepare().then(() => {
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
-    if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
+    if (pathname === '/hiring-js') {
+      app.render(req, res, '/hiring', {type: 'js'})
+    } else if (pathname === '/hiring-vp') {
+      app.render(req, res, '/hiring', {type: 'vp'})
+    } else if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
      pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
      pathname.indexOf('.png') !== -1 || pathname.indexOf('.css') !== -1 ||

@@ -117,16 +117,20 @@ class Home extends React.Component {
 
   componentDidMount () {
     logger.warn('Home componentDidMount')
+    if (this.props.store.isMobile) {
     /* eslint-disable no-undef */
-    this.addToHome = addToHomescreen({
-      autostart: false,
-      debug: true
-    })
+      this.addToHome = addToHomescreen({
+        autostart: false,
+        debug: true
+      })
+    }
   }
 
   addToHomeOnMobile () {
     logger.warn('Home addToHomeOnMobile')
-    this.addToHome.show(true)
+    if (this.props.store.isMobile) {
+      this.addToHome.show(true)
+    }
   }
 
   componentWillReact () {
