@@ -78,7 +78,7 @@ class ChromeInstall extends React.Component {
   render () {
     const { title, description, install, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
     logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
-    let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
+    let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
         {isLogin && !isMobile && isChrome && !isInstall &&
@@ -106,11 +106,6 @@ class ChromeInstall extends React.Component {
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome &&
-              <div className='panel-extention'><p> <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p>
-                { !isMobile && <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p> }
-              </div>
-            }
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
             {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {

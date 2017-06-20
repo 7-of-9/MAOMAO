@@ -28,7 +28,7 @@
     "loglevel": "^1.4.1",
     "mailgun": "shz/node-mailgun",
     "material-ui": "^0.18.3",
-    "mobx": "^3.1.15",
+    "mobx": "^3.1.16",
     "moment": "^2.18.1",
     "postcss-loader": "^2.0.6",
     "prop-types": "^15.5.10",

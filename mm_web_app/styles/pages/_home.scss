@@ -329,7 +329,7 @@ the home page
     }
   }
   .card-block {
-    padding: 10px 68px;
+    padding: 10px 20px;
     @media (max-width: 767px) {
       padding: 10px 15px;
     }
@@ -372,6 +372,10 @@ the home page
 
 
 /* Timeline */
+
+.timeline-pause {
+  background-color: grey;
+}
 
 .timeline-horizontal {
   @include clearfix();
@@ -458,8 +462,6 @@ the home page
     &:nth-child(1) {
       width: 25%;
       text-align: left;
-      .timeline-badge {
-      }
       @media (max-width: 590px) {
         width: 28%;
       }
@@ -479,8 +481,6 @@ the home page
     &:nth-child(3) {
       width: 25%;
       text-align: right;
-      .timeline-badge {
-      }
       .timeline-panel {
         font-size: 0.8125rem;
         font-weight: bold;

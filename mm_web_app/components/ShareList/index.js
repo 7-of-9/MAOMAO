@@ -77,13 +77,19 @@ class ShareList extends React.PureComponent {
                     shares_issued && shares_issued.length === 0 &&
                     <div> You have shared nothing with your friends</div>
                   }
-                  {shares_issued.map(receiver => (
+                  {shares_issued && _.map(shares_issued, receiver => (
                       (receiver.share_all || receiver.topic_id) &&
-                      <ul key={`share-detail-${receiver.email}-${receiver.share_code}`} className='timeline timeline-horizontal'>
+                      <ul key={`share-detail-${receiver.email}-${receiver.share_code}`} className={receiver.source_user_deactivated ? 'timeline timeline-pause timeline-horizontal' : 'timeline timeline-horizontal'}>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
                             <img className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                           </div>
+                          {
+                            receiver.source_user_deactivated &&
+                            <div className='timeline-panel'>
+                              <span className='user-info-share'>Has been paused by {user.name}</span>
+                            </div>
+                          }
                         </li>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
@@ -113,9 +119,8 @@ class ShareList extends React.PureComponent {
                           <div className='timeline-panel'>
                             <div className='timeline-panel'>
                               <span className='user-info-share'>{receiver.fullname}</span>
-                              <a href='#' className='btn btn-related'>Unshare</a>
+                              <a href='#' className='btn btn-related'>{receiver.source_user_deactivated ? 'Reshare' : 'Unshare'}</a>
                             </div>
-
                           </div>
                         </li>
                       </ul>
@@ -123,7 +128,7 @@ class ShareList extends React.PureComponent {
                 </div>
               </div>
             </div>
-            {_.map(friends, friend => (
+            {friends && _.map(friends, friend => (
               <div key={`friend-${friend.user_id}`} className='card card-topic'>
                 <div className='card-header collapsed' role='tab' id={`heading${friend.user_id}`} data-toggle='collapse' data-parent='#accordion' href={`#collapse${friend.user_id}`} aria-expanded='false' aria-controls={`collapse${friend.user_id}`}>
                   <div className='card-header-cnt'>
@@ -147,17 +152,17 @@ class ShareList extends React.PureComponent {
                 </div>
                 <div id={`collapse${friend.user_id}`} className='collapse' role='tabpanel' aria-labelledby={`heading${friend.user_id}`}>
                   <div className='card-block'>
-                    {_.map(friend.shares, code => {
+                    {friend.shares && _.map(friend.shares, code => {
                       const item = shareLists[code]
                       return (
                             item.type !== 'url' &&
-                            <ul key={`share-${code}-${friend.user_id}`} className='timeline timeline-horizontal'>
+                            <ul key={`share-${code}-${friend.user_id}`} className={item.target_user_deactivated ? 'timeline timeline-pause timeline-horizontal' : 'timeline timeline-horizontal'}>
                               <li className='timeline-item'>
                                 <div className='timeline-badge'>
                                   <img className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
                                 </div>
                                 <div className='timeline-panel'>
-                                  <a href='#' className='btn btn-unfollow'>Unfollow</a>
+                                  <a href='#' className='btn btn-unfollow'>{item.target_user_deactivated ? 'Follow' : 'Unfollow'}</a>
                                 </div>
                               </li>
                               <li className='timeline-item'>
@@ -193,6 +198,12 @@ class ShareList extends React.PureComponent {
                                 <div className='timeline-badge'>
                                   <img className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
                                 </div>
+                                {
+                                  item.target_user_deactivated &&
+                                  <div className='timeline-panel'>
+                                    <span className='user-info-share'>Has been paused by {user.name}</span>
+                                  </div>
+                                }
                               </li>
                             </ul>
                       )

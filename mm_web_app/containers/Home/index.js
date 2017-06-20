@@ -101,12 +101,12 @@ class Home extends React.Component {
   }
 
   inlineInstall () {
-      /* eslint-disable */
-      chrome.webstore.install(
-      'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
-      this.onInstallSucess,
-      this.onInstallFail)
-      /* eslint-enable */
+    /* eslint-disable */
+    chrome.webstore.install(
+    'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
+    this.onInstallSucess,
+    this.onInstallFail)
+    /* eslint-enable */
   }
 
   removeNotification (uuid) {
@@ -128,18 +128,18 @@ class Home extends React.Component {
   }
 
   render () {
-    const title = 'maomao - discovery & share'
+    const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
       if (shareAll) {
-        description = `${fullname} would like to share all maomao stream with you`
+        description = `<strong>${fullname}</strong> would like to share all maomao stream with you`
       } else if (urlTitle && urlTitle.length) {
-        description = `${fullname} would like to share "${urlTitle}" with you`
+        description = `<strong>${fullname}</strong> would like to share "${urlTitle}" with you`
       } else if (topicTitle && topicTitle.length) {
-        description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
+        description = `<strong>${fullname}</strong> would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
     logger.warn('Home urls, users', toJS(urls), toJS(users))
@@ -148,6 +148,9 @@ class Home extends React.Component {
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
+          <meta name='apple-mobile-web-app-capable' content='yes' />
+          <meta name='mobile-web-app-capable' content='yes' />
+          <meta name='apple-mobile-web-app-title' content='Maomao' />
           <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
           <meta name='description' content={description} />
           <meta name='og:title' content={title} />
@@ -161,8 +164,11 @@ class Home extends React.Component {
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-          <script src='/static/js/sticky.js' />
+          <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
+          <script src='/static/vendors/js/addtohomescreen.min.js' />
+          <script src='/static/js/sticky.js' />
+          <script src='/static/js/home.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
