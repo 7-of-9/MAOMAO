@@ -173,6 +173,8 @@ class Home extends React.Component {
           <meta name='og:image' content={bgImage && bgImage.length > 0 ? bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
           <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
+          <link rel='apple-touch-icon' href='/static/images/logo.png' />
+          <link rel='icon' href='/static/images/logo.png' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
           <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
