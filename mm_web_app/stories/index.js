@@ -12,6 +12,7 @@ import Loading from '../components/Loading'
 import UnlockNow from '../components/UnlockNow'
 import SearchBar from '../components/SearchBar'
 import Footer from '../components/Footer'
+import AddToHome from '../components/AddToHome'
 
 storiesOf('Header', module)
   .add('with logo & slogan', () => (
@@ -21,6 +22,11 @@ storiesOf('Header', module)
 storiesOf('Footer', module)
   .add('default props', () => (
     <Footer />
+  ))
+
+storiesOf('AddToHome', module)
+  .add('default props', () => (
+    <AddToHome onClick={action('click')} />
   ))
 
 storiesOf('ShareTopic', module)

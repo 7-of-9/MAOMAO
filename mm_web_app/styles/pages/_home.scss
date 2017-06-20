@@ -599,3 +599,28 @@ the home page
     transform: scale(0.7, 0.7);
   }
 }
+
+/* add to home */
+.add-to-home {
+    background-color: #50A1CB;
+    color: white;
+    z-index: 999;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 50%;
+}
+
+a.add-to-home {
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.6;
+    padding-left: 2px;
+    padding-top: 4px;
+}

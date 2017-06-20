@@ -18,6 +18,7 @@ import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
 import Loading from '../../components/Loading'
+import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
 // dynaymic load container component
@@ -81,6 +82,7 @@ class Home extends React.Component {
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
+    this.addToHomeOnMobile = this.addToHomeOnMobile.bind(this)
   }
 
   onInstallSucess () {
@@ -114,8 +116,17 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-      // TODO: filter by invite user
     logger.warn('Home componentDidMount')
+    /* eslint-disable no-undef */
+    this.addToHome = addToHomescreen({
+      autostart: false,
+      debug: true
+    })
+  }
+
+  addToHomeOnMobile () {
+    logger.warn('Home addToHomeOnMobile')
+    this.addToHome.show(true)
   }
 
   componentWillReact () {
@@ -130,7 +141,7 @@ class Home extends React.Component {
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users } = this.props.store
+    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users, isMobile } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
@@ -168,7 +179,6 @@ class Home extends React.Component {
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
           <script src='/static/js/sticky.js' />
-          <script src='/static/js/home.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
@@ -246,6 +256,10 @@ class Home extends React.Component {
               }
           </div>
         </ToggleDisplay>
+        {
+          isMobile &&
+          <AddToHome onClick={this.addToHomeOnMobile} />
+         }
         <div className='footer-area'>
           <Footer brandName={brandName}
             facebookUrl='https://www.facebook.com/maomao.hiring'
