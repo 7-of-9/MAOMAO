@@ -6589,7 +6589,7 @@ react-masonry-component@^5.0.7:
     masonry-layout "^4.2.0"
     prop-types "^15.5.8"
 
-react-modal@^1.7.6, react-modal@^1.7.7, react-modal@^1.9.6:
+react-modal@^1.7.6, react-modal@^1.7.7:
   version "1.9.6"
   resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-1.9.6.tgz#b3fc0947e562bfcf0a5e295b1a4bdd5f81e77d4c"
   dependencies:
@@ -6598,6 +6598,15 @@ react-modal@^1.7.6, react-modal@^1.7.7, react-modal@^1.9.6:
     exenv "1.2.0"
     lodash.assign "^4.2.0"
     prop-types "^15.5.7"
+    react-dom-factories "^1.0.0"
+
+react-modal@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-2.0.6.tgz#00eaa806ec6b52625e25716cda07734692c99e31"
+  dependencies:
+    element-class "^0.2.0"
+    exenv "1.2.0"
+    prop-types "^15.5.10"
     react-dom-factories "^1.0.0"
 
 react-motion@^0.4.4:

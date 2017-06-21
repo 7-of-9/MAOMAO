@@ -83,6 +83,9 @@ class Home extends React.Component {
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
     this.addToHomeOnMobile = this.addToHomeOnMobile.bind(this)
+    this.state = {
+      hasAddToHome: false
+    }
   }
 
   onInstallSucess () {
@@ -118,11 +121,20 @@ class Home extends React.Component {
   componentDidMount () {
     logger.warn('Home componentDidMount')
     if (this.props.store.isMobile) {
-    /* eslint-disable no-undef */
-      this.addToHome = addToHomescreen({
-        autostart: false,
-        debug: true
-      })
+      if (window.navigator.standalone) {
+        this.setState({
+          hasAddToHome: true
+        })
+      } else {
+        /* eslint-disable no-undef */
+        this.addToHome = addToHomescreen({
+          autostart: false,
+          appID: 'org.maomao.webApp',
+          detectHomescreen: true,
+          startDelay: 0
+        })
+        logger.warn('addToHome', this.addToHome)
+      }
     }
   }
 
@@ -130,6 +142,9 @@ class Home extends React.Component {
     logger.warn('Home addToHomeOnMobile')
     if (this.props.store.isMobile) {
       this.addToHome.show(true)
+      this.setState({
+        hasAddToHome: true
+      })
     }
   }
 
@@ -150,13 +165,14 @@ class Home extends React.Component {
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
       if (shareAll) {
-        description = `<strong>${fullname}</strong> would like to share all maomao stream with you`
+        description = `${fullname} would like to share all maomao stream with you`
       } else if (urlTitle && urlTitle.length) {
-        description = `<strong>${fullname}</strong> would like to share "${urlTitle}" with you`
+        description = `${fullname} would like to share "${urlTitle}" with you`
       } else if (topicTitle && topicTitle.length) {
-        description = `<strong>${fullname}</strong> would like to share the maomao stream with you: "${topicTitle}"`
+        description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
+    const { hasAddToHome } = this.state
     logger.warn('Home urls, users', toJS(urls), toJS(users))
     return (
       <Page>
@@ -263,7 +279,7 @@ class Home extends React.Component {
           </div>
         </ToggleDisplay>
         {
-          isMobile &&
+          isMobile && !hasAddToHome &&
           <AddToHome onClick={this.addToHomeOnMobile} />
          }
         <div className='footer-area'>
