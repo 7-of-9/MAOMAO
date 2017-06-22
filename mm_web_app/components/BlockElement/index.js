@@ -6,6 +6,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { compose, withHandlers } from 'recompose'
 import styled from 'styled-components'
 import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
@@ -74,7 +75,28 @@ function iconType (type) {
   }
 }
 
-function BlockElement ({url, image, name, description, type}) {
+const enhance = compose(
+  withHandlers({
+    openUrl: (props) => (url, name) => {
+      /* global $ */
+      // Close only the currently active or all fancyBox instances
+      $.fancybox.close()
+      // Open the fancyBox right away
+      $.fancybox.open({
+        src: url,
+        type: 'iframe',
+        opts: {
+          caption: name
+        }
+      })
+    }
+  })
+)
+
+function BlockElement ({
+  show, url, image, name, description, type,
+  openUrl
+}) {
   const opts = {
     height: '220',
     width: '100%',
@@ -90,6 +112,7 @@ function BlockElement ({url, image, name, description, type}) {
             <YouTube
               videoId={url}
               opts={opts}
+              onReady={(event) => { event.target.pauseVideo() }}
               />
           </div>
           <div className='caption'>
@@ -110,16 +133,17 @@ function BlockElement ({url, image, name, description, type}) {
           </div>
         </div>
         }
-      {type !== 'Youtube' &&
+      {
+        type !== 'Youtube' &&
         <div className='thumbnail'>
           <div className='thumbnail-image'>
-            <Anchor className='thumbnail-overlay' href={url} target='_blank'>
+            <Anchor className='thumbnail-overlay' onClick={() => openUrl(url, name)}>
               <Image src={image} alt={name} />
             </Anchor>
           </div>
           <div className='caption'>
             <Title className='caption-title'>
-              <Anchor href={url} target='_blank'>
+              <Anchor onClick={() => openUrl(url, name)}>
                 {name && <span>{name}</span>}
               </Anchor>
             </Title>
@@ -136,7 +160,7 @@ function BlockElement ({url, image, name, description, type}) {
             </div>
           </div>
         </div>
-        }
+      }
     </Wrapper>
   )
 }
@@ -149,4 +173,4 @@ BlockElement.propTypes = {
   url: PropTypes.string
 }
 
-export default BlockElement
+export default enhance(BlockElement)
