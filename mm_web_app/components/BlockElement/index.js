@@ -4,12 +4,13 @@
 *
 */
 
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { compose, withHandlers } from 'recompose'
 import styled from 'styled-components'
 import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
+import logger from '../../utils/logger'
 
 const Wrapper = styled.section`
   padding: 10px;
@@ -82,37 +83,47 @@ const enhance = compose(
       // Close only the currently active or all fancyBox instances
       $.fancybox.close()
       // Open the fancyBox right away
+      const proxyUrl = `http://webproxy.to/browse.php?u=${escape(url)}&b=4&f=norefer`
       $.fancybox.open({
-        src: url,
+        src: proxyUrl,
         type: 'iframe',
         opts: {
-          caption: name
+          caption: name,
+          beforeShow: function (instance, current) {
+            logger.warn('beforeShow')
+          },
+          afterShow: function (instance, current) {
+            logger.warn('afterShow')
+          }
         }
       })
     }
   })
 )
 
-function BlockElement ({
-  show, url, image, name, description, type,
-  openUrl
-}) {
-  const opts = {
-    height: '220',
-    width: '100%',
-    playerVars: {
-      autoplay: 0
+class BlockElement extends PureComponent {
+  render () {
+    const { url, image, name, description, type, openUrl } = this.props
+    const opts = {
+      height: '220',
+      width: '100%',
+      playerVars: {
+        autoplay: 0
+      }
     }
-  }
-  return (
-    <Wrapper className='thumbnail-box'>
-      {type === 'Youtube' &&
-        <div className='thumbnail'>
+    return (
+      <Wrapper className='thumbnail-box'>
+        {type === 'Youtube' &&
+        <div
+          className='thumbnail'
+          onMouseEnter={() => { this.ytb.playVideo() }}
+          onMouseLeave={() => { this.ytb.pauseVideo() }}
+          >
           <div className='thumbnail-image'>
             <YouTube
               videoId={url}
               opts={opts}
-              onReady={(event) => { event.target.pauseVideo() }}
+              onReady={(event) => { this.ytb = event.target }}
               />
           </div>
           <div className='caption'>
@@ -133,7 +144,7 @@ function BlockElement ({
           </div>
         </div>
         }
-      {
+        {
         type !== 'Youtube' &&
         <div className='thumbnail'>
           <div className='thumbnail-image'>
@@ -161,8 +172,9 @@ function BlockElement ({
           </div>
         </div>
       }
-    </Wrapper>
-  )
+      </Wrapper>
+    )
+  }
 }
 
 BlockElement.propTypes = {
