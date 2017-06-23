@@ -16,9 +16,9 @@ import Loading from '../../components/Loading'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
+import previewUrl from '../../utils/previewUrl'
 import { tagColor } from '../../utils/helper'
 
-const PROXY_URL = 'http://www.glype-proxy.info/browse.php'
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
@@ -143,26 +143,6 @@ function parseDomain (link) {
   return url.hostname
 }
 
-function openUrl (url, name) {
-  /* global $ */
-  $.fancybox.close()
-  // Open the fancyBox right away
-  const proxyUrl = `${PROXY_URL}?u=${escape(url)}&b=4&f=norefer`
-  $.fancybox.open({
-    src: proxyUrl,
-    type: 'iframe',
-    opts: {
-      caption: name,
-      beforeShow: function (instance, current) {
-        logger.warn('beforeShow')
-      },
-      afterShow: function (instance, current) {
-        logger.warn('afterShow')
-      }
-    }
-  })
-}
-
 @inject('store')
 @inject('ui')
 @observer
@@ -207,14 +187,14 @@ class Streams extends React.PureComponent {
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
             <div className='thumbnail'>
               <div className='thumbnail-image'>
-                <a className='thumbnail-overlay' onClick={() => openUrl(href, title)}>
+                <a className='thumbnail-overlay' onClick={() => previewUrl(href, title)}>
                   <img src={img || '/static/images/no-image.png'} alt={title} />
                 </a>
                 {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
               </div>
               <div className='caption'>
                 <h4 className='caption-title'>
-                  <a onClick={() => openUrl(href, title)}>
+                  <a onClick={() => previewUrl(href, title)}>
                     {title} ({url_id})
                   </a>
                 </h4>

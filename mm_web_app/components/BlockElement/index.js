@@ -6,11 +6,10 @@
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { compose, withHandlers } from 'recompose'
 import styled from 'styled-components'
-import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
-import logger from '../../utils/logger'
+import YoutubePlayer from '../YoutubePlayer'
+import previewUrl from '../../utils/previewUrl'
 
 const Wrapper = styled.section`
   padding: 10px;
@@ -76,85 +75,26 @@ function iconType (type) {
   }
 }
 
-const enhance = compose(
-  withHandlers({
-    openUrl: (props) => (url, name) => {
-      /* global $ */
-      // Close only the currently active or all fancyBox instances
-      $.fancybox.close()
-      // Open the fancyBox right away
-      const proxyUrl = `http://webproxy.to/browse.php?u=${escape(url)}&b=4&f=norefer`
-      $.fancybox.open({
-        src: proxyUrl,
-        type: 'iframe',
-        opts: {
-          caption: name,
-          beforeShow: function (instance, current) {
-            logger.warn('beforeShow')
-          },
-          afterShow: function (instance, current) {
-            logger.warn('afterShow')
-          }
-        }
-      })
-    }
-  })
-)
-
 class BlockElement extends PureComponent {
   render () {
-    const { url, image, name, description, type, openUrl } = this.props
-    const opts = {
-      height: '220',
-      width: '100%',
-      playerVars: {
-        autoplay: 0
-      }
-    }
+    const { url, image, name, description, type } = this.props
     return (
       <Wrapper className='thumbnail-box'>
-        {type === 'Youtube' &&
-        <div
-          className='thumbnail'
-          onMouseEnter={() => { this.ytb.playVideo() }}
-          onMouseLeave={() => { this.ytb.pauseVideo() }}
-          >
-          <div className='thumbnail-image'>
-            <YouTube
-              videoId={url}
-              opts={opts}
-              onReady={(event) => { this.ytb = event.target }}
-              />
-          </div>
-          <div className='caption'>
-            <Title className='caption-title'>
-              {name && <span>{name}</span>}
-            </Title>
-            {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-            <div className='panel-user panel-credit'>
-              <div className='panel-user-img'>
-                <span className='credit-user'>
-                  <Icon src={iconType(type)} />
-                  <span className='panel-user-cnt'>
-                    <span className='full-name'>{type}</span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        {
+          type === 'Youtube' &&
+          <YoutubePlayer {...this.props} />
         }
         {
         type !== 'Youtube' &&
         <div className='thumbnail'>
           <div className='thumbnail-image'>
-            <Anchor className='thumbnail-overlay' onClick={() => openUrl(url, name)}>
+            <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
               <Image src={image} alt={name} />
             </Anchor>
           </div>
           <div className='caption'>
             <Title className='caption-title'>
-              <Anchor onClick={() => openUrl(url, name)}>
+              <Anchor onClick={() => previewUrl(url, name)}>
                 {name && <span>{name}</span>}
               </Anchor>
             </Title>
@@ -185,4 +125,4 @@ BlockElement.propTypes = {
   url: PropTypes.string
 }
 
-export default enhance(BlockElement)
+export default BlockElement

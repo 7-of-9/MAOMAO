@@ -58,7 +58,7 @@ class AppHeader extends React.Component {
                 this.props.notify(`Welcome, ${user.displayName}!`)
               }
               this.props.ui.toggleSignIn(false)
-              return fetch('/api/login', {
+              return fetch('/api/auth/login', {
                 method: 'POST',
                 // eslint-disable-next-line no-undef
                 headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -173,7 +173,7 @@ class AppHeader extends React.Component {
   onLogout () {
     logger.warn('onLogout', this.props)
     firebase.auth().signOut().then(() => {
-      fetch('/api/logout', {
+      fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'same-origin'
       }).then(() => {
