@@ -7,9 +7,7 @@
     "page": "bg.html"
   },
   "icons": {
-    "16": "img/s_ps_sirius_dog_blue.png",
-    "48": "img/m_ps_sirius_dog_blue.png",
-    "128": "img/ps_sirius_dog_blue.png"
+    "128": "img/logo/maodog_blue128x128.png"
   },
   "web_accessible_resources": [
     "img/*.*",

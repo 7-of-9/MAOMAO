@@ -57,7 +57,7 @@ function animationIcon(tabId, round) {
   log.info('animationIcon on tabId', tabId);
   var sizes = [
     'img/dog_flash.png',
-    'img/ps_sirius_dog_blue.png',
+    'img/logo/maodog_blue128x128.png',
     'img/dog_flash2.png',
   ];
   isFlashingDog = true;
@@ -104,7 +104,7 @@ function setIconApp(rawUrl, image, msg, color) {
   log.info('currentTab', rawUrl, tabmap, currentTab);
 
   chrome.browserAction.setIcon({
-    path: 'img/ps_sirius_dog_' + image + '.png',
+    path: 'img/logo/maodog_' + image + '128x128.png',
     tabId: currentTab && currentTab.id,
   });
 

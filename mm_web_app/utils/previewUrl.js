@@ -9,7 +9,10 @@ export default function previewUrl (url, name) {
     src: proxyUrl,
     type: 'iframe',
     opts: {
-      caption: name
+      caption: name,
+      iframe: {
+        tpl: '<iframe sandbox="allow-scripts" id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency="true" src=""></iframe>'
+      }
     }
   })
 }

@@ -72,6 +72,6 @@ app.prepare().then(() => {
       log.error(err)
       throw err
     }
-    log.warn('> Ready on http://localhost:3000')
+    log.warn(`> Ready on http://localhost:${port}`)
   })
 })
