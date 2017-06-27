@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
+import previewUrl from '../../utils/previewUrl'
 
 const Title = styled.h3`
   font-size: 14px;
@@ -18,6 +19,14 @@ const Title = styled.h3`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`
+
+const Anchor = styled.a`
+  color: #41addd;
+  text-decoration: none;
+   &:hover {
+     color: #6cc0e5;
+   }
 `
 
 const Description = styled.p`
@@ -72,7 +81,9 @@ class YoutubePlayer extends PureComponent {
         </div>
         <div className='caption'>
           <Title className='caption-title'>
-            {name && <span>{name}</span>}
+            <Anchor onClick={() => previewUrl(url, name)}>
+              {name && <span>{name}</span>}
+            </Anchor>
           </Title>
           {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
           <div className='panel-user panel-credit'>

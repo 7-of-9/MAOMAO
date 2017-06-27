@@ -70,6 +70,8 @@ function iconType (type) {
       return '/static/images/youtube.png'
     case 'Reddit':
       return '/static/images/reddit.png'
+    case 'Vimeo':
+      return '/static/images/vimeo.png'
     default:
       return '/static/images/google.png'
   }
