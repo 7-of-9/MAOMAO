@@ -13,6 +13,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
+import InlinePlayer from './InlinePlayer'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
@@ -185,23 +186,45 @@ class Streams extends React.PureComponent {
         items.push(<div key={url_id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
-            <div className='thumbnail'>
-              <div className='thumbnail-image'>
-                <a className='thumbnail-overlay' onClick={() => previewUrl(href, title)}>
-                  <img src={img || '/static/images/no-image.png'} alt={title} />
-                </a>
-                {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-              </div>
-              <div className='caption'>
-                <h4 className='caption-title'>
-                  <a onClick={() => previewUrl(href, title)}>
-                    {title} ({url_id})
+            {
+              href.indexOf('youtube.com') === -1 &&
+              <div className='thumbnail'>
+                <div className='thumbnail-image'>
+                  <a className='thumbnail-overlay' onClick={() => previewUrl(href, title)}>
+                    <img src={img || '/static/images/no-image.png'} alt={title} />
                   </a>
-                </h4>
-                <h5 className='caption-title'>{parseDomain(href)}</h5>
-                {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                  {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
+                </div>
+                <div className='caption'>
+                  <h4 className='caption-title'>
+                    <a onClick={() => previewUrl(href, title)}>
+                      {title} ({url_id})
+                  </a>
+                  </h4>
+                  <h5 className='caption-title'>{parseDomain(href)}</h5>
+                  {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                </div>
               </div>
-            </div>
+            }
+            {
+              href.indexOf('youtube.com') !== -1 &&
+              <InlinePlayer
+                href={href}
+                title={title}
+                url_id={url_id}
+                topics={topics}
+                users={users}
+                owners={owners}
+                myUrlIds={myUrlIds}
+                urlTopic={urlTopic}
+                urlOwner={urlOwner}
+                parseDomain={parseDomain}
+                previewUrl={previewUrl}
+                selectTopic={this.props.ui.selectTopic}
+                selectUser={this.props.ui.selectUser}
+                openShareTopic={this.props.ui.openShareTopic}
+              />
+            }
           </div>
         </div>)
       })
