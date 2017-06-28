@@ -5,6 +5,8 @@ import logger from '../utils/logger'
 let store = null
 
 export class UIStore {
+  @observable showSignInModal = false
+  @observable showExtensionModal = false
   @observable onlyMe = false
   @observable sortBy = 'rating'
   @observable sortDirection = 'desc'
@@ -14,15 +16,19 @@ export class UIStore {
   @observable discoverySuggestionTerms = []
   @observable rating = 1
   @observable currentViewer = 'streams'
-  @observable showExtensionModal = false
   @observable notifications = []
   @observable page = 1
   shareTopics = []
   shareUrlId = -1
+  userId = -1
 
   @action toggleOnlyMe (userId, users) {
+    logger.warn('toggleOnlyMe', userId, users)
     this.onlyMe = !this.onlyMe
-    logger.warn('toggleOnlyMe', this.onlyMe, userId, users)
+    if (this.onlyMe) {
+      this.userId = userId
+    }
+
     if (this.onlyMe) {
       const user = users.find(item => item.user_id === userId)
       if (user) {
@@ -45,10 +51,15 @@ export class UIStore {
     }
   }
 
-  @action openShareTopic (urlId, topic) {
-    logger.warn('share topic', urlId, topic)
+  @action openShareTopic (urlId, selectedTopic, otherTopics) {
+    logger.warn('share topic', urlId, selectedTopic, otherTopics)
     this.shareUrlId = urlId
-    this.shareTopics = [ { id: `${topic.id}-tld-${topic.name}`, topic_id: topic.id, name: topic.name } ]
+    this.shareTopics = [ { id: `${selectedTopic.id}-tld-${selectedTopic.name}`, topic_id: selectedTopic.id, name: selectedTopic.name } ]
+    otherTopics.forEach((topic) => {
+      if (topic.id !== selectedTopic.id) {
+        this.shareTopics.push({ id: `${topic.id}-beta-${topic.name}`, topic_id: topic.id, name: topic.name })
+      }
+    })
     this.currentViewer = 'sharetopic'
   }
 
@@ -66,6 +77,10 @@ export class UIStore {
     this.sortBy = type
     this.sortDirection = direction
     this.page = 1
+  }
+
+  @action toggleSignIn (isShow) {
+    this.showSignInModal = isShow
   }
 
   @action openExtensionModal () {
@@ -117,6 +132,9 @@ export class UIStore {
   @action removeUser (user) {
     logger.info('removeUser', user, this)
     this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id)
+    if (this.filterByUser.length <= 1) {
+      this.onlyMe = !!this.filterByUser.find(item => item.user_id === this.userId)
+    }
     this.page = 1
   }
 
@@ -124,6 +142,9 @@ export class UIStore {
     logger.info('selectUser', user, this)
     if (!this.filterByUser.find(item => item.user_id === user.user_id)) {
       this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
+    }
+    if (this.filterByUser.length > 1) {
+      this.onlyMe = false
     }
     this.page = 1
   }

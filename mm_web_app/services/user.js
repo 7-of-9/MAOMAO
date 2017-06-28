@@ -2,6 +2,17 @@ import axios from 'axios'
 import { fromPromise } from 'mobx-utils'
 import { MAOMAO_API_URL } from '../containers/App/constants'
 
+export function testInternalUser () {
+  const apiUrl = `${MAOMAO_API_URL}user/test`
+  return fromPromise(axios({
+    method: 'post',
+    url: apiUrl,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }))
+}
+
 export function loginWithGoogle (info) {
   const names = info.name.split(' ')
   const firstName = names[0]

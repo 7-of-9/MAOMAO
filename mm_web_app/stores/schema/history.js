@@ -26,5 +26,8 @@ const history = new schema.Entity('histories', {
 }, { idAttribute: 'mine' })
 
 export function normalizedHistoryData (data) {
-  return normalize(data, history)
+  if (data) {
+    return normalize(data, history)
+  }
+  return { entities: {}, result: {} }
 }

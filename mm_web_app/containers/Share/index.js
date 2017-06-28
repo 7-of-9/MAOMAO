@@ -143,6 +143,7 @@ class Share extends React.Component {
   sendInvitations (name, email, topic, url) {
     const { name: fullName, email: fromEmail } = this.props.store.user
     logger.warn('sendInvitations', fullName, fromEmail, name, email, topic, url)
+    this.props.ui.addNotification('Sending invitations...')
      /* global fetch */
     fetch('/api/email', {
       method: 'POST',

@@ -26,6 +26,8 @@ const propTypes = {
   dispatch: PropTypes.func,
   getLink: PropTypes.func,
   onFacebookLogin: PropTypes.func,
+  onGoogleLogin: PropTypes.func,
+  onInternalLogin: PropTypes.func,
   changeShareOption: PropTypes.func,
 };
 
@@ -52,6 +54,8 @@ const defaultProps = {
   dispatch: () => { },
   getLink: () => { },
   onFacebookLogin: () => { },
+  onGoogleLogin: () => { },
+  onInternalLogin: () => { },
   changeShareOption: () => { },
 };
 
@@ -138,7 +142,7 @@ const userMenu = auth =>
 
 const render = (
   status, auth, nlp, url, icon, dispatch, shareOption,
-  changeShareOption, getLink, onFacebookLogin,
+  changeShareOption, getLink, onFacebookLogin, onGoogleLogin, onInternalLogin,
 ) => {
   if (url && status && isInternalTab(url)) {
     return (
@@ -308,6 +312,20 @@ const render = (
           <span><i className="icons-facebook" /></span>
           SIGN IN WITH FACEBOOK
         </button>
+        <button
+          className="btn btn-block btn-social btn-google-plus"
+          onClick={onGoogleLogin}
+        >
+          <span><i className="icons-googleplus" /></span>
+          SIGN IN WITH FACEBOOK
+        </button>
+        <button
+          className="btn btn-block btn-social btn-internal-lab"
+          onClick={onInternalLogin}
+        >
+          <span><i className="icons-internal-lab" /></span>
+          Test Internal: New User
+        </button>
       </div>
     </div>
   );
@@ -316,11 +334,12 @@ const render = (
 const App = ({
   status, auth, nlp, url, icon,
   dispatch, shareOption, changeShareOption,
-  getLink, onFacebookLogin,
+  getLink, onFacebookLogin, onGoogleLogin, onInternalLogin,
  }) =>
   render(
     status, auth, nlp, removeHashFromUrl(url), icon,
-    dispatch, shareOption, changeShareOption, getLink, onFacebookLogin,
+    dispatch, shareOption, changeShareOption, getLink,
+    onFacebookLogin, onGoogleLogin, onInternalLogin,
   );
 
 App.propTypes = propTypes;
@@ -347,12 +366,44 @@ const enhance = compose(
   withState('status', 'isReady', false),
   withState('shareOption', 'updateShareOption', ''),
   withHandlers({
+    onInternalLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Internal Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('INTERNAL'));
+    },
     onFacebookLogin: props => () => {
       props.dispatch(notify({
         title: 'Facebook Login',
         message: 'Please wait in a minute!',
       }));
       props.dispatch(checkAuth('FACEBOOK'))
+        .then((result) => {
+          logger.warn('result', result);
+          if (result) {
+            const { error } = result;
+            if (error) {
+              props.dispatch(notify({
+                title: 'Oops!',
+                message: error.message,
+              }));
+            }
+          }
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onGoogleLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Google Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('GOOGLE'))
         .then((result) => {
           logger.warn('result', result);
           if (result) {

@@ -10,3 +10,4 @@ mmdb # maomao local db
 npm-debug.log
 .idea
 .vscode
+static/offline

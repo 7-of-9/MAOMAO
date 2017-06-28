@@ -37,6 +37,7 @@ const propTypes = {
   isOpen: PropTypes.bool.isRequired,
   isShareOnUrl: PropTypes.object,
   onFacebookLogin: PropTypes.func,
+  onGoogleLogin: PropTypes.func,
   onLogout: PropTypes.func,
   changeShareType: PropTypes.func,
   accessGoogleContacts: PropTypes.func,
@@ -85,6 +86,7 @@ const defaultProps = {
   },
   isOpen: false,
   onFacebookLogin: () => { },
+  onGoogleLogin: () => { },
   onLogout: () => { },
   changeShareType: () => { },
   accessGoogleContacts: () => { },
@@ -345,7 +347,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
 const MIN_IM_SCORE = 1; // for showing the tld xp popup
 
 function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
-  onFacebookLogin, onLogout,
+  onFacebookLogin, onGoogleLogin, onLogout,
   changeShareType, accessGoogleContacts, openShare, closeShare,
   closeXp, sendEmail, onClose, notifyMsg, tld, xpTopics, closeTLD,
   }) {
@@ -377,6 +379,7 @@ function App({ auth, isOpen, isShareOnUrl, terms, topics, code, score, icon,
           <WelcomeModal
             auth={auth}
             onFacebookLogin={onFacebookLogin}
+            onGoogleLogin={onGoogleLogin}
             onClose={onClose}
             onLogout={onLogout}
             isOpen={isOpen}
@@ -487,6 +490,31 @@ const enhance = compose(
         message: 'Please wait in a minute!',
       }));
       props.dispatch(checkAuth('FACEBOOK'))
+        .then((result) => {
+          logger.warn('result', result);
+          if (result) {
+            const { error } = result;
+            if (error) {
+              props.dispatch(notify({
+                title: 'Oops!',
+                message: error.message,
+              }));
+            }
+          }
+        })
+        .catch((err) => {
+          props.dispatch(notify({
+            title: 'Oops!',
+            message: err.message,
+          }));
+        });
+    },
+    onGoogleLogin: props => () => {
+      props.dispatch(notify({
+        title: 'Facebook Login',
+        message: 'Please wait in a minute!',
+      }));
+      props.dispatch(checkAuth('GOOGLE'))
         .then((result) => {
           logger.warn('result', result);
           if (result) {

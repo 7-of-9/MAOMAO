@@ -29,15 +29,16 @@ module.exports = {
             }
           }
         ]
-      },
-      {
-        test: require.resolve('react-addons-perf'),
-        use: [{
-          loader: 'expose-loader',
-          options: 'Perf'
-        }]
       }
     )
+
+    // config.plugins = config.plugins.filter((plugin) => {
+    //   if (plugin.constructor.name === 'UglifyJsPlugin') {
+    //     return false
+    //   } else {
+    //     return true
+    //   }
+    // })
 
     return config
   }

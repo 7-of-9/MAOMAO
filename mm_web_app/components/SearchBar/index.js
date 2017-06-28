@@ -10,8 +10,7 @@ import { compose, withState, withHandlers } from 'recompose'
 import DebounceInput from 'react-debounce-input'
 import Form from './Form'
 import logger from '../../utils/logger'
-
-const MAX_COLORS = 12
+import { tagColor } from '../../utils/helper'
 
 const enhance = compose(
   withState('value', 'changeValue', ''),
@@ -61,7 +60,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
                   <ul className='search-box-list'>
                     {
                       terms.map((item, index) => (
-                        <li className={`tags-color-${(index % MAX_COLORS) + 1}`} key={`topic-${item}`}>
+                        <li className={tagColor(item)} key={`topic-${item}`}>
                           <span className='text-topic'>{item}</span>
                           <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
                             <i className='fa fa-remove' aria-hidden='true' />
@@ -83,8 +82,8 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
             {
               suggestions && suggestions.length > 0 &&
               <div className='suggestion-topic'>
-                {suggestions.map((item, index) => terms.indexOf(item) === -1 && (
-                  <div key={`suggest-${item}`} className={`suggestion-topic-item tags-color-${(index + terms.length) % MAX_COLORS + 1}`}>
+                {suggestions.map((item) => terms.indexOf(item) === -1 && (
+                  <div key={`suggest-${item}`} className={`suggestion-topic-item ${tagColor(item)}`}>
                     <span className='text-topic'>{item}</span>
                     <a className='btn-box-remove' onClick={() => handleAdd(item)} ><i className='fa fa-plus' /></a>
                   </div>

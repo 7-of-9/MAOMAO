@@ -86,6 +86,7 @@ const customStyles = {
 
 const propTypes = {
   onFacebookLogin: PropTypes.func.isRequired,
+  onGoogleLogin: PropTypes.func.isRequired,
   isLogin: PropTypes.bool.isRequired,
   info: PropTypes.object.isRequired,
   onLogout: PropTypes.func.isRequired,
@@ -101,7 +102,7 @@ const defaultProps = {
 
 function WelcomeModal({
   isLogin, info, isOpen,
-  onFacebookLogin,
+  onFacebookLogin, onGoogleLogin,
   onClose, onLogout }) {
   logger.info('WelcomeModal isLogin, info, isOpen', isLogin, info, isOpen);
   let component = null;
@@ -120,6 +121,9 @@ function WelcomeModal({
             <h2 style={customStyles.cardTitle}>Join maomao now!</h2>
             <a tabIndex="0" role="button" className="btn btn-block btn-social btn-facebook" onClick={onFacebookLogin}>
               <span><i className="icons-facebook" /></span> Sign in with Facebook
+            </a>
+            <a className="btn btn-block btn-social btn-google-plus" onTouchTap={onGoogleLogin}>
+              <span><i className="icons-googleplus" /></span> Sign in with Google
             </a>
           </ToggleDisplay>
           <ToggleDisplay show={isLogin} className="position-normal">

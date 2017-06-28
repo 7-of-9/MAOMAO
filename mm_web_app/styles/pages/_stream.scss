@@ -1513,9 +1513,20 @@ a.btn-box-remove {
     }
   }
   .widget-user {
-    padding-top: 3px;
-    @media (max-width: 767px) {
-      padding-top: 0;
+    .fa-users,
+    .fa-signal {
+      margin-top: 3px;
+      @media (max-width: 767px) {
+        margin-top: 0;
+      }
+    }
+  }
+  .widget-calendar {
+    .fa-calendar {
+      margin-top: 3px;
+      @media (max-width: 767px) {
+        margin-top: 0;
+      }
     }
   }
   .widget-topic,
@@ -1647,37 +1658,44 @@ a.btn-box-remove {
     .order-calendar,
     .order-rating {
       position: relative;
-      margin-left: 7px;
+      margin-left: 9px;
       display: inline-block;
       vertical-align: middle;
-      width: 16px;
+      width: 19px;
       height: 32px;
-      .order-asc {
+      /* .order-asc {
         @include abs-pos ($top: -2px, $right: auto, $bottom: auto, $left: 0);
-        .fa {
-          vertical-align: bottom;
-        }
       }
       .order-desc {
         @include abs-pos ($top: auto, $right: auto, $bottom: 4px, $left: 0);
-        .fa {
-          vertical-align: top;
-        }
-      }
+      } */
       .order-asc,
       .order-desc {
-        display: inline-block;
-        height: 15px;
-        width: 15px;
+        display: block;
+        height: 17px;
+        line-height: 16px;
+        width: 19px;
         color: #404040;
-        .fa {
-          font-size: 1.5rem;
-          line-height: 1rem;
+        .ar-sort-asc,
+        .ar-sort-desc {
+          height: 9px;
+          vertical-align: middle;
+          display: inline-block;
+        }
+        &:hover .ar-sort-asc,
+        &:focus .ar-sort-asc,
+        &.active .ar-sort-asc,
+        {
+          border-bottom-color: #2db7f5;
+        }
+        &:hover .ar-sort-desc,
+        &:focus .ar-sort-desc,
+        &.active .ar-sort-desc {
+          border-top-color: #2db7f5;
         }
         &:hover,
-        &:focus,
-        &.active {
-          color: #2db7f5;
+        &:focus {
+          @include transition(all 0.5s);
         }
       }
     }
@@ -1843,6 +1861,19 @@ a.btn-box-remove {
     }
   }
 }
+
+.sticky {
+  .switch-responsive,
+  #toolbar-search,
+  #toolbar-sort {
+    @media (max-width: 767px) {
+      @include opacity(0);
+      display: none;
+      transition: visibility 0s, opacity 0.5s linear;
+    }
+  }
+}
+
 .switch-responsive {
   @include opacity(0);
   @include clearfix();
@@ -2174,6 +2205,22 @@ a.btn-box-remove {
       }
     }
   }
+}
+
+.ar-sort-asc {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #404040;
+}
+
+.ar-sort-desc {
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 9px solid #404040;
 }
 
 

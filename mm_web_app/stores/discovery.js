@@ -1,9 +1,12 @@
 import { action, when, computed, observable } from 'mobx'
+import _ from 'lodash'
 import { CoreStore } from './core'
 import { googleKnowlegeSearchByTerm, youtubeSearchByKeyword } from '../services/google'
 import { googleNewsSearchByTerm, googleSearchByTerm } from '../services/crawler'
 import { redditListing } from '../services/reddit'
-import _ from 'lodash'
+import { twitterSearch } from '../services/twitter'
+import { vimeoVideo } from '../services/vimeo'
+import logger from '../utils/logger'
 
 let store = null
 
@@ -15,6 +18,7 @@ class DiscoveryStore extends CoreStore {
   googleResult = []
   googleNewsResult = []
   googleKnowledgeResult = []
+  vimeoResult = []
   @observable pendings = []
   @observable terms = []
 
@@ -38,6 +42,7 @@ class DiscoveryStore extends CoreStore {
     this.googleNewsResult = []
     this.googleKnowledgeResult = []
     this.youtubeResult = []
+    this.vimeoResult = []
   }
 
   @action loadMore () {
@@ -46,6 +51,7 @@ class DiscoveryStore extends CoreStore {
   }
 
   @action search () {
+    logger.warn('searh terms', this.terms)
     _.forEach(this.terms, (term) => {
       const googleSearch = googleSearchByTerm(term, this.page)
       this.pendings.push('google')
@@ -57,6 +63,10 @@ class DiscoveryStore extends CoreStore {
       this.pendings.push('youtube')
       const reddit = redditListing(term, this.page)
       this.pendings.push('reddit')
+      const vimeo = vimeoVideo(term, this.page)
+      this.pendings.push('vimeo')
+      const twitter = twitterSearch(term, this.page)
+      this.pendings.push('twitter')
 
       when(
         () => googleSearch.state !== 'pending',
@@ -110,6 +120,24 @@ class DiscoveryStore extends CoreStore {
             this.redditResult.push(...(reddit.value || []))
             this.pendings.splice(0, 1)
           }
+        }
+      )
+
+      when(
+        () => vimeo.state !== 'pending',
+        () => {
+          if (vimeo.value && vimeo.value.data) {
+            this.vimeoResult.push(...(vimeo.value.data.data || []))
+            this.pendings.splice(0, 1)
+          }
+        }
+      )
+
+      when(
+        () => twitter.state !== 'pending',
+        () => {
+          logger.warn('twitter', twitter.value)
+          this.pendings.splice(0, 1)
         }
       )
     })

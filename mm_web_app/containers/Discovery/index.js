@@ -35,11 +35,13 @@ function mashUp (store) {
   const news = []
   const videos = []
   const reddits = []
-  const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult } = store
+  const vimeos = []
+  const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult, vimeoResult } = store
   if (googleKnowledgeResult && googleKnowledgeResult.length) {
     _.forEach(googleKnowledgeResult, (item) => {
       const moreDetailUrl = (item.result && item.result.detailedDescription && item.result.detailedDescription.url) || (item.result && item.result.url)
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
+        logger.warn('google knowledge item', item)
         urls.push(moreDetailUrl)
         graphKnowledges.push(
           <div className='grid-item' key={`GK-${moreDetailUrl}`}>
@@ -57,6 +59,7 @@ function mashUp (store) {
   if (googleNewsResult && googleNewsResult.length) {
     _.forEach(googleNewsResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
+        logger.warn('google news item', item)
         urls.push(item.url)
         news.push(
           <div className='grid-item' key={`GN-${item.url}`}>
@@ -74,6 +77,7 @@ function mashUp (store) {
   if (googleResult && googleResult.length) {
     _.forEach(googleResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
+        logger.warn('google search item', item)
         urls.push(item.url)
         search.push(
           <div className='grid-item' key={`GS-${item.url}`}>
@@ -92,6 +96,7 @@ function mashUp (store) {
     _.forEach(youtubeResult, (item) => {
       const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`
       if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
+        logger.warn('youtube item', item)
         urls.push(youtubeUrl)
         videos.push(
           <div className='grid-item' key={`YT-${youtubeUrl}`}>
@@ -99,7 +104,7 @@ function mashUp (store) {
               name={item.snippet.title}
               description={item.snippet.description}
               image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-              url={item.id.videoId}
+              url={youtubeUrl}
               type={'Youtube'}
             />
           </div>)
@@ -109,10 +114,11 @@ function mashUp (store) {
   if (redditResult && redditResult.length) {
     _.forEach(redditResult, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
+        logger.warn('reddit item', item)
         urls.push(item.url)
         const img = item.preview.images[0].resolutions.length ? item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url : '/static/images/no-image.png'
         reddits.push(
-          <div className='grid-item' key={`RD-${item.url}`}>
+          <div className='grid-item' key={`RD-${item.url}-${item.id}`}>
             <BlockElement
               name={item.title}
               description={item.selftext || item.title}
@@ -124,8 +130,26 @@ function mashUp (store) {
       }
     })
   }
+
+  if (vimeoResult && vimeoResult.length) {
+    _.forEach(vimeoResult, (item) => {
+      logger.warn('vimeo item', item)
+      urls.push(item.link)
+      const img = item.pictures && item.pictures.sizes.length ? item.pictures.sizes[item.pictures.sizes.length - 1].link : '/static/images/no-image.png'
+      vimeos.push(
+        <div className='grid-item' key={`VM-${item.link}`}>
+          <BlockElement
+            name={item.name}
+            description={item.description}
+            image={img}
+            url={item.link}
+            type={'Vimeo'}
+            />
+        </div>)
+    })
+  }
   // Mashup records
-  const result = [graphKnowledges, news, search, reddits, videos]
+  const result = [graphKnowledges, news, search, reddits, vimeos, videos]
   const elements = []
   const numberItems = _.map(result, (item) => item.length)
   const maxItems = _.max(numberItems)

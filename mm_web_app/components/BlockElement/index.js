@@ -4,11 +4,12 @@
 *
 */
 
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
+import YoutubePlayer from '../YoutubePlayer'
+import previewUrl from '../../utils/previewUrl'
 
 const Wrapper = styled.section`
   padding: 10px;
@@ -69,57 +70,33 @@ function iconType (type) {
       return '/static/images/youtube.png'
     case 'Reddit':
       return '/static/images/reddit.png'
+    case 'Vimeo':
+      return '/static/images/vimeo.png'
     default:
       return '/static/images/google.png'
   }
 }
 
-function BlockElement ({url, image, name, description, type}) {
-  const opts = {
-    height: '220',
-    width: '100%',
-    playerVars: {
-      autoplay: 0
-    }
-  }
-  return (
-    <Wrapper className='thumbnail-box'>
-      {type === 'Youtube' &&
-        <div className='thumbnail'>
-          <div className='thumbnail-image'>
-            <YouTube
-              videoId={url}
-              opts={opts}
-              />
-          </div>
-          <div className='caption'>
-            <Title className='caption-title'>
-              {name && <span>{name}</span>}
-            </Title>
-            {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-            <div className='panel-user panel-credit'>
-              <div className='panel-user-img'>
-                <span className='credit-user'>
-                  <Icon src={iconType(type)} />
-                  <span className='panel-user-cnt'>
-                    <span className='full-name'>{type}</span>
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+class BlockElement extends PureComponent {
+  render () {
+    const { url, image, name, description, type } = this.props
+    return (
+      <Wrapper className='thumbnail-box'>
+        {
+          type === 'Youtube' &&
+          <YoutubePlayer {...this.props} />
         }
-      {type !== 'Youtube' &&
+        {
+        type !== 'Youtube' &&
         <div className='thumbnail'>
           <div className='thumbnail-image'>
-            <Anchor className='thumbnail-overlay' href={url} target='_blank'>
+            <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
               <Image src={image} alt={name} />
             </Anchor>
           </div>
           <div className='caption'>
             <Title className='caption-title'>
-              <Anchor href={url} target='_blank'>
+              <Anchor onClick={() => previewUrl(url, name)}>
                 {name && <span>{name}</span>}
               </Anchor>
             </Title>
@@ -136,9 +113,10 @@ function BlockElement ({url, image, name, description, type}) {
             </div>
           </div>
         </div>
-        }
-    </Wrapper>
-  )
+      }
+      </Wrapper>
+    )
+  }
 }
 
 BlockElement.propTypes = {

@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
+import Modal from 'react-modal'
 import { Navbar, NavItem } from 'neal-react'
 import Header from '../../components/Header'
 import LogoIcon from '../../components/LogoIcon'
@@ -34,7 +35,10 @@ class AppHeader extends React.Component {
   constructor (props) {
     super(props)
     this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.onGoogleLogin = this.onGoogleLogin.bind(this)
+    this.onInternalLogin = this.onInternalLogin.bind(this)
     this.onLogout = this.onLogout.bind(this)
+    this.onClose = this.onClose.bind(this)
   }
 
   /* global fetch */
@@ -43,13 +47,18 @@ class AppHeader extends React.Component {
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
+        logger.warn('firebase - onAuthStateChanged', user)
         if (user) {
           logger.warn('firebase - user', user)
+          const { photoURL } = user
           return user.getIdToken()
           .then((token) => {
             if (this.props.store.userId < 0) {
-              this.props.notify(`Welcome, ${user.displayName}!`)
-              return fetch('/api/login', {
+              if (!user.isAnonymous) {
+                this.props.notify(`Welcome, ${user.displayName}!`)
+              }
+              this.props.ui.toggleSignIn(false)
+              return fetch('/api/auth/login', {
                 method: 'POST',
                 // eslint-disable-next-line no-undef
                 headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -59,41 +68,56 @@ class AppHeader extends React.Component {
               // register for new user
                 res.json().then(json => {
                   // register new user
-                  logger.warn('user', json)
-                  const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                  logger.warn('logged-in user', json)
+                  if (!user.isAnonymous) {
+                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
                   /* eslint-disable camelcase */
-                  logger.warn('sign_in_provider', sign_in_provider)
-                  logger.warn('identities', identities)
-                  let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
-                  let google_user_id = identities['google.com'] && identities['google.com'][0]
-                  if (sign_in_provider === 'google.com') {
-                    if (!email) {
-                      user.providerData.forEach(item => {
-                        if (item.providerId === sign_in_provider) {
-                          this.props.store.googleConnect({
-                            email: item.email, name, picture, google_user_id
-                          })
-                        }
-                      })
-                    } else {
-                      this.props.store.googleConnect({
-                        email, name, picture, google_user_id
-                      })
+                    logger.warn('sign_in_provider', sign_in_provider)
+                    logger.warn('identities', identities)
+                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                    let google_user_id = identities['google.com'] && identities['google.com'][0]
+                    let user_email = identities['email'] && identities['email'][0]
+                    if (sign_in_provider === 'google.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.googleConnect({
+                              email: item.email, name, picture, google_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.googleConnect({
+                          email, name, picture, google_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'facebook.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.facebookConnect({
+                              email: item.email, name, picture, fb_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.facebookConnect({
+                          email, name, picture, fb_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'password') {
+                      logger.warn('found user email', user_email)
+                      logger.warn('photoURL', photoURL)
+                      // hack here, try to store intenal user
+                      try {
+                        const loggedUser = JSON.parse(photoURL)
+                        this.props.store.retrylLoginForInternalUser(loggedUser)
+                      } catch (error) {
+                        logger.warn(error)
+                      }
                     }
-                  } else if (sign_in_provider === 'facebook.com') {
-                    if (!email) {
-                      user.providerData.forEach(item => {
-                        if (item.providerId === sign_in_provider) {
-                          this.props.store.facebookConnect({
-                            email: item.email, name, picture, fb_user_id
-                          })
-                        }
-                      })
-                    } else {
-                      this.props.store.facebookConnect({
-                        email, name, picture, fb_user_id
-                      })
-                    }
+                  } else {
+                    this.props.store.isLogin = true
                   }
                 })
               })
@@ -110,6 +134,26 @@ class AppHeader extends React.Component {
     logger.warn('AppHeader componentWillReact')
   }
 
+  onInternalLogin () {
+    logger.warn('onInternalLogin', this.props)
+    this.props.notify('Test Internal: New User')
+    this.props.ui.toggleSignIn(false)
+    this.props.store.internalLogin((user) => {
+      logger.warn('test user', user)
+      const { email, name: displayName } = user
+      firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
+        newUser.updateProfile({
+          displayName,
+          photoURL: JSON.stringify(user)
+        }).catch((error) => {
+          this.props.notify(error.message)
+        })
+      }).catch((error) => {
+        this.props.notify(error.message)
+      })
+    })
+  }
+
   onFacebookLogin () {
     logger.warn('onFacebookLogin', this.props)
     const provider = new firebase.auth.FacebookAuthProvider()
@@ -117,10 +161,19 @@ class AppHeader extends React.Component {
     firebase.auth().signInWithPopup(provider)
   }
 
+  onGoogleLogin () {
+    logger.warn('onGoogleLogin', this.props)
+    const provider = new firebase.auth.GoogleAuthProvider()
+    provider.addScope('https://www.googleapis.com/auth/plus.me')
+    provider.addScope('https://www.googleapis.com/auth/userinfo.email')
+    provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
+    firebase.auth().signInWithPopup(provider)
+  }
+
   onLogout () {
     logger.warn('onLogout', this.props)
     firebase.auth().signOut().then(() => {
-      fetch('/api/logout', {
+      fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'same-origin'
       }).then(() => {
@@ -132,8 +185,14 @@ class AppHeader extends React.Component {
     })
   }
 
+  onClose () {
+    logger.warn('onClose', this.props)
+    this.props.ui.toggleSignIn(false)
+  }
+
   render () {
     const { isLogin, userId, user } = this.props.store
+    const { showSignInModal } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
@@ -179,21 +238,39 @@ class AppHeader extends React.Component {
               <ul className='dropdown-menu pull-right'>
                 {user && user.name &&
                   <div className='account-dropdown__identity account-dropdown__segment'>
-                    Signed in as <strong>{user.name}</strong>
+                    Signed in as <strong>{user.name} ({user.email})</strong>
                   </div>
                 }
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
               </ul>
             </div>
           }
-          {
-            !isLogin &&
-            <div className='block-button'>
-              <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                <i className='fa fa-facebook' /> Sign in with Facebook
-              </a>
+          {!isLogin && <button className='btn btn-login' onClick={() => this.props.ui.toggleSignIn(true)}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
+          <Modal
+            isOpen={showSignInModal}
+            onRequestClose={this.onClose}
+            portalClassName='SignInModal'
+            contentLabel='Sign In Modal'
+          >
+            <h2 ref='subtitle'>Sign In</h2>
+            <div className='social-action' >
+              <div className='block-button'>
+                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                  <i className='fa fa-facebook' /> Sign in with Facebook
+               </a>
+              </div>
+              <div className='block-button'>
+                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+                  <i className='fa fa-google' /> Sign in with Google
+                </a>
+              </div>
+              <div className='block-button'>
+                <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
+                  <i className='fa icon-internal-lab' /> Test Internal: New User
+                </a>
+              </div>
             </div>
-          }
+          </Modal>
         </NavItem>
       </Navbar>
     )

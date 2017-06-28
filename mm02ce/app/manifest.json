@@ -1,15 +1,13 @@
 {
   "name": "maomao - share & discover",
   "short_name": "maomao",
-  "version": "0.6.4",
+  "version": "0.6.7",
   "description": "maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.",
   "background": {
     "page": "bg.html"
   },
   "icons": {
-    "16": "img/s_ps_sirius_dog_blue.png",
-    "48": "img/m_ps_sirius_dog_blue.png",
-    "128": "img/ps_sirius_dog_blue.png"
+    "128": "img/logo/maodog_blue128x128.png"
   },
   "web_accessible_resources": [
     "img/*.*",

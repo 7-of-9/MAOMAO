@@ -329,7 +329,7 @@ the home page
     }
   }
   .card-block {
-    padding: 10px 68px;
+    padding: 10px 20px;
     @media (max-width: 767px) {
       padding: 10px 15px;
     }
@@ -372,7 +372,11 @@ the home page
 
 
 /* Timeline */
-
+/*
+.timeline-pause {
+  background-color: grey;
+}
+*/
 .timeline-horizontal {
   @include clearfix();
   position: relative;
@@ -458,8 +462,6 @@ the home page
     &:nth-child(1) {
       width: 25%;
       text-align: left;
-      .timeline-badge {
-      }
       @media (max-width: 590px) {
         width: 28%;
       }
@@ -479,8 +481,6 @@ the home page
     &:nth-child(3) {
       width: 25%;
       text-align: right;
-      .timeline-badge {
-      }
       .timeline-panel {
         font-size: 0.8125rem;
         font-weight: bold;
@@ -598,4 +598,29 @@ the home page
     -webkit-transform: scale(0.7, 0.7);
     transform: scale(0.7, 0.7);
   }
+}
+
+/* add to home */
+.add-to-home {
+    background-color: #50A1CB;
+    color: white;
+    z-index: 999;
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 50%;
+}
+
+a.add-to-home {
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 12px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.6;
+    padding-left: 2px;
+    padding-top: 4px;
 }

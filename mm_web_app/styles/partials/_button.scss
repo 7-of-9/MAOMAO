@@ -4,6 +4,7 @@ These are the styles for
 the button section
 **************************************
 **************************************/
+$lab-icons: url('/static/images/icons-lab.png');
 
 //@include button-size($padding-vertical, $padding-horizontal, $font-size, $line-height, $border-radius);
 .btn:focus,
@@ -244,6 +245,7 @@ the button section
 }
 
 .btn-google,
+.btn-internal-lab,
 .btn-facebook {
   color: #fff !important;
   padding: 0.6875rem 0.75rem 0.625rem;
@@ -321,6 +323,48 @@ the button section
     background: #dd4b39;
     border-color: rgba(0, 0, 0, 0.2)
   }
+}
+
+.btn-internal-lab {
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff !important;
+  background: #0a6b53;
+  border-color: rgba(0, 0, 0, 0.2);
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    color: #fff !important;
+    background: #0abb53;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+  &:active,
+  .active {
+    background-image: none
+  }
+  &.disabled,
+  [disabled],
+  &.disabled:hover,
+  [disabled]:hover,
+  &.disabled:focus,
+  [disabled]:focus,
+  &.disabled:active,
+  [disabled]:active,
+  &.disabled.active,
+  [disabled].active,
+  {
+    background: #0a6b53;
+    border-color: rgba(0, 0, 0, 0.2)
+  }
+}
+
+.icon-internal-lab {
+  height: 33px;
+  background-color: #fff;
+  background: $lab-icons no-repeat center;
 }
 
 .btn-type-share {

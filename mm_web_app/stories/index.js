@@ -12,6 +12,7 @@ import Loading from '../components/Loading'
 import UnlockNow from '../components/UnlockNow'
 import SearchBar from '../components/SearchBar'
 import Footer from '../components/Footer'
+import AddToHome from '../components/AddToHome'
 
 storiesOf('Header', module)
   .add('with logo & slogan', () => (
@@ -21,6 +22,11 @@ storiesOf('Header', module)
 storiesOf('Footer', module)
   .add('default props', () => (
     <Footer />
+  ))
+
+storiesOf('AddToHome', module)
+  .add('default props', () => (
+    <AddToHome onClick={action('click')} />
   ))
 
 storiesOf('ShareTopic', module)
@@ -141,11 +147,11 @@ storiesOf('BlockElement', module)
   ))
   .add('Youtube inline player', () => (
     <BlockElement
-      image='https://i.ytimg.com/vi/8LVN7WVgx0c/mqdefault.jpg'
-      name='Top 5 - Technology That Has Changed The World'
+      image='https://i.ytimg.com/vi/IoGIEoUEw-A/mqdefault.jpg'
+      name='10 Things You Need To Know By 30'
       type='Youtube'
-      description='jaw dropping halloween deals(upto 90% off) = http://amzn.to/1jc8At9. Technology has changed the...'
-      url='https://www.youtube.com/watch?v=8LVN7WVgx0c'
+      description='10 Things You Need to Know By the Time You Turn 30 Years Old'
+      url='IoGIEoUEw-A'
       />
   ))
 

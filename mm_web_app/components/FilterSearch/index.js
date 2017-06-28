@@ -13,8 +13,7 @@ import _ from 'lodash'
 import Autosuggest from 'react-autosuggest'
 import DebounceInput from 'react-debounce-input'
 import logger from '../../utils/logger'
-
-const MAX_COLORS = 12
+import { tagColor } from '../../utils/helper'
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -124,6 +123,14 @@ const ratingCount = (urls, owners, rate) => {
   return counter
 }
 
+const urlsCount = (topic, filterByUser) => {
+  if (filterByUser.length) {
+    const urlIds = _.flatMap(toJS(filterByUser), 'value')
+    return _.intersection(urlIds, topic.urlIds).length
+  }
+  return topic.urlIds.length
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -181,9 +188,9 @@ class FilterSearch extends React.Component {
       value,
       onChange: this.onChange
     }
-    const { users, firstLevelTopics, topics, userId } = toJS(this.props.store)
+    const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
-    logger.warn('FilterSearch render', users, firstLevelTopics, userId)
+    logger.warn('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
 
     return (
       <nav className='navbar'>
@@ -206,7 +213,7 @@ class FilterSearch extends React.Component {
               </button>
             </div>
           </div>
-          <div id='toolbar-search' className='widget-form collapse-show collapse show' aria-expanded='true'>
+          <div id='toolbar-search' className='widget-form collapse' aria-expanded='true'>
             <div className='checkbox__styled'>
               <input onChange={() => this.props.ui.toggleOnlyMe(userId, users)} type='checkbox' className='checkbox__styled__input' id='checkbox-only-me' name='only-me' value={userId} checked={onlyMe} />
               <label className='checkbox__styled__label' htmlFor='checkbox-only-me'>Only me</label>
@@ -217,7 +224,7 @@ class FilterSearch extends React.Component {
                   <ul className='search-box-list'>
                     {
                       filterByTopic.map(item => (
-                        <li className={`tags-color-${(topics.map(item => item.name).indexOf(item.label) % MAX_COLORS) + 1}`} key={`filter-topic-${item.label}`}>
+                        <li className={tagColor(item.label)} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
                             <i className='fa fa-remove' aria-hidden='true' />
@@ -270,9 +277,9 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Streams</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {firstLevelTopics.map(topic => (
+                  {firstLevelTopics.filter(item => urlsCount(item, filterByUser)).map(topic => (
                     <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}>
-                      <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name}</span>
+                      <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name} ({urlsCount(topic, filterByUser)})</span>
                     </li>
                 ))}
                 </ul>
@@ -317,13 +324,13 @@ class FilterSearch extends React.Component {
                     className={sortBy === 'date' && sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
                     onClick={() => this.props.ui.changeSortOrder('date', 'asc')}
                   >
-                    <i className='fa fa-sort-up' aria-hidden='true' />
+                    <i className='ar-sort-asc' />
                   </a>
                   <a
                     className={sortBy === 'date' && sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                     onClick={() => this.props.ui.changeSortOrder('date', 'desc')}
                   >
-                    <i className='fa fa-sort-desc' aria-hidden='true' />
+                    <i className='ar-sort-desc' />
                   </a>
                 </span>
               </div>
@@ -338,13 +345,13 @@ class FilterSearch extends React.Component {
                   <a
                     className={sortBy === 'rating' && sortDirection === 'asc' ? 'order-asc active' : 'order-asc'}
                     onClick={() => this.props.ui.changeSortOrder('rating', 'asc')}
-                                ><i className='fa fa-sort-up' aria-hidden='true' />
+                                ><i className='ar-sort-asc' />
                   </a>
                   <a
                     className={sortBy === 'rating' && sortDirection === 'desc' ? 'order-desc active' : 'order-desc'}
                     onClick={() => this.props.ui.changeSortOrder('rating', 'desc')}
                                 >
-                    <i className='fa fa-sort-desc' aria-hidden='true' />
+                    <i className='ar-sort-desc' />
                   </a>
                 </span>
                 <ul className='dropdown-menu sort-case'>

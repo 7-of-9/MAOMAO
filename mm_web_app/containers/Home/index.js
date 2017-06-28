@@ -18,6 +18,7 @@ import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../AppHeader'
 import Loading from '../../components/Loading'
+import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
 // dynaymic load container component
@@ -81,6 +82,10 @@ class Home extends React.Component {
     this.inlineInstall = this.inlineInstall.bind(this)
     this.addNotification = this.addNotification.bind(this)
     this.removeNotification = this.removeNotification.bind(this)
+    this.addToHomeOnMobile = this.addToHomeOnMobile.bind(this)
+    this.state = {
+      hasAddToHome: false
+    }
   }
 
   onInstallSucess () {
@@ -101,12 +106,12 @@ class Home extends React.Component {
   }
 
   inlineInstall () {
-      /* eslint-disable */
-      chrome.webstore.install(
-      'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
-      this.onInstallSucess,
-      this.onInstallFail)
-      /* eslint-enable */
+    /* eslint-disable */
+    chrome.webstore.install(
+    'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
+    this.onInstallSucess,
+    this.onInstallFail)
+    /* eslint-enable */
   }
 
   removeNotification (uuid) {
@@ -114,8 +119,33 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-      // TODO: filter by invite user
     logger.warn('Home componentDidMount')
+    if (this.props.store.isMobile) {
+      if (window.navigator.standalone) {
+        this.setState({
+          hasAddToHome: true
+        })
+      } else {
+        /* eslint-disable no-undef */
+        this.addToHome = addToHomescreen({
+          autostart: false,
+          appID: 'org.maomao.webApp',
+          detectHomescreen: true,
+          startDelay: 0
+        })
+        logger.warn('addToHome', this.addToHome)
+      }
+    }
+  }
+
+  addToHomeOnMobile () {
+    logger.warn('Home addToHomeOnMobile')
+    if (this.props.store.isMobile) {
+      this.addToHome.show(true)
+      this.setState({
+        hasAddToHome: true
+      })
+    }
   }
 
   componentWillReact () {
@@ -128,9 +158,9 @@ class Home extends React.Component {
   }
 
   render () {
-    const title = 'maomao - discovery & share'
+    const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users } = this.props.store
+    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users, isMobile } = this.props.store
     const { notifications } = this.props.ui
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
@@ -142,12 +172,16 @@ class Home extends React.Component {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
+    const { hasAddToHome } = this.state
     logger.warn('Home urls, users', toJS(urls), toJS(users))
     return (
       <Page>
         <Head>
           <meta charSet='utf-8' />
           <title>{title}</title>
+          <meta name='apple-mobile-web-app-capable' content='yes' />
+          <meta name='mobile-web-app-capable' content='yes' />
+          <meta name='apple-mobile-web-app-title' content='Maomao' />
           <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
           <meta name='description' content={description} />
           <meta name='og:title' content={title} />
@@ -155,14 +189,20 @@ class Home extends React.Component {
           <meta name='og:image' content={bgImage && bgImage.length > 0 ? bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
           <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
+          <link rel='apple-touch-icon' href='/static/images/logo.png' />
+          <link rel='icon' href='/static/images/logo.png' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-          <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
+          <script src='https://code.jquery.com/jquery-3.2.1.min.js' />
+          <script src='https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.20/jquery.fancybox.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
+          <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.20/jquery.fancybox.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-          <script src='/static/js/sticky.js' />
+          <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
+          <script src='/static/vendors/js/addtohomescreen.min.js' />
+          <script src='/static/js/sticky.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
@@ -240,6 +280,10 @@ class Home extends React.Component {
               }
           </div>
         </ToggleDisplay>
+        {
+          isMobile && !hasAddToHome &&
+          <AddToHome onClick={this.addToHomeOnMobile} />
+         }
         <div className='footer-area'>
           <Footer brandName={brandName}
             facebookUrl='https://www.facebook.com/maomao.hiring'

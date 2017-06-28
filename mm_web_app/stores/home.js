@@ -2,7 +2,7 @@ import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
-import { loginWithGoogle, loginWithFacebook, getUserHistory } from '../services/user'
+import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -79,6 +79,55 @@ export class HomeStore extends CoreStore {
     return sharesReveived
   }
 
+  @action internalLogin (callback) {
+    logger.warn('internalLogin')
+    const registerNewUser = testInternalUser()
+    this.isProcessingRegister = true
+    when(
+      () => registerNewUser.state !== 'pending',
+      () => {
+        this.isProcessingRegister = false
+        const { data } = registerNewUser.value
+        const userHash = md5hash(data.id)
+        this.isLogin = true
+        this.userId = data.id
+        this.userHash = userHash
+        this.user = {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+        // send data to chrome extension
+        if (this.isInstalledOnChromeDesktop) {
+          sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: data.id }))
+          sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+            info: {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+          }))
+          sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
+          sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
+        }
+        this.login(this.userId, this.userHash)
+        callback(Object.assign({}, this.user, {userHash}))
+        this.getUserHistory()
+      }
+    )
+  }
+
+  @action retrylLoginForInternalUser (user) {
+    logger.warn('retrylLoginForInternalUser', user)
+    const { id, userHash } = user
+    this.isLogin = true
+    this.userId = id
+    this.userHash = userHash
+    this.user = user
+    if (this.isInstalledOnChromeDesktop) {
+      sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: id }))
+      sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
+        info: user
+      }))
+      sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: id }))
+      sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: id }))
+    }
+    this.login(this.userId, this.userHash)
+    this.getUserHistory()
+  }
+
   @action googleConnect (info) {
     logger.warn('googleConnect', info)
     const googleConnectResult = loginWithGoogle(info)
@@ -113,10 +162,9 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', {}))
-        } else {
-          this.login(this.userId, this.userHash)
-          this.getUserHistory()
         }
+        this.login(this.userId, this.userHash)
+        this.getUserHistory()
       }
     )
   }
@@ -154,10 +202,9 @@ export class HomeStore extends CoreStore {
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
-        } else {
-          this.login(this.userId, this.userHash)
-          this.getUserHistory()
         }
+        this.login(this.userId, this.userHash)
+        this.getUserHistory()
       }
     )
   }

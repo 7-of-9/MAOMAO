@@ -7,7 +7,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
-import firebase from 'firebase'
 import Modal from 'react-modal'
 import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
@@ -32,7 +31,7 @@ const customModalStyles = {
 class ChromeInstall extends React.Component {
   constructor (props) {
     super(props)
-    this.onFacebookLogin = this.onFacebookLogin.bind(this)
+    this.onClose = this.onClose.bind(this)
     this.state = {
       isHide: false
     }
@@ -71,20 +70,18 @@ class ChromeInstall extends React.Component {
     }
   }
 
-  onFacebookLogin () {
-    logger.warn('onFacebookLogin', this.props)
-    const provider = new firebase.auth.FacebookAuthProvider()
-    provider.addScope('email')
-    firebase.auth().signInWithPopup(provider)
+  onClose () {
+    logger.warn('onClose', this.props)
+    this.props.ui.toggleSignIn(false)
   }
 
   render () {
-    const { title, description, install, store: { isChrome, browserName, isMobile, isInstall, isLogin, shareInfo } } = this.props
-    logger.warn('ChromeInstall isChrome, browserName, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, isMobile, isInstall, isLogin, shareInfo)
-    let joinMsg = shareInfo ? 'JOIN NOW TO VIEW FRIEND STREAM' : 'JOIN NOW'
+    const { title, description, install, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
+    let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
-        {isLogin && browserName.length > 0 && !isMobile && isChrome && !isInstall &&
+        {isLogin && !isMobile && isChrome && !isInstall &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
@@ -98,33 +95,25 @@ class ChromeInstall extends React.Component {
           }
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }
-        {!isLogin && browserName.length > 0 && browserName !== 'node' &&
+        {!isLogin &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isChrome &&
-              <div className='panel-extention'><p> <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /> is in proof of concept mode: it works on desktop Chrome browser.</p>
-                { !isMobile && <p>Get <a href='https://www.google.com/chrome'>Chrome here <span className='icon-wrap'><i className='icon-download' /></span></a></p> }
-              </div>
-            }
             {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
             {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
               (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>
-                <div className='block-button'>
-                  <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                    <i className='fa fa-facebook' /> {joinMsg}
-                  </a>
-                </div>
+                <button className='btn btn-login' onClick={() => { this.props.ui.toggleSignIn(true) }}>
+                  <i className='fa fa-sign-in' aria-hidden='true' /> {joinMsg}
+                </button>
               </div>
             }
           </div>

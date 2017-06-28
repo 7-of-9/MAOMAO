@@ -13,13 +13,14 @@ import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import Loading from '../../components/Loading'
+import InlinePlayer from './InlinePlayer'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
-import { guid } from '../../utils/hash'
+import previewUrl from '../../utils/previewUrl'
+import { tagColor } from '../../utils/helper'
 
-const LIMIT = 20
-const MAX_COLORS = 12
+const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.4s'
@@ -31,7 +32,7 @@ function urlOwner (owners, users, onSelectUser) {
     const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
-      <div key={guid()} className='panel-user-img'>
+      <div key={`${owner.fullname}-${hitUtc}`} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
           <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
           <span className='panel-user-cnt'>
@@ -70,8 +71,8 @@ function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
   const maxLevel = _.maxBy(currentTopics, 'level')
   _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
     items.push(
-      <div className='mix-tag-topic' key={guid()}>
-        <span className={`tags tags-color-${(topics.indexOf(topic) % MAX_COLORS) + 1}`} rel='tag'>
+      <div className='mix-tag-topic' key={`${urlId}-${topic.name}`}>
+        <span className={`tags ${tagColor(topic.name)}`} rel='tag'>
           <span onClick={() => { onSelectTopic(topic) }} className='text-tag'>{topic.name}</span>
           {
             isOwner &&
@@ -99,13 +100,17 @@ function filterbyRating (item, owners, userIds, rating) {
 
 function orderBy (result, owners, sortBy, sortDirection) {
   if (sortBy === 'date') {
-    return sortDirection === 'desc'
-      ? _.reverse(_.sortBy(result, [(url) => _.max(owners.find(item => item.url_id === url.url_id).hit_utc)]))
-       : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).hit_utc])
+    const sortResult = _.sortBy(result, (url) => {
+      const users = owners.filter(item => item.url_id === url.url_id)
+      return _.max(users.map(item => item.hit_utc))
+    })
+    return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   } else {
-    return sortDirection === 'desc'
-     ? _.reverse(_.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate]))
-      : _.sortBy(result, [(url) => owners.find(item => item.url_id === url.url_id).rate])
+    const sortResult = _.sortBy(result, (url) => {
+      const users = owners.filter(item => item.url_id === url.url_id)
+      return _.max(users.map(item => item.rate))
+    })
+    return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   }
 }
 
@@ -181,23 +186,45 @@ class Streams extends React.PureComponent {
         items.push(<div key={url_id} className='grid-item shuffle-item'>
           <div className='thumbnail-box'>
             {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
-            <div className='thumbnail'>
-              <div className='thumbnail-image'>
-                <a className='thumbnail-overlay' href={href} target='_blank'>
-                  <img src={img || '/static/images/no-image.png'} alt={title} />
-                </a>
-                {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic))}
-              </div>
-              <div className='caption'>
-                <h4 className='caption-title'>
-                  <a href={href} target='_blank'>
-                    {title} ({url_id})
+            {
+              href.indexOf('youtube.com') === -1 &&
+              <div className='thumbnail'>
+                <div className='thumbnail-image'>
+                  <a className='thumbnail-overlay' onClick={() => previewUrl(href, title)}>
+                    <img src={img || '/static/images/no-image.png'} alt={title} />
                   </a>
-                </h4>
-                <h5 className='caption-title'>{parseDomain(href)}</h5>
-                {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                  {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
+                </div>
+                <div className='caption'>
+                  <h4 className='caption-title'>
+                    <a onClick={() => previewUrl(href, title)}>
+                      {title} ({url_id})
+                  </a>
+                  </h4>
+                  <h5 className='caption-title'>{parseDomain(href)}</h5>
+                  {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                </div>
               </div>
-            </div>
+            }
+            {
+              href.indexOf('youtube.com') !== -1 &&
+              <InlinePlayer
+                href={href}
+                title={title}
+                url_id={url_id}
+                topics={topics}
+                users={users}
+                owners={owners}
+                myUrlIds={myUrlIds}
+                urlTopic={urlTopic}
+                urlOwner={urlOwner}
+                parseDomain={parseDomain}
+                previewUrl={previewUrl}
+                selectTopic={this.props.ui.selectTopic}
+                selectUser={this.props.ui.selectUser}
+                openShareTopic={this.props.ui.openShareTopic}
+              />
+            }
           </div>
         </div>)
       })
