@@ -315,6 +315,7 @@ function session_add_IM(session, data, tab) {
       log.info('%c ..... session.events.length = ' + session.events.length, session_style);
       log.info('%c ..... session.session_millis = ' + session.session_millis, session_style);
       log.info('%c ..... session.im_score = ' + session.im_score, session_style);
+      sessionObservable.activeUrl = session.url;
       sessionObservable.lastUpdate = Date.now();
     }
 
