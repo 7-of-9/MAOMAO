@@ -11,6 +11,7 @@ import logger from '../utils/logger'
 let store = null
 
 class DiscoveryStore extends CoreStore {
+  twitterMaxId = ''
   youtubePageToken = ''
   page = 0
   youtubeResult = []
@@ -19,6 +20,7 @@ class DiscoveryStore extends CoreStore {
   googleNewsResult = []
   googleKnowledgeResult = []
   vimeoResult = []
+  twitterResult = []
   @observable pendings = []
   @observable terms = []
 
@@ -36,6 +38,7 @@ class DiscoveryStore extends CoreStore {
     if (this.terms.length === 0) {
       this.page = 0
       this.youtubePageToken = ''
+      this.twitterMaxId = ''
     }
     this.redditResult = []
     this.googleResult = []
@@ -43,6 +46,7 @@ class DiscoveryStore extends CoreStore {
     this.googleKnowledgeResult = []
     this.youtubeResult = []
     this.vimeoResult = []
+    this.twitterResult = []
   }
 
   @action loadMore () {
@@ -65,7 +69,7 @@ class DiscoveryStore extends CoreStore {
       this.pendings.push('reddit')
       const vimeo = vimeoVideo(term, this.page)
       this.pendings.push('vimeo')
-      const twitter = twitterSearch(term, this.page)
+      const twitter = twitterSearch(term, this.page, this.twitterMaxId)
       this.pendings.push('twitter')
 
       when(
@@ -136,8 +140,12 @@ class DiscoveryStore extends CoreStore {
       when(
         () => twitter.state !== 'pending',
         () => {
-          logger.warn('twitter', twitter.value)
-          this.pendings.splice(0, 1)
+          if (twitter.value && twitter.value.data) {
+            const { statuses, search_metadata: { max_id: maxId } } = youtubeVideo.value.data.tweets
+            this.youtubeResult.push(...(statuses || []))
+            this.twitterMaxId = maxId
+            this.pendings.splice(0, 1)
+          }
         }
       )
     })

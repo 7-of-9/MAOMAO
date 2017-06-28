@@ -17,6 +17,7 @@ const auth = require('./api/auth')
 const email = require('./api/email')
 const preview = require('./api/preview')
 const contacts = require('./api/contacts')
+const twitter = require('./api/twitter')
 
 log.setLevel(dev ? 'info' : 'error')
 mobxReact.useStaticRendering(true)
@@ -39,6 +40,7 @@ app.prepare().then(() => {
   server.use('/api/email', email)
   server.use('/api/contacts', contacts)
   server.use('/api/preview', preview)
+  server.use('/api/twitter', twitter)
 
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
