@@ -17,6 +17,5 @@ namespace tests
         {
             var ret = UserHomepage.Get(15);
         }
-
     }
 }

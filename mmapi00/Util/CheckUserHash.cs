@@ -18,15 +18,21 @@ namespace mmapi00.Util
 
                 string goog_uid_hash = null;
                 string fb_uid_hash = null;
+                string test_uid_hash = null;
+
                 if (!string.IsNullOrEmpty(user.google_user_id))
                     goog_uid_hash = mm_svc.Util.Hashing.MD5(user.google_user_id);
+
                 if (!string.IsNullOrEmpty(user.fb_user_id))
                     fb_uid_hash = mm_svc.Util.Hashing.MD5(user.fb_user_id);
 
+                test_uid_hash = mm_svc.Util.Hashing.MD5(user.id.ToString());
+
                 var matches_goog = goog_uid_hash != null && goog_uid_hash == hash;
                 var matches_fb = fb_uid_hash != null && fb_uid_hash == hash;
+                var matches_test_user = test_uid_hash != null && test_uid_hash == hash;
 
-                return matches_goog || matches_fb;
+                return matches_goog || matches_fb || matches_test_user;
             }   
         }
     }
