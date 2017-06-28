@@ -85,6 +85,7 @@
     <Compile Include="Test_UrlProcessor.cs" />
     <Compile Include="Test_UrlRecorder.cs" />
     <Compile Include="Test_Homepage.cs" />
+    <Compile Include="Test_UserCreation.cs" />
     <Compile Include="Test_UtilTldTitle.cs" />
   </ItemGroup>
   <ItemGroup>

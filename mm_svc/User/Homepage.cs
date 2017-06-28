@@ -96,10 +96,7 @@ namespace mm_svc
                 };
                 Debug.WriteLine($"3 = {sw.ElapsedMilliseconds}ms");
 
-                //
-                // TODO: 
-                //       (2) is_topic buggy
-                //
+                // todo: (2) is_topic buggy?
                 var received_url_infos = ret.received.SelectMany(p => p.shares.SelectMany(p2 => p2.urls)).ToList();
                 var all_url_infos = own_url_infos.Union(received_url_infos).ToList();
                 var all_url_ids = all_url_infos.Select(p => p.url_id).ToList();
@@ -111,9 +108,6 @@ namespace mm_svc
 
             var ms = sw.ElapsedMilliseconds;
             g.LogInfo($"Homepage/get user_id={user_id} ms={ms}");
-
-            var a = ret.mine.urls.Where(p => p.url_id == 13513).ToList();
-            var b = ret.received.SelectMany(p => p.shares.SelectMany(p2 => p2.urls.Where(p3 => p3.url_id == 13513))).ToList();
 
             return ret;
         }
@@ -464,7 +458,7 @@ namespace mm_svc
                 foreach (var topic_chain in topic_chains.Values) {
                     foreach (var topic in topic_chain) {
                         var urls_ids_matching = url_infos.Where(p => p.topic_chains.Any(p2 => p2.Any(p3 => p3.term_id == topic.term_id))).Select(p => p.url_id).ToList();
-                        topic.url_ids.AddRange(urls_ids_matching);
+                        topic.url_ids.AddRange(urls_ids_matching.Distinct());
                     }
                 }
 

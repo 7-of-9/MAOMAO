@@ -21,6 +21,20 @@ namespace mmapi00.Controllers
     public class UserController : ApiController
     {
         /// <summary>
+        /// Register new internal test user
+        /// </summary>
+        /// <returns></returns>
+        [Route("user/test")]
+        [HttpPost]
+        public IHttpActionResult CreateUserTest()
+        {
+            var db_user = mm_svc.UserRegister.CreateNewTestUser();
+
+            return Ok(new { id = db_user.id, email = db_user.email,
+                            firstname = db_user.firstname, lastname = db_user.lastname });
+        }
+
+        /// <summary>
         /// Register new user by google
         /// </summary>
         /// <returns></returns>
@@ -31,7 +45,8 @@ namespace mmapi00.Controllers
             if (user == null) return BadRequest("bad user input");
             var db_user = mm_svc.UserRegister.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id);
 
-            return Ok(new { id = db_user.id, email = db_user.email, google_user_id= user.google_user_id, fb_user_id= user.fb_user_id });
+            return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
+                            firstname = db_user.firstname, lastname = db_user.lastname });
         }
 
         /// <summary>
@@ -45,7 +60,8 @@ namespace mmapi00.Controllers
             if (user == null) return BadRequest("bad user input");
             var db_user = mm_svc.UserRegister.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id);
 
-            return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id });
+            return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
+                            firstname = db_user.firstname,lastname = db_user.lastname });
         }
 
         /// <summary>
