@@ -8,7 +8,7 @@ const TWITTER_TOKEN = '89360130-oQRgnzOkZVCVPgfkLtV0qZAMV6GaKzgWD9vxzBu5q'
 const TWITTER_TOKEN_SECRET = '3GorBw1lyujy1AnRU7mjJkuj6Zm37MwxggVBXohiogeaF'
 
 router.post('/', (req, res) => {
-  const { keyword, page, maxId } = req.body
+  const { keyword, maxId } = req.body
   if (!keyword) {
     return res.status(404).json({error: 'Sorry, missing keyword!'})
   }
@@ -21,7 +21,10 @@ router.post('/', (req, res) => {
   })
 
   const searchOptions = {
-    q: keyword, count: (page || 1) * LIMIT, result_type: 'popular'
+    q: `"${keyword}"`,
+    count: LIMIT,
+    result_type: 'recent',
+    lang: 'en'
   }
 
   if (maxId) {

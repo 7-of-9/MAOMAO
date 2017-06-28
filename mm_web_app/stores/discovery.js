@@ -69,7 +69,7 @@ class DiscoveryStore extends CoreStore {
       this.pendings.push('reddit')
       const vimeo = vimeoVideo(term, this.page)
       this.pendings.push('vimeo')
-      const twitter = twitterSearch(term, this.page, this.twitterMaxId)
+      const twitter = twitterSearch(term, this.twitterMaxId)
       this.pendings.push('twitter')
 
       when(
@@ -140,9 +140,10 @@ class DiscoveryStore extends CoreStore {
       when(
         () => twitter.state !== 'pending',
         () => {
+          logger.warn('twitter.value.data', twitter.value.data)
           if (twitter.value && twitter.value.data) {
-            const { statuses, search_metadata: { max_id: maxId } } = youtubeVideo.value.data.tweets
-            this.youtubeResult.push(...(statuses || []))
+            const { statuses, search_metadata: { max_id: maxId } } = twitter.value.data.tweets
+            this.twitterResult.push(...(statuses || []))
             this.twitterMaxId = maxId
             this.pendings.splice(0, 1)
           }

@@ -36,12 +36,12 @@ function mashUp (store) {
   const videos = []
   const reddits = []
   const vimeos = []
-  const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult, vimeoResult } = store
+  const twitters = []
+  const { redditResult, googleResult, googleNewsResult, googleKnowledgeResult, youtubeResult, twitterResult, vimeoResult } = store
   if (googleKnowledgeResult && googleKnowledgeResult.length) {
     _.forEach(googleKnowledgeResult, (item) => {
       const moreDetailUrl = (item.result && item.result.detailedDescription && item.result.detailedDescription.url) || (item.result && item.result.url)
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
-        logger.warn('google knowledge item', item)
         urls.push(moreDetailUrl)
         graphKnowledges.push(
           <div className='grid-item' key={`GK-${moreDetailUrl}`}>
@@ -59,7 +59,6 @@ function mashUp (store) {
   if (googleNewsResult && googleNewsResult.length) {
     _.forEach(googleNewsResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
-        logger.warn('google news item', item)
         urls.push(item.url)
         news.push(
           <div className='grid-item' key={`GN-${item.url}`}>
@@ -77,7 +76,6 @@ function mashUp (store) {
   if (googleResult && googleResult.length) {
     _.forEach(googleResult, (item) => {
       if (item.img && item.url && !urls.includes(item.url)) {
-        logger.warn('google search item', item)
         urls.push(item.url)
         search.push(
           <div className='grid-item' key={`GS-${item.url}`}>
@@ -95,8 +93,7 @@ function mashUp (store) {
   if (youtubeResult && youtubeResult.length) {
     _.forEach(youtubeResult, (item) => {
       const youtubeUrl = `https://www.youtube.com/watch?v=${item.id.videoId}`
-      if (item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
-        logger.warn('youtube item', item)
+      if (item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
         urls.push(youtubeUrl)
         videos.push(
           <div className='grid-item' key={`YT-${youtubeUrl}`}>
@@ -131,9 +128,25 @@ function mashUp (store) {
     })
   }
 
+  if (twitterResult && twitterResult.length) {
+    _.forEach(twitterResult, (item) => {
+      const url = `https://twitter.com/${item.user.screen_name}/status/${item.id_str}`
+      urls.push(url)
+      twitters.push(
+        <div className='grid-item' key={`VM-${url}`}>
+          <BlockElement
+            name={item.user.name}
+            description={item.text}
+            image={item.user.profile_image_url}
+            url={url}
+            type={'Twitter'}
+            />
+        </div>)
+    })
+  }
+
   if (vimeoResult && vimeoResult.length) {
     _.forEach(vimeoResult, (item) => {
-      logger.warn('vimeo item', item)
       urls.push(item.link)
       const img = item.pictures && item.pictures.sizes.length ? item.pictures.sizes[item.pictures.sizes.length - 1].link : '/static/images/no-image.png'
       vimeos.push(
@@ -149,7 +162,7 @@ function mashUp (store) {
     })
   }
   // Mashup records
-  const result = [graphKnowledges, news, search, reddits, vimeos, videos]
+  const result = [graphKnowledges, news, search, reddits, twitters, vimeos, videos]
   const elements = []
   const numberItems = _.map(result, (item) => item.length)
   const maxItems = _.max(numberItems)
@@ -217,12 +230,12 @@ class Discovery extends React.Component {
               loadMore={this.loadMore}
               hasMore={this.props.discovery.hasMore}
               className='container-fluid'
-              >
+                >
               <Masonry className='container-masonry' options={masonryOptions}>
                 <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
               </Masonry>
-              <Loading isLoading={this.props.discovery.pendings.length > 0} />
             </InfiniteScroll>
+            <Loading isLoading={this.props.discovery.pendings.length > 0} />
           </StickyContainer>
         </div>
       </div>
