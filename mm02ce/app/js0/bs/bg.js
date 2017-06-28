@@ -712,9 +712,16 @@ function playNavSound(id) {
 
 // TABMAP: chrome.tabs.onCreated
 function tabCreated(tab) {
-
   update_tabmap();
-
+  sessionObservable.activeUrl = 'N/A';
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    if (tabs != null && tabs.length > 0) {
+      sessionObservable.activeUrl = tabs[0].url;
+    }
+  });
   if (eatEvent('tabCreated'))
     return false;
   eventsToEat++; // tabNavigated or tabSelectionChanged
@@ -766,7 +773,6 @@ function tabNavigated(tabId, changeInfo, tab) {
     ' ci.audible=' + changeInfo.audible +
     ' ci.mutedInfo=' + changeInfo.mutedInfo +
     ' ci.favIconUrl=' + changeInfo.favIconUrl, events_style_hi);
-
   chrome.tabs.query({
     active: true,
     currentWindow: true

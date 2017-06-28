@@ -4,6 +4,7 @@ import { CoreStore } from './core'
 import { googleKnowlegeSearchByTerm, youtubeSearchByKeyword } from '../services/google'
 import { googleNewsSearchByTerm, googleSearchByTerm } from '../services/crawler'
 import { redditListing } from '../services/reddit'
+import { twitterSearch } from '../services/twitter'
 import { vimeoVideo } from '../services/vimeo'
 import logger from '../utils/logger'
 
@@ -64,6 +65,8 @@ class DiscoveryStore extends CoreStore {
       this.pendings.push('reddit')
       const vimeo = vimeoVideo(term, this.page)
       this.pendings.push('vimeo')
+      const twitter = twitterSearch(term, this.page)
+      this.pendings.push('twitter')
 
       when(
         () => googleSearch.state !== 'pending',
@@ -127,6 +130,14 @@ class DiscoveryStore extends CoreStore {
             this.vimeoResult.push(...(vimeo.value.data.data || []))
             this.pendings.splice(0, 1)
           }
+        }
+      )
+
+      when(
+        () => twitter.state !== 'pending',
+        () => {
+          logger.warn('twitter', twitter.value)
+          this.pendings.splice(0, 1)
         }
       )
     })
