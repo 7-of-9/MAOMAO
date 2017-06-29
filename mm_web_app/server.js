@@ -4,6 +4,7 @@ const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const next = require('next')
 const { parse } = require('url')
+const { join } = require('path')
 const mobxReact = require('mobx-react')
 const request = require('request')
 const helmet = require('helmet')
@@ -45,7 +46,12 @@ app.prepare().then(() => {
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
-    if (pathname === '/hiring-js') {
+    log.warn('pathname', pathname)
+    if (pathname === '/service-worker.js') {
+      const filePath = join(__dirname, '.next', pathname)
+      log.warn('filePath', filePath)
+      app.serveStatic(req, res, filePath)
+    } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})

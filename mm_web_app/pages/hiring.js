@@ -8,6 +8,7 @@ import Header from '../components/Header'
 import LogoIcon from '../components/LogoIcon'
 import Slogan from '../components/Slogan'
 import stylesheet from '../styles/index.scss'
+import logger from '../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -98,6 +99,19 @@ const hiringVp = () => (
 export default class Hiring extends React.Component {
   static getInitialProps ({ query: { type } }) {
     return { type }
+  }
+
+  componentDidMount () {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(registration => {
+          logger.log('service worker registration successful')
+        })
+        .catch(err => {
+          logger.warn('service worker registration failed', err.message)
+        })
+    }
   }
 
   render () {

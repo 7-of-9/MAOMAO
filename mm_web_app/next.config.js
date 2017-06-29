@@ -1,5 +1,8 @@
 const path = require('path')
 const glob = require('glob')
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const { ANALYZE } = process.env
 
 module.exports = {
   // distDir: 'build',
@@ -39,6 +42,35 @@ module.exports = {
     //     return true
     //   }
     // })
+
+    config.plugins.push(
+      new SWPrecacheWebpackPlugin({
+        verbose: true,
+        staticFileGlobsIgnorePatterns: [/\.next\//],
+        runtimeCaching: [
+          {
+            handler: 'networkFirst',
+            urlPattern: /^https?.*/
+          }
+        ],
+        mergeStaticsConfig: true,
+        staticFileGlobs: [
+          'static/*.*',
+          'static/js/*.*',
+          'static/images/*.*',
+          'static/fonts/**/*.*',
+          'static/vendors/**/*.*'
+        ]
+      })
+    )
+
+    if (ANALYZE) {
+      config.plugins.push(new BundleAnalyzerPlugin({
+        analyzerMode: 'server',
+        analyzerPort: 8888,
+        openAnalyzer: true
+      }))
+    }
 
     return config
   }

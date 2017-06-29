@@ -121,6 +121,7 @@ class Home extends React.Component {
   componentDidMount () {
     logger.warn('Home componentDidMount')
     if (this.props.store.isMobile) {
+      // TODO: support chrome (android)
       if (window.navigator.standalone) {
         this.setState({
           hasAddToHome: true

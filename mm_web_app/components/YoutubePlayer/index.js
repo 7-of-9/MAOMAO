@@ -106,7 +106,7 @@ YoutubePlayer.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
-  image: PropTypes.string.required,
+  image: PropTypes.string,
   url: PropTypes.string
 }
 

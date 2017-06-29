@@ -38,6 +38,19 @@ export default class Index extends React.Component {
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
   }
 
+  componentDidMount () {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(registration => {
+          logger.log('service worker registration successful')
+        })
+        .catch(err => {
+          logger.warn('service worker registration failed', err.message)
+        })
+    }
+  }
+
   render () {
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>

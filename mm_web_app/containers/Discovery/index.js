@@ -111,7 +111,6 @@ function mashUp (store) {
   if (redditResult && redditResult.length) {
     _.forEach(redditResult, (item) => {
       if (item.preview && item.preview.images && item.preview.images[0] && item.url && !urls.includes(item.url)) {
-        logger.warn('reddit item', item)
         urls.push(item.url)
         const img = item.preview.images[0].resolutions.length ? item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url : '/static/images/no-image.png'
         reddits.push(
@@ -133,7 +132,7 @@ function mashUp (store) {
       const url = `https://twitter.com/${item.user.screen_name}/status/${item.id_str}`
       urls.push(url)
       twitters.push(
-        <div className='grid-item' key={`VM-${url}`}>
+        <div className='grid-item' key={`VM-${item.id_str}`}>
           <BlockElement
             name={item.user.name}
             description={item.text}
@@ -231,7 +230,12 @@ class Discovery extends React.Component {
               hasMore={this.props.discovery.hasMore}
               className='container-fluid'
                 >
-              <Masonry className='container-masonry' options={masonryOptions}>
+              <Masonry
+                className='container-masonry'
+                options={masonryOptions}
+                disableImagesLoaded={false}
+                updateOnEachImageLoad={false}
+                >
                 <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
               </Masonry>
             </InfiniteScroll>

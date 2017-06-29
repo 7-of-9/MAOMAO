@@ -4,12 +4,14 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
+import ReactPlaceholder from 'react-placeholder'
 import { truncate } from 'lodash'
 import YoutubePlayer from '../YoutubePlayer'
 import previewUrl from '../../utils/previewUrl'
+import logger from '../../utils/logger'
 
 const Wrapper = styled.section`
   padding: 10px;
@@ -79,7 +81,18 @@ function iconType (type) {
   }
 }
 
-class BlockElement extends PureComponent {
+class BlockElement extends Component {
+  constructor (props) {
+    super(props)
+    this.state = { ready: false }
+    this.onLoad = this.onLoad.bind(this)
+  }
+
+  onLoad () {
+    logger.warn('onLoad')
+    this.setState({ready: true})
+  }
+
   render () {
     const { url, image, name, description, type } = this.props
     return (
@@ -93,7 +106,9 @@ class BlockElement extends PureComponent {
         <div className='thumbnail'>
           <div className='thumbnail-image'>
             <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
-              <Image src={image} alt={name} />
+              <ReactPlaceholder showLoadingAnimation type='media' rows={7} ready={this.state.ready}>
+                <Image src={image} alt={name} onLoad={this.onLoad} />
+              </ReactPlaceholder>
             </Anchor>
           </div>
           <div className='caption'>
@@ -125,7 +140,7 @@ BlockElement.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
-  image: PropTypes.string.required,
+  image: PropTypes.string,
   url: PropTypes.string
 }
 
