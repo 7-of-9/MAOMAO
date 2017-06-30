@@ -8,6 +8,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import ReactPlaceholder from 'react-placeholder'
+import 'react-placeholder/lib/reactPlaceholder.css'
+import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders'
 import { truncate } from 'lodash'
 import YoutubePlayer from '../YoutubePlayer'
 import previewUrl from '../../utils/previewUrl'
@@ -31,7 +33,7 @@ const Anchor = styled.a`
    }
 `
 
-const Image = styled.img`
+const Img = styled.img`
   margin-bottom: 10px;
   border-radius: 8px;
   vertical-align: middle;
@@ -81,20 +83,45 @@ function iconType (type) {
   }
 }
 
+function awesomePlaceholder () {
+  return (
+    <div className='media-block'>
+      <RectShape color='#CDCDCD' style={{width: 200, height: 120}} />
+      <TextBlock rows={3} color='#CDCDCD' />
+    </div>
+  )
+}
+
 class BlockElement extends Component {
   constructor (props) {
     super(props)
     this.state = { ready: false }
-    this.onLoad = this.onLoad.bind(this)
   }
 
-  onLoad () {
-    logger.warn('onLoad')
-    this.setState({ready: true})
+  componentDidMount () {
+    const { image } = this.props
+    logger.warn('BlockElement componentDidMount', image)
+    if (image) {
+      /* global Image */
+      const img = new Image()
+      img.onload = () => {
+        logger.warn('BlockElement componentDidMount onload', image)
+        this.setState({ready: true})
+      }
+      img.onerror = () => {
+        logger.warn('BlockElement componentDidMount onerror', image)
+        this.setState({ready: true})
+      }
+      img.src = image
+      logger.warn('BlockElement componentDidMount img', img)
+    } else {
+      this.setState({ready: true})
+    }
   }
 
   render () {
     const { url, image, name, description, type } = this.props
+    logger.info('BlockElement render', url, image, type)
     return (
       <Wrapper className='thumbnail-box'>
         {
@@ -103,33 +130,36 @@ class BlockElement extends Component {
         }
         {
         type !== 'Youtube' &&
-        <div className='thumbnail'>
-          <div className='thumbnail-image'>
-            <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
-              <ReactPlaceholder showLoadingAnimation type='media' rows={7} ready={this.state.ready}>
-                <Image src={image} alt={name} onLoad={this.onLoad} />
-              </ReactPlaceholder>
-            </Anchor>
-          </div>
-          <div className='caption'>
-            <Title className='caption-title'>
-              <Anchor onClick={() => previewUrl(url, name)}>
-                {name && <span>{name}</span>}
+        <ReactPlaceholder
+          showLoadingAnimation
+          customPlaceholder={awesomePlaceholder()}
+          ready={this.state.ready}>
+          <div className='thumbnail'>
+            <div className='thumbnail-image'>
+              <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
+                <Img src={image} alt={name} />
               </Anchor>
-            </Title>
-            {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-            <div className='panel-user panel-credit'>
-              <div className='panel-user-img'>
-                <span className='credit-user'>
-                  <Icon src={iconType(type)} />
-                  <span className='panel-user-cnt'>
-                    <span className='full-name'>{type}</span>
+            </div>
+            <div className='caption'>
+              <Title className='caption-title'>
+                <Anchor onClick={() => previewUrl(url, name)}>
+                  {name && <span>{name}</span>}
+                </Anchor>
+              </Title>
+              {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
+              <div className='panel-user panel-credit'>
+                <div className='panel-user-img'>
+                  <span className='credit-user'>
+                    <Icon src={iconType(type)} />
+                    <span className='panel-user-cnt'>
+                      <span className='full-name'>{type}</span>
+                    </span>
                   </span>
-                </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ReactPlaceholder>
       }
       </Wrapper>
     )

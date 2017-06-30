@@ -140,7 +140,6 @@ class DiscoveryStore extends CoreStore {
       when(
         () => twitter.state !== 'pending',
         () => {
-          logger.warn('twitter.value.data', twitter.value.data)
           if (twitter.value && twitter.value.data) {
             const { statuses, search_metadata: { max_id: maxId } } = twitter.value.data.tweets
             this.twitterResult.push(...(statuses || []))

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
@@ -178,7 +178,7 @@ function mashUp (store) {
 @inject('discovery')
 @inject('ui')
 @observer
-class Discovery extends React.Component {
+class Discovery extends Component {
   constructor (props) {
     super(props)
     this.loadMore = this.loadMore.bind(this)
