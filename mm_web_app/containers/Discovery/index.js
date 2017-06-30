@@ -21,10 +21,11 @@ Router.onRouteChangeError = () => NProgress.done()
 
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: 0
+  transitionDuration: '0.2s',
+  percentPosition: true
 }
 
-function mashUp (store) {
+function mashUp (store, masonry) {
   // Parse data
   if (store.terms.length === 0) {
     return []
@@ -44,15 +45,15 @@ function mashUp (store) {
       if (!urls.includes(moreDetailUrl) && moreDetailUrl && item.result.image && item.result.image.contentUrl) {
         urls.push(moreDetailUrl)
         graphKnowledges.push(
-          <div className='grid-item' key={`GK-${moreDetailUrl}`}>
-            <BlockElement
-              name={item.result.name}
-              description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
-              image={item.result.image && item.result.image.contentUrl}
-              url={moreDetailUrl}
-              type={'Google Knowledge'}
-            />
-          </div>)
+          <BlockElement
+            key={`GK-${moreDetailUrl}`}
+            name={item.result.name}
+            description={(item.result.detailedDescription && item.result.detailedDescription.articleBody) || item.result.description}
+            image={item.result.image && item.result.image.contentUrl}
+            url={moreDetailUrl}
+            type={'Google Knowledge'}
+            masonry={masonry}
+            />)
       }
     })
   }
@@ -61,15 +62,15 @@ function mashUp (store) {
       if (item.img && item.url && !urls.includes(item.url)) {
         urls.push(item.url)
         news.push(
-          <div className='grid-item' key={`GN-${item.url}`}>
-            <BlockElement
-              name={item.title}
-              description={item.description}
-              url={item.url}
-              image={item.img}
-              type={'Google News'}
-            />
-          </div>)
+          <BlockElement
+            key={`GN-${item.url}`}
+            name={item.title}
+            description={item.description}
+            url={item.url}
+            image={item.img}
+            type={'Google News'}
+            masonry={masonry}
+            />)
       }
     })
   }
@@ -78,15 +79,15 @@ function mashUp (store) {
       if (item.img && item.url && !urls.includes(item.url)) {
         urls.push(item.url)
         search.push(
-          <div className='grid-item' key={`GS-${item.url}`}>
-            <BlockElement
-              name={item.title}
-              description={item.description}
-              url={item.url}
-              image={item.img}
-              type={'Google Search'}
-            />
-          </div>)
+          <BlockElement
+            key={`GS-${item.url}`}
+            name={item.title}
+            description={item.description}
+            url={item.url}
+            image={item.img}
+            type={'Google Search'}
+            masonry={masonry}
+            />)
       }
     })
   }
@@ -96,15 +97,15 @@ function mashUp (store) {
       if (item.snippet && item.snippet.thumbnails && item.snippet.thumbnails.medium.url && !urls.includes(youtubeUrl)) {
         urls.push(youtubeUrl)
         videos.push(
-          <div className='grid-item' key={`YT-${youtubeUrl}`}>
-            <BlockElement
-              name={item.snippet.title}
-              description={item.snippet.description}
-              image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
-              url={youtubeUrl}
-              type={'Youtube'}
-            />
-          </div>)
+          <BlockElement
+            key={`YT-${youtubeUrl}`}
+            name={item.snippet.title}
+            description={item.snippet.description}
+            image={item.snippet.thumbnails && item.snippet.thumbnails.medium.url}
+            url={youtubeUrl}
+            type={'Youtube'}
+            masonry={masonry}
+            />)
       }
     })
   }
@@ -114,50 +115,52 @@ function mashUp (store) {
         urls.push(item.url)
         const img = item.preview.images[0].resolutions.length ? item.preview.images[0].resolutions[item.preview.images[0].resolutions.length - 1].url : '/static/images/no-image.png'
         reddits.push(
-          <div className='grid-item' key={`RD-${item.url}-${item.id}`}>
-            <BlockElement
-              name={item.title}
-              description={item.selftext || item.title}
-              image={img}
-              url={`https://www.reddit.com${item.permalink}`}
-              type={'Reddit'}
-            />
-          </div>)
+          <BlockElement
+            key={`YT-${item.url}`}
+            name={item.title}
+            description={item.selftext || item.title}
+            image={img}
+            url={`https://www.reddit.com${item.permalink}`}
+            type={'Reddit'}
+            masonry={masonry}
+            />)
       }
     })
   }
 
   if (twitterResult && twitterResult.length) {
-    _.forEach(twitterResult, (item) => {
+    const uniqTwitterResult = _.uniqBy(twitterResult, 'id_str')
+    _.forEach(uniqTwitterResult, (item) => {
       const url = `https://twitter.com/${item.user.screen_name}/status/${item.id_str}`
       urls.push(url)
       twitters.push(
-        <div className='grid-item' key={`VM-${item.id_str}`}>
-          <BlockElement
-            name={item.user.name}
-            description={item.text}
-            image={item.user.profile_image_url}
-            url={url}
-            type={'Twitter'}
-            />
-        </div>)
+        <BlockElement
+          key={`TW-${url}`}
+          name={item.user.name}
+          description={item.text}
+          image={item.user.profile_image_url}
+          url={url}
+          type={'Twitter'}
+          masonry={masonry}
+            />)
     })
   }
 
   if (vimeoResult && vimeoResult.length) {
-    _.forEach(vimeoResult, (item) => {
+    const uniqVimeoResult = _.uniqBy(vimeoResult, 'link')
+    _.forEach(uniqVimeoResult, (item) => {
       urls.push(item.link)
       const img = item.pictures && item.pictures.sizes.length ? item.pictures.sizes[item.pictures.sizes.length - 1].link : '/static/images/no-image.png'
       vimeos.push(
-        <div className='grid-item' key={`VM-${item.link}`}>
-          <BlockElement
-            name={item.name}
-            description={item.description}
-            image={img}
-            url={item.link}
-            type={'Vimeo'}
-            />
-        </div>)
+        <BlockElement
+          key={`VM-${item.link}`}
+          name={item.name}
+          description={item.description}
+          image={img}
+          url={item.link}
+          type={'Vimeo'}
+          masonry={masonry}
+          />)
     })
   }
   // Mashup records
@@ -233,8 +236,9 @@ class Discovery extends Component {
               <Masonry
                 className='container-masonry'
                 options={masonryOptions}
+                ref={(c) => { this.masonry = this.masonry || c.masonry }}
                 >
-                <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
+                <div className='grid-row'>{mashUp(toJS(this.props.discovery), this.masonry)}</div>
               </Masonry>
             </InfiniteScroll>
             <Loading isLoading={this.props.discovery.pendings.length > 0} />

@@ -507,6 +507,12 @@ img {
       width: 100%;
     }
   }
+  .grid-item--full {
+    width: 40%;
+    @media (max-width: 550px) {
+      width: 100%;
+    }
+  }
 }
 
 .stream-list {

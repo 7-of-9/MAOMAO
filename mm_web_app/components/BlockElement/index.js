@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { truncate } from 'lodash'
@@ -81,49 +81,72 @@ function iconType (type) {
   }
 }
 
-class BlockElement extends PureComponent {
+class BlockElement extends Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      isPreview: false
+    }
+    this.onPreview = this.onPreview.bind(this)
+  }
+
+  onPreview () {
+    this.setState({
+      isPreview: true
+    }, () => { this.props.masonry.layout() })
+  }
+
   render () {
     const { url, image, name, description, type } = this.props
+    const { isPreview } = this.state
     logger.info('BlockElement render', url, image, type)
     return (
-      <Wrapper className='thumbnail-box'>
-        {
-          type === 'Youtube' &&
-          <PlaceHolder image={image}>
-            <YoutubePlayer {...this.props} />
-          </PlaceHolder>
-        }
-        {
-        type !== 'Youtube' &&
-        <PlaceHolder image={image}>
-          <div className='thumbnail'>
-            <div className='thumbnail-image'>
-              <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
-                <Img src={image} alt={name} />
-              </Anchor>
-            </div>
-            <div className='caption'>
-              <Title className='caption-title'>
-                <Anchor onClick={() => previewUrl(url, name)}>
-                  {name && <span>{name}</span>}
-                </Anchor>
-              </Title>
-              {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
-              <div className='panel-user panel-credit'>
-                <div className='panel-user-img'>
-                  <span className='credit-user'>
-                    <Icon src={iconType(type)} />
-                    <span className='panel-user-cnt'>
-                      <span className='full-name'>{type}</span>
-                    </span>
-                  </span>
+      <div className={isPreview ? 'grid-item grid-item--full' : 'grid-item'}>
+        <Wrapper className='thumbnail-box'>
+          {
+            type === 'Youtube' &&
+            <PlaceHolder image={image}>
+              <YoutubePlayer {...this.props} />
+            </PlaceHolder>
+          }
+          {
+          type !== 'Youtube' &&
+          isPreview &&
+          previewUrl(url, name)
+          }
+          {
+              type !== 'Youtube' &&
+              !isPreview &&
+              <PlaceHolder image={image}>
+                <div className='thumbnail'>
+                  <div className='thumbnail-image'>
+                    <Anchor className='thumbnail-overlay' onClick={this.onPreview}>
+                      <Img src={image} alt={name} />
+                    </Anchor>
+                  </div>
+                  <div className='caption'>
+                    <Title className='caption-title'>
+                      <Anchor onClick={() => previewUrl(url, name)}>
+                        {name && <span>{name}</span>}
+                      </Anchor>
+                    </Title>
+                    {description && <Description>{truncate(description, { length: 100, separator: /,? +/ })}</Description>}
+                    <div className='panel-user panel-credit'>
+                      <div className='panel-user-img'>
+                        <span className='credit-user'>
+                          <Icon src={iconType(type)} />
+                          <span className='panel-user-cnt'>
+                            <span className='full-name'>{type}</span>
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </PlaceHolder>
-      }
-      </Wrapper>
+              </PlaceHolder>
+          }
+        </Wrapper>
+      </div>
     )
   }
 }
@@ -133,7 +156,8 @@ BlockElement.propTypes = {
   name: PropTypes.string,
   description: PropTypes.string,
   image: PropTypes.string,
-  url: PropTypes.string
+  url: PropTypes.string,
+  masonry: PropTypes.object
 }
 
 export default BlockElement

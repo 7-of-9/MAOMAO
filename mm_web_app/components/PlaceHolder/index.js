@@ -6,7 +6,6 @@
 
 import React, { Component } from 'react'
 import ReactPlaceholder from 'react-placeholder'
-import 'react-placeholder/lib/reactPlaceholder.css'
 import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders'
 
 function awesomePlaceholder () {
@@ -25,20 +24,29 @@ class PlaceHolder extends Component {
   }
 
   componentDidMount () {
+    this._isMount = true
     const { image } = this.props
     if (image) {
       /* global Image */
       const img = new Image()
       img.onload = () => {
-        this.setState({ready: true})
+        if (this._isMount) {
+          this.setState({ready: true})
+        }
       }
       img.onerror = () => {
-        this.setState({ready: true})
+        if (this._isMount) {
+          this.setState({ready: true})
+        }
       }
       img.src = image
     } else {
       this.setState({ready: true})
     }
+  }
+
+  componentWillUnmount () {
+    this._isMount = false
   }
 
   render () {

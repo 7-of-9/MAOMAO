@@ -5442,9 +5442,9 @@ mobx-react-devtools@^4.2.15:
   version "4.2.15"
   resolved "https://registry.yarnpkg.com/mobx-react-devtools/-/mobx-react-devtools-4.2.15.tgz#881c038fb83db4dffd1e72bbaf5374d26b2fdebb"
 
-mobx-react@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.2.1.tgz#35324834b71ae27a7553d76ad413e5f96ba40db5"
+mobx-react@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.2.2.tgz#db9cc3cafefbd830d0584c1149af5aae67829201"
   dependencies:
     hoist-non-react-statics "^1.2.0"
 
@@ -6882,9 +6882,9 @@ react-modal@^1.7.6, react-modal@^1.7.7:
     prop-types "^15.5.7"
     react-dom-factories "^1.0.0"
 
-react-modal@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-2.2.0.tgz#9c29e3ecd54d03ebb5a0b8e7e6769fbe6324beb4"
+react-modal@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-2.2.1.tgz#22563782688bbb43441ac436156d6cb5dcb60c8b"
   dependencies:
     element-class "^0.2.0"
     exenv "1.2.0"

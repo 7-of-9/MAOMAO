@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
 import previewUrl from '../../utils/previewUrl'
+import logger from '../../utils/logger'
 
 const Title = styled.h3`
   font-size: 14px;
@@ -43,7 +44,7 @@ const Icon = styled.img`
 `
 
 function YouTubeGetID (url) {
-  var ID = ''
+  let ID = ''
   url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)
   if (url[2] !== undefined) {
     ID = url[2].split(/[^0-9a-z_-]/i)
@@ -51,6 +52,7 @@ function YouTubeGetID (url) {
   } else {
     ID = url
   }
+  logger.warn('youtube id', ID)
   return ID
 }
 
