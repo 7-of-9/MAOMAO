@@ -21,7 +21,7 @@ Router.onRouteChangeError = () => NProgress.done()
 
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.4s'
+  transitionDuration: 0
 }
 
 function mashUp (store) {
@@ -233,8 +233,6 @@ class Discovery extends Component {
               <Masonry
                 className='container-masonry'
                 options={masonryOptions}
-                disableImagesLoaded={false}
-                updateOnEachImageLoad={false}
                 >
                 <div className='grid-row'>{mashUp(toJS(this.props.discovery))}</div>
               </Masonry>
