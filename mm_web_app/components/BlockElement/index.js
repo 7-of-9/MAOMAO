@@ -4,13 +4,11 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import ReactPlaceholder from 'react-placeholder'
-import 'react-placeholder/lib/reactPlaceholder.css'
-import { TextBlock, RectShape } from 'react-placeholder/lib/placeholders'
 import { truncate } from 'lodash'
+import PlaceHolder from '../PlaceHolder'
 import YoutubePlayer from '../YoutubePlayer'
 import previewUrl from '../../utils/previewUrl'
 import logger from '../../utils/logger'
@@ -83,42 +81,7 @@ function iconType (type) {
   }
 }
 
-function awesomePlaceholder () {
-  return (
-    <div className='media-block'>
-      <RectShape color='#CDCDCD' style={{width: 200, height: 120}} />
-      <TextBlock rows={3} color='#CDCDCD' />
-    </div>
-  )
-}
-
-class BlockElement extends Component {
-  constructor (props) {
-    super(props)
-    this.state = { ready: false }
-  }
-
-  componentDidMount () {
-    const { image } = this.props
-    logger.warn('BlockElement componentDidMount', image)
-    if (image) {
-      /* global Image */
-      const img = new Image()
-      img.onload = () => {
-        logger.warn('BlockElement componentDidMount onload', image)
-        this.setState({ready: true})
-      }
-      img.onerror = () => {
-        logger.warn('BlockElement componentDidMount onerror', image)
-        this.setState({ready: true})
-      }
-      img.src = image
-      logger.warn('BlockElement componentDidMount img', img)
-    } else {
-      this.setState({ready: true})
-    }
-  }
-
+class BlockElement extends PureComponent {
   render () {
     const { url, image, name, description, type } = this.props
     logger.info('BlockElement render', url, image, type)
@@ -126,14 +89,13 @@ class BlockElement extends Component {
       <Wrapper className='thumbnail-box'>
         {
           type === 'Youtube' &&
-          <YoutubePlayer {...this.props} />
+          <PlaceHolder image={image}>
+            <YoutubePlayer {...this.props} />
+          </PlaceHolder>
         }
         {
         type !== 'Youtube' &&
-        <ReactPlaceholder
-          showLoadingAnimation
-          customPlaceholder={awesomePlaceholder()}
-          ready={this.state.ready}>
+        <PlaceHolder image={image}>
           <div className='thumbnail'>
             <div className='thumbnail-image'>
               <Anchor className='thumbnail-overlay' onClick={() => previewUrl(url, name)}>
@@ -159,7 +121,7 @@ class BlockElement extends Component {
               </div>
             </div>
           </div>
-        </ReactPlaceholder>
+        </PlaceHolder>
       }
       </Wrapper>
     )
