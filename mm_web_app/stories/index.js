@@ -151,7 +151,16 @@ storiesOf('BlockElement', module)
       name='10 Things You Need To Know By 30'
       type='Youtube'
       description='10 Things You Need to Know By the Time You Turn 30 Years Old'
-      url='IoGIEoUEw-A'
+      url='https://www.youtube.com/watch?v=IoGIEoUEw-A'
+      />
+  ))
+  .add('Vimeo inline player', () => (
+    <BlockElement
+      image='https://i.vimeocdn.com/video/642420448_1280x720.webp'
+      name='BEYOND NATIVE (NOWNESS Magazine)'
+      type='Vimeo'
+      description='"A group of rising artists unite for a dynamic show of intercultural creativity"'
+      url='https://vimeo.com/223584214'
       />
   ))
 

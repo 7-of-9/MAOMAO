@@ -1,13 +1,13 @@
 /**
 *
-* YoutubePlayer
+* VimeoPlayer
 *
 */
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import YouTube from 'react-youtube'
+import Vimeo from 'react-vimeo'
 import { truncate } from 'lodash'
 
 const Title = styled.h3`
@@ -41,46 +41,32 @@ const Icon = styled.img`
   height: 32px;
 `
 
-function YouTubeGetID (url) {
-  let ID = ''
-  url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)
-  if (url[2] !== undefined) {
-    ID = url[2].split(/[^0-9a-z_-]/i)
-    ID = ID[0]
-  } else {
-    ID = url
-  }
-  return ID
+function vimeoGetID (url) {
+  /* global URL */
+  const { pathname } = new URL(url)
+  return pathname.substr(1)
 }
 
-class YoutubePlayer extends PureComponent {
+class VimeoPlayer extends PureComponent {
   render () {
     const { url, name, description, type } = this.props
-    const opts = {
-      height: '220',
-      width: '100%',
-      playerVars: {
-        autoplay: 0
-      }
-    }
     return (
       <div
         className='thumbnail'
-        onMouseEnter={() => { this.ytb && this.ytb.playVideo() }}
-        onMouseLeave={() => { this.ytb && this.ytb.pauseVideo() }}
+        onMouseEnter={(evt) => { this.vm.playVideo(evt) }}
+        onMouseLeave={(evt) => { this.vm.playVideo(evt) }}
           >
         <div
           className='thumbnail-image'
             >
-          <YouTube
-            videoId={YouTubeGetID(url)}
-            opts={opts}
-            onReady={(event) => { this.ytb = event.target }}
-              />
+          <Vimeo
+            videoId={vimeoGetID(url)}
+            ref={(el) => { this.vm = el }}
+           />
         </div>
         <div className='caption'>
           <Title className='caption-title'>
-            <Anchor onClick={this.ytb && this.ytb.playVideo()}>
+            <Anchor onClick={(evt) => { this.vm.playVideo(evt) }}>
               {name && <span>{name}</span>}
             </Anchor>
           </Title>
@@ -88,7 +74,7 @@ class YoutubePlayer extends PureComponent {
           <div className='panel-user panel-credit'>
             <div className='panel-user-img'>
               <span className='credit-user'>
-                <Icon src='/static/images/youtube.png' />
+                <Icon src='/static/images/vimeo.png' />
                 <span className='panel-user-cnt'>
                   <span className='full-name'>{type}</span>
                 </span>
@@ -101,7 +87,7 @@ class YoutubePlayer extends PureComponent {
   }
 }
 
-YoutubePlayer.propTypes = {
+VimeoPlayer.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
@@ -109,4 +95,4 @@ YoutubePlayer.propTypes = {
   url: PropTypes.string
 }
 
-export default YoutubePlayer
+export default VimeoPlayer

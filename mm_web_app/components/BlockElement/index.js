@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { truncate } from 'lodash'
 import PlaceHolder from '../PlaceHolder'
 import YoutubePlayer from '../YoutubePlayer'
+import VimeoPlayer from '../VimeoPlayer'
 import previewUrl from '../../utils/previewUrl'
 import logger from '../../utils/logger'
 
@@ -93,7 +94,7 @@ class BlockElement extends Component {
   onPreview () {
     this.setState({
       isPreview: true
-    }, () => { this.props.masonry.layout() })
+    }, () => { this.props.masonry && this.props.masonry.layout() })
   }
 
   render () {
@@ -114,12 +115,22 @@ class BlockElement extends Component {
             </PlaceHolder>
           }
           {
-          type !== 'Youtube' &&
+            type === 'Vimeo' &&
+            <PlaceHolder image={image}>
+              <div
+                onMouseEnter={this.onPreview}
+                >
+                <VimeoPlayer {...this.props} />
+              </div>
+            </PlaceHolder>
+          }
+          {
+          type !== 'Youtube' && type !== 'Vimeo' &&
           isPreview &&
           previewUrl(url, name)
           }
           {
-              type !== 'Youtube' &&
+              type !== 'Youtube' && type !== 'Vimeo' &&
               !isPreview &&
               <PlaceHolder image={image}>
                 <div className='thumbnail'>

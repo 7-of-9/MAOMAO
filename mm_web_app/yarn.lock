@@ -2420,7 +2420,7 @@ debug@2.2.0:
   dependencies:
     ms "0.7.1"
 
-debug@^2.6.8:
+debug@^2.1.3, debug@^2.6.8:
   version "2.6.8"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
@@ -4756,6 +4756,12 @@ jsonify@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
 
+jsonp@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/jsonp/-/jsonp-0.2.1.tgz#a65b4fa0f10bda719a05441ea7b94c55f3e15bae"
+  dependencies:
+    debug "^2.1.3"
+
 jsonpointer@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/jsonpointer/-/jsonpointer-4.0.1.tgz#4fd92cb34e0e9db3c89c8622ecf51f9b978c6cb9"
@@ -4817,6 +4823,10 @@ jws@^3.1.3, jws@^3.1.4:
 keycode@^2.1.8:
   version "2.1.9"
   resolved "https://registry.yarnpkg.com/keycode/-/keycode-2.1.9.tgz#964a23c54e4889405b4861a5c9f0480d45141dfa"
+
+keymirror@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
 
 kind-of@^2.0.1:
   version "2.0.1"
@@ -6952,6 +6962,14 @@ react-transition-group@^1.2.0:
     loose-envify "^1.3.1"
     prop-types "^15.5.6"
     warning "^3.0.0"
+
+react-vimeo@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-vimeo/-/react-vimeo-1.0.0.tgz#82efe060f268592beda08ac4f4dda7207814896f"
+  dependencies:
+    debug "^2.2.0"
+    jsonp "^0.2.0"
+    keymirror "^0.1.1"
 
 react-youtube@^7.4.0:
   version "7.4.0"
