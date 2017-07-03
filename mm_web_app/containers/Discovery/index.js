@@ -22,6 +22,7 @@ Router.onRouteChangeError = () => NProgress.done()
 const masonryOptions = {
   itemSelector: '.grid-item',
   transitionDuration: '0.2s',
+  columnWidth: '.grid-sizer',
   percentPosition: true
 }
 
@@ -238,7 +239,10 @@ class Discovery extends Component {
                 options={masonryOptions}
                 ref={(c) => { this.masonry = this.masonry || c.masonry }}
                 >
-                <div className='grid-row'>{mashUp(toJS(this.props.discovery), this.masonry)}</div>
+                <div className='grid-row'>
+                  <div className='grid-sizer' />
+                  {mashUp(toJS(this.props.discovery), this.masonry)}
+                </div>
               </Masonry>
             </InfiniteScroll>
             <Loading isLoading={this.props.discovery.pendings.length > 0} />

@@ -461,7 +461,7 @@ img {
   position: relative;
   margin: 0;
   width: 100%;
-  .grid-item {
+  .grid-sizer, .grid-item {
     @include border-radius(8px);
     position: relative;
     margin-bottom: 10px;
@@ -508,8 +508,8 @@ img {
     }
   }
   .grid-item--full {
-    width: 40%;
-    @media (max-width: 550px) {
+    width: 60%;
+    @media (max-width: 750px) {
       width: 100%;
     }
   }

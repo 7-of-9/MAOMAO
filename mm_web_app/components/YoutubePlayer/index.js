@@ -10,7 +10,6 @@ import styled from 'styled-components'
 import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
 import previewUrl from '../../utils/previewUrl'
-import logger from '../../utils/logger'
 
 const Title = styled.h3`
   font-size: 14px;
@@ -52,7 +51,6 @@ function YouTubeGetID (url) {
   } else {
     ID = url
   }
-  logger.warn('youtube id', ID)
   return ID
 }
 

@@ -11,7 +11,9 @@ router.get('/', (req, res) => {
     if (error) {
       res.status(500).send({ error })
     } else {
-      res.send(body)
+      const replace = String.prototype.replace
+      const html = replace.call(body, '<head>', `<head><base href="${url}">`)
+      res.send(html)
     }
   })
 })
