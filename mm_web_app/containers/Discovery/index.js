@@ -21,7 +21,7 @@ Router.onRouteChangeError = () => NProgress.done()
 
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.2s',
+  transitionDuration: '0.4s',
   columnWidth: '.grid-sizer',
   percentPosition: true
 }

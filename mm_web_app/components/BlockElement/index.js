@@ -106,7 +106,11 @@ class BlockElement extends Component {
           {
             type === 'Youtube' &&
             <PlaceHolder image={image}>
-              <YoutubePlayer {...this.props} />
+              <div
+                onMouseEnter={this.onPreview}
+                >
+                <YoutubePlayer {...this.props} />
+              </div>
             </PlaceHolder>
           }
           {
@@ -126,7 +130,7 @@ class BlockElement extends Component {
                   </div>
                   <div className='caption'>
                     <Title className='caption-title'>
-                      <Anchor onClick={() => previewUrl(url, name)}>
+                      <Anchor onClick={this.onPreview}>
                         {name && <span>{name}</span>}
                       </Anchor>
                     </Title>

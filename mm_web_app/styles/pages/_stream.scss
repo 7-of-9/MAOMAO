@@ -509,6 +509,13 @@ img {
   }
   .grid-item--full {
     width: 60%;
+    height: 500px;
+    iframe {
+      height: 350px;
+    }
+    @media (max-width: 1290px) {
+      width: 75%;
+    }
     @media (max-width: 750px) {
       width: 100%;
     }
