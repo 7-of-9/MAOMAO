@@ -150,7 +150,9 @@ function mashUp (store, masonry) {
   if (vimeoResult && vimeoResult.length) {
     const uniqVimeoResult = _.uniqBy(vimeoResult, 'link')
     _.forEach(uniqVimeoResult, (item) => {
-      urls.push(item.link)
+      const replace = String.prototype.replace
+      const link = replace.call(item.uri, '/videos', 'https://vimeo.com')
+      urls.push(link)
       const img = item.pictures && item.pictures.sizes.length ? item.pictures.sizes[item.pictures.sizes.length - 1].link : '/static/images/no-image.png'
       vimeos.push(
         <BlockElement
@@ -158,7 +160,7 @@ function mashUp (store, masonry) {
           name={item.name}
           description={item.description}
           image={img}
-          url={item.link}
+          url={link}
           type={'Vimeo'}
           masonry={masonry}
           />)

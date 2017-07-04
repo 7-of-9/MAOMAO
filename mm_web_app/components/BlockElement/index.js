@@ -6,13 +6,27 @@
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { truncate } from 'lodash'
 import PlaceHolder from '../PlaceHolder'
-import YoutubePlayer from '../YoutubePlayer'
-import VimeoPlayer from '../VimeoPlayer'
+import Loading from '..//Loading'
 import previewUrl from '../../utils/previewUrl'
 import logger from '../../utils/logger'
+
+const YoutubePlayer = dynamic(
+ import('../YoutubePlayer'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const VimeoPlayer = dynamic(
+ import('../VimeoPlayer'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
 
 const Wrapper = styled.section`
   padding: 10px;

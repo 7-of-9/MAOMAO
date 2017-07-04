@@ -7,7 +7,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import Vimeo from 'react-vimeo'
+import Player from '@vimeo/player'
 import { truncate } from 'lodash'
 
 const Title = styled.h3`
@@ -47,26 +47,47 @@ function vimeoGetID (url) {
   return pathname.substr(1)
 }
 
+function playVideo (iframe) {
+  const player = new Player(iframe)
+  player.setVolume(0)
+  player.play()
+}
+
+function pauseVideo (iframe) {
+  const player = new Player(iframe)
+  player.pause()
+}
+
+function handleClick (event, url, iframe) {
+  if (event.shiftKey || event.ctrlKey || event.metaKey) {
+    window.open(url, '_blank')
+  } else if (iframe) {
+    const player = new Player(iframe)
+    player.play()
+  }
+}
+
 class VimeoPlayer extends PureComponent {
   render () {
     const { url, name, description, type } = this.props
     return (
-      <div
-        className='thumbnail'
-        onMouseEnter={(evt) => { this.vm.playVideo(evt) }}
-        onMouseLeave={(evt) => { this.vm.playVideo(evt) }}
-          >
-        <div
-          className='thumbnail-image'
-            >
-          <Vimeo
-            videoId={vimeoGetID(url)}
-            ref={(el) => { this.vm = el }}
-           />
+      <div className='thumbnail'
+        onMouseEnter={() => { this.iframe && playVideo(this.iframe) }}
+        onMouseLeave={() => { this.iframe && pauseVideo(this.iframe) }}
+        >
+        <div className='thumbnail-image' >
+          <iframe
+            src={`https://player.vimeo.com/video/${vimeoGetID(url)}`}
+            frameBorder='0'
+            height='100%'
+            width='100%'
+            allowFullScreen
+            ref={(el) => { this.iframe = el }}
+            />
         </div>
         <div className='caption'>
           <Title className='caption-title'>
-            <Anchor onClick={(evt) => { this.vm.playVideo(evt) }}>
+            <Anchor onClick={(evt) => { handleClick(evt, url, this.iframe) }}>
               {name && <span>{name}</span>}
             </Anchor>
           </Title>

@@ -53,6 +53,23 @@ function YouTubeGetID (url) {
   return ID
 }
 
+function playVideo (player) {
+  player.mute()
+  player.playVideo()
+}
+
+function pauseVideo (player) {
+  player.pauseVideo()
+}
+
+function handleClick (event, url, player) {
+  if (event.shiftKey || event.ctrlKey || event.metaKey) {
+    window.open(url, '_blank')
+  } else if (player) {
+    player.playVideo()
+  }
+}
+
 class YoutubePlayer extends PureComponent {
   render () {
     const { url, name, description, type } = this.props
@@ -66,8 +83,8 @@ class YoutubePlayer extends PureComponent {
     return (
       <div
         className='thumbnail'
-        onMouseEnter={() => { this.ytb && this.ytb.playVideo() }}
-        onMouseLeave={() => { this.ytb && this.ytb.pauseVideo() }}
+        onMouseEnter={() => { this.ytb && playVideo(this.ytb) }}
+        onMouseLeave={() => { this.ytb && pauseVideo(this.ytb) }}
           >
         <div
           className='thumbnail-image'
@@ -80,7 +97,7 @@ class YoutubePlayer extends PureComponent {
         </div>
         <div className='caption'>
           <Title className='caption-title'>
-            <Anchor onClick={this.ytb && this.ytb.playVideo()}>
+            <Anchor onClick={(evt) => { handleClick(evt, url, this.ytb) }}>
               {name && <span>{name}</span>}
             </Anchor>
           </Title>
