@@ -15,14 +15,14 @@ import previewUrl from '../../utils/previewUrl'
 import logger from '../../utils/logger'
 
 const YoutubePlayer = dynamic(
- import('../YoutubePlayer'),
+ import('./YoutubePlayer'),
   {
     loading: () => (<Loading isLoading />)
   }
 )
 
 const VimeoPlayer = dynamic(
- import('../VimeoPlayer'),
+ import('./VimeoPlayer'),
   {
     loading: () => (<Loading isLoading />)
   }
@@ -120,23 +120,11 @@ class BlockElement extends Component {
         <Wrapper className='thumbnail-box'>
           {
             type === 'Youtube' &&
-            <PlaceHolder image={image}>
-              <div
-                onMouseEnter={this.onPreview}
-                >
-                <YoutubePlayer {...this.props} />
-              </div>
-            </PlaceHolder>
+            <YoutubePlayer {...this.props} onPreview={this.onPreview} />
           }
           {
             type === 'Vimeo' &&
-            <PlaceHolder image={image}>
-              <div
-                onMouseEnter={this.onPreview}
-                >
-                <VimeoPlayer {...this.props} />
-              </div>
-            </PlaceHolder>
+            <VimeoPlayer {...this.props} onPreview={this.onPreview} />
           }
           {
           type !== 'Youtube' && type !== 'Vimeo' &&

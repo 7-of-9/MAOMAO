@@ -1,13 +1,13 @@
 /**
 *
-* VimeoPlayer
+* YoutubePlayer
 *
 */
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import Player from '@vimeo/player'
+import YouTube from 'react-youtube'
 import { truncate } from 'lodash'
 
 const Title = styled.h3`
@@ -41,53 +41,63 @@ const Icon = styled.img`
   height: 32px;
 `
 
-function vimeoGetID (url) {
-  /* global URL */
-  const { pathname } = new URL(url)
-  return pathname.substr(1)
+function YouTubeGetID (url) {
+  let ID = ''
+  url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/)
+  if (url[2] !== undefined) {
+    ID = url[2].split(/[^0-9a-z_-]/i)
+    ID = ID[0]
+  } else {
+    ID = url
+  }
+  return ID
 }
 
-function playVideo (iframe) {
-  const player = new Player(iframe)
-  player.setVolume(0)
-  player.play()
+function playVideo (player) {
+  player.mute()
+  player.playVideo()
 }
 
-function pauseVideo (iframe) {
-  const player = new Player(iframe)
-  player.pause()
+function pauseVideo (player) {
+  player.pauseVideo()
 }
 
-function handleClick (event, url, iframe) {
+function handleClick (event, url, player) {
   if (event.shiftKey || event.ctrlKey || event.metaKey) {
     window.open(url, '_blank')
-  } else if (iframe) {
-    const player = new Player(iframe)
-    player.play()
+  } else if (player) {
+    player.playVideo()
   }
 }
 
-class VimeoPlayer extends PureComponent {
+class YoutubePlayer extends PureComponent {
   render () {
-    const { url, name, description, type } = this.props
+    const { url, name, description, type, onPreview } = this.props
+    const opts = {
+      height: '220',
+      width: '100%',
+      playerVars: {
+        autoplay: 0
+      }
+    }
     return (
-      <div className='thumbnail'
-        onMouseEnter={() => { this.iframe && playVideo(this.iframe) }}
-        onMouseLeave={() => { this.iframe && pauseVideo(this.iframe) }}
-        >
-        <div className='thumbnail-image' >
-          <iframe
-            src={`https://player.vimeo.com/video/${vimeoGetID(url)}`}
-            frameBorder='0'
-            height='100%'
-            width='100%'
-            allowFullScreen
-            ref={(el) => { this.iframe = el }}
-            />
+      <div
+        className='thumbnail'
+        onMouseEnter={() => { this.ytb && playVideo(this.ytb) }}
+        onMouseLeave={() => { this.ytb && pauseVideo(this.ytb) }}
+          >
+        <div
+          className='thumbnail-image'
+            >
+          <YouTube
+            videoId={YouTubeGetID(url)}
+            opts={opts}
+            onReady={(event) => { this.ytb = event.target }}
+              />
         </div>
         <div className='caption'>
           <Title className='caption-title'>
-            <Anchor onClick={(evt) => { handleClick(evt, url, this.iframe) }}>
+            <Anchor onClick={(evt) => { onPreview() && handleClick(evt, url, this.ytb) }}>
               {name && <span>{name}</span>}
             </Anchor>
           </Title>
@@ -95,7 +105,7 @@ class VimeoPlayer extends PureComponent {
           <div className='panel-user panel-credit'>
             <div className='panel-user-img'>
               <span className='credit-user'>
-                <Icon src='/static/images/vimeo.png' />
+                <Icon src='/static/images/youtube.png' />
                 <span className='panel-user-cnt'>
                   <span className='full-name'>{type}</span>
                 </span>
@@ -108,7 +118,7 @@ class VimeoPlayer extends PureComponent {
   }
 }
 
-VimeoPlayer.propTypes = {
+YoutubePlayer.propTypes = {
   type: PropTypes.string,
   name: PropTypes.string,
   description: PropTypes.string,
@@ -116,4 +126,4 @@ VimeoPlayer.propTypes = {
   url: PropTypes.string
 }
 
-export default VimeoPlayer
+export default YoutubePlayer

@@ -42,7 +42,7 @@ function handleClick (event, url, player) {
 class InlineYoutubePlayer extends PureComponent {
   render () {
     /* eslint-disable camelcase */
-    const { href, title, url_id, owners, users, topics, myUrlIds, deepestTopics, parseDomain, urlTopic, urlOwner } = this.props
+    const { href, title, url_id, owners, users, topics, myUrlIds, deepestTopics, parseDomain, urlTopic, urlOwner, onPreview } = this.props
     const opts = {
       height: '220',
       width: '100%',
@@ -65,7 +65,7 @@ class InlineYoutubePlayer extends PureComponent {
         </div>
         <div className='caption'>
           <h4 className='caption-title'>
-            <a onClick={(evt) => { handleClick(evt, href, this.ytb) }}>
+            <a onClick={(evt) => { onPreview() && handleClick(evt, href, this.ytb) }}>
               {title} ({url_id})
             </a>
           </h4>

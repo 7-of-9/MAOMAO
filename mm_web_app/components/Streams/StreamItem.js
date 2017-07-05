@@ -73,47 +73,37 @@ class StreamItem extends Component {
           }
           {
             href.indexOf('youtube.com') !== -1 &&
-            <PlaceHolder image={img}>
-              <div
-                onMouseEnter={this.onPreview}
-              >
-                <InlineYoutubePlayer
-                  href={href}
-                  title={title}
-                  url_id={url_id}
-                  topics={topics}
-                  deepestTopics={deepestTopics}
-                  users={users}
-                  owners={owners}
-                  myUrlIds={myUrlIds}
-                  urlTopic={urlTopic}
-                  urlOwner={urlOwner}
-                  parseDomain={parseDomain}
+            <InlineYoutubePlayer
+              href={href}
+              title={title}
+              url_id={url_id}
+              topics={topics}
+              deepestTopics={deepestTopics}
+              users={users}
+              owners={owners}
+              myUrlIds={myUrlIds}
+              urlTopic={urlTopic}
+              urlOwner={urlOwner}
+              parseDomain={parseDomain}
+              onPreview={this.onPreview}
               />
-              </div>
-            </PlaceHolder>
           }
           {
               href.indexOf('vimeo.com') !== -1 &&
-              <PlaceHolder image={img}>
-                <div
-                  onMouseEnter={this.onPreview}
-                >
-                  <InlineVimeoPlayer
-                    href={href}
-                    title={title}
-                    url_id={url_id}
-                    topics={topics}
-                    deepestTopics={deepestTopics}
-                    users={users}
-                    owners={owners}
-                    myUrlIds={myUrlIds}
-                    urlTopic={urlTopic}
-                    urlOwner={urlOwner}
-                    parseDomain={parseDomain}
+              <InlineVimeoPlayer
+                href={href}
+                title={title}
+                url_id={url_id}
+                topics={topics}
+                deepestTopics={deepestTopics}
+                users={users}
+                owners={owners}
+                myUrlIds={myUrlIds}
+                urlTopic={urlTopic}
+                urlOwner={urlOwner}
+                parseDomain={parseDomain}
+                onPreview={this.onPreview}
                 />
-                </div>
-              </PlaceHolder>
             }
         </div>
       </div>
