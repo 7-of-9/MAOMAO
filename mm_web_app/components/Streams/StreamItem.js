@@ -9,6 +9,7 @@ import { inject, observer } from 'mobx-react'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import PlaceHolder from '../../components/PlaceHolder'
 import InlineYoutubePlayer from './InlineYoutubePlayer'
+import InlineVimeoPlayer from './InlineVimeoPlayer'
 import previewUrl from '../../utils/previewUrl'
 
 @inject('ui')
@@ -38,8 +39,8 @@ class StreamItem extends Component {
           {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
           {
               href.indexOf('youtube.com') === -1 &&
+              href.indexOf('vimeo.com') === -1 &&
               !isPreview &&
-
               <PlaceHolder image={img}>
                 <div className='thumbnail'>
                   <div className='thumbnail-image'>
@@ -66,16 +67,39 @@ class StreamItem extends Component {
           }
           {
           href.indexOf('youtube.com') === -1 &&
+          href.indexOf('vimeo.com') === -1 &&
           isPreview &&
           previewUrl(href, title)
           }
           {
-              href.indexOf('youtube.com') !== -1 &&
+            href.indexOf('youtube.com') !== -1 &&
+            <PlaceHolder image={img}>
+              <div
+                onMouseEnter={this.onPreview}
+              >
+                <InlineYoutubePlayer
+                  href={href}
+                  title={title}
+                  url_id={url_id}
+                  topics={topics}
+                  deepestTopics={deepestTopics}
+                  users={users}
+                  owners={owners}
+                  myUrlIds={myUrlIds}
+                  urlTopic={urlTopic}
+                  urlOwner={urlOwner}
+                  parseDomain={parseDomain}
+              />
+              </div>
+            </PlaceHolder>
+          }
+          {
+              href.indexOf('vimeo.com') !== -1 &&
               <PlaceHolder image={img}>
                 <div
                   onMouseEnter={this.onPreview}
                 >
-                  <InlineYoutubePlayer
+                  <InlineVimeoPlayer
                     href={href}
                     title={title}
                     url_id={url_id}

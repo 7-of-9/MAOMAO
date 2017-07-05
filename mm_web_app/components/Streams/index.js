@@ -149,6 +149,15 @@ function parseDomain (link) {
 @inject('ui')
 @observer
 class Streams extends React.Component {
+  constructor (props) {
+    super(props)
+    this.onLayout = this.onLayout.bind(this)
+  }
+
+  onLayout () {
+    this.masonry && this.masonry.layout()
+  }
+
   render () {
     // populate urls and users
     const { urls, users, topics, owners } = toJS(this.props.store)
@@ -194,7 +203,7 @@ class Streams extends React.Component {
           urlOwner={urlOwner}
           parseDomain={parseDomain}
           previewUrl={previewUrl}
-          onLayout={() => { this.masonry && this.masonry.layout() }}
+          onLayout={this.onLayout}
           />)
       })
     }
@@ -223,6 +232,8 @@ class Streams extends React.Component {
             <Masonry
               className='container-masonry'
               options={masonryOptions}
+              updateOnEachImageLoad
+              onImagesLoaded={this.onLayout}
               ref={(c) => { this.masonry = this.masonry || c.masonry }}
               >
               <div className='grid-row'>

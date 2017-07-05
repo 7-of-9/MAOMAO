@@ -189,6 +189,11 @@ class Discovery extends Component {
     super(props)
     this.loadMore = this.loadMore.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.onLayout = this.onLayout.bind(this)
+  }
+
+  onLayout () {
+    this.masonry && this.masonry.layout()
   }
 
   componentDidMount () {
@@ -238,6 +243,8 @@ class Discovery extends Component {
               <Masonry
                 className='container-masonry'
                 options={masonryOptions}
+                updateOnEachImageLoad
+                onImagesLoaded={this.onLayout}
                 ref={(c) => { this.masonry = this.masonry || c.masonry }}
                 >
                 <div className='grid-row'>
