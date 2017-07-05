@@ -8,7 +8,7 @@ export default function previewUrl (url, name) {
       id={`frame-${name}`}
       name={`frame-${name}`}
       width='100%'
-      height='500'
+      height='480'
       frameBorder='0'
       allowFullScreen
       allowTransparency

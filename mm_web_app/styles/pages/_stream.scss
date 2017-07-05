@@ -511,7 +511,7 @@ img {
     width: 60%;
     height: 500px;
     iframe {
-      height: 350px;
+      min-height: 320px;
     }
     @media (max-width: 1290px) {
       width: 75%;

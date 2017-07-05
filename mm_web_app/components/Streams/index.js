@@ -12,9 +12,8 @@ import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
+import StreamItem from './StreamItem'
 import Loading from '../../components/Loading'
-import InlinePlayer from './InlinePlayer'
-import DiscoveryButton from '../../components/DiscoveryButton'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
 import previewUrl from '../../utils/previewUrl'
@@ -23,7 +22,9 @@ import { tagColor } from '../../utils/helper'
 const LIMIT = 10
 const masonryOptions = {
   itemSelector: '.grid-item',
-  transitionDuration: '0.4s'
+  transitionDuration: '0.4s',
+  columnWidth: '.grid-sizer',
+  percentPosition: true
 }
 
 function urlOwner (owners, users, onSelectUser) {
@@ -34,7 +35,7 @@ function urlOwner (owners, users, onSelectUser) {
     items.push(
       <div key={`${owner.fullname}-${hitUtc}`} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
-          <img src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
+          <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
           <span className='panel-user-cnt'>
             <span className='full-name'>{owner.fullname} visited {moment.utc(hitUtc).fromNow()}</span>
             <div className='filter-rating'>
@@ -147,14 +148,7 @@ function parseDomain (link) {
 @inject('store')
 @inject('ui')
 @observer
-class Streams extends React.PureComponent {
-  componentDidMount () {
-    logger.warn('Streams componentDidMount')
-  }
-
-  componentWillReact () {
-    logger.warn('Streams componentWillReact')
-  }
+class Streams extends React.Component {
   render () {
     // populate urls and users
     const { urls, users, topics, owners } = toJS(this.props.store)
@@ -183,50 +177,25 @@ class Streams extends React.PureComponent {
             suggestionKeys.push(..._.map(item.suggestions.slice(0, 5), 'term_name'))
           })
         }
-        items.push(<div key={url_id} className='grid-item shuffle-item'>
-          <div className='thumbnail-box'>
-            {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
-            {
-              href.indexOf('youtube.com') === -1 &&
-              <div className='thumbnail'>
-                <div className='thumbnail-image'>
-                  <a className='thumbnail-overlay' onClick={() => previewUrl(href, title)}>
-                    <img src={img || '/static/images/no-image.png'} alt={title} />
-                  </a>
-                  {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-                </div>
-                <div className='caption'>
-                  <h4 className='caption-title'>
-                    <a onClick={() => previewUrl(href, title)}>
-                      {title} ({url_id})
-                  </a>
-                  </h4>
-                  <h5 className='caption-title'>{parseDomain(href)}</h5>
-                  {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
-                </div>
-              </div>
-            }
-            {
-              href.indexOf('youtube.com') !== -1 &&
-              <InlinePlayer
-                href={href}
-                title={title}
-                url_id={url_id}
-                topics={topics}
-                users={users}
-                owners={owners}
-                myUrlIds={myUrlIds}
-                urlTopic={urlTopic}
-                urlOwner={urlOwner}
-                parseDomain={parseDomain}
-                previewUrl={previewUrl}
-                selectTopic={this.props.ui.selectTopic}
-                selectUser={this.props.ui.selectUser}
-                openShareTopic={this.props.ui.openShareTopic}
-              />
-            }
-          </div>
-        </div>)
+        items.push(<StreamItem
+          key={href}
+          href={href}
+          img={img}
+          title={title}
+          url_id={url_id}
+          topics={topics}
+          users={users}
+          deepestTopics={deepestTopics}
+          discoveryKeys={discoveryKeys}
+          suggestionKeys={suggestionKeys}
+          owners={owners}
+          myUrlIds={myUrlIds}
+          urlTopic={urlTopic}
+          urlOwner={urlOwner}
+          parseDomain={parseDomain}
+          previewUrl={previewUrl}
+          onLayout={() => { this.masonry && this.masonry.layout() }}
+          />)
       })
     }
 
@@ -251,8 +220,13 @@ class Streams extends React.PureComponent {
           loader={<Loading isLoading />}
         >
           <div className='main-inner'>
-            <Masonry className='container-masonry' options={masonryOptions}>
+            <Masonry
+              className='container-masonry'
+              options={masonryOptions}
+              ref={(c) => { this.masonry = this.masonry || c.masonry }}
+              >
               <div className='grid-row'>
+                <div className='grid-sizer' />
                 {items}
               </div>
             </Masonry>

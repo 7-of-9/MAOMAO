@@ -217,50 +217,27 @@ export class HomeStore extends CoreStore {
       when(
         () => userHistoryResult.state !== 'pending',
         () => {
-          this.userHistory = userHistoryResult.value.data
-          const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-          logger.warn('normalizedData', normalizedData)
-          this.normalizedData = normalizedData
+          if (userHistoryResult.state === 'fulfilled') {
+            this.userHistory = userHistoryResult.value.data
+            const normalizedData = normalizedHistoryData(toJS(this.userHistory))
+            logger.warn('normalizedData', normalizedData)
+            this.normalizedData = normalizedData
 
-          const { received, mine, topics } = this.userHistory
-          const friends = toJS(received)
-          const { urls: myUrls, user_id, fullname, avatar } = toJS(mine)
-          let urls = []
-          let users = []
-          let owners = []
-          if (myUrls && myUrls.length) {
-            urls.push(...myUrls.map(item => ({
-              url_id: item.url_id,
-              title: item.title,
-              href: item.href,
-              img: item.img
-            }
-            )))
-            myUrls.forEach(item => {
-              owners.push({
-                owner: user_id,
-                url_id: item.url_id,
-                hit_utc: item.hit_utc,
-                im_score: item.im_score,
-                time_on_tab: item.time_on_tab,
-                rate: calcRate(item.im_score, item.time_on_tab)
-              })
-            })
-            users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
-          }
-
-          _.forEach(friends, friend => {
-            const { user_id, fullname, avatar, shares: list } = friend
-            const urlIds = []
-            _.forEach(list, item => {
-              urls.push(...item.urls.map(item => ({
+            const { received, mine, topics } = this.userHistory
+            const friends = toJS(received)
+            const { urls: myUrls, user_id, fullname, avatar } = toJS(mine)
+            let urls = []
+            let users = []
+            let owners = []
+            if (myUrls && myUrls.length) {
+              urls.push(...myUrls.map(item => ({
                 url_id: item.url_id,
                 title: item.title,
                 href: item.href,
                 img: item.img
               }
               )))
-              item.urls.forEach(item => {
+              myUrls.forEach(item => {
                 owners.push({
                   owner: user_id,
                   url_id: item.url_id,
@@ -270,16 +247,41 @@ export class HomeStore extends CoreStore {
                   rate: calcRate(item.im_score, item.time_on_tab)
                 })
               })
-              urlIds.push(...item.urls.map(item => item.url_id))
+              users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
+            }
+
+            _.forEach(friends, friend => {
+              const { user_id, fullname, avatar, shares: list } = friend
+              const urlIds = []
+              _.forEach(list, item => {
+                urls.push(...item.urls.map(item => ({
+                  url_id: item.url_id,
+                  title: item.title,
+                  href: item.href,
+                  img: item.img
+                }
+              )))
+                item.urls.forEach(item => {
+                  owners.push({
+                    owner: user_id,
+                    url_id: item.url_id,
+                    hit_utc: item.hit_utc,
+                    im_score: item.im_score,
+                    time_on_tab: item.time_on_tab,
+                    rate: calcRate(item.im_score, item.time_on_tab)
+                  })
+                })
+                urlIds.push(...item.urls.map(item => item.url_id))
+              })
+              users.push({ user_id, fullname, avatar, urlIds })
             })
-            users.push({ user_id, fullname, avatar, urlIds })
-          })
-          this.urls = _.uniqBy(urls, 'url_id')
-          this.topics = flattenTopics(topics)
-          this.firstLevelTopics = topics.map(item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
-          this.users = users
-          this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
-          logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
+            this.urls = _.uniqBy(urls, 'url_id')
+            this.topics = flattenTopics(topics)
+            this.firstLevelTopics = topics.map(item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
+            this.users = users
+            this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
+            logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
+          }
           this.isProcessingHistory = false
         }
       )

@@ -234,8 +234,7 @@ class Discovery extends Component {
               pageStart={0}
               loadMore={this.loadMore}
               hasMore={this.props.discovery.hasMore}
-              className='container-fluid'
-                >
+              >
               <Masonry
                 className='container-masonry'
                 options={masonryOptions}
