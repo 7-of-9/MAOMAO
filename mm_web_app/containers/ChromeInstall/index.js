@@ -29,12 +29,8 @@ const customModalStyles = {
 @inject('ui')
 @observer
 class ChromeInstall extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onClose = this.onClose.bind(this)
-    this.state = {
-      isHide: false
-    }
+  state = {
+    isHide: false
   }
 
   componentDidMount () {
@@ -70,9 +66,19 @@ class ChromeInstall extends React.Component {
     }
   }
 
-  onClose () {
+  onClose = () => {
     logger.warn('onClose', this.props)
-    this.props.ui.toggleSignIn(false)
+    this.props.ui.closeExtensionModal()
+  }
+
+  onOpen = () => {
+    logger.warn('onOpen', this.props)
+    this.props.ui.openExtensionModal()
+  }
+
+  showSignIn = () => {
+    logger.warn('showSignIn', this.props)
+    this.props.ui.toggleSignIn(true)
   }
 
   render () {
@@ -95,7 +101,7 @@ class ChromeInstall extends React.Component {
           }
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={this.onOpen}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }
@@ -106,12 +112,12 @@ class ChromeInstall extends React.Component {
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={() => this.props.ui.openExtensionModal()} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={() => this.props.ui.openExtensionModal()}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
+            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={this.onOpen} title={title} />}
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={this.onOpen}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
               (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>
-                <button className='btn btn-login' onClick={() => { this.props.ui.toggleSignIn(true) }}>
+                <button className='btn btn-login' onClick={this.showSignIn}>
                   <i className='fa fa-sign-in' aria-hidden='true' /> {joinMsg}
                 </button>
               </div>
@@ -121,7 +127,7 @@ class ChromeInstall extends React.Component {
           }
         <Modal
           isOpen={this.props.ui.showExtensionModal}
-          onRequestClose={() => this.props.ui.closeExtensionModal()}
+          onRequestClose={this.onClose}
           portalClassName='InstallModal'
           style={customModalStyles}
           contentLabel='Install maomao'>

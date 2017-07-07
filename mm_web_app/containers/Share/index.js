@@ -39,17 +39,11 @@ const parseShareCode = (codes, urlId, shareTopics) => {
 @inject('store')
 @inject('ui')
 @observer
-class Share extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      type: 'Google',
-      shareOption: 'site',
-      currentStep: 1
-    }
-    this.changeShareType = this.changeShareType.bind(this)
-    this.sendInvitations = this.sendInvitations.bind(this)
-    this.fetchGoogleContacts = this.fetchGoogleContacts.bind(this)
+export default class Share extends React.Component {
+  state = {
+    type: 'Google',
+    shareOption: 'site',
+    currentStep: 1
   }
 
   componentDidMount () {
@@ -99,7 +93,7 @@ class Share extends React.Component {
     logger.warn('Share componentWillReact')
   }
 
-  changeShareType (type, shareOption, currentStep) {
+  changeShareType = (type, shareOption, currentStep) => {
     if (type.indexOf('Facebook') !== -1) {
       const { shareUrlId, shareTopics } = this.props.ui
       const code = parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)
@@ -121,7 +115,7 @@ class Share extends React.Component {
     }
   }
 
-  fetchGoogleContacts () {
+  fetchGoogleContacts = () => {
     checkGoogleAuth()
     .then((data) => {
       // download data
@@ -140,7 +134,7 @@ class Share extends React.Component {
     })
   }
 
-  sendInvitations (name, email, topic, url) {
+  sendInvitations = (name, email, topic, url) => {
     const { name: fullName, email: fromEmail } = this.props.store.user
     logger.warn('sendInvitations', fullName, fromEmail, name, email, topic, url)
     this.props.ui.addNotification('Sending invitations...')
@@ -155,11 +149,16 @@ class Share extends React.Component {
     .catch(error => this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`))
   }
 
+  onBack = (evt) => {
+    evt.preventDefault()
+    this.props.ui.backToStreams()
+  }
+
   render () {
     const { shareUrlId, shareTopics } = this.props.ui
     return (
       <div>
-        <button className='btn btn-back' onClick={() => { this.props.ui.backToStreams() }}>
+        <button className='btn btn-back' onClick={this.onBack}>
           <i className='fa fa-angle-left' aria-hidden='true' />
         </button>
         <div className='share-management bounceInRight animated'>
@@ -177,8 +176,7 @@ class Share extends React.Component {
               changeShareType={this.changeShareType}
               accessGoogleContacts={this.fetchGoogleContacts}
               contacts={toJS(this.props.store.contacts)}
-              notify={(msg) => this.props.ui.addNotification(msg)}
-              closeShare={() => this.props.ui.backToStreams()}
+              notify={this.props.ui.addNotification}
             />
           </div>
         </div>
@@ -186,5 +184,3 @@ class Share extends React.Component {
     )
   }
 }
-
-export default Share

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose'
-import { CSSTransitionGroup } from 'react-transition-group'
 import Steps, { Step } from 'rc-steps'
 import StepOne from './StepOne'
 import StepTwo from './StepTwo'
@@ -91,7 +90,7 @@ function ShareTopic ({
       description={item.description}
     />
   ))
-  const component = (
+  return (
     <div style={style.container}>
       <Steps className='share-steps' current={currentStep - 1} direction='vertical' size='small'>
         {steps}
@@ -131,15 +130,6 @@ function ShareTopic ({
           />
         }
     </div>
-    )
-  return (
-    <CSSTransitionGroup
-      transitionName='maomao'
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={300}
-    >
-      {component}
-    </CSSTransitionGroup>
   )
 }
 
@@ -153,7 +143,6 @@ ShareTopic.propTypes = {
   sendEmail: PropTypes.func.isRequired,
   changeShareType: PropTypes.func.isRequired,
   accessGoogleContacts: PropTypes.func.isRequired,
-  notify: PropTypes.func.isRequired,
-  closeShare: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired
 }
 export default enhance(ShareTopic)

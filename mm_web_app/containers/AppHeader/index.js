@@ -31,16 +31,7 @@ const avatar = (user) => {
 @inject('store')
 @inject('ui')
 @observer
-class AppHeader extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onFacebookLogin = this.onFacebookLogin.bind(this)
-    this.onGoogleLogin = this.onGoogleLogin.bind(this)
-    this.onInternalLogin = this.onInternalLogin.bind(this)
-    this.onLogout = this.onLogout.bind(this)
-    this.onClose = this.onClose.bind(this)
-  }
-
+class AppHeader extends React.PureComponent {
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
@@ -134,7 +125,7 @@ class AppHeader extends React.Component {
     logger.warn('AppHeader componentWillReact')
   }
 
-  onInternalLogin () {
+  onInternalLogin = () => {
     logger.warn('onInternalLogin', this.props)
     this.props.notify('Test Internal: New User')
     this.props.ui.toggleSignIn(false)
@@ -154,14 +145,14 @@ class AppHeader extends React.Component {
     })
   }
 
-  onFacebookLogin () {
+  onFacebookLogin = () => {
     logger.warn('onFacebookLogin', this.props)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
     firebase.auth().signInWithPopup(provider)
   }
 
-  onGoogleLogin () {
+  onGoogleLogin = () => {
     logger.warn('onGoogleLogin', this.props)
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')
@@ -170,7 +161,7 @@ class AppHeader extends React.Component {
     firebase.auth().signInWithPopup(provider)
   }
 
-  onLogout () {
+  onLogout = () => {
     logger.warn('onLogout', this.props)
     firebase.auth().signOut().then(() => {
       fetch('/api/auth/logout', {
@@ -185,7 +176,7 @@ class AppHeader extends React.Component {
     })
   }
 
-  onClose () {
+  onClose = () => {
     logger.warn('onClose', this.props)
     this.props.ui.toggleSignIn(false)
   }

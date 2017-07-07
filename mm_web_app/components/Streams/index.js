@@ -8,11 +8,11 @@ import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import { StickyContainer, Sticky } from 'react-sticky'
-import Masonry from 'react-masonry-component'
 import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import StreamItem from './StreamItem'
+import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
@@ -20,12 +20,6 @@ import previewUrl from '../../utils/previewUrl'
 import { tagColor } from '../../utils/helper'
 
 const LIMIT = 10
-const masonryOptions = {
-  itemSelector: '.grid-item',
-  transitionDuration: '0.4s',
-  columnWidth: '.grid-sizer',
-  percentPosition: true
-}
 
 function urlOwner (owners, users, onSelectUser) {
   const items = []
@@ -148,14 +142,18 @@ function parseDomain (link) {
 @inject('store')
 @inject('ui')
 @observer
-class Streams extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onLayout = this.onLayout.bind(this)
+class Streams extends React.PureComponent {
+  onLayout = () => {
+    this.masonry && this.masonry.layout()
   }
 
-  onLayout () {
-    this.masonry && this.masonry.layout()
+  hasMoreItem = () => {
+    return this.props.ui.page * LIMIT < this.sortedUrls.length
+  }
+
+  loadMore = () => {
+    logger.warn('loadMore')
+    this.props.ui.page += 1
   }
 
   render () {
@@ -163,13 +161,12 @@ class Streams extends React.Component {
     const { urls, users, topics, owners } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
     logger.warn('Streams render', urls, users, topics, owners, myUrls)
-    let hasMoreItems = false
     const items = []
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
-    const sortedUrls = filterUrls(urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection)
+    this.sortedUrls = filterUrls(urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection)
     /* eslint-disable camelcase */
-    const currentUrls = sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
+    const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.url_id)
     logger.warn('currentUrls', currentUrls)
     if (currentUrls && currentUrls.length) {
@@ -208,7 +205,6 @@ class Streams extends React.Component {
       })
     }
 
-    hasMoreItems = this.props.ui.page * LIMIT < sortedUrls.length
     return (
       <StickyContainer className='streams'>
         <Sticky>
@@ -216,7 +212,7 @@ class Streams extends React.Component {
             ({ style }) => {
               return (
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
-                  <FilterSearch sortedUrls={sortedUrls} owners={owners} />
+                  <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
                 </div>
               )
             }
@@ -224,24 +220,13 @@ class Streams extends React.Component {
         </Sticky>
         <InfiniteScroll
           pageStart={this.props.ui.page}
-          loadMore={() => { this.props.ui.page += 1 }}
-          hasMore={hasMoreItems}
+          loadMore={this.loadMore}
+          hasMore={this.hasMoreItems}
           loader={<Loading isLoading />}
         >
-          <div className='main-inner'>
-            <Masonry
-              className='container-masonry'
-              options={masonryOptions}
-              updateOnEachImageLoad
-              onImagesLoaded={this.onLayout}
-              ref={(c) => { this.masonry = this.masonry || c.masonry }}
-              >
-              <div className='grid-row'>
-                <div className='grid-sizer' />
-                {items}
-              </div>
-            </Masonry>
-          </div>
+          <GridView>
+            {items}
+          </GridView>
         </InfiniteScroll>
       </StickyContainer>
     )

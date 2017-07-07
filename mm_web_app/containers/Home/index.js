@@ -75,20 +75,11 @@ const businessAddress = (
 @inject('ui')
 @observer
 class Home extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onInstallSucess = this.onInstallSucess.bind(this)
-    this.onInstallFail = this.onInstallFail.bind(this)
-    this.inlineInstall = this.inlineInstall.bind(this)
-    this.addNotification = this.addNotification.bind(this)
-    this.removeNotification = this.removeNotification.bind(this)
-    this.addToHomeOnMobile = this.addToHomeOnMobile.bind(this)
-    this.state = {
-      hasAddToHome: false
-    }
+  state = {
+    hasAddToHome: false
   }
 
-  onInstallSucess () {
+  onInstallSucess = () => {
     this.props.ui.addNotification('Yeah! You have been installed maomao extension successfully.')
     setTimeout(() => {
       this.props.store.checkEnvironment()
@@ -97,15 +88,15 @@ class Home extends React.Component {
     }, 1000)
   }
 
-  onInstallFail (error) {
+  onInstallFail = (error) => {
     this.props.ui.addNotification(error)
   }
 
-  addNotification (msg) {
+  addNotification = (msg) => {
     this.props.ui.addNotification(msg)
   }
 
-  inlineInstall () {
+  inlineInstall = () => {
     /* eslint-disable */
     chrome.webstore.install(
     'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
@@ -114,8 +105,18 @@ class Home extends React.Component {
     /* eslint-enable */
   }
 
-  removeNotification (uuid) {
+  removeNotification = (uuid) => {
     this.props.ui.removeNotification(uuid)
+  }
+
+  addToHomeOnMobile = () => {
+    logger.warn('Home addToHomeOnMobile')
+    if (this.props.store.isMobile) {
+      this.addToHome.show(true)
+      this.setState({
+        hasAddToHome: true
+      })
+    }
   }
 
   componentDidMount () {
@@ -136,16 +137,6 @@ class Home extends React.Component {
         })
         logger.warn('addToHome', this.addToHome)
       }
-    }
-  }
-
-  addToHomeOnMobile () {
-    logger.warn('Home addToHomeOnMobile')
-    if (this.props.store.isMobile) {
-      this.addToHome.show(true)
-      this.setState({
-        hasAddToHome: true
-      })
     }
   }
 
@@ -201,7 +192,6 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
-          <script src='/static/js/sticky.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
