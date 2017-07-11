@@ -77,6 +77,7 @@ namespace wowmao.Controls
             long.TryParse(search, out term_id);
 
             using (var db = mm02Entities.Create()) {
+
                 if (string.IsNullOrEmpty(search) && !topics_only) {
                     // root terms in wiki golden tree
                     var root_term = db.terms.Where(p => p.name == g.WIKI_ROOT_TERM_NAME_CLEANED && (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14)).Single();
