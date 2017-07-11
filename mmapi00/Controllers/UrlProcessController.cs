@@ -58,9 +58,7 @@ namespace mmapi00.Controllers
             var options = new PusherOptions();
             options.Cluster = "ap1";
             options.Encrypted = true;
-
             var pusher = new Pusher("332227", "056a3bc19f7b681fd6fb", "85101936fa2c6216a316", options);
-
             var result = pusher.Trigger("my-friend-stream-" + user_id, "process-url", new
             {
                 url = nlp_info.url.href,
