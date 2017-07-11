@@ -234,7 +234,7 @@ class Streams extends React.Component {
         <InfiniteScroll
           pageStart={this.props.ui.page}
           loadMore={this.loadMore}
-          hasMore={this.hasMoreItems}
+          hasMore={this.hasMoreItem()}
           loader={<Loading isLoading />}
         >
           <GridView>
