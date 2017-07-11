@@ -119,6 +119,15 @@ class Home extends React.Component {
     }
   }
 
+  goBack = (evt) => {
+    evt.preventDefault()
+    this.props.ui.openDiscoveryMode([])
+  }
+
+  onDismiss = (uuid) => {
+    this.props.ui.removeNotification(uuid)
+  }
+
   componentDidMount () {
     logger.warn('Home componentDidMount')
     if (this.props.store.isMobile) {
@@ -192,12 +201,13 @@ class Home extends React.Component {
           <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
+          <script src='/static/js/sticky.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack
           notifications={notifications.slice()}
           dismissAfter={5000}
-          onDismiss={(notification) => this.props.ui.removeNotification(notification)}
+          onDismiss={this.onDismiss}
         />
         <ToggleDisplay if={!isLogin}>
           <ChromeInstall
@@ -207,7 +217,7 @@ class Home extends React.Component {
             />
           {
               this.props.ui.currentViewer === 'discovery' &&
-              <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+              <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />
             }
           <Section className='section-list' style={{ backgroundColor: '#fff', padding: '2rem 0' }}>
             <div className='section-item'>
@@ -250,7 +260,7 @@ class Home extends React.Component {
               }
             {
                 this.props.ui.currentViewer === 'discovery' &&
-                <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={() => this.props.ui.openDiscoveryMode([])} />
+                <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />
               }
             {
               urls.length > 0 && users.length > 0 && this.props.ui.currentViewer === 'streams' &&

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
@@ -184,18 +184,7 @@ function mashUp (store, masonry) {
 @inject('discovery')
 @inject('ui')
 @observer
-class Discovery extends Component {
-  constructor (props) {
-    super(props)
-    this.loadMore = this.loadMore.bind(this)
-    this.onChange = this.onChange.bind(this)
-    this.onLayout = this.onLayout.bind(this)
-  }
-
-  onLayout () {
-    this.masonry && this.masonry.layout()
-  }
-
+class Discovery extends PureComponent {
   componentDidMount () {
     logger.warn('terms', this.props.terms)
     if (this.props.terms.length) {
@@ -203,12 +192,16 @@ class Discovery extends Component {
     }
   }
 
-  loadMore () {
+  onLayout = () => {
+    this.masonry && this.masonry.layout()
+  }
+
+  loadMore = () => {
     logger.warn('loadMore')
     this.props.discovery.loadMore()
   }
 
-  onChange (terms) {
+  onChange = (terms) => {
     logger.warn('onChange terms', terms)
     this.props.discovery.changeTerms(terms)
   }

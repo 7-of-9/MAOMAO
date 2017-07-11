@@ -12,11 +12,11 @@ import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import StreamItem from './StreamItem'
+import InlinePreview from './InlinePreview'
 import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
 import FilterSearch from '../../components/FilterSearch'
 import logger from '../../utils/logger'
-import previewUrl from '../../utils/previewUrl'
 import { tagColor } from '../../utils/helper'
 
 const LIMIT = 10
@@ -142,9 +142,9 @@ function parseDomain (link) {
 @inject('store')
 @inject('ui')
 @observer
-class Streams extends React.PureComponent {
-  onLayout = () => {
-    this.masonry && this.masonry.layout()
+class Streams extends React.Component {
+  state = {
+    currentUrl: ''
   }
 
   hasMoreItem = () => {
@@ -154,6 +154,16 @@ class Streams extends React.PureComponent {
   loadMore = () => {
     logger.warn('loadMore')
     this.props.ui.page += 1
+  }
+
+  onPreview = (url) => {
+    logger.warn('onPreview', url)
+    this.setState({ currentUrl: url })
+  }
+
+  closePreview = () => {
+    logger.warn('closePreview')
+    this.setState({ currentUrl: '' })
   }
 
   render () {
@@ -169,39 +179,41 @@ class Streams extends React.PureComponent {
     const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.url_id)
     logger.warn('currentUrls', currentUrls)
+    const { currentUrl } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item
-        let discoveryKeys = []
-        const suggestionKeys = []
-        const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
-        const maxLevel = _.maxBy(currentTopics, 'level')
-        const deepestTopics = currentTopics.filter(item => item.level === maxLevel.level)
-        discoveryKeys = discoveryKeys.concat(_.map(deepestTopics, 'name'))
-        if (deepestTopics.length) {
-          deepestTopics.forEach(item => {
-            suggestionKeys.push(..._.map(item.suggestions.slice(0, 5), 'term_name'))
-          })
-        }
-        items.push(<StreamItem
-          key={href}
-          href={href}
-          img={img}
-          title={title}
-          url_id={url_id}
-          topics={topics}
-          users={users}
-          deepestTopics={deepestTopics}
-          discoveryKeys={discoveryKeys}
-          suggestionKeys={suggestionKeys}
-          owners={owners}
-          myUrlIds={myUrlIds}
-          urlTopic={urlTopic}
-          urlOwner={urlOwner}
-          parseDomain={parseDomain}
-          previewUrl={previewUrl}
-          onLayout={this.onLayout}
+        if (currentUrl !== href) {
+          let discoveryKeys = []
+          const suggestionKeys = []
+          const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
+          const maxLevel = _.maxBy(currentTopics, 'level')
+          const deepestTopics = currentTopics.filter(item => item.level === maxLevel.level)
+          discoveryKeys = discoveryKeys.concat(_.map(deepestTopics, 'name'))
+          if (deepestTopics.length) {
+            deepestTopics.forEach(item => {
+              suggestionKeys.push(..._.map(item.suggestions.slice(0, 5), 'term_name'))
+            })
+          }
+          items.push(<StreamItem
+            key={href}
+            href={href}
+            img={img}
+            title={title}
+            url_id={url_id}
+            topics={topics}
+            users={users}
+            deepestTopics={deepestTopics}
+            discoveryKeys={discoveryKeys}
+            suggestionKeys={suggestionKeys}
+            owners={owners}
+            myUrlIds={myUrlIds}
+            urlTopic={urlTopic}
+            urlOwner={urlOwner}
+            parseDomain={parseDomain}
+            onPreview={this.onPreview}
           />)
+        }
       })
     }
 
@@ -218,6 +230,7 @@ class Streams extends React.PureComponent {
             }
           }
         </Sticky>
+        {currentUrl && <InlinePreview url={currentUrl} closePreview={this.closePreview} />}
         <InfiniteScroll
           pageStart={this.props.ui.page}
           loadMore={this.loadMore}

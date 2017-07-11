@@ -4,6 +4,8 @@ These are the styles for
 the stream page
 **************************************
 **************************************/
+$close-btn-img: url('/static/images/close_button.png');
+
 
 a {
   cursor: pointer;
@@ -507,18 +509,36 @@ img {
       width: 100%;
     }
   }
-  .grid-item--full {
-    width: 60%;
-    height: 500px;
-    iframe {
-      min-height: 320px;
+}
+
+.grid-item--full {
+  position: fixed;
+  z-index: 9999;
+  width: 50%;
+  top: 60px;
+  left: 0px;
+  background: url("/static/images/balls.svg") no-repeat center gray;
+  .close_button {
+    z-index: 1000;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: -16px;
+    right: -16px;
+    border: 0;
+    background: $close-btn-img no-repeat center center;
+    &:hover {
+      text-decoration: none;
+      cursor: pointer;
     }
-    @media (max-width: 1290px) {
-      width: 75%;
-    }
-    @media (max-width: 750px) {
-      width: 100%;
-    }
+  }
+  iframe {
+    min-height: 600px;
+    border-radius: 6px;
+    box-shadow: 4px 4px 14px #000;
+  }
+  @media (max-width: 750px) {
+    width: 75%;
   }
 }
 

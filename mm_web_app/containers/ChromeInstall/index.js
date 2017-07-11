@@ -71,12 +71,14 @@ class ChromeInstall extends React.Component {
     this.props.ui.closeExtensionModal()
   }
 
-  onOpen = () => {
+  onOpen = (evt) => {
+    evt.preventDefault()
     logger.warn('onOpen', this.props)
     this.props.ui.openExtensionModal()
   }
 
-  showSignIn = () => {
+  showSignIn = (evt) => {
+    evt.preventDefault()
     logger.warn('showSignIn', this.props)
     this.props.ui.toggleSignIn(true)
   }

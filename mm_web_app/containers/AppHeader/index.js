@@ -161,7 +161,8 @@ class AppHeader extends React.PureComponent {
     firebase.auth().signInWithPopup(provider)
   }
 
-  onLogout = () => {
+  onLogout = (evt) => {
+    evt.preventDefault()
     logger.warn('onLogout', this.props)
     firebase.auth().signOut().then(() => {
       fetch('/api/auth/logout', {
@@ -179,6 +180,16 @@ class AppHeader extends React.PureComponent {
   onClose = () => {
     logger.warn('onClose', this.props)
     this.props.ui.toggleSignIn(false)
+  }
+
+  showSignIn = (evt) => {
+    evt.preventDefault()
+    this.props.ui.toggleSignIn(true)
+  }
+
+  openShareManagement = (evt) => {
+    evt.preventDefault()
+    this.props.ui.displayShareManagement()
   }
 
   render () {
@@ -210,7 +221,7 @@ class AppHeader extends React.PureComponent {
         {
           isLogin &&
           <NavItem>
-            <a onClick={() => this.props.ui.displayShareManagement()}>
+            <a onClick={this.openShareManagement}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
               <span className='nav-text'>Share Management</span>
             </a>
@@ -236,7 +247,7 @@ class AppHeader extends React.PureComponent {
               </ul>
             </div>
           }
-          {!isLogin && <button className='btn btn-login' onClick={() => this.props.ui.toggleSignIn(true)}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
+          {!isLogin && <button className='btn btn-login' onClick={this.showSignIn}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
           <Modal
             isOpen={showSignInModal}
             onRequestClose={this.onClose}

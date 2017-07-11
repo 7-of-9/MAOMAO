@@ -92,7 +92,11 @@ export class UIStore {
   }
 
   @action removeNotification (uuid) {
-    this.notifications = this.notifications.filter((item) => item.key !== uuid)
+    if (this.notifications) {
+      this.notifications = this.notifications.filter((item) => item && item.key !== uuid)
+    } else {
+      this.clearNotifications()
+    }
   }
 
   @action clearNotifications () {

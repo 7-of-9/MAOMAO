@@ -4,47 +4,38 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { inject, observer } from 'mobx-react'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import PlaceHolder from '../../components/PlaceHolder'
-import InlineYoutubePlayer from './InlineYoutubePlayer'
-import InlineVimeoPlayer from './InlineVimeoPlayer'
-import previewUrl from '../../utils/previewUrl'
+import InlinePlayer from './InlinePlayer'
 
 @inject('ui')
 @observer
-class StreamItem extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      isPreview: false
+class StreamItem extends PureComponent {
+  handleClick = (event) => {
+    event.preventDefault()
+    if (event.shiftKey || event.ctrlKey || event.metaKey) {
+      window.open(this.props.href, '_blank')
+    } else {
+      this.props.onPreview(this.props.href)
     }
-    this.onPreview = this.onPreview.bind(this)
-  }
-
-  onPreview () {
-    this.setState({
-      isPreview: true
-    }, () => { this.props.onLayout && this.props.onLayout() })
   }
 
   render () {
     /* eslint-disable camelcase */
     const { href, title, img, url_id, owners, users, topics, myUrlIds, deepestTopics, parseDomain, urlTopic, urlOwner, discoveryKeys, suggestionKeys } = this.props
-    const { isPreview } = this.state
     return (
-      <div key={url_id} className={isPreview ? 'grid-item grid-item--full shuffle-item' : 'grid-item shuffle-item'}>
+      <div key={url_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
           {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
           {
               href.indexOf('youtube.com') === -1 &&
               href.indexOf('vimeo.com') === -1 &&
-              !isPreview &&
-              <PlaceHolder image={img}>
+              <PlaceHolder>
                 <div className='thumbnail'>
                   <div className='thumbnail-image'>
-                    <a className='thumbnail-overlay' onClick={this.onPreview}>
+                    <a className='thumbnail-overlay' onClick={this.handleClick}>
                       <img
                         src={img || '/static/images/no-image.png'}
                         alt={title}
@@ -55,7 +46,7 @@ class StreamItem extends Component {
                   </div>
                   <div className='caption'>
                     <h4 className='caption-title'>
-                      <a onClick={this.onPreview}>
+                      <a onClick={this.handleClick}>
                         {title} ({url_id})
                   </a>
                     </h4>
@@ -66,15 +57,10 @@ class StreamItem extends Component {
               </PlaceHolder>
           }
           {
-          href.indexOf('youtube.com') === -1 &&
-          href.indexOf('vimeo.com') === -1 &&
-          isPreview &&
-          previewUrl(href, title)
-          }
-          {
             href.indexOf('youtube.com') !== -1 &&
-            <InlineYoutubePlayer
+            <InlinePlayer
               href={href}
+              img={img}
               title={title}
               url_id={url_id}
               topics={topics}
@@ -85,13 +71,14 @@ class StreamItem extends Component {
               urlTopic={urlTopic}
               urlOwner={urlOwner}
               parseDomain={parseDomain}
-              onPreview={this.onPreview}
+              onPreview={this.props.onPreview}
               />
           }
           {
               href.indexOf('vimeo.com') !== -1 &&
-              <InlineVimeoPlayer
+              <InlinePlayer
                 href={href}
+                img={img}
                 title={title}
                 url_id={url_id}
                 topics={topics}
@@ -102,8 +89,8 @@ class StreamItem extends Component {
                 urlTopic={urlTopic}
                 urlOwner={urlOwner}
                 parseDomain={parseDomain}
-                onPreview={this.onPreview}
-                />
+                onPreview={this.props.onPreview}
+                  />
             }
         </div>
       </div>
