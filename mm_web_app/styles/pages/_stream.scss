@@ -475,7 +475,6 @@ img {
       @include border-radius(8px);
       @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
       @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
-      /* background: rgba(255, 255, 255, 0.05); */
       -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
       -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
       box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
@@ -487,9 +486,6 @@ img {
       z-index: 3;
     }
     &:hover::before {
-      /* -webkit-box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18);
-      -moz-box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18);
-      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.20), 0 6px 10px rgba(0, 0, 0, 0.18); */
       -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
       -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
       box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
@@ -511,13 +507,34 @@ img {
   }
 }
 
+.split-view {
+  width: 50%;
+  height: 100%;
+  float: right;
+  .grid-row {
+    .grid-sizer, .grid-item {
+      width: 20vw;
+      @media (max-width: 1290px) {
+        width: 25vw;
+      }
+      @media (max-width: 890px) {
+        width: 33.33vw;
+      }
+      @media (max-width: 750px) {
+        width: 50vw;
+      }
+      @media (max-width: 550px) {
+        width: 100vw;
+      }
+    }
+  }
+}
+
 .grid-item--full {
   position: fixed;
-  z-index: 9999;
   width: 50%;
-  top: 60px;
-  left: 0px;
   background: url("/static/images/balls.svg") no-repeat center gray;
+  z-index: 9999;
   .close_button {
     z-index: 1000;
     position: absolute;
@@ -533,12 +550,7 @@ img {
     }
   }
   iframe {
-    min-height: 600px;
-    border-radius: 6px;
-    box-shadow: 4px 4px 14px #000;
-  }
-  @media (max-width: 750px) {
-    width: 75%;
+    height: calc(100vh - 70px);
   }
 }
 

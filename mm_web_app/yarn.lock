@@ -6775,11 +6775,10 @@ react-modal@^1.7.6, react-modal@^1.7.7:
     prop-types "^15.5.7"
     react-dom-factories "^1.0.0"
 
-react-modal@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-2.2.1.tgz#22563782688bbb43441ac436156d6cb5dcb60c8b"
+react-modal@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-2.2.2.tgz#4bbf98bc506e61c446c9f57329c7a488ea7d504b"
   dependencies:
-    element-class "^0.2.0"
     exenv "1.2.0"
     prop-types "^15.5.10"
     react-dom-factories "^1.0.0"

@@ -225,22 +225,24 @@ class Streams extends React.Component {
               return (
                 <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
                   <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
+                  {currentUrl && <InlinePreview url={currentUrl} closePreview={this.closePreview} />}
                 </div>
               )
             }
           }
         </Sticky>
-        {currentUrl && <InlinePreview url={currentUrl} closePreview={this.closePreview} />}
-        <InfiniteScroll
-          pageStart={this.props.ui.page}
-          loadMore={this.loadMore}
-          hasMore={this.hasMoreItem()}
-          loader={<Loading isLoading />}
-        >
-          <GridView>
-            {items}
-          </GridView>
-        </InfiniteScroll>
+        <div className={currentUrl ? 'split-view' : ''}>
+          <InfiniteScroll
+            pageStart={this.props.ui.page}
+            loadMore={this.loadMore}
+            hasMore={this.hasMoreItem()}
+            loader={<Loading isLoading />}
+             >
+            <GridView>
+              {items}
+            </GridView>
+          </InfiniteScroll>
+        </div>
       </StickyContainer>
     )
   }
