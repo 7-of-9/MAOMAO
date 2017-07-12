@@ -5,7 +5,8 @@ $(function () {
   }
 
   $(window).scroll(function () {
-    if ($(this).scrollTop() > 71) {
+    var findHeader = $('.wrapper-slide').offset();
+    if ($(this).scrollTop() > findHeader.top) {
       $('.neal-page').addClass('sticky')
       $('.standand-sort,.search-bar').addClass('animated slideInDown')
       $('.standand-sort,.search-bar,.block-back').removeClass('animated slideInUp')

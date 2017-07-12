@@ -513,19 +513,7 @@ img {
   float: right;
   .grid-row {
     .grid-sizer, .grid-item {
-      width: 20vw;
-      @media (max-width: 1290px) {
-        width: 25vw;
-      }
-      @media (max-width: 890px) {
-        width: 33.33vw;
-      }
-      @media (max-width: 750px) {
-        width: 50vw;
-      }
-      @media (max-width: 550px) {
-        width: 100vw;
-      }
+      width: 280px;
     }
   }
 }
@@ -1916,6 +1904,12 @@ a.btn-box-remove {
       display: none;
       transition: visibility 0s, opacity 0.5s linear;
     }
+  }
+  .standand-sort {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
   }
 }
 

@@ -71,7 +71,7 @@
     "react-transition-group": "^2.0.2",
     "react-virtualized": "^9.9.0",
     "react-youtube": "^7.4.0",
-    "recompose": "^0.23.5",
+    "recompose": "^0.24.0",
     "request": "^2.81.0",
     "session-file-store": "^1.0.0",
     "styled-components": "^2.1.1",
