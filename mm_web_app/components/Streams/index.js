@@ -145,7 +145,8 @@ function parseDomain (link) {
 @observer
 class Streams extends React.Component {
   state = {
-    currentUrl: ''
+    currentUrl: '',
+    currentWidth: window.innerWidth / 2
   }
 
   hasMoreItem = () => {
@@ -167,6 +168,10 @@ class Streams extends React.Component {
     this.setState({ currentUrl: '' })
   }
 
+  onResizeStop = (width) => {
+    this.setState({ currentWidth: width })
+  }
+
   render () {
     // populate urls and users
     const { urls, users, topics, owners } = toJS(this.props.store)
@@ -180,7 +185,7 @@ class Streams extends React.Component {
     const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.url_id)
     logger.warn('currentUrls', currentUrls)
-    const { currentUrl } = this.state
+    const { currentUrl, currentWidth } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item
@@ -225,9 +230,9 @@ class Streams extends React.Component {
         </div>
         <div className={currentUrl ? 'sticky-view' : 'hidden-view'}>
           <Sticky>
-            <SplitView>
+            <SplitView onResizeStop={this.onResizeStop} currentWidth={currentWidth}>
               {(width, height) => (<InlinePreview
-                width={width}
+                width={currentWidth}
                 height={height}
                 url={currentUrl}
                 closePreview={this.closePreview}
@@ -235,7 +240,7 @@ class Streams extends React.Component {
             </SplitView>
           </Sticky>
         </div>
-        <div className={currentUrl ? 'split-view' : ''}>
+        <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 10) : '100%' }}>
           <InfiniteScroll
             pageStart={this.props.ui.page}
             loadMore={this.loadMore}

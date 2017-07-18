@@ -59,11 +59,12 @@ app.prepare().then(() => {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})
-    } else if (pathname === '/' || pathname.indexOf('hiring') !== -1 ||
+    } else if (pathname.indexOf('hiring') !== -1 ||
      pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
      pathname.indexOf('.') !== -1 || pathname.indexOf('%20') !== -1 ||
-     pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1
+     pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1 ||
+     pathname.indexOf('/') !== -1
     ) {
       return handle(req, res, parsedUrl)
     } else {

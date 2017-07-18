@@ -15,8 +15,8 @@ export default class InlinePreview extends PureComponent {
   static propTypes = {
     url: PropTypes.string.isRequired,
     closePreview: PropTypes.func,
-    width: PropTypes.any,
-    height: PropTypes.any
+    width: PropTypes.any.isRequired,
+    height: PropTypes.any.isRequired
   }
 
   renderPlayer = () => {
