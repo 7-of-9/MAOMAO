@@ -130,6 +130,8 @@ class Home extends React.Component {
 
   componentDidMount () {
     logger.warn('Home componentDidMount')
+    /* global Raven */
+    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.store.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {
@@ -193,15 +195,15 @@ class Home extends React.Component {
           <link rel='apple-touch-icon' href='/static/images/logo.png' />
           <link rel='icon' href='/static/images/logo.png' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-          <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
-          <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-          <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
           <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />
+          <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
+          <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
+          <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
+          <script src='https://cdn.ravenjs.com/3.17.0/raven.min.js' crossOrigin='anonymous' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
-          <script src='/static/js/sticky.js' />
         </Head>
         <AppHeader notify={this.addNotification} />
         <NotificationStack

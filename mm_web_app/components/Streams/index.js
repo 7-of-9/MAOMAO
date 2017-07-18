@@ -7,12 +7,13 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import { StickyContainer, Sticky } from 'react-sticky'
+import Sticky from 'react-sticky-el'
 import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
 import _ from 'lodash'
 import StreamItem from './StreamItem'
 import InlinePreview from './InlinePreview'
+import SplitView from '../../components/SplitView'
 import GridView from '../../components/GridView'
 import Loading from '../../components/Loading'
 import FilterSearch from '../../components/FilterSearch'
@@ -218,19 +219,22 @@ class Streams extends React.Component {
     }
 
     return (
-      <StickyContainer className='streams'>
-        <Sticky>
-          {
-            ({ style }) => {
-              return (
-                <div style={{ ...style, margin: '0', zIndex: 1000, backgroundColor: '#fff' }} className='standand-sort'>
-                  <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
-                  {currentUrl && <InlinePreview url={currentUrl} closePreview={this.closePreview} />}
-                </div>
-              )
-            }
-          }
-        </Sticky>
+      <div className='streams'>
+        <div className='standand-sort'>
+          <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
+        </div>
+        <div className={currentUrl ? 'sticky-view' : 'hidden-view'}>
+          <Sticky>
+            <SplitView>
+              {(width, height) => (<InlinePreview
+                width={width}
+                height={height}
+                url={currentUrl}
+                closePreview={this.closePreview}
+                />)}
+            </SplitView>
+          </Sticky>
+        </div>
         <div className={currentUrl ? 'split-view' : ''}>
           <InfiniteScroll
             pageStart={this.props.ui.page}
@@ -243,7 +247,7 @@ class Streams extends React.Component {
             </GridView>
           </InfiniteScroll>
         </div>
-      </StickyContainer>
+      </div>
     )
   }
 }

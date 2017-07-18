@@ -3,6 +3,7 @@ import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
+import { safeBrowsingLoockup } from '../services/google'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -282,8 +283,32 @@ export class HomeStore extends CoreStore {
             this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
             logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
           }
-          this.isProcessingHistory = false
+          this.checkSafeUrls()
         }
+      )
+    }
+  }
+
+  @action checkSafeUrls () {
+    logger.warn('safeBrowsingLoockup', this.urls)
+    const urls = toJS(this.urls)
+    const MAX_ITEM = 500
+    const totalPage = urls.length / MAX_ITEM
+    for (let counter = 0; counter < totalPage; counter += 1) {
+      const safeCheckResult = safeBrowsingLoockup(urls.slice(counter * MAX_ITEM, MAX_ITEM * (counter + 1)).map(item => item.href))
+      when(
+          () => safeCheckResult.state !== 'pending',
+          () => {
+            if (safeCheckResult.state === 'fulfilled') {
+              const { matches } = safeCheckResult.value.data
+              if (matches) {
+                const ingoreUrls = matches.map(item => item && item.threat && item.threat.url)
+                logger.warn('safeBrowsingLoockup ingoreUrls', ingoreUrls)
+                this.urls = urls.filter(item => ingoreUrls.indexOf(item.href) === -1)
+              }
+            }
+            this.isProcessingHistory = false
+          }
       )
     }
   }

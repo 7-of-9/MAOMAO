@@ -269,7 +269,9 @@ export default (state = initialState, action, auth, nlp) => {
       window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
       // call animation
       /* eslint-disable no-underscore-dangle */
-      window.animationIcon(action._sender.tab.id, 10);
+      if (url === window.sessionObservable.activeTabUrl) {
+        window.animationIcon(action._sender.tab.id, 10);
+      }
       return Object.assign({}, state, {
         urls,
       });
@@ -351,7 +353,9 @@ export default (state = initialState, action, auth, nlp) => {
       const urls = changeIconUrl(state.urls, url, 'blue', `${score} **`);
       window.setIconApp(url, 'blue', `${score}`, window.BG_SUCCESS_COLOR);
       /* eslint-disable no-underscore-dangle */
-      window.animationIcon(action._sender.tab.id, 5);
+      if (url === window.sessionObservable.activeTabUrl) {
+        window.animationIcon(action._sender.tab.id, 5);
+      }
       return Object.assign({}, state, {
         urls,
       });

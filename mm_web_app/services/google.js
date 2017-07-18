@@ -38,3 +38,30 @@ export function youtubeSearchByKeyword (keyword, pageToken) {
   const requestURL = `https://www.googleapis.com/youtube/v3/search?${buildQuery}`
   return fromPromise(axios.get(requestURL))
 }
+
+/**
+ * Checking the urls is safe or not
+ * @param array urls
+ */
+export function safeBrowsingLoockup (urls = []) {
+  const requestURL = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GOOGLE_API_KEY}`
+  return fromPromise(axios({
+    method: 'post',
+    url: requestURL,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      client: {
+        clientId: 'mmweb',
+        clientVersion: '1.0.0'
+      },
+      threatInfo: {
+        threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
+        platformTypes: ['ANY_PLATFORM'],
+        threatEntryTypes: ['URL'],
+        threatEntries: urls.map(item => ({ url: item }))
+      }
+    }
+  }))
+}

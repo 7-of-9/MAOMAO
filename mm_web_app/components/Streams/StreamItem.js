@@ -51,7 +51,6 @@ class StreamItem extends PureComponent {
                   </a>
                     </h4>
                     <h5 className='caption-title'>{parseDomain(href)}</h5>
-                    {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
                   </div>
                 </div>
               </PlaceHolder>

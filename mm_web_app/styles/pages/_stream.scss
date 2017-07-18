@@ -89,7 +89,7 @@ img {
   @include box-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
   @include transition(all 0.5s);
   position: relative;
-  z-index: 500;
+  /* z-index: 500; */
   clear: both;
   background: #fff;
   text-align: left;
@@ -507,38 +507,58 @@ img {
   }
 }
 
-.split-view {
-  width: 50%;
-  height: 100%;
-  float: right;
-  .grid-row {
-    .grid-sizer, .grid-item {
-      width: 280px;
+.hidden-view {
+  display: none;
+}
+
+.sticky-view {
+  background : gray;
+  .resizable {
+    .grid-item--full {
+      z-index: 1000;
+      position: fixed;
+      background: url("/static/images/balls.svg") no-repeat center gray;
+      .close_button {
+        z-index: 9999;
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: -16px;
+        right: -16px;
+        border: 0;
+        background: $close-btn-img no-repeat center center;
+        &:hover {
+          text-decoration: none;
+          cursor: pointer;
+        }
+      }
+      iframe {
+        z-index: 1;
+        background: #fff;
+        height: 100vh;
+      }
+    }
+    div:nth-child(2) {
+      background: #2db7f5;
+      border-radius: 6px;
+      margin-top: 12px;
+      height: 100vh !important;
+      z-index: 10000;
     }
   }
 }
 
-.grid-item--full {
-  position: fixed;
+.split-view {
   width: 50%;
-  background: url("/static/images/balls.svg") no-repeat center gray;
-  z-index: 9999;
-  .close_button {
-    z-index: 1000;
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    top: -16px;
-    right: -16px;
-    border: 0;
-    background: $close-btn-img no-repeat center center;
-    &:hover {
-      text-decoration: none;
-      cursor: pointer;
+  height: 100%;
+  float: right;
+  .container-masonry {
+    z-index: 1;
+    .grid-row {
+      .grid-sizer, .grid-item {
+        width: 280px;
+      }
     }
-  }
-  iframe {
-    height: calc(100vh - 70px);
   }
 }
 

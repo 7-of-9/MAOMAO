@@ -54,7 +54,7 @@ class InlinePlayer extends Component {
 
   renderTitle = () => {
     /* eslint-disable camelcase */
-    const { href, title, url_id, owners, users, parseDomain, urlOwner } = this.props
+    const { href, title, url_id, parseDomain } = this.props
     return (
       <div className='caption'>
         <h4 className='caption-title'>
@@ -63,26 +63,29 @@ class InlinePlayer extends Component {
               </a>
         </h4>
         <h5 className='caption-title'>{parseDomain(href)}</h5>
-        {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
       </div>
     )
   }
 
   renderYoutubeFrame = () => {
     const { isPlaying } = this.state
-    const { href } = this.props
-    return (<ReactPlayer
-      ref={player => { this.player = player }}
-      url={href}
-      onReady={this.onReady}
-      onError={this.onError}
-      volume={0}
-      playsinline
-      playing={isPlaying}
-      width={'100%'}
-      height={'100%'}
-      controls
-      />)
+    const { href, url_id, topics, myUrlIds, deepestTopics, urlTopic } = this.props
+    return (
+      <div className='thumbnail-image'>
+        <ReactPlayer
+          ref={player => { this.player = player }}
+          url={href}
+          onReady={this.onReady}
+          onError={this.onError}
+          volume={0}
+          playsinline
+          playing={isPlaying}
+          width={'100%'}
+          height={'100%'}
+          controls
+      />
+        {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
+      </div>)
   }
 
   onMouseEnter = (evt) => {

@@ -135,29 +135,23 @@ const urlsCount = (topic, filterByUser) => {
 @inject('ui')
 @observer
 class FilterSearch extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      value: '',
-      suggestions: []
-    }
-    this.onChange = this.onChange.bind(this)
-    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this)
-    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this)
+  state = {
+    value: '',
+    suggestions: []
   }
 
-  onSuggestionsFetchRequested ({ value }) {
+  onSuggestionsFetchRequested = ({ value }) => {
     logger.warn('onSuggestionsFetchRequested')
     const { users, firstLevelTopics } = this.props.store
     this.setState({ suggestions: getSuggestions(value, users, firstLevelTopics) })
   }
 
-  onSuggestionsClearRequested () {
+  onSuggestionsClearRequested = () => {
     logger.warn('onSuggestionsClearRequested')
     this.setState({suggestions: [ ]})
   }
 
-  onChange (event, { newValue, method }) {
+  onChange = (event, { newValue, method }) => {
     logger.warn('onChange newValue, method', newValue, method)
     if (method === 'click' || method === 'enter') {
       const { users, firstLevelTopics } = this.props.store
@@ -178,6 +172,26 @@ class FilterSearch extends React.Component {
         value: newValue
       })
     }
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.props.sortedUrls.length !== nextProps.sortedUrls.length) {
+      return true
+    }
+
+    if (this.props.owners.length !== nextProps.owners.length) {
+      return true
+    }
+
+    if (this.state.value !== nextState.value) {
+      return true
+    }
+
+    if (this.state.suggestions !== nextState.suggestions) {
+      return true
+    }
+
+    return false
   }
 
   render () {

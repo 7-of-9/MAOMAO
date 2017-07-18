@@ -145,20 +145,26 @@ class AppHeader extends React.PureComponent {
     })
   }
 
-  onFacebookLogin = () => {
-    logger.warn('onFacebookLogin', this.props)
+  onFacebookLogin = (evt) => {
+    evt.preventDefault()
+    logger.warn('onFacebookLogin', this.props, evt)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
-    firebase.auth().signInWithPopup(provider)
+    firebase.auth().signInWithPopup(provider).catch((error) => {
+      this.props.notify(error.message)
+    })
   }
 
-  onGoogleLogin = () => {
-    logger.warn('onGoogleLogin', this.props)
+  onGoogleLogin = (evt) => {
+    evt.preventDefault()
+    logger.warn('onGoogleLogin', this.props, evt)
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')
     provider.addScope('https://www.googleapis.com/auth/userinfo.email')
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
-    firebase.auth().signInWithPopup(provider)
+    firebase.auth().signInWithPopup(provider).catch((error) => {
+      this.props.notify(error.message)
+    })
   }
 
   onLogout = (evt) => {
@@ -207,12 +213,12 @@ class AppHeader extends React.PureComponent {
           </a>
           <ul className='dropdown-menu dropdown-hiring pull-right'>
             <li key={guid()}>
-              <Link prefetch href='/hiring/?type=js' as='/hiring-js' className='nav-link'>
+              <Link prefetch href='/hiring/?type=js' as='/hiring-js'>
                 <a href='/hiring-js'><i className='fa fa-angle-right' aria-hidden='true' />  JavaScript / Node.JS Developer</a>
               </Link>
             </li>
             <li key={guid()}>
-              <Link prefetch href='/hiring/?type=vp' as='/hiring-vp' className='nav-link'>
+              <Link prefetch href='/hiring/?type=vp' as='/hiring-vp'>
                 <a href='/hiring-vp'><i className='fa fa-angle-right' aria-hidden='true' />  Server & Platform Engineer / VP Engineering</a>
               </Link>
             </li>

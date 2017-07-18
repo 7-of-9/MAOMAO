@@ -1,4 +1,5 @@
 const express = require('express')
+const Raven = require('raven')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const FileStore = require('session-file-store')(session)
@@ -22,6 +23,8 @@ const twitter = require('./api/twitter')
 
 log.setLevel(dev ? 'info' : 'error')
 mobxReact.useStaticRendering(true)
+const SENTRY_DNS = 'https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653'
+Raven.config(SENTRY_DNS).install()
 
 app.prepare().then(() => {
   const server = express()
@@ -36,6 +39,7 @@ app.prepare().then(() => {
     httpOnly: true,
     cookie: { maxAge: 604800000 } // week
   }))
+  server.use(Raven.requestHandler())
 
   server.use('/api/auth', auth)
   server.use('/api/email', email)
