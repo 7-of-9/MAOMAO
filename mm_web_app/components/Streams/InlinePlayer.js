@@ -38,7 +38,7 @@ class InlinePlayer extends Component {
 
   renderThumbnailImage = () => {
     /* eslint-disable camelcase */
-    const { title, img, url_id, topics, myUrlIds, deepestTopics, urlTopic } = this.props
+    const { title, img, url_id, topics, myUrlIds, deepestTopics, urlTopic, urlOwner, owners, users } = this.props
     return (
       <div className='thumbnail-image'>
         <img
@@ -46,8 +46,9 @@ class InlinePlayer extends Component {
           alt={title}
           height={230}
           onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
-              />
+          />
         {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
+        {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
       </div>
     )
   }
@@ -69,7 +70,7 @@ class InlinePlayer extends Component {
 
   renderYoutubeFrame = () => {
     const { isPlaying } = this.state
-    const { href, url_id, topics, myUrlIds, deepestTopics, urlTopic } = this.props
+    const { href, url_id, topics, owners, users, myUrlIds, deepestTopics, urlTopic, urlOwner } = this.props
     return (
       <div className='thumbnail-image'>
         <ReactPlayer
@@ -85,6 +86,7 @@ class InlinePlayer extends Component {
           controls
       />
         {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
+        {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
       </div>)
   }
 

@@ -278,10 +278,8 @@ img {
   .panel-user-img {
     @include clearfix();
     position: relative;
-    margin: 0.5rem 0 0 0;
     img {
       @include border-radius(50%);
-      margin: 0.75rem 0.625rem 0 0;
       float: left;
       width: 30px;
       height: 30px;
@@ -300,9 +298,25 @@ img {
       position: relative;
       display: block;
       font-size: 0.75rem;
-      .full-name {
-        font-weight: bold;
-        color: #808080;
+      &[title]{
+        position:relative;
+      }
+      &[title]:after{
+        content:attr(title);
+        color:#fff;
+        background:#333;
+        background:rgba(51,51,51,0.75);
+        padding:5px;
+        position:absolute;
+        left:-9999px;
+        opacity:0;
+        top:100%;
+        white-space:nowrap;
+        transition:0.25s linear opacity;
+      }
+      &[title]:hover:after{
+        left:30px;
+        opacity:1;
       }
       &::before {
         @include border-radius(8px);
@@ -842,6 +856,10 @@ img {
             }
           }
         }
+      }
+      .panel-user {
+        @include abs-pos ($top: 30px, $left: 3px, $bottom: auto, $right: auto);
+        z-index: 500;
       }
     }
     .caption {

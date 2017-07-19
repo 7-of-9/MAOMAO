@@ -15,6 +15,11 @@ class SplitView extends React.PureComponent {
     width: PropTypes.any.isRequired
   }
 
+  static defaultProps = {
+    onResizeStop: () => {},
+    width: '50%'
+  }
+
   onResizeStop = () => {
     logger.warn('onResizeStop', this.resizable)
     const { width } = this.resizable.state

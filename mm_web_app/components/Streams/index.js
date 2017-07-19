@@ -25,31 +25,12 @@ const LIMIT = 10
 function urlOwner (owners, users, onSelectUser) {
   const items = []
   _.forEach(owners, user => {
-    const { hit_utc: hitUtc, time_on_tab: timeOnTab, owner: userId, im_score: IMScore, rate } = user
+    const { hit_utc: hitUtc, owner: userId } = user
     const owner = users.find(item => item.user_id === userId)
     items.push(
       <div key={`${owner.fullname}-${hitUtc}`} className='panel-user-img'>
-        <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={owner.fullname}>
+        <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={`${owner.fullname} visited ${moment.utc(hitUtc).fromNow()}`}>
           <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} src={owner.avatar || '/static/images/no-avatar.png'} width='40' height='40' alt={owner.fullname} />
-          <span className='panel-user-cnt'>
-            <span className='full-name'>{owner.fullname} visited {moment.utc(hitUtc).fromNow()}</span>
-            <div className='filter-rating'>
-              <span className={rate >= 1 ? 'active' : ''} />
-              <span className={rate >= 2 ? 'active' : ''} />
-              <span className={rate >= 3 ? 'active' : ''} />
-              <span className={rate >= 4 ? 'active' : ''} />
-              <span className={rate >= 5 ? 'active' : ''} />
-            </div>
-            <span className='date-time'>
-              <i className='fa fa-bolt' /> Earned: <span className='nlp_score'>{parseInt(timeOnTab / 1000)} XP</span>
-            </span>
-            <span className='date-time'>
-              <i className='fa fa-angle-double-down' /> IM Score: <span className='nlp_score'>{parseInt(IMScore)}</span>
-            </span>
-            <span className='date-time'>
-              <i className='fa fa-clock-o' /> Time on page: {moment.duration(timeOnTab).humanize()}
-            </span>
-          </span>
         </a>
       </div>)
   })
