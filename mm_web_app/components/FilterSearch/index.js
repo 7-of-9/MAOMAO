@@ -191,6 +191,10 @@ class FilterSearch extends React.Component {
       return true
     }
 
+    if (this.props.ui.sortBy !== nextProps.ui.sortBy) {
+      return true
+    }
+
     return false
   }
 

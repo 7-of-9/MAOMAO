@@ -1,4 +1,5 @@
 const express = require('express')
+const compression = require('compression')
 const Raven = require('raven')
 const bodyParser = require('body-parser')
 const session = require('express-session')
@@ -28,12 +29,13 @@ Raven.config(SENTRY_DNS).install()
 
 app.prepare().then(() => {
   const server = express()
+  server.use(compression())
   server.use(helmet())
   server.use(bodyParser.json())
   server.use(session({
     secret: 'REDACTED_SECRET',
     saveUninitialized: true,
-    store: new FileStore({path: '/tmp/sessions', secret: 'REDACTED_SECRET'}),
+    store: new FileStore({path: './tmp/sessions', secret: 'REDACTED_SECRET'}),
     resave: false,
     rolling: true,
     httpOnly: true,

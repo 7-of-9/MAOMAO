@@ -7,6 +7,7 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
+import ReactResizeDetector from 'react-resize-detector'
 import Sticky from 'react-sticky-el'
 import InfiniteScroll from 'react-infinite-scroller'
 import moment from 'moment'
@@ -153,6 +154,10 @@ class Streams extends React.Component {
     this.setState({ currentWidth: width })
   }
 
+  onLayout = () => {
+    this.setState({ currentWidth: window.innerWidth / 2 })
+  }
+
   render () {
     // populate urls and users
     const { urls, users, topics, owners } = toJS(this.props.store)
@@ -206,6 +211,7 @@ class Streams extends React.Component {
 
     return (
       <div className='streams'>
+        <ReactResizeDetector handleWidth handleHeight onResize={this.onLayout} />
         <div className='standand-sort'>
           <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
         </div>
@@ -221,7 +227,7 @@ class Streams extends React.Component {
             </SplitView>
           </Sticky>
         </div>
-        <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 10) : '100%' }}>
+        <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 20) : '100%' }}>
           <InfiniteScroll
             pageStart={this.props.ui.page}
             loadMore={this.loadMore}

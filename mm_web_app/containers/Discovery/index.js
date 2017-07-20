@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
-import { StickyContainer, Sticky } from 'react-sticky'
+import Sticky from 'react-sticky-el'
 import Router from 'next/router'
 import InfiniteScroll from 'react-infinite-scroller'
 import Masonry from 'react-masonry-component'
@@ -216,9 +216,8 @@ class Discovery extends PureComponent {
           </button>
         </div>
         <div className='bounceInRight animated'>
-          <StickyContainer>
-            <Sticky>
-              {
+          <Sticky>
+            {
               ({style}) => {
                 return (
                   <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
@@ -227,27 +226,26 @@ class Discovery extends PureComponent {
                 )
               }
             }
-            </Sticky>
-            <InfiniteScroll
-              pageStart={0}
-              loadMore={this.loadMore}
-              hasMore={this.props.discovery.hasMore}
+          </Sticky>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={this.props.discovery.hasMore}
               >
-              <Masonry
-                className='container-masonry'
-                options={masonryOptions}
-                updateOnEachImageLoad
-                onImagesLoaded={this.onLayout}
-                ref={(c) => { this.masonry = this.masonry || c.masonry }}
+            <Masonry
+              className='container-masonry'
+              options={masonryOptions}
+              updateOnEachImageLoad
+              onImagesLoaded={this.onLayout}
+              ref={(c) => { this.masonry = this.masonry || c.masonry }}
                 >
-                <div className='grid-row'>
-                  <div className='grid-sizer' />
-                  {mashUp(toJS(this.props.discovery), this.masonry)}
-                </div>
-              </Masonry>
-            </InfiniteScroll>
-            <Loading isLoading={this.props.discovery.pendings.length > 0} />
-          </StickyContainer>
+              <div className='grid-row'>
+                <div className='grid-sizer' />
+                {mashUp(toJS(this.props.discovery), this.masonry)}
+              </div>
+            </Masonry>
+          </InfiniteScroll>
+          <Loading isLoading={this.props.discovery.pendings.length > 0} />
         </div>
       </div>
     )

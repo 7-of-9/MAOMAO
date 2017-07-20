@@ -776,7 +776,6 @@ img {
       @include border-radius(8px);
       position: relative;
       min-height: 120px;
-      /* overflow: hidden; */
       display: block;
       .thumbnail-overlay {
         @include border-radius(4px);
@@ -860,6 +859,8 @@ img {
       .panel-user {
         @include abs-pos ($top: 30px, $left: 3px, $bottom: auto, $right: auto);
         z-index: 500;
+        visibility: hidden;
+        opacity: 0;
       }
     }
     .caption {
@@ -992,7 +993,6 @@ img {
     background-color: #fbf8f8;
     background-clip: padding-box;
     font-size: 0.875rem;
-    opacity: .97;
     white-space: nowrap;
     visibility: hidden;
     opacity: 0;
@@ -1010,6 +1010,10 @@ img {
       @include transition(all 0.3s ease);
       opacity: 1;
       visibility: visible;
+    }
+    .panel-user {
+      opacity: 1 !important;
+      visibility: visible !important;
     }
     .share-topic-ex {
       @media (max-width: 767px) {
