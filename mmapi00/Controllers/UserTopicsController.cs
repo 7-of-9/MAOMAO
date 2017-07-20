@@ -20,7 +20,20 @@ namespace mmapi00.Controllers
         {
             if (!UserHash.Ok(user_id, hash)) return Unauthorized();
 
-            return Ok(new {  });
+            mm_svc.UserTopics.AddUserTopic(user_id, topic_id);
+            return Ok(new {});
+        }
+
+        [Route("user_topics/remove")]
+        [HttpDelete]
+        public IHttpActionResult RemoveUserTopic(
+           long user_id, string hash,
+           long topic_id)
+        {
+            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+
+            mm_svc.UserTopics.RemoveUserTopic(user_id, topic_id);
+            return Ok(new {});
         }
     }
 }
