@@ -14,6 +14,12 @@ namespace tests
     public class Test_Golden
     {
         [TestMethod]
+        public void GetTopicTree_Test0()
+        {
+            var data = mm_svc.Terms.TopicTree.GetTopicTree();
+        }
+
+        [TestMethod]
         public void GetOrProcessParents_Test0()
         {
             //var term_parents = GoldenParents.GetOrProcessParents(p.term_id, true);

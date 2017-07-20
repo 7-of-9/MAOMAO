@@ -96,10 +96,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mm_web_services", "mm_web_s
 		SlnRelativePath = "mm_web_services\"
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HarshTesting", "HarshTesting", "{3F02F2ED-E409-4D38-83F1-0E02DD6F5F99}"
-EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "IronPythonApplication1", "IronPythonApplication1\IronPythonApplication1.pyproj", "{DEB8654D-F481-47A3-AE4A-DE6C9EF16D69}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,8 +156,6 @@ Global
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{DEB8654D-F481-47A3-AE4A-DE6C9EF16D69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEB8654D-F481-47A3-AE4A-DE6C9EF16D69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,6 +177,5 @@ Global
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
 		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1} = {88D4EF12-311E-4451-8B3A-2DBBF849A07B}
-		{DEB8654D-F481-47A3-AE4A-DE6C9EF16D69} = {3F02F2ED-E409-4D38-83F1-0E02DD6F5F99}
 	EndGlobalSection
 EndGlobal

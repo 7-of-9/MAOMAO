@@ -348,6 +348,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\AiExceptionFilterAttribute.cs" />
     <Compile Include="Controllers\ShareController.cs" />
+    <Compile Include="Controllers\TopicTreeController.cs" />
     <Compile Include="Controllers\UrlInfoController.cs" />
     <Compile Include="Controllers\UrlProcessController.cs" />
     <Compile Include="Controllers\UrlRecordController.cs" />

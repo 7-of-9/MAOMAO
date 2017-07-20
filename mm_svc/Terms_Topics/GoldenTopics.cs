@@ -24,6 +24,34 @@ namespace mm_svc.Terms
         }
 
         //
+        // Get Topic Roots: term IDs
+        //
+        public static List<long> GetTopicRoot_TermIds()
+        {
+            using (var db = mm02Entities.Create()) {
+                // get root topics - explicit
+                var explicit_root_topic_ids = db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock();
+
+                // root topics - implied; parent terms, not children
+                var computed_root_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(
+                      "SELECT DISTINCT [parent_term_id] FROM [topic_link] WHERE [parent_term_id] " +
+                      " NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link] WHERE [disabled]=0)").ToList();
+
+                // "temp" root topics - not yet categorized in topic_link 
+                var not_yet_categorized_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(
+                    "SELECT [id] FROM [term] where [is_topic]=1 AND [term_type_id] IN (0, 14) " +
+                    " AND [id] NOT IN (SELECT DISTINCT [child_term_id] FROM [topic_link] WHERE [disabled]=0) " +
+                    " AND [is_topic_root]=0").ToList();
+
+                var all_root_topic_ids = explicit_root_topic_ids
+                  .Union(computed_root_topic_ids)
+                  .Union(not_yet_categorized_topic_ids);//.Distinct();
+
+                return all_root_topic_ids.ToList();
+            }
+        }
+
+        //
         // Gets the topic_link chain up to root topic 
         //
         public static List<topic_link> GetTopicLinkChain(long child_term_id) {
