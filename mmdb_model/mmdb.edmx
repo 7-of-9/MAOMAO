@@ -237,6 +237,14 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="google_user_id" Type="nvarchar" MaxLength="100" />
           <Property Name="fb_user_id" Type="nvarchar" MaxLength="100" />
         </EntityType>
+        <EntityType Name="user_reg_topic">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="user_id" Type="bigint" Nullable="false" />
+          <Property Name="topic_id" Type="bigint" Nullable="false" />
+        </EntityType>
         <EntityType Name="user_url">
           <Key>
             <PropertyRef Name="id" />
@@ -579,6 +587,30 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_user_reg_topic_term">
+          <End Role="term" Type="Self.term" Multiplicity="1" />
+          <End Role="user_reg_topic" Type="Self.user_reg_topic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_reg_topic">
+              <PropertyRef Name="topic_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_reg_topic_user">
+          <End Role="user" Type="Self.user" Multiplicity="1" />
+          <End Role="user_reg_topic" Type="Self.user_reg_topic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_reg_topic">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_user_url_classification_term">
           <End Role="term" Type="Self.term" Multiplicity="1" />
           <End Role="user_url_classification" Type="Self.user_url_classification" Multiplicity="*" />
@@ -657,6 +689,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySet Name="url_term" EntityType="Self.url_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="url_text" EntityType="Self.url_text" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user" EntityType="Self.user" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="user_reg_topic" EntityType="Self.user_reg_topic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url" EntityType="Self.user_url" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="user_url_classification" EntityType="Self.user_url_classification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wiki_catlink" EntityType="Self.wiki_catlink" Schema="dbo" store:Type="Tables" />
@@ -770,6 +803,14 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_urlTerms_url" Association="Self.FK_urlTerms_url">
             <End Role="url" EntitySet="url" />
             <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_reg_topic_term" Association="Self.FK_user_reg_topic_term">
+            <End Role="term" EntitySet="term" />
+            <End Role="user_reg_topic" EntitySet="user_reg_topic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_reg_topic_user" Association="Self.FK_user_reg_topic_user">
+            <End Role="user" EntitySet="user" />
+            <End Role="user_reg_topic" EntitySet="user_reg_topic" />
           </AssociationSet>
           <AssociationSet Name="FK_user_url_classification_term" Association="Self.FK_user_url_classification_term">
             <End Role="term" EntitySet="term" />
@@ -950,6 +991,15 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="user" EntitySet="users" />
             <End Role="share_active" EntitySet="share_active" />
           </AssociationSet>
+          <EntitySet Name="user_reg_topic" EntityType="mm02Model.user_reg_topic" />
+          <AssociationSet Name="FK_user_reg_topic_term" Association="mm02Model.FK_user_reg_topic_term">
+            <End Role="term" EntitySet="terms" />
+            <End Role="user_reg_topic" EntitySet="user_reg_topic" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_reg_topic_user" Association="mm02Model.FK_user_reg_topic_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="user_reg_topic" EntitySet="user_reg_topic" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_cat">
           <Key>
@@ -1091,6 +1141,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="golden_term1" Relationship="mm02Model.FK_golden_term_parent" FromRole="term" ToRole="golden_term" />
           <NavigationProperty Name="url_parent_term" Relationship="mm02Model.FK_url_parent_term_term" FromRole="term" ToRole="url_parent_term" />
           <NavigationProperty Name="shares" Relationship="mm02Model.FK_share_term" FromRole="term" ToRole="share" />
+          <NavigationProperty Name="user_reg_topic" Relationship="mm02Model.FK_user_reg_topic_term" FromRole="term" ToRole="user_reg_topic" />
         </EntityType>
         <Association Name="FK_term_cal_entity_type">
           <End Type="mm02Model.cal_entity_type" Role="cal_entity_type" Multiplicity="0..1" />
@@ -1513,6 +1564,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.fk_user_url_classification_user" FromRole="user" ToRole="user_url_classification" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_user" FromRole="user" ToRole="user_url" />
           <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_user" FromRole="user" ToRole="share_active" />
+          <NavigationProperty Name="user_reg_topic" Relationship="mm02Model.FK_user_reg_topic_user" FromRole="user" ToRole="user_reg_topic" />
         </EntityType>
         <Association Name="fk_share_source_user">
           <End Type="mm02Model.user" Role="user" Multiplicity="1" />
@@ -1637,6 +1689,40 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="share_active">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="user_reg_topic">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int64" Nullable="false" />
+          <Property Name="topic_id" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="term" Relationship="mm02Model.FK_user_reg_topic_term" FromRole="user_reg_topic" ToRole="term" />
+          <NavigationProperty Name="user" Relationship="mm02Model.FK_user_reg_topic_user" FromRole="user_reg_topic" ToRole="user" />
+        </EntityType>
+        <Association Name="FK_user_reg_topic_term">
+          <End Type="mm02Model.term" Role="term" Multiplicity="1" />
+          <End Type="mm02Model.user_reg_topic" Role="user_reg_topic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="term">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_reg_topic">
+              <PropertyRef Name="topic_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_reg_topic_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.user_reg_topic" Role="user_reg_topic" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_reg_topic">
               <PropertyRef Name="user_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -1936,6 +2022,15 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="accepted_utc" ColumnName="accepted_utc" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="share_id" ColumnName="share_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="user_reg_topic">
+            <EntityTypeMapping TypeName="mm02Model.user_reg_topic">
+              <MappingFragment StoreEntitySet="user_reg_topic">
+                <ScalarProperty Name="topic_id" ColumnName="topic_id" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

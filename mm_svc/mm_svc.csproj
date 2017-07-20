@@ -74,6 +74,7 @@
     <Compile Include="UrlRecordAndProcess\UrlProcessor.cs" />
     <Compile Include="UrlRecordAndProcess\UrlRecorder.cs" />
     <Compile Include="User\Homepage.cs" />
+    <Compile Include="User\UserTopics.cs" />
     <Compile Include="Util\Hashing.cs" />
     <Compile Include="Util\Porter2_English.cs" />
     <Compile Include="Util\Utils\TldSuffixes.cs" />

@@ -353,6 +353,7 @@
     <Compile Include="Controllers\UrlProcessController.cs" />
     <Compile Include="Controllers\UrlRecordController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\UserTopicsController.cs" />
     <Compile Include="DTOs\UrlNlpInfoDto.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

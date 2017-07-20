@@ -31,6 +31,7 @@ namespace mmdb_model
             this.golden_term1 = new HashSet<golden_term>();
             this.url_parent_term = new HashSet<url_parent_term>();
             this.shares = new HashSet<share>();
+            this.user_reg_topic = new HashSet<user_reg_topic>();
         }
     
         public long id { get; set; }
@@ -72,5 +73,7 @@ namespace mmdb_model
         public virtual ICollection<url_parent_term> url_parent_term { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<share> shares { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<user_reg_topic> user_reg_topic { get; set; }
     }
 }

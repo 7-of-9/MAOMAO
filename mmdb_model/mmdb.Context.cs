@@ -48,5 +48,6 @@ namespace mmdb_model
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<awis_site> awis_site { get; set; }
         public virtual DbSet<share_active> share_active { get; set; }
+        public virtual DbSet<user_reg_topic> user_reg_topic { get; set; }
     }
 }

@@ -144,6 +144,9 @@
     <Compile Include="user.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="user_reg_topic.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="user_url.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
