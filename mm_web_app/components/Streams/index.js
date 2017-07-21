@@ -128,7 +128,9 @@ function parseDomain (link) {
 class Streams extends React.Component {
   state = {
     currentUrl: '',
-    currentWidth: window.innerWidth / 2
+    innerWidth: window.innerWidth,
+    currentWidth: window.innerWidth / 2,
+    isResize: false
   }
 
   hasMoreItem = () => {
@@ -150,12 +152,23 @@ class Streams extends React.Component {
     this.setState({ currentUrl: '' })
   }
 
-  onResizeStop = (width) => {
-    this.setState({ currentWidth: width })
+  onResizeStart = () => {
+    this.setState({ isResize: true })
   }
 
-  onLayout = () => {
-    this.setState({ currentWidth: window.innerWidth / 2 })
+  onResizeStop = (width) => {
+    this.setState({ currentWidth: width, isResize: false })
+  }
+
+  onZoomLayout = () => {
+    const { innerWidth } = this.state
+    if (innerWidth !== window.innerWidth) {
+      logger.warn('onZoomLayout')
+      this.setState({
+        currentWidth: window.innerWidth / 2,
+        innerWidth: window.innerWidth
+      })
+    }
   }
 
   render () {
@@ -171,7 +184,7 @@ class Streams extends React.Component {
     const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls.map(item => item.url_id)
     logger.warn('currentUrls', currentUrls)
-    const { currentUrl, currentWidth } = this.state
+    const { currentUrl, currentWidth, isResize } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
         const { url_id, href, img, title } = item
@@ -211,13 +224,13 @@ class Streams extends React.Component {
 
     return (
       <div className='streams'>
-        <ReactResizeDetector handleWidth handleHeight onResize={this.onLayout} />
+        <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
         <div className='standand-sort'>
           <FilterSearch sortedUrls={this.sortedUrls} owners={owners} />
         </div>
         <div className={currentUrl ? 'sticky-view' : 'hidden-view'}>
           <Sticky>
-            <SplitView onResizeStop={this.onResizeStop} currentWidth={currentWidth}>
+            <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
               {(width, height) => (<InlinePreview
                 width={currentWidth}
                 height={height}
@@ -227,18 +240,21 @@ class Streams extends React.Component {
             </SplitView>
           </Sticky>
         </div>
-        <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 20) : '100%' }}>
-          <InfiniteScroll
-            pageStart={this.props.ui.page}
-            loadMore={this.loadMore}
-            hasMore={this.hasMoreItem()}
-            loader={<Loading isLoading />}
+        {
+          !isResize &&
+          <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 20) : '100%' }}>
+            <InfiniteScroll
+              pageStart={this.props.ui.page}
+              loadMore={this.loadMore}
+              hasMore={this.hasMoreItem()}
+              loader={<Loading isLoading />}
              >
-            <GridView>
-              {items}
-            </GridView>
-          </InfiniteScroll>
-        </div>
+              <GridView>
+                {items}
+              </GridView>
+            </InfiniteScroll>
+          </div>
+        }
       </div>
     )
   }

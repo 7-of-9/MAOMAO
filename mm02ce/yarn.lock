@@ -5586,15 +5586,14 @@ querystring@0.2.0, querystring@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
-radium@^0.19.1:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/radium/-/radium-0.19.1.tgz#0fbcc6d0ea5526bdb1e5e5371cad386775a3eec8"
+radium@^0.19.3:
+  version "0.19.3"
+  resolved "https://registry.yarnpkg.com/radium/-/radium-0.19.3.tgz#9884875b7ace99e7a24918e88a343c51ef0611e3"
   dependencies:
     array-find "^1.0.0"
     exenv "^1.2.1"
     inline-style-prefixer "^2.0.5"
     prop-types "^15.5.8"
-    rimraf "^2.6.1"
 
 raf@^3.1.0:
   version "3.3.0"

@@ -34,7 +34,7 @@
     "prop-types": "^15.5.10",
     "pusher-js": "^4.1.0",
     "qs": "^6.5.0",
-    "radium": "^0.19.1",
+    "radium": "^0.19.3",
     "rc-steps": "^2.5.1",
     "react": "^15.6.1",
     "react-addons-shallow-compare": "^15.6.0",
