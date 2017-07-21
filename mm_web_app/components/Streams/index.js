@@ -242,7 +242,7 @@ class Streams extends React.Component {
         </div>
         {
           !isResize &&
-          <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 20) : '100%' }}>
+          <div className={currentUrl ? 'split-view' : ''} style={{ width: currentUrl ? (window.innerWidth - currentWidth - 30) : '100%' }}>
             <InfiniteScroll
               pageStart={this.props.ui.page}
               loadMore={this.loadMore}
