@@ -130,12 +130,7 @@ namespace mmapi00.Controllers
             return Ok( new { mine = data.mine, received = data.received, topics = data.topics });
         }
 
-        /// <summary>
-        /// Returns categorized URL history for the user.
-        /// </summary>
-        /// <param name="user_id"></param>
-        /// <param name="hash"></param>
-        /// <returns></returns>
+     
         //[Route("user/home")]
         //[HttpGet]
         //public IHttpActionResult DEMO_CalcCategorizedHistory_All(
