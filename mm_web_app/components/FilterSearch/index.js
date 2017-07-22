@@ -174,30 +174,6 @@ class FilterSearch extends React.Component {
     }
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    if (this.props.sortedUrls.length !== nextProps.sortedUrls.length) {
-      return true
-    }
-
-    if (this.props.owners.length !== nextProps.owners.length) {
-      return true
-    }
-
-    if (this.state.value !== nextState.value) {
-      return true
-    }
-
-    if (this.state.suggestions !== nextState.suggestions) {
-      return true
-    }
-
-    if (this.props.ui.sortBy !== nextProps.ui.sortBy) {
-      return true
-    }
-
-    return false
-  }
-
   render () {
     const { value, suggestions } = this.state
     const { sortedUrls, owners } = this.props

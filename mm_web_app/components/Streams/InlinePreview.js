@@ -4,14 +4,13 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
-import previewUrl from '../../utils/previewUrl'
 
-export default class InlinePreview extends PureComponent {
+export default class InlinePreview extends Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     closePreview: PropTypes.func,
@@ -19,11 +18,20 @@ export default class InlinePreview extends PureComponent {
     height: PropTypes.any.isRequired
   }
 
+  state = {
+    isLoading: false
+  }
+
   renderPlayer = () => {
     const { url, width, height } = this.props
     logger.warn('renderPlayer', url, width, height)
     if (!url) {
-      return (<Loading isLoading />)
+      return (
+        <div
+          style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
+        >
+          <Loading isLoading />
+        </div>)
     }
     return (<ReactPlayer
       url={url}
@@ -35,13 +43,52 @@ export default class InlinePreview extends PureComponent {
       />)
   }
 
+  onLoadIframe = () => {
+    logger.warn('iframe', this.iframe)
+    this.setState({isLoading: false})
+  }
+
   renderIframe = () => {
     const { url, width, height } = this.props
-    if (!url) {
-      return (<Loading isLoading />)
-    }
+    const { isLoading } = this.state
     logger.warn('renderIframe', url, width, height)
-    return previewUrl(url, url, width, height)
+    if (!url) {
+      return (
+        <div
+          style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
+        >
+          <Loading isLoading />
+        </div>)
+    }
+    const PROXY_URL = '/api/preview'
+    const proxyUrl = `${PROXY_URL}?url=${url}`
+    return (
+      <div
+        style={{backgroundColor: '#fff', width: width || '100%', height: height || '100%'}}
+        >
+        <Loading isLoading={isLoading} />
+        <iframe
+          className={isLoading ? 'hidden-view' : 'iframe-view'}
+          sandbox='allow-same-origin'
+          id={`frame-${url}`}
+          name={`frame-${url}`}
+          ref={(iframe) => { this.iframe = iframe }}
+          onLoad={this.onLoadIframe}
+          width={width}
+          height={height}
+          frameBorder='0'
+          allowFullScreen
+          allowTransparency
+          src={proxyUrl}
+        />
+      </div>
+    )
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.url !== this.props.url && !this.state.isLoading) {
+      this.setState({isLoading: true})
+    }
   }
 
   render () {

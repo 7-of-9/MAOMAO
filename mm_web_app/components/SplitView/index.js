@@ -48,7 +48,9 @@ class SplitView extends React.Component {
         onResizeStop={this.onResizeStop}
         onResizeStart={this.onResizeStart}
         >
-        {ready && this.props.children(this.resizable && this.resizable.state.width, window.outerHeight)}
+        <div className={!ready ? 'hidden-view' : 'splitter-view'}>
+          {this.props.children(this.resizable && this.resizable.state.width, window.outerHeight)}
+        </div>
         {!ready && <div className='on-resize' />}
       </Resizable>)
   }

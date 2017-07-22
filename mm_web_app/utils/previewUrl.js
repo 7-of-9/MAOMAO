@@ -1,5 +1,5 @@
 
-export default function previewUrl (url, name, width = '100%', height = '100%') {
+export default function previewUrl (url, name, width = '100%', height = '100%', onload = () => {}) {
   const PROXY_URL = '/api/preview'
   const proxyUrl = `${PROXY_URL}?url=${url}`
   return (
@@ -12,6 +12,8 @@ export default function previewUrl (url, name, width = '100%', height = '100%') 
       frameBorder='0'
       allowFullScreen
       allowTransparency
-      src={proxyUrl} />
+      onLoad={onload()}
+      src={proxyUrl}
+      />
   )
 }
