@@ -39,6 +39,9 @@ namespace wowmao
                             });
                             db.SaveChangesTraceValidationErrors();
 
+                            // get a topic level
+                            var parent_link = db.topic_link.Where(p => p.child_term_id == parent_term_id && p.disabled == false).FirstOrDefaultNoLock();
+
                             // if no existing, create new enabled topic link for parent->child
                             if (topic_links.Count == 0) {
                                 db.topic_link.Add(new topic_link() {
@@ -46,7 +49,9 @@ namespace wowmao
                                     parent_term_id = parent_term_id,
                                     max_distance = 0,
                                     min_distance = 0,
-                                    mmtopic_level = 0,
+                                    mmtopic_level = parent_link == null 
+                                                        ? 1 // root
+                                                        : parent_link.mmtopic_level + 1,
                                     seen_count = 1,
                                     disabled = false
                                 });

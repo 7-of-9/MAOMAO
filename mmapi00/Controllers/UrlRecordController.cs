@@ -39,7 +39,7 @@ namespace mmapi00.Controllers
             int user_id, string hash,
             [FromBody] RecordUrlParam param) //[FromBody] string href, [FromBody] string text)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (param == null) return BadRequest();
             if (string.IsNullOrEmpty(param.href) || string.IsNullOrEmpty(param.text)) return BadRequest();
             Stopwatch sw = new Stopwatch(); sw.Start();

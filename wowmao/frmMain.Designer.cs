@@ -310,6 +310,8 @@
             // chkProdEnv
             // 
             this.chkProdEnv.AutoSize = true;
+            this.chkProdEnv.Checked = true;
+            this.chkProdEnv.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkProdEnv.Location = new System.Drawing.Point(68, 5);
             this.chkProdEnv.Name = "chkProdEnv";
             this.chkProdEnv.Size = new System.Drawing.Size(48, 17);

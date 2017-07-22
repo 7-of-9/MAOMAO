@@ -232,7 +232,7 @@ namespace wowmao.Controls
             // format color node
             FormatNodeColor(tn);
 
-            tn.ToolTipText = (link == null ? node_desc : $"{link.parent_term.name} ==> {link.child_term.name}")
+            tn.ToolTipText = (link == null ? node_desc : $"{link.parent_term?.name} ==> {link.child_term?.name}")
                              + $" (R={ tn.BackColor.R} G={ tn.BackColor.G} B ={ tn.BackColor.B})";
             count++;
             return tn;

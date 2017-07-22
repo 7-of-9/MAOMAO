@@ -1,0 +1,62 @@
+﻿using mm_svc.Util.Utils;
+using mmdb_model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+
+namespace mmapi00.Util
+{
+    public static class UserAuth
+    {
+        public static bool Ok(long user_id, string hash)
+        {
+            using (var db = mm02Entities.Create()) {
+                var user = db.users.Find(user_id);
+                if (user == null) return false;
+
+                string goog_uid_hash = null;
+                string fb_uid_hash = null;
+                string test_uid_hash = null;
+
+                if (!string.IsNullOrEmpty(user.google_user_id))
+                    goog_uid_hash = mm_svc.Util.Hashing.MD5(user.google_user_id);
+
+                if (!string.IsNullOrEmpty(user.fb_user_id))
+                    fb_uid_hash = mm_svc.Util.Hashing.MD5(user.fb_user_id);
+
+                test_uid_hash = mm_svc.Util.Hashing.MD5(user.id.ToString());
+
+                var matches_goog = goog_uid_hash != null && goog_uid_hash == hash;
+                var matches_fb = fb_uid_hash != null && fb_uid_hash == hash;
+                var matches_test_user = test_uid_hash != null && test_uid_hash == hash;
+
+                var user_authorized = matches_goog || matches_fb || matches_test_user;
+
+                // record user IP & geo data
+                if (user_authorized) {
+                    var user_ip = IpParser.GetClientIpAddress();
+                    if (user_ip != null) {
+                        Task.Factory.StartNew(() => {
+                            using (var db2 = mm02Entities.Create()) {
+                                var user2 = db2.users.SingleOrDefault(p => p.id == user_id);
+                                if (user2 != null) {
+                                    user2.last_api_city = IpParser.GetCity(user_ip);
+                                    user2.last_api_state = IpParser.GetState(user_ip);
+                                    user2.last_api_cc = IpParser.GetCountry(user_ip);
+                                    user2.last_api_ip = user_ip;
+                                    db2.SaveChangesTraceValidationErrors();
+                                }
+                            }
+                        });
+                    }
+                }
+
+                return user_authorized;
+            }
+        }
+    }
+}

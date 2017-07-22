@@ -360,7 +360,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\CacheApiControllerExtensions.cs" />
-    <Compile Include="Util\CheckUserHash.cs" />
+    <Compile Include="Util\UserAuth.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\PublishProfiles\mmapi00.pubxml" />

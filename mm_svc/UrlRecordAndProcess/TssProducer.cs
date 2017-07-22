@@ -271,18 +271,30 @@ namespace mm_svc
             //    }
             //}
 
+            //
+            // Last Chance boosting -- only do this for terms that are also WIKI terms (probably would be cleaner to strip non-wiki terms earlier in the flow)
+            //
+
             // last chance saloon -- assign maximum Calais-scored terms that are up to now not scored, with TSS of exactly 1/2 of max. assigned TSS
             if (url_terms.Max(p2 => p2.tss) > 0) {
                 url_terms.Where(p => p.tss == 0 && p.S == 9).ToList().ForEach(p => {
-                    p.candidate_reason += $" CAL_MAX_LAST_CHANCE(1)";
-                    p.tss = url_terms.Max(p2 => p2.tss) / 2;
+                    using (var db = mm02Entities.Create()) {
+                        if (db.terms.Any(p2 => p2.name == p.term.name && (p2.term_type_id == (int)g.TT.WIKI_NS_0 || p2.term_type_id == (int)g.TT.WIKI_NS_14))) {
+                            p.candidate_reason += $" CAL_MAX_LAST_CHANCE(1)";
+                            p.tss = url_terms.Max(p2 => p2.tss) / 2;
+                        }
+                    }
                 });
             }
 
-            // last chance saloon -- assign maximum Calais-scored terms that are up to now not scored, with TSS of exactly 1/2 of max. assigned TSS
+            // last chance saloon -- assign near-maximum Calais-scored terms that are up to now not scored, with TSS of exactly 1/3 of max. assigned TSS
             url_terms.Where(p => p.tss == 0 && p.S == 6).ToList().ForEach(p => {
-                p.candidate_reason += $" CAL_MAX_LAST_CHANCE(2)";
-                p.tss = url_terms.Max(p2 => p2.tss) / 3;
+                using (var db = mm02Entities.Create()) {
+                    if (db.terms.Any(p2 => p2.name == p.term.name && (p2.term_type_id == (int)g.TT.WIKI_NS_0 || p2.term_type_id == (int)g.TT.WIKI_NS_14))) {
+                        p.candidate_reason += $" CAL_MAX_LAST_CHANCE(2)";
+                        p.tss = url_terms.Max(p2 => p2.tss) / 3;
+                    }
+                }
             });
 
             // FALLBACK: if still no terms with TSS > 0, then assign non-zero TSS values to maximum weighted terms

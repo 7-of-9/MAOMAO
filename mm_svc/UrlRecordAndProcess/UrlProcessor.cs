@@ -424,9 +424,10 @@ namespace mm_svc
 
             // weightings
             counted_info.ForEach(p =>
-                p.S = Math.Pow(p.count, 0.75)
-                    * Math.Pow(p.avg_S_norm, 1.5) // Math.Pow(p.max_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
-                    * (Math.Pow(p.avg_TSS_leaf, 2.0)) //* (Math.Pow(p.max_TSS_leaf, 2.0))
+                p.S = Math.Pow(p.count, 1.1)                    // 0.75
+                    * Math.Pow(p.avg_S, 2)
+                    * Math.Pow(p.avg_S_norm, 1.5)               // Math.Pow(p.max_S_norm, 1.5) //* Math.Pow(p.avg_S, 2.0)
+                    * (Math.Pow(p.max_TSS_leaf, 2.0))           //* (Math.Pow(p.avg_TSS_leaf, 2.0))
                     * (Math.Pow(p.mmtopic_level, 0.8) / 100)
             );
 

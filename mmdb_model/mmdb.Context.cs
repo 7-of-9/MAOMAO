@@ -50,7 +50,7 @@ namespace mmdb_model
         public virtual DbSet<user_reg_topic> user_reg_topic { get; set; }
         public virtual DbSet<country> countries { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
-        public virtual DbSet<user> users { get; set; }
         public virtual DbSet<dbip_city_2016_11> dbip_city_2016_11 { get; set; }
+        public virtual DbSet<user> users { get; set; }
     }
 }

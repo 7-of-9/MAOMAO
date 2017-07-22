@@ -18,7 +18,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             long topic_id)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             mm_svc.UserTopics.AddUserTopic(user_id, topic_id);
             return Ok(new {});
@@ -30,7 +30,7 @@ namespace mmapi00.Controllers
            long user_id, string hash,
            long topic_id)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             mm_svc.UserTopics.RemoveUserTopic(user_id, topic_id);
             return Ok(new {});

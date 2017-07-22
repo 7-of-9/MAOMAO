@@ -14,7 +14,8 @@ namespace tests.Tests.Util_Misc {
         public void IpLookup_Test0()
         {
             var test_ips = new List<string>() {
-            "180.254.108.93" // ID,
+            "69.147.92.42", // synnvale?
+            "180.254.108.93", // ID,
             "175.156.244.65", // SG
             "175.139.93.89", // MY
             "130.105.246.138", // PH

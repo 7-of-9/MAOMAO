@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}"
 	ProjectSection(SolutionItems) = preProject
@@ -149,11 +149,9 @@ Global
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
