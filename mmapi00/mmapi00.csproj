@@ -20,7 +20,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <ApplicationInsightsResourceId>/subscriptions/dab9bba6-11c1-4d0d-ac8d-e924e599f54a/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/mmapi00</ApplicationInsightsResourceId>
-    <ApplicationInsightsAnnotationResourceId>/subscriptions/503a67e6-8e86-41a6-bb4e-70cc003224af/resourcegroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/mmapi00</ApplicationInsightsAnnotationResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/dab9bba6-11c1-4d0d-ac8d-e924e599f54a/resourceGroups/Default-ApplicationInsights-CentralUS/providers/microsoft.insights/components/mmapi00</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

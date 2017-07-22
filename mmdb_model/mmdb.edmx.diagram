@@ -47,20 +47,24 @@
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
         <EntityTypeShape EntityType="mm02Model.url_text" Width="1.5" PointX="5.5" PointY="16.625" />
         <AssociationConnector Association="mm02Model.FK_url_text_url" />
-        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="0.75" />
-        <AssociationConnector Association="mm02Model.fk_share_source_user" />
-        <AssociationConnector Association="mm02Model.fk_share_target_user" />
-        <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
-        <AssociationConnector Association="mm02Model.fk_user_url_user" />
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="1.25" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <EntityTypeShape EntityType="mm02Model.share_active" Width="1.5" PointX="19.25" PointY="2.25" />
         <AssociationConnector Association="mm02Model.FK_share_active_share" />
-        <AssociationConnector Association="mm02Model.FK_share_active_user" />
         <EntityTypeShape EntityType="mm02Model.user_reg_topic" Width="1.5" PointX="8.5" PointY="0.875" />
         <AssociationConnector Association="mm02Model.FK_user_reg_topic_term" />
+        <EntityTypeShape EntityType="mm02Model.country" Width="1.5" PointX="3.875" PointY="19.75" />
+        <EntityTypeShape EntityType="mm02Model.sysdiagram" Width="1.5" PointX="8.375" PointY="12" />
+        <EntityTypeShape EntityType="mm02Model.user" Width="1.5" PointX="6.125" PointY="19.875" />
+        <EntityTypeShape EntityType="mm02Model.dbip_city_2016_11" Width="1.5" PointX="10.375" PointY="11.75" />
+        <AssociationConnector Association="mm02Model.FK_user_Country" />
+        <AssociationConnector Association="mm02Model.fk_share_source_user" />
+        <AssociationConnector Association="mm02Model.fk_share_target_user" />
+        <AssociationConnector Association="mm02Model.FK_share_active_user" />
         <AssociationConnector Association="mm02Model.FK_user_reg_topic_user" />
+        <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
+        <AssociationConnector Association="mm02Model.fk_user_url_user" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

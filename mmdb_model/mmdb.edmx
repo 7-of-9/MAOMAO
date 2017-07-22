@@ -36,6 +36,33 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="name" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
+        <EntityType Name="country">
+          <Key>
+            <PropertyRef Name="cc" />
+          </Key>
+          <Property Name="cc" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'mm02.dbo.dbip-city-2016-11' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="dbip-city-2016-11">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="ipFrom" />
+            <PropertyRef Name="ipTo" />
+            <PropertyRef Name="countryCode" />
+            <PropertyRef Name="state" />
+            <PropertyRef Name="city" />
+          </Key>
+          <Property Name="id" Type="bigint" Nullable="false" />
+          <Property Name="ipFrom" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ipTo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="countryCode" Type="char" MaxLength="2" Nullable="false" />
+          <Property Name="state" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="city" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ipFromNum" Type="bigint" />
+          <Property Name="ipToNum" Type="bigint" />
+        </EntityType>
         <EntityType Name="golden_term">
           <Key>
             <PropertyRef Name="id" />
@@ -92,6 +119,16 @@
           <Property Name="accepted_utc" Type="datetime" Nullable="false" />
           <Property Name="source_user_deactivated" Type="bit" Nullable="false" />
           <Property Name="user_deactivated" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="term">
           <Key>
@@ -236,6 +273,9 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="salt" Type="nvarchar" MaxLength="50" />
           <Property Name="google_user_id" Type="nvarchar" MaxLength="100" />
           <Property Name="fb_user_id" Type="nvarchar" MaxLength="100" />
+          <Property Name="last_api_cc" Type="char" MaxLength="2" />
+          <Property Name="last_api_city" Type="nvarchar" MaxLength="256" />
+          <Property Name="last_api_state" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="user_reg_topic">
           <Key>
@@ -587,6 +627,18 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_user_Country">
+          <End Role="country" Type="Self.country" Multiplicity="0..1" />
+          <End Role="user" Type="Self.user" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="country">
+              <PropertyRef Name="cc" />
+            </Principal>
+            <Dependent Role="user">
+              <PropertyRef Name="last_api_cc" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_user_reg_topic_term">
           <End Role="term" Type="Self.term" Multiplicity="1" />
           <End Role="user_reg_topic" Type="Self.user_reg_topic" Multiplicity="*" />
@@ -675,11 +727,13 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySet Name="awis_cat" EntityType="Self.awis_cat" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="awis_site" EntityType="Self.awis_site" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="cal_entity_type" EntityType="Self.cal_entity_type" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="country" EntityType="Self.country" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="golden_term" EntityType="Self.golden_term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="gt_parent" EntityType="Self.gt_parent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="gt_path_to_root" EntityType="Self.gt_path_to_root" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="share" EntityType="Self.share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="share_active" EntityType="Self.share_active" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term" EntityType="Self.term" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_matrix" EntityType="Self.term_matrix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="term_type" EntityType="Self.term_type" Schema="dbo" store:Type="Tables" />
@@ -694,6 +748,18 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySet Name="user_url_classification" EntityType="Self.user_url_classification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wiki_catlink" EntityType="Self.wiki_catlink" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wiki_page" EntityType="Self.wiki_page" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="dbip-city-2016-11" EntityType="Self.dbip-city-2016-11" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [dbip-city-2016-11].[id] AS [id], 
+    [dbip-city-2016-11].[ipFrom] AS [ipFrom], 
+    [dbip-city-2016-11].[ipTo] AS [ipTo], 
+    [dbip-city-2016-11].[countryCode] AS [countryCode], 
+    [dbip-city-2016-11].[state] AS [state], 
+    [dbip-city-2016-11].[city] AS [city], 
+    [dbip-city-2016-11].[ipFromNum] AS [ipFromNum], 
+    [dbip-city-2016-11].[ipToNum] AS [ipToNum]
+    FROM [dbo].[dbip-city-2016-11] AS [dbip-city-2016-11]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="tmp_is_topic_ids" EntityType="Self.tmp_is_topic_ids" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [tmp_is_topic_ids].[id] AS [id]
@@ -803,6 +869,10 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_urlTerms_url" Association="Self.FK_urlTerms_url">
             <End Role="url" EntitySet="url" />
             <End Role="url_term" EntitySet="url_term" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_Country" Association="Self.FK_user_Country">
+            <End Role="country" EntitySet="country" />
+            <End Role="user" EntitySet="user" />
           </AssociationSet>
           <AssociationSet Name="FK_user_reg_topic_term" Association="Self.FK_user_reg_topic_term">
             <End Role="term" EntitySet="term" />
@@ -956,23 +1026,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="url" EntitySet="urls" />
             <End Role="url_text" EntitySet="url_text" />
           </AssociationSet>
-          <EntitySet Name="users" EntityType="mm02Model.user" />
-          <AssociationSet Name="fk_share_source_user" Association="mm02Model.fk_share_source_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="share" EntitySet="shares" />
-          </AssociationSet>
-          <AssociationSet Name="fk_share_target_user" Association="mm02Model.fk_share_target_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="share" EntitySet="shares" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_url_classification_user" Association="mm02Model.fk_user_url_classification_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="user_url_classification" EntitySet="user_url_classification" />
-          </AssociationSet>
-          <AssociationSet Name="fk_user_url_user" Association="mm02Model.fk_user_url_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="user_url" EntitySet="user_url" />
-          </AssociationSet>
           <EntitySet Name="awis_site" EntityType="mm02Model.awis_site" />
           <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
             <End Role="awis_cat" EntitySet="awis_cat" />
@@ -987,18 +1040,42 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="share" EntitySet="shares" />
             <End Role="share_active" EntitySet="share_active" />
           </AssociationSet>
-          <AssociationSet Name="FK_share_active_user" Association="mm02Model.FK_share_active_user">
-            <End Role="user" EntitySet="users" />
-            <End Role="share_active" EntitySet="share_active" />
-          </AssociationSet>
           <EntitySet Name="user_reg_topic" EntityType="mm02Model.user_reg_topic" />
           <AssociationSet Name="FK_user_reg_topic_term" Association="mm02Model.FK_user_reg_topic_term">
             <End Role="term" EntitySet="terms" />
             <End Role="user_reg_topic" EntitySet="user_reg_topic" />
           </AssociationSet>
+          <EntitySet Name="countries" EntityType="mm02Model.country" />
+          <EntitySet Name="sysdiagrams" EntityType="mm02Model.sysdiagram" />
+          <EntitySet Name="users" EntityType="mm02Model.user" />
+          <EntitySet Name="dbip_city_2016_11" EntityType="mm02Model.dbip_city_2016_11" />
+          <AssociationSet Name="FK_user_Country" Association="mm02Model.FK_user_Country">
+            <End Role="country" EntitySet="countries" />
+            <End Role="user" EntitySet="users" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_source_user" Association="mm02Model.fk_share_source_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="fk_share_target_user" Association="mm02Model.fk_share_target_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share" EntitySet="shares" />
+          </AssociationSet>
+          <AssociationSet Name="FK_share_active_user" Association="mm02Model.FK_share_active_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="share_active" EntitySet="share_active" />
+          </AssociationSet>
           <AssociationSet Name="FK_user_reg_topic_user" Association="mm02Model.FK_user_reg_topic_user">
             <End Role="user" EntitySet="users" />
             <End Role="user_reg_topic" EntitySet="user_reg_topic" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_url_classification_user" Association="mm02Model.fk_user_url_classification_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="user_url_classification" EntitySet="user_url_classification" />
+          </AssociationSet>
+          <AssociationSet Name="fk_user_url_user" Association="mm02Model.fk_user_url_user">
+            <End Role="user" EntitySet="users" />
+            <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="awis_cat">
@@ -1427,9 +1504,9 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="term" Relationship="mm02Model.FK_share_term" FromRole="share" ToRole="term" />
           <Property Name="target_user_ref" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="url" Relationship="mm02Model.FK_share_url" FromRole="share" ToRole="url" />
+          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_share" FromRole="share" ToRole="share_active" />
           <NavigationProperty Name="user" Relationship="mm02Model.fk_share_source_user" FromRole="share" ToRole="user" />
           <NavigationProperty Name="user1" Relationship="mm02Model.fk_share_target_user" FromRole="share" ToRole="user" />
-          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_share" FromRole="share" ToRole="share_active" />
         </EntityType>
         <Association Name="FK_share_term">
           <End Type="mm02Model.term" Role="term" Multiplicity="0..1" />
@@ -1542,78 +1619,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="user">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="email" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="gender" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="avatar" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="created" Type="DateTime" Precision="3" />
-          <Property Name="password" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="salt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="google_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="fb_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="shares" Relationship="mm02Model.fk_share_source_user" FromRole="user" ToRole="share" />
-          <NavigationProperty Name="shares1" Relationship="mm02Model.fk_share_target_user" FromRole="user" ToRole="share" />
-          <NavigationProperty Name="user_url_classification" Relationship="mm02Model.fk_user_url_classification_user" FromRole="user" ToRole="user_url_classification" />
-          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_user" FromRole="user" ToRole="user_url" />
-          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_user" FromRole="user" ToRole="share_active" />
-          <NavigationProperty Name="user_reg_topic" Relationship="mm02Model.FK_user_reg_topic_user" FromRole="user" ToRole="user_reg_topic" />
-        </EntityType>
-        <Association Name="fk_share_source_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
-          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="share">
-              <PropertyRef Name="source_user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_share_target_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="0..1" />
-          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="share">
-              <PropertyRef Name="target_user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user_url_classification_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
-          <End Type="mm02Model.user_url_classification" Role="user_url_classification" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url_classification">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_user_url_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
-          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="user_url">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="awis_site">
           <Key>
             <PropertyRef Name="id" />
@@ -1681,18 +1686,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_share_active_user">
-          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
-          <End Type="mm02Model.share_active" Role="share_active" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="user">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="share_active">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="user_reg_topic">
           <Key>
             <PropertyRef Name="id" />
@@ -1715,6 +1708,118 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="country">
+          <Key>
+            <PropertyRef Name="cc" />
+          </Key>
+          <Property Name="cc" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="users" Relationship="mm02Model.FK_user_Country" FromRole="country" ToRole="user" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="user">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="firstname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="lastname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="gender" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="avatar" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="status" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="created" Type="DateTime" Precision="3" />
+          <Property Name="password" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="salt" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="google_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="fb_user_id" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="last_api_cc" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="last_api_city" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="last_api_state" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="country" Relationship="mm02Model.FK_user_Country" FromRole="user" ToRole="country" />
+          <NavigationProperty Name="shares" Relationship="mm02Model.fk_share_source_user" FromRole="user" ToRole="share" />
+          <NavigationProperty Name="shares1" Relationship="mm02Model.fk_share_target_user" FromRole="user" ToRole="share" />
+          <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_user" FromRole="user" ToRole="share_active" />
+          <NavigationProperty Name="user_reg_topic" Relationship="mm02Model.FK_user_reg_topic_user" FromRole="user" ToRole="user_reg_topic" />
+          <NavigationProperty Name="user_url_classification" Relationship="mm02Model.fk_user_url_classification_user" FromRole="user" ToRole="user_url_classification" />
+          <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_user" FromRole="user" ToRole="user_url" />
+        </EntityType>
+        <EntityType Name="dbip_city_2016_11">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="ipFrom" />
+            <PropertyRef Name="ipTo" />
+            <PropertyRef Name="countryCode" />
+            <PropertyRef Name="state" />
+            <PropertyRef Name="city" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" />
+          <Property Name="ipFrom" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ipTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="countryCode" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="state" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ipFromNum" Type="Int64" />
+          <Property Name="ipToNum" Type="Int64" />
+        </EntityType>
+        <Association Name="FK_user_Country">
+          <End Type="mm02Model.country" Role="country" Multiplicity="0..1" />
+          <End Type="mm02Model.user" Role="user" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="country">
+              <PropertyRef Name="cc" />
+            </Principal>
+            <Dependent Role="user">
+              <PropertyRef Name="last_api_cc" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_source_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="source_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_share_target_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="0..1" />
+          <End Type="mm02Model.share" Role="share" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share">
+              <PropertyRef Name="target_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_share_active_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.share_active" Role="share_active" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="share_active">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_user_reg_topic_user">
           <End Type="mm02Model.user" Role="user" Multiplicity="1" />
           <End Type="mm02Model.user_reg_topic" Role="user_reg_topic" Multiplicity="*" />
@@ -1723,6 +1828,30 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="user_reg_topic">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_user_url_classification_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.user_url_classification" Role="user_url_classification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url_classification">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_user_url_user">
+          <End Type="mm02Model.user" Role="user" Multiplicity="1" />
+          <End Type="mm02Model.user_url" Role="user_url" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_url">
               <PropertyRef Name="user_id" />
             </Dependent>
           </ReferentialConstraint>
@@ -1978,25 +2107,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="users">
-            <EntityTypeMapping TypeName="mm02Model.user">
-              <MappingFragment StoreEntitySet="user">
-                <ScalarProperty Name="fb_user_id" ColumnName="fb_user_id" />
-                <ScalarProperty Name="google_user_id" ColumnName="google_user_id" />
-                <ScalarProperty Name="salt" ColumnName="salt" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="created" ColumnName="created" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="avatar" ColumnName="avatar" />
-                <ScalarProperty Name="gender" ColumnName="gender" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="lastname" ColumnName="lastname" />
-                <ScalarProperty Name="firstname" ColumnName="firstname" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="awis_site">
             <EntityTypeMapping TypeName="mm02Model.awis_site">
               <MappingFragment StoreEntitySet="awis_site">
@@ -2031,6 +2141,61 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <MappingFragment StoreEntitySet="user_reg_topic">
                 <ScalarProperty Name="topic_id" ColumnName="topic_id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="countries">
+            <EntityTypeMapping TypeName="mm02Model.country">
+              <MappingFragment StoreEntitySet="country">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="cc" ColumnName="cc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="mm02Model.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="users">
+            <EntityTypeMapping TypeName="mm02Model.user">
+              <MappingFragment StoreEntitySet="user">
+                <ScalarProperty Name="last_api_state" ColumnName="last_api_state" />
+                <ScalarProperty Name="last_api_city" ColumnName="last_api_city" />
+                <ScalarProperty Name="last_api_cc" ColumnName="last_api_cc" />
+                <ScalarProperty Name="fb_user_id" ColumnName="fb_user_id" />
+                <ScalarProperty Name="google_user_id" ColumnName="google_user_id" />
+                <ScalarProperty Name="salt" ColumnName="salt" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="created" ColumnName="created" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="lastname" ColumnName="lastname" />
+                <ScalarProperty Name="firstname" ColumnName="firstname" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="dbip_city_2016_11">
+            <EntityTypeMapping TypeName="mm02Model.dbip_city_2016_11">
+              <MappingFragment StoreEntitySet="dbip-city-2016-11">
+                <ScalarProperty Name="ipToNum" ColumnName="ipToNum" />
+                <ScalarProperty Name="ipFromNum" ColumnName="ipFromNum" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="state" ColumnName="state" />
+                <ScalarProperty Name="countryCode" ColumnName="countryCode" />
+                <ScalarProperty Name="ipTo" ColumnName="ipTo" />
+                <ScalarProperty Name="ipFrom" ColumnName="ipFrom" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -32,9 +32,9 @@ namespace mmdb_model
     
         public virtual term term { get; set; }
         public virtual url url { get; set; }
-        public virtual user user { get; set; }
-        public virtual user user1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<share_active> share_active { get; set; }
+        public virtual user user { get; set; }
+        public virtual user user1 { get; set; }
     }
 }

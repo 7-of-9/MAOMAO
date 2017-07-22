@@ -68,25 +68,26 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Test_DOS_Filter.cs" />
-    <Compile Include="Test_Flow.cs" />
-    <Compile Include="Test_Golden.cs" />
-    <Compile Include="Test_Correlations.cs" />
-    <Compile Include="Test_Misc.cs" />
-    <Compile Include="Test_Porter2_English.cs" />
-    <Compile Include="Test_Shares.cs" />
-    <Compile Include="Test_SiteInfo.cs" />
+    <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_Flow.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_Golden.cs" />
+    <Compile Include="old\Test_Correlations.cs" />
+    <Compile Include="Tests\Util_Misc\Test_Ip.cs" />
+    <Compile Include="Tests\Util_Misc\Test_Misc.cs" />
+    <Compile Include="Tests\NLP\Test_Porter2_English.cs" />
+    <Compile Include="Tests\Users\Test_Shares.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_SiteInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test_CalaisNlp.cs" />
-    <Compile Include="Test_StanfordCoreNlp.cs" />
-    <Compile Include="Test_SuggestedParents.cs" />
-    <Compile Include="Test_UrlClassifier.cs" />
-    <Compile Include="Test_UrlInfo.cs" />
-    <Compile Include="Test_UrlProcessor.cs" />
-    <Compile Include="Test_UrlRecorder.cs" />
-    <Compile Include="Test_Homepage.cs" />
-    <Compile Include="Test_UserCreation.cs" />
-    <Compile Include="Test_UtilTldTitle.cs" />
+    <Compile Include="Tests\NLP\Test_CalaisNlp.cs" />
+    <Compile Include="Tests\NLP\Test_StanfordCoreNlp.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_SuggestedParents.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_UrlClassifier.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_UrlInfo.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_UrlProcessor.cs" />
+    <Compile Include="Tests\ProcessingFlow\Test_UrlRecorder.cs" />
+    <Compile Include="Tests\Users\Test_Homepage.cs" />
+    <Compile Include="Tests\Users\Test_UserCreation.cs" />
+    <Compile Include="Tests\Util_Misc\Test_UtilTldTitle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

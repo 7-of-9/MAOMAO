@@ -45,9 +45,12 @@ namespace mmdb_model
         public virtual DbSet<share> shares { get; set; }
         public virtual DbSet<url> urls { get; set; }
         public virtual DbSet<url_text> url_text { get; set; }
-        public virtual DbSet<user> users { get; set; }
         public virtual DbSet<awis_site> awis_site { get; set; }
         public virtual DbSet<share_active> share_active { get; set; }
         public virtual DbSet<user_reg_topic> user_reg_topic { get; set; }
+        public virtual DbSet<country> countries { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<user> users { get; set; }
+        public virtual DbSet<dbip_city_2016_11> dbip_city_2016_11 { get; set; }
     }
 }
