@@ -41,6 +41,7 @@ namespace mmdb_model
         public string last_api_cc { get; set; }
         public string last_api_city { get; set; }
         public string last_api_state { get; set; }
+        public string last_api_ip { get; set; }
     
         public virtual country country { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

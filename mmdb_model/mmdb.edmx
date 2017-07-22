@@ -276,6 +276,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="last_api_cc" Type="char" MaxLength="2" />
           <Property Name="last_api_city" Type="nvarchar" MaxLength="256" />
           <Property Name="last_api_state" Type="nvarchar" MaxLength="256" />
+          <Property Name="last_api_ip" Type="nvarchar" MaxLength="32" />
         </EntityType>
         <EntityType Name="user_reg_topic">
           <Key>
@@ -1047,8 +1048,8 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           </AssociationSet>
           <EntitySet Name="countries" EntityType="mm02Model.country" />
           <EntitySet Name="sysdiagrams" EntityType="mm02Model.sysdiagram" />
-          <EntitySet Name="users" EntityType="mm02Model.user" />
           <EntitySet Name="dbip_city_2016_11" EntityType="mm02Model.dbip_city_2016_11" />
+          <EntitySet Name="users" EntityType="mm02Model.user" />
           <AssociationSet Name="FK_user_Country" Association="mm02Model.FK_user_Country">
             <End Role="country" EntitySet="countries" />
             <End Role="user" EntitySet="users" />
@@ -1507,7 +1508,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="share_active" Relationship="mm02Model.FK_share_active_share" FromRole="share" ToRole="share_active" />
           <NavigationProperty Name="user" Relationship="mm02Model.fk_share_source_user" FromRole="share" ToRole="user" />
           <NavigationProperty Name="user1" Relationship="mm02Model.fk_share_target_user" FromRole="share" ToRole="user" />
-        </EntityType>
+          </EntityType>
         <Association Name="FK_share_term">
           <End Type="mm02Model.term" Role="term" Multiplicity="0..1" />
           <End Type="mm02Model.share" Role="share" Multiplicity="*" />
@@ -1726,6 +1727,24 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="version" Type="Int32" />
           <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
+        <EntityType Name="dbip_city_2016_11">
+          <Key>
+            <PropertyRef Name="id" />
+            <PropertyRef Name="ipFrom" />
+            <PropertyRef Name="ipTo" />
+            <PropertyRef Name="countryCode" />
+            <PropertyRef Name="state" />
+            <PropertyRef Name="city" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" />
+          <Property Name="ipFrom" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ipTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="countryCode" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
+          <Property Name="state" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="city" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ipFromNum" Type="Int64" />
+          <Property Name="ipToNum" Type="Int64" />
+        </EntityType>
         <EntityType Name="user">
           <Key>
             <PropertyRef Name="id" />
@@ -1746,6 +1765,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="last_api_cc" Type="String" MaxLength="2" FixedLength="true" Unicode="false" />
           <Property Name="last_api_city" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="last_api_state" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="last_api_ip" Type="String" MaxLength="32" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="country" Relationship="mm02Model.FK_user_Country" FromRole="user" ToRole="country" />
           <NavigationProperty Name="shares" Relationship="mm02Model.fk_share_source_user" FromRole="user" ToRole="share" />
           <NavigationProperty Name="shares1" Relationship="mm02Model.fk_share_target_user" FromRole="user" ToRole="share" />
@@ -1753,24 +1773,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <NavigationProperty Name="user_reg_topic" Relationship="mm02Model.FK_user_reg_topic_user" FromRole="user" ToRole="user_reg_topic" />
           <NavigationProperty Name="user_url_classification" Relationship="mm02Model.fk_user_url_classification_user" FromRole="user" ToRole="user_url_classification" />
           <NavigationProperty Name="user_url" Relationship="mm02Model.fk_user_url_user" FromRole="user" ToRole="user_url" />
-        </EntityType>
-        <EntityType Name="dbip_city_2016_11">
-          <Key>
-            <PropertyRef Name="id" />
-            <PropertyRef Name="ipFrom" />
-            <PropertyRef Name="ipTo" />
-            <PropertyRef Name="countryCode" />
-            <PropertyRef Name="state" />
-            <PropertyRef Name="city" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" />
-          <Property Name="ipFrom" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ipTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="countryCode" Type="String" Nullable="false" MaxLength="2" FixedLength="true" Unicode="false" />
-          <Property Name="state" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="city" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="ipFromNum" Type="Int64" />
-          <Property Name="ipToNum" Type="Int64" />
         </EntityType>
         <Association Name="FK_user_Country">
           <End Type="mm02Model.country" Role="country" Multiplicity="0..1" />
@@ -2164,9 +2166,24 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="dbip_city_2016_11">
+            <EntityTypeMapping TypeName="mm02Model.dbip_city_2016_11">
+              <MappingFragment StoreEntitySet="dbip-city-2016-11">
+                <ScalarProperty Name="ipToNum" ColumnName="ipToNum" />
+                <ScalarProperty Name="ipFromNum" ColumnName="ipFromNum" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="state" ColumnName="state" />
+                <ScalarProperty Name="countryCode" ColumnName="countryCode" />
+                <ScalarProperty Name="ipTo" ColumnName="ipTo" />
+                <ScalarProperty Name="ipFrom" ColumnName="ipFrom" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="mm02Model.user">
               <MappingFragment StoreEntitySet="user">
+                <ScalarProperty Name="last_api_ip" ColumnName="last_api_ip" />
                 <ScalarProperty Name="last_api_state" ColumnName="last_api_state" />
                 <ScalarProperty Name="last_api_city" ColumnName="last_api_city" />
                 <ScalarProperty Name="last_api_cc" ColumnName="last_api_cc" />
@@ -2182,20 +2199,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
                 <ScalarProperty Name="lastname" ColumnName="lastname" />
                 <ScalarProperty Name="firstname" ColumnName="firstname" />
                 <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="dbip_city_2016_11">
-            <EntityTypeMapping TypeName="mm02Model.dbip_city_2016_11">
-              <MappingFragment StoreEntitySet="dbip-city-2016-11">
-                <ScalarProperty Name="ipToNum" ColumnName="ipToNum" />
-                <ScalarProperty Name="ipFromNum" ColumnName="ipFromNum" />
-                <ScalarProperty Name="city" ColumnName="city" />
-                <ScalarProperty Name="state" ColumnName="state" />
-                <ScalarProperty Name="countryCode" ColumnName="countryCode" />
-                <ScalarProperty Name="ipTo" ColumnName="ipTo" />
-                <ScalarProperty Name="ipFrom" ColumnName="ipFrom" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
