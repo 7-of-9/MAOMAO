@@ -31,7 +31,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             [FromBody] dynamic nlp_info)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (nlp_info == null) return BadRequest("bad nlp_info");
             //long user_id_nlp;
             //if (nlp_info.user_id == null) throw new ArgumentException("missing user_id");

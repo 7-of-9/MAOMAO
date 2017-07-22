@@ -41,11 +41,11 @@ namespace mm_svc.Util.Utils {
             }
         }
 
-        public static string GetClientIpAddress(HttpRequestMessage request)
+        public static string GetClientIpAddress(HttpRequestMessage request = null)
         {
-            if (request == null || !request.Properties.ContainsKey("MS_HttpContext")) return "0.0.0.0";
+            if (request == null || !request.Properties.ContainsKey("MS_HttpContext")) return null;
             var requestBase = ((HttpContextWrapper)request.Properties["MS_HttpContext"]).Request;
-            return GetClientIpAddress(requestBase); //((HttpContextWrapper)request.Properties["MS_HttpContext"]).Request.UserHostAddress;
+            return GetClientIpAddress(requestBase);
 
             // not self-hosting, so this isn't needed:
             //if (request.Properties.ContainsKey(RemoteEndpointMessageProperty.Name))

@@ -77,7 +77,7 @@ namespace mmapi00.Controllers
             int user_id, string hash,
             [FromBody]user account)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (account == null) return BadRequest("bad linked account");
             if (account.google_user_id == null && account.fb_user_id == null) return BadRequest("missing google_user_id or fb_user_id");
 
@@ -99,7 +99,7 @@ namespace mmapi00.Controllers
             int user_id, string hash,
             [FromBody]dynamic history)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (history == null) return BadRequest("bad user_history");
             if (history.url == null) return BadRequest("missing url");
             if (history.document_head_hash == null) return BadRequest("missing document_head_hash");
@@ -123,7 +123,7 @@ namespace mmapi00.Controllers
         public IHttpActionResult GetUserHomepage(
             long user_id, string hash)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             var data = mm_svc.UserHomepage.Get(user_id);
 

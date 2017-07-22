@@ -30,7 +30,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             long? url_id = null, long? topic_id = null, bool share_all = false)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             var share_code = mm_svc.ShareCreator.CreateShare(user_id, null, url_id, topic_id, share_all);
 
@@ -51,7 +51,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             string share_code)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             var share_accepted = mm_svc.ShareAcceptor.AcceptShare(user_id, share_code);
 
@@ -73,7 +73,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             string share_code, long target_user_id)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             using (var db = mm02Entities.Create()) {
                 var share = db.shares.Where(p => p.share_code == share_code && p.source_user_id == user_id).FirstOrDefaultNoLock();
@@ -104,7 +104,7 @@ namespace mmapi00.Controllers
             long user_id, string hash,
             string share_code, long source_user_id)
         {
-            if (!UserHash.Ok(user_id, hash)) return Unauthorized();
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             using (var db = mm02Entities.Create()) {
                 var share = db.shares.Where(p => p.share_code == share_code && p.source_user_id == source_user_id).FirstOrDefaultNoLock();
