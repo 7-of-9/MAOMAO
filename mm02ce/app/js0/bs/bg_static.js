@@ -2,6 +2,7 @@
 //
 // Static Data
 //
+var NotInjectCSUrls = [];
 
 // Map of query parameter words to sounds.
 var searchSounds = {
@@ -99,6 +100,8 @@ function process_url(url) {
   // sanity
   if (url == null) return false;
   if (url.indexOf('http:') != 0 && url.indexOf('https://') != 0) return false;
+  var hostname = new URL(url).hostname;
+  if (NotInjectCSUrls.indexOf(hostname) !== -1) return false;
 
   // don't process 'top level' URLs, e.g. 'www.facebook.com' or 'www.quora.com' -- these
   // almost certainly won't contain topic-specific content; rather, they'll be aggregates of lots of different topics

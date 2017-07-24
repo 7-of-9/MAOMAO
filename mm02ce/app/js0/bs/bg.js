@@ -95,38 +95,37 @@ function animationIcon(tabId, round) {
 function setIconApp(rawUrl, image, msg, color) {
   if (!rawUrl) {
     log.warn('not found url', rawUrl);
+    log.trace('not found url');
     return;
   }
 
+  var url = bglib_remove_hash_url(rawUrl);
   var currentTab = tabmap.find(function (item) {
-    return item && item.url === rawUrl;
+    return item && bglib_remove_hash_url(item.url) === url;
   });
-  log.info('currentTab', rawUrl, tabmap, currentTab);
+  log.info('currentTab', rawUrl, tabmap, currentTab, image, msg, color);
 
-  if (rawUrl) {
-    var url = bglib_remove_hash_url(rawUrl);
-    if (sessionObservable.activeUrl === url) {
-      chrome.browserAction.setIcon({
-        path: 'img/logo/maodog_' + image + '128x128.png',
-        tabId: currentTab && currentTab.id,
-      });
+  if (bglib_remove_hash_url(sessionObservable.activeUrl) === url) {
+    chrome.browserAction.setIcon({
+      path: 'img/logo/maodog_' + image + '128x128.png',
+      tabId: currentTab && currentTab.id,
+    });
 
-      if (window.enableIconText) {
+    if (window.enableIconText) {
+      setIconText(msg, color, currentTab && currentTab.id);
+    } else {
+      if (color === BG_EXCEPTION_COLOR) {
         setIconText(msg, color, currentTab && currentTab.id);
       } else {
-        if (color === BG_EXCEPTION_COLOR) {
-          setIconText(msg, color, currentTab && currentTab.id);
-        } else {
-          setIconText('', color, currentTab && currentTab.id);
-        }
+        setIconText('', color, currentTab && currentTab.id);
       }
     }
-    sessionObservable.icons.set(url, {
-      image: image,
-      text: msg,
-      color: color,
-    });
   }
+  sessionObservable.icons.set(url, {
+    image: image,
+    text: msg,
+    color: color,
+  });
 }
 
 function setIconText(s, c, tabId) {
@@ -236,7 +235,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
 
   var tab = get_tab(details.tabId);
   if (tab != null)
-    if (tab.url != details.url && process_url(tab.url)) {
+    if (tab.url != details.url && process_url(tab.url) && tab.active) {
       log.info('onHistoryStateUpdated - ' + JSON.stringify(details));
       log.info('onHistoryStateUpdated - tabId=' + details.tabId + ' frameId=' + details.frameId + ' transitionType=' + details.transitionType + ' [' + details.url + ']');
       log.info('known URL=' + tab.url);
@@ -336,7 +335,7 @@ function after_login(userId) {
     currentWindow: true
   }, function (tabs) {
     var tab = tabs[0];
-    if (tab != null && process_url(tab.url)) {
+    if (tab != null && process_url(tab.url) && tab.active) {
       var session = session_get_by_tab(tab, true);
       session_add_view_instance(session);
     }
@@ -471,7 +470,7 @@ function inject_cs(session, tab_id, skip_text) {
       }
 
       var process = process_url(current_tab.url);
-      if (process && !isGuest && NotInjectCSUrls.indexOf(current_tab.url) === -1) {
+      if (process && !isGuest && current_tab.active) {
         // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
         ajax_isTldAllowable(current_tab.url, function (data) {
           log.info('%c /allowable (2.1)... got: ' + JSON.stringify(data), session_style);
@@ -510,6 +509,11 @@ function inject_cs(session, tab_id, skip_text) {
         });
       } else {
         log.warn('Do not inject cs on url #1', current_tab.url);
+        if (isGuest) {
+          setIconApp(current_tab.url, 'gray', '!(MM)', BG_INACTIVE_COLOR);
+        } else {
+          setIconApp(current_tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+        }
       }
     });
   } else {
@@ -522,7 +526,7 @@ function inject_cs(session, tab_id, skip_text) {
       }
       if (tab != null) {
         var process = process_url(tab.url);
-        if (process && !isGuest && NotInjectCSUrls.indexOf(tab.url) === -1) {
+        if (process && !isGuest && tab.active) {
           // check allowable on tab.url -- caller should/will have done this, but the tab url can change after dispatching the request for CS injection!
           ajax_isTldAllowable(tab.url, function (data) {
             log.info('%c /allowable (2.2)... got: ' + JSON.stringify(data), session_style);
@@ -566,6 +570,12 @@ function inject_cs(session, tab_id, skip_text) {
             }
             setIconApp(tab.url, 'black', '*EX1', BG_EXCEPTION_COLOR);
           });
+        } else {
+          if (isGuest) {
+            setIconApp(tab.url, 'gray', '!(MM)', BG_INACTIVE_COLOR);
+          } else {
+            setIconApp(tab.url, 'black', '!(MM)', BG_INACTIVE_COLOR);
+          }
         }
       }
     });
@@ -772,8 +782,9 @@ function tabNavigated(tabId, changeInfo, tab) {
     if (tab != null) {
       log.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
-      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
+      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined' && process_url(tab.url)) {
         var session = session_get_by_tab(tab, true);
+        log.trace('set active url');
         sessionObservable.activeUrl = changeInfo.url;
         session_add_view_instance(session);
       }
@@ -804,18 +815,6 @@ function tabSelectionChanged(tabId) {
 
   selectedTabId = tabId;
 
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var tab = tabs[0];
-    if (tab != null && process_url(tab.url)) {
-      log.info('%c >tabSelectionChanged: [' + tab.url + ']', events_style_hi);
-      var session = session_get_by_tab(tab, true);
-      session_add_view_instance(session);
-    }
-  });
-
   if (eatEvent('tabSelectionChanged'))
     return false;
   var count = 7;
@@ -838,21 +837,26 @@ function tabActivated(o) { // why getting object here?!
   chrome.tabs.get(tabId, function (new_tab) {
     if (chrome.runtime.lastError)
       log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
-    else if (new_tab != null) {
+    else if (new_tab != null && new_tab.active) {
       log.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
       // set current tab session
+      log.trace('set active url');
       sessionObservable.activeUrl = new_tab.url;
 
       // stop TOT for previously focused
       if (TOT_active_tab != null && TOT_active_tab.id != new_tab.id) {
-        var prev_session = session_get_by_tab(TOT_active_tab, false);
-        session_stop_TOT(prev_session);
+        var prev_session = session_get_by_url(TOT_active_tab.url);
+        if (prev_session) {
+          session_stop_TOT(prev_session);
+        }
       }
 
       // start TOT for newly focused
-      var new_session = session_get_by_tab(new_tab, true); //***
-      if (new_session != null) {
-        session_start_TOT(new_session);
+      if (new_tab != null && process_url(new_tab.url) && new_tab.active) {
+        var new_session = session_get_by_tab(new_tab, true); //***
+        if (new_session != null) {
+          session_start_TOT(new_session);
+        }
       }
 
       // update new active tab
@@ -869,17 +873,9 @@ function windowFocusChanged(windowId) {
   selectedWindowId = windowId;
   log.warn('windowFocusChanged: [windowId=' + windowId + ']');
   var prev_session;
-  if (TOT_active_tab != null) {
-    prev_session = session_get_by_tab(TOT_active_tab, false);
-    if (prev_session != null)
-      log.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
-
-    // stop TOT for previously focused
-    session_stop_TOT(prev_session);
-  }
 
   // fallback to session by url
-  if (sessionObservable.activeUrl) {
+  if (TOT_active_tab != null && TOT_active_tab.active && sessionObservable.activeUrl) {
     prev_session = session_get_by_url(sessionObservable.activeUrl);
     if (prev_session != null)
       log.warn('windowFocusChanged TOT STOP (old) [' + prev_session.url + ']');
@@ -896,7 +892,8 @@ function windowFocusChanged(windowId) {
         log.warn('windowFocusChanged CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
       }
       log.warn('windowFocusChanged active tabs', tabs)
-      if (tabs.length > 0) {
+      log.trace('set active url');
+      if (tabs.length > 0 && tabs[0].active) {
         sessionObservable.activeUrl = tabs[0].url;
       } else {
         sessionObservable.activeUrl = 'N/A';
@@ -905,6 +902,7 @@ function windowFocusChanged(windowId) {
     });
   } else {
     log.warn('windowFocusChanged active activeUrl', sessionObservable.activeUrl)
+    log.trace('set active url');
     sessionObservable.activeUrl = 'N/A';
   }
 }
@@ -921,6 +919,7 @@ function TOT_start_current_focused() {
     else {
       if (tabs.length > 0) {
         TOT_active_tab = tabs[0];
+        log.trace('set active url');
         sessionObservable.activeUrl = tabs[0].url;
         // start TOT for newly focused
         var new_session = session_get_by_tab(TOT_active_tab, true); //***
@@ -929,6 +928,7 @@ function TOT_start_current_focused() {
           session_start_TOT(new_session);
         }
       } else {
+        log.trace('set active url');
         sessionObservable.activeUrl = 'N/A';
       }
     }

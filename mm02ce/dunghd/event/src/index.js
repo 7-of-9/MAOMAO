@@ -27,14 +27,8 @@ require('expose-loader?log!loglevel');
 /* eslint-enable */
 
 const dev = process.env.NODE_ENV !== 'production';
-log.setLevel('debug');
-
-// if (!dev) {
-//   // This disables all logging below the given level
-//   log.setLevel('error');
-// } else {
-//   log.setLevel('debug');
-// }
+// log.setLevel('debug');
+log.enableAll();
 
 const logger = createLogger();
 const config = new Config();
@@ -288,10 +282,7 @@ mobx.reaction(() => window.sessionObservable.activeUrl.length, () => {
       if (tabs != null && tabs.length > 0) {
         const activeUrl = tabs[0].url;
         log.info('case 1 - active url', activeUrl);
-        let session = window.session_get_by_tab(tabs[0]);
-        if (!session) {
-          session = window.session_get_by_url(activeUrl);
-        }
+        const session = window.session_get_by_url(activeUrl);
         if (session) {
           window.session_stop_TOT(session);
           syncImScore(activeUrl, true);
@@ -321,7 +312,7 @@ setInterval(() => {
         if (tabs != null && tabs.length > 0) {
           const activeUrl = tabs[0].url;
           log.info('case 2 - timer - 30s - active url', activeUrl, new Date());
-          const session = window.session_get_by_tab(tabs[0]);
+          const session = window.session_get_by_url(activeUrl);
           if (session) {
             window.session_stop_TOT(session);
             syncImScore(activeUrl, true);
@@ -387,7 +378,7 @@ window.onload = () => {
         isEnableIconText: window.enableIconText,
       },
     });
-    syncImScore(false);
+    syncImScore(window.location.href);
 
     // TODO: get all friends and streams to listen new data
     realtimeStream([]);

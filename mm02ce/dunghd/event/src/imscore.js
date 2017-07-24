@@ -1,7 +1,7 @@
 import logger from './logger';
 // tracking latest record for by url
 const histories = {};
-logger.info('histories', histories);
+
 /**
  * get im_score base url
  */

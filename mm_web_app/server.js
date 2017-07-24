@@ -66,7 +66,7 @@ app.prepare().then(() => {
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
      pathname.indexOf('.') !== -1 || pathname.indexOf('%20') !== -1 ||
      pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1 ||
-     pathname.indexOf('/') !== -1
+     pathname === '/'
     ) {
       return handle(req, res, parsedUrl)
     } else {

@@ -6,13 +6,8 @@ import StackTrace from 'stacktrace-js';
 import * as logger from 'loglevel';
 import App from './components/app/App';
 
-// if (process.env.NODE_ENV === 'production') {
-//   // This disables all logging below the given level
-//   logger.setLevel('error');
-// } else {
-//   logger.setLevel('debug');
-// }
-logger.setLevel('debug');
+// logger.setLevel('debug');
+logger.enableAll();
 
 // ERROR handler
 const errBack = (err) => { logger.error(err.message); };

@@ -14,7 +14,6 @@ var enableIconText = false;
 var enableXP = false;
 var userId = -1;
 var userHash = '';
-var NotInjectCSUrls = [];
 var session_style_hi = 'background: blue; color: white;';
 var session_style = 'background: white; color: blue;';
 var session_style_err = 'background: red; color: white;';
@@ -67,12 +66,12 @@ function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 ///   (*) does allowable lookup -- then does CS injection if url is allowable
 //
 function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
-  log.info('%c >>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, session_style_hi);
+  log.trace('>>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, tab, reinject_cs_handlers_on_existing_session);
   // log.trace('checking session for tab', tab);
 
   var session = null;
   // turn off for guest
-  if (isGuest) {
+  if (isGuest || !tab.active) {
     return session;
   }
   var url_ex_hash = bglib_remove_hash_url(tab.url);
@@ -98,6 +97,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
     if (!session_injected_cs) { // never injected
 
       // only inject CS if the TLD is allowable
+      log.trace('inject CS only if TLD is allowable');
       ajax_isTldAllowable(url_ex_hash, function (data) {
         log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
@@ -109,11 +109,16 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         } else {
           log.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
+          var hostname = new URL(url_ex_hash).hostname;
+          if (NotInjectCSUrls.indexOf(hostname) === -1) {
+            NotInjectCSUrls.push(hostname);
+          }
         }
       }, function (error) {
         StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-        if (NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
-          NotInjectCSUrls.push(url_ex_hash);
+        var hostname = new URL(url_ex_hash).hostname;
+        if (NotInjectCSUrls.indexOf(hostname) === -1) {
+          NotInjectCSUrls.push(hostname);
         }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
       });
@@ -129,9 +134,9 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
   //
   else if (existing_session.length == 0) {
 
-    if (process_url(tab.url)) {
+    if (process_url(tab.url) && tab.active) {
       // call info/allowable for the new session URL
-      log.info('%c >>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...', session_style);
+      log.trace('>>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...');
 
       // record session
       session = new_session(url_ex_hash);
@@ -139,6 +144,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
       mm_update(session, true);
 
       // inject CS only if TLD is allowable
+      log.trace('inject CS only if TLD is allowable');
       ajax_isTldAllowable(url_ex_hash, function (data) {
         log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
@@ -150,11 +156,16 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
         } else {
           log.info('%c (get_session_by_tab - existing - never injected: rejecting non-allowable TLD/URL [' + url_ex_hash + '])', session_style);
           setIconApp(url_ex_hash, 'black', '!(MM)', BG_INACTIVE_COLOR);
+          var hostname = new URL(url_ex_hash).hostname;
+          if (NotInjectCSUrls.indexOf(hostname) === -1) {
+            NotInjectCSUrls.push(hostname);
+          }
         }
       }, function (error) {
         StackTrace.fromError(error).then(errorStackTracking).catch(errBack);;
-        if (NotInjectCSUrls.indexOf(url_ex_hash) === -1) {
-          NotInjectCSUrls.push(url_ex_hash);
+        var hostname = new URL(url_ex_hash).hostname;
+        if (NotInjectCSUrls.indexOf(hostname) === -1) {
+          NotInjectCSUrls.push(hostname);
         }
         setIconApp(url_ex_hash, 'black', '*EX1', BG_EXCEPTION_COLOR);
       });
@@ -226,7 +237,7 @@ function session_update_NLP(session, nlp, page_meta) {
 }
 
 function session_add_IM(session, data, tab) {
-  if (session == null) return;
+  if (session == null && !tab.active) return;
   if (session.hasOwnProperty('track_im')) {
 
     // { TOT: seconds

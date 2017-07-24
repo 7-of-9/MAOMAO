@@ -144,7 +144,12 @@ class Streams extends React.Component {
 
   onPreview = (url) => {
     logger.warn('onPreview', url)
-    this.setState({ currentUrl: url })
+    const { isMobile } = this.props.store
+    if (!isMobile) {
+      this.setState({ currentUrl: url })
+    } else {
+      window.open(url, '_blank')
+    }
   }
 
   closePreview = () => {

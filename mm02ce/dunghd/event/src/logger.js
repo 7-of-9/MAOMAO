@@ -1,12 +1,7 @@
 import * as logger from 'loglevel';
 
-logger.setLevel('debug');
+// logger.setLevel('debug');
+logger.enableAll();
 
-// const dev = process.env.NODE_ENV !== 'production';
-// if (!dev) {
-//   logger.setLevel('error');
-// } else {
-//   logger.setLevel('debug');
-// }
 
 export default logger;
