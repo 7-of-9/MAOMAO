@@ -104,13 +104,17 @@ function setIconApp(rawUrl, image, msg, color) {
     return item && bglib_remove_hash_url(item.url) === url;
   });
   log.info('currentTab', rawUrl, tabmap, currentTab, image, msg, color);
-
   if (bglib_remove_hash_url(sessionObservable.activeUrl) === url) {
+    log.trace('set icon', rawUrl, image, msg, color);
     chrome.browserAction.setIcon({
       path: 'img/logo/maodog_' + image + '128x128.png',
       tabId: currentTab && currentTab.id,
     });
-
+    sessionObservable.icons.set(url, {
+      image: image,
+      text: msg,
+      color: color,
+    });
     if (window.enableIconText) {
       setIconText(msg, color, currentTab && currentTab.id);
     } else {
@@ -121,15 +125,10 @@ function setIconApp(rawUrl, image, msg, color) {
       }
     }
   }
-  sessionObservable.icons.set(url, {
-    image: image,
-    text: msg,
-    color: color,
-  });
 }
 
 function setIconText(s, c, tabId) {
-  log.info('setIconText on tabId', tabId);
+  log.info('setIconText on tabId', tabId, s, c);
   if (tabId) {
     chrome.browserAction.setBadgeText({
       text: s,
@@ -782,11 +781,13 @@ function tabNavigated(tabId, changeInfo, tab) {
     if (tab != null) {
       log.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
-      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined' && process_url(tab.url)) {
-        var session = session_get_by_tab(tab, true);
-        log.trace('set active url');
+      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
         sessionObservable.activeUrl = changeInfo.url;
-        session_add_view_instance(session);
+        if (process_url(changeInfo.url)) {
+          var session = session_get_by_tab(tab, true);
+          log.trace('set active url');
+          session_add_view_instance(session);
+        }
       }
     }
   });

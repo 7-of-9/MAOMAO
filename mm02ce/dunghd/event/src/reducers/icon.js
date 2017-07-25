@@ -143,7 +143,7 @@ export default (state = initialState, action, auth, nlp) => {
           action.payload.url,
           'black',
           isInternalTab ? '!(int)' : '',
-          window.BG_ERROR_COLOR,
+          window.BG_INACTIVE_COLOR,
         );
       } else {
         urls = urls.concat({ url, color: 'gray', text: '' });
