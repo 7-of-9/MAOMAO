@@ -4,7 +4,7 @@ import { action } from '@storybook/addon-actions'
 import BlockElement from '../components/BlockElement'
 import DiscoveryButton from '../components/DiscoveryButton'
 import ShareTopic from '../components/ShareTopic'
-import FilterSearch from '../components/FilterSearch'
+import SelectedPanel from '../components/SelectedPanel'
 import Header from '../components/Header'
 import LogoIcon from '../components/LogoIcon'
 import Slogan from '../components/Slogan'
@@ -135,6 +135,13 @@ storiesOf('SearchBar', module)
       />
   ))
 
+storiesOf('SelectedPanel', module)
+  .add('default props', () => (
+    <SelectedPanel>
+      <h1> SelectedPanel </h1>
+    </SelectedPanel>
+  ))
+
 storiesOf('BlockElement', module)
   .add('default props', () => (
     <BlockElement
@@ -162,21 +169,4 @@ storiesOf('BlockElement', module)
       description='"A group of rising artists unite for a dynamic show of intercultural creativity"'
       url='https://vimeo.com/223584214'
       />
-  ))
-
-storiesOf('FilterSearch', module)
-  .add('default props', () => (
-    <FilterSearch
-      rating={1}
-      urls={[]}
-      topics={[]}
-      users={[]}
-      filterByTopic={[]}
-      filterByUser={[]}
-      onChangeRate={action('onChangeRate')}
-      onSelectTopic={action('onSelectTopic')}
-      onRemoveTopic={action('onRemoveTopic')}
-      onSelectUser={action('onSelectUser')}
-      onRemoveUser={action('onRemoveUser')}
-    />
   ))

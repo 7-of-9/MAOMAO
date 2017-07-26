@@ -16,6 +16,7 @@ export class UIStore {
   @observable discoverySuggestionTerms = []
   @observable rating = 1
   @observable currentViewer = 'streams'
+  @observable selectedTopics = []
   @observable notifications = []
   @observable page = 1
   shareTopics = []
@@ -36,6 +37,15 @@ export class UIStore {
       }
     } else {
       this.filterByUser = this.filterByUser.filter(item => item.user_id !== userId)
+    }
+  }
+
+  @action toggleSelectTopic (isSelect, topicId, topicName) {
+    logger.warn('toggleSelectTopic', isSelect, topicId, topicName)
+    if (isSelect) {
+      this.selectedTopics.push({topicId, topicName})
+    } else {
+      this.selectedTopics = this.selectedTopics.filter(item => item.topicId !== topicId)
     }
   }
 

@@ -65,6 +65,13 @@ import('../../components/TopicTree'),
   }
 )
 
+const SelectedPanel = dynamic(
+import('../../components/SelectedPanel'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
 }
@@ -228,6 +235,7 @@ class Home extends React.Component {
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             <TopicTree />
+            <SelectedPanel total={this.props.ui.selectedTopics.length || 0} />
             {
               this.props.ui.currentViewer === 'discovery' &&
               <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />

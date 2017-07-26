@@ -5,15 +5,37 @@
 */
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { inject, observer } from 'mobx-react'
+import logger from '../../utils/logger'
 
+@inject('ui')
+@observer
 class TopicItem extends Component {
+  static propTypes = {
+    topic_id: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    img: PropTypes.string.isRequired
+  }
+
+  static defaultProps = {
+    topic_id: 0,
+    title: '',
+    img: ''
+  }
+
   state = {
     isSelect: false
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
-    this.setState(currentState => ({ isSelect: !currentState.isSelect }))
+    this.setState(currentState => ({ isSelect: !currentState.isSelect }), () => {
+      const { topic_id, title } = this.props
+      const { isSelect } = this.state
+      logger.warn('toggle select isSelect', topic_id, title, isSelect)
+      this.props.ui.toggleSelectTopic(isSelect, topic_id, title)
+    })
   }
 
   noImage = (evt) => {
