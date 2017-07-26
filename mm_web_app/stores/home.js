@@ -4,6 +4,7 @@ import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
+import { getAllTopicTree } from '../services/topic'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -30,6 +31,7 @@ function flattenTopics (topics, counter = 0) {
 
 export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
+  @observable isProcessingTopicTree = false
   @observable isProcessingHistory = false
   @observable codes = {
     all: null,
@@ -37,6 +39,7 @@ export class HomeStore extends CoreStore {
     topics: []
   }
   normalizedData = { entities: {}, result: {} }
+  tree = []
   users = []
   topics = []
   firstLevelTopics = []
@@ -57,7 +60,7 @@ export class HomeStore extends CoreStore {
   }
 
   @computed get isProcessing () {
-    return this.isProcessingRegister || this.isProcessingHistory
+    return this.isProcessingRegister || this.isProcessingHistory || this.isProcessingTopicTree
   }
 
   @computed get myStream () {
@@ -208,6 +211,21 @@ export class HomeStore extends CoreStore {
         this.getUserHistory()
       }
     )
+  }
+
+  @action getTopicTree () {
+    logger.warn('getTopicTree')
+    if (!this.isProcessingTopicTree) {
+      const allTopics = getAllTopicTree()
+      this.isProcessingTopicTree = true
+      when(
+      () => allTopics.state !== 'pending',
+      () => {
+        this.isProcessingTopicTree = false
+        this.tree = allTopics.value.data.tree || []
+        logger.warn('getTopicTree', this.tree)
+      })
+    }
   }
 
   @action getUserHistory () {

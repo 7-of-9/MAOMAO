@@ -198,6 +198,10 @@ class AppHeader extends React.PureComponent {
     this.props.ui.displayShareManagement()
   }
 
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
+
   render () {
     const { isLogin, userId, user } = this.props.store
     const { showSignInModal } = this.props.ui
@@ -237,7 +241,7 @@ class AppHeader extends React.PureComponent {
           {isLogin &&
             <div className='dropdown account-dropdown'>
               <a className='dropdown-toggle' data-toggle='dropdown'>
-                <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
+                <img onError={this.noImage} className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
               </a>
               <a className='link-logout-res' onClick={this.onLogout}>
                 <i className='fa fa-sign-out' />

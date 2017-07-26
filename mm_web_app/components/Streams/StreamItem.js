@@ -22,6 +22,10 @@ class StreamItem extends PureComponent {
     }
   }
 
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
+
   render () {
     /* eslint-disable camelcase */
     const { href, title, img, url_id, owners, users, topics, myUrlIds, deepestTopics, parseDomain, urlTopic, urlOwner, discoveryKeys, suggestionKeys } = this.props
@@ -39,7 +43,7 @@ class StreamItem extends PureComponent {
                       <img
                         src={img || '/static/images/no-image.png'}
                         alt={title}
-                        onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
+                        onError={this.noImage}
                         />
                     </a>
                     {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}

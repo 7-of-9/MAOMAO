@@ -36,6 +36,9 @@ const hasShareTopic = (friend, shareLists) => {
 @inject('ui')
 @observer
 class ShareList extends React.PureComponent {
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
@@ -56,7 +59,7 @@ class ShareList extends React.PureComponent {
                     <a className='collapse-title'>
                       <span className='directional-user'>
                         <span className='share-image'>
-                          <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
+                          <img onError={this.noImage} className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                         </span>
                         <span className='share-name'> Your sharing</span>
                       </span>
@@ -82,7 +85,7 @@ class ShareList extends React.PureComponent {
                       <ul key={`share-detail-${receiver.email}-${receiver.share_code}`} className={receiver.source_user_deactivated ? 'timeline timeline-pause timeline-horizontal' : 'timeline timeline-horizontal'}>
                         <li className='timeline-item'>
                           <div className='timeline-badge'>
-                            <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
+                            <img onError={this.noImage} className='share-object' src={avatar(user)} alt={userId} width='40' height='40' />
                           </div>
                           {
                             /* receiver.source_user_deactivated &&
@@ -115,7 +118,7 @@ class ShareList extends React.PureComponent {
                         </li>
                         <li className='timeline-item share-line-left'>
                           <div className='timeline-badge'>
-                            <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
+                            <img onError={this.noImage} className='object-badge' src={avatar(receiver)} alt={receiver.fullname} width='51' height='51' />
                           </div>
                           <div className='timeline-panel'>
                             <div className='timeline-panel'>
@@ -137,7 +140,7 @@ class ShareList extends React.PureComponent {
                       <a className='collapse-title'>
                         <span className='directional-user'>
                           <span className='share-image'>
-                            <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
+                            <img onError={this.noImage} className='share-object' src={avatar(friend)} alt={friend.user_id} width='40' height='40' />
                           </span>
                           <span className='share-name'> {friend.fullname} </span>
                         </span>
@@ -160,7 +163,7 @@ class ShareList extends React.PureComponent {
                             <ul key={`share-${code}-${friend.user_id}`} className={item.target_user_deactivated ? 'timeline timeline-pause timeline-horizontal' : 'timeline timeline-horizontal'}>
                               <li className='timeline-item'>
                                 <div className='timeline-badge'>
-                                  <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
+                                  <img onError={this.noImage} className='share-object' src={avatar(friend)} alt={friend.user_id} width='51' height='51' />
                                 </div>
                                 <div className='timeline-panel'>
                                   <a href='#' className='btn btn-unfollow'>{item.target_user_deactivated ? 'Follow' : 'Unfollow'}</a>
@@ -197,7 +200,7 @@ class ShareList extends React.PureComponent {
                               </li>
                               <li className='timeline-item share-line-left'>
                                 <div className='timeline-badge'>
-                                  <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
+                                  <img onError={this.noImage} className='share-object' src={avatar(user)} alt={userId} width='51' height='51' />
                                 </div>
                                 { /*
                                   item.target_user_deactivated &&

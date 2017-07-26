@@ -26,6 +26,10 @@ class InlinePlayer extends Component {
     layoutEmitter.emit('layout')
   }
 
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
+
   handleClick = (event) => {
     event.preventDefault()
     if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -45,7 +49,7 @@ class InlinePlayer extends Component {
           src={img || '/static/images/no-image.png'}
           alt={title}
           height={230}
-          onError={(ev) => { ev.target.src = '/static/images/no-image.png' }}
+          onError={this.noImage}
           />
         {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
         {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}

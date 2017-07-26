@@ -174,6 +174,10 @@ class FilterSearch extends React.Component {
     }
   }
 
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
+
   render () {
     const { value, suggestions } = this.state
     const { sortedUrls, owners } = this.props
@@ -231,7 +235,7 @@ class FilterSearch extends React.Component {
                       <li key={`filter-user-${item.label}`} className='search-item tags-color-1'>
                         <div className='search-media'>
                           <div className='search-media-left'>
-                            <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
+                            <img onError={this.noImage} src={item.avatar || '/static/images/no-image.png'} alt={item.label} className='img-object' width='40' height='40' />
                           </div>
                           <div className='search-media-body'>
                             <span className='full-name'>{item.label}</span>
@@ -290,7 +294,7 @@ class FilterSearch extends React.Component {
                   (<li onClick={() => this.props.ui.selectUser(user)} key={`user-${user.user_id}`}>
                     <div className='user-share'>
                       <div className='user-share-img'>
-                        <img onError={(ev) => { ev.target.src = '/static/images/no-image.png' }} width='24' height='24' src={avatar(user)} alt={user.fullname} />
+                        <img onError={this.noImage} width='24' height='24' src={avatar(user)} alt={user.fullname} />
                       </div>
                       <div className='user-share-cnt'>
                         <div className='user-share-inner'>
