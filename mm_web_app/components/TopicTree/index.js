@@ -28,7 +28,7 @@ class TopicTree extends React.PureComponent {
           key={topic_id}
           topic_id={topic_id}
           title={title}
-          img={'http://via.placeholder.com/240x150'}
+          img={'http://via.placeholder.com/270x200'}
           />
         )
     })

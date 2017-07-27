@@ -4,14 +4,14 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import logger from '../../utils/logger'
 
 @inject('ui')
 @observer
-class TopicItem extends Component {
+class TopicItem extends PureComponent {
   static propTypes = {
     topic_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
@@ -24,18 +24,12 @@ class TopicItem extends Component {
     img: ''
   }
 
-  state = {
-    isSelect: false
-  }
-
   handleClick = (evt) => {
     evt.preventDefault()
-    this.setState(currentState => ({ isSelect: !currentState.isSelect }), () => {
-      const { topic_id, title } = this.props
-      const { isSelect } = this.state
-      logger.warn('toggle select isSelect', topic_id, title, isSelect)
-      this.props.ui.toggleSelectTopic(isSelect, topic_id, title)
-    })
+    const { topic_id: topicId, title } = this.props
+    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topicId)
+    logger.warn('toggle select isSelect', topicId, title, !isSelect)
+    this.props.ui.toggleSelectTopic(!isSelect, topicId, title)
   }
 
   noImage = (evt) => {
@@ -45,7 +39,7 @@ class TopicItem extends Component {
   render () {
     /* eslint-disable camelcase */
     const { topic_id, title, img } = this.props
-    const { isSelect } = this.state
+    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topic_id)
     return (
       <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>

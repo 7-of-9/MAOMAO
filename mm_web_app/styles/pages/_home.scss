@@ -529,6 +529,16 @@ the home page
 }
 
 /* select topics */
+.topic-tree {
+ .container-masonry {
+    z-index: 1;
+    .grid-row {
+      .grid-sizer, .grid-item {
+        width: 330px;
+      }
+    }
+  }
+}
 
 input.select-topic {
   position: absolute;
@@ -543,6 +553,7 @@ input.select-topic {
   width: 50vw;
   z-index: 1000;
   padding: 15px;
+  background: #fff;
   @include border-radius(8px);
   @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
   -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
@@ -552,6 +563,7 @@ input.select-topic {
     position: absolute;
     right:0;
     top: 0;
+    z-index: 100;
   }
 }
 

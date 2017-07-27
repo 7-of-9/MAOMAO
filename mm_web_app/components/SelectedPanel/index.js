@@ -6,14 +6,19 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import SelectedList from './SelectedList'
 
 class SelectedPanel extends React.Component {
   static propTypes = {
-    total: PropTypes.number.isRequired
+    total: PropTypes.number.isRequired,
+    items: PropTypes.array.isRequired,
+    onRemove: PropTypes.func.isRequired
   }
 
   static defaultProps = {
-    total: 0
+    total: 0,
+    items: [],
+    onRemove: (id, name) => {}
   }
 
   state = {
@@ -27,14 +32,14 @@ class SelectedPanel extends React.Component {
 
   render () {
     const { isCollapse } = this.state
-    const { total } = this.props
+    const { total, items } = this.props
     return (
         total > 0 &&
-        <div className='selected-panel' style={{ height: isCollapse ? '50px' : '300px' }}>
+        <div className='selected-panel' style={{ height: isCollapse ? '50px' : 'auto' }}>
           <div className='toolbar'>
-            <i className={isCollapse ? 'fa fa-2 fa-toggle-on' : 'fa fa-toggle-off'} aria-hidden='true' onClick={this.toggleCollapse} />
+            <i className={isCollapse ? 'fa fa-2x fa-toggle-on' : 'fa fa-2x fa-toggle-off'} aria-hidden='true' onClick={this.toggleCollapse} />
           </div>
-          { !isCollapse && this.props.children}
+          { !isCollapse && <SelectedList items={items} onRemove={this.props.onRemove} />}
           {isCollapse && <p>You have selected {total} topics.</p>}
         </div>
     )

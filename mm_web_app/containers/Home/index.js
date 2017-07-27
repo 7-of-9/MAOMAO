@@ -142,6 +142,10 @@ class Home extends React.Component {
     this.props.ui.removeNotification(uuid)
   }
 
+  onRemove = (id, name) => {
+    this.props.ui.toggleSelectTopic(false, id, name)
+  }
+
   componentDidMount () {
     logger.warn('Home componentDidMount')
     this.props.store.getTopicTree()
@@ -192,6 +196,8 @@ class Home extends React.Component {
     }
     const { hasAddToHome } = this.state
     logger.warn('Home urls, users', toJS(urls), toJS(users))
+    const selectedTopics = toJS(this.props.ui.selectedTopics)
+    const selectedItems = selectedTopics.map(item => ({id: item.topicId, name: item.topicName}))
     return (
       <Page>
         <Head>
@@ -235,7 +241,11 @@ class Home extends React.Component {
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             <TopicTree />
-            <SelectedPanel total={this.props.ui.selectedTopics.length || 0} />
+            <SelectedPanel
+              total={selectedTopics.length}
+              items={selectedItems}
+              onRemove={this.onRemove}
+              />
             {
               this.props.ui.currentViewer === 'discovery' &&
               <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />
