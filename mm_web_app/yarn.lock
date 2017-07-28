@@ -3432,13 +3432,13 @@ from@~0:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/from/-/from-0.1.7.tgz#83c60afc58b9c56997007ed1a768b3ab303a44fe"
 
-fs-extra@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-1.0.0.tgz#cd3ce5f7e7cb6145883fcae3191e9877f8587950"
+fs-extra@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-4.0.0.tgz#414fb4ca2d2170ba0014159d3a8aec3303418d9e"
   dependencies:
     graceful-fs "^4.1.2"
-    jsonfile "^2.1.0"
-    klaw "^1.0.0"
+    jsonfile "^3.0.0"
+    universalify "^0.1.0"
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -3700,7 +3700,7 @@ got@^5.0.0:
     unzip-response "^1.0.2"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.4, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
+graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.4, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
@@ -4716,9 +4716,9 @@ json5@^0.5.0, json5@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/json5/-/json5-0.5.1.tgz#1eade7acc012034ad84e2396767ead9fa5495821"
 
-jsonfile@^2.1.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-2.4.0.tgz#3736a2b428b87bbda0cc83b53fa3d633a35c2ae8"
+jsonfile@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-3.0.1.tgz#a5ecc6f65f53f662c4415c7675a0331d0992ec66"
   optionalDependencies:
     graceful-fs "^4.1.6"
 
@@ -4805,12 +4805,6 @@ kind-of@^4.0.0:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-4.0.0.tgz#20813df3d712928b207378691a45066fae72dd57"
   dependencies:
     is-buffer "^1.1.5"
-
-klaw@^1.0.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/klaw/-/klaw-1.3.1.tgz#4088433b46b3b1ba259d78785d8e96f73ba02439"
-  optionalDependencies:
-    graceful-fs "^4.1.9"
 
 latest-version@^1.0.0:
   version "1.0.1"
@@ -6701,9 +6695,9 @@ react-addons-test-utils@^15.6.0:
   version "15.6.0"
   resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.6.0.tgz#062d36117fe8d18f3ba5e06eb33383b0b85ea5b9"
 
-react-autosuggest@^9.3.1:
-  version "9.3.1"
-  resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-9.3.1.tgz#cf106d95e650de292a08e6506372d3eb4b6b2614"
+react-autosuggest@^9.3.2:
+  version "9.3.2"
+  resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-9.3.2.tgz#dd8c0fbe9c25aa94afe296180353647f6ecc10a7"
   dependencies:
     prop-types "^15.5.10"
     react-autowhatever "^10.1.0"
@@ -7442,14 +7436,15 @@ serviceworker-cache-polyfill@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/serviceworker-cache-polyfill/-/serviceworker-cache-polyfill-4.0.0.tgz#de19ee73bef21ab3c0740a37b33db62464babdeb"
 
-session-file-store@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/session-file-store/-/session-file-store-1.0.0.tgz#17d6a1f4b548c4ce8a5b808d268637abeb46dcf4"
+session-file-store@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/session-file-store/-/session-file-store-1.1.1.tgz#aa9172a8878fff1aa79db9153129c0a84757354c"
   dependencies:
     bagpipe "^0.3.5"
-    fs-extra "^1.0.0"
+    fs-extra "^4.0.0"
+    object-assign "^4.1.1"
     retry "^0.10.0"
-    write-file-atomic "^1.1.4"
+    write-file-atomic "1.3.1"
 
 set-blocking@^2.0.0, set-blocking@~2.0.0:
   version "2.0.0"
@@ -8199,6 +8194,10 @@ unique-string@^1.0.0:
   dependencies:
     crypto-random-string "^1.0.0"
 
+universalify@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.1.tgz#fa71badd4437af4c148841e3b3b165f9e9e590b7"
+
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/unpipe/-/unpipe-1.0.0.tgz#b2bf4ee8514aae6165b4817829d21b2ef49904ec"
@@ -8549,7 +8548,15 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
-write-file-atomic@^1.1.2, write-file-atomic@^1.1.4:
+write-file-atomic@1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-1.3.1.tgz#7d45ba32316328dd1ec7d90f60ebc0d845bb759a"
+  dependencies:
+    graceful-fs "^4.1.11"
+    imurmurhash "^0.1.4"
+    slide "^1.1.5"
+
+write-file-atomic@^1.1.2:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/write-file-atomic/-/write-file-atomic-1.3.4.tgz#f807a4f0b1d9e913ae7a48112e6cc3af1991b45f"
   dependencies:

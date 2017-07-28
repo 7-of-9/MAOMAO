@@ -6,6 +6,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import Sticky from 'react-sticky-el'
 import SelectedList from './SelectedList'
 
 class SelectedPanel extends React.Component {
@@ -37,11 +38,12 @@ class SelectedPanel extends React.Component {
     const { total, items } = this.props
     return (
         total > 0 &&
-        <div className='selected-panel' style={{ height: isCollapse ? '50px' : 'auto' }}>
-          <div className='toolbar'>
-            <i className={isCollapse ? 'fa fa-2x fa-toggle-on' : 'fa fa-2x fa-toggle-off'} aria-hidden='true' onClick={this.toggleCollapse} />
-          </div>
-          {
+        <Sticky>
+          <div className='selected-panel' style={{ height: isCollapse ? '50px' : 'auto' }}>
+            <div className='toolbar'>
+              <i className={isCollapse ? 'fa fa-2x fa-toggle-on' : 'fa fa-2x fa-toggle-off'} aria-hidden='true' onClick={this.toggleCollapse} />
+            </div>
+            {
             !isCollapse &&
             <div>
               <SelectedList items={items} onRemove={this.props.onRemove} />
@@ -53,8 +55,9 @@ class SelectedPanel extends React.Component {
               </div>
             </div>
           }
-          {isCollapse && <p>You have selected {total} topics.</p>}
-        </div>
+            {isCollapse && <p>You have selected {total} topics.</p>}
+          </div>
+        </Sticky>
     )
   }
 }

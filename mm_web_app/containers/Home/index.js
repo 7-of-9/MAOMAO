@@ -251,13 +251,13 @@ class Home extends React.Component {
           </div>
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
-            <TopicTree />
             <SelectedPanel
               total={selectedTopics.length}
               items={selectedItems}
               onRemove={this.onRemove}
               showSignUp={this.showSignUp}
-              />
+            />
+            <TopicTree />
             {
               this.props.ui.currentViewer === 'discovery' &&
               <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />

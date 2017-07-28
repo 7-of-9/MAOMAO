@@ -24,11 +24,19 @@ class TopicItem extends PureComponent {
     img: ''
   }
 
-  handleClick = (evt) => {
+  onChange = (evt) => {
     evt.preventDefault()
+    logger.warn('onChange')
     const { topic_id: topicId, title } = this.props
     const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topicId)
-    logger.warn('toggle select isSelect', topicId, title, !isSelect)
+    this.props.ui.toggleSelectTopic(!isSelect, topicId, title)
+  }
+
+  handleClick = (evt) => {
+    evt.preventDefault()
+    logger.warn('handleClick')
+    const { topic_id: topicId, title } = this.props
+    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topicId)
     this.props.ui.toggleSelectTopic(!isSelect, topicId, title)
   }
 
@@ -54,12 +62,10 @@ class TopicItem extends PureComponent {
                 checked={isSelect}
                 type='checkbox'
                 className='select-topic'
-                onChange={this.handleClick}
+                onChange={this.onChange}
                  />
               <div className='caption'>
-                <h4 onClick={this.handleClick} >
-                  {title}
-                </h4>
+                <h4>{title}</h4>
               </div>
             </a>
           </div>
