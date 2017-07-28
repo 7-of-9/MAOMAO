@@ -151,6 +151,10 @@ class Home extends React.Component {
     this.props.ui.toggleSelectTopic(false, id, name)
   }
 
+  showSignUp = () => {
+    this.props.ui.toggleSignIn(true, 'Sign Up')
+  }
+
   componentDidMount () {
     logger.warn('Home componentDidMount')
     this.props.store.getTopicTree()
@@ -240,9 +244,8 @@ class Home extends React.Component {
           <div className='wrap-main' style={{ textAlign: 'center' }}>
             <div
               className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-              style={{ background: 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
             >
-              <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao lets you discover and share the best of the web!') }} />
+              <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
               <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
             </div>
           </div>
@@ -253,6 +256,7 @@ class Home extends React.Component {
               total={selectedTopics.length}
               items={selectedItems}
               onRemove={this.onRemove}
+              showSignUp={this.showSignUp}
               />
             {
               this.props.ui.currentViewer === 'discovery' &&

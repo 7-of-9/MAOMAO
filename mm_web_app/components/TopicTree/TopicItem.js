@@ -44,26 +44,24 @@ class TopicItem extends PureComponent {
       <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
           <div className='thumbnail'>
-            <div className='thumbnail-image'>
-              <a className='thumbnail-overlay' onClick={this.handleClick}>
-                <img
-                  src={img || '/static/images/no-image.png'}
-                  alt={title}
-                  onError={this.noImage}
+            <a className='thumbnail-image' onClick={this.handleClick}>
+              <img
+                src={img || '/static/images/no-image.png'}
+                alt={title}
+                onError={this.noImage}
                   />
-                <input
-                  checked={isSelect}
-                  type='checkbox'
-                  className='select-topic'
-                  onChange={this.handleClick}
+              <input
+                checked={isSelect}
+                type='checkbox'
+                className='select-topic'
+                onChange={this.handleClick}
                  />
-              </a>
-            </div>
-            <div className='caption'>
-              <h3 onClick={this.handleClick} >
-                {title}
-              </h3>
-            </div>
+              <div className='caption'>
+                <h4 onClick={this.handleClick} >
+                  {title}
+                </h4>
+              </div>
+            </a>
           </div>
         </div>
       </div>

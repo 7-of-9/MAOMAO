@@ -190,7 +190,7 @@ class AppHeader extends React.PureComponent {
 
   showSignIn = (evt) => {
     evt.preventDefault()
-    this.props.ui.toggleSignIn(true)
+    this.props.ui.toggleSignIn(true, 'Sign In')
   }
 
   openShareManagement = (evt) => {
@@ -204,7 +204,7 @@ class AppHeader extends React.PureComponent {
 
   render () {
     const { isLogin, userId, user } = this.props.store
-    const { showSignInModal } = this.props.ui
+    const { showSignInModal, title } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
         <NavItem>
@@ -262,18 +262,18 @@ class AppHeader extends React.PureComponent {
             isOpen={showSignInModal}
             onRequestClose={this.onClose}
             portalClassName='SignInModal'
-            contentLabel='Sign In Modal'
+            contentLabel={title}
           >
-            <h2 ref='subtitle'>Sign In</h2>
+            <h2 ref='subtitle'>{title}</h2>
             <div className='social-action' >
               <div className='block-button'>
                 <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                  <i className='fa fa-facebook' /> Sign in with Facebook
+                  <i className='fa fa-facebook' /> {title} with Facebook
                </a>
               </div>
               <div className='block-button'>
                 <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
-                  <i className='fa fa-google' /> Sign in with Google
+                  <i className='fa fa-google' /> {title} with Google
                 </a>
               </div>
               <div className='block-button'>

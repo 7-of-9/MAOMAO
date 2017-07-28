@@ -8,7 +8,7 @@ the home page
 .neal-hero {
   &.banner-hero {
     position: relative;
-    min-height: 280px;
+    min-height: 220px;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     -moz-animation: fadeIn 1s both;
@@ -535,6 +535,29 @@ the home page
     .grid-row {
       .grid-sizer, .grid-item {
         width: 20%;
+        @include border-radius(5px);
+        &::before {
+          @include transform(scale(0.96));
+          @include border-radius(5px);
+          @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+          @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
+          -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+          -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+          box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+          opacity: 0;
+          content: " ";
+          height: 100%;
+          width: 100%;
+          pointer-events: none;
+          z-index: 3;
+        }
+        &:hover::before {
+          -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+          -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+          box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+          -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+          animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+        }
         @media (max-width: 1290px) {
         width: 25%;
         }
@@ -548,8 +571,70 @@ the home page
           width: 100%;
         }
         .thumbnail-box {
-          .caption {
-            h3 { text-align: center; }
+          .thumbnail-image {
+            @include border-radius(4px);
+            position: relative;
+            display: block;
+            overflow: hidden;
+            .caption {
+              padding: 0px;
+              h4 {
+                  position: absolute;
+                  right: 0;
+                  bottom: 0;
+                  color: #000;
+              }
+            }
+            img {
+              @include border-radius(8px);
+              object-fit: contain;
+              margin: 0 auto;
+              display: block;
+              max-width: 335px;
+              @media (max-width: 1450px) {
+                max-width: 270px;
+              }
+              @media (max-width: 1050px) {
+                max-width: 225px;
+              }
+              @media (max-width: 690px) {
+                max-width: 250px;
+              }
+              @media (max-width: 490px) {
+                max-width: 260px;
+              }
+            }
+            &::after,
+            &::before {
+              @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+              @include transition(background 0.7s linear);
+              @include border-radius(8px);
+              content: " ";
+              height: 100%;
+              width: 100%;
+              overflow: hidden;
+            }
+            &::after {
+              background: rgba(0, 0, 0, 0.02);
+              bottom: 0;
+              z-index: 5;
+            }
+            &::before {
+              z-index: 101;
+              visibility: hidden;
+              background: -webkit-linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
+              background: linear-gradient(rgba(80, 80, 80, 0), rgba(80, 80, 80, 0.2) 70%, rgba(80, 80, 80, 0.5));
+            }
+            &:before {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              background-image: linear-gradient(to bottom right,#000,#fff);
+              opacity: .6;
+            }
           }
           input.select-topic {
             position: absolute;
@@ -591,7 +676,7 @@ the home page
   z-index: 1000;
   padding: 15px;
   background: #fff;
-  @include border-radius(8px);
+  @include border-radius(5px);
   @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
   -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
   -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);

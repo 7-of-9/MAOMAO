@@ -22,6 +22,7 @@ export class UIStore {
   shareTopics = []
   shareUrlId = -1
   userId = -1
+  title = 'Sign In'
 
   @action toggleOnlyMe (userId, users) {
     logger.warn('toggleOnlyMe', userId, users)
@@ -89,8 +90,9 @@ export class UIStore {
     this.page = 1
   }
 
-  @action toggleSignIn (isShow) {
+  @action toggleSignIn (isShow, title = 'Sign In') {
     this.showSignInModal = isShow
+    this.title = title
   }
 
   @action openExtensionModal () {

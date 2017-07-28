@@ -12,13 +12,15 @@ class SelectedPanel extends React.Component {
   static propTypes = {
     total: PropTypes.number.isRequired,
     items: PropTypes.array.isRequired,
-    onRemove: PropTypes.func.isRequired
+    onRemove: PropTypes.func.isRequired,
+    showSignUp: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     total: 0,
     items: [],
-    onRemove: (id, name) => {}
+    onRemove: (id, name) => {},
+    showSignUp: () => {}
   }
 
   state = {
@@ -39,7 +41,18 @@ class SelectedPanel extends React.Component {
           <div className='toolbar'>
             <i className={isCollapse ? 'fa fa-2x fa-toggle-on' : 'fa fa-2x fa-toggle-off'} aria-hidden='true' onClick={this.toggleCollapse} />
           </div>
-          { !isCollapse && <SelectedList items={items} onRemove={this.props.onRemove} />}
+          {
+            !isCollapse &&
+            <div>
+              <SelectedList items={items} onRemove={this.props.onRemove} />
+              <br />
+              <div className='block-button' style={{ textAlign: 'center' }}>
+                <button className='btn btn-login' onClick={this.props.showSignUp}>
+                  <i className='fa fa-sign-in' aria-hidden='true' /> Ok! Let’s go
+                </button>
+              </div>
+            </div>
+          }
           {isCollapse && <p>You have selected {total} topics.</p>}
         </div>
     )
