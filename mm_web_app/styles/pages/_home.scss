@@ -534,17 +534,54 @@ the home page
     z-index: 1;
     .grid-row {
       .grid-sizer, .grid-item {
-        width: 330px;
+        width: 20%;
+        @media (max-width: 1290px) {
+        width: 25%;
+        }
+        @media (max-width: 890px) {
+          width: 33.33%;
+        }
+        @media (max-width: 750px) {
+          width: 50%;
+        }
+        @media (max-width: 550px) {
+          width: 100%;
+        }
+        .thumbnail-box {
+          .caption {
+            h3 { text-align: center; }
+          }
+          input.select-topic {
+            position: absolute;
+            visibility: hidden;
+            top: 0;
+            right: 0;
+            -webkit-appearance:none;
+            width:24px;
+            height:24px;
+            background-color: #fff;
+            border-radius:2px;
+            border:1px solid #ccc;
+            transition: all .3s linear;
+            &:checked {
+              background: url('/static/images/tick.png') no-repeat center;
+              background-size: contain;
+              background-color: #fff;
+              visibility: visible;
+            }
+          }
+        }
+        &:hover {
+          input.select-topic {
+            visibility: visible;
+          }
+        }
       }
     }
   }
 }
 
-input.select-topic {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+
 
 .selected-panel {
   position: fixed;

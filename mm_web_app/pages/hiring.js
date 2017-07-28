@@ -133,7 +133,7 @@ export default class Hiring extends React.Component {
             <script src='/static/vendors/js/addtohomescreen.min.js' />
           </Head>
           <Navbar className='header-nav animated fadeInDown' brand={brand}>
-            <NavItem><Link prefetch href='/' className='nav-link'><a href='/'>Home</a></Link></NavItem>
+            <NavItem><Link prefetch href='/'><a href='/'>Home</a></Link></NavItem>
           </Navbar>
           { type === 'js' && hiringJs() }
           { type === 'vp' && hiringVp() }

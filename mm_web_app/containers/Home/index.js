@@ -11,6 +11,7 @@ import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Router from 'next/router'
+import Raven from 'raven-js'
 import { NotificationStack } from 'react-notification'
 import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
@@ -85,6 +86,10 @@ const businessAddress = (
   </address>
 )
 
+const replaceMMIcon = (desc) => {
+  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -149,7 +154,6 @@ class Home extends React.Component {
   componentDidMount () {
     logger.warn('Home componentDidMount')
     this.props.store.getTopicTree()
-    /* global Raven */
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.store.isMobile) {
       // TODO: support chrome (android)
@@ -233,11 +237,15 @@ class Home extends React.Component {
           onDismiss={this.onDismiss}
         />
         <ToggleDisplay if={!isLogin}>
-          <ChromeInstall
-            description={description}
-            title='Unlock YOUR FRIEND STREAM Now'
-            install={this.inlineInstall}
-            />
+          <div className='wrap-main' style={{ textAlign: 'center' }}>
+            <div
+              className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
+              style={{ background: 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
+            >
+              <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao lets you discover and share the best of the web!') }} />
+              <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
+            </div>
+          </div>
           <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             <TopicTree />

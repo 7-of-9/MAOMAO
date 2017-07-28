@@ -3325,9 +3325,9 @@ firebase-admin@^5.1.0:
     jsonwebtoken "7.1.9"
     node-forge "0.7.1"
 
-firebase@^4.1.5:
-  version "4.1.5"
-  resolved "https://registry.yarnpkg.com/firebase/-/firebase-4.1.5.tgz#f7e9269ea62629736b88c3727db3265ceea1adaa"
+firebase@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/firebase/-/firebase-4.2.0.tgz#9181a0a22c6afc2b27bd810789beac48a438207d"
   dependencies:
     dom-storage "^2.0.2"
     faye-websocket "0.9.3"
@@ -5161,9 +5161,9 @@ mailcomposer@^4.0.2:
     buildmail "4.0.1"
     libmime "3.0.0"
 
-mailgun-js@^0.11.3:
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/mailgun-js/-/mailgun-js-0.11.3.tgz#93be2b858738fcf298c069f1bba7c5464c12280f"
+mailgun-js@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/mailgun-js/-/mailgun-js-0.12.0.tgz#19bc0e7ac5b5a39bc7c5ac10a9a20a9eb4aee617"
   dependencies:
     async "~2.5.0"
     debug "~2.6.0"
@@ -5460,9 +5460,9 @@ netmask@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
 
-next@^3.0.1-beta.19:
-  version "3.0.1-beta.19"
-  resolved "https://registry.yarnpkg.com/next/-/next-3.0.1-beta.19.tgz#4871f5597b99831913f64eae2e0f287ec80a7a4e"
+next@beta:
+  version "3.0.1-beta.20"
+  resolved "https://registry.yarnpkg.com/next/-/next-3.0.1-beta.20.tgz#d531780c1824fe6935c437db45a79c0041307823"
   dependencies:
     ansi-html "0.0.7"
     babel-core "6.25.0"
@@ -5509,7 +5509,6 @@ next@^3.0.1-beta.19:
     strip-ansi "4.0.0"
     styled-jsx "^1.0.8"
     touch "3.1.0"
-    uglifyjs-webpack-plugin "0.4.6"
     unfetch "3.0.0"
     url "0.11.0"
     uuid "3.1.0"
@@ -6654,9 +6653,13 @@ range-parser@^1.0.3, range-parser@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
 
-raven@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/raven/-/raven-2.1.0.tgz#1b624e56374d9c9d93c74448461a2a356ce37527"
+raven-js@^3.17.0:
+  version "3.17.0"
+  resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-3.17.0.tgz#779457ac7910512c3c2cc9bb6d0a9eeb59a969ec"
+
+raven@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/raven/-/raven-2.1.1.tgz#b3a974c6c29315c677c079e168435ead196525cd"
   dependencies:
     cookie "0.3.1"
     json-stringify-safe "5.0.1"
@@ -6869,9 +6872,9 @@ react-placeholder@^1.0.5:
   dependencies:
     prop-types "^15.5.8"
 
-react-player@^0.19.1:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/react-player/-/react-player-0.19.1.tgz#8a5d7b5fec0bb84122e2a86110b825709c2a2911"
+react-player@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/react-player/-/react-player-0.20.0.tgz#61ba61b0a0c03a9a0e5e45ee70b40fb82eab56bd"
   dependencies:
     fetch-jsonp "^1.0.2"
     load-script "^1.0.0"
@@ -7827,8 +7830,8 @@ styled-components@^2.1.1:
     supports-color "^3.2.3"
 
 styled-jsx@^1.0.8:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/styled-jsx/-/styled-jsx-1.0.9.tgz#f4c4df5c124c15dbdd34b97a5b9acf9226c64d54"
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/styled-jsx/-/styled-jsx-1.0.10.tgz#114eea6ff5ae8f54bc2bcda86d2861085d5c99dd"
   dependencies:
     babel-plugin-syntax-jsx "6.18.0"
     babel-traverse "6.21.0"
@@ -7839,11 +7842,11 @@ styled-jsx@^1.0.8:
     escape-string-regexp "1.0.5"
     source-map "0.5.6"
     string-hash "1.1.1"
-    stylis "3.2.6"
+    stylis "3.2.8"
 
-stylis@3.2.6:
-  version "3.2.6"
-  resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.2.6.tgz#6291df64aae62e9f537ab24b7d8a62b2428a34e9"
+stylis@3.2.8:
+  version "3.2.8"
+  resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.2.8.tgz#9b23a3e06597f7944a3d9ae880d5796248b8784f"
 
 stylis@^3.2.1:
   version "3.2.3"
@@ -8146,7 +8149,7 @@ uglify-to-browserify@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/uglify-to-browserify/-/uglify-to-browserify-1.0.2.tgz#6e0924d6bda6b5afe349e39a6d632850a0f882b7"
 
-uglifyjs-webpack-plugin@0.4.6, uglifyjs-webpack-plugin@^0.4.6:
+uglifyjs-webpack-plugin@^0.4.6:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/uglifyjs-webpack-plugin/-/uglifyjs-webpack-plugin-0.4.6.tgz#b951f4abb6bd617e66f63eb891498e391763e309"
   dependencies:

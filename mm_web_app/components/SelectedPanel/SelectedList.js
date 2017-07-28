@@ -30,6 +30,7 @@ class SelectedList extends React.PureComponent {
                 <SelectedItem
                   name={name}
                   id={id}
+                  key={`${id}-${name}`}
                   onRemove={this.props.onRemove}
                 />
               ))

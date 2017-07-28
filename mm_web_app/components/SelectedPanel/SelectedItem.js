@@ -13,7 +13,7 @@ class SelectedItem extends React.PureComponent {
   static propTypes = {
     name: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
-    onRemove: PropTypes.string.isRequired
+    onRemove: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -22,19 +22,13 @@ class SelectedItem extends React.PureComponent {
     onRemove: (id, name) => {}
   }
 
-  onRemove = (evt) => {
-    evt.preventDefault()
-    const { name, id } = this.props
-    this.props.onRemove(id, name)
-  }
-
   render () {
     const { name, id } = this.props
     logger.warn('SelectedItem')
     return (
       <li className={tagColor(name)} key={`topic-${id}`}>
         <span className='text-topic'>{name}</span>
-        <a className='btn-box-remove' onClick={this.onRemove}>
+        <a className='btn-box-remove' onClick={() => { this.props.onRemove(id, name) }}>
           <i className='fa fa-remove' aria-hidden='true' />
         </a>
       </li>

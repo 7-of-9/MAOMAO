@@ -60,11 +60,9 @@ class TopicItem extends PureComponent {
               </a>
             </div>
             <div className='caption'>
-              <h4 className='caption-title'>
-                <a onClick={this.handleClick}>
-                  {title} ({topic_id})
-                </a>
-              </h4>
+              <h3 onClick={this.handleClick} >
+                {title}
+              </h3>
             </div>
           </div>
         </div>
