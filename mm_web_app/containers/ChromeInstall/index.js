@@ -7,22 +7,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
-import Modal from 'react-modal'
 import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
   return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
-}
-
-const customModalStyles = {
-  content: {
-    top: '82px',
-    left: 'auto',
-    right: 'auto',
-    bottom: 'auto',
-    overflow: 'hidden'
-  }
 }
 
 @inject('store')
@@ -66,17 +55,6 @@ class ChromeInstall extends React.Component {
     }
   }
 
-  onClose = () => {
-    logger.warn('onClose', this.props)
-    this.props.ui.closeExtensionModal()
-  }
-
-  onOpen = (evt) => {
-    evt.preventDefault()
-    logger.warn('onOpen', this.props)
-    this.props.ui.openExtensionModal()
-  }
-
   showSignIn = (evt) => {
     evt.preventDefault()
     logger.warn('showSignIn', this.props)
@@ -84,7 +62,7 @@ class ChromeInstall extends React.Component {
   }
 
   render () {
-    const { title, description, install, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    const { title, description, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
     logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
     let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
     return (
@@ -127,26 +105,6 @@ class ChromeInstall extends React.Component {
           </div>
         </div>
           }
-        <Modal
-          isOpen={this.props.ui.showExtensionModal}
-          onRequestClose={this.onClose}
-          portalClassName='InstallModal'
-          style={customModalStyles}
-          contentLabel='Install maomao'>
-          <div className='install-modal-content'>
-            <div className='modal-header'>
-              <h4 className='modal-title'>Install maomao</h4>
-            </div>
-            <div className='modal-body'>
-              <div className='install-description'>
-                <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
-                <br />
-                <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
-                <button className='btn btn-install' type='button' onClick={install}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
-              </div>
-            </div>
-          </div>
-        </Modal>
       </div>
     )
   }

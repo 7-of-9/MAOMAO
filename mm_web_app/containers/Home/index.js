@@ -234,7 +234,7 @@ class Home extends React.Component {
           <script src='https://cdn.ravenjs.com/3.17.0/raven.min.js' crossOrigin='anonymous' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
         </Head>
-        <AppHeader notify={this.addNotification} />
+        <AppHeader notify={this.addNotification} install={this.inlineInstall} />
         <NotificationStack
           notifications={notifications.slice()}
           dismissAfter={5000}

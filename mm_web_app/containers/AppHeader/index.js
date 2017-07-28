@@ -28,6 +28,16 @@ const avatar = (user) => {
   return '/static/images/no-avatar.png'
 }
 
+const customModalStyles = {
+  content: {
+    top: '82px',
+    left: 'auto',
+    right: 'auto',
+    bottom: 'auto',
+    overflow: 'hidden'
+  }
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -198,6 +208,16 @@ class AppHeader extends React.PureComponent {
     this.props.ui.displayShareManagement()
   }
 
+  onOpenExtensionModal = (evt) => {
+    evt.preventDefault()
+    this.props.ui.openExtensionModal()
+  }
+
+  onCloseExtensionModal = (evt) => {
+    evt.preventDefault()
+    this.props.ui.closeExtensionModal()
+  }
+
   noImage = (evt) => {
     evt.target.src = '/static/images/no-image.png'
   }
@@ -227,6 +247,9 @@ class AppHeader extends React.PureComponent {
               </Link>
             </li>
           </ul>
+        </NavItem>
+        <NavItem>
+          <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
         </NavItem>
         {
           isLogin &&
@@ -284,6 +307,26 @@ class AppHeader extends React.PureComponent {
             </div>
           </Modal>
         </NavItem>
+        <Modal
+          isOpen={this.props.ui.showExtensionModal}
+          onRequestClose={this.onCloseExtensionModal}
+          portalClassName='InstallModal'
+          style={customModalStyles}
+          contentLabel='Install maomao'>
+          <div className='install-modal-content'>
+            <div className='modal-header'>
+              <h4 className='modal-title'>Install maomao</h4>
+            </div>
+            <div className='modal-body'>
+              <div className='install-description'>
+                <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
+                <br />
+                <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
+                <button className='btn btn-install' type='button' onClick={this.props.install}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
+              </div>
+            </div>
+          </div>
+        </Modal>
       </Navbar>
     )
   }
@@ -291,11 +334,13 @@ class AppHeader extends React.PureComponent {
 
 AppHeader.propTypes = {
   notify: PropTypes.func.isRequired,
+  install: PropTypes.func.isRequired,
   isHome: PropTypes.bool
 }
 
 AppHeader.defaultProps = {
   notify: () => {},
+  install: () => {},
   isHome: true
 }
 
