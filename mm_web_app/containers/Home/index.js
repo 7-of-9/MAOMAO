@@ -17,12 +17,19 @@ import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
-import AppHeader from '../AppHeader'
 import Loading from '../../components/Loading'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
 // dynaymic load container component
+const AppHeader = dynamic(
+ import('../AppHeader'),
+  {
+    loading: () => (<Loading isLoading />),
+    ssr: false
+  }
+)
+
 const Discovery = dynamic(
  import('../Discovery'),
   {

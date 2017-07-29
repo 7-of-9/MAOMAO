@@ -223,7 +223,7 @@ class AppHeader extends React.PureComponent {
   }
 
   render () {
-    const { isLogin, userId, user } = this.props.store
+    const { isLogin, userId, user, isInstall, isChrome, isMobile } = this.props.store
     const { showSignInModal, title } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
@@ -248,9 +248,12 @@ class AppHeader extends React.PureComponent {
             </li>
           </ul>
         </NavItem>
-        <NavItem>
-          <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
-        </NavItem>
+        {
+          (isMobile || !isChrome || (isChrome && isInstall)) &&
+          <NavItem>
+            <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
+          </NavItem>
+        }
         {
           isLogin &&
           <NavItem>
