@@ -13,6 +13,7 @@ import UnlockNow from '../components/UnlockNow'
 import SearchBar from '../components/SearchBar'
 import Footer from '../components/Footer'
 import AddToHome from '../components/AddToHome'
+import AnimateBox from '../components/AnimateBox'
 
 storiesOf('Header', module)
   .add('with logo & slogan', () => (
@@ -22,6 +23,11 @@ storiesOf('Header', module)
 storiesOf('Footer', module)
   .add('default props', () => (
     <Footer />
+  ))
+
+storiesOf('AnimateBox', module)
+  .add('default props', () => (
+    <AnimateBox />
   ))
 
 storiesOf('AddToHome', module)

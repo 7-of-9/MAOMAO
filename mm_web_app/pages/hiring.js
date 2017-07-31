@@ -102,7 +102,7 @@ export default class Hiring extends React.Component {
   }
 
   componentDidMount () {
-    if ('serviceWorker' in navigator) {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/service-worker.js')
         .then(registration => {

@@ -528,6 +528,11 @@ the home page
   }
 }
 
+/* animate box */
+
+.keyframe { position: relative; width: 270px; height: 250px; overflow: hidden; border: 1px solid #ccc; margin:1em;}
+.keyframe > div { position: absolute; }
+
 /* select topics */
 .topic-tree {
  .container-masonry {
