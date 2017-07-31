@@ -6,38 +6,36 @@
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { inject, observer } from 'mobx-react'
 import logger from '../../utils/logger'
 
-@inject('ui')
-@observer
 class TopicItem extends PureComponent {
   static propTypes = {
     topic_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    img: PropTypes.string.isRequired
+    img: PropTypes.string.isRequired,
+    isSelect: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     topic_id: 0,
     title: '',
-    img: ''
+    img: '',
+    isSelect: false,
+    onChange: (isSelect, topicId, title) => {}
   }
 
   onChange = (evt) => {
-    evt.preventDefault()
-    logger.warn('onChange')
-    const { topic_id: topicId, title } = this.props
-    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topicId)
-    this.props.ui.toggleSelectTopic(!isSelect, topicId, title)
+    logger.warn('onChange', evt)
+    const { topic_id: topicId, title, isSelect } = this.props
+    this.props.onChange(!isSelect, topicId, title)
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
     logger.warn('handleClick')
-    const { topic_id: topicId, title } = this.props
-    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topicId)
-    this.props.ui.toggleSelectTopic(!isSelect, topicId, title)
+    const { topic_id: topicId, title, isSelect } = this.props
+    this.props.onChange(!isSelect, topicId, title)
   }
 
   noImage = (evt) => {
@@ -46,8 +44,7 @@ class TopicItem extends PureComponent {
 
   render () {
     /* eslint-disable camelcase */
-    const { topic_id, title, img } = this.props
-    const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topic_id)
+    const { topic_id, title, img, isSelect } = this.props
     return (
       <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
@@ -58,16 +55,16 @@ class TopicItem extends PureComponent {
                 alt={title}
                 onError={this.noImage}
                   />
-              <input
-                checked={isSelect}
-                type='checkbox'
-                className='select-topic'
-                onChange={this.onChange}
-                 />
               <div className='caption'>
                 <h4>{title}</h4>
               </div>
             </a>
+            <input
+              checked={isSelect}
+              type='checkbox'
+              className='select-topic'
+              onChange={this.onChange}
+              />
           </div>
         </div>
       </div>

@@ -4,12 +4,12 @@
 *
 */
 
-import React from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
-class SelectedItem extends React.PureComponent {
+class SelectedItem extends PureComponent {
   static propTypes = {
     name: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,

@@ -57,7 +57,7 @@ function animationIcon(tabId, round) {
   log.info('animationIcon on tabId', tabId);
   var sizes = [
     'img/dog_flash.png',
-    'img/logo/maodog_blue128x128.png',
+    'img/logo/maoao_blue.png',
     'img/dog_flash2.png',
   ];
   isFlashingDog = true;
@@ -107,7 +107,7 @@ function setIconApp(rawUrl, image, msg, color) {
   if (bglib_remove_hash_url(sessionObservable.activeUrl) === url) {
     log.trace('set icon', rawUrl, image, msg, color);
     chrome.browserAction.setIcon({
-      path: 'img/logo/maodog_' + image + '128x128.png',
+      path: 'img/logo/maomao_' + image + '.png',
       tabId: currentTab && currentTab.id,
     });
     sessionObservable.icons.set(url, {

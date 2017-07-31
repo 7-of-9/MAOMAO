@@ -17,44 +17,7 @@ const replaceMMIcon = (desc) => {
 @inject('store')
 @inject('ui')
 @observer
-class ChromeInstall extends React.Component {
-  state = {
-    isHide: false
-  }
-
-  componentDidMount () {
-    logger.warn('ChromeInstall componentDidMount')
-    this.props.store.checkInstall()
-    let counter = 0
-    this.timer = setInterval(() => {
-      logger.info('ChromeInstall componentDidMount setInterval')
-      counter += 1
-      if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
-        this.props.store.checkInstall()
-        if (this.props.store.isInstalledOnChromeDesktop) {
-          logger.warn('ChromeInstall clearInterval')
-          this.setState({isHide: true})
-          clearInterval(this.timer)
-        }
-      } else {
-        logger.warn('ChromeInstall clearInterval')
-        clearInterval(this.timer)
-      }
-    }, 2 * 1000) // check mm extension has installed on every 2s
-  }
-
-  componentWillReact () {
-    logger.warn('ChromeInstall componentWillReact')
-  }
-
-  componentWillUnmount () {
-    logger.warn('ChromeInstall componentWillUnmount')
-    if (this.timer) {
-      logger.warn('ChromeInstall clearInterval')
-      clearInterval(this.timer)
-    }
-  }
-
+class ChromeInstall extends React.PureComponent {
   showSignIn = (evt) => {
     evt.preventDefault()
     logger.warn('showSignIn', this.props)

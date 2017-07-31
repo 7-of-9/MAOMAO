@@ -228,6 +228,7 @@ class Home extends React.Component {
           <meta name='og:image' content={bgImage && bgImage.length > 0 ? bgImage : `${MAOMAO_SITE_URL}static/images/logo.png`} />
           <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
           <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
+          <meta name='google-site-verification' content='AmFFr6xg5Htf_GFkf0psWvL1r9JKBMhGEkmAJ7UmafM' />
           <link rel='apple-touch-icon' href='/static/images/logo.png' />
           <link rel='icon' href='/static/images/logo.png' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />

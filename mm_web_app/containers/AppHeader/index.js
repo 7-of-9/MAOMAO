@@ -42,99 +42,6 @@ const customModalStyles = {
 @inject('ui')
 @observer
 class AppHeader extends React.PureComponent {
-  /* global fetch */
-  componentDidMount () {
-    logger.warn('AppHeader componentDidMount')
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(clientCredentials)
-      firebase.auth().onAuthStateChanged(user => {
-        logger.warn('firebase - onAuthStateChanged', user)
-        if (user) {
-          logger.warn('firebase - user', user)
-          const { photoURL } = user
-          return user.getIdToken()
-          .then((token) => {
-            if (this.props.store.userId < 0) {
-              if (!user.isAnonymous) {
-                this.props.notify(`Welcome, ${user.displayName}!`)
-              }
-              this.props.ui.toggleSignIn(false)
-              return fetch('/api/auth/login', {
-                method: 'POST',
-                // eslint-disable-next-line no-undef
-                headers: new Headers({ 'Content-Type': 'application/json' }),
-                credentials: 'same-origin',
-                body: JSON.stringify({ token })
-              }).then((res) => {
-              // register for new user
-                res.json().then(json => {
-                  // register new user
-                  logger.warn('logged-in user', json)
-                  if (!user.isAnonymous) {
-                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
-                  /* eslint-disable camelcase */
-                    logger.warn('sign_in_provider', sign_in_provider)
-                    logger.warn('identities', identities)
-                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
-                    let google_user_id = identities['google.com'] && identities['google.com'][0]
-                    let user_email = identities['email'] && identities['email'][0]
-                    if (sign_in_provider === 'google.com') {
-                      if (!email) {
-                        user.providerData.forEach(item => {
-                          if (item.providerId === sign_in_provider) {
-                            this.props.store.googleConnect({
-                              email: item.email, name, picture, google_user_id
-                            })
-                          }
-                        })
-                      } else {
-                        this.props.store.googleConnect({
-                          email, name, picture, google_user_id
-                        })
-                      }
-                    } else if (sign_in_provider === 'facebook.com') {
-                      if (!email) {
-                        user.providerData.forEach(item => {
-                          if (item.providerId === sign_in_provider) {
-                            this.props.store.facebookConnect({
-                              email: item.email, name, picture, fb_user_id
-                            })
-                          }
-                        })
-                      } else {
-                        this.props.store.facebookConnect({
-                          email, name, picture, fb_user_id
-                        })
-                      }
-                    } else if (sign_in_provider === 'password') {
-                      logger.warn('found user email', user_email)
-                      logger.warn('photoURL', photoURL)
-                      // hack here, try to store intenal user
-                      try {
-                        const loggedUser = JSON.parse(photoURL)
-                        this.props.store.retrylLoginForInternalUser(loggedUser)
-                      } catch (error) {
-                        logger.warn(error)
-                      }
-                    }
-                  } else {
-                    this.props.store.isLogin = true
-                  }
-                })
-              })
-            } else {
-              this.props.store.isLogin = true
-            }
-          })
-        }
-      })
-    }
-  }
-
-  componentWillReact () {
-    logger.warn('AppHeader componentWillReact')
-  }
-
   onInternalLogin = () => {
     logger.warn('onInternalLogin', this.props)
     this.props.notify('Test Internal: New User')
@@ -222,8 +129,127 @@ class AppHeader extends React.PureComponent {
     evt.target.src = '/static/images/no-image.png'
   }
 
+  /* global fetch */
+  componentDidMount () {
+    logger.warn('AppHeader componentDidMount')
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(clientCredentials)
+      firebase.auth().onAuthStateChanged(user => {
+        logger.warn('firebase - onAuthStateChanged', user)
+        if (user) {
+          logger.warn('firebase - user', user)
+          const { photoURL } = user
+          return user.getIdToken()
+          .then((token) => {
+            if (this.props.store.userId < 0) {
+              if (!user.isAnonymous) {
+                this.props.notify(`Welcome, ${user.displayName}!`)
+              }
+              this.props.ui.toggleSignIn(false)
+              return fetch('/api/auth/login', {
+                method: 'POST',
+                // eslint-disable-next-line no-undef
+                headers: new Headers({ 'Content-Type': 'application/json' }),
+                credentials: 'same-origin',
+                body: JSON.stringify({ token })
+              }).then((res) => {
+              // register for new user
+                res.json().then(json => {
+                  // register new user
+                  logger.warn('logged-in user', json)
+                  if (!user.isAnonymous) {
+                    const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
+                  /* eslint-disable camelcase */
+                    logger.warn('sign_in_provider', sign_in_provider)
+                    logger.warn('identities', identities)
+                    let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
+                    let google_user_id = identities['google.com'] && identities['google.com'][0]
+                    let user_email = identities['email'] && identities['email'][0]
+                    if (sign_in_provider === 'google.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.googleConnect({
+                              email: item.email, name, picture, google_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.googleConnect({
+                          email, name, picture, google_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'facebook.com') {
+                      if (!email) {
+                        user.providerData.forEach(item => {
+                          if (item.providerId === sign_in_provider) {
+                            this.props.store.facebookConnect({
+                              email: item.email, name, picture, fb_user_id
+                            })
+                          }
+                        })
+                      } else {
+                        this.props.store.facebookConnect({
+                          email, name, picture, fb_user_id
+                        })
+                      }
+                    } else if (sign_in_provider === 'password') {
+                      logger.warn('found user email', user_email)
+                      logger.warn('photoURL', photoURL)
+                      // hack here, try to store intenal user
+                      try {
+                        const loggedUser = JSON.parse(photoURL)
+                        this.props.store.retrylLoginForInternalUser(loggedUser)
+                      } catch (error) {
+                        logger.warn(error)
+                      }
+                    }
+                  } else {
+                    this.props.store.isLogin = true
+                  }
+                })
+              })
+            } else {
+              this.props.store.isLogin = true
+            }
+          })
+        }
+      })
+    }
+
+    this.props.store.checkInstall()
+    let counter = 0
+    this.timer = setInterval(() => {
+      logger.info('ChromeInstall componentDidMount setInterval')
+      counter += 1
+      if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
+        this.props.store.checkInstall()
+        if (this.props.store.isInstalledOnChromeDesktop) {
+          logger.warn('ChromeInstall clearInterval')
+          this.setState({isHide: true})
+          clearInterval(this.timer)
+        }
+      } else {
+        logger.warn('ChromeInstall clearInterval')
+        clearInterval(this.timer)
+      }
+    }, 2 * 1000) // check mm extension has installed on every 2s
+  }
+
+  componentWillReact () {
+    logger.warn('AppHeader componentWillReact')
+  }
+
+  componentWillUnmount () {
+    logger.warn('ChromeInstall componentWillUnmount')
+    if (this.timer) {
+      logger.warn('ChromeInstall clearInterval')
+      clearInterval(this.timer)
+    }
+  }
+
   render () {
-    const { isLogin, userId, user, isInstall, isChrome, isMobile } = this.props.store
+    const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
     const { showSignInModal, title } = this.props.ui
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand}>
@@ -249,7 +275,7 @@ class AppHeader extends React.PureComponent {
           </ul>
         </NavItem>
         {
-          (isMobile || !isChrome || (isChrome && isInstall)) &&
+          (!isMobile && isChrome && !isInstalledOnChromeDesktop) &&
           <NavItem>
             <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
           </NavItem>

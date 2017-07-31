@@ -27,7 +27,7 @@ export function notifyMsg(title, message, imageUrl) {
     title,
     message,
     type: 'basic',
-    iconUrl: 'img/logo/maodog_blue128x128.png',
+    iconUrl: 'img/logo/maomao_blue.png',
   };
   if (imageUrl) {
     options = Object.assign({}, options, { type: 'image', imageUrl });
