@@ -56,7 +56,7 @@ export default class Index extends React.Component {
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home />
+          <Home {...this.store} {...this.uiStore} {...this.discovery} />
         </div>
       </Provider>
     )

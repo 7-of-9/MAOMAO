@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import Sticky from 'react-sticky-el'
@@ -183,12 +182,12 @@ function mashUp (store, masonry) {
 
 @inject('discovery')
 @inject('ui')
+@inject('store')
 @observer
 class Discovery extends PureComponent {
   componentDidMount () {
-    logger.warn('terms', this.props.terms)
-    if (this.props.terms.length) {
-      this.props.discovery.changeTerms(this.props.terms)
+    if (this.props.ui.discoveryTerms.length) {
+      this.props.discovery.changeTerms(this.props.ui.discoveryTerms)
     }
   }
 
@@ -206,26 +205,24 @@ class Discovery extends PureComponent {
     this.props.discovery.changeTerms(terms)
   }
 
+  onGoBack = () => {
+    this.props.ui.openDiscoveryMode([])
+  }
+
   render () {
     logger.warn('Discovery render', this.props)
     return (
       <div>
         <div className='back'>
-          <button className='btn btn-back' onClick={this.props.onGoBack}>
+          <button className='btn btn-back' onClick={this.onGoBack}>
             <i className='fa fa-angle-left' aria-hidden='true' />
           </button>
         </div>
         <div className='bounceInRight animated'>
           <Sticky>
-            {
-              ({style}) => {
-                return (
-                  <div style={{...style, zIndex: 1000, backgroundColor: '#fff'}} className='standand-sort'>
-                    <SearchBar terms={this.props.terms} suggestions={this.props.suggestions} onChange={this.onChange} />
-                  </div>
-                )
-              }
-            }
+            <div className='standand-sort'>
+              <SearchBar terms={toJS(this.props.ui.discoveryTerms)} suggestions={toJS(this.props.ui.discoverySuggestionTerms)} onChange={this.onChange} />
+            </div>
           </Sticky>
           <InfiniteScroll
             pageStart={0}
@@ -250,12 +247,6 @@ class Discovery extends PureComponent {
       </div>
     )
   }
-}
-
-Discovery.propTypes = {
-  terms: PropTypes.array.isRequired,
-  suggestions: PropTypes.array,
-  onGoBack: PropTypes.func.isRequired
 }
 
 export default Discovery

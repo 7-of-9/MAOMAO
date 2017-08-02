@@ -43,26 +43,28 @@ module.exports = {
     //   }
     // })
 
-    config.plugins.push(
-      new SWPrecacheWebpackPlugin({
-        verbose: true,
-        staticFileGlobsIgnorePatterns: [/\.next\//],
-        runtimeCaching: [
-          {
-            handler: 'networkFirst',
-            urlPattern: /^https?.*/
-          }
-        ],
-        mergeStaticsConfig: true,
-        staticFileGlobs: [
-          'static/*.*',
-          'static/js/*.*',
-          'static/images/*.*',
-          'static/fonts/**/*.*',
-          'static/vendors/**/*.*'
-        ]
-      })
-    )
+    if (!dev) {
+      config.plugins.push(
+        new SWPrecacheWebpackPlugin({
+          verbose: true,
+          staticFileGlobsIgnorePatterns: [/\.next\//],
+          runtimeCaching: [
+            {
+              handler: 'networkFirst',
+              urlPattern: /^https?.*/
+            }
+          ],
+          mergeStaticsConfig: true,
+          staticFileGlobs: [
+            'static/*.*',
+            'static/js/*.*',
+            'static/images/*.*',
+            'static/fonts/**/*.*',
+            'static/vendors/**/*.*'
+          ]
+        })
+      )
+    }
 
     if (ANALYZE) {
       config.plugins.push(new BundleAnalyzerPlugin({

@@ -41,10 +41,18 @@ const customModalStyles = {
 @inject('store')
 @inject('ui')
 @observer
-class AppHeader extends React.PureComponent {
+class AppHeader extends React.Component {
+  static propTypes = {
+    isHome: PropTypes.bool
+  }
+
+  static defaultProps = {
+    isHome: true
+  }
+
   onInternalLogin = () => {
     logger.warn('onInternalLogin', this.props)
-    this.props.notify('Test Internal: New User')
+    this.addNotification('Test Internal: New User')
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
       logger.warn('test user', user)
@@ -54,10 +62,10 @@ class AppHeader extends React.PureComponent {
           displayName,
           photoURL: JSON.stringify(user)
         }).catch((error) => {
-          this.props.notify(error.message)
+          this.addNotification(error.message)
         })
       }).catch((error) => {
-        this.props.notify(error.message)
+        this.addNotification(error.message)
       })
     })
   }
@@ -68,7 +76,7 @@ class AppHeader extends React.PureComponent {
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
     firebase.auth().signInWithPopup(provider).catch((error) => {
-      this.props.notify(error.message)
+      this.addNotification(error.message)
     })
   }
 
@@ -80,7 +88,7 @@ class AppHeader extends React.PureComponent {
     provider.addScope('https://www.googleapis.com/auth/userinfo.email')
     provider.addScope('https://www.googleapis.com/auth/contacts.readonly')
     firebase.auth().signInWithPopup(provider).catch((error) => {
-      this.props.notify(error.message)
+      this.addNotification(error.message)
     })
   }
 
@@ -94,7 +102,7 @@ class AppHeader extends React.PureComponent {
       }).then(() => {
         this.props.store.logoutUser()
       })
-      this.props.notify('You have successfully signed out.')
+      this.addNotification('You have successfully signed out.')
     }).catch((error) => {
       logger.warn(error)
     })
@@ -129,6 +137,36 @@ class AppHeader extends React.PureComponent {
     evt.target.src = '/static/images/no-image.png'
   }
 
+  inlineInstall = () => {
+    /* eslint-disable */
+    chrome.webstore.install(
+    'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
+    this.onInstallSucess,
+    this.onInstallFail)
+    /* eslint-enable */
+  }
+
+  onInstallSucess = () => {
+    this.props.ui.addNotification('Yeah! You have been installed maomao extension successfully.')
+    setTimeout(() => {
+      this.props.store.checkEnvironment()
+      this.props.store.checkInstall()
+      window.location.reload()
+    }, 1000)
+  }
+
+  onInstallFail = (error) => {
+    this.props.ui.addNotification(error)
+  }
+
+  addNotification = (msg) => {
+    this.props.ui.addNotification(msg)
+  }
+
+  removeNotification = (uuid) => {
+    this.props.ui.removeNotification(uuid)
+  }
+
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
@@ -143,7 +181,7 @@ class AppHeader extends React.PureComponent {
           .then((token) => {
             if (this.props.store.userId < 0) {
               if (!user.isAnonymous) {
-                this.props.notify(`Welcome, ${user.displayName}!`)
+                this.addNotification(`Welcome, ${user.displayName}!`)
               }
               this.props.ui.toggleSignIn(false)
               return fetch('/api/auth/login', {
@@ -220,17 +258,17 @@ class AppHeader extends React.PureComponent {
     this.props.store.checkInstall()
     let counter = 0
     this.timer = setInterval(() => {
-      logger.info('ChromeInstall componentDidMount setInterval')
+      logger.info('AppHeader componentDidMount setInterval')
       counter += 1
       if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
         this.props.store.checkInstall()
         if (this.props.store.isInstalledOnChromeDesktop) {
-          logger.warn('ChromeInstall clearInterval')
+          logger.warn('AppHeader clearInterval')
           this.setState({isHide: true})
           clearInterval(this.timer)
         }
       } else {
-        logger.warn('ChromeInstall clearInterval')
+        logger.warn('AppHeader clearInterval')
         clearInterval(this.timer)
       }
     }, 2 * 1000) // check mm extension has installed on every 2s
@@ -241,9 +279,9 @@ class AppHeader extends React.PureComponent {
   }
 
   componentWillUnmount () {
-    logger.warn('ChromeInstall componentWillUnmount')
+    logger.warn('AppHeader componentWillUnmount')
     if (this.timer) {
-      logger.warn('ChromeInstall clearInterval')
+      logger.warn('AppHeader clearInterval')
       clearInterval(this.timer)
     }
   }
@@ -351,7 +389,7 @@ class AppHeader extends React.PureComponent {
                 <h3><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> lets you share topics with friends</h3>
                 <br />
                 <p><img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> only shares what you tell it, when you tell it. </p>
-                <button className='btn btn-install' type='button' onClick={this.props.install}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
+                <button className='btn btn-install' type='button' onClick={this.inlineInstall}>Ok! Give me <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /></button>
               </div>
             </div>
           </div>
@@ -359,18 +397,6 @@ class AppHeader extends React.PureComponent {
       </Navbar>
     )
   }
-}
-
-AppHeader.propTypes = {
-  notify: PropTypes.func.isRequired,
-  install: PropTypes.func.isRequired,
-  isHome: PropTypes.bool
-}
-
-AppHeader.defaultProps = {
-  notify: () => {},
-  install: () => {},
-  isHome: true
 }
 
 export default AppHeader

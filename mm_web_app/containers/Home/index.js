@@ -5,23 +5,22 @@
  */
 
 import React from 'react'
-import PropTypes from 'prop-types'
-import { observer, inject } from 'mobx-react'
-import { toJS } from 'mobx'
 import dynamic from 'next/dynamic'
+import { observer } from 'mobx-react'
 import Head from 'next/head'
 import Router from 'next/router'
 import Raven from 'raven-js'
-import { NotificationStack } from 'react-notification'
 import { Footer, Page, Section } from 'neal-react'
 import ToggleDisplay from 'react-toggle-display'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import Loading from '../../components/Loading'
+import Notification from '../../components/Notification'
 import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
 // dynaymic load container component
+
 const AppHeader = dynamic(
  import('../AppHeader'),
   {
@@ -44,14 +43,6 @@ const Share = dynamic(
   }
 )
 
-const ChromeInstall = dynamic(
- import('../ChromeInstall'),
-  {
-    ssr: false,
-    loading: () => (<Loading isLoading />)
-  }
-)
-
 const ShareList = dynamic(
 import('../../components/ShareList'),
   {
@@ -69,6 +60,7 @@ import('../../components/Streams'),
 const TopicTree = dynamic(
 import('../../components/TopicTree'),
   {
+    ssr: false,
     loading: () => (<Loading isLoading />)
   }
 )
@@ -97,47 +89,15 @@ const replaceMMIcon = (desc) => {
   return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
 }
 
-@inject('store')
-@inject('ui')
 @observer
 class Home extends React.Component {
   state = {
     hasAddToHome: false
   }
 
-  onInstallSucess = () => {
-    this.props.ui.addNotification('Yeah! You have been installed maomao extension successfully.')
-    setTimeout(() => {
-      this.props.store.checkEnvironment()
-      this.props.store.checkInstall()
-      window.location.reload()
-    }, 1000)
-  }
-
-  onInstallFail = (error) => {
-    this.props.ui.addNotification(error)
-  }
-
-  addNotification = (msg) => {
-    this.props.ui.addNotification(msg)
-  }
-
-  inlineInstall = () => {
-    /* eslint-disable */
-    chrome.webstore.install(
-    'https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk',
-    this.onInstallSucess,
-    this.onInstallFail)
-    /* eslint-enable */
-  }
-
-  removeNotification = (uuid) => {
-    this.props.ui.removeNotification(uuid)
-  }
-
   addToHomeOnMobile = () => {
     logger.warn('Home addToHomeOnMobile')
-    if (this.props.store.isMobile) {
+    if (this.props.isMobile) {
       this.addToHome.show(true)
       this.setState({
         hasAddToHome: true
@@ -145,28 +105,10 @@ class Home extends React.Component {
     }
   }
 
-  goBack = (evt) => {
-    evt.preventDefault()
-    this.props.ui.openDiscoveryMode([])
-  }
-
-  onDismiss = (uuid) => {
-    this.props.ui.removeNotification(uuid)
-  }
-
-  onRemove = (id, name) => {
-    this.props.ui.toggleSelectTopic(false, id, name)
-  }
-
-  showSignUp = () => {
-    this.props.ui.toggleSignIn(true, 'Sign Up')
-  }
-
   componentDidMount () {
     logger.warn('Home componentDidMount')
-    this.props.store.getTopicTree()
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
-    if (this.props.store.isMobile) {
+    if (this.props.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {
         this.setState({
@@ -185,20 +127,10 @@ class Home extends React.Component {
     }
   }
 
-  componentWillReact () {
-    logger.warn('Home componentWillReact')
-  }
-
-  componentWillUnmount () {
-    logger.warn('Home componentWillUnmount')
-    this.props.ui.clearNotifications()
-  }
-
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isInstall, isProcessing, shareInfo, bgImage, urls, users, isMobile } = this.props.store
-    const { notifications } = this.props.ui
+    const { isLogin, isInstall, shareInfo, bgImage, urls, users, isMobile, selectedTopics } = this.props
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
       if (shareAll) {
@@ -210,9 +142,8 @@ class Home extends React.Component {
       }
     }
     const { hasAddToHome } = this.state
-    logger.warn('Home urls, users', toJS(urls), toJS(users))
-    const selectedTopics = toJS(this.props.ui.selectedTopics)
-    const selectedItems = selectedTopics.map(item => ({id: item.topicId, name: item.topicName}))
+    logger.warn('Home render')
+    const selectedItems = selectedTopics ? selectedTopics.map(item => ({id: item.topicId, name: item.topicName})) : []
     return (
       <Page>
         <Head>
@@ -239,15 +170,9 @@ class Home extends React.Component {
           <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
           <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-          <script src='https://cdn.ravenjs.com/3.17.0/raven.min.js' crossOrigin='anonymous' />
           <script src='/static/vendors/js/addtohomescreen.min.js' />
         </Head>
-        <AppHeader notify={this.addNotification} install={this.inlineInstall} />
-        <NotificationStack
-          notifications={notifications.slice()}
-          dismissAfter={5000}
-          onDismiss={this.onDismiss}
-        />
+        <AppHeader />
         <ToggleDisplay if={!isLogin}>
           <div className='wrap-main' style={{ textAlign: 'center' }}>
             <div
@@ -257,47 +182,41 @@ class Home extends React.Component {
               <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
             </div>
           </div>
-          <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             <SelectedPanel
-              total={selectedTopics.length}
+              total={selectedTopics && selectedTopics.length}
               items={selectedItems}
-              onRemove={this.onRemove}
-              showSignUp={this.showSignUp}
             />
-            <TopicTree />
             {
-              this.props.ui.currentViewer === 'discovery' &&
-              <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />
+               this.props.currentViewer !== 'discovery' &&
+               <TopicTree />
+            }
+            {
+              this.props.currentViewer === 'discovery' &&
+              <Discovery />
             }
           </div>
         </ToggleDisplay>
         <ToggleDisplay if={isLogin}>
-          <ChromeInstall
-            description={description}
-            title='Unlock YOUR FRIEND STREAM Now'
-            install={this.inlineInstall}
-            />
-          <Loading isLoading={isProcessing} />
           <div className='wrapper-slide'>
             {
-                this.props.ui.currentViewer === 'share' &&
+                this.props.currentViewer === 'share' &&
                 <ShareList />
               }
             {
-                this.props.ui.currentViewer === 'sharetopic' &&
+                this.props.currentViewer === 'sharetopic' &&
                 <Share />
               }
             {
-                this.props.ui.currentViewer === 'discovery' &&
-                <Discovery suggestions={toJS(this.props.ui.discoverySuggestionTerms)} terms={toJS(this.props.ui.discoveryTerms)} onGoBack={this.goBack} />
+                this.props.currentViewer === 'discovery' &&
+                <Discovery />
               }
             {
-              urls.length > 0 && users.length > 0 && this.props.ui.currentViewer === 'streams' &&
+              urls && urls.length > 0 && users && users.length > 0 && this.props.currentViewer === 'streams' &&
               <Streams />
               }
             {
-              urls.length === 0 && !isProcessing &&
+              urls && urls.length === 0 &&
               <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
                 {
                   isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
@@ -313,6 +232,7 @@ class Home extends React.Component {
           isMobile && !hasAddToHome &&
           <AddToHome onClick={this.addToHomeOnMobile} />
          }
+        <Notification />
         <div className='footer-area'>
           <Footer brandName={brandName}
             facebookUrl='https://www.facebook.com/maomao.hiring'
@@ -322,17 +242,6 @@ class Home extends React.Component {
       </Page>
     )
   }
-}
-
-Home.propTypes = {
-  history: PropTypes.object,
-  home: PropTypes.object,
-  loading: PropTypes.bool,
-  notifications: PropTypes.object,
-  changeNotifications: PropTypes.func,
-  inlineInstall: PropTypes.func,
-  onChangeTerm: PropTypes.func,
-  onChangeFriendStream: PropTypes.func
 }
 
 export default Home

@@ -4,20 +4,29 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
+import Flight from 'react-flight/dom'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import TopicItem from './TopicItem'
-import GridView from '../../components/GridView'
 import logger from '../../utils/logger'
 
 @inject('store')
 @inject('ui')
 @observer
-class TopicTree extends PureComponent {
+class TopicTree extends Component {
+  componentDidMount () {
+    this.props.store.getTopicTree()
+  }
+
   onChange = (isSelect, topicId, title) => {
     this.props.ui.toggleSelectTopic(isSelect, topicId, title)
+  }
+
+  onSelect = (isSelect, topicId, title) => {
+    this.props.ui.toggleSelectTopic(isSelect, topicId, title)
+    this.flight.play()
   }
 
   render () {
@@ -35,16 +44,31 @@ class TopicTree extends PureComponent {
           isSelect={!!isSelect}
           title={title}
           onChange={this.onChange}
-          img={`https://placeimg.com/320/240/${title}`}
+          onSelect={this.onSelect}
+          img={`https://placeimg.com/320/240/${encodeURI(title)}`}
           />
         )
     })
     return (
-      <div className='topic-tree'>
-        <GridView>
-          {items}
-        </GridView>
-      </div>
+      <Flight ref={flight => (this.flight = flight)}>
+        <Flight.Frame duration={300} source>
+          <div id='topic-tree' className='topic-tree'>
+            <div className='main-inner'>
+              <div className='container-masonry'>
+                <div className='grid-row'>
+                  {items}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Flight.Frame>
+        <Flight.Frame duration={300}>
+          <div id='topic-tree' className='topic-tree'>
+            <h3>Test </h3>
+          </div>
+        </Flight.Frame>
+      </Flight>
+
     )
   }
 }

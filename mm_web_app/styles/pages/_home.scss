@@ -528,18 +528,13 @@ the home page
   }
 }
 
-/* animate box */
-
-.keyframe { position: relative; width: 270px; height: 250px; overflow: hidden; border: 1px solid #ccc; margin:1em;}
-.keyframe > div { position: absolute; }
-
 /* select topics */
 .topic-tree {
  .container-masonry {
     z-index: 1;
     .grid-row {
       .grid-sizer, .grid-item {
-        width: 20%;
+        width: 33.33%;
         @include border-radius(5px);
         &::before {
           @include transform(scale(0.96));
@@ -563,12 +558,6 @@ the home page
           -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
           animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
         }
-        @media (max-width: 1290px) {
-        width: 25%;
-        }
-        @media (max-width: 890px) {
-          width: 33.33%;
-        }
         @media (max-width: 750px) {
           width: 50%;
         }
@@ -578,6 +567,7 @@ the home page
         .thumbnail-box {
           .thumbnail-image {
             @include border-radius(4px);
+            min-height: 240px;
             position: relative;
             display: block;
             overflow: hidden;
@@ -596,19 +586,6 @@ the home page
               object-fit: contain;
               margin: 0 auto;
               display: block;
-              max-width: 335px;
-              @media (max-width: 1450px) {
-                max-width: 270px;
-              }
-              @media (max-width: 1050px) {
-                max-width: 225px;
-              }
-              @media (max-width: 690px) {
-                max-width: 250px;
-              }
-              @media (max-width: 490px) {
-                max-width: 260px;
-              }
             }
             &::before {
               content: '';
@@ -629,7 +606,6 @@ the home page
             -webkit-appearance:none;
             width:24px;
             height:24px;
-            z-index: 100;
             background-color: #fff;
             border-radius:2px;
             border:1px solid #ccc;

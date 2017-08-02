@@ -27,7 +27,11 @@ storiesOf('Footer', module)
 
 storiesOf('AnimateBox', module)
   .add('default props', () => (
-    <AnimateBox />
+    <AnimateBox
+      start={() => <div>Start </div>}
+      finish={() => <div>Finish </div>}
+      duration={300}
+    />
   ))
 
 storiesOf('AddToHome', module)

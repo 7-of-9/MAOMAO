@@ -14,7 +14,8 @@ class TopicItem extends PureComponent {
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     isSelect: PropTypes.bool.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onSelect: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -22,7 +23,8 @@ class TopicItem extends PureComponent {
     title: '',
     img: '',
     isSelect: false,
-    onChange: (isSelect, topicId, title) => {}
+    onChange: (isSelect, topicId, title) => {},
+    onSelect: (isSelect, topicId, title) => {}
   }
 
   onChange = (evt) => {
@@ -35,26 +37,27 @@ class TopicItem extends PureComponent {
     evt.preventDefault()
     logger.warn('handleClick')
     const { topic_id: topicId, title, isSelect } = this.props
-    this.props.onChange(!isSelect, topicId, title)
-  }
-
-  noImage = (evt) => {
-    evt.target.src = '/static/images/no-image.png'
+    this.props.onSelect(!isSelect, topicId, title)
   }
 
   render () {
     /* eslint-disable camelcase */
     const { topic_id, title, img, isSelect } = this.props
+    logger.warn('TopicItem', topic_id, title, img)
     return (
       <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
-          <div className='thumbnail'>
-            <a className='thumbnail-image' onClick={this.handleClick}>
-              <img
-                src={img || '/static/images/no-image.png'}
-                alt={title}
-                onError={this.noImage}
-                  />
+          <div
+            className='thumbnail'
+            >
+            <a
+              style={{
+                backgroundImage: `url(${img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover'
+              }}
+              className='thumbnail-image'
+              onClick={this.handleClick}
+              >
               <div className='caption'>
                 <h4>{title}</h4>
               </div>
