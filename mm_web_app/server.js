@@ -49,6 +49,12 @@ app.prepare().then(() => {
   server.use('/api/preview', preview)
   server.use('/api/twitter', twitter)
 
+  const pages = [
+    '/discovery',
+    '/hiring',
+    '/smart'
+  ]
+
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
@@ -61,8 +67,7 @@ app.prepare().then(() => {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})
-    } else if (pathname.indexOf('hiring') !== -1 ||
-     pathname === '/discovery' || pathname.indexOf('_next') !== -1 ||
+    } else if (pages.includes('hiring') !== -1 || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
      pathname.indexOf('.') !== -1 || pathname.indexOf('%20') !== -1 ||
      pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1 ||

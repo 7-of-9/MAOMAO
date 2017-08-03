@@ -13,6 +13,7 @@ router.get('/', (req, res) => {
       } else {
         const replace = String.prototype.replace
         const html = replace.call(body, '<head>', `<head><base href="${url}">`)
+        res.set('Content-Type', 'text/html; charset=utf-8')
         res.send(html)
       }
     })

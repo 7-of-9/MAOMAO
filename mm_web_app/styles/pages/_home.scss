@@ -529,6 +529,11 @@ the home page
 }
 
 /* select topics */
+.keyframe {
+  position: relative;
+  min-height: 100vh;
+}
+
 .topic-tree {
  .container-masonry {
     z-index: 1;

@@ -5,11 +5,13 @@ import logger from '../../utils/logger'
 
 class AnimateBox extends PureComponent {
   static propTypes = {
-    duration: PropTypes.number
+    duration: PropTypes.number,
+    onBack: PropTypes.func
   }
 
   static defaultProps = {
-    duration: 300
+    duration: 300,
+    onBack: () => {}
   }
 
   render () {
@@ -20,37 +22,58 @@ class AnimateBox extends PureComponent {
           <div className='keyframe'>
             <Rect
               name='head-1'
-              radius={5}
               style={{
-                backgroundColor: '#fff',
-                left: 30 - 20,
-                top: 20,
-                width: 50,
-                height: 10
+                left: 0,
+                top: 0,
+                width: '100%',
+                height: 'auto',
+                position: 'relative'
               }}
             >
               {this.props.children}
             </Rect>
+            <div
+              id='brace-1'
+              className='brace-1'
+              style={{
+                color: '#95A2AA',
+                top: 30,
+                left: -50,
+                fontSize: 30,
+                height: 'auto',
+                position: 'absolute'
+              }}
+            >
+              <button className='btn' onClick={this.props.onBack}>
+                <i className='fa fa-angle-left' aria-hidden='true' />
+              </button>
+            </div>
           </div>
         </Flight.Frame>
         <Flight.Frame duration={this.props.duration}>
           <div className='keyframe'>
             <Rect
               name='head-1'
-              radius={5}
               style={{
-                backgroundColor: '#fff',
-                left: -60,
-                top: 20,
-                width: 50,
-                height: 10
+                left: -50,
+                top: 0,
+                width: 10,
+                height: 10,
+                position: 'absolute'
               }}
-            >
-              {this.props.children}
-            </Rect>
+             />
           </div>
+          <div
+            id='brace-1'
+            className='brace-1'
+            style={{
+              color: '#95A2AA',
+              top: 30,
+              left: 20,
+              fontSize: 30
+            }}
+             />
         </Flight.Frame>
-
       </Flight>
     )
   }

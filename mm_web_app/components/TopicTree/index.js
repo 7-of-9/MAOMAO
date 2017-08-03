@@ -5,7 +5,6 @@
 */
 
 import React, { Component } from 'react'
-import Flight from 'react-flight/dom'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -26,7 +25,6 @@ class TopicTree extends Component {
 
   onSelect = (isSelect, topicId, title) => {
     this.props.ui.toggleSelectTopic(isSelect, topicId, title)
-    this.flight.play()
   }
 
   render () {
@@ -50,25 +48,15 @@ class TopicTree extends Component {
         )
     })
     return (
-      <Flight ref={flight => (this.flight = flight)}>
-        <Flight.Frame duration={300} source>
-          <div id='topic-tree' className='topic-tree'>
-            <div className='main-inner'>
-              <div className='container-masonry'>
-                <div className='grid-row'>
-                  {items}
-                </div>
-              </div>
+      <div className='topic-tree'>
+        <div className='main-inner'>
+          <div className='container-masonry'>
+            <div className='grid-row'>
+              {items}
             </div>
           </div>
-        </Flight.Frame>
-        <Flight.Frame duration={300}>
-          <div id='topic-tree' className='topic-tree'>
-            <h3>Test </h3>
-          </div>
-        </Flight.Frame>
-      </Flight>
-
+        </div>
+      </div>
     )
   }
 }

@@ -28,6 +28,14 @@ const AppHeader = dynamic(
   }
 )
 
+// const AnimateBox = dynamic(
+//  import('../../components/AnimateBox'),
+//   {
+//     loading: () => (<Loading isLoading />),
+//     ssr: false
+//   }
+// )
+
 const Discovery = dynamic(
  import('../Discovery'),
   {
@@ -60,7 +68,6 @@ import('../../components/Streams'),
 const TopicTree = dynamic(
 import('../../components/TopicTree'),
   {
-    ssr: false,
     loading: () => (<Loading isLoading />)
   }
 )
