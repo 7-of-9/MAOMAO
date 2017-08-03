@@ -312,6 +312,9 @@ export class HomeStore extends CoreStore {
     const urls = toJS(this.urls)
     const MAX_ITEM = 500
     const totalPage = urls.length / MAX_ITEM
+    if (urls.length === 0) {
+      this.isProcessingHistory = false
+    }
     for (let counter = 0; counter < totalPage; counter += 1) {
       const safeCheckResult = safeBrowsingLoockup(urls.slice(counter * MAX_ITEM, MAX_ITEM * (counter + 1)).map(item => item.href))
       when(

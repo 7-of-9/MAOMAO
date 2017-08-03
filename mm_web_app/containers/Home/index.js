@@ -52,7 +52,8 @@ import('../../components/ShareList'),
 const Streams = dynamic(
 import('../../components/Streams'),
   {
-    loading: () => (<Loading isLoading />)
+    loading: () => (<Loading isLoading />),
+    ssr: false
   }
 )
 

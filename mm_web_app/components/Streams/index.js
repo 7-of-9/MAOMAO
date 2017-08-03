@@ -7,6 +7,7 @@
 import React from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
+import { Section } from 'neal-react'
 import ReactResizeDetector from 'react-resize-detector'
 import Sticky from 'react-sticky-el'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -122,10 +123,6 @@ function parseDomain (link) {
   return url.hostname
 }
 
-const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
-}
-
 @inject('store')
 @inject('ui')
 @observer
@@ -182,18 +179,17 @@ class Streams extends React.Component {
 
   render () {
     // populate urls and users
-    const { urls, users, topics, owners } = toJS(this.props.store)
+    const { urls, users, topics, owners, isInstall } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
     logger.warn('Streams render', urls, users, topics, owners, myUrls)
     if (urls && urls.length === 0) {
-      return (<div className='wrap-main' style={{ textAlign: 'center' }}>
-        <div
-          className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-            >
-          <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
-          <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
-        </div>
-      </div>
+      return (
+        <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
+          { isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3> }
+          <p>
+            Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
+          </p>
+        </Section>
       )
     }
     const items = []
