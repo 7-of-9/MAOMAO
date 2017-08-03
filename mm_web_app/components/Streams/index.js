@@ -122,6 +122,10 @@ function parseDomain (link) {
   return url.hostname
 }
 
+const replaceMMIcon = (desc) => {
+  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
+}
+
 @inject('store')
 @inject('ui')
 @observer
@@ -181,13 +185,24 @@ class Streams extends React.Component {
     const { urls, users, topics, owners } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
     logger.warn('Streams render', urls, users, topics, owners, myUrls)
+    if (urls && urls.length === 0) {
+      return (<div className='wrap-main' style={{ textAlign: 'center' }}>
+        <div
+          className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
+            >
+          <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
+          <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
+        </div>
+      </div>
+      )
+    }
     const items = []
     // TODO: support sort by time or score
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
     this.sortedUrls = filterUrls(urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection)
     /* eslint-disable camelcase */
     const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
-    const myUrlIds = myUrls.map(item => item.url_id)
+    const myUrlIds = myUrls ? myUrls && myUrls.map(item => item.url_id) : []
     logger.warn('currentUrls', currentUrls)
     const { currentUrl, currentWidth, isResize } = this.state
     if (currentUrls && currentUrls.length) {

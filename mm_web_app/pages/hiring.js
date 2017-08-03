@@ -116,6 +116,7 @@ export default class Hiring extends React.Component {
 
   render () {
     const { type } = this.props
+    logger.warn('Hiring render')
     return (
       <div>
         <style dangerouslySetInnerHTML={{ __html: stylesheet }} />

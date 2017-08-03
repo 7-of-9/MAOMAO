@@ -1,5 +1,5 @@
 import React from 'react'
-import { Provider, observer } from 'mobx-react'
+import { Provider } from 'mobx-react'
 import Home from '../containers/Home'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
@@ -7,7 +7,6 @@ import { initDiscoveryStore } from '../stores/discovery'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-@observer
 export default class DiscoveryPage extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req
@@ -53,13 +52,14 @@ export default class DiscoveryPage extends React.Component {
   }
 
   render () {
+    logger.warn('Discovey render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='discovery'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home {...this.store} {...this.uiStore} {...this.discovery} />
+          <Home />
         </div>
       </Provider>
     )
   }
-  }
+}

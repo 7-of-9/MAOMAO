@@ -6,12 +6,11 @@
 
 import React from 'react'
 import dynamic from 'next/dynamic'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import Head from 'next/head'
 import Router from 'next/router'
 import Raven from 'raven-js'
-import { Footer, Page, Section } from 'neal-react'
-import ToggleDisplay from 'react-toggle-display'
+import { Footer, Page } from 'neal-react'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import Loading from '../../components/Loading'
@@ -89,6 +88,8 @@ const replaceMMIcon = (desc) => {
   return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
 }
 
+@inject('store')
+@inject('ui')
 @observer
 class Home extends React.Component {
   state = {
@@ -127,10 +128,63 @@ class Home extends React.Component {
     }
   }
 
+  renderViewer = (currentViewer) => {
+    switch (currentViewer) {
+      case 'share':
+        return (<ShareList />)
+      case 'sharetopic':
+        return (<Share />)
+      case 'discovery':
+        return (<Discovery />)
+      case 'streams':
+      default:
+        return (<Streams />)
+    }
+  }
+
+  renderBaseOnAuthentication = () => {
+    const { isLogin, isProcessing } = this.props.store
+    const { currentViewer, selectedTopics } = this.props.ui
+    if (isLogin) {
+      return (
+        <div className='wrapper-slide'>
+          {this.renderViewer(currentViewer)}
+          <Loading isLoading={isProcessing} />
+        </div>
+      )
+    }
+    const selectedItems = selectedTopics ? selectedTopics.map(item => ({id: item.topicId, name: item.topicName})) : []
+    return (
+      <div>
+        <div className='wrap-main' style={{ textAlign: 'center' }}>
+          <div
+            className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
+            >
+            <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
+            <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
+          </div>
+        </div>
+        <div className='wrapper-slide'>
+          <SelectedPanel
+            total={selectedTopics && selectedTopics.length}
+            items={selectedItems}
+            />
+          {
+               currentViewer !== 'discovery' &&
+               <TopicTree />
+            }
+          {
+              currentViewer === 'discovery' &&
+              <Discovery />
+            }
+        </div>
+      </div>)
+  }
+
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    const { isLogin, isInstall, shareInfo, bgImage, urls, users, isMobile, selectedTopics } = this.props
+    const { shareInfo, bgImage, isMobile } = this.props.store
     if (shareInfo) {
       const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
       if (shareAll) {
@@ -142,8 +196,7 @@ class Home extends React.Component {
       }
     }
     const { hasAddToHome } = this.state
-    logger.warn('Home render')
-    const selectedItems = selectedTopics ? selectedTopics.map(item => ({id: item.topicId, name: item.topicName})) : []
+    logger.warn('Home render', this.props)
     return (
       <Page>
         <Head>
@@ -173,61 +226,7 @@ class Home extends React.Component {
           <script src='/static/vendors/js/addtohomescreen.min.js' />
         </Head>
         <AppHeader />
-        <ToggleDisplay if={!isLogin}>
-          <div className='wrap-main' style={{ textAlign: 'center' }}>
-            <div
-              className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-            >
-              <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
-              <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
-            </div>
-          </div>
-          <div className='wrapper-slide'>
-            <SelectedPanel
-              total={selectedTopics && selectedTopics.length}
-              items={selectedItems}
-            />
-            {
-               this.props.currentViewer !== 'discovery' &&
-               <TopicTree />
-            }
-            {
-              this.props.currentViewer === 'discovery' &&
-              <Discovery />
-            }
-          </div>
-        </ToggleDisplay>
-        <ToggleDisplay if={isLogin}>
-          <div className='wrapper-slide'>
-            {
-                this.props.currentViewer === 'share' &&
-                <ShareList />
-              }
-            {
-                this.props.currentViewer === 'sharetopic' &&
-                <Share />
-              }
-            {
-                this.props.currentViewer === 'discovery' &&
-                <Discovery />
-              }
-            {
-              urls && urls.length > 0 && users && users.length > 0 && this.props.currentViewer === 'streams' &&
-              <Streams />
-              }
-            {
-              urls && urls.length === 0 &&
-              <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
-                {
-                  isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
-                }
-                <p>
-                  Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
-                </p>
-              </Section>
-              }
-          </div>
-        </ToggleDisplay>
+        { this.renderBaseOnAuthentication() }
         {
           isMobile && !hasAddToHome &&
           <AddToHome onClick={this.addToHomeOnMobile} />

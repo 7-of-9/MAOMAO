@@ -1,5 +1,5 @@
 import React from 'react'
-import { Provider, observer } from 'mobx-react'
+import { Provider } from 'mobx-react'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
@@ -7,7 +7,6 @@ import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-@observer
 export default class Invite extends React.Component {
   static async getInitialProps ({ req, query: { code, shareInfo } }) {
     const isServer = !!req
@@ -61,11 +60,12 @@ export default class Invite extends React.Component {
   }
 
   render () {
+    logger.warn('Invite render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='invite'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home {...this.store} {...this.uiStore} {...this.discovery} />
+          <Home />
         </div>
       </Provider>
     )
