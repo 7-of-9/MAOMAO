@@ -30,11 +30,17 @@ export default class Smart extends React.Component {
 
   onLoadIframe = (evt) => {
     logger.warn('onLoadIframe', evt, this.iframe)
-    if (this.iframe) {
-      this.iframe.addEventListener('onbeforeunload', () => {
-        alert('onbeforeunload')
-      })
-      logger.warn('iframe contentWindow', this.iframe.contentWindow)
+    if (this.iframe && this.iframe.contentWindow) {
+      logger.warn('iframe addEventListener click')
+      this.iframe.contentWindow.addEventListener('click', (event) => {
+        logger.warn('iframe click', event)
+        if (event.target && event.target.tagName === 'A') {
+          event.preventDefault()
+          const { href: url, innerText: title } = event.target
+          this.setState(prevState => ({ url, title }))
+        }
+      }, false)
+      logger.warn('iframe contentWindow.location', this.iframe.contentWindow.location)
     }
   }
 
