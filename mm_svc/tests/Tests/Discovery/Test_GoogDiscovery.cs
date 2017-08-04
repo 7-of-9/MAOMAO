@@ -35,9 +35,7 @@ namespace tests.Tests.Discovery
             //if ((page_meta["thumbnail"] = $('meta[name="thumbnail"]').attr('content')))
             //if ((page_meta["image_src"] = $('link[rel="image_src"]').attr('href')))
 
-
-
-            //mm_svc.Discovery.Search_Goog.Search("chess singapore");
+            mm_svc.Discovery.Search_Goog.Search("board games singapore", SmartFinder.SearchTypeNum.GOOG_MAIN, 0, 0, false);
             //mm_svc.Discovery.Search_Goog.Search("chess");
         }
     }

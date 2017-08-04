@@ -24,9 +24,38 @@ namespace mm_svc.Discovery {
             var doc = Browser.Fetch(string.Format(gs_url, term));
 
             // Google.com.sg -- Aug '17
-            var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g"); 
-            foreach (var result_cell in result_cells)
-            {
+            var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g");
+            ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, suggestion, urls, result_cells);
+
+            // todo ... place results don't have any obvious url associated, so they really don't fit well into the current schema
+            //  but obviously extremely cool in principle for MMM...
+            //var places_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_gt");
+            //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, suggestion, urls, places_cells);
+
+            return urls;
+        }
+
+        private static void ProcessPlacesResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, bool suggestion, List<ImportUrlInfo> urls, IEnumerable<HtmlNode> places_cells)
+        {
+            foreach (var place_cell in places_cells) {
+                var rl = place_cell.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_rl").FirstOrDefault();
+
+                var rllt__details = place_cell.Descendants("span").Where(p => p.Attributes["class"]?.Value.Contains("rllt__details") == true).FirstOrDefault();
+                if (rllt__details == null)
+                    continue;
+
+                var rllt__details_divs = rllt__details.Descendants("div");
+                if (rllt__details_divs.Count() < 3)
+                    continue;
+
+                var place_name = rl.InnerText;
+                var place_addr = rllt__details_divs.Skip(2).First().InnerText;
+            }
+        }
+
+        private static void ProcessSearchResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, bool suggestion, List<ImportUrlInfo> urls, IEnumerable<HtmlNode> result_cells)
+        {
+            foreach (var result_cell in result_cells) {
                 //
                 // (1)
                 // get result div
@@ -127,8 +156,6 @@ namespace mm_svc.Discovery {
 
                 urls.Add(url_info);
             }
-
-            return urls;
         }
 
         private static string ParseGoogRedirect(string href)

@@ -85,8 +85,9 @@ namespace mm_svc.Discovery
                 ImportUrls.GetMeta(new_discoveries);
 
                 // save new discoveries
-                var additions = new_discoveries.Select(p => new disc_url() {
+                var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title)).Select(p => new disc_url() {
                     discovered_at_utc = DateTime.UtcNow,
+                    url = p.url,
                     img_url = p.image_url,
                     meta_title = p.meta_title,
                     search_num = (int)p.search_num,

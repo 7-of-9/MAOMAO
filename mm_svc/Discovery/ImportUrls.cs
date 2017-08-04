@@ -13,6 +13,9 @@ namespace mm_svc.Discovery
         {
             Parallel.ForEach(urls, (url_info) => {
                 var doc = Browser.Fetch(url_info.url);
+                if (doc != null)
+                    return;
+
                 var metas = doc.DocumentNode.SelectNodes("//meta/@content");
                 var links = doc.DocumentNode.SelectNodes("//link/@content");
                 var title = doc.DocumentNode.Descendants("title").FirstOrDefault();
@@ -52,6 +55,7 @@ namespace mm_svc.Discovery
                 url_info.image_url = image_url;
                 url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
                 Debug.WriteLine($" >> {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
+
             });
         }
     }
