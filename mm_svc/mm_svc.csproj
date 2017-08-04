@@ -65,7 +65,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Discovery\GOOG.cs" />
+    <Compile Include="Discovery\Search_Goog.cs" />
+    <Compile Include="Discovery\ImportUrlInfo.cs" />
+    <Compile Include="Discovery\ImportUrls.cs" />
+    <Compile Include="Discovery\Browser.cs" />
+    <Compile Include="Discovery\SmartFinder.cs" />
     <Compile Include="Shares\ShareAcceptor.cs" />
     <Compile Include="Shares\ShareCreator.cs" />
     <Compile Include="Shares\ShareInfo.cs" />

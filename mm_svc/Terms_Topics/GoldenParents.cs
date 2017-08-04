@@ -130,7 +130,7 @@ namespace mm_svc.Terms
                     .Where(p => p.t.name != "Contents") // noise
                     .ToList();
 
-            return ret.Where(p => p != null && p.t != null).ToList();
+            return ret.Where(p => p != null && p.t != null && !p.t.IS_TOPIC).ToList();
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
