@@ -237,7 +237,7 @@ function session_update_NLP(session, nlp, page_meta) {
 }
 
 function session_add_IM(session, data, tab) {
-  if (session == null && !tab.active) return;
+  if (session == null || !tab.active) return;
   if (session.hasOwnProperty('track_im')) {
 
     // { TOT: seconds

@@ -781,7 +781,7 @@ function tabNavigated(tabId, changeInfo, tab) {
     if (tab != null) {
       log.info('%c >tabNavigated (chrome.tabs.query callback, tabs.len=' + tabs.length + '): [' + tab.url + ']', events_style_hi);
       // track session 'instances', i.e. every time the session has been navigated to (loaded or tabbed to)
-      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined') {
+      if (changeInfo.status == 'loading' && typeof changeInfo.url != 'undefined' && tab.id === tabId) {
         sessionObservable.activeUrl = changeInfo.url;
         if (process_url(changeInfo.url)) {
           var session = session_get_by_tab(tab, true);
@@ -836,9 +836,10 @@ function tabActivated(o) { // why getting object here?!
   var tabId = o.tabId;
   log.warn('tabActivated: [' + tabId + ']');
   chrome.tabs.get(tabId, function (new_tab) {
-    if (chrome.runtime.lastError)
+    if (chrome.runtime.lastError) {
       log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
-    else if (new_tab != null && new_tab.active) {
+    }
+    if (new_tab != null && new_tab.active) {
       log.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
       // set current tab session
       log.trace('set active url');
@@ -917,21 +918,20 @@ function TOT_start_current_focused() {
     if (chrome.runtime.lastError) {
       log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
     }
-    else {
-      if (tabs.length > 0) {
-        TOT_active_tab = tabs[0];
-        log.trace('set active url');
-        sessionObservable.activeUrl = tabs[0].url;
-        // start TOT for newly focused
-        var new_session = session_get_by_tab(TOT_active_tab, true); //***
-        if (new_session != null) {
-          log.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
-          session_start_TOT(new_session);
-        }
-      } else {
-        log.trace('set active url');
-        sessionObservable.activeUrl = 'N/A';
+
+    if (tabs.length > 0) {
+      TOT_active_tab = tabs[0];
+      log.trace('set active url');
+      sessionObservable.activeUrl = tabs[0].url;
+      // start TOT for newly focused
+      var new_session = session_get_by_tab(TOT_active_tab, true); //***
+      if (new_session != null) {
+        log.warn('windowFocusChanged TOT START (new) [' + new_session.url + ']');
+        session_start_TOT(new_session);
       }
+    } else {
+      log.trace('set active url');
+      sessionObservable.activeUrl = 'N/A';
     }
   });
 }
