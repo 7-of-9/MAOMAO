@@ -68,6 +68,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Tests\Discovery\Test_GoogDiscovery.cs" />
     <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Flow.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Golden.cs" />
@@ -112,6 +113,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\cal_raw_text1.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
