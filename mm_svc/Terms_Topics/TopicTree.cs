@@ -21,6 +21,27 @@ namespace mm_svc.Terms
         }
 
         //
+        // Get topic parents & adjacencies
+        //
+        //public static List<TopicTermLink> GetTopicTreePartial(long topic_id, int parent_height)
+        //{
+        //    using (var db = mm02Entities.Create()) {
+
+        //        // get parent term link
+        //        var parent_link = db.topic_link.Include("term").Include("term1").AsNoTracking().Where(p => p.child_term_id == topic_id && p.disabled == false).FirstOrDefaultNoLock();
+        //        var parent = new TopicTermLink() {
+        //            parent = null,
+        //            topic_id = parent_link.parent_term_id,
+        //            topic_name = parent_link.parent_term.name,
+        //        };
+
+        //        // get children of parent (i.e. direct adjacencies for supplied topic)
+        //        var parent_child_links = db.topic_link.Include("term").Include("term1").AsNoTracking().Where(p => p.parent_term_id == parent.topic_id && p.disabled == false).ToListNoLock();
+
+        //    }
+        //}
+
+        //
         // Get entire topic tree
         //
         public static List<TopicTermLink> GetTopicTree()

@@ -130,7 +130,9 @@ namespace mm_svc.Terms
                     .Where(p => p.t.name != "Contents") // noise
                     .ToList();
 
-            return ret.Where(p => p != null && p.t != null && !p.t.IS_TOPIC).ToList();
+            return ret.Where(p => p != null && p.t != null 
+                            //&& !p.t.IS_TOPIC          // value in letting this algo also work on defined topics - can filter them out after as desired
+                             ).ToList();
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
@@ -190,7 +192,10 @@ namespace mm_svc.Terms
             //grouped_terms.ForEach(p => p.S = p.sum_NSLW / Math.Pow(p.avg_gl_distance, 2)); // naive - sum of NSLWs / inverse square distance
             //grouped_terms.ForEach(p => p.S = p.avg_NSLW / Math.Pow(p.avg_gl_distance, 2)); // avg NSLW (no regard repetitions) / inversely square of distance
             //grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Sqrt(p.avg_gl_distance)); // blend -avg NSLW * sqrt repetitions / inverse root of distance
-            grouped_terms.ForEach(p => p.S = Math.Pow(p.avg_NSLW, 2) * Math.Pow(p.NSLWs.Count, (1.0 / 4.0)) / Math.Pow(p.avg_gl_distance, 1.5)); // blend - sq. avg NSLW *  root 4 repetitions / inverse ~sq. of avg sdistance
+            grouped_terms.ForEach(p => p.S = Math.Pow(p.avg_NSLW, 0.5)             // NS level-weighted
+                                           * Math.Pow(p.NSLWs.Count, 0.75)         // repetitions
+                                           / Math.Pow(p.avg_gl_distance, 1.1));    // inverse avg distance
+
             grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
 
             // cap list for better repeat analaysis -- remove long tail on mega terms
@@ -225,10 +230,10 @@ namespace mm_svc.Terms
             var ordered_terms = grouped_terms.Where(p => p.S != 0).OrderByDescending(p => p.S_norm).ToList();
 
             // dbg
-            //Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
-            //ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
-            //    (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
-            //    $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
+            Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
+                (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
+                $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
 
             return ordered_terms;
         }

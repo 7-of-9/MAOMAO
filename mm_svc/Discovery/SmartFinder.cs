@@ -26,7 +26,7 @@ namespace mm_svc.Discovery
                 var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
 
-                foreach (var user_reg_topic_id in user_reg_topics.Take(1)) {
+                foreach (var user_reg_topic_id in user_reg_topics) { //.Take(1)) {
                     // get term, parents & suggestions
                     var term = db.terms.Find(user_reg_topic_id);
                     var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(user_reg_topic_id, reprocess: true);
@@ -37,8 +37,12 @@ namespace mm_svc.Discovery
                     topics.RemoveAll(p => p.parent_term_id == user_reg_topic_id);
                     topics.ForEach(p => p.S_norm = p.S / topics.Max(p2 => p2.S));
 
-                    topics.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> parent: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
-                    suggestions.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> suggested: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
+                    // topics are actually quite bad -- they are raw gt_parent (PtR) -- we want parents in defined topic_tree instead
+                    //topics.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> parent: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")}"));
+
+                    // suggestions are good -- ADD MAIN TERM TO GOOG SEARCH e.g. "chess + 'strategy'" -- will work well
+                    suggestions.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> suggested: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")} is_topic:{p.parent_term.IS_TOPIC}"));
+                    continue;
 
                     // set term numbers (ordering/priority)
                     int term_num;
