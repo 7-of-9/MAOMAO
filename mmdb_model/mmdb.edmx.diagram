@@ -67,7 +67,7 @@
         <AssociationConnector Association="mm02Model.fk_user_url_user" />
         <EntityTypeShape EntityType="mm02Model.disc_url_osl" Width="1.5" PointX="15.25" PointY="23.25" />
         <EntityTypeShape EntityType="mm02Model.disc_url_cwc" Width="1.5" PointX="15.25" PointY="20.25" />
-        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="13" PointY="19.125" />
+        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="13" PointY="19" />
         <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
         <AssociationConnector Association="mm02Model.FK_disc_url_osl_disc_url" />
         <AssociationConnector Association="mm02Model.FK_disc_url_term" />

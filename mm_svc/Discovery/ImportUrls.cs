@@ -20,7 +20,7 @@ namespace mm_svc.Discovery
                     return;
                 }
 
-                var metas = doc.DocumentNode.SelectNodes("//meta/@content");
+                var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
                 var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
                 var title = doc.DocumentNode.SelectSingleNode("//title");
 
@@ -80,7 +80,8 @@ namespace mm_svc.Discovery
                 var meta_title = title?.InnerText;
 
                 // populate
-                url_info.image_url = image_url;
+                if (!string.IsNullOrEmpty(image_url) && !image_url.StartsWith("/"))
+                    url_info.image_url = HttpUtility.HtmlDecode(image_url);
                 if (!string.IsNullOrEmpty(meta_title))
                     url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
                 else

@@ -80,6 +80,7 @@ warning 6002: The table/view 'mm02.dbo.dbip-city-2016-11' does not have a primar
           <Property Name="term_num" Type="int" Nullable="false" />
           <Property Name="city" Type="nvarchar" MaxLength="128" />
           <Property Name="country" Type="nvarchar" MaxLength="128" />
+          <Property Name="desc" Type="nvarchar" MaxLength="256" />
         </EntityType>
         <EntityType Name="disc_url_cwc">
           <Key>
@@ -2000,6 +2001,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="term_num" Type="Int32" Nullable="false" />
           <Property Name="city" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="country" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="desc" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="disc_url_cwc" Relationship="mm02Model.FK_disc_url_cwc_disc_url" FromRole="disc_url" ToRole="disc_url_cwc" />
           <NavigationProperty Name="disc_url_osl" Relationship="mm02Model.FK_disc_url_osl_disc_url" FromRole="disc_url" ToRole="disc_url_osl" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_disc_url_term" FromRole="disc_url" ToRole="term" />
@@ -2409,6 +2411,7 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <EntitySetMapping Name="disc_url">
             <EntityTypeMapping TypeName="mm02Model.disc_url">
               <MappingFragment StoreEntitySet="disc_url">
+                <ScalarProperty Name="desc" ColumnName="desc" />
                 <ScalarProperty Name="country" ColumnName="country" />
                 <ScalarProperty Name="city" ColumnName="city" />
                 <ScalarProperty Name="term_num" ColumnName="term_num" />

@@ -34,6 +34,7 @@ namespace mmdb_model
         public int term_num { get; set; }
         public string city { get; set; }
         public string country { get; set; }
+        public string desc { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_cwc> disc_url_cwc { get; set; }

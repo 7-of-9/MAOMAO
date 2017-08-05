@@ -15,6 +15,25 @@ namespace mm_svc.Discovery {
     {
         private const string gs_url = "https://www.google.com/search?q={0}{1}"; //&start={1}";
 
+        public enum SearchTypeNum
+        {
+            GOOG_MAIN = 1,           // too general - not relevent enough?
+            GOOG_LOCAL = 2,          // country + city
+            GOOG_DISCUSSION = 3,
+            GOOG_YOUTUBE = 4,
+            GOOG_NEWS = 5,
+            GOOG_COOL = 6,
+            GOOG_TRENDING = 7,
+            GOOG_LOCAL_EVENTS = 8,
+            GOOG_QUORA = 9,
+            GOOG_BUZZFEED = 10,
+            GOOG_MASHABLE = 11,
+            GOOG_MEDIUM = 12,
+            GOOG_YCOMBINATOR = 13,
+            GOOG_VIMEO = 14,
+            GOOG_DAILYMOTION = 15,
+        }
+
         private static string UCaseFirst(string s) {
             if (s.Length > 1) {
                 var r = char.ToUpper(s[0]).ToString();
@@ -57,6 +76,9 @@ namespace mm_svc.Discovery {
             fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
 
             var urls = new List<ImportUrlInfo>();
+            if (!string.IsNullOrEmpty(site_search) && !site_search.EndsWith(" "))
+                site_search = site_search + " ";
+
             for (int page = 0; page < pages; page++) {
 
                 g.LogInfo($">>> GOOG SEARCH: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
