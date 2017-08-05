@@ -12,7 +12,7 @@ const brand = (title, url) => (
   <Header>
     <LogoIcon />
     <Slogan />
-    <h3>{title} ({url})</h3>
+    <p>{title} ({url})</p>
   </Header>
 )
 const brandName = 'maomao'

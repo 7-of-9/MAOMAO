@@ -42,12 +42,11 @@ module.exports = {
     //     return true
     //   }
     // })
-
     if (!dev) {
       config.plugins.push(
         new SWPrecacheWebpackPlugin({
           verbose: true,
-          staticFileGlobsIgnorePatterns: [/\.next\//],
+          staticFileGlobsIgnorePatterns: [/\.next\//, /dist\//],
           runtimeCaching: [
             {
               handler: 'networkFirst',

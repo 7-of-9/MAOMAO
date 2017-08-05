@@ -10,6 +10,7 @@ const { join } = require('path')
 const mobxReact = require('mobx-react')
 const request = require('request')
 const helmet = require('helmet')
+const _ = require('lodash')
 const log = require('loglevel')
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
@@ -24,11 +25,11 @@ const twitter = require('./api/twitter')
 
 log.setLevel(dev ? 'info' : 'error')
 mobxReact.useStaticRendering(true)
-const SENTRY_DNS = 'https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653'
-Raven.config(SENTRY_DNS).install()
+Raven.config('https://REDACTED_SENTRY_DSN@sentry.io/191653').install()
 
 app.prepare().then(() => {
   const server = express()
+  server.use(Raven.requestHandler())
   server.use(compression())
   server.use(helmet())
   server.use(bodyParser.json())
@@ -41,7 +42,6 @@ app.prepare().then(() => {
     httpOnly: true,
     cookie: { maxAge: 604800000 } // week
   }))
-  server.use(Raven.requestHandler())
 
   server.use('/api/auth', auth)
   server.use('/api/email', email)
@@ -58,16 +58,17 @@ app.prepare().then(() => {
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
+    const dirBuild = '.next'
     log.warn('pathname', pathname)
     if (pathname === '/service-worker.js') {
-      const filePath = join(__dirname, '.next', pathname)
+      const filePath = join(__dirname, dirBuild, pathname)
       log.warn('filePath', filePath)
       app.serveStatic(req, res, filePath)
     } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})
-    } else if (pages.includes('hiring') !== -1 || pathname.indexOf('_next') !== -1 ||
+    } else if (_.includes(pages, pathname) || pathname.indexOf('_next') !== -1 ||
      pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
      pathname.indexOf('.') !== -1 || pathname.indexOf('%20') !== -1 ||
      pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1 ||
@@ -77,6 +78,7 @@ app.prepare().then(() => {
     } else {
       // Hack: support FB open graph
       const code = pathname.substr(1)
+      log.warn('code', code)
       request('https://mmapi00.azurewebsites.net/share/info?share_code=' + code, (error, response, body) => {
         if (error) {
           log.error(error)
@@ -86,6 +88,8 @@ app.prepare().then(() => {
       })
     }
   })
+
+  server.use(Raven.errorHandler())
 
   server.listen(port, (err) => {
     if (err) {
