@@ -146,7 +146,7 @@ namespace mm_svc.Discovery
                     search_str = $"{term.name}";
 
                 // main search - too general?
-                //urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));
+                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // local search
                 if (!string.IsNullOrEmpty(user_country) || !string.IsNullOrEmpty(user_city)) {
@@ -170,12 +170,12 @@ namespace mm_svc.Discovery
                 }
 
                 // news search
-                //urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} news", SearchTypeNum.GOOG_NEWS, user_reg_topic_id, term_id, term_num, suggestion));
+                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} news", SearchTypeNum.GOOG_NEWS, user_reg_topic_id, term_id, term_num, suggestion));
 
                 // discussion search
-                //urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));*/
 
-                // cool search -- not so good for chess?
+                // cool search 
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"cool {search_str}", null, SearchTypeNum.GOOG_COOL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
 
                 // trending search
@@ -183,18 +183,6 @@ namespace mm_svc.Discovery
 
                 // local events search
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"events {search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-
-                //
-                // todo  -- want to extract every last ounce of value from goog...
-                //
-                // {term} -- how to get locations? e.g. "board games singapore" // MM mobile location pushes
-                // {term} -- how to get top stories?
-                // site:reddit.com {term}
-                // {term} discussion {country}
-                // {term} meetup {country}
-                // {term} videos
-                // {term} news
-                // {term} + filter 24hours
 
                 urls.ForEach(p => {
                     if (!all_urls.Any(p2 => p2.url == p.url))

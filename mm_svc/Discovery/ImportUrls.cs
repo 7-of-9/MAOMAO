@@ -19,6 +19,7 @@ namespace mm_svc.Discovery
                     g.LogWarn($"got no HAP obj for [{url_info.url}]");
                     return;
                 }
+                return;
 
                 var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
                 var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
@@ -89,6 +90,9 @@ namespace mm_svc.Discovery
                 url_info.meta_title = HttpUtility.HtmlDecode(url_info.meta_title);
                 Debug.WriteLine($" >> {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
 
+                // HAP leaks - this fixes
+                doc = null;
+                GC.Collect();
             });
         }
     }

@@ -18,6 +18,8 @@ namespace mm_svc.Discovery
 
         static Browser()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+
 #if DEBUG
             if (Debugger.IsAttached)
                 TelemetryConfiguration.Active.DisableTelemetry = true;
@@ -47,7 +49,8 @@ namespace mm_svc.Discovery
 
             string html;
             var rnd = new Random();
-            using (var client = new GZipWebClient()) {
+
+            using (var client = new WebClient()) { // GZipWebClient()) {
                 // from: Chrome OSX Version 59.0.3071.115 (Official Build) (64-bit)
                 //if (rnd.NextDouble() < 0.3)
                 //    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";

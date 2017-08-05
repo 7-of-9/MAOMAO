@@ -94,6 +94,10 @@ namespace mm_svc.Discovery {
                 //  but obviously extremely cool in principle for MMM...
                 //var places_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_gt");
                 //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, places_cells);
+
+                // HAP leaks - this fixes
+                doc = null;
+                GC.Collect();
             }
             return urls;
         }
