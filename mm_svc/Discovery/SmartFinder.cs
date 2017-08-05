@@ -21,6 +21,7 @@ namespace mm_svc.Discovery
             GOOG_NEWS = 5,
             GOOG_COOL = 6,
             GOOG_TRENDING = 7,
+            GOOG_LOCAL_EVENTS = 8,
         }
 
         public static int FindForUser(long user_id)
@@ -60,7 +61,7 @@ namespace mm_svc.Discovery
 
                     // discovery: top n suggestions by s_norm -- todo: let people tell us when to increase n (by topic)
                     var opts = new ParallelOptions() { MaxDegreeOfParallelism = 4 };
-                    Parallel.ForEach(suggestions.Take(3), opts, (suggestion) => {
+                    Parallel.ForEach(suggestions.Take(5), opts, (suggestion) => {
                         DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true);
                     });
 
@@ -90,7 +91,7 @@ namespace mm_svc.Discovery
                 ImportUrls.GetMeta(new_discoveries);
 
                 // save new discoveries
-                var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.url.Length < 256).Select(
+                var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.meta_title.Length < 256 && p.url.Length < 256).Select(
                 p => new disc_url() {
                     discovered_at_utc = DateTime.UtcNow,
                     url = p.url,
@@ -111,6 +112,8 @@ namespace mm_svc.Discovery
                         }).ToList(),
                     result_num = p.result_num,
                     term_num = p.term_num,
+                    city = p.city,
+                    country = p.country,
                 }).ToList();
 
                 additions.ForEach(p => { foreach (var cwc in p.disc_url_cwc) cwc.disc_url = p; });
@@ -160,11 +163,14 @@ namespace mm_svc.Discovery
                 //urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));
 
                 // local search
-                if (!string.IsNullOrEmpty(user_country) || !string.IsNullOrEmpty(user_city))
-                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} {user_country} {user_city}", null, SearchTypeNum.GOOG_LOCAL, user_reg_topic_id, term_id, term_num, suggestion, pages: 2));
+                if (!string.IsNullOrEmpty(user_country) || !string.IsNullOrEmpty(user_city)) {
+                    var new_urls = mm_svc.Discovery.Search_Goog.Search($"{search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL, user_reg_topic_id, term_id, term_num, suggestion, pages: 2);
+                    new_urls.ForEach(p => { p.city = user_city; p.country = user_country; });
+                    urls.AddRange(new_urls);
+                }
 
                 // video search
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site: youtube.com", SearchTypeNum.GOOG_VIDEO, user_reg_topic_id, term_id, term_num, suggestion, pages: 3));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site: youtube.com", SearchTypeNum.GOOG_VIDEO, user_reg_topic_id, term_id, term_num, suggestion, pages: 2));
 
                 // news search
                 //urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} news", SearchTypeNum.GOOG_NEWS, user_reg_topic_id, term_id, term_num, suggestion));
@@ -177,6 +183,9 @@ namespace mm_svc.Discovery
 
                 // trending search
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 2));
+
+                // local events search
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"events {search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, user_reg_topic_id, term_id, term_num, suggestion, pages: 3));
 
                 //
                 // todo  -- want to extract every last ounce of value from goog...

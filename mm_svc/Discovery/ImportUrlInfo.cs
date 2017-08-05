@@ -28,6 +28,8 @@ namespace mm_svc.Discovery
 
         public int result_num;
         public int term_num;
+
+        public string city, country;
     }
 
     public class OnsiteLinkInfo

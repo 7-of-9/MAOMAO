@@ -14,7 +14,7 @@ namespace mm_svc.Discovery
         public static void GetMeta(List<ImportUrlInfo> urls)
         {
             Parallel.ForEach(urls, (url_info) => {
-                var doc = Browser.Fetch(url_info.url);
+                var doc = Browser.Fetch(url_info.url, rate_limit: false);
                 if (doc == null) {
                     g.LogWarn($"got no HAP obj for [{url_info.url}]");
                     return;

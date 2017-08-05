@@ -32,6 +32,8 @@ namespace mmdb_model
         public Nullable<bool> suggested_topic { get; set; }
         public int result_num { get; set; }
         public int term_num { get; set; }
+        public string city { get; set; }
+        public string country { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_cwc> disc_url_cwc { get; set; }
