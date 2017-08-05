@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using mm_global;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,32 +7,72 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using static mm_svc.Discovery.SmartFinder;
 
 namespace mm_svc.Discovery {
     public static class Search_Goog
     {
+        private const string gs_url = "https://www.google.com/search?q={0}{1}"; //&start={1}";
 
-        private const string gs_url = "https://www.google.com.sg/search?site=&source=hp&q={0}";
+        private static string UCaseFirst(string s) {
+            if (s.Length > 1) {
+                var r = char.ToUpper(s[0]).ToString();
+                if (s.Length > 1)
+                    r += s.Substring(1);
+                return r;
+            } else return s;
+        }
+        private static string OmmitRandom(string s) {
+            if (s.Length > 6) {
+                var rnd = new Random();
+                var omit_at = rnd.Next(1, s.Length - 2);
+                var r = s.Substring(0, omit_at) + s.Substring(omit_at + 1);
+                return r;
+            } else return s;
+        }
 
-        public static List<ImportUrlInfo> Search(string term,
+        public static List<ImportUrlInfo> Search(string search_term, string site_search,
             SearchTypeNum search_num,
             long user_reg_topic_id,
             long parent_term_id, int term_num,
-            bool suggestion)
+            bool suggestion,
+            int pages = 1)
         {
+            // fuzz search terms
+            var rnd = new Random();
+            var words = search_term.Trim().Split(' ');
+            string fuzzed_search_term = "";
+            foreach (var word in words) {
+                var fuzzed_word = word;
+                if (rnd.NextDouble() < 0.5)
+                    fuzzed_word = UCaseFirst(fuzzed_word);
+                if (rnd.NextDouble() < 0.9)
+                    fuzzed_word = OmmitRandom(fuzzed_word);
+                if (rnd.NextDouble() < 0.1)
+                    fuzzed_word = fuzzed_word.ToUpper();
+                fuzzed_search_term += fuzzed_word + " ";
+            }
+            var ss = fuzzed_search_term.Split(' ').ToList();
+            fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
+
             var urls = new List<ImportUrlInfo>();
-            var doc = Browser.Fetch(string.Format(gs_url, term));
+            for (int page = 0; page < pages; page++) {
 
-            // Google.com.sg -- Aug '17
-            var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g");
-            ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, result_cells);
+                g.LogInfo($">>> GOOG SEARCH: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
+                var doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                if (doc == null)
+                    continue;
 
-            // todo ... place results don't have any obvious url associated, so they really don't fit well into the current schema
-            //  but obviously extremely cool in principle for MMM...
-            //var places_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_gt");
-            //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, places_cells);
+                // Google.com.sg -- Aug '17
+                var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g");
+                ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, result_cells);
 
+                // todo ... place results don't have any obvious url associated, so they really don't fit well into the current schema
+                //  but obviously extremely cool in principle for MMM...
+                //var places_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_gt");
+                //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, places_cells);
+            }
             return urls;
         }
 
@@ -91,15 +132,18 @@ namespace mm_svc.Discovery {
                 var desc = st.InnerText;
                 var title = a.InnerText;
 
+                // new url info
                 Debug.WriteLine($"RES: [{title}] desc=[{desc}] href=[{href}]");
+                if (href.StartsWith("/") && Debugger.IsAttached)
+                    Debugger.Break();
                 var url_info = new ImportUrlInfo() {
                     search_num = search_num,
                     user_reg_topic_id = user_reg_topic_id,
                     parent_term_id = parent_term_id,
                     suggestion = suggestion,
                     url = href,
-                    desc = desc,
-                    title = title,
+                    desc = HttpUtility.HtmlDecode(desc),
+                    title = HttpUtility.HtmlDecode(title),
                     result_num = result_num,
                     term_num = term_num,
                 };
@@ -110,7 +154,7 @@ namespace mm_svc.Discovery {
                     foreach (var osl in onsite_links.Descendants("a")) {
                         var osl_info = new OnsiteLinkInfo() {
                             url_info = url_info,
-                            desc = osl.InnerText,
+                            desc = HttpUtility.HtmlDecode(osl.InnerText),
                             href = ParseGoogRedirect(osl.Attributes["href"]?.Value)
                         };
                         url_info.osl.Add(osl_info);
@@ -152,7 +196,7 @@ namespace mm_svc.Discovery {
 
                         var cwc_info = new CalendarWebContentInfo() {
                             url_info = url_info,
-                            desc = cwc_title,
+                            desc = HttpUtility.HtmlDecode(cwc_title),
                             date = cwc_date,
                             href = cwc_link,
                         };

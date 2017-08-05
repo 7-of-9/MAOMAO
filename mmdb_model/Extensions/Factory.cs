@@ -21,6 +21,9 @@ namespace mmdb_model
             string connectionString = con_str == null ? GetDbConnectionString("mm02Entities") : con_str;
             var db = new mm02Entities(connectionString);
 
+            if (Debugger.IsAttached)
+                db.Database.CommandTimeout = 120;
+
             //db.ObjectContext().ContextOptions.ProxyCreationEnabled = false;
             //db.ObjectContext().ContextOptions.LazyLoadingEnabled = false;
 

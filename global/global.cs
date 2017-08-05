@@ -187,6 +187,11 @@ namespace mm_global
             g.LogLine($"** {msg}");
         }
 
+        public static void LogError(string msg)
+        {
+            g.LogLine($"### {msg}");
+        }
+
         public static string LogStack()
         {
             StringBuilder sb = new StringBuilder();

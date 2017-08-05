@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace mm_svc.Discovery
 {
@@ -84,6 +85,7 @@ namespace mm_svc.Discovery
                     url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
                 else
                     url_info.meta_title = url_info.title;
+                url_info.meta_title = HttpUtility.HtmlDecode(url_info.meta_title);
                 Debug.WriteLine($" >> {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
 
             });

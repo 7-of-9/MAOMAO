@@ -230,10 +230,10 @@ namespace mm_svc.Terms
             var ordered_terms = grouped_terms.Where(p => p.S != 0).OrderByDescending(p => p.S_norm).ToList();
 
             // dbg
-            Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
-            ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
-                (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
-                $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
+            //Trace.WriteLine($"*** R_norm_sd={R_norm_sd.ToString("0.00")} (GL={root_paths.First().First().gl}) [{leaf.t.stemmed}] // {leaf.t.name} - root_paths.Count={root_paths.Count} - levels_to_use={levels_to_use}");
+            //ordered_terms.ForEach(p => Trace.WriteLine($"\t" +
+            //    (p.word_info.Any(p2 => p2.R_norm > MIN_BOOST_R_NORM) ? $"** (A(R_n)={p.word_info.Average(p2 => p2.R_norm).ToString("0.00")}) R_BOOST={p.R_BOOST.ToString("0.00")} " : "                              ") +
+            //    $"S_norm={p.S_norm.ToString("0.00")} [{p.t.stemmed}] [{string.Join(",", p.word_info)}] // {p.t} / S={p.S.ToString("0.00")} avg_NSLW={p.avg_NSLW.ToString("0.00")} (NSLWs={string.Join(",", p.NSLWs.Select(p2 => p2.ToString("0.00")))}) avg_gl_distance={p.avg_gl_distance.ToString("0.0")} (gl_distances={string.Join(",", p.gl_distances)})"));
 
             return ordered_terms;
         }
