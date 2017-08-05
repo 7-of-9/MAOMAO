@@ -19,14 +19,14 @@ namespace mm_svc.Discovery
             GOOG_CITY = 3
         }
 
-        public static void FindForUser(long user_id)
+        public static int FindForUser(long user_id)
         {
             using (var db = mm02Entities.Create()) {
 
                 var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
 
-                foreach (var user_reg_topic_id in user_reg_topics) {
+                foreach (var user_reg_topic_id in user_reg_topics.Take(1)) {
                     // get term, parents & suggestions
                     var term = db.terms.Find(user_reg_topic_id);
                     var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(user_reg_topic_id, reprocess: true);
@@ -40,33 +40,26 @@ namespace mm_svc.Discovery
                     topics.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> parent: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
                     suggestions.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> suggested: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00")}\r\n"));
 
-                    // remove all but top 
+                    // set term numbers (ordering/priority)
+                    int term_num;
+                    term_num = 1; topics.ForEach(p => p.tmp_term_num = term_num++);
+                    term_num = 1; suggestions.ForEach(p => p.tmp_term_num = term_num++);
 
                     // discovery: top 2 topics
                     Parallel.ForEach(topics.Take(2), (topic) => {
-                        DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, topic.parent_term_id, suggestion: false);
+                        DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, topic.parent_term_id, topic.tmp_term_num, suggestion: false);
                     });
 
                     // discovery: top n suggestions by s_norm
                     Parallel.ForEach(suggestions.Where(p => p.S_norm > 0.75), (suggestion) => {
-                        DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, suggestion.parent_term_id, suggestion: true);
+                        DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true);
                     });
 
                     // run discovery for user reg topic term
-                    DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, user_reg_topic_id, suggestion: false);
+                    DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false);
                 }
 
-                // dedupe
-                //var discovered_uniq = discovered_urls.ToList().DistinctBy(p => p.url);
-
-                //var new_discoveries = new List<ImportUrlInfo>();
-                //foreach (var url in discovered_urls) {
-                //    var disc_url = db.disc_url.Where(p => p.url == url.url).FirstOrDefaultNoLock();
-                //    if (disc_url == null) {
-                //        new_discoveries.Add(url);
-                //    }
-                //}
-
+                // find new things
                 var new_discoveries = new List<ImportUrlInfo>();
                 foreach (var url in discovered_urls) {
                     var db_disc_url = db.disc_url.Where(p => // compound uniq key
@@ -95,14 +88,16 @@ namespace mm_svc.Discovery
                     term_id = p.parent_term_id,
                     user_reg_topic_id = p.user_reg_topic_id,
                     disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
-                        date = p2.date,
-                        desc = p2.desc,
-                        href = p2.href,
-                    }).ToList(),
+                            date = p2.date,
+                            desc = p2.desc,
+                            href = p2.href,
+                        }).ToList(),
                     disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
-                        desc = p2.desc,
-                        href = p2.href,
-                    }).ToList(),
+                            desc = p2.desc,
+                            href = p2.href,
+                        }).ToList(),
+                    result_num = p.result_num,
+                    term_num = p.term_num,
                 }).ToList();
 
                 additions.ForEach(p => { foreach (var cwc in p.disc_url_cwc) cwc.disc_url = p; });
@@ -114,12 +109,13 @@ namespace mm_svc.Discovery
                 //    desc = p.desc,
                 //    disc_url_id = p.url_info.
                 //}));
-                db.SaveChangesTraceValidationErrors();
+                int new_rows = db.SaveChangesTraceValidationErrors();
+                return new_rows;
             }
         }
-
       
-        private static void DiscoverForTerm(ConcurrentBag<ImportUrlInfo> all_urls, long user_id, long user_reg_topic_id, long term_id, bool suggestion)
+        private static void DiscoverForTerm(
+            ConcurrentBag<ImportUrlInfo> all_urls, long user_id, long user_reg_topic_id, long term_id, int term_num, bool suggestion)
         {
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(term_id);
@@ -138,11 +134,11 @@ namespace mm_svc.Discovery
                 else
                     search_desc = $"SUGGESTION for [{user_reg_topic.name}]";
 
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, suggestion));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));
                 if (!string.IsNullOrEmpty(user_country))
-                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name} {user_country}", SearchTypeNum.GOOG_COUNTRY, user_reg_topic_id, term_id, suggestion));
+                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name} {user_country}", SearchTypeNum.GOOG_COUNTRY, user_reg_topic_id, term_id, term_num, suggestion));
                 if (!string.IsNullOrEmpty(user_city))
-                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name} {user_city}", SearchTypeNum.GOOG_CITY, user_reg_topic_id, term_id, suggestion));
+                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name} {user_city}", SearchTypeNum.GOOG_CITY, user_reg_topic_id, term_id, term_num, suggestion));
 
                 //
                 // todo  -- want to extract every last ounce of value from goog...

@@ -25,8 +25,10 @@ namespace mm_svc.Discovery
                     g.LogException(wex, $"FAIL: download url=[{url}]");
                     return null;
                 }
-                if (string.IsNullOrEmpty(html))
+                if (string.IsNullOrEmpty(html)) {
+                    g.LogWarn($"got no html for [{url}]");
                     return null;
+                }
             }
             var doc = new HtmlDocument();
             doc.LoadHtml(html);

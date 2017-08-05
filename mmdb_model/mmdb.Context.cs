@@ -52,8 +52,8 @@ namespace mmdb_model
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<dbip_city_2016_11> dbip_city_2016_11 { get; set; }
         public virtual DbSet<user> users { get; set; }
-        public virtual DbSet<disc_url> disc_url { get; set; }
         public virtual DbSet<disc_url_osl> disc_url_osl { get; set; }
         public virtual DbSet<disc_url_cwc> disc_url_cwc { get; set; }
+        public virtual DbSet<disc_url> disc_url { get; set; }
     }
 }

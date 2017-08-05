@@ -25,6 +25,9 @@ namespace mm_svc.Discovery
 
         public List<OnsiteLinkInfo> osl = new List<OnsiteLinkInfo>();
         public List<CalendarWebContentInfo> cwc = new List<CalendarWebContentInfo>();
+
+        public int result_num;
+        public int term_num;
     }
 
     public class OnsiteLinkInfo

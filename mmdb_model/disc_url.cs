@@ -17,8 +17,8 @@ namespace mmdb_model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public disc_url()
         {
-            this.disc_url_osl = new HashSet<disc_url_osl>();
             this.disc_url_cwc = new HashSet<disc_url_cwc>();
+            this.disc_url_osl = new HashSet<disc_url_osl>();
         }
     
         public long id { get; set; }
@@ -30,11 +30,13 @@ namespace mmdb_model
         public Nullable<long> term_id { get; set; }
         public Nullable<int> search_num { get; set; }
         public Nullable<bool> suggested_topic { get; set; }
+        public int result_num { get; set; }
+        public int term_num { get; set; }
     
-        public virtual term term { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<disc_url_osl> disc_url_osl { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_cwc> disc_url_cwc { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_url_osl> disc_url_osl { get; set; }
+        public virtual term term { get; set; }
     }
 }

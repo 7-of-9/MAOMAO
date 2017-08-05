@@ -17,7 +17,7 @@ namespace mm_svc.Discovery {
         public static List<ImportUrlInfo> Search(string term,
             SearchTypeNum search_num,
             long user_reg_topic_id,
-            long parent_term_id,
+            long parent_term_id, int term_num,
             bool suggestion)
         {
             var urls = new List<ImportUrlInfo>();
@@ -25,17 +25,19 @@ namespace mm_svc.Discovery {
 
             // Google.com.sg -- Aug '17
             var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g");
-            ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, suggestion, urls, result_cells);
+            ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, result_cells);
 
             // todo ... place results don't have any obvious url associated, so they really don't fit well into the current schema
             //  but obviously extremely cool in principle for MMM...
             //var places_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_gt");
-            //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, suggestion, urls, places_cells);
+            //ProcessPlacesResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, places_cells);
 
             return urls;
         }
 
-        private static void ProcessPlacesResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, bool suggestion, List<ImportUrlInfo> urls, IEnumerable<HtmlNode> places_cells)
+        private static void ProcessPlacesResults(
+            SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, bool suggestion, int term_num,
+            List<ImportUrlInfo> urls, IEnumerable<HtmlNode> places_cells)
         {
             foreach (var place_cell in places_cells) {
                 var rl = place_cell.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_rl").FirstOrDefault();
@@ -53,9 +55,13 @@ namespace mm_svc.Discovery {
             }
         }
 
-        private static void ProcessSearchResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, bool suggestion, List<ImportUrlInfo> urls, IEnumerable<HtmlNode> result_cells)
+        private static void ProcessSearchResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, int term_num, bool suggestion,
+            List<ImportUrlInfo> urls, IEnumerable<HtmlNode> result_cells)
         {
+            int result_num = 0;
             foreach (var result_cell in result_cells) {
+                result_num++;
+
                 //
                 // (1)
                 // get result div
@@ -91,10 +97,11 @@ namespace mm_svc.Discovery {
                     user_reg_topic_id = user_reg_topic_id,
                     parent_term_id = parent_term_id,
                     suggestion = suggestion,
-
                     url = href,
                     desc = desc,
                     title = title,
+                    result_num = result_num,
+                    term_num = term_num,
                 };
 
                 // on site links
