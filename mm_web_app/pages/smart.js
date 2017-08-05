@@ -44,6 +44,10 @@ export default class Smart extends React.Component {
     }
   }
 
+  onErrorIframe = (evt) => {
+    logger.warn('onErrorIframe', evt, this.iframe)
+  }
+
   openUrlInIframe = (url, name, width = '100%', height = '100%') => {
     const PROXY_URL = '/api/preview'
     const proxyUrl = `${PROXY_URL}?url=${url}`
@@ -59,6 +63,7 @@ export default class Smart extends React.Component {
       allowTransparency
       src={proxyUrl}
       onLoad={this.onLoadIframe}
+      onError={this.onErrorIframe}
       />)
   }
 
