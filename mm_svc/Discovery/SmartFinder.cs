@@ -1,4 +1,5 @@
-﻿using mm_global.Extensions;
+﻿using mm_global;
+using mm_global.Extensions;
 using mm_svc.Terms;
 using mmdb_model;
 using System;
@@ -14,14 +15,39 @@ namespace mm_svc.Discovery
 {
     public static class SmartFinder
     {
-        public static int FindForUser(long user_id)
+        private const int TERM_SEARCH_INTERVAL_HOURS = 1;
+        private const int TERM_SEARCH_BATCH_SIZE = 1;
+
+        // todo -- operate on all [url] parent terms -- problem is country search?
+        public static int FindForAllUrls() {
+            return 0;
+        }
+
+        // runs SF on all a user's browsed topics & suggestions - should allow instant home->discovery nav (good for demo)
+        public static int FindForUserAllBrowsedTopics(long user_id) {
+            using (var db = mm02Entities.Create()) {
+                var user_reg_topics = db.user_url.Where(p => p.user_id == user_id).SelectMany(p => p.url.url_parent_term)
+                                        .Where(p => p.pri == 1 && p.suggested_dynamic == false)
+                                        .Select(p => p.term_id).Distinct().ToListNoLock();
+                var topics_to_search = GetTopicsToSearch(user_reg_topics);
+                return FindForCountryTopics(user_id, topics_to_search);
+            }
+        }
+
+        // runs SF only on user-registered topics
+        public static int FindForUserRegTopics(long user_id) {
+            using (var db = mm02Entities.Create()) {
+                var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
+                var topics_to_search = GetTopicsToSearch(user_reg_topics);
+                return FindForCountryTopics(user_id, topics_to_search);
+            }
+        }
+
+        private static int FindForCountryTopics(long user_id,  List<long> topics_to_search)
         {
             using (var db = mm02Entities.Create()) {
-
-                var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
-
-                foreach (var user_reg_topic_id in user_reg_topics) { //.Take(1)) {
+                foreach (var user_reg_topic_id in topics_to_search) {
                     // get term, parents & suggestions
                     var term = db.terms.Find(user_reg_topic_id);
                     var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(user_reg_topic_id, reprocess: true);
@@ -68,7 +94,7 @@ namespace mm_svc.Discovery
                         if (false == db2.disc_url.Any(p => // compound uniq key
                                                     p.url == url.url
                                           && p.search_num == (int)url.search_num
-                                   && p.user_reg_topic_id == url.user_reg_topic_id
+                                        && p.main_term_id == url.main_term_id
                                              && p.term_id == url.parent_term_id
                                      && p.suggested_topic == url.suggestion)) {
                             new_conc.Add(url);
@@ -91,34 +117,66 @@ namespace mm_svc.Discovery
                     search_num = (int)p.search_num,
                     suggested_topic = p.suggestion,
                     term_id = p.parent_term_id,
-                    user_reg_topic_id = p.user_reg_topic_id,
+                    main_term_id = p.main_term_id,
                     disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
-                            date = p2.date,
-                            desc = p2.desc,
-                            href = p2.href,
-                        }).ToList(),
+                        date = p2.date,
+                        desc = p2.desc,
+                        href = p2.href,
+                    }).ToList(),
                     disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
-                            desc = p2.desc,
-                            href = p2.href,
-                        }).ToList(),
+                        desc = p2.desc,
+                        href = p2.href,
+                    }).ToList(),
                     result_num = p.result_num,
                     term_num = p.term_num,
                     city = p.city,
                     country = p.country,
+                    url_hash = p.url.GetHashCode(),
                 }).ToList();
-
                 additions.ForEach(p => { foreach (var cwc in p.disc_url_cwc) cwc.disc_url = p; });
                 additions.ForEach(p => { foreach (var osl in p.disc_url_osl) osl.disc_url = p; });
                 db.disc_url.AddRange(additions);
 
+                db.disc_term.AddRange(topics_to_search.Select(p => new disc_term() {
+                    term_id = p,
+                    search_utc = DateTime.UtcNow,
+                    added_count = additions.Count,
+                }));
+
                 int new_rows = db.SaveChangesTraceValidationErrors();
+                g.LogInfo($"DONE: {additions.Count} additions for user_id={user_id}");
                 return new_rows;
             }
         }
-      
+
+        // restrict each run to a reasonable batch of terms - prioritize topics never searched
+        private static List<long> GetTopicsToSearch(List<long> topic_ids)
+        {
+            var to_refresh = new ConcurrentBag<long>();
+            var never_searched = new ConcurrentBag<long>();
+            Parallel.ForEach(topic_ids, (topic_id) => {
+                using (var db2 = mm02Entities.Create()) {
+                    var last_search = db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock();
+                    if (last_search != null) {
+                        var since_last_search = DateTime.UtcNow.Subtract(last_search.search_utc);
+                        if (since_last_search.TotalHours >= TERM_SEARCH_INTERVAL_HOURS)
+                            to_refresh.Add(topic_id);
+                    }
+                    else never_searched.Add(topic_id);
+                }
+            });
+            var topics_to_search = never_searched.OrderBy(p => p).Union(to_refresh.OrderBy(p => p)).Take(TERM_SEARCH_BATCH_SIZE).ToList();
+            return topics_to_search;
+        }
+
         private static void DiscoverForTerm(
             ConcurrentBag<ImportUrlInfo> all_urls, long user_id, long user_reg_topic_id, long term_id, int term_num, bool suggestion)
         {
+            if (Search_Goog.goog_rate_limit_hit == true) {
+                g.LogError($"Search_Goog.goog_rate_limit_hit == true: aborting.");
+                return;
+            }
+
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(term_id);
                 var user_reg_topic = db.terms.Find(user_reg_topic_id);
@@ -148,11 +206,17 @@ namespace mm_svc.Discovery
                 // main search - too general?
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
-                // local search
+                // local searches
                 if (!string.IsNullOrEmpty(user_country) || !string.IsNullOrEmpty(user_city)) {
-                    var new_urls = mm_svc.Discovery.Search_Goog.Search($"{search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1);
-                    new_urls.ForEach(p => { p.city = user_city; p.country = user_country; });
-                    urls.AddRange(new_urls);
+                    // general local
+                    var gen_local = mm_svc.Discovery.Search_Goog.Search($"{search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1);
+                    gen_local.ForEach(p => { p.city = user_city; p.country = user_country; });
+                    urls.AddRange(gen_local);
+
+                    // events local
+                    var events_local = mm_svc.Discovery.Search_Goog.Search($"events {search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, user_reg_topic_id, term_id, term_num, suggestion, pages: 1);
+                    events_local.ForEach(p => { p.city = user_city; p.country = user_country; });
+                    urls.AddRange(events_local);
                 }
 
                 // site searches
@@ -176,13 +240,11 @@ namespace mm_svc.Discovery
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // cool search 
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"cool {search_str}", null, SearchTypeNum.GOOG_COOL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
 
-                // trending search
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                // trending search -- not good: goog itself handles this to a large extent
+                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
 
-                // local events search
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"events {search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
 
                 urls.ForEach(p => {
                     if (!all_urls.Any(p2 => p2.url == p.url))

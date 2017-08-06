@@ -26,7 +26,7 @@ namespace mmdb_model
         public string meta_title { get; set; }
         public Nullable<System.DateTime> discovered_at_utc { get; set; }
         public string img_url { get; set; }
-        public Nullable<long> user_reg_topic_id { get; set; }
+        public Nullable<long> main_term_id { get; set; }
         public Nullable<long> term_id { get; set; }
         public Nullable<int> search_num { get; set; }
         public Nullable<bool> suggested_topic { get; set; }
@@ -35,11 +35,13 @@ namespace mmdb_model
         public string city { get; set; }
         public string country { get; set; }
         public string desc { get; set; }
+        public int url_hash { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_cwc> disc_url_cwc { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_osl> disc_url_osl { get; set; }
         public virtual term term { get; set; }
+        public virtual term term1 { get; set; }
     }
 }

@@ -13,7 +13,8 @@ using static mm_svc.Discovery.SmartFinder;
 namespace mm_svc.Discovery {
     public static class Search_Goog
     {
-        private const string gs_url = "https://www.google.com/search?q={0}{1}"; //&start={1}";
+        private const string gs_url = "https://www.google.com/search?q={0}{1}&start={2}";
+        public static bool goog_rate_limit_hit = false;
 
         public enum SearchTypeNum
         {
@@ -58,6 +59,9 @@ namespace mm_svc.Discovery {
             bool suggestion,
             int pages = 1)
         {
+            if (goog_rate_limit_hit == true)
+                return null;
+
             // fuzz search terms
             var rnd = new Random();
             var words = search_term.Trim().Split(' ');
@@ -72,8 +76,8 @@ namespace mm_svc.Discovery {
                     fuzzed_word = fuzzed_word.ToUpper();
                 fuzzed_search_term += fuzzed_word + " ";
             }
-            var ss = fuzzed_search_term.Split(' ').ToList();
-            fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
+            //var ss = fuzzed_search_term.Split(' ').ToList();
+            //fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
 
             var urls = new List<ImportUrlInfo>();
             if (!string.IsNullOrEmpty(site_search) && !site_search.EndsWith(" "))
@@ -82,7 +86,16 @@ namespace mm_svc.Discovery {
             for (int page = 0; page < pages; page++) {
 
                 g.LogInfo($">>> GOOG SEARCH: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
-                var doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                HtmlDocument doc = null;
+                try {
+                    doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                }
+                catch (ApplicationException aex) {
+                    if (aex.Message == "RATE LIMIT HIT") {
+                        goog_rate_limit_hit = true;
+                        return null;
+                    }
+                }
                 if (doc == null)
                     continue;
 
@@ -160,11 +173,11 @@ namespace mm_svc.Discovery {
 
                 // new url info
                 Debug.WriteLine($"RES: [{title}] desc=[{desc}] href=[{href}]");
-                if (href.StartsWith("/") && Debugger.IsAttached)
-                    Debugger.Break();
+                //if (href.StartsWith("/") && Debugger.IsAttached)
+                //    Debugger.Break();
                 var url_info = new ImportUrlInfo() {
                     search_num = search_num,
-                    user_reg_topic_id = user_reg_topic_id,
+                    main_term_id = user_reg_topic_id,
                     parent_term_id = parent_term_id,
                     suggestion = suggestion,
                     url = href,

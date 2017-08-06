@@ -72,6 +72,7 @@ namespace mm_svc.Discovery
                 catch (WebException wex) {
                     if (wex.Message.Contains("503") && rate_limit) {
                         g.LogError(" **** 503 RATE LIMIT !! ****");
+                        throw new ApplicationException("RATE LIMIT HIT");
                     }
                     g.LogException(wex, $"FAIL: download url=[{url}]");
                     return null;

@@ -55,5 +55,6 @@ namespace mmdb_model
         public virtual DbSet<disc_url_osl> disc_url_osl { get; set; }
         public virtual DbSet<disc_url_cwc> disc_url_cwc { get; set; }
         public virtual DbSet<disc_url> disc_url { get; set; }
+        public virtual DbSet<disc_term> disc_term { get; set; }
     }
 }

@@ -13,14 +13,25 @@ namespace tests.Tests.Discovery
     public class Test_GoogDiscovery
     {
         [TestMethod]
-        public void SmartFind_Test0()
+        public void SmartFind_UserRegTopics_Test0()
         {
-            var new_rows = SmartFinder.FindForUser(20);
+            var new_rows = SmartFinder.FindForUserRegTopics(20);
         }
 
+        [TestMethod]
+        public void SmartFind_UserBrowsedUrls_Test1()
+        {
+            var new_rows = SmartFinder.FindForUserAllBrowsedTopics(20);
+        }
 
         [TestMethod]
-        public void GoogDiscovery_Test0()
+        public void GoogSearch_Image()
+        {
+            var new_rows = Search_GoogImage.Search("nature");
+        }
+
+        [TestMethod]
+        public void GoogDiscovery_Test2()
         {
             // next: pipeline for importing + wiring up svr-discovery
             // {term} {country} -- how to get images for plain results? og tags et al - would be part of processing stream

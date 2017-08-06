@@ -12,7 +12,7 @@ namespace mm_svc.Discovery
     {
         public string url;
         public SearchTypeNum search_num;
-        public long user_reg_topic_id;
+        public long main_term_id;
         public long parent_term_id;
         public bool suggestion;
 

@@ -74,6 +74,9 @@
     <Compile Include="dbip_city_2016_11.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="disc_term.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="disc_url.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

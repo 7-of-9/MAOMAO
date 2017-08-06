@@ -19,7 +19,6 @@ namespace mm_svc.Discovery
                     g.LogWarn($"got no HAP obj for [{url_info.url}]");
                     return;
                 }
-                return;
 
                 var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
                 var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
@@ -68,7 +67,6 @@ namespace mm_svc.Discovery
 
                 var link_rel_shortcut_icon_196 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "196x196").FirstOrDefault())?.Attributes["href"]?.Value;
                 var link_rel_shortcut_icon_128 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "128x128").FirstOrDefault())?.Attributes["href"]?.Value;
-
 
                 //page_meta["ip_thumbnail_url"] = $('link[itemprop="thumbnailUrl"]').attr('href') || ""; // todo
 
