@@ -9,11 +9,11 @@ namespace mm_svc.Images
 {
     public static class ImageNames
     {
-        public static string GetTermFilename_Jpeg(term t) {
+        public static string GetTermFilename(term t) {
             return $"t_{t.id}_{t.name.Replace(" ", "")}";
         }
 
-        public static string GetSiteFilename_Jpeg(awis_site s) {
+        public static string GetSiteFilename(awis_site s) {
             return $"s_{s.id}_{s.TLD.Replace(".", "-")}";
         }
     }

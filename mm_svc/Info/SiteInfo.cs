@@ -13,6 +13,7 @@ using mm_svc.Discovery;
 using mm_svc.Images;
 using System.Threading;
 using System.Windows.Forms;
+using mm_svc.Util.Utils;
 
 namespace mm_svc
 {
@@ -92,11 +93,14 @@ namespace mm_svc
                 Application.DoEvents();
                 using (var db2 = mm02Entities.Create()) {
                     var db_site2 = db2.awis_site.Find(site.id);
-                    var file_name = ImageNames.GetSiteFilename_Jpeg(db_site2);
-                    var master_file_name = file_name + "_M1.jpeg";
-                    if (!AzureFile.Exists(master_file_name)) {
-                        if (Search_GoogImage.Search($"{site.TLD} website logo", file_name, 1, 0, clipart: true) > 0) {
-                            db_site2.logo_file_name = master_file_name;
+                    var filename = ImageNames.GetSiteFilename(db_site2);
+                    var master_jpeg = filename + "_M1.jpeg";
+                    var master_png = filename + "_M1.png";
+                    if (!AzureFile.Exists(master_jpeg) && !AzureFile.Exists(master_png)) {
+                        var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
+                        var saved = Search_GoogImage.Search($"{trimmed_tld}", filename, 1, 0, clipart: true);
+                        if (saved.Count > 0) { 
+                            db_site2.logo_file_name = saved[0];
                             db2.SaveChangesTraceValidationErrors();
                         }
                     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using mm_svc.Discovery;
+using mm_svc.Util.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,14 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void GoogSearch_Image()
         {
-            var new_rows = Search_GoogImage.Search("nature");
+            var a = TldTitle.GetPartialTldNameWithSuffix("blah.com");
+            var b = TldTitle.GetPartialTldNameWithSuffix("www.blah.com");
+            var c = TldTitle.GetPartialTldNameWithSuffix("www.blah.co.uk");
+            var d = TldTitle.GetPartialTldNameWithSuffix("blah.co.uk");
+            var e = TldTitle.GetPartialTldNameWithSuffix("dev.blah.co.uk");
+            var f = TldTitle.GetPartialTldNameWithSuffix("dev.blah.ie");
+
+            var new_rows = Search_GoogImage.Search("www.meetup.com logo", null, 0, 0, true);
         }
 
         [TestMethod]

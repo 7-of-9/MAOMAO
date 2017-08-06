@@ -57,5 +57,22 @@ namespace mm_svc.Util.Utils
             // e.g. "Bangkok Post" 
             return s;
         }
+
+        // e.g. "en.wikipedia.org" -> "wikipedia.org"
+        // used for google image finding for sites
+        public static string GetPartialTldNameWithSuffix(string tld)
+        {
+            if (tld.Contains(".") && !tld.Contains(" ")) {
+                var matching_suffixes = TldSuffixes.all.Where(p => tld.ltrim().EndsWith("." + p.ltrim())).OrderByDescending(p => p.Length);
+                if (matching_suffixes.Count() > 0) {
+                    var suffix_start_ndx = tld.ltrim().IndexOf(matching_suffixes.First());
+                    var tld_without_suffix = tld.Substring(0, tld.Length - matching_suffixes.First().Length - 1);
+                    var last_dot_left_of_suffix = tld_without_suffix.LastIndexOf('.');
+                    var ret = tld.Substring(last_dot_left_of_suffix + 1);
+                    return ret;
+                }
+            }
+            return tld;
+        }
     }
 }

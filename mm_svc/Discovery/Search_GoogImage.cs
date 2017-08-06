@@ -17,14 +17,14 @@ namespace mm_svc.Discovery
 
     public static class Search_GoogImage
     {
-        private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}";
+        private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
-        public static int Search(
-            string search_term, string file_name = null, int save_top_count = 6, int save_white_count = 2, bool clipart = false)
+        public static List<string> Search(
+            string search_term, string filename = null, int save_top_count = 6, int save_white_count = 2, bool clipart = false)
         {
-            var saved_count = 0;
+            var saved = new List<string>();
             if (Search_Goog.goog_rate_limit_hit == true)
-                return 0;
+                return saved;
 
             lock (Browser.lock_obj) {
                 while (DateTime.Now.Subtract(Browser.last_access).TotalSeconds < Browser.min_seconds_between_requests) {
@@ -32,7 +32,7 @@ namespace mm_svc.Discovery
                 }
             }
 
-            var tbs = clipart ? "&tbs=itp:clipart" : "";
+            var tbs = clipart ? "&tbs=itp:clipart" : ""; // &gs_l=psy-ab.3...49755.50083.0.50178.4.4.0.0.0.0.66.162.4.4.0....0...1.1.64.psy-ab..0.0.0.aXqKsUacjFc" : "";
             var url = string.Format(gs_url, search_term, tbs);
             var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
 
@@ -44,11 +44,15 @@ namespace mm_svc.Discovery
                 foreach (var img in imgs) {
                     var src = img.Attributes["src"]?.Value;
                     if (!string.IsNullOrEmpty(src)) {
-                        var search = "data:image/jpeg;base64,";
-                        if (src.StartsWith(search)) {
-                            if (!string.IsNullOrEmpty(file_name)) {
+                        var jpeg_header = "data:image/jpeg;base64,";
+                        var png_header = "data:image/png;base64,";
+                        var jpeg = src.StartsWith(jpeg_header);
+                        var png = src.StartsWith(png_header);
+                        if (jpeg || png) {
+                            if (!string.IsNullOrEmpty(filename)) {
 
-                                var base64 = src.Substring(search.Length);
+                                var header = jpeg ? jpeg_header : png_header;
+                                var base64 = src.Substring(header.Length);
                                 var bytes = Convert.FromBase64String(base64);
                                 Image image = null;
                                 try {
@@ -61,14 +65,21 @@ namespace mm_svc.Discovery
                                     if (image != null) {
                                         using (Bitmap bmp = new Bitmap(image)) {
                                             var tl = bmp.GetPixel(0, 0);
+                                            var ext = jpeg ? ".jpeg" : ".png";
+                                            var content_type = jpeg ? "image/jpeg" : "image/png";
 
                                             // save first n images
-                                            if (++img_ndx <= save_top_count)
-                                                saved_count += Images.AzureFile.Save(bytes, file_name + $"_M{img_ndx}.jpeg", "image/jpeg");
+                                            if (++img_ndx <= save_top_count) {
+                                                var full_filename = filename + $"_M{img_ndx}{ext}";
+                                                Images.AzureFile.Save(bytes, full_filename, content_type);
+                                                saved.Add(full_filename);
+                                            }
 
                                             // separate first n white backg images too too
                                             if (got_whites < save_white_count && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
-                                                saved_count += Images.AzureFile.Save(bytes, file_name + $"_W{++got_whites}.jpeg", "image/jpeg");
+                                                var full_filename = filename + $"_W{++got_whites}{ext}";
+                                                Images.AzureFile.Save(bytes, full_filename, content_type);
+                                                saved.Add(full_filename);
                                             }
                                             if (got_whites == save_white_count && img_ndx >= save_top_count)
                                                 break;
@@ -88,7 +99,7 @@ namespace mm_svc.Discovery
                 doc = null;
                 GC.Collect();
             }
-            return saved_count;
+            return saved;
         }
     }
 }
