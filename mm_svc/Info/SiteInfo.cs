@@ -96,9 +96,10 @@ namespace mm_svc
                     var filename = ImageNames.GetSiteFilename(db_site2);
                     var master_jpeg = filename + "_M1.jpeg";
                     var master_png = filename + "_M1.png";
+
                     if (!AzureFile.Exists(master_jpeg) && !AzureFile.Exists(master_png)) {
                         var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
-                        var saved = Search_GoogImage.Search($"{trimmed_tld}", filename, 1, 0, clipart: true);
+                        var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", filename, 1, 0, clipart: true);
                         if (saved.Count > 0) { 
                             db_site2.logo_file_name = saved[0];
                             db2.SaveChangesTraceValidationErrors();

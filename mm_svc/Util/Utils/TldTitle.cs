@@ -68,9 +68,15 @@ namespace mm_svc.Util.Utils
                     var suffix_start_ndx = tld.ltrim().IndexOf(matching_suffixes.First());
                     var tld_without_suffix = tld.Substring(0, tld.Length - matching_suffixes.First().Length - 1);
                     var last_dot_left_of_suffix = tld_without_suffix.LastIndexOf('.');
-                    var ret = tld.Substring(last_dot_left_of_suffix + 1, tld.Length - matching_suffixes.First().Length - last_dot_left_of_suffix - 1);
-                    if (ret.EndsWith("."))
-                        ret = ret.Substring(0, ret.Length - 1);
+
+                    // without suffix:
+                    //var ret = tld.Substring(last_dot_left_of_suffix + 1, tld.Length - matching_suffixes.First().Length - last_dot_left_of_suffix - 1);
+                    //if (ret.EndsWith("."))
+                    //    ret = ret.Substring(0, ret.Length - 1);
+
+                    // with suffix:
+                    var ret = tld.Substring(last_dot_left_of_suffix + 1);
+
                     return ret;
                 }
             }

@@ -1,18 +1,33 @@
 select * from [user]
 select * from user_reg_topic
-select * from [term] where name = 'buddhism'
+select * from [term] where id = 4990960 --name = 'buddhism'
 
 insert into user_reg_topic values (20, 5032082) -- dom
+
+-- all browsed topics for user
+select distinct term_id, t.name --  (select meta_title from [url] where id=url_id) 'meta_title', t.name, *
+from url_parent_term, term t, user_url uu where suggested_dynamic in (0) and pri in (1) and t.id = term_id  and uu.url_id = url_parent_term.url_id and uu.user_id = 20
+--and url_id in (select url_id from user_url where [user_id] = 15) -- dung // -- Software architecture / Feminism / Computer programming / Artificial intelligence
 
 /* delete from disc_url_cwc
 delete from disc_url_osl
 delete from disc_url */
-select (select [name] from [term] where id=user_reg_topic_id) 'main', (select [name] from [term] where id=term_id) 'term',
-  [url], [desc], meta_title, img_url, search_num, term_num, result_num, city, country  from disc_url where search_num = 13
-  order by user_reg_topic_id, term_id, search_num, term_num, result_num
+select *, t.name from disc_term, term t where t.id = term_id order by 1 desc -- delete from disc_term
+
+select (select [name] from [term] where id=main_term_id) 'main', (select [name] from [term] where id=term_id) 'term',
+  [url], [desc], meta_title, img_url, search_num, term_num, result_num, city, country, url_hash from disc_url where main_term_id = 4990960
+  order by main_term_id, term_id, search_num, term_num, result_num
 
 select * from disc_url_cwc
 select * from disc_url_osl
+
+-- retrieving for term: interleaving of search types; consistent ordering
+select top 10 --HashBytes('MD5', [url]), 
+     * from disc_url where main_term_id = 5010985
+
+-- others
+
+-- goog image search: for topics, also for websites
 
 https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968
 <meta name="ICBM" content="1.3,103.85" />
@@ -20,11 +35,3 @@ https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968
 <meta name="geo.placename" content="Singapore, Singapore" />
 <meta name="geo.region" content="SG" />
 
--- site:buzzfeed.com chess {no suggestions}
--- site:mashable.com chess {no suggestions}
-
--- site:medium.com chess strategy
--- site:ycombinator.com chess strategy
-
--- site:vimeo.com 
--- site:dailymotion.com
