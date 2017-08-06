@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace tests.Maintenance
+namespace Maintenance
 {
     [TestClass]
     public class TopicTreeImages
@@ -19,7 +19,6 @@ namespace tests.Maintenance
         public void MM_Images_FetchForTopicTree()
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
-
             var tree = TopicTree.GetTopicTree();
             tree.ForEach(p => ProcessImages(p));
         }
@@ -29,7 +28,7 @@ namespace tests.Maintenance
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(link.topic_id);
                 var file_name = TermImages.GetFilenameJpeg(term);
-                if (!AzureFile.Exists(file_name + ".jpeg")) {
+                if (!AzureFile.Exists(file_name + "_M1.jpeg")) {
                     Search_GoogImage.Search(term.name, file_name);
                 }
             }

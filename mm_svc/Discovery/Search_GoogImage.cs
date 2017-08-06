@@ -63,8 +63,7 @@ namespace mm_svc.Discovery
 
             var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
             var img_ndx = 0;
-            //var got_black = false;
-            var got_white = false;
+            var got_whites = 0;
             foreach (var img in imgs) {
                 img_ndx++;
                 var src = img.Attributes["src"]?.Value;
@@ -87,19 +86,20 @@ namespace mm_svc.Discovery
                                     using (Bitmap bmp = new Bitmap(image)) {
                                         var tl = bmp.GetPixel(0, 0);
 
-                                        if (img_ndx == 1) // always save first image
-                                            Images.AzureFile.Save(bytes, file_name + ".jpeg", "image/jpeg");
+                                        if (img_ndx < 6) // always save first n images
+                                            Images.AzureFile.Save(bytes, file_name + $"_M{img_ndx}.jpeg", "image/jpeg");
 
-                                        else { // save first black and first white backg images also
+                                        // separate first n white backg images too too
+                                        else
+                                        { 
                                             //if (!got_black && tl.R == 0 && tl.G == 0 && tl.B == 0) {
                                             //    Images.AzureFile.Save(bytes, file_name + "_B.jpeg", "image/jpeg");
                                             //    got_black = true;
                                             //}
-                                            if (!got_white && tl.R == 0xff && tl.G == 0xff && tl.B == 0xff) {
-                                                Images.AzureFile.Save(bytes, file_name + "_W.jpeg", "image/jpeg");
-                                                got_white = true;
+                                            if (got_whites < 4 && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
+                                                Images.AzureFile.Save(bytes, file_name + $"_W{++got_whites}.jpeg", "image/jpeg");
                                             }
-                                            if (got_white)// && got_black)
+                                            if (got_whites == 2 && img_ndx >= 6)
                                                 break;
                                         }
                                     }
@@ -110,9 +110,9 @@ namespace mm_svc.Discovery
                 }
             }
 
-            if (!got_white) {
-                throw new ApplicationException($"failed to get white image for {search_term}");
-            }
+            //if (got_whites == 0) {
+            //    throw new ApplicationException($"failed to get white image for {search_term}");
+            //}
             return null;
         }
     }

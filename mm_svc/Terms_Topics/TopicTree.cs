@@ -86,7 +86,7 @@ namespace mm_svc.Terms
                         }
                     }
                     else {
-                        Debug.WriteLine($"skipping {link.child_term.name} - already in parent tree.");
+                        ; // Debug.WriteLine($"skipping {link.child_term.name} - already in parent tree.");
                     }
                 }
             }
