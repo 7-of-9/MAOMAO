@@ -3,6 +3,7 @@ using mm_global;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace mm_svc.Discovery
     {
         private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch&q={0}";
 
-        public static List<string> Search(string search_term)
+        public static List<string> Search(string search_term, string file_name = null)
         {
             if (Search_Goog.goog_rate_limit_hit == true)
                 return null;
@@ -61,22 +62,56 @@ namespace mm_svc.Discovery
             //}
 
             var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
+            var img_ndx = 0;
+            //var got_black = false;
+            var got_white = false;
             foreach (var img in imgs) {
+                img_ndx++;
                 var src = img.Attributes["src"]?.Value;
                 if (!string.IsNullOrEmpty(src)) {
                     var search = "data:image/jpeg;base64,";
                     if (src.StartsWith(search)) {
-                        var base64 = src.Substring(search.Length);
-                        var bytes = Convert.FromBase64String(base64);
-                        using (var imageFile = new FileStream($"c:\\temp\\{search_term.Replace(" ", "_")}.jpeg", FileMode.Create)) {
-                            imageFile.Write(bytes, 0, bytes.Length);
-                            imageFile.Flush();
+                        if (!string.IsNullOrEmpty(file_name)) {
 
-                            Images.Azure.Save(bytes, "test.jpeg", "image/jpeg");
+                            var base64 = src.Substring(search.Length);
+                            var bytes = Convert.FromBase64String(base64);
+                            Image image = null;
+                            try {
+                                MemoryStream ms = new MemoryStream(bytes, 0, bytes.Length);
+                                ms.Write(bytes, 0, bytes.Length);
+                                image = Image.FromStream(ms, true);
+                            }
+                            catch { }
+                            using (image) {
+                                if (image != null) {
+                                    using (Bitmap bmp = new Bitmap(image)) {
+                                        var tl = bmp.GetPixel(0, 0);
+
+                                        if (img_ndx == 1) // always save first image
+                                            Images.AzureFile.Save(bytes, file_name + ".jpeg", "image/jpeg");
+
+                                        else { // save first black and first white backg images also
+                                            //if (!got_black && tl.R == 0 && tl.G == 0 && tl.B == 0) {
+                                            //    Images.AzureFile.Save(bytes, file_name + "_B.jpeg", "image/jpeg");
+                                            //    got_black = true;
+                                            //}
+                                            if (!got_white && tl.R == 0xff && tl.G == 0xff && tl.B == 0xff) {
+                                                Images.AzureFile.Save(bytes, file_name + "_W.jpeg", "image/jpeg");
+                                                got_white = true;
+                                            }
+                                            if (got_white)// && got_black)
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
                         }
-
                     }
                 }
+            }
+
+            if (!got_white) {
+                throw new ApplicationException($"failed to get white image for {search_term}");
             }
             return null;
         }

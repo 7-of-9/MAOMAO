@@ -1,0 +1,39 @@
+﻿using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using mm_svc.Discovery;
+using mm_svc.Images;
+using mm_svc.Terms;
+using mmdb_model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace tests.Maintenance
+{
+    [TestClass]
+    public class TopicTreeImages
+    {
+        [TestMethod]
+        public void MM_Images_FetchForTopicTree()
+        {
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+
+            var tree = TopicTree.GetTopicTree();
+            tree.ForEach(p => ProcessImages(p));
+        }
+
+        private void ProcessImages(TopicTree.TopicTermLink link)
+        {
+            using (var db = mm02Entities.Create()) {
+                var term = db.terms.Find(link.topic_id);
+                var file_name = TermImages.GetFilenameJpeg(term);
+                if (!AzureFile.Exists(file_name + ".jpeg")) {
+                    Search_GoogImage.Search(term.name, file_name);
+                }
+            }
+            link.children.ForEach(p => ProcessImages(p));
+        }
+    }
+}

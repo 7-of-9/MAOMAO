@@ -1,9 +1,11 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using mm_global;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,14 +14,14 @@ namespace mm_svc.Images
 {
     // http://www.wintellect.com/devcenter/rrobinson/azure-bits-2-saving-the-image-to-azure-blob-storage
 
-    public static class Azure
+    public static class AzureFile
     {
         
         private static string _imageRootPath;
         private static string _containerName;
         private static string _blobStorageConnectionString;
 
-        static Azure()
+        static AzureFile()
         {
             _imageRootPath = ConfigurationManager.AppSettings["ImageRootPath"];
             _containerName = ConfigurationManager.AppSettings["ImagesContainer"];
@@ -33,6 +35,19 @@ namespace mm_svc.Images
             blockBlob.Properties.ContentType = content_type;
 
             blockBlob.UploadFromByteArray(data, 0, data.Length);
+            g.LogInfo($"saved Azure file: {file_name}");
+        }
+
+        public static bool Exists(string file_name)
+        {
+            var container = GetImagesBlobContainer();
+            var blob = container.GetBlockBlobReference(file_name);
+            try {
+                blob.FetchAttributes();
+                return true;
+            } catch (StorageException e) {
+                return false;
+            }
         }
 
         private static CloudBlobContainer GetImagesBlobContainer()
