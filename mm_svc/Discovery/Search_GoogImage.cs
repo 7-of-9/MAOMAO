@@ -32,7 +32,7 @@ namespace mm_svc.Discovery
                 }
             }
 
-            var tbs = clipart ? "&tbs=itp:clipart" : ""; // &gs_l=psy-ab.3...49755.50083.0.50178.4.4.0.0.0.0.66.162.4.4.0....0...1.1.64.psy-ab..0.0.0.aXqKsUacjFc" : "";
+            var tbs = clipart ? "&tbs=itp:clipart" : "&tbs=itp:photo";
             var url = string.Format(gs_url, search_term, tbs);
             var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
 
