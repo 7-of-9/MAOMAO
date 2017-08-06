@@ -56,8 +56,11 @@ namespace tests.Tests.Discovery
             //if ((page_meta["thumbnail"] = $('meta[name="thumbnail"]').attr('content')))
             //if ((page_meta["image_src"] = $('link[rel="image_src"]').attr('href')))
 
-            var urls = mm_svc.Discovery.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
-            ImportUrls.GetMeta(urls, max_parallel: 2);
+            var urls = mm_svc.Discovery.Search_Goog.Search("history", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            ImportUrls.GetMeta(urls, max_parallel: 4);
+
+            urls = mm_svc.Discovery.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            ImportUrls.GetMeta(urls, max_parallel: 4);
 
             //mm_svc.Discovery.Search_Goog.Search("chess");
         }

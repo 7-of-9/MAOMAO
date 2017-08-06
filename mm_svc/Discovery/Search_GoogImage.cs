@@ -36,7 +36,12 @@ namespace mm_svc.Discovery
             var url = string.Format(gs_url, search_term, tbs);
             var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
 
-            var doc = new HtmlWeb().LoadFromBrowser(url);
+            HtmlAgilityPack.HtmlDocument doc = null;
+            try {
+                doc = new HtmlWeb().LoadFromBrowser(url);
+            }
+            catch { return saved; }
+
             try {
                 var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
                 var img_ndx = 0;

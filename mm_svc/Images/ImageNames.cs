@@ -1,4 +1,5 @@
-﻿using mmdb_model;
+﻿using mm_svc.Util.Utils;
+using mmdb_model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,8 @@ namespace mm_svc.Images
         }
 
         public static string GetSiteFilename(awis_site s) {
-            return $"s_{s.id}_{s.TLD.Replace(".", "-")}";
+            var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(s.TLD);
+            return $"s_{s.id}_{trimmed_tld.Replace(".", "-")}";
         }
     }
 }
