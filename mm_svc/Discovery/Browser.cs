@@ -15,6 +15,7 @@ namespace mm_svc.Discovery
     {
         internal static object lock_obj = "42";
         internal static DateTime last_access = DateTime.MinValue;
+        internal static double min_seconds_between_requests = 1;
 
         static Browser()
         {

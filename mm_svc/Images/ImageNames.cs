@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 
 namespace mm_svc.Images
 {
-    public static class TermImages
+    public static class ImageNames
     {
-        public static string GetFilenameJpeg(term t) {
+        public static string GetTermFilename_Jpeg(term t) {
             return $"t_{t.id}_{t.name.Replace(" ", "")}";
+        }
+
+        public static string GetSiteFilename_Jpeg(awis_site s) {
+            return $"s_{s.id}_{s.TLD.Replace(".", "-")}";
         }
     }
 }

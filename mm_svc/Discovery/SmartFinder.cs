@@ -16,7 +16,7 @@ namespace mm_svc.Discovery
     public static class SmartFinder
     {
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
-        private const int TERM_SEARCH_BATCH_SIZE = 1;
+        private const int TERM_SEARCH_BATCH_SIZE = 5;
 
         // todo -- operate on all [url] parent terms -- problem is country search?
         public static int FindForAllUrls() {
@@ -104,7 +104,7 @@ namespace mm_svc.Discovery
                 var new_discoveries = new_conc.ToList();
 
                 // get metadata (inc. images) for newly discovered
-                ImportUrls.GetMeta(new_discoveries);
+                ImportUrls.GetMeta(new_discoveries, max_parallel: 4);
 
                 // save new discoveries
                 var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.meta_title.Length < 256 && p.url.Length < 256).Select(

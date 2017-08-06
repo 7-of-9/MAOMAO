@@ -47,9 +47,6 @@
         <AssociationConnector Association="mm02Model.fk_user_url_url" />
         <EntityTypeShape EntityType="mm02Model.url_text" Width="1.5" PointX="5.5" PointY="16.625" />
         <AssociationConnector Association="mm02Model.FK_url_text_url" />
-        <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="1.25" PointY="0.75" />
-        <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
-        <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <EntityTypeShape EntityType="mm02Model.share_active" Width="1.5" PointX="19.25" PointY="2.25" />
         <AssociationConnector Association="mm02Model.FK_share_active_share" />
         <EntityTypeShape EntityType="mm02Model.user_reg_topic" Width="1.5" PointX="9" PointY="0.625" />
@@ -74,6 +71,9 @@
         <AssociationConnector Association="mm02Model.FK_disc_url_term1" />
         <EntityTypeShape EntityType="mm02Model.disc_term" Width="1.5" PointX="13" PointY="19.25" />
         <AssociationConnector Association="mm02Model.FK_disc_term_term" />
+        <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="6.125" PointY="0.875" />
+        <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
+        <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -9,6 +9,10 @@ using mm_global;
 using mm_aws;
 using System.Diagnostics;
 using mm_global.Extensions;
+using mm_svc.Discovery;
+using mm_svc.Images;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace mm_svc
 {
@@ -81,6 +85,33 @@ namespace mm_svc
             return allowable;
         }
 
+        private static void MaintainSiteLogo(awis_site site)
+        {
+            // maintain TLD logo (google image search)
+            var th = new Thread(() => { //Task.Run(() => {
+                Application.DoEvents();
+                using (var db2 = mm02Entities.Create()) {
+                    var db_site2 = db2.awis_site.Find(site.id);
+                    var file_name = ImageNames.GetSiteFilename_Jpeg(db_site2);
+                    var master_file_name = file_name + "_M1.jpeg";
+                    if (!AzureFile.Exists(master_file_name)) {
+                        if (Search_GoogImage.Search($"{site.TLD} website logo", file_name, 1, 0, clipart: true) > 0) {
+                            db_site2.logo_file_name = master_file_name;
+                            db2.SaveChangesTraceValidationErrors();
+                        }
+                    }
+                }
+            });
+            th.SetApartmentState(ApartmentState.STA);
+            th.Start();
+            var sw = new Stopwatch(); sw.Start();
+            while (th.ThreadState != System.Threading.ThreadState.Stopped) {// && sw.ElapsedMilliseconds < 1000 * 20) {
+                Thread.Sleep(100);
+            }
+            try { th.Abort(); }
+            catch { }
+        }
+
         public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db)
         {
             using (var db = mm02Entities.Create())
@@ -99,6 +130,7 @@ retry:
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
                     returned_from_db = true;
+                    MaintainSiteLogo(db_site);
                     return db_site;
                 }
 
@@ -161,6 +193,8 @@ retry:
                 db.awis_site.Add(db_site);
                 if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
                 g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
+
+                MaintainSiteLogo(db_site);
 
                 returned_from_db = false;
                 return db_site;

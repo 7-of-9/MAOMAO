@@ -11,15 +11,22 @@ namespace mm_svc.Discovery
 {
     public static class ImportUrls
     {
-        public static void GetMeta(List<ImportUrlInfo> urls)
+        public static void GetMeta(List<ImportUrlInfo> urls, int max_parallel = 2)
         {
-            Parallel.ForEach(urls, (url_info) => {
+            Parallel.ForEach(urls, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
+
+                // TODO - add tld to awis_site; batch job to maintain new column on that table to point to 
+                bool from_db;
+                var site = SiteInfo.GetOrQueryAwis(url_info.url, out from_db);
+
+                // download
                 var doc = Browser.Fetch(url_info.url, rate_limit: false);
                 if (doc == null) {
                     g.LogWarn($"got no HAP obj for [{url_info.url}]");
                     return;
                 }
 
+                // extract meta
                 var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
                 var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
                 var title = doc.DocumentNode.SelectSingleNode("//title");

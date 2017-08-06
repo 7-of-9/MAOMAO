@@ -27,7 +27,7 @@ namespace Maintenance
         {
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(link.topic_id);
-                var file_name = TermImages.GetFilenameJpeg(term);
+                var file_name = ImageNames.GetTermFilename_Jpeg(term);
                 if (!AzureFile.Exists(file_name + "_M1.jpeg")) {
                     Search_GoogImage.Search(term.name, file_name);
                 }

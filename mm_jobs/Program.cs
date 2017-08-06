@@ -13,6 +13,7 @@ using mm_global;
 using mmdb_model;
 using mm_global.Extensions;
 using System.Windows.Forms;
+using mm_svc.Discovery;
 
 namespace mm_jobs
 {
@@ -64,10 +65,15 @@ namespace mm_jobs
                 }
                 g.LogLine("(none found, proceeding)");
 
-                // images - terms
                 if (args.Contains("-ti")) { 
                     g.LogLine("-");
+                    g.LogInfo("terms-images");
                     new Maintenance.TopicTreeImages().MM_Images_FetchForTopicTree();
+                }
+                else if (args.Contains("-du")) {
+                    g.LogLine("-");
+                    g.LogInfo("discover-user");
+                    SmartFinder.FindForUserAllBrowsedTopics(20);
                 }
 
                 return 0;

@@ -28,7 +28,7 @@ namespace mm_svc.Images
             _blobStorageConnectionString = ConfigurationManager.ConnectionStrings["BlobStorageConnectionString"].ConnectionString;
         }
 
-        public static void Save(byte[] data, string file_name, string content_type)
+        public static int Save(byte[] data, string file_name, string content_type)
         {
             var container = GetImagesBlobContainer();
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(file_name);
@@ -36,6 +36,7 @@ namespace mm_svc.Images
 
             blockBlob.UploadFromByteArray(data, 0, data.Length);
             g.LogInfo($"saved Azure file: {file_name}");
+            return 1;
         }
 
         public static bool Exists(string file_name)

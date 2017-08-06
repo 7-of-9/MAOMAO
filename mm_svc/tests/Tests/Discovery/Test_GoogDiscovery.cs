@@ -13,15 +13,15 @@ namespace tests.Tests.Discovery
     public class Test_GoogDiscovery
     {
         [TestMethod]
-        public void SmartFind_UserRegTopics_Test0()
-        {
-            var new_rows = SmartFinder.FindForUserRegTopics(20);
-        }
-
-        [TestMethod]
         public void SmartFind_UserBrowsedUrls_Test1()
         {
             var new_rows = SmartFinder.FindForUserAllBrowsedTopics(20);
+        }
+
+        [TestMethod]
+        public void SmartFind_UserRegTopics_Test0()
+        {
+            var new_rows = SmartFinder.FindForUserRegTopics(20);
         }
 
         [TestMethod]
@@ -48,8 +48,8 @@ namespace tests.Tests.Discovery
             //if ((page_meta["thumbnail"] = $('meta[name="thumbnail"]').attr('content')))
             //if ((page_meta["image_src"] = $('link[rel="image_src"]').attr('href')))
 
-            var urls = mm_svc.Discovery.Search_Goog.Search("board games", "site:youtube.com", SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
-            ImportUrls.GetMeta(urls);
+            var urls = mm_svc.Discovery.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            ImportUrls.GetMeta(urls, max_parallel: 2);
 
             //mm_svc.Discovery.Search_Goog.Search("chess");
         }
