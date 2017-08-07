@@ -65,15 +65,24 @@ namespace mm_jobs
                 }
                 g.LogLine("(none found, proceeding)");
 
-                if (args.Contains("-ti")) { 
-                    g.LogLine("-");
-                    g.LogInfo("terms-images");
-                    new Maintenance.TopicTreeImages().MM_Images_FetchForTopicTree();
+                // images
+                if (args.Contains("-it")) { 
+                    g.LogLine("-"); g.LogInfo("terms-images");
+                    mm_svc.Maintenance.TermImages.Maintain();
                 }
-                else if (args.Contains("-du")) {
-                    g.LogLine("-");
-                    g.LogInfo("discover-user");
-                    SmartFinder.FindForUserAllBrowsedTopics(20);
+                else if (args.Contains("-is")) {
+                    g.LogLine("-"); g.LogInfo("sites-user");
+                    mm_svc.Maintenance.SiteImages.Maintain();
+                }
+
+                // discovery
+                else if (args.Contains("-du20")) {
+                    g.LogLine("-"); g.LogInfo("discover-user");
+                    SmartFinder.Find_UserAllTopics(20);
+                }
+                else if (args.Contains("-du15")) {
+                    g.LogLine("-"); g.LogInfo("discover-user");
+                    SmartFinder.Find_UserAllTopics(15);
                 }
 
                 return 0;

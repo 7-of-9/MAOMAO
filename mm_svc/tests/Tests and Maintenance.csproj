@@ -75,6 +75,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Maintenance\SiteImages.cs" />
     <Compile Include="Maintenance\TopicTreeImages.cs" />
     <Compile Include="Tests\Discovery\Test_GoogDiscovery.cs" />
     <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />

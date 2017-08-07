@@ -1,8 +1,9 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using mm_global;
 using mm_svc.Discovery;
 using mm_svc.Images;
-using mm_svc.Terms;
+using mm_svc.Util.Utils;
 using mmdb_model;
 using System;
 using System.Collections.Generic;
@@ -10,16 +11,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace tests.Maintenance
+namespace test.Maintenance
 {
     [TestClass]
-    public class TopicTreeImages
+    public class SiteImages
     {
         [TestMethod]
-        public void Maintain_TermImages_Test0()
+        public void Maintain_AwisSiteImages_Test0()
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
-            mm_svc.Maintenance.TermImages.Maintain();
+            mm_svc.Maintenance.SiteImages.Maintain();
         }
     }
 }

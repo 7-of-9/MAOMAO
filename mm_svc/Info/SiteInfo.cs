@@ -88,38 +88,47 @@ namespace mm_svc
 
         private static void MaintainSiteLogo(awis_site site, string meta_title)
         {
-            // maintain TLD logo (google image search)
-            var th = new Thread(() => { //Task.Run(() => {
-                Application.DoEvents();
-                using (var db2 = mm02Entities.Create()) {
-                    var db_site2 = db2.awis_site.Find(site.id);
-                    var filename = ImageNames.GetSiteFilename(db_site2);
-                    var master_jpeg = filename + "_M1.jpeg";
-                    var master_png = filename + "_M1.png";
+            // Azure WebApp runs in Sandbox mode -- access to out of process components is restricted by design
+            // (call to WebBrowser via HAP fails below under Azure, works under local IIS Express); would work under a Cloud App/Worker Role combo in Azure
+            /*Task.Run(() => { 
+                // maintain TLD logo (google image search)
+                var th = new Thread(() => { //Task.Run(() => {
+                    g.LogInfo($"MaintainSiteLogo -- Task.Run about to start STA thread...");
 
-                    if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
+                    Application.DoEvents();
+                    using (var db2 = mm02Entities.Create()) {
+                        var db_site2 = db2.awis_site.Find(site.id);
+                        var filename = ImageNames.GetSiteFilename(db_site2);
+                        var master_jpeg = filename + "_M1.jpeg";
+                        var master_png = filename + "_M1.png";
 
-                        // (1) tld search
-                        var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
-                        var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", AzureImageFileType.SiteLogo, filename, 1, 0, clipart: true);
-                        if (saved.Count > 0) { 
-                            db_site2.logo_file_name = saved[0];
-                            db2.SaveChangesTraceValidationErrors();
+                        if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
+
+                            // (1) tld search
+                            var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
+                            var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", AzureImageFileType.SiteLogo, filename, 1, 0, clipart: true);
+                            if (saved.Count > 0) { 
+                                db_site2.logo_file_name = saved[0];
+                                db2.SaveChangesTraceValidationErrors();
+                            }
+
+                            // (2) meta_title search -- not much good
+                            //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
                         }
-
-                        // (2) meta_title search -- not much good
-                        //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
                     }
+                });
+                th.SetApartmentState(ApartmentState.STA);
+                th.Start();
+                var sw = new Stopwatch(); sw.Start();
+                while (th.ThreadState != System.Threading.ThreadState.Stopped && sw.ElapsedMilliseconds < 10000) { // run STA thread for 10s
+                    Thread.Sleep(100);
                 }
-            });
-            th.SetApartmentState(ApartmentState.STA);
-            th.Start();
-            var sw = new Stopwatch(); sw.Start();
-            while (th.ThreadState != System.Threading.ThreadState.Stopped) {// && sw.ElapsedMilliseconds < 1000 * 20) {
-                Thread.Sleep(100);
-            }
-            try { th.Abort(); }
-            catch { }
+                try {
+                    g.LogInfo($"MaintainSiteLogo -- Task.Run aborting STA thread...");
+                    th.Abort();
+                }
+                catch { }
+            });*/
         }
 
         public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db, string meta_title = null)

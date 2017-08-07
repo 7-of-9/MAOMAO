@@ -24,22 +24,30 @@ namespace mm_svc.Discovery
         }
 
         // runs SF on all a user's browsed topics & suggestions - should allow instant home->discovery nav (good for demo)
-        public static int FindForUserAllBrowsedTopics(long user_id) {
+        public static int Find_UserAllTopics(long user_id) {
             using (var db = mm02Entities.Create()) {
                 var user_reg_topics = db.user_url.Where(p => p.user_id == user_id).SelectMany(p => p.url.url_parent_term)
                                         .Where(p => p.pri == 1 && p.suggested_dynamic == false)
                                         .Select(p => p.term_id).Distinct().ToListNoLock();
                 var topics_to_search = GetTopicsToSearch(user_reg_topics);
-                return FindForCountryTopics(user_id, topics_to_search);
+
+                var ret = FindForCountryTopics(user_id, topics_to_search);
+
+                Maintenance.SiteImages.Maintain();
+                return ret;
             }
         }
 
         // runs SF only on user-registered topics
-        public static int FindForUserRegTopics(long user_id) {
+        public static int Find_UserRegTopics(long user_id) {
             using (var db = mm02Entities.Create()) {
                 var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
                 var topics_to_search = GetTopicsToSearch(user_reg_topics);
-                return FindForCountryTopics(user_id, topics_to_search);
+
+                var ret = FindForCountryTopics(user_id, topics_to_search);
+
+                Maintenance.SiteImages.Maintain();
+                return ret;
             }
         }
 

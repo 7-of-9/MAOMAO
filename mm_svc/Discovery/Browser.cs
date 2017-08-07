@@ -41,8 +41,8 @@ namespace mm_svc.Discovery
         {
             if (rate_limit) {
                 lock (lock_obj) {
-                    while (DateTime.Now.Subtract(last_access).TotalSeconds < 1) {
-                        g.LogLine("Fetch -- waiting...");
+                    while (DateTime.Now.Subtract(last_access).TotalSeconds < min_seconds_between_requests) {
+                        //g.LogLine("Fetch -- waiting...");
                         System.Threading.Thread.Sleep(2000);
                     }
                 }

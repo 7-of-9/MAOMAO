@@ -20,9 +20,12 @@ namespace mm_svc.Discovery
         private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         public static List<string> Search(
+            out bool none_found,
             string search_term, Images.AzureImageFileType type, string filename = null,
-            int save_top_count = 6, int save_white_count = 2, bool clipart = false)
+            int save_top_count = 6, int save_white_count = 2, bool clipart = false
+            )
         {
+            none_found = false;
             var saved = new List<string>();
             if (Search_Goog.goog_rate_limit_hit == true)
                 return saved;
@@ -39,17 +42,29 @@ namespace mm_svc.Discovery
 
             HtmlAgilityPack.HtmlDocument doc = null;
             try {
+                g.LogLine($"GOOG Image Search -- DOWNLOADING: {url}...");
                 doc = new HtmlWeb().LoadFromBrowser(url);
             }
-            catch { return saved; }
+            catch(Exception ex) {
+                g.LogException(ex);
+                g.LogAllExceptionsAndStack(ex);
+                return saved;
+            }
 
             try {
                 var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
+                //g.LogLine($"imgs.Count={imgs.Count()}"); //*
                 var img_ndx = 0;
                 var got_whites = 0;
+                if (imgs.Count() == 0) {
+                    g.LogWarn($"GOT NO IMAGES: url={url}");
+                    none_found = true;
+                    return saved;
+                }
                 foreach (var img in imgs) {
                     var src = img.Attributes["src"]?.Value;
                     if (!string.IsNullOrEmpty(src)) {
+                        //g.LogLine($"src={src}"); //*
                         var jpeg_header = "data:image/jpeg;base64,";
                         var png_header = "data:image/png;base64,";
                         var jpeg = src.StartsWith(jpeg_header);

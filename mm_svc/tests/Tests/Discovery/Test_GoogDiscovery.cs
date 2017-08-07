@@ -16,13 +16,13 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void SmartFind_UserBrowsedUrls_Test1()
         {
-            var new_rows = SmartFinder.FindForUserAllBrowsedTopics(20);
+            //var new_rows = SmartFinder.Find_UserAllTopics(20); // dom
+            var new_rows = SmartFinder.Find_UserAllTopics(15); // dung
         }
 
         [TestMethod]
-        public void SmartFind_UserRegTopics_Test0()
-        {
-            var new_rows = SmartFinder.FindForUserRegTopics(20);
+        public void SmartFind_UserRegTopics_Test_20() {
+            var new_rows = SmartFinder.Find_UserRegTopics(20);
         }
 
         [TestMethod]
@@ -35,7 +35,8 @@ namespace tests.Tests.Discovery
             var e = TldTitle.GetPartialTldNameWithSuffix("dev.blah.co.uk");
             var f = TldTitle.GetPartialTldNameWithSuffix("dev.blah.ie");
 
-            var new_rows = Search_GoogImage.Search("www.meetup.com logo", mm_svc.Images.AzureImageFileType.SiteLogo, null, 0, 0, true);
+            bool none_found;
+            var new_rows = Search_GoogImage.Search(out none_found, "www.meetup.com logo", mm_svc.Images.AzureImageFileType.SiteLogo, null, 0, 0, true);
         }
 
         [TestMethod]

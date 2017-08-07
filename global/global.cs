@@ -97,7 +97,7 @@ namespace mm_global
                     }
 
                     Trace.TraceInformation(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Information);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Information);
 
                     if (is_console)
                         Console.ResetColor();
@@ -113,7 +113,7 @@ namespace mm_global
                     }
 
                     Trace.TraceError(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Error);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Error);
 
                     if (is_console)
                         Console.ResetColor();
@@ -129,7 +129,7 @@ namespace mm_global
                     }
 
                     Trace.TraceWarning(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Warning);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Warning);
 
                     if (is_console)
                         Console.ResetColor();
@@ -143,7 +143,7 @@ namespace mm_global
                         Console.ForegroundColor = ConsoleColor.Red;
 
                     Trace.WriteLine(logStr); // verbose level, no email
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Verbose);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Verbose);
 
                     if (is_console && s.Contains("!!!"))
                         Console.ResetColor();
