@@ -35,7 +35,7 @@ namespace tests.Tests.Discovery
             var e = TldTitle.GetPartialTldNameWithSuffix("dev.blah.co.uk");
             var f = TldTitle.GetPartialTldNameWithSuffix("dev.blah.ie");
 
-            var new_rows = Search_GoogImage.Search("www.meetup.com logo", null, 0, 0, true);
+            var new_rows = Search_GoogImage.Search("www.meetup.com logo", mm_svc.Images.AzureImageFileType.SiteLogo, null, 0, 0, true);
         }
 
         [TestMethod]

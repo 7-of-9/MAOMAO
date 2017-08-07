@@ -20,7 +20,8 @@ namespace mm_svc.Discovery
         private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         public static List<string> Search(
-            string search_term, string filename = null, int save_top_count = 6, int save_white_count = 2, bool clipart = false)
+            string search_term, Images.AzureImageFileType type, string filename = null,
+            int save_top_count = 6, int save_white_count = 2, bool clipart = false)
         {
             var saved = new List<string>();
             if (Search_Goog.goog_rate_limit_hit == true)
@@ -76,14 +77,14 @@ namespace mm_svc.Discovery
                                             // save first n images
                                             if (++img_ndx <= save_top_count) {
                                                 var full_filename = filename + $"_M{img_ndx}{ext}";
-                                                Images.AzureFile.Save(bytes, full_filename, content_type);
+                                                Images.AzureImageFile.Save(bytes, type, full_filename, content_type);
                                                 saved.Add(full_filename);
                                             }
 
                                             // separate first n white backg images too too
                                             if (got_whites < save_white_count && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
                                                 var full_filename = filename + $"_W{++got_whites}{ext}";
-                                                Images.AzureFile.Save(bytes, full_filename, content_type);
+                                                Images.AzureImageFile.Save(bytes, type, full_filename, content_type);
                                                 saved.Add(full_filename);
                                             }
                                             if (got_whites == save_white_count && img_ndx >= save_top_count)

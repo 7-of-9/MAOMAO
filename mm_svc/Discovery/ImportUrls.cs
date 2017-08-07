@@ -15,10 +15,6 @@ namespace mm_svc.Discovery
         {
             Parallel.ForEach(urls, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
 
-                // TODO - add tld to awis_site; batch job to maintain new column on that table to point to 
-                bool from_db;
-                var site = SiteInfo.GetOrQueryAwis(url_info.url, out from_db);
-
                 // download
                 var doc = Browser.Fetch(url_info.url, rate_limit: false);
                 if (doc == null) {
@@ -91,13 +87,17 @@ namespace mm_svc.Discovery
                 if (!string.IsNullOrEmpty(meta_title))
                     url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
                 else
-                    url_info.meta_title = url_info.title;
+                    url_info.meta_title = url_info.title;   
                 url_info.meta_title = HttpUtility.HtmlDecode(url_info.meta_title);
                 Debug.WriteLine($" >> {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
 
                 // HAP leaks - this fixes
                 doc = null;
                 GC.Collect();
+
+                // do awis maintenance (includes site logo fetching from google)
+                bool from_db;
+                var site = SiteInfo.GetOrQueryAwis(url_info.url, out from_db, url_info.meta_title);
             });
         }
     }

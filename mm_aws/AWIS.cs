@@ -34,7 +34,7 @@ namespace mm_aws
             // run the request with amazon
             var res = RunRequest(request, extra);
 
-            Debug.WriteLine(res);
+            //Debug.WriteLine(res);
 
             XDocument doc = XDocument.Parse(res);
             dynamic info = new ExpandoObject();

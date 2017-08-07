@@ -86,7 +86,7 @@ namespace mm_svc
             return allowable;
         }
 
-        private static void MaintainSiteLogo(awis_site site)
+        private static void MaintainSiteLogo(awis_site site, string meta_title)
         {
             // maintain TLD logo (google image search)
             var th = new Thread(() => { //Task.Run(() => {
@@ -97,13 +97,18 @@ namespace mm_svc
                     var master_jpeg = filename + "_M1.jpeg";
                     var master_png = filename + "_M1.png";
 
-                    if (!AzureFile.Exists(master_jpeg) && !AzureFile.Exists(master_png)) {
+                    if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
+
+                        // (1) tld search
                         var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
-                        var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", filename, 1, 0, clipart: true);
+                        var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", AzureImageFileType.SiteLogo, filename, 1, 0, clipart: true);
                         if (saved.Count > 0) { 
                             db_site2.logo_file_name = saved[0];
                             db2.SaveChangesTraceValidationErrors();
                         }
+
+                        // (2) meta_title search -- not much good
+                        //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
                     }
                 }
             });
@@ -117,7 +122,7 @@ namespace mm_svc
             catch { }
         }
 
-        public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db)
+        public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db, string meta_title = null)
         {
             using (var db = mm02Entities.Create())
             {
@@ -135,7 +140,7 @@ retry:
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
                     returned_from_db = true;
-                    MaintainSiteLogo(db_site);
+                    MaintainSiteLogo(db_site, meta_title);
                     return db_site;
                 }
 
@@ -151,7 +156,7 @@ retry:
                 }
                 catch (Exception ex) {  // handle no returned AWIS category -- assign to stoplist by virtue of missing AWIS category
                     if (ex.Message == "'System.Dynamic.ExpandoObject' does not contain a definition for 'Categories'")
-                        g.LogInfo($"WARN: got no AWIS category info unknown tld={tld} - {ex.Message}!");
+                        g.LogWarn($"WARN: got no AWIS category info unknown tld={tld} - {ex.Message}!");
                     else throw;
                 }
 
@@ -199,7 +204,7 @@ retry:
                 if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
                 g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
-                MaintainSiteLogo(db_site);
+                MaintainSiteLogo(db_site, meta_title);
 
                 returned_from_db = false;
                 return db_site;

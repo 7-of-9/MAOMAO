@@ -12,36 +12,47 @@ using System.Web;
 
 namespace mm_svc.Images
 {
-    // http://www.wintellect.com/devcenter/rrobinson/azure-bits-2-saving-the-image-to-azure-blob-storage
+    public enum AzureImageFileType {
+        SiteLogo,
+        TermPicture,
+    }
 
-    public static class AzureFile
+    // http://www.wintellect.com/devcenter/rrobinson/azure-bits-2-saving-the-image-to-azure-blob-storage
+    public static class AzureImageFile
     {
-        
-        private static string _imageRootPath;
-        private static string _containerName;
+        private static string _terms_imageRootPath;
+        private static string _terms_containerName;
+
+        private static string _sites_imageRootPath;
+        private static string _sites_containerName;
+
         private static string _blobStorageConnectionString;
 
-        static AzureFile()
+        static AzureImageFile()
         {
-            _imageRootPath = ConfigurationManager.AppSettings["ImageRootPath"];
-            _containerName = ConfigurationManager.AppSettings["ImagesContainer"];
+            _terms_imageRootPath = ConfigurationManager.AppSettings["Terms_ImageRootPath"];
+            _terms_containerName = ConfigurationManager.AppSettings["Terms_ImagesContainer"];
+
+            _sites_imageRootPath = ConfigurationManager.AppSettings["Sites_ImageRootPath"];
+            _sites_containerName = ConfigurationManager.AppSettings["Sites_ImagesContainer"];
+
             _blobStorageConnectionString = ConfigurationManager.ConnectionStrings["BlobStorageConnectionString"].ConnectionString;
         }
 
-        public static int Save(byte[] data, string file_name, string content_type)
+        public static int Save(byte[] data, AzureImageFileType type, string filename, string content_type)
         {
-            var container = GetImagesBlobContainer();
-            CloudBlockBlob blockBlob = container.GetBlockBlobReference(file_name);
+            var container = GetImagesBlobContainer(type);
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(filename);
             blockBlob.Properties.ContentType = content_type;
 
             blockBlob.UploadFromByteArray(data, 0, data.Length);
-            g.LogInfo($"saved Azure file: {file_name}");
+            g.LogInfo($"saved Azure file: {filename}");
             return 1;
         }
 
-        public static bool Exists(string file_name)
+        public static bool Exists(AzureImageFileType type, string file_name)
         {
-            var container = GetImagesBlobContainer();
+            var container = GetImagesBlobContainer(type);
             var blob = container.GetBlockBlobReference(file_name);
             try {
                 blob.FetchAttributes();
@@ -51,11 +62,13 @@ namespace mm_svc.Images
             }
         }
 
-        private static CloudBlobContainer GetImagesBlobContainer()
+        private static CloudBlobContainer GetImagesBlobContainer(AzureImageFileType type)
         {
             var storageAccount = CloudStorageAccount.Parse(_blobStorageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(_containerName);
+
+            var container = blobClient.GetContainerReference(type == AzureImageFileType.SiteLogo ? _sites_containerName
+                                                        : type == AzureImageFileType.TermPicture ? _terms_containerName : null);
             
             container.CreateIfNotExists();
             container.SetPermissions(

@@ -30,8 +30,8 @@ namespace Maintenance
                 var filename = ImageNames.GetTermFilename(term);
                 var master_jpeg = filename + "_M1.jpeg";
                 var master_png = filename + "_M1.png";
-                if (!AzureFile.Exists(master_jpeg) && !AzureFile.Exists(master_png)) {
-                    Search_GoogImage.Search(term.name, filename);
+                if (!AzureImageFile.Exists(AzureImageFileType.TermPicture, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.TermPicture, master_png)) {
+                    Search_GoogImage.Search(term.name, AzureImageFileType.TermPicture, filename);
                 }
             }
             link.children.ForEach(p => ProcessImages(p));

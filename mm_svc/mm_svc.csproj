@@ -99,7 +99,7 @@
     <Compile Include="Discovery\Browser.cs" />
     <Compile Include="Discovery\Search_GoogImage.cs" />
     <Compile Include="Discovery\SmartFinder.cs" />
-    <Compile Include="Images\AzureFile.cs" />
+    <Compile Include="Images\AzureImageFile.cs" />
     <Compile Include="Images\ImageNames.cs" />
     <Compile Include="Shares\ShareAcceptor.cs" />
     <Compile Include="Shares\ShareCreator.cs" />
