@@ -2,6 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { Navbar, Footer, Page } from 'neal-react'
 import Raven from 'raven-js'
+import queryString from 'query-string'
 import logger from '../utils/logger'
 import stylesheet from '../styles/index.scss'
 import Header from '../components/Header'
@@ -9,11 +10,11 @@ import LogoIcon from '../components/LogoIcon'
 import Loading from '../components/Loading'
 import Slogan from '../components/Slogan'
 
-const brand = (title, url) => (
+const brand = (title) => (
   <Header>
     <LogoIcon />
     <Slogan />
-    <p className='url-info'>{title} ({url})</p>
+    <p className='url-info'>{title}</p>
   </Header>
 )
 const brandName = 'maomao'
@@ -44,13 +45,13 @@ export default class Smart extends React.Component {
             this.setState(prevState => ({ isLoading: true, url, title }))
           }
         }, false)
-        // const { title } = this.iframe.contentDocument
-        // const { search } = this.iframe.contentWindow.location
-        // logger.warn('iframe title', title)
-        // logger.warn('iframe search', search)
+        const { title } = this.iframe.contentDocument
+        const { search } = this.iframe.contentWindow.location
+        logger.warn('iframe title', title)
+        logger.warn('iframe search', queryString.parse(search))
         logger.warn('iframe contentDocument', this.iframe.contentDocument)
         logger.warn('iframe contentWindow', this.iframe.contentWindow)
-        this.setState(prevState => ({ isLoading: false }))
+        this.setState(prevState => ({ isLoading: false, title }))
       }
     } catch (err) {
       const { url, title } = this.state

@@ -10,6 +10,15 @@ const dev = process.env.NODE_ENV !== 'production'
 
 const SITE_URL = dev ? 'http://localhost:3000/' : 'https://maomaoweb.azurewebsites.net/'
 
+const parseUrl = (baseUrl, query) => {
+  if (Object.keys(query).length !== 1) {
+    const rawUrl = url.parse(baseUrl)
+    log.warn('rawUrl', rawUrl)
+    return `${rawUrl.protocol}//${rawUrl.hostname}${rawUrl.pathname}?${queryString.stringify(Object.assign(rawUrl.search ? queryString.parse(rawUrl.search) : {}, _.omit(query, 'url')))}`
+  }
+  return baseUrl
+}
+
 router.get('/', (req, res) => {
   const { query, body, params } = req
   const { url: baseUrl } = req.query
@@ -17,14 +26,9 @@ router.get('/', (req, res) => {
   if (!baseUrl) {
     res.status(404).send('Sorry, we cannot find that!')
   } else {
-    let queryData = {}
-    if (Object.keys(query).length !== 1) {
-      queryData = Object.assign({}, _.omit(query, 'url'))
-    }
-    log.warn('queryData', queryData)
     request({
       method: 'GET',
-      url: `${baseUrl}?${queryString.stringify(queryData)}`
+      url: parseUrl(baseUrl, query)
     }, (error, response, body) => {
       if (error) {
         res.status(500).send({ error })
@@ -34,24 +38,29 @@ router.get('/', (req, res) => {
         const html = replace.call(body, '<head>', `<head><base href="${response.request.uri.href}">`)
         const $ = cheerio.load(html)
         // covert to absoluate url
-        $('meta').each((index, item) => {
+        $('html').find('meta').each((index, item) => {
           const metaProp = $(item).attr('itemprop')
           const metaContent = $(item).attr('content')
           metaProp === 'image' && $(item).attr('content', url.resolve(response.request.uri.href, metaContent))
         })
 
-        $('form').each((index, item) => {
+        $('html').find('form').each((index, item) => {
           const actionSrc = $(item).attr('action')
           actionSrc && $(item).attr('action', SITE_URL + 'api/preview?url=' + url.resolve(response.request.uri.href, actionSrc))
           actionSrc && $(item).append(`<input name="url" type="hidden" value="${url.resolve(response.request.uri.href, actionSrc)}" />`)
         })
 
-        $('img').each((index, item) => {
+        $('html').find('img').each((index, item) => {
           const imgSrc = $(item).attr('src')
           imgSrc && $(item).attr('src', url.resolve(response.request.uri.href, imgSrc))
         })
 
-        $('a, link').each((index, item) => {
+        $('html').find('link').each((index, item) => {
+          const href = $(item).attr('href')
+          href && href !== '#' && $(item).attr('href', url.resolve(response.request.uri.href, href))
+        })
+
+        $('html').find('a').each((index, item) => {
           const href = $(item).attr('href')
           href && href !== '#' && $(item).attr('href', url.resolve(response.request.uri.href, href))
         })
