@@ -180,7 +180,8 @@ retry:
                         db_cat.abs_path = cat_path.TruncateMax(128);
                         db_cat.title = cat_title;
                         db.awis_cat.Add(db_cat);
-                        if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
+                        //if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
+                        db.SaveChanges_IgnoreDupeKeyEx();
 
                         g.LogLine($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
                     }
@@ -210,7 +211,8 @@ retry:
                 db_site.url = url;
                 db_site.desc = desc;
                 db.awis_site.Add(db_site);
-                if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
+                //if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
+                db.SaveChanges_IgnoreDupeKeyEx();
                 g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
                 //MaintainSiteLogo(db_site);
