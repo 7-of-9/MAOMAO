@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace mm_svc.Maintenance
 {
@@ -23,10 +24,13 @@ namespace mm_svc.Maintenance
             using (var db = mm02Entities.Create()) {
                 var sites_mising_logos = db.awis_site.AsNoTracking().Where(p => string.IsNullOrEmpty(p.logo_file_name)).Select(p => p.id).ToListNoLock();
                 g.LogInfo($"sites_mising_logos.Count={sites_mising_logos.Count}");
-                Parallel.ForEach(sites_mising_logos, new ParallelOptions() { MaxDegreeOfParallelism = 2 }, awis_site_id => {
 
-                    var th = new Thread(() => { // STA for WebBrowser
+                // using Parallel class causes WebBrowser in STA thread to (after some reps of the loop) start to timeout; no idea why
+                //Parallel.ForEach(sites_mising_logos, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, awis_site_id => {
+                foreach( var awis_site_id in sites_mising_logos) {
 
+                    //var th = new Thread(() => { // STA for WebBrowser
+                    try {
                         using (var db2 = mm02Entities.Create()) {
                             var db_site2 = db2.awis_site.Find(awis_site_id);
                             var filename = ImageNames.GetSiteFilename(db_site2);
@@ -52,20 +56,26 @@ namespace mm_svc.Maintenance
                                 //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
                             }
                         }
-                    });
+                    }
+                    catch(Exception ex) {
+                        g.LogException(ex);
+                    }
+                    //});
 
-                    th.SetApartmentState(ApartmentState.STA);
-                    th.Start();
-                    var sw = new Stopwatch(); sw.Start();
-                    while (th.ThreadState != System.Threading.ThreadState.Stopped) {// && sw.ElapsedMilliseconds < 10000) {
-                        Thread.Sleep(100);
-                    }
-                    try {
-                        g.LogLine($"aborting STA thread for awis_site_id={awis_site_id}");
-                        th.Abort();
-                    }
-                    catch { }
-                });
+                    //th.SetApartmentState(ApartmentState.STA);
+                    //th.Start();
+                    //var sw = new Stopwatch(); sw.Start();
+                    //while (th.ThreadState != System.Threading.ThreadState.Stopped) {// && sw.ElapsedMilliseconds < 2000) {
+                    //    Thread.Sleep(100);
+                    //    //Application.DoEvents();
+                    //}
+                    //try {
+                    //    g.LogLine($"aborting STA thread for awis_site_id={awis_site_id}");
+                    //    th.Abort();
+                    //}
+                    //catch { }
+                }
+                //);
             }
         }
     }

@@ -78,9 +78,9 @@
       <Project>{98894532-0239-49c0-9d82-d1bfb71f9553}</Project>
       <Name>mm_svc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\mm_svc\tests\Tests and Maintenance.csproj">
+    <ProjectReference Include="..\mm_svc\tests\tests.csproj">
       <Project>{5abd7d8c-e31d-4cf3-8a52-8357d0b466f4}</Project>
-      <Name>Tests and Maintenance</Name>
+      <Name>tests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

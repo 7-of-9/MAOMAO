@@ -13,6 +13,7 @@ from url_parent_term, term t, user_url uu where suggested_dynamic in (0) and pri
 delete from disc_url_osl
 delete from disc_url */
 select *, t.name from disc_term, term t where t.id = term_id order by 1 desc -- delete from disc_term
+select top 10 * from awis_site order by id asc -- update awis_site set logo_file_name = null
 
 select (select [name] from [term] where id=main_term_id) 'main', (select [name] from [term] where id=term_id) 'term',
   [url], [desc], meta_title, img_url, search_num, term_num, result_num, city, country, url_hash from disc_url where main_term_id = 4990960

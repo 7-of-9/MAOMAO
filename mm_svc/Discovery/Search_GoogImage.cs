@@ -38,28 +38,31 @@ namespace mm_svc.Discovery
 
             var tbs = clipart ? "&tbs=itp:clipart" : "&tbs=itp:photo";
             var url = string.Format(gs_url, search_term, tbs);
-            var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
+            //var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
+            //wb.Dispose();
 
             HtmlAgilityPack.HtmlDocument doc = null;
+            HtmlWeb html_web = new HtmlWeb();
             try {
                 g.LogLine($"GOOG Image Search -- DOWNLOADING: {url}...");
-                doc = new HtmlWeb().LoadFromBrowser(url);
+                doc = html_web.LoadFromBrowser(url);
             }
             catch(Exception ex) {
                 g.LogException(ex);
                 g.LogAllExceptionsAndStack(ex);
-                return saved;
+                goto done;
             }
 
+            var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
             try {
-                var imgs = doc.DocumentNode.Descendants("img").Where(p => p.Attributes["class"]?.Value == "rg_ic rg_i");
                 //g.LogLine($"imgs.Count={imgs.Count()}"); //*
                 var img_ndx = 0;
                 var got_whites = 0;
                 if (imgs.Count() == 0) {
                     g.LogWarn($"GOT NO IMAGES: url={url}");
                     none_found = true;
-                    return saved;
+                    imgs = null;
+                    goto done;
                 }
                 foreach (var img in imgs) {
                     var src = img.Attributes["src"]?.Value;
@@ -92,14 +95,14 @@ namespace mm_svc.Discovery
                                             // save first n images
                                             if (++img_ndx <= save_top_count) {
                                                 var full_filename = filename + $"_M{img_ndx}{ext}";
-                                                Images.AzureImageFile.Save(bytes, type, full_filename, content_type);
+                                                Task.Run(() => Images.AzureImageFile.Save(bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }
 
                                             // separate first n white backg images too too
                                             if (got_whites < save_white_count && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
                                                 var full_filename = filename + $"_W{++got_whites}{ext}";
-                                                Images.AzureImageFile.Save(bytes, type, full_filename, content_type);
+                                                Task.Run(() => Images.AzureImageFile.Save(bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }
                                             if (got_whites == save_white_count && img_ndx >= save_top_count)
@@ -117,9 +120,15 @@ namespace mm_svc.Discovery
                 }
             }
             finally {
+                imgs = null;
                 doc = null;
                 GC.Collect();
             }
+
+        done:
+            doc = null;
+            html_web = null;
+            GC.Collect();
             return saved;
         }
     }

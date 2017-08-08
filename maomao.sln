@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "mm_aws\tests\tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_svc", "mm_svc\mm_svc.csproj", "{98894532-0239-49C0-9D82-D1BFB71F9553}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests and Maintenance", "mm_svc\tests\Tests and Maintenance.csproj", "{5ABD7D8C-E31D-4CF3-8A52-8357D0B466F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "mm_svc\tests\tests.csproj", "{5ABD7D8C-E31D-4CF3-8A52-8357D0B466F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_global", "global\mm_global.csproj", "{17D58E56-2A83-4552-8AFE-664D78183A6B}"
 EndProject

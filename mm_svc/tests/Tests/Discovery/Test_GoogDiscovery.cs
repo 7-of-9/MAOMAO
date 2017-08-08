@@ -16,8 +16,8 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void SmartFind_UserBrowsedUrls_Test1()
         {
-            //var new_rows = SmartFinder.Find_UserAllTopics(20); // dom
-            var new_rows = SmartFinder.Find_UserAllTopics(15); // dung
+            var new_rows = SmartFinder.Find_UserAllTopics(20); // dom
+            //var new_rows = SmartFinder.Find_UserAllTopics(15); // dung
         }
 
         [TestMethod]

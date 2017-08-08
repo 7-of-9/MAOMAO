@@ -13,6 +13,14 @@ namespace mm_svc.Discovery
     {
         public static void GetMeta(List<ImportUrlInfo> urls, int max_parallel = 2)
         {
+            // do awis maintenance 
+            var tlds_uniq = urls.Select(p => mm_global.Util.GetTldFromUrl(p.url)).Distinct().ToList();
+            Parallel.ForEach(tlds_uniq, /*new ParallelOptions() { MaxDegreeOfParallelism = max_parallel },*/ (tld) => {
+                bool from_db;
+                var site = SiteInfo.GetOrQueryAwis(tld, out from_db);
+            });
+
+            // download all, fetch meta data
             Parallel.ForEach(urls, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
 
                 // download
@@ -95,9 +103,6 @@ namespace mm_svc.Discovery
                 doc = null;
                 GC.Collect();
 
-                // do awis maintenance (includes site logo fetching from google)
-                bool from_db;
-                var site = SiteInfo.GetOrQueryAwis(url_info.url, out from_db, url_info.meta_title);
             });
         }
     }

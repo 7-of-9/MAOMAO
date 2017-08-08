@@ -131,7 +131,7 @@ namespace mm_svc
             });*/
         }
 
-        public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db, string meta_title = null)
+        public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db)
         {
             using (var db = mm02Entities.Create())
             {
@@ -149,7 +149,7 @@ retry:
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
                     returned_from_db = true;
-                    MaintainSiteLogo(db_site, meta_title);
+                    //MaintainSiteLogo(db_site);
                     return db_site;
                 }
 
@@ -213,7 +213,7 @@ retry:
                 if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
                 g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
-                MaintainSiteLogo(db_site, meta_title);
+                //MaintainSiteLogo(db_site);
 
                 returned_from_db = false;
                 return db_site;

@@ -33,14 +33,27 @@ namespace mm_jobs
             TelemetryConfiguration.Active.DisableTelemetry = true;
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
+            // prevent re-entry
+            bool isSimilarProcessRunning = IsSameProgramAlreadyRunning(args);
+            if (isSimilarProcessRunning) {
+                g.LogLine(">>> RUNNING PID IS DUPLICATED ON CMDLINE [" + string.Join(",", args.Select(x => x.ToLower().Replace("-", ""))) + "]");
+                if (!args.Contains("-Force")) {
+                    g.LogLine(">>> ABORTING THIS PROCESS; NOP <<<");
+                    return 0;
+                }
+                else {
+                    g.LogLine("(-Force: allowing multiple instances)");
+                }
+            }
+            g.LogLine("(none found, proceeding)");
+
+            // setup
             GetProgramVariables(args);
             CreateLogDirectory();
             SetupLogger();
-
             Environment.CurrentDirectory = exeDir; 
             DateTime startupTime = DateTime.Now;
             bool completedWithoutError = true;
-
             var db = mm02Entities.Create();
             LogJobStartup(db);
 
@@ -51,20 +64,7 @@ namespace mm_jobs
             g.LogInfo("Set Application_ThreadException OK.");
 
             try {
-                // prevent re-entry
-                bool isSimilarProcessRunning = IsSameProgramAlreadyRunning(args);
-                if (isSimilarProcessRunning) {
-                    g.LogLine(">>> RUNNING PID IS DUPLICATED ON CMDLINE [" + string.Join(",", args.Select(x => x.ToLower().Replace("-", ""))) + "]");
-                    if (!args.Contains("-Force")) {
-                        g.LogLine(">>> ABORTING THIS PROCESS; NOP <<<");
-                        return 0;
-                    }
-                    else {
-                        g.LogLine("(-Force: allowing multiple instances)");
-                    }
-                }
-                g.LogLine("(none found, proceeding)");
-
+  
                 // images
                 if (args.Contains("-it")) { 
                     g.LogLine("-"); g.LogInfo("terms-images");
