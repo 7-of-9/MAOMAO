@@ -14,6 +14,12 @@ namespace tests.Tests.Discovery
     public class Test_GoogDiscovery
     {
         [TestMethod]
+        public void SmartFind_AllTopicTree_Test1()
+        {
+            var new_rows = SmartFinder.Find_TopicTree();
+        }
+
+        [TestMethod]
         public void SmartFind_UserBrowsedUrls_Test1()
         {
             var new_rows = SmartFinder.Find_UserAllTopics(20); // dom

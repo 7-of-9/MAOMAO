@@ -15,9 +15,12 @@ namespace mm_svc.Terms
             [NonSerialized]
             public TopicTermLink parent;
 
+            public int level;
+            public bool is_topic;
             public long topic_id;
             public string topic_name;
-            public List<TopicTermLink> children = new List<TopicTermLink>();
+            public List<TopicTermLink> child_topics = new List<TopicTermLink>();
+            public List<TopicTermLink> child_suggestions = new List<TopicTermLink>();
         }
 
         //
@@ -44,7 +47,7 @@ namespace mm_svc.Terms
         //
         // Get entire topic tree
         //
-        public static List<TopicTermLink> GetTopicTree()
+        public static List<TopicTermLink> GetTopicTree(int n_this = 1, int n_of = 1)
         {
             var roots = new List<TopicTermLink>();
 
@@ -53,13 +56,18 @@ namespace mm_svc.Terms
                 // get roots
                 var root_topic_ids = mm_svc.Terms.GoldenTopics.GetTopicRoot_TermIds();
                 roots = root_topic_ids.Select(p => new TopicTermLink() {
+                    level = 1,
+                    is_topic = true,
                     parent = null,
                     topic_id = p,
                     topic_name = db.terms.Find(p).name,
                 }).ToList();
 
                 // add children (recursively)
-                roots.ForEach(p => AddChildTopicTerms_Recurse(p));
+                roots.ForEach(p => {
+                    if (Math.Abs(p.topic_name.GetHashCode()) % n_of == n_this - 1) // intra-process sharing of work
+                        AddChildTopicTerms_Recurse(p);
+                });
 
                 return roots;
             }
@@ -68,6 +76,22 @@ namespace mm_svc.Terms
         private static void AddChildTopicTerms_Recurse(TopicTermLink parent)
         {
             using (var db = mm02Entities.Create()) {
+
+                // get suggested terms for parent
+                var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(parent.topic_id, reprocess: false);
+                var suggestions = parents.Where(p => !p.is_topic && p.S_norm > 0.33).OrderByDescending(p => p.S).ToList();
+                suggestions.RemoveAll(p => p.parent_term_id == parent.topic_id);
+                parent.child_suggestions = suggestions.Select(p => new TopicTermLink() {
+                    level = parent.level + 1,
+                    is_topic = false,
+                    parent = parent,
+                    topic_id = p.parent_term_id,
+                    topic_name = p.parent_term.name,
+                }).ToList();
+
+                // todo -- recurse n levels of suggestions...
+
+                // get defined child topics
                 var topic_links = db.topic_link.Include("term").Include("term1").AsNoTracking()
                        .Where(p => p.parent_term_id == parent.topic_id)
                        .OrderBy(p => p.disabled)
@@ -77,11 +101,13 @@ namespace mm_svc.Terms
                     if (!TermInParentsChain(parent, link.child_term_id)) {
                         if (!link.disabled) {
                             var child = new TopicTermLink() {
+                                level = parent.level + 1,
+                                is_topic = true,
                                 parent = parent,
                                 topic_id = link.child_term.id,
                                 topic_name = link.child_term.name,
                             };
-                            parent.children.Add(child);
+                            parent.child_topics.Add(child);
                             AddChildTopicTerms_Recurse(child);
                         }
                     }

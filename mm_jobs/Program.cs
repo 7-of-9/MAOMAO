@@ -58,7 +58,7 @@ namespace mm_jobs
 
             var ip = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
             g.LogInfo($">> {ip}: RUNNING AS {n_this} OF {n_of}");
-            Console.Title = $"{ip} / [{fullArgs}] / {n_this} OF {n_of}";
+            Console.Title = $"{fullArgs} / {n_this} OF {n_of} ({ip})";
 
             Environment.CurrentDirectory = exeDir; 
             DateTime startupTime = DateTime.Now;
@@ -85,6 +85,10 @@ namespace mm_jobs
                 }
 
                 // discovery
+                else if (args.Contains("-dtt")) {
+                    g.LogLine("-"); g.LogInfo("discover-topic-tree");
+                    SmartFinder.Find_TopicTree("singapore", "singapore", n_this, n_of);
+                }
                 else if (args.Contains("-du20")) {
                     g.LogLine("-"); g.LogInfo("discover-user");
                     SmartFinder.Find_UserAllTopics(20);
@@ -94,6 +98,10 @@ namespace mm_jobs
                     SmartFinder.Find_UserAllTopics(15);
                 }
 
+                if (console_present()) {
+                    g.LogInfo($">> all done. Press any key...");
+                    Console.ReadKey();
+                }
                 return 0;
             }
             catch (Exception ex) {
@@ -114,6 +122,12 @@ namespace mm_jobs
                     File.Move(logFullPath, logFullPath.Replace("INPROCESS.", "FAILED.") + "_" + execTime.TotalMinutes.ToString("0") + ".MINS.LOG");
                 }
             }
+        }
+
+        private static bool console_present() {
+            try { int window_height = Console.WindowHeight; }
+            catch { return false; }
+            return true;
         }
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)

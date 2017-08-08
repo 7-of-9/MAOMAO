@@ -20,8 +20,13 @@ namespace mm_svc.Discovery
         private const string gs_url = "http://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         internal static object lock_obj = "42";
-        internal static double min_secs_interval = 2;
+        internal static double min_secs_interval = 5;
         internal static DateTime last_access = DateTime.MinValue;
+
+        internal static int backoff_secs_base = 15;
+        internal static int backoff_secs = backoff_secs_base;
+        internal static int success_count = 0;
+        internal static int fail_count = 0;
 
         public static List<string> Search(
             out bool none_found,
@@ -56,10 +61,21 @@ namespace mm_svc.Discovery
                 }
 
                 if (doc?.DocumentNode?.InnerText.Contains("Our systems have detected unusual traffic") == true) {
-                    g.LogError($"GOOG detected unusual traffic; will sleep for 10s...");
-                    Thread.Sleep(10 * 1000);
+                    fail_count++;
+                    backoff_secs *= fail_count;
+                    g.LogError($"ERR: GOOG detected unusual traffic; will sleep for {backoff_secs}...");
+                    Thread.Sleep(backoff_secs * 1000);
                     goto done;
                 }
+
+                if (doc?.DocumentNode?.InnerText.Contains("Navigation canceled") == true) {
+                    g.LogError($"ERR: Got IE 'Navigation canceled' -- aborting.");
+                    goto done;
+                }
+
+                success_count++;
+                fail_count = 0;
+                backoff_secs = backoff_secs_base;
             }
             catch(Exception ex) {
                 g.LogException(ex);

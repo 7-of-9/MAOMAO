@@ -23,6 +23,37 @@ namespace mm_svc.Discovery
             return 0;
         }
 
+        public static int Find_TopicTree(string country = "singapore", string city = "singapore", int n_this = 1, int n_of = 1) {
+            var tree = TopicTree.GetTopicTree(n_this, n_of);
+            var tree_topics = new List<long>();
+            var tree_suggestions = new List<long>();
+            tree.ForEach(p => GetTreeTopics(tree_topics, p));
+            tree.ForEach(p => GetTreeSuggestions(tree_suggestions, p));
+
+            var topics_to_search = GetTopicsToSearch(tree_topics);
+            var suggestions_to_search = GetTopicsToSearch(tree_suggestions);
+
+            g.LogInfo($"topics_to_search={string.Join(",", topics_to_search)}");
+            g.LogInfo($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
+
+            var ret1 = FindForTopics(topics_to_search);
+            var ret2 = FindForTopics(suggestions_to_search);
+
+            Maintenance.ImagesSites.Maintain(n_this = 1, n_of = 1);
+            return ret1 + ret2;
+        }
+
+        private static void GetTreeTopics(List<long> terms, TopicTree.TopicTermLink link) {
+            if (link.is_topic == true)
+                terms.Add(link.topic_id);
+            link.child_topics.ForEach(p => GetTreeTopics(terms, p));
+        }
+        private static void GetTreeSuggestions(List<long> terms, TopicTree.TopicTermLink link) {
+            if (link.is_topic == false)
+                terms.Add(link.topic_id);
+            link.child_suggestions.ForEach(p => GetTreeSuggestions(terms, p));
+        }
+
         // runs SF on all a user's browsed topics & suggestions - should allow instant home->discovery nav (good for demo)
         public static int Find_UserAllTopics(long user_id) {
             using (var db = mm02Entities.Create()) {
@@ -31,8 +62,11 @@ namespace mm_svc.Discovery
                                         .Select(p => p.term_id).Distinct().ToListNoLock();
                 var topics_to_search = GetTopicsToSearch(user_reg_topics);
 
-                var ret = FindForCountryTopics(user_id, topics_to_search);
+                var user = db.users.Find(user_id);
+                var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
+                var user_city = user.last_api_city?.ToLower();
 
+                var ret = FindForTopics(topics_to_search, user_country, user_city);
                 Maintenance.ImagesSites.Maintain();
                 return ret;
             }
@@ -43,15 +77,18 @@ namespace mm_svc.Discovery
             using (var db = mm02Entities.Create()) {
                 var user_reg_topics = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
                 var topics_to_search = GetTopicsToSearch(user_reg_topics);
+                
+                var user = db.users.Find(user_id);
+                var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
+                var user_city = user.last_api_city?.ToLower();
 
-                var ret = FindForCountryTopics(user_id, topics_to_search);
-
+                var ret = FindForTopics(topics_to_search, user_country, user_city);
                 Maintenance.ImagesSites.Maintain();
                 return ret;
             }
         }
 
-        private static int FindForCountryTopics(long user_id,  List<long> topics_to_search)
+        private static int FindForTopics(List<long> topics_to_search, string country = "singapore", string city = "singapore")
         {
             using (var db = mm02Entities.Create()) {
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
@@ -86,11 +123,11 @@ namespace mm_svc.Discovery
                     // discovery: top n suggestions by s_norm -- todo: let people tell us when to increase n (by topic)
                     var opts = new ParallelOptions() { MaxDegreeOfParallelism = 2 };
                     Parallel.ForEach(suggestions.Take(5), opts, (suggestion) => {
-                        DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true);
+                        DiscoverForTerm(discovered_urls, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
                     });
 
                     // run discovery for user reg topic term
-                    DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false);
+                    DiscoverForTerm(discovered_urls, user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, country: country, city: city);
                 }
 
                 // find new things
@@ -152,7 +189,7 @@ namespace mm_svc.Discovery
                 }));
 
                 int new_rows = db.SaveChangesTraceValidationErrors();
-                g.LogInfo($"DONE: {additions.Count} additions for user_id={user_id}");
+                g.LogInfo($"DONE: {additions.Count} additions for country={country} city={city}");
                 return new_rows;
             }
         }
@@ -178,7 +215,9 @@ namespace mm_svc.Discovery
         }
 
         private static void DiscoverForTerm(
-            ConcurrentBag<ImportUrlInfo> all_urls, long user_id, long user_reg_topic_id, long term_id, int term_num, bool suggestion)
+            ConcurrentBag<ImportUrlInfo> all_urls,
+            long main_term_id, long term_id, int term_num, bool suggestion,
+            string country = "singapore", string city = "singapore")
         {
             if (Search_Goog.goog_rate_limit_hit == true) {
                 g.LogError($"Search_Goog.goog_rate_limit_hit == true: aborting.");
@@ -187,17 +226,17 @@ namespace mm_svc.Discovery
 
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(term_id);
-                var user_reg_topic = db.terms.Find(user_reg_topic_id);
-                var user = db.users.Find(user_id);
-                var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
-                var user_city = user.last_api_city?.ToLower();
-                if (user_city == user_country)
-                    user_city = null;
+                var user_reg_topic = db.terms.Find(main_term_id);
+                //var user = db.users.Find(user_id);
+                //var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
+                //var user_city = user.last_api_city?.ToLower();
+                if (city == country)
+                    city = null;
 
                 var urls = new List<ImportUrlInfo>();
 
                 string search_desc;
-                if (user_reg_topic_id == term_id)
+                if (main_term_id == term_id)
                     search_desc = $"MAIN for [{user_reg_topic.name}]";
                 else if (!suggestion)
                     search_desc = $"PARENT for [{user_reg_topic.name}]";
@@ -215,30 +254,30 @@ namespace mm_svc.Discovery
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // local searches
-                if (!string.IsNullOrEmpty(user_country) || !string.IsNullOrEmpty(user_city)) {
+                if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
                     // general local
-                    var gen_local = mm_svc.Discovery.Search_Goog.Search($"{search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1);
-                    gen_local.ForEach(p => { p.city = user_city; p.country = user_country; });
+                    var gen_local = mm_svc.Discovery.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
+                    gen_local.ForEach(p => { p.city = city; p.country = country; });
                     urls.AddRange(gen_local);
 
                     // events local
-                    var events_local = mm_svc.Discovery.Search_Goog.Search($"events {search_str} {user_city} {user_country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, user_reg_topic_id, term_id, term_num, suggestion, pages: 1);
-                    events_local.ForEach(p => { p.city = user_city; p.country = user_country; });
+                    var events_local = mm_svc.Discovery.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
+                    events_local.ForEach(p => { p.city = city; p.country = country; });
                     urls.AddRange(events_local);
                 }
 
                 // site searches
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.GOOG_YCOMBINATOR, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.GOOG_YCOMBINATOR, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 if (!suggestion) { // low signal sites
-                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:buzzfeed.com", SearchTypeNum.GOOG_BUZZFEED, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
-                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:mashable.com", SearchTypeNum.GOOG_MASHABLE, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:buzzfeed.com", SearchTypeNum.GOOG_BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
+                    urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str}", "site:mashable.com", SearchTypeNum.GOOG_MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
                 }
 
                 // news search
@@ -248,7 +287,7 @@ namespace mm_svc.Discovery
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // cool search 
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // trending search -- not good: goog itself handles this to a large extent
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/

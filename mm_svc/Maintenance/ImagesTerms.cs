@@ -15,7 +15,7 @@ namespace mm_svc.Maintenance
     {
         public static void Maintain(int n_this = 1, int n_of = 1)
         {
-            var tree = TopicTree.GetTopicTree(); // todo -- add suggested terms for topics; then get images for selected + discovery for selected
+            var tree = TopicTree.GetTopicTree(n_this, n_of);
 
             tree.ForEach(p => {
                 // intra-process sharing of work
@@ -26,10 +26,13 @@ namespace mm_svc.Maintenance
                     ProcessImages(p);
                 }
             });
+
+            g.LogLine("all done.");
         }
 
         private static void ProcessImages(TopicTree.TopicTermLink link, int n_this = 1, int n_of = 1)
         {
+            // maintain image for parent term/topic
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(link.topic_id);
                 var filename = ImageNames.GetTermFilename(term);
@@ -39,7 +42,12 @@ namespace mm_svc.Maintenance
                     Search_GoogImage.Search(out bool none_found, term.name, AzureImageFileType.TermPicture, filename);
                 }
             }
-            link.children.ForEach(p => ProcessImages(p));
+
+            // recurse child topics
+            link.child_topics.ForEach(p => ProcessImages(p));
+
+            // recurse child suggestions
+            link.child_suggestions.ForEach(p => ProcessImages(p));
         }
     }
 }
