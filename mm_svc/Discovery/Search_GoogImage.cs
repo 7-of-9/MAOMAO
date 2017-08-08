@@ -17,7 +17,7 @@ namespace mm_svc.Discovery
 
     public static class Search_GoogImage
     {
-        private const string gs_url = "https://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
+        private const string gs_url = "http://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         public static List<string> Search(
             out bool none_found,

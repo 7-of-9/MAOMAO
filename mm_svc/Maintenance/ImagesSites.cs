@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace mm_svc.Maintenance
 {
-    public static class SiteImages
+    public static class ImagesSites
     {
         public static void Maintain(int n_this = 1, int n_of = 1)
         {
@@ -23,7 +23,7 @@ namespace mm_svc.Maintenance
 
             using (var db = mm02Entities.Create()) {
                 var sites_mising_logos = db.awis_site.Where(p => string.IsNullOrEmpty(p.logo_file_name))
-                                           .Select(p => new { id = p.id, guid = Guid.NewGuid() }).ToListNoLock();
+                                           .Select(p => new { id = p.id, url = p.url }).ToListNoLock();
                 g.LogInfo($"sites_mising_logos.Count={sites_mising_logos.Count}");
 
                 // using Parallel class causes WebBrowser in STA thread to (after some reps of the loop) start to timeout; no idea why
@@ -36,27 +36,26 @@ namespace mm_svc.Maintenance
                     threads.Add(new Thread(() => {
 
                         foreach (var awis_site in sites_mising_logos) {
+                            // intra-process sharing of work
                             var awis_site_id = awis_site.id;
-                            var awis_site_guid = awis_site.guid;
-                            var guid_hash = awis_site_guid.GetHashCode();
+                            var url_hash = Math.Abs(awis_site.url.GetHashCode());
+                            if (url_hash % n_of == n_this - 1) {
 
-                            // threading determine here
-                            //if (guid_hash % threads_to_use == thread_id) {
+                                // inter-process sharing of work
+                                var url_hash_hash = Math.Abs(url_hash.ToString().GetHashCode()); //g.LogLine($"url_hash_hash={url_hash_hash} threads_to_use={threads_to_use} thread_id={thread_id}");
+                                if (url_hash_hash % threads_to_use == thread_id) {
 
-                            // threading determined by caller
-                            if (guid_hash % n_of == n_this - 1) {
-                            
-                                g.LogInfo($"thread_id={thread_id} guid_hash={guid_hash} n_this={n_this} n_of={n_of}");
-                                try {
-                                    using (var db2 = mm02Entities.Create()) {
-                                        //g.LogLine($"thread_id={thread_id} awis_site_id={awis_site_id}");
+                                    g.LogLine($">> {n_this} OF {n_of}: thread_id={thread_id} - taking: url_hash={url_hash} ");
+                                    try {
+                                        using (var db2 = mm02Entities.Create()) {
+                                            //g.LogLine($"thread_id={thread_id} awis_site_id={awis_site_id}");
 
-                                        var db_site2 = db2.awis_site.Find(awis_site_id);
-                                        var filename = ImageNames.GetSiteFilename(db_site2);
-                                        var master_jpeg = filename + "_M1.jpeg";
-                                        var master_png = filename + "_M1.png";
+                                            var db_site2 = db2.awis_site.Find(awis_site_id);
+                                            var filename = ImageNames.GetSiteFilename(db_site2);
+                                            var master_jpeg = filename + "_M1.jpeg";
+                                            var master_png = filename + "_M1.png";
 
-                                        if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
+                                            //if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
 
                                             // (1) tld search
                                             var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(db_site2.TLD);
@@ -72,11 +71,12 @@ namespace mm_svc.Maintenance
 
                                             // (2) meta_title search -- not much good
                                             //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
+                                            //}
                                         }
                                     }
-                                }
-                                catch (Exception ex) {
-                                    g.LogException(ex);
+                                    catch (Exception ex) {
+                                        g.LogException(ex);
+                                    }
                                 }
                             }
                         }

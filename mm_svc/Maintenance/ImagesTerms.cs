@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace mm_svc.Maintenance
 {
-    public static class TermImages
+    public static class ImagesTerms
     {
         public static void Maintain(int n_this = 1, int n_of = 1)
         {

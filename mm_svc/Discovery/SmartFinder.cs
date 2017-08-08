@@ -33,7 +33,7 @@ namespace mm_svc.Discovery
 
                 var ret = FindForCountryTopics(user_id, topics_to_search);
 
-                Maintenance.SiteImages.Maintain();
+                Maintenance.ImagesSites.Maintain();
                 return ret;
             }
         }
@@ -46,7 +46,7 @@ namespace mm_svc.Discovery
 
                 var ret = FindForCountryTopics(user_id, topics_to_search);
 
-                Maintenance.SiteImages.Maintain();
+                Maintenance.ImagesSites.Maintain();
                 return ret;
             }
         }

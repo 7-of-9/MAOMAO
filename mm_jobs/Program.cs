@@ -72,15 +72,15 @@ namespace mm_jobs
             g.LogInfo("Set Application_ThreadException OK.");
 
             try {
-  
+
                 // images
                 if (args.Contains("-it")) { 
                     g.LogLine("-"); g.LogInfo("terms-images");
-                    mm_svc.Maintenance.TermImages.Maintain(n_this, n_of);
+                    mm_svc.Maintenance.ImagesTerms.Maintain(n_this, n_of);
                 }
                 else if (args.Contains("-is")) {
                     g.LogLine("-"); g.LogInfo("sites-images");
-                    mm_svc.Maintenance.SiteImages.Maintain(n_this, n_of);
+                    mm_svc.Maintenance.ImagesSites.Maintain(n_this, n_of);
                 }
 
                 // discovery

@@ -13,7 +13,7 @@ using static mm_svc.Discovery.SmartFinder;
 namespace mm_svc.Discovery {
     public static class Search_Goog
     {
-        private const string gs_url = "https://www.google.com/search?q={0}{1}&start={2}";
+        private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}";
         public static bool goog_rate_limit_hit = false;
 
         public enum SearchTypeNum

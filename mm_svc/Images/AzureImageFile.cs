@@ -67,15 +67,23 @@ namespace mm_svc.Images
             var storageAccount = CloudStorageAccount.Parse(_blobStorageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
 
-            var container = blobClient.GetContainerReference(type == AzureImageFileType.SiteLogo ? _sites_containerName
-                                                        : type == AzureImageFileType.TermPicture ? _terms_containerName : null);
-            
-            container.CreateIfNotExists();
-            container.SetPermissions(
-                new BlobContainerPermissions {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
-                });
-            return container;
+            int retry_count = 0;
+again:
+            try {
+                var container = blobClient.GetContainerReference(type == AzureImageFileType.SiteLogo ? _sites_containerName
+                                                            : type == AzureImageFileType.TermPicture ? _terms_containerName : null);
+
+                container.CreateIfNotExists();
+                container.SetPermissions(
+                    new BlobContainerPermissions {
+                        PublicAccess = BlobContainerPublicAccessType.Blob
+                    });
+                return container;
+            } catch(Exception ex) {
+                if (++retry_count < 3)
+                    goto again;
+                throw ex;
+            }
         }
 
         //public async Task AddImageToBlobStorageAsync(UploadedImage image)

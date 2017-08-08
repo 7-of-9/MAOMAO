@@ -20,7 +20,7 @@ namespace test.Maintenance
         public void Maintain_AwisSiteImages_Test0()
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
-            mm_svc.Maintenance.SiteImages.Maintain();
+            mm_svc.Maintenance.ImagesSites.Maintain();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace tests.Maintenance
         public void Maintain_TermImages_Test0()
         {
             TelemetryConfiguration.Active.DisableTelemetry = true;
-            mm_svc.Maintenance.TermImages.Maintain();
+            mm_svc.Maintenance.ImagesTerms.Maintain();
         }
     }
 }
