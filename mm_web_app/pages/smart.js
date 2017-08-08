@@ -26,8 +26,8 @@ const businessAddress = (
 
 export default class Smart extends React.Component {
   state = {
-    url: 'https://www.google.com',
-    title: 'Google',
+    url: '',
+    title: '',
     isLoading: true
   }
 
@@ -69,6 +69,9 @@ export default class Smart extends React.Component {
     const PROXY_URL = '/api/preview'
     const proxyUrl = `${PROXY_URL}?url=${url}`
     const { isLoading } = this.state
+    if (!url) {
+      return null
+    }
     return (
       <iframe
         sandbox='allow-same-origin allow-scripts allow-forms allow-presentation allow-popups'
@@ -88,8 +91,18 @@ export default class Smart extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('Smart componentDidMount')
+    logger.warn('Smart componentDidMount', this.props, this.state)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+    const { query: { url } } = this.props.url
+    if (!url) {
+      this.setState({ url: 'http://google.com' })
+    } else {
+      if (url.indexOf('http') === -1) {
+        this.setState({ url: `http://${url}` })
+      } else {
+        this.setState({ url })
+      }
+    }
   }
 
   render () {
