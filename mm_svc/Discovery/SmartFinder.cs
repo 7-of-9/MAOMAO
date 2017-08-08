@@ -136,12 +136,12 @@ namespace mm_svc.Discovery
                 //foreach (var url in discovered_urls) {
                 Parallel.ForEach(discovered_urls, (url) => {
                     using (var db2 = mm02Entities.Create()) {
-                        if (false == db2.disc_url.Any(p => // compound uniq key
+                        if (false == g.RetryMaxOrThrow(() => db2.disc_url.Any(p => // compound uniq key
                                                     p.url == url.url
                                           && p.search_num == (int)url.search_num
                                         && p.main_term_id == url.main_term_id
                                              && p.term_id == url.parent_term_id
-                                     && p.suggested_topic == url.suggestion)) {
+                                     && p.suggested_topic == url.suggestion))) {
                             new_conc.Add(url);
                         }
                     }

@@ -13,7 +13,6 @@ namespace mm_svc.Discovery
 {
     public static class Browser
     {
-        // see: http://www.gatherproxy.com/sockslist/country/?c=Singapore
 
         static Browser()
         {
