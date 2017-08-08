@@ -24,7 +24,7 @@ namespace mm_svc.Discovery
             Parallel.ForEach(urls, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
 
                 // download
-                var doc = Browser.Fetch(url_info.url, rate_limit: false);
+                var doc = Browser.Fetch(url_info.url);
                 if (doc == null) {
                     g.LogWarn($"got no HAP obj for [{url_info.url}]");
                     return;

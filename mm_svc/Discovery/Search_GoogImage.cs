@@ -19,6 +19,10 @@ namespace mm_svc.Discovery
     {
         private const string gs_url = "http://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
+        internal static object lock_obj = "42";
+        internal static double min_secs_interval = 2;
+        internal static DateTime last_access = DateTime.MinValue;
+
         public static List<string> Search(
             out bool none_found,
             string search_term, Images.AzureImageFileType type, string filename = null,
@@ -27,12 +31,11 @@ namespace mm_svc.Discovery
         {
             none_found = false;
             var saved = new List<string>();
-            if (Search_Goog.goog_rate_limit_hit == true)
-                return saved;
 
-            lock (Browser.lock_obj) {
-                while (DateTime.Now.Subtract(Browser.last_access).TotalSeconds < Browser.min_seconds_between_requests) {
-                    System.Threading.Thread.Sleep(100);
+            lock (Search_GoogImage.lock_obj) {
+                while (DateTime.Now.Subtract(Search_GoogImage.last_access).TotalSeconds < Search_GoogImage.min_secs_interval) {
+                    g.LogLine("waiting...");
+                    System.Threading.Thread.Sleep(2000);
                 }
             }
 
@@ -45,7 +48,18 @@ namespace mm_svc.Discovery
             HtmlWeb html_web = new HtmlWeb();
             try {
                 g.LogLine($"GOOG Image Search -- DOWNLOADING: {url}...");
+
                 doc = html_web.LoadFromBrowser(url);
+
+                lock (Search_GoogImage.lock_obj) {
+                    Search_GoogImage.last_access = DateTime.Now;
+                }
+
+                if (doc?.DocumentNode?.InnerText.Contains("Our systems have detected unusual traffic") == true) {
+                    g.LogError($"GOOG detected unusual traffic; will sleep for 10s...");
+                    Thread.Sleep(10 * 1000);
+                    goto done;
+                }
             }
             catch(Exception ex) {
                 g.LogException(ex);
@@ -60,6 +74,8 @@ namespace mm_svc.Discovery
                 var got_whites = 0;
                 if (imgs.Count() == 0) {
                     g.LogWarn($"GOT NO IMAGES: url={url}");
+                    g.LogWarn($"html={doc.DocumentNode.InnerHtml}");
+                    g.LogWarn($"text={doc.DocumentNode.InnerText}");
                     none_found = true;
                     imgs = null;
                     goto done;
@@ -115,9 +131,6 @@ namespace mm_svc.Discovery
                     }
                 }
 
-                lock (Browser.lock_obj) {
-                    Browser.last_access = DateTime.Now;
-                }
             }
             finally {
                 imgs = null;

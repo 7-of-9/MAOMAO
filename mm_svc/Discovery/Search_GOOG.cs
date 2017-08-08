@@ -16,6 +16,10 @@ namespace mm_svc.Discovery {
         private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}";
         public static bool goog_rate_limit_hit = false;
 
+        internal static object lock_obj = "42";
+        internal static DateTime last_access = DateTime.MinValue;
+        internal static double min_secs_interval = 1;
+
         public enum SearchTypeNum
         {
             GOOG_MAIN = 1,           // too general - not relevent enough?
@@ -88,7 +92,18 @@ namespace mm_svc.Discovery {
                 g.LogInfo($">>> GOOG SEARCH: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
                 HtmlDocument doc = null;
                 try {
+                    lock (lock_obj) {
+                        while (DateTime.Now.Subtract(last_access).TotalSeconds < min_secs_interval) {
+                            g.LogLine("waiting...");
+                            System.Threading.Thread.Sleep(2000);
+                        }
+                    }
+
                     doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+
+                    lock (lock_obj) {
+                        last_access = DateTime.Now;
+                    }
                 }
                 catch (ApplicationException aex) {
                     if (aex.Message == "RATE LIMIT HIT") {

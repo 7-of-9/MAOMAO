@@ -15,10 +15,6 @@ namespace mm_svc.Discovery
     {
         // see: http://www.gatherproxy.com/sockslist/country/?c=Singapore
 
-        internal static object lock_obj = "42";
-        internal static DateTime last_access = DateTime.MinValue;
-        internal static double min_seconds_between_requests = 0.5;
-
         static Browser()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
@@ -39,17 +35,8 @@ namespace mm_svc.Discovery
             }
         }
 
-        public static HtmlDocument Fetch(string url, bool rate_limit = true)
+        public static HtmlDocument Fetch(string url)
         {
-            if (rate_limit) {
-                lock (lock_obj) {
-                    while (DateTime.Now.Subtract(last_access).TotalSeconds < min_seconds_between_requests) {
-                        //g.LogLine("Fetch -- waiting...");
-                        System.Threading.Thread.Sleep(2000);
-                    }
-                }
-            }
-
             string html;
             var rnd = new Random();
 
@@ -73,8 +60,8 @@ namespace mm_svc.Discovery
                     html = client.DownloadString(url);
                 }
                 catch (WebException wex) {
-                    if (wex.Message.Contains("503") && rate_limit) {
-                        g.LogError(" **** 503 RATE LIMIT !! ****");
+                    if (wex.Message.Contains("503")) {
+                        g.LogError(" **** 503 -- PROBABLE RATE LIMIT !! ****");
                         throw new ApplicationException("RATE LIMIT HIT");
                     }
                     g.LogException(wex, $"FAIL: download url=[{url}]");
@@ -85,12 +72,7 @@ namespace mm_svc.Discovery
                     return null;
                 }
             }
-            if (rate_limit) {
-                lock (lock_obj) {
-                    last_access = DateTime.Now;
-                }
-            }
-
+        
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
             return doc;

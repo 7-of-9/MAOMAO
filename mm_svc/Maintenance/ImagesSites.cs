@@ -48,7 +48,6 @@ namespace mm_svc.Maintenance
                                     g.LogLine($">> {n_this} OF {n_of}: thread_id={thread_id} - taking: url_hash={url_hash} ");
                                     try {
                                         using (var db2 = mm02Entities.Create()) {
-                                            //g.LogLine($"thread_id={thread_id} awis_site_id={awis_site_id}");
 
                                             var db_site2 = db2.awis_site.Find(awis_site_id);
                                             var filename = ImageNames.GetSiteFilename(db_site2);
