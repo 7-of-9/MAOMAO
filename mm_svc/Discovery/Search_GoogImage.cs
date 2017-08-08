@@ -38,8 +38,8 @@ namespace mm_svc.Discovery
 
             var tbs = clipart ? "&tbs=itp:clipart" : "&tbs=itp:photo";
             var url = string.Format(gs_url, search_term, tbs);
-            //var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime
-            //wb.Dispose();
+            var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime in debugger
+            wb.Dispose();
 
             HtmlAgilityPack.HtmlDocument doc = null;
             HtmlWeb html_web = new HtmlWeb();

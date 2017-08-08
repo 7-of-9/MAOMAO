@@ -12,7 +12,7 @@ namespace mm_svc.Maintenance
 {
     public static class TermImages
     {
-        public static void Maintain()
+        public static void Maintain(int n_this = 1, int n_of = 1)
         {
             var tree = TopicTree.GetTopicTree();
             tree.ForEach(p => ProcessImages(p));

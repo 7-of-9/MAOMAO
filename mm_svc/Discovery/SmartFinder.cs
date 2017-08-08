@@ -16,7 +16,7 @@ namespace mm_svc.Discovery
     public static class SmartFinder
     {
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
-        private const int TERM_SEARCH_BATCH_SIZE = 5;
+        private const int TERM_SEARCH_BATCH_SIZE = 1;
 
         // todo -- operate on all [url] parent terms -- problem is country search?
         public static int FindForAllUrls() {
