@@ -9,7 +9,6 @@ import React from 'react'
 function Slogan () {
   return (
     <div style={{margin: '0 16px'}}>
-      <span className='stamp-logo' />
       <img className='logo-image' onClick={() => { window.location.href = '/' }} src='/static/images/maomao.png' alt='maomao' width='165' height='24' />
       <span className='paragraph-smarter'> discover & share </span>
     </div>

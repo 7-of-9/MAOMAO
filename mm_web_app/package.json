@@ -68,7 +68,7 @@
     "react-player": "^0.20.0",
     "react-resizable-box": "^2.0.6",
     "react-resize-detector": "^0.5.0",
-    "react-sticky-el": "1.0.10",
+    "react-sticky-el": "^1.0.13",
     "react-subscribe": "^1.2.3",
     "react-toggle-button": "^2.1.0",
     "react-toggle-display": "^2.2.0",

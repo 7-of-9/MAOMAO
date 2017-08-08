@@ -7098,9 +7098,9 @@ react-split-pane@^0.1.65:
     prop-types "^15.5.10"
     react-style-proptype "^3.0.0"
 
-react-sticky-el@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/react-sticky-el/-/react-sticky-el-1.0.10.tgz#9b842aae5ca47166229a50b2f37c0ece73297ed5"
+react-sticky-el@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/react-sticky-el/-/react-sticky-el-1.0.13.tgz#835463eb050804956724f5d0362ad75363953129"
   dependencies:
     prop-types "^15.5.10"
 

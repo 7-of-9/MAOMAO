@@ -43,6 +43,11 @@ export default class Smart extends React.Component {
             const { href: url, innerText: title } = event.target
             logger.warn('iframe link', url, title)
             this.setState(prevState => ({ isLoading: true, url, title }))
+          } else if (event.target && event.target.parentNode.nodeName === 'A' && event.target.parentNode.href.indexOf('#') === -1) {
+            event.preventDefault()
+            const { href: url, innerText: title } = event.target.parentNode
+            logger.warn('iframe link', url, title)
+            this.setState(prevState => ({ isLoading: true, url, title }))
           }
         }, false)
         const { title } = this.iframe.contentDocument
@@ -66,7 +71,7 @@ export default class Smart extends React.Component {
     const { isLoading } = this.state
     return (
       <iframe
-        sandbox='allow-same-origin allow-scripts allow-forms allow-presentation'
+        sandbox='allow-same-origin allow-scripts allow-forms allow-presentation allow-popups'
         className={isLoading ? 'hidden-view' : 'iframe-view'}
         id={`frame-${name}`}
         name={`frame-${name}`}
