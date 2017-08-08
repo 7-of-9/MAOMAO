@@ -6,13 +6,14 @@ import logger from '../utils/logger'
 import stylesheet from '../styles/index.scss'
 import Header from '../components/Header'
 import LogoIcon from '../components/LogoIcon'
+import Loading from '../components/Loading'
 import Slogan from '../components/Slogan'
 
 const brand = (title, url) => (
   <Header>
     <LogoIcon />
     <Slogan />
-    <p>{title} ({url})</p>
+    <p className='url-info'>{title} ({url})</p>
   </Header>
 )
 const brandName = 'maomao'
@@ -25,46 +26,59 @@ const businessAddress = (
 export default class Smart extends React.Component {
   state = {
     url: 'https://www.google.com',
-    title: 'Google'
+    title: 'Google',
+    isLoading: true
   }
 
   onLoadIframe = (evt) => {
     logger.warn('onLoadIframe', evt, this.iframe)
-    if (this.iframe && this.iframe.contentWindow) {
-      logger.warn('iframe addEventListener click')
-      this.iframe.contentWindow.addEventListener('click', (event) => {
-        logger.warn('iframe click', event)
-        if (event.target && event.target.tagName === 'A') {
-          event.preventDefault()
-          const { href: url, innerText: title } = event.target
-          this.setState(prevState => ({ url, title }))
-        }
-      }, false)
-      logger.warn('iframe contentWindow.location', this.iframe.contentWindow.location)
+    try {
+      if (this.iframe && this.iframe.contentWindow) {
+        logger.warn('iframe addEventListener click')
+        this.iframe.contentWindow.addEventListener('click', (event) => {
+          logger.warn('iframe click', event)
+          if (event.target && event.target.tagName === 'A' && event.target.href.indexOf('#') === -1) {
+            event.preventDefault()
+            const { href: url, innerText: title } = event.target
+            logger.warn('iframe link', url, title)
+            this.setState(prevState => ({ isLoading: true, url, title }))
+          }
+        }, false)
+        // const { title } = this.iframe.contentDocument
+        // const { search } = this.iframe.contentWindow.location
+        // logger.warn('iframe title', title)
+        // logger.warn('iframe search', search)
+        logger.warn('iframe contentDocument', this.iframe.contentDocument)
+        logger.warn('iframe contentWindow', this.iframe.contentWindow)
+        this.setState(prevState => ({ isLoading: false }))
+      }
+    } catch (err) {
+      const { url, title } = this.state
+      logger.warn('found error', err, url, title, this.iframe)
+      this.setState(prevState => ({ isLoading: false }))
     }
-  }
-
-  onErrorIframe = (evt) => {
-    logger.warn('onErrorIframe', evt, this.iframe)
   }
 
   openUrlInIframe = (url, name, width = '100%', height = '100%') => {
     const PROXY_URL = '/api/preview'
     const proxyUrl = `${PROXY_URL}?url=${url}`
-    return (<iframe
-      sandbox='allow-same-origin allow-scripts allow-forms'
-      id={`frame-${name}`}
-      name={`frame-${name}`}
-      ref={(ifr) => { this.iframe = ifr }}
-      width={width}
-      height={height}
-      frameBorder='0'
-      allowFullScreen
-      allowTransparency
-      src={proxyUrl}
-      onLoad={this.onLoadIframe}
-      onError={this.onErrorIframe}
-      />)
+    const { isLoading } = this.state
+    return (
+      <iframe
+        sandbox='allow-same-origin allow-scripts allow-forms allow-presentation'
+        className={isLoading ? 'hidden-view' : 'iframe-view'}
+        id={`frame-${name}`}
+        name={`frame-${name}`}
+        ref={(ifr) => { this.iframe = ifr }}
+        width={width}
+        height={height}
+        frameBorder='0'
+        allowFullScreen
+        allowTransparency
+        src={proxyUrl}
+        onLoad={this.onLoadIframe}
+      />
+    )
   }
 
   componentDidMount () {
@@ -73,7 +87,7 @@ export default class Smart extends React.Component {
   }
 
   render () {
-    const { url, title } = this.state
+    const { url, title, isLoading } = this.state
     return (
       <Page>
         <Head>
@@ -96,7 +110,12 @@ export default class Smart extends React.Component {
         </Head>
         <div className='smart'>
           <Navbar className='header-nav animated fadeInDown' brand={brand(title, url)} />
-          {this.openUrlInIframe(url, title)}
+          <div
+            style={{backgroundColor: '#fff', width: '100%', height: '100%'}}
+             >
+            <Loading isLoading={isLoading} />
+            {this.openUrlInIframe(url, title)}
+          </div>
           <div className='footer-area'>
             <Footer brandName={brandName}
               facebookUrl='https://www.facebook.com/maomao.hiring'
