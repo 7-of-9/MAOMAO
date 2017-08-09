@@ -28,14 +28,6 @@ const AppHeader = dynamic(
   }
 )
 
-// const AnimateBox = dynamic(
-//  import('../../components/AnimateBox'),
-//   {
-//     loading: () => (<Loading isLoading />),
-//     ssr: false
-//   }
-// )
-
 const Discovery = dynamic(
  import('../Discovery'),
   {
@@ -91,10 +83,6 @@ const businessAddress = (
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
   </address>
 )
-
-const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
-}
 
 @inject('store')
 @inject('ui')
@@ -168,8 +156,9 @@ class Home extends React.Component {
           <div
             className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
             >
-            <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
-            <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
+            <h1 className='animated fadeInUp'>
+              <img className='logo-image' src='/static/images/maomao.png' alt='maomao' />  smart browsing & discovery
+            </h1>
           </div>
         </div>
         <div className='wrapper-slide'>

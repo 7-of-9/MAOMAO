@@ -9,7 +9,6 @@ const { parse } = require('url')
 const { join } = require('path')
 const mobxReact = require('mobx-react')
 const request = require('request')
-const helmet = require('helmet')
 const _ = require('lodash')
 const log = require('loglevel')
 const dev = process.env.NODE_ENV !== 'production'
@@ -31,7 +30,6 @@ app.prepare().then(() => {
   const server = express()
   server.use(Raven.requestHandler())
   server.use(compression())
-  server.use(helmet())
   server.use(bodyParser.json())
   server.use(session({
     secret: 'REDACTED_SECRET',

@@ -19,7 +19,11 @@ import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
 
-const brand = <Header><LogoIcon /><Slogan /></Header>
+const brand = () => (
+  <Header>
+    <LogoIcon />
+    <Slogan />
+  </Header>)
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -304,7 +308,7 @@ class AppHeader extends React.Component {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
     const { showSignInModal, title } = this.props.ui
     return (
-      <Navbar className='header-nav animated fadeInDown' brand={brand}>
+      <Navbar className='header-nav animated fadeInDown' brand={brand()}>
         <NavItem>
           <a data-toggle='dropdown'>
             <i className='fa fa-briefcase fa-2x' aria-hidden='true' />

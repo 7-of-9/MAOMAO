@@ -18,6 +18,7 @@ export class UIStore {
   @observable currentViewer = 'streams'
   @observable selectedTopics = []
   @observable currentTopicId = ''
+  @observable currentTopicTitle = ''
   @observable treeLevel = 1
   @observable notifications = []
   @observable page = 1
@@ -52,9 +53,10 @@ export class UIStore {
     }
   }
 
-  @action selectTopicTree (topicId, inc = 1) {
+  @action selectTopicTree (topicId, topicName = '', inc = 1) {
     logger.warn('selectTopicTree', topicId)
     this.currentTopicId = topicId
+    this.currentTopicTitle = topicName
     this.treeLevel += inc
   }
 

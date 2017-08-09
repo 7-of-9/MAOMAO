@@ -7,6 +7,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
+import { tagColor } from '../../utils/helper'
 
 class TopicItem extends PureComponent {
   static propTypes = {
@@ -26,7 +27,7 @@ class TopicItem extends PureComponent {
     isSelect: false,
     hasChild: true,
     onChange: (isSelect, topicId, title) => {},
-    onSelect: (topicId) => {}
+    onSelect: (isSelect, topicId, title) => {}
   }
 
   onChange = (evt) => {
@@ -40,8 +41,9 @@ class TopicItem extends PureComponent {
     logger.warn('handleClick')
     const { hasChild, topic_id: topicId, title, isSelect } = this.props
     if (hasChild) {
-      this.props.onSelect(topicId)
-    } else {
+      this.props.onSelect(topicId, title)
+    }
+    if (!isSelect) {
       this.props.onChange(!isSelect, topicId, title)
     }
   }
@@ -65,7 +67,13 @@ class TopicItem extends PureComponent {
               onClick={this.handleClick}
               >
               <div className='caption'>
-                <h4>{title}</h4>
+                <div className='mix-tag'>
+                  <div className='mix-tag-topic'>
+                    <span className={`tags ${tagColor(title)}`} rel='tag'>
+                      {title}
+                    </span>
+                  </div>
+                </div>
               </div>
             </a>
             <input

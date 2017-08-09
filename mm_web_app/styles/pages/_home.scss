@@ -8,7 +8,7 @@ the home page
 .neal-hero {
   &.banner-hero {
     position: relative;
-    min-height: 220px;
+    min-height: 150px;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     -moz-animation: fadeIn 1s both;
@@ -534,6 +534,30 @@ the home page
   min-height: 100vh;
 }
 
+.back-to-parent {
+  @include border-radius(5px);
+  z-index: 9999;
+  text-align: center;
+  font-size: 2rem;
+  color: #fff;
+  animation-name: fadeInLeft;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  .fa {
+    margin-top: 7px;
+    vertical-align: top;
+  }
+  &:hover,
+  &:focus {
+    color: #fff;
+    background: rgba(0, 0, 0, .45);
+  }
+  .current-topic-name {
+    display: inline-block;
+    padding-top: 20px;
+  }
+}
+
 .topic-tree {
  .container-masonry {
     z-index: 1;
@@ -577,12 +601,14 @@ the home page
             display: block;
             overflow: hidden;
             .caption {
-              padding: 0px;
-              h4 {
-                  position: absolute;
-                  right: 0;
-                  bottom: 0;
-                  color: #000;
+              @include abs-pos ($top: auto, $right: 0, $bottom: 40px, $left: auto);
+              width: 100%;
+              .mix-tag {
+                z-index: 1;
+                .tags {
+                  font-size: 1.5rem;
+                  text-align: left;
+                }
               }
             }
             img {
@@ -608,8 +634,8 @@ the home page
             top: 0;
             right: 0;
             -webkit-appearance:none;
-            width:30px;
-            height:30px;
+            width:40px;
+            height:40px;
             background-color: #fff;
             border-radius:2px;
             border:1px solid #ccc;
@@ -661,6 +687,11 @@ the home page
     background: #008000;
     border: 1px solid #1a8000;
     font-size: 1.2rem;
+  }
+  span.text-topic {
+    font-size: 1.5rem !important;
+    max-width: 400px !important;
+    line-height: 30px;
   }
 }
 
