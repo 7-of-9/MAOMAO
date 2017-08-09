@@ -20,21 +20,21 @@ namespace mm_svc.Images
     // http://www.wintellect.com/devcenter/rrobinson/azure-bits-2-saving-the-image-to-azure-blob-storage
     public static class AzureImageFile
     {
-        private static string _terms_imageRootPath;
-        private static string _terms_containerName;
+        public static string terms_imageRootPath;
+        public static string terms_containerName;
 
-        private static string _sites_imageRootPath;
-        private static string _sites_containerName;
+        public static string sites_imageRootPath;
+        public static string sites_containerName;
 
         private static string _blobStorageConnectionString;
 
         static AzureImageFile()
         {
-            _terms_imageRootPath = ConfigurationManager.AppSettings["Terms_ImageRootPath"];
-            _terms_containerName = ConfigurationManager.AppSettings["Terms_ImagesContainer"];
+            terms_imageRootPath = ConfigurationManager.AppSettings["Terms_ImageRootPath"];
+            terms_containerName = ConfigurationManager.AppSettings["Terms_ImagesContainer"];
 
-            _sites_imageRootPath = ConfigurationManager.AppSettings["Sites_ImageRootPath"];
-            _sites_containerName = ConfigurationManager.AppSettings["Sites_ImagesContainer"];
+            sites_imageRootPath = ConfigurationManager.AppSettings["Sites_ImageRootPath"];
+            sites_containerName = ConfigurationManager.AppSettings["Sites_ImagesContainer"];
 
             _blobStorageConnectionString = ConfigurationManager.ConnectionStrings["BlobStorageConnectionString"].ConnectionString;
         }
@@ -70,8 +70,8 @@ namespace mm_svc.Images
             int retry_count = 0;
 again:
             try {
-                var container = blobClient.GetContainerReference(type == AzureImageFileType.SiteLogo ? _sites_containerName
-                                                            : type == AzureImageFileType.TermPicture ? _terms_containerName : null);
+                var container = blobClient.GetContainerReference(type == AzureImageFileType.SiteLogo ? sites_containerName
+                                                            : type == AzureImageFileType.TermPicture ? terms_containerName : null);
 
                 container.CreateIfNotExists();
                 container.SetPermissions(

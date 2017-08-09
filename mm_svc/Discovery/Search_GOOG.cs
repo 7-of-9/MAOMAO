@@ -94,7 +94,7 @@ namespace mm_svc.Discovery {
                 try {
                     lock (lock_obj) {
                         while (DateTime.Now.Subtract(last_access).TotalSeconds < min_secs_interval) {
-                            g.LogLine("waiting...");
+                            g.LogLine("Search_Goog.Search - waiting...");
                             System.Threading.Thread.Sleep(2000);
                         }
                     }

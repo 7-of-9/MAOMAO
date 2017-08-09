@@ -12,6 +12,18 @@ namespace mmapi00.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class UserTopicsController : ApiController
     {
+        [Route("user_topics/bulkadd")]
+        [HttpGet]
+        public IHttpActionResult AddUserTopic(
+          long user_id, string hash,
+          List<long> topic_ids)
+        {
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+
+            mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
+            return Ok(new {});
+        }
+
         [Route("user_topics/add")]
         [HttpGet]
         public IHttpActionResult AddUserTopic(

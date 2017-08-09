@@ -37,7 +37,7 @@ namespace mmapi00.Controllers
         [HttpPut]
         public IHttpActionResult RecordUrl(
             int user_id, string hash,
-            [FromBody] RecordUrlParam param) //[FromBody] string href, [FromBody] string text)
+            [FromBody] RecordUrlParam param)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (param == null) return BadRequest();

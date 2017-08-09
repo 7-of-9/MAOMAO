@@ -37,8 +37,8 @@ namespace mm_svc.Maintenance
                 var term = db.terms.Find(link.topic_id);
                 var filename = ImageNames.GetTermFilename(term);
                 var master_jpeg = filename + "_M1.jpeg";
-                var master_png = filename + "_M1.png";
-                if (!AzureImageFile.Exists(AzureImageFileType.TermPicture, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.TermPicture, master_png)) {
+                //var master_png = filename + "_M1.png";
+                if (!AzureImageFile.Exists(AzureImageFileType.TermPicture, master_jpeg)) {// && !AzureImageFile.Exists(AzureImageFileType.TermPicture, master_png)) {
                     Search_GoogImage.Search(out bool none_found, term.name, AzureImageFileType.TermPicture, filename);
                 }
             }

@@ -11,8 +11,13 @@ using System.Threading.Tasks;
 
 namespace mm_svc.Discovery
 {
+    // general WebBrowser - used by google searches (which uses its own rate limiting) and also for
+    // misc. scraping/downloading (which uses this class' internal rate limiting)
     public static class Browser
     {
+        internal static object lock_obj = "42";
+        internal static DateTime last_access = DateTime.MinValue;
+        internal static double min_secs_interval = 1;
 
         static Browser()
         {
@@ -34,10 +39,19 @@ namespace mm_svc.Discovery
             }
         }
 
-        public static HtmlDocument Fetch(string url)
+        public static HtmlDocument Fetch(string url, bool internal_rate_limit = false)
         {
             string html;
             var rnd = new Random();
+
+            if (internal_rate_limit) {
+                lock (lock_obj) {
+                    while (DateTime.Now.Subtract(last_access).TotalSeconds < min_secs_interval) {
+                        g.LogLine("Browser.Fetch - waiting...");
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                }
+            }
 
             using (var client = new WebClient()) { // GZipWebClient()) {
                 // from: Chrome OSX Version 59.0.3071.115 (Official Build) (64-bit)
@@ -57,6 +71,12 @@ namespace mm_svc.Discovery
                 try {
                     g.LogInfo($"Fetch -- DOWNLOADING: {url}...");
                     html = client.DownloadString(url);
+
+                    if (internal_rate_limit) {
+                        lock (lock_obj) {
+                            last_access = DateTime.Now;
+                        }
+                    }
                 }
                 catch (WebException wex) {
                     if (wex.Message.Contains("503")) {

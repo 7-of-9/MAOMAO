@@ -18,15 +18,10 @@ namespace mm_svc.Discovery
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
         private const int TERM_SEARCH_BATCH_SIZE = 1;
 
-        // todo -- operate on all [url] parent terms -- problem is country search?
-        public static int FindForAllUrls() {
-            return 0;
-        }
-
         public static int Find_TopicTree(string country = "singapore", string city = "singapore", int n_this = 1, int n_of = 1) {
             var tree = TopicTree.GetTopicTree(n_this, n_of);
             var tree_topics = new List<long>();
-            var tree_suggestions = new List<long>();
+            var tree_suggestions = new List<long>(); https://maomao.blob.core.windows.net/t-img/t_4990959_History_M1.jpeg
             tree.ForEach(p => GetTreeTopics(tree_topics, p));
             tree.ForEach(p => GetTreeSuggestions(tree_suggestions, p));
 

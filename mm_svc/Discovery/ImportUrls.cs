@@ -20,7 +20,7 @@ namespace mm_svc.Discovery
                 var site = SiteInfo.GetOrQueryAwis(tld, out from_db);
             });
 
-            // todo -- handle better, e.g. ycombinator bad gateway + quora too many requests
+            // todo -- handle better, e.g. ycombinator bad gateway + quora too many requests + lots of 403 forbiddens
             // download all, fetch meta data
             Parallel.ForEach(urls, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
 

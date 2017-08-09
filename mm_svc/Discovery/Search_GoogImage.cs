@@ -121,20 +121,23 @@ namespace mm_svc.Discovery
                                     if (image != null) {
                                         using (Bitmap bmp = new Bitmap(image)) {
                                             var tl = bmp.GetPixel(0, 0);
-                                            var ext = jpeg ? ".jpeg" : ".png";
-                                            var content_type = jpeg ? "image/jpeg" : "image/png";
+
+                                            // always save as jpeg
+                                            var ext = ".jpeg"; // jpeg ? ".jpeg" : ".png";
+                                            var content_type = "image/jpeg"; // jpeg ? "image/jpeg" : "image/png";
+                                            var jpeg_bytes = ImageToBytes_Jpeg(image);
 
                                             // save first n images
                                             if (++img_ndx <= save_top_count) {
                                                 var full_filename = filename + $"_M{img_ndx}{ext}";
-                                                Task.Run(() => Images.AzureImageFile.Save(bytes, type, full_filename, content_type));
+                                                Task.Run(() => Images.AzureImageFile.Save(jpeg_bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }
 
                                             // separate first n white backg images too too
                                             if (got_whites < save_white_count && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
                                                 var full_filename = filename + $"_W{++got_whites}{ext}";
-                                                Task.Run(() => Images.AzureImageFile.Save(bytes, type, full_filename, content_type));
+                                                Task.Run(() => Images.AzureImageFile.Save(jpeg_bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }
                                             if (got_whites == save_white_count && img_ndx >= save_top_count)
@@ -159,6 +162,13 @@ namespace mm_svc.Discovery
             html_web = null;
             GC.Collect();
             return saved;
+        }
+
+        private static byte[] ImageToBytes_Jpeg(Image img) {
+            using (var stream = new MemoryStream()) {
+                img.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+                return stream.ToArray();
+            }
         }
     }
 }

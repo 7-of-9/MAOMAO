@@ -78,6 +78,7 @@
     <Compile Include="Maintenance\SiteImages.cs" />
     <Compile Include="Maintenance\TopicTreeImages.cs" />
     <Compile Include="Tests\Discovery\Test_GoogDiscovery.cs" />
+    <Compile Include="Tests\Users\Test_UserRegTopics.cs" />
     <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Flow.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Golden.cs" />
