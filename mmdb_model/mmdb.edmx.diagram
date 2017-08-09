@@ -64,16 +64,16 @@
         <AssociationConnector Association="mm02Model.fk_user_url_user" />
         <EntityTypeShape EntityType="mm02Model.disc_url_osl" Width="1.5" PointX="15.25" PointY="23.25" />
         <EntityTypeShape EntityType="mm02Model.disc_url_cwc" Width="1.5" PointX="15.25" PointY="20.25" />
-        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="13" PointY="27.125" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_osl_disc_url" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_term" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_term1" />
         <EntityTypeShape EntityType="mm02Model.disc_term" Width="1.5" PointX="13" PointY="19.25" />
         <AssociationConnector Association="mm02Model.FK_disc_term_term" />
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="6.125" PointY="0.875" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
+        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="13" PointY="23" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_osl_disc_url" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_term" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_term1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

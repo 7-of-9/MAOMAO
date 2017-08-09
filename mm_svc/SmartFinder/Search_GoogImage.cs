@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 
-namespace mm_svc.Discovery
+namespace mm_svc.SmartFinder
 {
 
     public static class Search_GoogImage

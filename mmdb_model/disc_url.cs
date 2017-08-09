@@ -24,12 +24,12 @@ namespace mmdb_model
         public long id { get; set; }
         public string url { get; set; }
         public string meta_title { get; set; }
-        public Nullable<System.DateTime> discovered_at_utc { get; set; }
+        public System.DateTime discovered_at_utc { get; set; }
         public string img_url { get; set; }
-        public Nullable<long> main_term_id { get; set; }
+        public long main_term_id { get; set; }
         public Nullable<long> term_id { get; set; }
-        public Nullable<int> search_num { get; set; }
-        public Nullable<bool> suggested_topic { get; set; }
+        public int search_num { get; set; }
+        public bool suggested_topic { get; set; }
         public int result_num { get; set; }
         public int term_num { get; set; }
         public string city { get; set; }

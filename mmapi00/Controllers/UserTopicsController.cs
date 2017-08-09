@@ -9,7 +9,7 @@ using System.Web.Http.Cors;
 
 namespace mmapi00.Controllers
 {
-    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]  
     public class UserTopicsController : ApiController
     {
         [Route("user_topics/bulkadd")]
@@ -20,8 +20,8 @@ namespace mmapi00.Controllers
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
-            return Ok(new {});
+            int n = mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
+            return Ok(new { added = n });
         }
 
         [Route("user_topics/add")]

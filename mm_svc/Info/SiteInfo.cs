@@ -9,7 +9,7 @@ using mm_global;
 using mm_aws;
 using System.Diagnostics;
 using mm_global.Extensions;
-using mm_svc.Discovery;
+using mm_svc.SmartFinder;
 using mm_svc.Images;
 using System.Threading;
 using System.Windows.Forms;

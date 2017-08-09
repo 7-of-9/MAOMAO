@@ -64,7 +64,7 @@ namespace mm_svc.Terms
                     parent = null,
                     topic_id = p,
                     topic_name = db.terms.Find(p).name,
-                    img = Images.ImageNames.GetMasterTerm_FullUrl(db.terms.Find(p)),
+                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(db.terms.Find(p)),
                 }).ToList();
 
                 // add children (recursively)
@@ -91,7 +91,7 @@ namespace mm_svc.Terms
                     parent = parent,
                     topic_id = p.parent_term_id,
                     topic_name = p.parent_term.name,
-                    img = Images.ImageNames.GetMasterTerm_FullUrl(p.parent_term),
+                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(p.parent_term),
                 }).ToList();
 
                 // todo -- recurse n levels of suggestions...
@@ -111,7 +111,7 @@ namespace mm_svc.Terms
                                 parent = parent,
                                 topic_id = link.child_term.id,
                                 topic_name = link.child_term.name,
-                                img = Images.ImageNames.GetMasterTerm_FullUrl(link.child_term),
+                                img = Images.ImageNames.GetTerm_MasterImage_FullUrl(link.child_term),
                             };
                             parent.child_topics.Add(child);
                             AddChildTopicTerms_Recurse(child);

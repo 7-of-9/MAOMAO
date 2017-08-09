@@ -9,7 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mm_svc.Discovery
+namespace mm_svc.SmartFinder
 {
     // general WebBrowser - used by google searches (which uses its own rate limiting) and also for
     // misc. scraping/downloading (which uses this class' internal rate limiting)

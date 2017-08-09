@@ -10,7 +10,7 @@ namespace mm_svc.Images
 {
     public static class ImageNames
     {
-        public static string GetMasterTerm_FullUrl(term t) {
+        public static string GetTerm_MasterImage_FullUrl(term t) {
             return $"{AzureImageFile.terms_imageRootPath}/{GetTermFilename(t)}_M1.jpeg";
         }
         public static string GetTermFilename(term t) {

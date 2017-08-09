@@ -1,6 +1,6 @@
 ﻿using Microsoft.ApplicationInsights.Extensibility;
 using mm_global;
-using mm_svc.Discovery;
+using mm_svc.SmartFinder;
 using mm_svc.Images;
 using mm_svc.Util.Utils;
 using mmdb_model;

@@ -1,14 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using mm_svc.Discovery;
+using mm_svc.SmartFinder;
 using mm_svc.Util.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static mm_svc.Discovery.Search_Goog;
+using static mm_svc.SmartFinder.Search_Goog;
 
-namespace tests.Tests.Discovery
+namespace tests.Tests.SmartFinder
 {
     [TestClass]
     public class Test_GoogDiscovery
@@ -16,19 +16,19 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void SmartFind_AllTopicTree_Test1()
         {
-            var new_rows = SmartFinder.Find_TopicTree();
+            var new_rows = mm_svc.SmartFinder.SmartFinder.Find_TopicTree();
         }
 
         [TestMethod]
         public void SmartFind_UserBrowsedUrls_Test1()
         {
-            var new_rows = SmartFinder.Find_UserAllTopics(20); // dom
+            var new_rows = mm_svc.SmartFinder.SmartFinder.Find_UserAllTopics(20); // dom
             //var new_rows = SmartFinder.Find_UserAllTopics(15); // dung
         }
 
         [TestMethod]
         public void SmartFind_UserRegTopics_Test_20() {
-            var new_rows = SmartFinder.Find_UserRegTopics(20);
+            var new_rows = mm_svc.SmartFinder.SmartFinder.Find_UserRegTopics(20);
         }
 
         [TestMethod]
@@ -63,10 +63,10 @@ namespace tests.Tests.Discovery
             //if ((page_meta["thumbnail"] = $('meta[name="thumbnail"]').attr('content')))
             //if ((page_meta["image_src"] = $('link[rel="image_src"]').attr('href')))
 
-            var urls = mm_svc.Discovery.Search_Goog.Search("history", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            var urls = mm_svc.SmartFinder.Search_Goog.Search("history", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
             ImportUrls.GetMeta(urls, max_parallel: 4);
 
-            urls = mm_svc.Discovery.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            urls = mm_svc.SmartFinder.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
             ImportUrls.GetMeta(urls, max_parallel: 4);
 
             //mm_svc.Discovery.Search_Goog.Search("chess");

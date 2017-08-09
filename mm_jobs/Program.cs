@@ -13,7 +13,7 @@ using mm_global;
 using mmdb_model;
 using mm_global.Extensions;
 using System.Windows.Forms;
-using mm_svc.Discovery;
+using mm_svc.SmartFinder;
 using System.Net;
 
 namespace mm_jobs

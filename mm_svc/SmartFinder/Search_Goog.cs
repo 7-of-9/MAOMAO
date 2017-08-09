@@ -8,9 +8,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using static mm_svc.Discovery.SmartFinder;
+using static mm_svc.SmartFinder.SmartFinder;
 
-namespace mm_svc.Discovery {
+namespace mm_svc.SmartFinder {
     public static class Search_Goog
     {
         private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}";

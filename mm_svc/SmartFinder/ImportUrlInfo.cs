@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static mm_svc.Discovery.Search_Goog;
-using static mm_svc.Discovery.SmartFinder;
+using static mm_svc.SmartFinder.Search_Goog;
+using static mm_svc.SmartFinder.SmartFinder;
 
-namespace mm_svc.Discovery
+namespace mm_svc.SmartFinder
 {
     public class ImportUrlInfo
     {

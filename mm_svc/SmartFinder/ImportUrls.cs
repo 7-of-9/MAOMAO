@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace mm_svc.Discovery
+namespace mm_svc.SmartFinder
 {
     public static class ImportUrls
     {
