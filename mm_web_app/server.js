@@ -52,7 +52,8 @@ app.prepare().then(() => {
   const pages = [
     '/discovery',
     '/hiring',
-    '/smart'
+    '/smart',
+    '/test'
   ]
 
   server.get('*', (req, res) => {

@@ -9,8 +9,8 @@
   "main": "server.js",
   "author": "Dung Huynh (dunghd.it@gmail.com)",
   "engines": {
-    "node": "6.x.x",
-    "npm": "3.x.x"
+    "node": "6.x.x || 8.x.x",
+    "npm": "3.x.x || 5.x.x"
   },
   "license": "MIT",
   "dependencies": {
@@ -21,7 +21,6 @@
     "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",
     "compression": "^1.7.0",
-    "cross-env": "^5.0.4",
     "detect-browser": "^1.7.1",
     "expose-loader": "^0.7.3",
     "express": "^4.15.4",
@@ -44,7 +43,7 @@
     "mobx-utils": "^3.0.0",
     "moment": "^2.18.1",
     "neal-react": "^0.2.5",
-    "next": "beta",
+    "next": "^3.0.3",
     "normalize.css": "^7.0.0",
     "normalizr": "^3.2.3",
     "nprogress": "^0.2.0",
@@ -79,8 +78,7 @@
     "styled-components": "^2.1.2",
     "sw-precache-webpack-plugin": "^0.11.4",
     "twitter-node-client": "^0.0.6",
-    "validate.js": "^0.11.1",
-    "webpack-bundle-analyzer": "^2.9.0"
+    "validate.js": "^0.11.1"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -98,7 +96,6 @@
     "build": "next build",
     "start": "node server.js",
     "lint": "standard",
-    "analyze": "cross-env ANALYZE=1 next build",
     "deploy:prod": "npm run build && git add --all && git commit --no-verify -m 'update azure site' && git push -f azure master",
     "deploy:dev": "npm run build && git add --all && git commit --no-verify -m 'update azure dev site' && git push -f azure-dev master",
     "storybook": "start-storybook -s . -p 6006",

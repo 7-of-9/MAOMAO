@@ -1,8 +1,6 @@
 const path = require('path')
 const glob = require('glob')
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-const { ANALYZE } = process.env
 
 module.exports = {
   // distDir: 'build',
@@ -64,15 +62,6 @@ module.exports = {
         })
       )
     }
-
-    if (ANALYZE) {
-      config.plugins.push(new BundleAnalyzerPlugin({
-        analyzerMode: 'server',
-        analyzerPort: 8888,
-        openAnalyzer: true
-      }))
-    }
-
     return config
   }
 }

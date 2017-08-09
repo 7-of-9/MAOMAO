@@ -14,6 +14,7 @@ class TopicItem extends PureComponent {
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     isSelect: PropTypes.bool.isRequired,
+    hasChild: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired
   }
@@ -23,8 +24,9 @@ class TopicItem extends PureComponent {
     title: '',
     img: '',
     isSelect: false,
+    hasChild: true,
     onChange: (isSelect, topicId, title) => {},
-    onSelect: (isSelect, topicId, title) => {}
+    onSelect: (topicId) => {}
   }
 
   onChange = (evt) => {
@@ -36,8 +38,12 @@ class TopicItem extends PureComponent {
   handleClick = (evt) => {
     evt.preventDefault()
     logger.warn('handleClick')
-    const { topic_id: topicId, title, isSelect } = this.props
-    this.props.onSelect(!isSelect, topicId, title)
+    const { hasChild, topic_id: topicId, title, isSelect } = this.props
+    if (hasChild) {
+      this.props.onSelect(topicId)
+    } else {
+      this.props.onChange(!isSelect, topicId, title)
+    }
   }
 
   render () {

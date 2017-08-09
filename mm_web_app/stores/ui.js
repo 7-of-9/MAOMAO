@@ -17,6 +17,8 @@ export class UIStore {
   @observable rating = 1
   @observable currentViewer = 'streams'
   @observable selectedTopics = []
+  @observable currentTopicId = ''
+  @observable treeLevel = 1
   @observable notifications = []
   @observable page = 1
   shareTopics = []
@@ -48,6 +50,12 @@ export class UIStore {
     } else {
       this.selectedTopics = this.selectedTopics.filter(item => item.topicId !== topicId)
     }
+  }
+
+  @action selectTopicTree (topicId, inc = 1) {
+    logger.warn('selectTopicTree', topicId)
+    this.currentTopicId = topicId
+    this.treeLevel += inc
   }
 
   @action openDiscoveryMode (terms, suggestions) {

@@ -4,7 +4,7 @@ import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
-import { getAllTopicTree } from '../services/topic'
+import { getAllTopicTree, addBulkTopics } from '../services/topic'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -83,6 +83,16 @@ export class HomeStore extends CoreStore {
     return sharesReveived
   }
 
+  @action saveTopics (ids) {
+    const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
+    when(
+      () => saveTopicRequest.state !== 'pending',
+      () => {
+        logger.warn('saveTopics result', saveTopicRequest.data)
+      }
+    )
+  }
+
   @action internalLogin (callback) {
     logger.warn('internalLogin')
     const registerNewUser = testInternalUser()
@@ -132,7 +142,7 @@ export class HomeStore extends CoreStore {
     this.getUserHistory()
   }
 
-  @action googleConnect (info) {
+  @action googleConnect (info, callback) {
     logger.warn('googleConnect', info)
     const googleConnectResult = loginWithGoogle(info)
     this.isProcessingRegister = true
@@ -169,11 +179,12 @@ export class HomeStore extends CoreStore {
         }
         this.login(this.userId, this.userHash)
         this.getUserHistory()
+        callback && callback()
       }
     )
   }
 
-  @action facebookConnect (info) {
+  @action facebookConnect (info, callback) {
     logger.warn('facebookConnect', info)
     const facebookConnectResult = loginWithFacebook(info)
     this.isProcessingRegister = true
@@ -209,6 +220,7 @@ export class HomeStore extends CoreStore {
         }
         this.login(this.userId, this.userHash)
         this.getUserHistory()
+        callback && callback()
       }
     )
   }

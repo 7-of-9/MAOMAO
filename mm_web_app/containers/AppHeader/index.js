@@ -56,6 +56,8 @@ class AppHeader extends React.Component {
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
       logger.warn('test user', user)
+      const { selectedTopics } = this.props.ui
+      this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -209,12 +211,18 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
+                            }, () => {
+                              const { selectedTopics } = this.props.ui
+                              this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
                             })
                           }
                         })
                       } else {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
+                        }, () => {
+                          const { selectedTopics } = this.props.ui
+                          this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -223,12 +231,18 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
+                            }, () => {
+                              const { selectedTopics } = this.props.ui
+                              this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
                             })
                           }
                         })
                       } else {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
+                        }, () => {
+                          const { selectedTopics } = this.props.ui
+                          this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
                         })
                       }
                     } else if (sign_in_provider === 'password') {
