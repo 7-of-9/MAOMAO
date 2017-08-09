@@ -206,7 +206,7 @@ retry:
                 db_site.as_of_utc = DateTime.UtcNow;
                 db_site.awis_cat_id = db_cat != null ? (long?)db_cat.id : null;
                 db_site.lang = lang;
-                db_site.title = title;
+                db_site.title = title.TruncateEllipsis(128);
                 db_site.TLD = tld;
                 db_site.url = url;
                 db_site.desc = desc;

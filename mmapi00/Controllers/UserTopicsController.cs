@@ -16,11 +16,11 @@ namespace mmapi00.Controllers
         [HttpGet]
         public IHttpActionResult AddUserTopic(
           long user_id, string hash,
-          List<long> topic_ids)
+          [FromUri] List<long> t)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            int n = mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
+            int n = mm_svc.UserTopics.AddUserTopics(user_id, t);
             return Ok(new { added = n });
         }
 

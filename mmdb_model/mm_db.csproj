@@ -83,6 +83,9 @@
     <Compile Include="disc_url_cwc.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="disc_url_html.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="disc_url_osl.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>

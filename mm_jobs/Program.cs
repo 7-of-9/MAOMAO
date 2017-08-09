@@ -56,9 +56,10 @@ namespace mm_jobs
             CreateLogDirectory();
             SetupLogger();
 
-            var ip = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
-            g.LogInfo($">> {ip}: RUNNING AS {n_this} OF {n_of}");
-            Console.Title = $"{fullArgs} / {n_this} OF {n_of} ({ip})";
+            var ip80 = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
+            var ip443 = new WebClient().DownloadString(@"https://icanhazip.com").Trim();
+            g.LogInfo($">> {ip80}:80 / {ip443}:443 - RUNNING AS {n_this} OF {n_of}");
+            Console.Title = $"{fullArgs} / {n_this} OF {n_of} / {ip80}:80 / {ip443}:443";
 
             Environment.CurrentDirectory = exeDir; 
             DateTime startupTime = DateTime.Now;

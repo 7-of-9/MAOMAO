@@ -16,7 +16,7 @@ namespace mm_svc.SmartFinder
     public static class SmartFinder
     {
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
-        private const int TERM_SEARCH_BATCH_SIZE = 1;
+        private const int TERM_SEARCH_BATCH_SIZE = 1;   
 
         public static int Find_TopicTree(string country = "singapore", string city = "singapore", int n_this = 1, int n_of = 1) {
             var tree = TopicTree.GetTopicTree(n_this, n_of);
@@ -34,7 +34,7 @@ namespace mm_svc.SmartFinder
             var ret1 = FindForTopics(topics_to_search);
             var ret2 = FindForTopics(suggestions_to_search);
 
-            Maintenance.ImagesSites.Maintain(n_this = 1, n_of = 1);
+            Maintenance.ImagesSites.Maintain(n_this, n_of);
             return ret1 + ret2;
         }
 
@@ -116,7 +116,7 @@ namespace mm_svc.SmartFinder
                     //});
 
                     // discovery: top n suggestions by s_norm -- todo: let people tell us when to increase n (by topic)
-                    var opts = new ParallelOptions() { MaxDegreeOfParallelism = 2 };
+                    var opts = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
                     Parallel.ForEach(suggestions.Take(5), opts, (suggestion) => {
                         DiscoverForTerm(discovered_urls, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
                     });
@@ -144,9 +144,9 @@ namespace mm_svc.SmartFinder
                 var new_discoveries = new_conc.ToList();
 
                 // get metadata (inc. images) for newly discovered
-                ImportUrls.GetMeta(new_discoveries, max_parallel: 4);
+                ImportUrls.GetMeta(new_discoveries);
 
-                // save new discoveries
+                // save new discoveries - [disc_url] + [disc_url_cwc] & 
                 var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.meta_title.Length < 256 && p.url.Length < 256).Select(
                 p => new disc_url() {
                     discovered_at_utc = DateTime.UtcNow,
@@ -172,9 +172,15 @@ namespace mm_svc.SmartFinder
                     city = p.city,
                     country = p.country,
                     url_hash = p.url.GetHashCode(),
+                    awis_site_id = p.awis_site_id,
+                    status = p.status,
+                    disc_url_html = new List<disc_url_html>() { new disc_url_html() {
+                        html = p.html,
+                    } },
                 }).ToList();
                 additions.ForEach(p => { foreach (var cwc in p.disc_url_cwc) cwc.disc_url = p; });
                 additions.ForEach(p => { foreach (var osl in p.disc_url_osl) osl.disc_url = p; });
+                additions.ForEach(p => { foreach (var disc_url_html in p.disc_url_html) disc_url_html.disc_url = p; });
                 db.disc_url.AddRange(additions);
 
                 db.disc_term.AddRange(topics_to_search.Select(p => new disc_term() {
@@ -183,6 +189,7 @@ namespace mm_svc.SmartFinder
                     added_count = additions.Count,
                 }));
 
+                g.LogInfo($"WRITING: {additions.Count} disc_url...");
                 int new_rows = db.SaveChangesTraceValidationErrors();
                 g.LogInfo($"DONE: {additions.Count} additions for country={country} city={city}");
                 return new_rows;

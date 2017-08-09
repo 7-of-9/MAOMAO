@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mmdb_model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,10 @@ namespace mm_svc.SmartFinder
         public int term_num;
 
         public string city, country;
+
+        public long awis_site_id;
+        public string status;
+        public string html;
     }
 
     public class OnsiteLinkInfo

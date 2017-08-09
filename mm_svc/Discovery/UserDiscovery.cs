@@ -39,6 +39,8 @@ namespace mm_svc.Discovery
 
                     // site images: need awis_site_id on disc_url
 
+                    // cwc + osl
+
                     search_num = p.search_num,
                     suggested_topic = p.suggested_topic,
                     result_num = p.result_num,

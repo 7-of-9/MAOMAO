@@ -51,8 +51,6 @@ namespace mm_svc.Maintenance
 
                                             var db_site2 = db2.awis_site.Find(awis_site_id);
                                             var filename = ImageNames.GetSiteFilename(db_site2);
-                                            var master_jpeg = filename + "_M1.jpeg";
-                                            var master_png = filename + "_M1.png";
 
                                             //if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
 

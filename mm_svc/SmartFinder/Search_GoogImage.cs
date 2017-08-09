@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using mm_global;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
@@ -78,7 +79,7 @@ namespace mm_svc.SmartFinder
                 backoff_secs = backoff_secs_base;
             }
             catch(Exception ex) {
-                g.LogException(ex);
+                //g.LogException(ex);
                 g.LogAllExceptionsAndStack(ex);
                 goto done;
             }

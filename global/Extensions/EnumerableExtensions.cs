@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace mm_global.Extensions
 {
-    public static class CollectionEx
+    public static class EnumerableExtensions
     {
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
-            (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+
+     
+
+        public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             HashSet<TKey> knownKeys = new HashSet<TKey>();
             foreach (TSource element in source)

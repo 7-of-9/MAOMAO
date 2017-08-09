@@ -11,7 +11,7 @@ using static mm_svc.SmartFinder.Search_Goog;
 namespace tests.Tests.SmartFinder
 {
     [TestClass]
-    public class Test_GoogDiscovery
+    public class Test_GoogSmartFind
     {
         [TestMethod]
         public void SmartFind_AllTopicTree_Test1()

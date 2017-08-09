@@ -13,7 +13,7 @@ namespace tests.Tests.Users
         [TestMethod]
         public void UserRegTopics_BulkAdd_Test0()
         {
-             mm_svc.UserTopics.AddUserTopics(20, new List<long> { 4990997, 4990983 });
+             mm_svc.UserTopics.AddUserTopics(15, new List<long> { 5011256 });
         }
     }
 }

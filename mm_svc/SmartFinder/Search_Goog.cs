@@ -17,8 +17,8 @@ namespace mm_svc.SmartFinder {
         public static bool goog_rate_limit_hit = false;
 
         internal static object lock_obj = "42";
-        internal static DateTime last_access = DateTime.MinValue;
-        internal static double min_secs_interval = 1;
+        internal static DateTime last_access = DateTime.Now;
+        internal static double min_secs_interval = 5;
 
         public enum SearchTypeNum
         {
@@ -97,11 +97,11 @@ namespace mm_svc.SmartFinder {
                             g.LogLine("Search_Goog.Search - waiting...");
                             System.Threading.Thread.Sleep(2000);
                         }
-                    }
+                    //}
 
-                    doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                        doc = Browser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
 
-                    lock (lock_obj) {
+                    //lock (lock_obj) {
                         last_access = DateTime.Now;
                     }
                 }
