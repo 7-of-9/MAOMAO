@@ -145,7 +145,7 @@ retry:
                 // in DB list of known sites?
                 awis_cat db_cat = null;
                 var db_site_qry = db.awis_site.Include("awis_cat").Where(p => p.TLD == tld);
-                var db_site = db_site_qry.FirstOrDefaultNoLock();
+                var db_site = g.RetryMaxOrThrow(() => db_site_qry.FirstOrDefaultNoLock());
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
                     returned_from_db = true;

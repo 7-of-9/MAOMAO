@@ -21,7 +21,7 @@ namespace mm_svc.SmartFinder
         private const string gs_url = "http://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         internal static object lock_obj = "42";
-        internal static double min_secs_interval = 5;
+        internal static double min_secs_interval = 3;
         internal static DateTime last_access = DateTime.MinValue;
 
         internal static int backoff_secs_base = 15;
@@ -41,12 +41,13 @@ namespace mm_svc.SmartFinder
             lock (Search_GoogImage.lock_obj) {
                 while (DateTime.Now.Subtract(Search_GoogImage.last_access).TotalSeconds < Search_GoogImage.min_secs_interval) {
                     g.LogLine("waiting...");
-                    System.Threading.Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(200);
                 }
             }
 
             var tbs = clipart ? "&tbs=itp:clipart" : "&tbs=itp:photo";
             var url = string.Format(gs_url, search_term, tbs);
+
             var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime in debugger
             wb.Dispose();
 

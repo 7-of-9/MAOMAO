@@ -92,7 +92,7 @@ namespace mm_svc.SmartFinder
                     var term = db.terms.Find(user_reg_topic_id);
                     var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(user_reg_topic_id, reprocess: true);
                     var topics = parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList();
-                    var suggestions = parents.Where(p => !p.is_topic).OrderByDescending(p => p.S).ToList();
+                    var suggestions = parents.Where(p => p.is_topic == false /*&& p.parent_term.IS_TOPIC == false*/).OrderByDescending(p => p.S).ToList();
 
                     // remove user_reg_topic from topics and renormalize
                     //topics.RemoveAll(p => p.parent_term_id == user_reg_topic_id);
@@ -115,9 +115,12 @@ namespace mm_svc.SmartFinder
                     //    DiscoverForTerm(discovered_urls, user_id, user_reg_topic_id, topic.parent_term_id, topic.tmp_term_num, suggestion: false);
                     //});
 
+                    //continue;
+
                     // discovery: top n suggestions by s_norm -- todo: let people tell us when to increase n (by topic)
                     var opts = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
-                    Parallel.ForEach(suggestions.Take(5), opts, (suggestion) => {
+                    const int SUGGESTIONS_TO_TAKE = 5;
+                    Parallel.ForEach(suggestions.Take(SUGGESTIONS_TO_TAKE), opts, (suggestion) => {
                         DiscoverForTerm(discovered_urls, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
                     });
 
@@ -256,17 +259,17 @@ namespace mm_svc.SmartFinder
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // local searches
-                if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
-                    // general local
-                    var gen_local = mm_svc.SmartFinder.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
-                    gen_local.ForEach(p => { p.city = city; p.country = country; });
-                    urls.AddRange(gen_local);
+                //if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
+                //    // general local
+                //    var gen_local = mm_svc.SmartFinder.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
+                //    gen_local.ForEach(p => { p.city = city; p.country = country; });
+                //    urls.AddRange(gen_local);
 
-                    // events local
-                    var events_local = mm_svc.SmartFinder.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
-                    events_local.ForEach(p => { p.city = city; p.country = country; });
-                    urls.AddRange(events_local);
-                }
+                //    // events local
+                //    var events_local = mm_svc.SmartFinder.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
+                //    events_local.ForEach(p => { p.city = city; p.country = country; });
+                //    urls.AddRange(events_local);
+                //}
 
                 // site searches
                 urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));

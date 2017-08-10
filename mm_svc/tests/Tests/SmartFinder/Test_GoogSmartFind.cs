@@ -27,7 +27,8 @@ namespace tests.Tests.SmartFinder
         }
 
         [TestMethod]
-        public void SmartFind_UserRegTopics_Test_20() {
+        public void SmartFind_UserRegTopics_Test_20()
+        {
             var new_rows = mm_svc.SmartFinder.SmartFinder.Find_UserRegTopics(20);
         }
 
@@ -70,6 +71,14 @@ namespace tests.Tests.SmartFinder
             ImportUrls.GetMeta(urls, max_parallel: 4);
 
             //mm_svc.Discovery.Search_Goog.Search("chess");
+        }
+
+        [TestMethod]
+        public void DownloadUrls_Test0()
+        {
+            var urls = new List<ImportUrlInfo>() { new ImportUrlInfo() { url = "https://vimeo.com/210868581" }
+                                                 , new ImportUrlInfo() { url = "https://vimeo.com/98852107" } };
+            ImportUrls.DownlodUrls(urls);
         }
     }
 }

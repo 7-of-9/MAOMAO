@@ -95,10 +95,11 @@
   <ItemGroup>
     <Compile Include="Discovery\DiscoveryInfo.cs" />
     <Compile Include="Discovery\UserDiscovery.cs" />
+    <Compile Include="SmartFinder\FullWebBrowser.cs" />
     <Compile Include="SmartFinder\Search_Goog.cs" />
     <Compile Include="SmartFinder\ImportUrlInfo.cs" />
     <Compile Include="SmartFinder\ImportUrls.cs" />
-    <Compile Include="SmartFinder\Browser.cs" />
+    <Compile Include="SmartFinder\WebClientBrowser.cs" />
     <Compile Include="SmartFinder\Search_GoogImage.cs" />
     <Compile Include="SmartFinder\SmartFinder.cs" />
     <Compile Include="Images\AzureImageFile.cs" />

@@ -13,13 +13,13 @@ namespace mm_svc.SmartFinder
 {
     // general WebBrowser - used by google searches (which uses its own rate limiting) and also for
     // misc. scraping/downloading (which uses this class' internal rate limiting)
-    public static class Browser
+    public static class WebClientBrowser
     {
         internal static object lock_obj = "42";
         internal static DateTime last_access = DateTime.MinValue;
         internal static double min_secs_interval = 1;
 
-        static Browser()
+        static WebClientBrowser()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
 
