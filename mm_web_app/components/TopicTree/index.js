@@ -37,8 +37,8 @@ class TopicTree extends Component {
     this.props.store.getTopicTree()
   }
 
-  onChange = (isSelect, topicId, title) => {
-    this.props.ui.toggleSelectTopic(isSelect, topicId, title)
+  onChange = (isSelect, topicId, title, img) => {
+    this.props.ui.toggleSelectTopic(isSelect, topicId, title, img)
   }
 
   onSelect = (topicId, topicName) => {

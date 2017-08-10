@@ -149,32 +149,21 @@ class Home extends React.Component {
         </div>
       )
     }
-    const selectedItems = selectedTopics ? selectedTopics.map(item => ({id: item.topicId, name: item.topicName})) : []
+    const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.topicId, name: item.topicName})) : []
     return (
-      <div>
-        <div className='wrap-main' style={{ textAlign: 'center' }}>
-          <div
-            className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-            >
-            <h1 className='animated fadeInUp'>
-              <img className='logo-image' src='/static/images/maomao.png' alt='maomao' />  smart browsing & discovery
-            </h1>
-          </div>
-        </div>
-        <div className='wrapper-slide'>
-          <SelectedPanel
-            total={selectedTopics && selectedTopics.length}
-            items={selectedItems}
+      <div className='wrapper-slide'>
+        <SelectedPanel
+          total={selectedTopics && selectedTopics.length}
+          items={selectedItems}
             />
-          {
-               currentViewer !== 'discovery' &&
-               <TopicTree />
-            }
-          {
-              currentViewer === 'discovery' &&
-              <Discovery />
-            }
-        </div>
+        {
+            currentViewer !== 'discovery' &&
+            <TopicTree />
+          }
+        {
+            currentViewer === 'discovery' &&
+            <Discovery />
+          }
       </div>)
   }
 
@@ -214,6 +203,8 @@ class Home extends React.Component {
           <link rel='icon' href='/static/images/logo.png' />
           <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
           <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
+          <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css' />
+          <link rel='stylesheet' type='text/css' href='https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css' />
           <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
           <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
           <script src='/static/vendors/js/snoowrap-v1.min.js' />

@@ -26,25 +26,25 @@ class TopicItem extends PureComponent {
     img: '',
     isSelect: false,
     hasChild: true,
-    onChange: (isSelect, topicId, title) => {},
-    onSelect: (isSelect, topicId, title) => {}
+    onChange: (isSelect, topicId, title, img) => {},
+    onSelect: (isSelect, topicId) => {}
   }
 
   onChange = (evt) => {
     logger.warn('onChange', evt)
-    const { topic_id: topicId, title, isSelect } = this.props
-    this.props.onChange(!isSelect, topicId, title)
+    const { topic_id: topicId, title, isSelect, img } = this.props
+    this.props.onChange(!isSelect, topicId, title, img)
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
     logger.warn('handleClick')
-    const { hasChild, topic_id: topicId, title, isSelect } = this.props
+    const { hasChild, topic_id: topicId, title, isSelect, img } = this.props
     if (hasChild) {
       this.props.onSelect(topicId, title)
     }
     if (!isSelect) {
-      this.props.onChange(!isSelect, topicId, title)
+      this.props.onChange(!isSelect, topicId, title, img)
     }
   }
 

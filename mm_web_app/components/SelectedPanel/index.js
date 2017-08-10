@@ -6,6 +6,7 @@
 
 import React, { PureComponent } from 'react'
 import { observer, inject } from 'mobx-react'
+import _ from 'lodash'
 import { toJS } from 'mobx'
 import PropTypes from 'prop-types'
 import Sticky from 'react-sticky-el'
@@ -44,8 +45,8 @@ class SelectedPanel extends PureComponent {
     items: []
   }
 
-  onRemove = (id, name) => {
-    this.props.ui.toggleSelectTopic(false, id, name)
+  onRemove = (id, name, img) => {
+    this.props.ui.toggleSelectTopic(false, id, name, img)
   }
 
   showSignUp = () => {
@@ -59,10 +60,35 @@ class SelectedPanel extends PureComponent {
     this.props.ui.selectTopicTree(parentTopic.topic_id, parentTopic.topic_name, -1)
   }
 
-  render () {
-    const { total, items } = this.props
+  renderBackButtonAndSignUp = () => {
     const { currentTopicId, currentTopicTitle } = toJS(this.props.ui)
+    const { total } = this.props
 
+    return (
+      <div className='bottom-panel'>
+        {
+          total > 0 &&
+          <div className='block-button' style={{ textAlign: 'center' }}>
+            <button className='btn btn-login' onClick={this.showSignUp}>
+              <i className='fa fa-sign-in' aria-hidden='true' /> Ok! Let’s go
+            </button>
+          </div>
+        }
+        {
+          currentTopicId && currentTopicId !== '' &&
+          <div className='breadcrum'>
+            <button className='btn back-to-parent' onClick={this.onBack}>
+              <i className='fa fa-angle-left' aria-hidden='true' />
+            </button>
+            <span className='text-topic current-topic-name' style={{color: '#000'}}>{currentTopicTitle}</span>
+          </div>
+          }
+      </div>
+    )
+  }
+
+  render () {
+    const { items } = this.props
     return (
       <Sticky className='animated fadeInUp'>
         <div className='selected-panel'>
@@ -70,21 +96,9 @@ class SelectedPanel extends PureComponent {
             <p className='text-engine'>
             To get started, please tell <img className='logo-image' src='/static/images/maomao.png' alt='maomao' /> what kind of things are you interested in…
             </p>
-            <SelectedList items={items} onRemove={this.onRemove} />
+            {items && items.length > 0 && <SelectedList items={items} onRemove={this.onRemove} /> }
             {
-                total > 0 &&
-                <div className='block-button' style={{ textAlign: 'center' }}>
-                  <button className='btn btn-login' onClick={this.showSignUp}>
-                    <i className='fa fa-sign-in' aria-hidden='true' /> Ok! Let’s go
-                  </button>
-                </div>
-              }
-            {
-              currentTopicId && currentTopicId !== '' &&
-              <button className='btn back-to-parent' onClick={this.onBack}>
-                <i className='fa fa-2x fa-angle-left' aria-hidden='true' />
-                <span className='current-topic-name'>{currentTopicTitle}</span>
-              </button>
+              this.renderBackButtonAndSignUp()
             }
           </div>
         </div>

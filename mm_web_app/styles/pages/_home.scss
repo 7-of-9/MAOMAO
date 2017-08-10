@@ -535,7 +535,7 @@ the home page
 }
 
 .back-to-parent {
-  @include border-radius(5px);
+  @include border-radius(0 50% 50% 0);
   z-index: 9999;
   text-align: center;
   font-size: 2rem;
@@ -554,7 +554,8 @@ the home page
   }
   .current-topic-name {
     display: inline-block;
-    padding-top: 20px;
+    padding-top: 30px;
+    font-size: 1.2rem;
   }
 }
 
@@ -692,6 +693,13 @@ the home page
     font-size: 1.5rem !important;
     max-width: 400px !important;
     line-height: 30px;
+  }
+  .selected-topic {
+    @include border-radius(20px);
+    height: 50px;
+    padding: 10px;
+  }
+  .bottom-panel {
   }
 }
 

@@ -44,10 +44,10 @@ export class UIStore {
     }
   }
 
-  @action toggleSelectTopic (isSelect, topicId, topicName) {
-    logger.warn('toggleSelectTopic', isSelect, topicId, topicName)
+  @action toggleSelectTopic (isSelect, topicId, topicName, img) {
+    logger.warn('toggleSelectTopic', isSelect, topicId, topicName, img)
     if (isSelect) {
-      this.selectedTopics.push({topicId, topicName})
+      this.selectedTopics.push({topicId, topicName, img})
     } else {
       this.selectedTopics = this.selectedTopics.filter(item => item.topicId !== topicId)
     }

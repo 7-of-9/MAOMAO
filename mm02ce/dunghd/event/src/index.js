@@ -51,9 +51,7 @@ const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
   applyMiddleware(...middleware),
 ));
 
-const TIMER_TO_SAVE = 1 * 60 * 1000; // 1 mins
-
-persistStore(store, { debounce: TIMER_TO_SAVE });
+persistStore(store);
 
 wrapStore(store, {
   portName: 'maomao-extension',
