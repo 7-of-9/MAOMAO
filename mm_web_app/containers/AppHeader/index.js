@@ -124,6 +124,11 @@ class AppHeader extends React.Component {
     this.props.ui.toggleSignIn(true, 'Sign In')
   }
 
+  showSignUp = (evt) => {
+    evt.preventDefault()
+    this.props.ui.toggleSignIn(true, 'Sign Up')
+  }
+
   openShareManagement = (evt) => {
     evt.preventDefault()
     this.props.ui.displayShareManagement()
@@ -306,15 +311,19 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title } = this.props.ui
+    const { showSignInModal, title, selectedTopics } = this.props.ui
+
     return (
       <Navbar className='header-nav animated fadeInDown' brand={brand()}>
+        {
+          !isLogin && selectedTopics.length > 0 &&
+          <NavItem className='fadeIn'>
+            <button className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
+          </NavItem>
+        }
         <NavItem>
           <a data-toggle='dropdown'>
-            <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-            <span className='notifications-number notifications-hiring'>
-              <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
-              </span>
+            Hiring
             <i className='fa fa-chevron-circle-down' aria-hidden='true' />
           </a>
           <ul className='dropdown-menu dropdown-hiring pull-right'>
@@ -331,7 +340,7 @@ class AppHeader extends React.Component {
           </ul>
         </NavItem>
         {
-          (!isMobile && isChrome && !isInstalledOnChromeDesktop) &&
+          (!isMobile && isLogin && isChrome && !isInstalledOnChromeDesktop) &&
           <NavItem>
             <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
           </NavItem>
@@ -365,33 +374,33 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {!isLogin && <button className='btn btn-login' onClick={this.showSignIn}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
-          <Modal
-            isOpen={showSignInModal}
-            onRequestClose={this.onClose}
-            portalClassName='SignInModal'
-            contentLabel={title}
-          >
-            <h2 ref='subtitle'>{title}</h2>
-            <div className='social-action' >
-              <div className='block-button'>
-                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                  <i className='fa fa-facebook' /> {title} with Facebook
-               </a>
-              </div>
-              <div className='block-button'>
-                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
-                  <i className='fa fa-google' /> {title} with Google
-                </a>
-              </div>
-              <div className='block-button'>
-                <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
-                  <i className='fa icon-internal-lab' /> Test Internal: New User
-                </a>
-              </div>
-            </div>
-          </Modal>
+          {!isLogin && <a onClick={this.showSignIn}>Sign In</a>}
         </NavItem>
+        <Modal
+          isOpen={showSignInModal}
+          onRequestClose={this.onClose}
+          portalClassName='SignInModal'
+          contentLabel={title}
+          >
+          <h2 ref='subtitle'>{title}</h2>
+          <div className='social-action' >
+            <div className='block-button'>
+              <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                <i className='fa fa-facebook' /> {title} with Facebook
+               </a>
+            </div>
+            <div className='block-button'>
+              <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+                <i className='fa fa-google' /> {title} with Google
+                </a>
+            </div>
+            <div className='block-button'>
+              <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
+                <i className='fa icon-internal-lab' /> Test Internal: New User
+                </a>
+            </div>
+          </div>
+        </Modal>
         <Modal
           isOpen={this.props.ui.showExtensionModal}
           onRequestClose={this.onCloseExtensionModal}

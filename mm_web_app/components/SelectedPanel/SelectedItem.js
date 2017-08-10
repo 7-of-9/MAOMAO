@@ -27,13 +27,13 @@ class SelectedItem extends PureComponent {
     const { name, id, img } = this.props
     logger.warn('SelectedItem', name, id, img)
     return (
-      <div className={`selected-topic`} key={`topic-${id}`}
+      <div className='selected-topic' key={`topic-${id}`}
         style={{
           backgroundImage: `url(${img || '/static/images/no-image.png'})`,
           backgroundSize: 'cover',
           opacity: '0.6'
         }}>
-        <span className='text-topic'>{name}</span>
+        <span style={{color: '#fff'}} className='text-topic'>{name}</span>
         <a className='btn-box-remove' onClick={() => { this.props.onRemove(id, name, img) }}>
           <i className='fa fa-remove' aria-hidden='true' />
         </a>

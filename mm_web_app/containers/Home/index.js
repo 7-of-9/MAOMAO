@@ -153,7 +153,6 @@ class Home extends React.Component {
     return (
       <div className='wrapper-slide'>
         <SelectedPanel
-          total={selectedTopics && selectedTopics.length}
           items={selectedItems}
             />
         {

@@ -15,12 +15,10 @@ import SelectedList from './SelectedList'
 @observer
 class SelectedPanel extends PureComponent {
   static propTypes = {
-    total: PropTypes.number.isRequired,
     items: PropTypes.array.isRequired
   }
 
   static defaultProps = {
-    total: 0,
     items: []
   }
 
@@ -28,29 +26,15 @@ class SelectedPanel extends PureComponent {
     this.props.ui.toggleSelectTopic(false, id, name, img)
   }
 
-  showSignUp = () => {
-    this.props.ui.toggleSignIn(true, 'Sign Up')
-  }
-
   render () {
-    const { items, total } = this.props
+    const { items } = this.props
     return (
-      <Sticky className='animated fadeInUp'>
-        <div className='selected-panel'>
-          <p className='text-engine'>
-            What kind of things are you interested in…
-            {
-              total > 0 &&
-              <div className='block-button' style={{ textAlign: 'center', display: 'inline-block' }}>
-                <button className='btn btn-login' onClick={this.showSignUp}>
-                  <i className='fa fa-sign-in' aria-hidden='true' /> Ok! Let’s go
-                </button>
-              </div>
-            }
-          </p>
-          {items && items.length > 0 && <SelectedList items={items} onRemove={this.onRemove} /> }
-        </div>
-      </Sticky>
+        items.length > 0 &&
+        <Sticky>
+          <div className='selected-panel'>
+            <SelectedList items={items} onRemove={this.onRemove} />
+          </div>
+        </Sticky>
     )
   }
 }
