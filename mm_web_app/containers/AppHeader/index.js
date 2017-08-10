@@ -318,11 +318,11 @@ class AppHeader extends React.Component {
         {
           !isLogin && selectedTopics.length > 0 &&
           <NavItem className='fadeIn'>
-            <button className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
+            <button style={{ fontSize: '1.2rem' }} className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
           </NavItem>
         }
         <NavItem>
-          <a data-toggle='dropdown'>
+          <a data-toggle='dropdown' style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }}>
             Hiring
             <i className='fa fa-chevron-circle-down' aria-hidden='true' />
           </a>
@@ -374,7 +374,7 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {!isLogin && <a onClick={this.showSignIn}>Sign In</a>}
+          {!isLogin && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
         </NavItem>
         <Modal
           isOpen={showSignInModal}

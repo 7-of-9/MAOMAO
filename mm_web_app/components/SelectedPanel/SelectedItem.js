@@ -29,14 +29,15 @@ class SelectedItem extends PureComponent {
     return (
       <div className='selected-topic' key={`topic-${id}`}
         style={{
-          backgroundImage: `url(${img || '/static/images/no-image.png'})`,
-          backgroundSize: 'cover',
-          opacity: '0.6'
+          background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+          backgroundSize: 'cover'
         }}>
-        <span style={{color: '#fff'}} className='text-topic'>{name}</span>
-        <a className='btn-box-remove' onClick={() => { this.props.onRemove(id, name, img) }}>
-          <i className='fa fa-remove' aria-hidden='true' />
-        </a>
+        <p className='blur-bg'>
+          <span className='text-topic'>{name}</span>
+          <a className='btn-box-remove' onClick={() => { this.props.onRemove(id, name, img) }}>
+            <i className='fa fa-2x fa-remove' aria-hidden='true' />
+          </a>
+        </p>
       </div>
     )
   }

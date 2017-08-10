@@ -723,10 +723,35 @@ the home page
     max-width: 400px !important;
     line-height: 30px;
   }
+  p.blur-bg {
+    .text-topic {
+      color: #fff;
+    }
+  }
+  .btn-box-remove {
+    @include opacity(0.5);
+    @include border-radius(50%);
+    margin-left: 5px;
+    background-color: #fff;
+    color: #abbaa8;
+    display: inline-block;
+    font-weight: normal;
+    height: 30px;
+    line-height: 30px;
+    width: 30px;
+    text-align: center;
+    cursor: pointer;
+    &:hover,
+    &:focus {
+      color: #222;
+    }
+  }
   .selected-topic {
     @include border-radius(20px);
+    position: relative;
     height: 50px;
     padding: 10px;
+    opacity: 0.8
   }
 }
 
