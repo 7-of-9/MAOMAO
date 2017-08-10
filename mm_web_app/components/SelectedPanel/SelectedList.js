@@ -23,14 +23,19 @@ class SelectedList extends React.PureComponent {
   render () {
     const { items } = this.props
     const settings = {
-      className: 'slider variable-width',
-      dots: true,
-      infinite: true,
+      infinite: false,
+      arrows: true,
       speed: 500,
-      slidesToShow: Math.min(items.length, 5),
+      responsive: [ {
+        breakpoint: 768,
+        settings: { slidesToShow: Math.min(items.length, 3) }
+      }, {
+        breakpoint: 1024,
+        settings: { slidesToShow: Math.min(items.length, 5) }
+      }],
+      slidesToShow: 4,
       slidesToScroll: 3,
-      variableWidth: true,
-      centerMode: true
+      variableWidth: true
     }
     return (
       <Slider {...settings}>

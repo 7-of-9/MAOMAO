@@ -11,6 +11,25 @@ import _ from 'lodash'
 import TopicItem from './TopicItem'
 import logger from '../../utils/logger'
 
+const parentTopicInfo = (tree, topicId, treeLevel) => {
+  if (treeLevel <= 2) {
+    return { topic_id: '', topic_name: '' }
+  } else {
+    for (let counter = 0; counter < tree.length; counter += 1) {
+      const foundTopicTree = _.find(tree[counter].child_topics, item => item.topic_id === topicId)
+      if (foundTopicTree) {
+        return tree[counter]
+      }
+    }
+    for (let counter = 0; counter < tree.length; counter += 1) {
+      const foundChild = parentTopicInfo(tree[counter].child_topics, topicId, treeLevel)
+      if (foundChild) {
+        return foundChild
+      }
+    }
+  }
+}
+
 const currentTopicTree = (tree, topicId) => {
   if (topicId === '') {
     return tree
@@ -45,6 +64,31 @@ class TopicTree extends Component {
     this.props.ui.selectTopicTree(topicId, topicName)
   }
 
+  onBack = () => {
+    const { tree } = toJS(this.props.store)
+    const { currentTopicId, treeLevel } = toJS(this.props.ui)
+    const parentTopic = parentTopicInfo(tree, currentTopicId, treeLevel)
+    this.props.ui.selectTopicTree(parentTopic.topic_id, parentTopic.topic_name, -1)
+  }
+
+  backButton = () => {
+    const { currentTopicId, currentTopicTitle } = toJS(this.props.ui)
+
+    return (
+      <div style={{ position: 'fixed', zIndex: '100' }}>
+        {
+          currentTopicId && currentTopicId !== '' &&
+          <div className='breadcrum'>
+            <button className='btn back-to-parent' onClick={this.onBack}>
+              <i className='fa fa-angle-left' aria-hidden='true' />
+            </button>
+            <span onClick={this.onBack} className='text-topic current-topic-name' style={{color: '#000'}}>{currentTopicTitle}</span>
+          </div>
+          }
+      </div>
+    )
+  }
+
   render () {
     const items = []
     const { tree } = toJS(this.props.store)
@@ -68,11 +112,13 @@ class TopicTree extends Component {
           />
         )
     })
+    const animateClassName = treeLevel === 1 ? 'grid-row' : 'grid-row bounceInRight animated'
     return (
       <div className='topic-tree'>
+        {this.backButton()}
         <div className='main-inner'>
           <div className='container-masonry'>
-            <div className='grid-row'>
+            <div className={animateClassName}>
               {items}
             </div>
           </div>

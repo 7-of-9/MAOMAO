@@ -562,9 +562,10 @@ the home page
 .topic-tree {
  .container-masonry {
     z-index: 1;
+    margin-top: 20px;
     .grid-row {
       .grid-sizer, .grid-item {
-        width: 33.33%;
+        width: 20%;
         @include border-radius(5px);
         &::before {
           @include transform(scale(0.96));
@@ -587,6 +588,12 @@ the home page
           box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
           -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
           animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+        }
+        @media (max-width: 1440px) {
+          width: 25%;
+        }
+        @media (max-width: 1024px) {
+          width: 33.3%;
         }
         @media (max-width: 750px) {
           width: 50%;
