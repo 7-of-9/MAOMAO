@@ -667,6 +667,19 @@ the home page
   }
 }
 
+.topic-number {
+  @include border-radius(50%);
+  @include abs-pos ($top: 0px, $right: -10px, $bottom: auto, $left: auto);
+  z-index: 100;
+  font-size: 11px;
+  text-align: center;
+  color: #fff;
+  background-color: #2db7f5;
+  width: 20px;
+  height: 20px;
+  line-height: 21px;
+}
+
 .wrapper-slide {
   .sticky {
     z-index: 100;
@@ -706,8 +719,11 @@ the home page
     height: 50px;
     padding: 10px;
   }
-  .bottom-panel {
-  }
+}
+
+.navigation-panel {
+  position: fixed;
+  z-index: 100;
 }
 
 /*animation download*/

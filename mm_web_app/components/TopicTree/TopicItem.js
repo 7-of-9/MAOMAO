@@ -15,6 +15,7 @@ class TopicItem extends PureComponent {
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     isSelect: PropTypes.bool.isRequired,
+    totals: PropTypes.number.isRequired,
     hasChild: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired
@@ -25,6 +26,7 @@ class TopicItem extends PureComponent {
     title: '',
     img: '',
     isSelect: false,
+    totals: 0,
     hasChild: true,
     onChange: (isSelect, topicId, title, img) => {},
     onSelect: (isSelect, topicId) => {}
@@ -50,7 +52,7 @@ class TopicItem extends PureComponent {
 
   render () {
     /* eslint-disable camelcase */
-    const { topic_id, title, img, isSelect } = this.props
+    const { topic_id, title, img, isSelect, totals } = this.props
     logger.warn('TopicItem', topic_id, title, img)
     return (
       <div key={topic_id} className='grid-item shuffle-item'>
@@ -72,6 +74,10 @@ class TopicItem extends PureComponent {
                     <span className={`tags ${tagColor(title)}`} rel='tag'>
                       {title}
                     </span>
+                    {
+                      totals > 0 &&
+                      <span className='topic-number'>{totals}</span>
+                    }
                   </div>
                 </div>
               </div>

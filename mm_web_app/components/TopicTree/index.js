@@ -75,7 +75,7 @@ class TopicTree extends Component {
     const { currentTopicId, currentTopicTitle } = toJS(this.props.ui)
 
     return (
-      <div style={{ position: 'fixed', zIndex: '100' }}>
+      <div className='navigation-panel'>
         {
           currentTopicId && currentTopicId !== '' &&
           <div className='breadcrum'>
@@ -108,6 +108,7 @@ class TopicTree extends Component {
           onChange={this.onChange}
           onSelect={this.onSelect}
           hasChild={child_topics.length > 0}
+          totals={child_topics.length}
           img={img}
           />
         )
