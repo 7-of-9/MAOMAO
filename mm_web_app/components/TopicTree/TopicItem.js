@@ -60,7 +60,7 @@ class TopicItem extends PureComponent {
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: '100%', position: 'absolute', bottom: '0' }}>
-          {images.map(item => <img style={{width: '25px', height: '25px'}} className='thumbnail' width='25' height='25' src={item.img} title={item.name} alt={item.name} />)}
+          {images.map(item => <a data-tooltip={item.name} data-position='bottom' class='bottom'><img style={{width: '25px', height: '25px'}} className='thumbnail' width='25' height='25' src={item.img} alt={item.name} /></a>)}
         </div>
       )
     }
