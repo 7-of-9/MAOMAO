@@ -16,7 +16,7 @@ namespace mm_svc.SmartFinder
     public static class SmartFinder
     {
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
-        private const int TERM_SEARCH_BATCH_SIZE = 1; 
+        private const int TERM_SEARCH_BATCH_SIZE = 5; 
 
         public static int Find_TopicTree(string country = "singapore", string city = "singapore", int n_this = 1, int n_of = 1) {
             var tree = TopicTree.GetTopicTree(n_this, n_of);
@@ -31,8 +31,8 @@ namespace mm_svc.SmartFinder
             g.LogInfo($"topics_to_search={string.Join(",", topics_to_search)}");
             g.LogInfo($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
 
-            var ret1 = FindForTopics(topics_to_search);
-            var ret2 = FindForTopics(suggestions_to_search);
+            var ret1 = FindForTopics(topics_to_search, country, city);
+            var ret2 = FindForTopics(suggestions_to_search, country, city);
 
             Maintenance.ImagesSites.Maintain(n_this, n_of);
             return ret1 + ret2;
@@ -87,6 +87,7 @@ namespace mm_svc.SmartFinder
         {
             using (var db = mm02Entities.Create()) {
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
+                int added_urls = 0;
                 foreach (var user_reg_topic_id in topics_to_search) {
                     // get term, parents & suggestions
                     var term = db.terms.Find(user_reg_topic_id);
@@ -121,15 +122,15 @@ namespace mm_svc.SmartFinder
                     var opts = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
                     const int SUGGESTIONS_TO_TAKE = 5;
                     Parallel.ForEach(suggestions.Take(SUGGESTIONS_TO_TAKE), opts, (suggestion) => {
-                        DiscoverForTerm(user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
+                        added_urls += DiscoverForTerm(user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
                     });
 
                     // run discovery for user reg topic term
-                    DiscoverForTerm(user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, country: country, city: city);
+                    added_urls += DiscoverForTerm(user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, country: country, city: city);
                 }
 
                 //return ProcessDiscoveries(topics_to_search, country, city, db, discovered_urls);
-                return -1;
+                return added_urls;
             }
         }
 
@@ -252,13 +253,13 @@ namespace mm_svc.SmartFinder
             return topics_to_search;
         }
 
-        private static void DiscoverForTerm(
+        private static int DiscoverForTerm(
             long main_term_id, long term_id, int term_num, bool suggestion,
             string country = "singapore", string city = "singapore")
         {
             if (Search_Goog.goog_rate_limit_hit == true) {
                 g.LogError($"Search_Goog.goog_rate_limit_hit == true: aborting.");
-                return;
+                return 0;
             }
 
             using (var db = mm02Entities.Create()) {
@@ -269,8 +270,6 @@ namespace mm_svc.SmartFinder
                 //var user_city = user.last_api_city?.ToLower();
                 if (city == country)
                     city = null;
-
-                var urls = new List<ImportUrlInfo>();
 
                 string search_desc;
                 if (main_term_id == term_id)
@@ -290,25 +289,25 @@ namespace mm_svc.SmartFinder
                 // main search - too general?
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
-                // local searches
-                //if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
-                //    // general local
-                //    var gen_local = mm_svc.SmartFinder.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
-                //    gen_local.ForEach(p => { p.city = city; p.country = country; });
-                //    urls.AddRange(gen_local);
-
-                //    // events local
-                //    var events_local = mm_svc.SmartFinder.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
-                //    events_local.ForEach(p => { p.city = city; p.country = country; });
-                //    urls.AddRange(events_local);
-                //}
-
                 var imports = new List<ImportUrlInfo>();
+             
+                // local searches
+                if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
+                    // general local
+                    var gen_local = mm_svc.SmartFinder.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
+                    gen_local.ForEach(p => { p.city = city; p.country = country; });
+                    imports.AddRange(gen_local);
+
+                    // events local
+                    var events_local = mm_svc.SmartFinder.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
+                    events_local.ForEach(p => { p.city = city; p.country = country; });
+                    imports.AddRange(events_local);
+                }
 
                 // site searches
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
 
@@ -336,7 +335,7 @@ namespace mm_svc.SmartFinder
                 // trending search -- not good: goog itself handles this to a large extent
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
 
-                ProcessUrlImports(imports, main_term_id, country, city, db);
+                return ProcessUrlImports(imports, main_term_id, country, city, db);
             }
         }
     }

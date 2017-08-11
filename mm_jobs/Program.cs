@@ -76,7 +76,6 @@ namespace mm_jobs
             g.LogInfo("Set Application_ThreadException OK.");
 
             try {
-
                 // images
                 if (args.Contains("-it")) { 
                     g.LogLine("-"); g.LogInfo("terms-images");
@@ -90,7 +89,14 @@ namespace mm_jobs
                 // discovery
                 else if (args.Contains("-dtt")) {
                     g.LogLine("-"); g.LogInfo("discover-topic-tree");
-                    SmartFinder.Find_TopicTree("singapore", "singapore", n_this, n_of);
+
+                    var added_urls = SmartFinder.Find_TopicTree(country: null, city: null, n_this: n_this, n_of: n_of);
+                    added_urls += SmartFinder.Find_TopicTree("Singapore", "Singapore", n_this: n_this, n_of: n_of);
+                    added_urls += SmartFinder.Find_TopicTree("US", "San Francisco", n_this: n_this, n_of: n_of);
+                    added_urls += SmartFinder.Find_TopicTree("UK", "London", n_this: n_this, n_of: n_of);
+                    added_urls += SmartFinder.Find_TopicTree("Indonesia", "Bali", n_this: n_this, n_of: n_of);
+
+                    g.LogYellow($"> added_urls={added_urls}");
                 }
                 else if (args.Contains("-du20")) {
                     g.LogLine("-"); g.LogInfo("discover-user");
