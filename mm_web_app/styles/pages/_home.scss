@@ -562,7 +562,7 @@ the home page
 .topic-tree {
  .container-masonry {
     z-index: 1;
-    margin-top: 20px;
+    margin-top: 50px;
     .grid-row {
       .grid-sizer, .grid-item {
         width: 20%;
@@ -667,17 +667,27 @@ the home page
   }
 }
 
+/* hotfix for carousel arrow */
+.carousel-arrow {
+  &::before {
+    color: #00558B;
+  }
+}
+.carousel-dots {
+  bottom: -20px;
+}
+
 .topic-number {
   @include border-radius(50%);
-  @include abs-pos ($top: 0px, $right: -10px, $bottom: auto, $left: auto);
+  @include abs-pos ($top: 0px, $right: -15px, $bottom: auto, $left: auto);
   z-index: 100;
   font-size: 11px;
   text-align: center;
   color: #fff;
   background-color: #2db7f5;
-  width: 20px;
-  height: 20px;
-  line-height: 21px;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
 }
 
 .wrapper-slide {
@@ -698,11 +708,8 @@ the home page
   -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
   transition: all .3s linear;
-  .toolbar {
-    position: absolute;
-    right:0;
-    top: 0;
-    z-index: 100;
+  .topic-guide {
+    height: 50px;
   }
   .btn-sign-up {
     background: #008000;

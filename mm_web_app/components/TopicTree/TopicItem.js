@@ -8,6 +8,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
+import eventEmitter from '../../utils/eventEmitter'
 
 class TopicItem extends PureComponent {
   static propTypes = {
@@ -36,6 +37,7 @@ class TopicItem extends PureComponent {
     logger.warn('onChange', evt)
     const { topic_id: topicId, title, isSelect, img } = this.props
     this.props.onChange(!isSelect, topicId, title, img)
+    eventEmitter.emit('carousel', !isSelect)
   }
 
   handleClick = (evt) => {
@@ -45,8 +47,9 @@ class TopicItem extends PureComponent {
     if (hasChild) {
       this.props.onSelect(topicId, title)
     }
+    this.props.onChange(!isSelect, topicId, title, img)
     if (!isSelect) {
-      this.props.onChange(!isSelect, topicId, title, img)
+      eventEmitter.emit('carousel', !isSelect)
     }
   }
 

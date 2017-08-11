@@ -26,15 +26,25 @@ class SelectedPanel extends PureComponent {
     this.props.ui.toggleSelectTopic(false, id, name, img)
   }
 
+  renderView = (items) => {
+    if (!items || items.length === 0) {
+      return (
+        <p className='topic-guide'>
+        What kind of things are you interested in…
+        </p>
+      )
+    }
+    return (<SelectedList items={items} onRemove={this.onRemove} />)
+  }
+
   render () {
     const { items } = this.props
     return (
-        items.length > 0 &&
-        <Sticky>
-          <div className='selected-panel'>
-            <SelectedList items={items} onRemove={this.onRemove} />
-          </div>
-        </Sticky>
+      <Sticky>
+        <div className='selected-panel'>
+          {this.renderView(items)}
+        </div>
+      </Sticky>
     )
   }
 }
