@@ -15,22 +15,42 @@ import logger from '../../utils/logger'
 function NextArrow (props) {
   const {className, style, onClick} = props
   return (
-    <div
-      className={`${className} carousel-arrow`}
-      style={{...style, right: '-20px'}}
-      onClick={onClick}
-     />
+    <div style={{
+      position: 'absolute',
+      right: '0',
+      top: '0',
+      zIndex: 1,
+      height: '50px',
+      width: '110px',
+      backgroundImage: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)'
+    }}>
+      <div
+        className={`${className} carousel-arrow`}
+        style={{...style, right: '-20px'}}
+        onClick={onClick}
+      />
+    </div>
   )
 }
 
 function PrevArrow (props) {
   const {className, style, onClick} = props
   return (
-    <div
-      className={`${className} carousel-arrow`}
-      style={{...style, left: '-20px'}}
-      onClick={onClick}
+    <div style={{
+      position: 'absolute',
+      left: '0',
+      top: '0',
+      zIndex: 1,
+      height: '50px',
+      width: '110px',
+      backgroundImage: 'linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)'
+    }}>
+      <div
+        className={`${className} carousel-arrow`}
+        style={{...style, left: '-20px'}}
+        onClick={onClick}
      />
+    </div>
   )
 }
 
@@ -64,7 +84,7 @@ class SelectedList extends React.PureComponent {
       swipeToSlide: true,
       draggable: true,
       touchMove: true,
-      focusOnSelect: true,
+      initialSlide: 0,
       speed: 500,
       responsive: [
         {
