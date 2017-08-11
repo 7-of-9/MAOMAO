@@ -59,8 +59,23 @@ class TopicItem extends PureComponent {
     logger.warn('renderThumnails', images)
     if (images.length > 0) {
       return (
-        <div className='preview-child-topics' style={{ width: '100%', position: 'absolute', bottom: '0' }}>
-          {images.map(item => <a data-tooltip={item.name} data-position='bottom' class='bottom'><img style={{width: '25px', height: '25px'}} className='thumbnail' width='25' height='25' src={item.img} alt={item.name} /></a>)}
+        <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
+          {images.map(item =>
+            <a
+              style={{ display: 'inline-block' }}
+              data-tooltip={item.name}
+              data-position='bottom'
+              class='bottom'>
+              <img
+                style={{width: '25px', height: '25px'}}
+                className='thumbnail'
+                width='25'
+                height='25'
+                src={item.img}
+                alt={item.name}
+                />
+            </a>)
+          }
         </div>
       )
     }
