@@ -109,6 +109,7 @@ class TopicTree extends Component {
           onSelect={this.onSelect}
           hasChild={child_topics.length > 0}
           totals={child_topics.length}
+          childTopics={child_topics}
           img={img}
           />
         )

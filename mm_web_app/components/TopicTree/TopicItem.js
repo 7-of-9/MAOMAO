@@ -15,6 +15,7 @@ class TopicItem extends PureComponent {
     topic_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
+    childTopics: PropTypes.array.isRequired,
     isSelect: PropTypes.bool.isRequired,
     totals: PropTypes.number.isRequired,
     hasChild: PropTypes.bool.isRequired,
@@ -29,6 +30,7 @@ class TopicItem extends PureComponent {
     isSelect: false,
     totals: 0,
     hasChild: true,
+    childTopics: [],
     onChange: (isSelect, topicId, title, img) => {},
     onSelect: (isSelect, topicId) => {}
   }
@@ -53,10 +55,22 @@ class TopicItem extends PureComponent {
     }
   }
 
+  renderThumnails = (images) => {
+    logger.warn('renderThumnails', images)
+    if (images.length > 0) {
+      return (
+        <div className='preview-child-topics' style={{ width: '100%', position: 'absolute', bottom: '0' }}>
+          {images.map(item => <img style={{width: '25px', height: '25px'}} className='thumbnail' width='25' height='25' src={item.img} title={item.name} alt={item.name} />)}
+        </div>
+      )
+    }
+  }
+
   render () {
     /* eslint-disable camelcase */
-    const { topic_id, title, img, isSelect, totals } = this.props
+    const { topic_id, title, img, isSelect, totals, childTopics } = this.props
     logger.warn('TopicItem', topic_id, title, img)
+    const images = childTopics.map(item => ({img: item.img, name: item.topic_name}))
     return (
       <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
@@ -85,6 +99,7 @@ class TopicItem extends PureComponent {
                 </div>
               </div>
             </a>
+            {this.renderThumnails(images)}
             <input
               checked={isSelect}
               type='checkbox'
