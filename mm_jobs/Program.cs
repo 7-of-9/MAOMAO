@@ -58,8 +58,10 @@ namespace mm_jobs
 
             var ip80 = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
             var ip443 = new WebClient().DownloadString(@"https://icanhazip.com").Trim();
-            g.LogInfo($">> {ip80}:80 / {ip443}:443 - RUNNING AS {n_this} OF {n_of}");
-            Console.Title = $"{fullArgs} / {n_this} OF {n_of} / {ip80}:80 / {ip443}:443";
+            var doc1 = mm_svc.SmartFinder.WebClientBrowser.Fetch("http://www.google.com.sg/search?site=&source=hp&q=whatts+my+ip&oq=whatts+my+ip");
+            var ipGoog1 = doc1.DocumentNode?.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_H1m _u2m _kup _I5m").FirstOrDefault()?.InnerText;
+            g.LogInfo($">> GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443} - RUNNING AS {n_this} OF {n_of}");
+            Console.Title = $"{fullArgs} / {n_this} OF {n_of} / GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443}";
 
             Environment.CurrentDirectory = exeDir; 
             DateTime startupTime = DateTime.Now;
@@ -100,7 +102,7 @@ namespace mm_jobs
                 }
 
                 if (console_present()) {
-                    g.LogInfo($">> all done. Press any key...");
+                    g.LogYellow($">> all done. Press any key...");
                     Console.ReadKey();
                 }
                 return 0;

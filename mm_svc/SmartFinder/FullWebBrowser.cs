@@ -79,6 +79,11 @@ namespace mm_svc.SmartFinder
                             Thread.Sleep(100);
                         }
 
+                        if (wb.Document != null) {
+                            wb.Document.ExecCommand("ClearAuthenticationCache", false, null);
+                            wb.Document.ExecCommand("Refresh", false, ""); // may prevent Save dialogs from showing?
+                        }
+
                         //g.LogLine("wb thread: Application.ExitThread...");
                         Application.ExitThread(); //**
 
@@ -97,7 +102,7 @@ namespace mm_svc.SmartFinder
                 //g.LogLine($"th.ThreadState={th.ThreadState}");
                 //g.LogLine($"th.IsAlive={th.IsAlive}");
                 Thread.Sleep(100);
-                if (sw2.ElapsedMilliseconds > 1000 * 15) {
+                if (sw2.ElapsedMilliseconds > 1000 * 30) {
                     g.LogWarn($"FORCE aborting STA thread (waited too long)");
                     break;
                 }
@@ -141,13 +146,15 @@ namespace mm_svc.SmartFinder
             //lock (lockObj) {
             try {
                 //g.LogLine($"Wb_DocumentCompleted: .Url.AbsolutePath={e.Url.AbsolutePath} / e.Url.AbsolutePath={e.Url.AbsolutePath} / (sender as WebBrowser).Url.AbsolutePath={(sender as WebBrowser).Url.AbsolutePath}");
-        
+
                 //var wb = sender as WebBrowser;
                 //if (wb == null || e == null || e.Url == null)
                 //    return;
 
-                if (wb.Document != null)
+                if (wb.Document != null) {
                     wb.Document.ExecCommand("ClearAuthenticationCache", false, null);
+                    wb.Document.ExecCommand("Refresh", false, ""); // may prevent Save dialogs from showing?
+                }
                 InternetSetOption(IntPtr.Zero, INTERNET_OPTION_END_BROWSER_SESSION, IntPtr.Zero, 0);
 
                 // if is main frame/page (not child frameset which has document url != browser url)

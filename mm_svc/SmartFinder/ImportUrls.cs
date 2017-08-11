@@ -16,7 +16,9 @@ namespace mm_svc.SmartFinder
 {
     public static class ImportUrls
     {
-        public static void GetMeta(List<ImportUrlInfo> to_import, int max_parallel = 2)
+        private static ConcurrentDictionary<string, DateTime> tld_last_access = new ConcurrentDictionary<string, DateTime>(); // tld, last_access
+
+        public static void GetMeta(List<ImportUrlInfo> to_import)
         {
             // awis 1 - run for distinct TLDs; populates new awis_sites in DB
             var tlds_uniq = to_import.Select(p => mm_global.Util.GetTldFromUrl(p.url)).Distinct().ToList();
@@ -29,6 +31,9 @@ namespace mm_svc.SmartFinder
                 var tld = mm_global.Util.GetTldFromUrl(import.url);
                 var site = SiteInfo.GetOrQueryAwis(tld, out bool from_db);
                 import.awis_site_id = site.id;
+
+                if (!tld_last_access.ContainsKey(tld))
+                    tld_last_access.TryAdd(tld, DateTime.MinValue);
             });
 
             // quora going 403!
@@ -51,10 +56,9 @@ namespace mm_svc.SmartFinder
 
         public static void DownlodUrls(List<ImportUrlInfo> to_import)
         {
-            //Parallel.ForEach(to_import, new ParallelOptions() { MaxDegreeOfParallelism = max_parallel }, (url_info) => {
-            var tld_last_access = new ConcurrentDictionary<string, DateTime>(); // tld, last_access
-            const double tld_min_secs_interval = 3;
-            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(8)) {
+            const double tld_min_secs_interval = 30;
+
+            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(4)) {
 
                 var threads = new List<Thread>();
                 //foreach (var url_info in chunk) {
@@ -62,138 +66,144 @@ namespace mm_svc.SmartFinder
                     //Debug.WriteLine($"{url_info.url}");
                     //return;
 
-                    //threads.Add(new Thread(() => {
-
                     // apply rate limit per tld
                     var tld = mm_global.Util.GetTldFromUrl(url_info.url);
-                    if (tld_last_access.TryGetValue(tld, out DateTime last_access)) {
-                        while (((TimeSpan)DateTime.Now.Subtract(last_access)).TotalSeconds < tld_min_secs_interval) {
-                            Thread.Sleep(500);
-                            g.LogLine($"{tld} - waiting...");
-                        }
-                    }
+                    var tld_last_access_key = tld_last_access.Keys.Where(p => p == tld).First();
+                    lock (tld_last_access_key) {
+                        g.LogLine($"[{tld}] got lock...");
 
-                    // download
-                    //var doc = Browser.Fetch(url_info.url); //*
-                    HtmlAgilityPack.HtmlDocument doc = null;
-                    HtmlWeb html_web = new HtmlWeb();
-                    try {
-                        int retry_count = 0;
-                        again:
-                        try {
-                            //Application.DoEvents();
-
-                            //var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime in debugger
-                            //wb.Dispose();
-
-                            g.LogLine($"FETCHING: {url_info.url}...");
-                            
-                            var wb = new FullWebBrowser();
-                            wb.GetFinalHtml(url_info.url, out string final_url, out string final_html, out string final_title);
-                            doc = new HtmlAgilityPack.HtmlDocument();
-                            doc.LoadHtml(final_html);
-
-                            g.LogInfo($"OK: {url_info.url}");
-
-                            url_info.status = "downloaded";
-                            tld_last_access.AddOrUpdate(tld, DateTime.Now, (k, v) => DateTime.Now);
-                        }
-                        catch (Exception ex) {
-                            if (++retry_count < 3) {
-                                g.LogWarn($"ex={ex.Message} url={url_info.url} - retrying ({retry_count})...");
-                                goto again;
+                        if (tld_last_access.TryGetValue(tld, out DateTime last_access)) {
+                            while (((TimeSpan)DateTime.Now.Subtract(last_access)).TotalSeconds < tld_min_secs_interval) {
+                                Thread.Sleep((int)(tld_min_secs_interval * 1000 / 4));
+                                g.LogLine($"[{tld}] - waiting...");
                             }
-                            url_info.status = ex.Message.TruncateMax(128);
-                            g.LogAllExceptionsAndStack(ex);
-                            return;
-                        }
-                        if (doc == null) {
-                            g.LogError($"got no HAP obj for [{url_info.url}]");
-                            return;
                         }
 
-                        // extract meta
-                        var html = doc.DocumentNode?.OuterHtml;
-                        var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
-                        var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
-                        var title = doc.DocumentNode.SelectSingleNode("//title");
+                        // download
+                        HtmlAgilityPack.HtmlDocument doc = null;
+                        HtmlWeb html_web = null;
+                        try {
+                            int retry_count = 0;
+                            again:
+                            try {
+                                //Application.DoEvents();
 
-                        //if (url_info.url == "https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968")
-                        //    Debugger.Break();
+                                //var wb = new WebBrowser(); // need this for reference to winforms to actually work at runtime in debugger
 
-                        // get images
-                        var og_image = metas?.Where(p => p.Attributes["property"]?.Value == "og:image").FirstOrDefault()?.Attributes["content"]?.Value;
+                                // fetch -- full browser (IE)
+                                //g.LogLine($"FETCHING (FullWebBrowser): {url_info.url}...");
+                                //var wb = new FullWebBrowser();
+                                //wb.GetFinalHtml(url_info.url, out string final_url, out string final_html, out string final_title);
+                                //doc = new HtmlAgilityPack.HtmlDocument();
+                                //doc.LoadHtml(final_html);
 
-                        var tw_image = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image").FirstOrDefault() ??
-                                        metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image").FirstOrDefault())?.Attributes["content"]?.Value;
+                                // fetch -- webclient
+                                g.LogLine($"FETCHING (WebClientBrowser): {url_info.url}...");
+                                doc = WebClientBrowser.Fetch(url_info.url); //*
 
-                        var tw_image0 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image0").FirstOrDefault() ??
-                                         metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image0").FirstOrDefault())?.Attributes["content"]?.Value;
+                                tld_last_access.AddOrUpdate(tld, DateTime.Now, (k, v) => DateTime.Now);
 
-                        var tw_image1 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image1").FirstOrDefault() ??
-                                         metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image1").FirstOrDefault())?.Attributes["content"]?.Value;
+                                if (doc != null) {
+                                    g.LogGreen($"fetched: {url_info.url}");
+                                    url_info.status = "downloaded";
+                                }
+                            }
+                            catch (Exception ex) {
+                                if (++retry_count < 3) {
+                                    g.LogWarn($"ex={ex.Message} url={url_info.url} - retrying ({retry_count})...");
+                                    goto again;
+                                }
+                                url_info.status = ex.Message.TruncateMax(128);
+                                //g.LogAllExceptionsAndStack(ex);
+                                return;
+                            }
+                            if (doc == null) {
+                                g.LogWarn($"got no HAP obj for [{url_info.url}]");
+                                return;
+                            }
 
-                        var tw_image2 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image2").FirstOrDefault() ??
-                                         metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image2").FirstOrDefault())?.Attributes["content"]?.Value;
+                            // extract meta
+                            var html = doc.DocumentNode?.OuterHtml;
+                            var metas = doc.DocumentNode.SelectNodes("//meta/@content") ?? doc.DocumentNode.Descendants("meta");
+                            var links = doc.DocumentNode.SelectNodes("//link/@content") ?? doc.DocumentNode.Descendants("link");
+                            var title = doc.DocumentNode.SelectSingleNode("//title");
 
-                        var tw_image3 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image3").FirstOrDefault() ??
-                                         metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image3").FirstOrDefault())?.Attributes["content"]?.Value;
+                            //if (url_info.url == "https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968")
+                            //    Debugger.Break();
 
-                        var sha_iamge = (metas?.Where(p => p.Attributes["name"]?.Value == "shareaholic:image").FirstOrDefault())?.Attributes["content"]?.Value;
+                            // get images
+                            var og_image = metas?.Where(p => p.Attributes["property"]?.Value == "og:image").FirstOrDefault()?.Attributes["content"]?.Value;
 
-                        var thumbnail = (metas?.Where(p => p.Attributes["name"]?.Value == "thumbnail").FirstOrDefault())?.Attributes["content"]?.Value;
+                            var tw_image = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image").FirstOrDefault() ??
+                                            metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        var image_src = (links?.Where(p => p.Attributes["rel"]?.Value == "image_src").FirstOrDefault())?.Attributes["content"]?.Value;
+                            var tw_image0 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image0").FirstOrDefault() ??
+                                             metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image0").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        var apple_touch_icon_180 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "180x180").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var apple_touch_icon_152 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "152x152").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var apple_touch_icon_144 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "144x144").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var apple_touch_icon_120 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "120x120").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var apple_touch_icon_114 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "114x114").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var apple_touch_icon_other = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true).FirstOrDefault())?.Attributes["href"]?.Value;
-                        //var apple_touch_icon_76 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "76x76").FirstOrDefault())?.Attributes["href"]?.Value;
-                        //var apple_touch_icon_72 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "72x72").FirstOrDefault())?.Attributes["href"]?.Value;
-                        //var apple_touch_icon_60 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "60x60").FirstOrDefault())?.Attributes["href"]?.Value;
-                        //var apple_touch_icon_57 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "57x57").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var tw_image1 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image1").FirstOrDefault() ??
+                                             metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image1").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        var link_rel_icon_192 = (links?.Where(p => p.Attributes["rel"]?.Value == "icon" && p.Attributes["sizes"]?.Value == "192x192").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var link_rel_icon_96 = (links?.Where(p => p.Attributes["rel"]?.Value == "icon" && p.Attributes["sizes"]?.Value == "96x96").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var tw_image2 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image2").FirstOrDefault() ??
+                                             metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image2").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        var link_rel_shortcut_icon_196 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "196x196").FirstOrDefault())?.Attributes["href"]?.Value;
-                        var link_rel_shortcut_icon_128 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "128x128").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var tw_image3 = (metas?.Where(p => p.Attributes["name"]?.Value == "twitter:image3").FirstOrDefault() ??
+                                             metas?.Where(p => p.Attributes["property"]?.Value == "twitter:image3").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        //page_meta["ip_thumbnail_url"] = $('link[itemprop="thumbnailUrl"]').attr('href') || ""; // todo
+                            var sha_iamge = (metas?.Where(p => p.Attributes["name"]?.Value == "shareaholic:image").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        var image_url = og_image ?? tw_image ?? thumbnail ?? image_src ?? sha_iamge ?? tw_image0 ?? tw_image1 ?? tw_image2 ?? tw_image3
-                                     ?? link_rel_shortcut_icon_196 ?? apple_touch_icon_180 ?? link_rel_icon_192
-                                     ?? apple_touch_icon_152 ?? apple_touch_icon_144 ?? link_rel_shortcut_icon_128 ?? apple_touch_icon_120 ?? apple_touch_icon_114 ?? link_rel_icon_96
-                                     ?? apple_touch_icon_other
-                                     ;
-                        // title
-                        var meta_title = title?.InnerText;
+                            var thumbnail = (metas?.Where(p => p.Attributes["name"]?.Value == "thumbnail").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        // populate
-                        url_info.html = html;
-                        if (!string.IsNullOrEmpty(image_url) && !image_url.StartsWith("/"))
-                            url_info.image_url = HttpUtility.HtmlDecode(image_url);
-                        if (!string.IsNullOrEmpty(meta_title))
-                            url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
-                        else
-                            url_info.meta_title = url_info.title;
-                        url_info.meta_title = HttpUtility.HtmlDecode(url_info.meta_title);
-                        Debug.WriteLine($" >> {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
+                            var image_src = (links?.Where(p => p.Attributes["rel"]?.Value == "image_src").FirstOrDefault())?.Attributes["content"]?.Value;
 
-                        // error detection
-                        DetectErrorsInMetaTitle(url_info, new List<string>() { "400", "403", "409", "401", "404", "407", "410", "451", "402", "408", "414", "417", "429", "499" });
-                        DetectErrorsInMetaTitle(url_info, new List<string>() { "500", "503", "509", "501", "504", "502", "511" });
+                            var apple_touch_icon_180 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "180x180").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var apple_touch_icon_152 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "152x152").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var apple_touch_icon_144 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "144x144").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var apple_touch_icon_120 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "120x120").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var apple_touch_icon_114 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true && p.Attributes["sizes"]?.Value == "114x114").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var apple_touch_icon_other = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-") == true).FirstOrDefault())?.Attributes["href"]?.Value;
+                            //var apple_touch_icon_76 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "76x76").FirstOrDefault())?.Attributes["href"]?.Value;
+                            //var apple_touch_icon_72 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "72x72").FirstOrDefault())?.Attributes["href"]?.Value;
+                            //var apple_touch_icon_60 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "60x60").FirstOrDefault())?.Attributes["href"]?.Value;
+                            //var apple_touch_icon_57 = (links?.Where(p => p.Attributes["rel"]?.Value.StartsWith("apple-touch-icon") == true && p.Attributes["sizes"]?.Value == "57x57").FirstOrDefault())?.Attributes["href"]?.Value;
+
+                            var link_rel_icon_192 = (links?.Where(p => p.Attributes["rel"]?.Value == "icon" && p.Attributes["sizes"]?.Value == "192x192").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var link_rel_icon_96 = (links?.Where(p => p.Attributes["rel"]?.Value == "icon" && p.Attributes["sizes"]?.Value == "96x96").FirstOrDefault())?.Attributes["href"]?.Value;
+
+                            var link_rel_shortcut_icon_196 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "196x196").FirstOrDefault())?.Attributes["href"]?.Value;
+                            var link_rel_shortcut_icon_128 = (links?.Where(p => p.Attributes["rel"]?.Value == "shortcut icon" && p.Attributes["sizes"]?.Value == "128x128").FirstOrDefault())?.Attributes["href"]?.Value;
+
+                            //page_meta["ip_thumbnail_url"] = $('link[itemprop="thumbnailUrl"]').attr('href') || ""; // todo
+
+                            var image_url = og_image ?? tw_image ?? thumbnail ?? image_src ?? sha_iamge ?? tw_image0 ?? tw_image1 ?? tw_image2 ?? tw_image3
+                                         ?? link_rel_shortcut_icon_196 ?? apple_touch_icon_180 ?? link_rel_icon_192
+                                         ?? apple_touch_icon_152 ?? apple_touch_icon_144 ?? link_rel_shortcut_icon_128 ?? apple_touch_icon_120 ?? apple_touch_icon_114 ?? link_rel_icon_96
+                                         ?? apple_touch_icon_other
+                                         ;
+                            // title
+                            var meta_title = title?.InnerText;
+
+                            // populate
+                            url_info.html = html;
+                            if (!string.IsNullOrEmpty(image_url) && !image_url.StartsWith("/"))
+                                url_info.image_url = HttpUtility.HtmlDecode(image_url);
+                            if (!string.IsNullOrEmpty(meta_title))
+                                url_info.meta_title = meta_title.Replace("\n", " ").Replace("\r", " ").Replace("\t", " ");
+                            else
+                                url_info.meta_title = url_info.title;
+                            url_info.meta_title = HttpUtility.HtmlDecode(url_info.meta_title);
+                            g.LogInfo($">> html_len={url_info.html?.Length} {url_info.url} --> title: [{url_info.meta_title}] img: [{url_info.image_url}]");
+
+                            // error detection
+                            DetectErrorsInMetaTitle(url_info, new List<string>() { "400", "403", "409", "401", "404", "407", "410", "451", "402", "408", "414", "417", "429", "499" });
+                            DetectErrorsInMetaTitle(url_info, new List<string>() { "500", "503", "509", "501", "504", "502", "511" });
+                        }
+
+                        finally {
+                            html_web = null;
+                            doc = null;
+                            GC.Collect();
+                        }
                     }
-
-                    finally {
-                        html_web = null;
-                        doc = null;
-                        GC.Collect();
-                    }
-
                     //}));
                 });
 

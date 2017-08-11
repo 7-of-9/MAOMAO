@@ -30,7 +30,7 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 // get root topics - explicit
-                var explicit_root_topic_ids = db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock();
+                var explicit_root_topic_ids = g.RetryMaxOrThrow(() => db.terms.AsNoTracking().Where(p => p.is_topic_root == true).Select(p => p.id).ToListNoLock());
 
                 // root topics - implied; parent terms, not children
                 var computed_root_topic_ids = db.ObjectContext().ExecuteStoreQuery<long>(

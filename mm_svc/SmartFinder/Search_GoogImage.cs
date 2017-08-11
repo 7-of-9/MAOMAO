@@ -21,13 +21,19 @@ namespace mm_svc.SmartFinder
         private const string gs_url = "http://www.google.com.sg/search?biw=1440&bih=776&tbm=isch{1}&q={0}&oq={0}";
 
         internal static object lock_obj = "42";
-        internal static double min_secs_interval = 3;
         internal static DateTime last_access = DateTime.MinValue;
+        // us-proxies (L1 SOCKS 5 providers) recommends no more than 15 goog requests per *hour*
+        // for uninterrupted service!!! that's one every four minutes...
+        //internal static double min_secs_interval = 4 * 60; // 4 minutes: ran overnight no 503s
+        //internal static double min_secs_interval = 2 * 60; // 2 minutes: testing...
+        internal static double min_secs_interval = 1 * 60; // 1 minutes: testing...
 
         internal static int backoff_secs_base = 15;
         internal static int backoff_secs = backoff_secs_base;
         internal static int success_count = 0;
         internal static int fail_count = 0;
+
+        internal static int total_searches = 0;
 
         public static List<string> Search(
             out bool none_found,
@@ -38,12 +44,22 @@ namespace mm_svc.SmartFinder
             none_found = false;
             var saved = new List<string>();
 
-            lock (Search_GoogImage.lock_obj) {
-                while (DateTime.Now.Subtract(Search_GoogImage.last_access).TotalSeconds < Search_GoogImage.min_secs_interval) {
-                    g.LogLine("waiting...");
-                    System.Threading.Thread.Sleep(200);
-                }
-            }
+            //lock (Search_GoogImage.lock_obj) {
+            //    bool ready = false;
+            //    while (!ready) {
+            //        var interval = DateTime.Now.Subtract(Search_GoogImage.last_access);
+            //        g.LogLine($"lock acquired - {interval.TotalSeconds.ToString("0.00")} secs since last access: [{search_term}]");
+            //        if (interval.TotalSeconds < Search_GoogImage.min_secs_interval) {
+            //            g.LogLine($"waiting 1s... [{search_term}]");
+            //            System.Threading.Thread.Sleep(1000);
+            //        }
+            //        else {
+            //            Search_GoogImage.last_access = DateTime.Now;
+            //            ready = true;
+            //        }
+            //    }
+            //}
+            //g.LogLine($"lock exited [{search_term}]");
 
             var tbs = clipart ? "&tbs=itp:clipart" : "&tbs=itp:photo";
             var url = string.Format(gs_url, search_term, tbs);
@@ -54,13 +70,28 @@ namespace mm_svc.SmartFinder
             HtmlAgilityPack.HtmlDocument doc = null;
             HtmlWeb html_web = new HtmlWeb();
             try {
-                g.LogLine($"GOOG Image Search -- DOWNLOADING: {url}...");
+                //g.LogLine($"GOOG Image Search -- REQUESTED DOWNLOAD: {url}...");
 
-                doc = html_web.LoadFromBrowser(url);
-
-                lock (Search_GoogImage.lock_obj) {
-                    Search_GoogImage.last_access = DateTime.Now;
+                bool ready = false;
+                while (!ready) {
+                    var interval = DateTime.Now.Subtract(Search_GoogImage.last_access);
+                    //g.LogLine($"[{search_term}] - {interval.TotalSeconds.ToString("0.00")} secs since last access");
+                    if (interval.TotalSeconds < Search_GoogImage.min_secs_interval) {
+                        //g.LogLine($"[{search_term}] - waiting 1s...");
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                    else {
+                        Search_GoogImage.last_access = DateTime.Now;
+                        ready = true;
+                    }
                 }
+
+                //lock (Search_GoogImage.lock_obj) {
+                    g.LogGreen($">>> IMAGE SEARCH #{total_searches} [{search_term}] - fetching...");
+                    doc = html_web.LoadFromBrowser(url);
+                    g.LogLine($"[{search_term}] - fetched.");
+                    Search_GoogImage.last_access = DateTime.Now;
+                //}
 
                 if (doc?.DocumentNode?.InnerText.Contains("Our systems have detected unusual traffic") == true) {
                     fail_count++;
@@ -69,6 +100,7 @@ namespace mm_svc.SmartFinder
                     Thread.Sleep(backoff_secs * 1000);
                     goto done;
                 }
+                total_searches++;
 
                 if (doc?.DocumentNode?.InnerText.Contains("Navigation canceled") == true) {
                     g.LogError($"ERR: Got IE 'Navigation canceled' -- aborting.");
@@ -76,7 +108,7 @@ namespace mm_svc.SmartFinder
                 }
 
                 success_count++;
-                fail_count = 0;
+                fail_count = Math.Max(0, --fail_count);
                 backoff_secs = backoff_secs_base;
             }
             catch(Exception ex) {
@@ -98,6 +130,7 @@ namespace mm_svc.SmartFinder
                     imgs = null;
                     goto done;
                 }
+                g.LogLine($"[{search_term}] - got {imgs.Count()} images");
                 foreach (var img in imgs) {
                     var src = img.Attributes["src"]?.Value;
                     if (!string.IsNullOrEmpty(src)) {
@@ -118,7 +151,9 @@ namespace mm_svc.SmartFinder
                                     ms.Write(bytes, 0, bytes.Length);
                                     image = Image.FromStream(ms, true);
                                 }
-                                catch { }
+                                catch (Exception ex) {
+                                    g.LogException(ex); // $"[{search_term}] - got {imgs} images");
+                                }
                                 using (image) {
                                     if (image != null) {
                                         using (Bitmap bmp = new Bitmap(image)) {
@@ -132,6 +167,7 @@ namespace mm_svc.SmartFinder
                                             // save first n images
                                             if (++img_ndx <= save_top_count) {
                                                 var full_filename = filename + $"_M{img_ndx}{ext}";
+                                                g.LogLine($"[{search_term}] - dispatching Azure save {full_filename}...");
                                                 Task.Run(() => Images.AzureImageFile.Save(jpeg_bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }
@@ -139,6 +175,7 @@ namespace mm_svc.SmartFinder
                                             // separate first n white backg images too too
                                             if (got_whites < save_white_count && tl.R >= 0xf0 && tl.G >= 0xf0 && tl.B >= 0xf0) {
                                                 var full_filename = filename + $"_W{++got_whites}{ext}";
+                                                g.LogLine($"[{search_term}] - dispatching Azure save {full_filename}...");
                                                 Task.Run(() => Images.AzureImageFile.Save(jpeg_bytes, type, full_filename, content_type));
                                                 saved.Add(full_filename);
                                             }

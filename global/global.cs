@@ -113,7 +113,6 @@ namespace mm_global
                     }
 
                     Trace.TraceError(logStr);
-                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Error);
 
                     if (is_console)
                         Console.ResetColor();
@@ -129,7 +128,51 @@ namespace mm_global
                     }
 
                     Trace.TraceWarning(logStr);
-                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Warning);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*G") || s.StartsWith("#G")) // green
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*C") || s.StartsWith("#C")) // Cyan
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*Y") || s.StartsWith("#Y")) // yellow
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    Trace.TraceInformation(logStr);
 
                     if (is_console)
                         Console.ResetColor();
@@ -191,6 +234,22 @@ namespace mm_global
         {
             g.LogLine($"### {msg}");
         }
+
+        public static void LogGreen(string msg)
+        {
+            g.LogLine($"#G {msg}");
+        }
+
+        public static void LogCyan(string msg)
+        {
+            g.LogLine($"#C {msg}");
+        }
+
+        public static void LogYellow(string msg)
+        {
+            g.LogLine($"#Y {msg}");
+        }
+        
 
         public static string LogStack()
         {

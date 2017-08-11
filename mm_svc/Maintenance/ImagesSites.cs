@@ -22,14 +22,15 @@ namespace mm_svc.Maintenance
             TelemetryConfiguration.Active.DisableTelemetry = true;
 
             using (var db = mm02Entities.Create()) {
-                var sites_mising_logos = db.awis_site.Where(p => string.IsNullOrEmpty(p.logo_file_name))
-                                           .Select(p => new { id = p.id, url = p.url }).ToListNoLock();
+                var sites_mising_logos = g.RetryMaxOrThrow(() => 
+                                                db.awis_site.Where(p => string.IsNullOrEmpty(p.logo_file_name))
+                                                  .Select(p => new { id = p.id, url = p.url }).ToListNoLock());
                 g.LogInfo($"sites_mising_logos.Count={sites_mising_logos.Count}");
 
                 // using Parallel class causes WebBrowser in STA thread to (after some reps of the loop) start to timeout; no idea why
                 //Parallel.ForEach(sites_mising_logos, new ParallelOptions() { MaxDegreeOfParallelism = 1 }, awis_site_id => {
 
-                int threads_to_use = 2;
+                int threads_to_use = 1;
                 var threads = new List<Thread>();
                 for (int i = 0; i < threads_to_use; i++) {
                     int thread_id = i;
@@ -85,7 +86,8 @@ namespace mm_svc.Maintenance
                     th.Start();
                 });
 
-                threads.ForEach(th => {
+                //threads.ForEach(th => {
+                Parallel.ForEach(threads, th => { 
                     var sw = new Stopwatch(); sw.Start();
                     while (th.ThreadState != System.Threading.ThreadState.Stopped) {// && sw.ElapsedMilliseconds < 2000) {
                         Thread.Sleep(100);

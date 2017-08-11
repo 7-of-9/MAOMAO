@@ -16,9 +16,17 @@ namespace mm_svc.SmartFinder {
         private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}";
         public static bool goog_rate_limit_hit = false;
 
+        
         internal static object lock_obj = "42";
-        internal static DateTime last_access = DateTime.Now;
-        internal static double min_secs_interval = 3;
+        internal static DateTime last_access = DateTime.MinValue;
+
+        // us-proxies (L1 SOCKS 5 providers) recommends no more than 15 goog requests per *hour*
+        // for uninterrupted service!!! that's one every four minutes...
+        //internal static double min_secs_interval = 4 * 60; // 4 minutes: ran overnight no 503s
+        //internal static double min_secs_interval = 2 * 60; // 2 minutes: testing...
+        internal static double min_secs_interval = 1 * 60; // 1 minutes: testing...
+
+        internal static int total_searches = 0;
 
         public enum SearchTypeNum
         {
@@ -89,19 +97,21 @@ namespace mm_svc.SmartFinder {
 
             for (int page = 0; page < pages; page++) {
 
-                g.LogInfo($">>> GOOG SEARCH: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
+                g.LogGreen($">>> GOOG SEARCH #{total_searches}: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
                 HtmlDocument doc = null;
                 try {
                     lock (lock_obj) {
                         while (DateTime.Now.Subtract(last_access).TotalSeconds < min_secs_interval) {
-                            g.LogLine("Search_Goog.Search - waiting...");
-                            System.Threading.Thread.Sleep(500);
+                            //g.LogLine("Search_Goog.Search - waiting 1...");
+                            System.Threading.Thread.Sleep(1000);
                         }
                     //}
 
                         doc = WebClientBrowser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                        if (doc != null)
+                            total_searches++;
 
-                    //lock (lock_obj) {
+                        //lock (lock_obj) {
                         last_access = DateTime.Now;
                     }
                 }

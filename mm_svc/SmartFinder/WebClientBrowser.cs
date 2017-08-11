@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace mm_svc.SmartFinder
@@ -18,6 +19,11 @@ namespace mm_svc.SmartFinder
         internal static object lock_obj = "42";
         internal static DateTime last_access = DateTime.MinValue;
         internal static double min_secs_interval = 1;
+
+        internal static int backoff_secs_base = 30;
+        internal static int backoff_secs = backoff_secs_base;
+        internal static int success_count = 0;
+        internal static int fail_count = 0;
 
         static WebClientBrowser()
         {
@@ -66,11 +72,15 @@ namespace mm_svc.SmartFinder
 
                 // this seems to cause broken youtube page loading into HAP (even with AutomaticDecompression)
                 //client.Headers[HttpRequestHeader.AcceptEncoding] = "zip, deflate, br";
-
+again:
                 client.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.8,id;q=0.6";
                 try {
-                    g.LogInfo($"Fetch -- DOWNLOADING: {url}...");
+                    g.LogLine($"Fetch -- DOWNLOADING: {url}...");
                     html = client.DownloadString(url);
+
+                    success_count++;
+                    fail_count = Math.Max(0, --fail_count);
+                    backoff_secs = backoff_secs_base;
 
                     if (internal_rate_limit) {
                         lock (lock_obj) {
@@ -79,11 +89,26 @@ namespace mm_svc.SmartFinder
                     }
                 }
                 catch (WebException wex) {
-                    if (wex.Message.Contains("503")) {
+                    if (wex.Message.Contains("503")) { // google
                         g.LogError(" **** 503 -- PROBABLE RATE LIMIT !! ****");
-                        throw new ApplicationException("RATE LIMIT HIT");
+                        fail_count++;
+                        backoff_secs *= fail_count;
+                        g.LogWarn($"ERR: 503 (fail_count={fail_count}); will sleep for {backoff_secs}...");
+                        Thread.Sleep(backoff_secs * 1000);
+                        goto again;
                     }
-                    g.LogException(wex, $"FAIL: download url=[{url}]");
+                    else if (wex.Message.Contains("429")) { // quora
+                        g.LogError(" **** 429 -- TOO MANY REQUESTS !! ****");
+                        fail_count++;
+                        backoff_secs *= fail_count;
+                        g.LogWarn($"ERR: 429 (fail_count={fail_count}); will sleep for {backoff_secs}...");
+                        Thread.Sleep(backoff_secs * 1000);
+                        goto again;
+                        //return null;
+                    }
+                    else {
+                        g.LogWarn($"FAIL: {wex.Message} url=[{url}]");
+                    }
                     return null;
                 }
                 if (string.IsNullOrEmpty(html)) {

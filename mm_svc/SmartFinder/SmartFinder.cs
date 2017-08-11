@@ -16,7 +16,7 @@ namespace mm_svc.SmartFinder
     public static class SmartFinder
     {
         private const int TERM_SEARCH_INTERVAL_HOURS = 1;
-        private const int TERM_SEARCH_BATCH_SIZE = 1;   
+        private const int TERM_SEARCH_BATCH_SIZE = 1; 
 
         public static int Find_TopicTree(string country = "singapore", string city = "singapore", int n_this = 1, int n_of = 1) {
             var tree = TopicTree.GetTopicTree(n_this, n_of);
@@ -121,82 +121,115 @@ namespace mm_svc.SmartFinder
                     var opts = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
                     const int SUGGESTIONS_TO_TAKE = 5;
                     Parallel.ForEach(suggestions.Take(SUGGESTIONS_TO_TAKE), opts, (suggestion) => {
-                        DiscoverForTerm(discovered_urls, user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
+                        DiscoverForTerm(user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, country: country, city: city);
                     });
 
                     // run discovery for user reg topic term
-                    DiscoverForTerm(discovered_urls, user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, country: country, city: city);
+                    DiscoverForTerm(user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, country: country, city: city);
                 }
 
-                // find new things
-                var new_conc = new ConcurrentBag<ImportUrlInfo>();
-                //var new_discoveries = new List<ImportUrlInfo>();
-                //foreach (var url in discovered_urls) {
-                Parallel.ForEach(discovered_urls, (url) => {
-                    using (var db2 = mm02Entities.Create()) {
-                        if (false == g.RetryMaxOrThrow(() => db2.disc_url.Any(p => // compound uniq key
-                                                    p.url == url.url
-                                          && p.search_num == (int)url.search_num
-                                        && p.main_term_id == url.main_term_id
-                                             && p.term_id == url.parent_term_id
-                                     && p.suggested_topic == url.suggestion))) {
-                            new_conc.Add(url);
-                        }
-                    }
-                });
-                var new_discoveries = new_conc.ToList();
-
-                // get metadata (inc. images) for newly discovered
-                ImportUrls.GetMeta(new_discoveries);
-
-                // save new discoveries - [disc_url] + [disc_url_cwc] & 
-                var additions = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.meta_title.Length < 256 && p.url.Length < 256).Select(
-                p => new disc_url() {
-                    discovered_at_utc = DateTime.UtcNow,
-                    url = p.url,
-                    img_url = p.image_url,
-                    meta_title = p.meta_title,
-                    desc = p.desc,
-                    search_num = (int)p.search_num,
-                    suggested_topic = p.suggestion,
-                    term_id = p.parent_term_id,
-                    main_term_id = p.main_term_id,
-                    disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
-                        date = p2.date,
-                        desc = p2.desc,
-                        href = p2.href,
-                    }).ToList(),
-                    disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
-                        desc = p2.desc,
-                        href = p2.href,
-                    }).ToList(),
-                    result_num = p.result_num,
-                    term_num = p.term_num,
-                    city = p.city,
-                    country = p.country,
-                    url_hash = p.url.GetHashCode(),
-                    awis_site_id = p.awis_site_id,
-                    status = p.status,
-                    disc_url_html = new List<disc_url_html>() { new disc_url_html() {
-                        html = p.html,
-                    } },
-                }).ToList();
-                additions.ForEach(p => { foreach (var cwc in p.disc_url_cwc) cwc.disc_url = p; });
-                additions.ForEach(p => { foreach (var osl in p.disc_url_osl) osl.disc_url = p; });
-                additions.ForEach(p => { foreach (var disc_url_html in p.disc_url_html) disc_url_html.disc_url = p; });
-                db.disc_url.AddRange(additions);
-
-                db.disc_term.AddRange(topics_to_search.Select(p => new disc_term() {
-                    term_id = p,
-                    search_utc = DateTime.UtcNow,
-                    added_count = additions.Count,
-                }));
-
-                g.LogInfo($"WRITING: {additions.Count} disc_url...");
-                int new_rows = db.SaveChangesTraceValidationErrors();
-                g.LogInfo($"DONE: {additions.Count} additions for country={country} city={city}");
-                return new_rows;
+                //return ProcessDiscoveries(topics_to_search, country, city, db, discovered_urls);
+                return -1;
             }
+        }
+
+        private static int ProcessUrlImports(List<ImportUrlInfo> url_imports, long term_id, string country, string city, mm02Entities db)
+        {
+            if (url_imports != null)
+                return ProcessDiscoveries(term_id, country, city, db, url_imports);
+            return 0;
+        }
+
+        private static int ProcessDiscoveries(long term_id, string country, string city, mm02Entities db, List<ImportUrlInfo> discovered_urls)
+        {
+            // which things are new?
+            var new_conc = new ConcurrentBag<ImportUrlInfo>();
+            Parallel.ForEach(discovered_urls, (url) => {
+                using (var db2 = mm02Entities.Create()) {
+                    if (false == g.RetryMaxOrThrow(() => db2.disc_url.Any(p => // compound uniq key
+                                                p.url == url.url
+                                      && p.search_num == (int)url.search_num
+                                    && p.main_term_id == url.main_term_id
+                                         && p.term_id == url.parent_term_id
+                                 && p.suggested_topic == url.suggestion))) {
+                        new_conc.Add(url);
+                    }
+                }
+            });
+            var new_discoveries = new_conc.ToList();
+
+            // get metadata (inc. images) for newly discovered
+            ImportUrls.GetMeta(new_discoveries);
+
+            // save new discoveries 
+            var to_save = new_discoveries.Where(p => !string.IsNullOrEmpty(p.meta_title) && p.meta_title.Length < 256 && p.url.Length < 256);
+            int new_disc_urls = 0;
+            //Parallel.ForEach(to_save, p => {
+            to_save.ToList().ForEach(p => {
+                using (var db2 = mm02Entities.Create()) {
+
+                    // shouldn't be necessary - see above; problems with per-proces work sharing?
+                    //var existing = db2.disc_url.Where(p2 => // compound uniq key
+                    //                        p2.url == p.url
+                    //              && p2.search_num == (int)p.search_num
+                    //            && p2.main_term_id == p.main_term_id
+                    //                 && p2.term_id == p.parent_term_id
+                    //         && p2.suggested_topic == p.suggestion).FirstOrDefaultNoLock();
+                    //if (existing == null) {
+
+                        var additions = new List<disc_url>() { new disc_url() {  //to_save.Select(p => new disc_url() {
+                            discovered_at_utc = DateTime.UtcNow,
+                            url = p.url,
+                            img_url = p.image_url,
+                            meta_title = p.meta_title,
+                            desc = p.desc,
+                            search_num = (int)p.search_num,
+                            suggested_topic = p.suggestion,
+                            term_id = p.parent_term_id,
+                            main_term_id = p.main_term_id,
+                            disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
+                                date = p2.date,
+                                desc = p2.desc,
+                                href = p2.href,
+                            }).ToList(),
+                            disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
+                                desc = p2.desc,
+                                href = p2.href,
+                            }).ToList(),
+                            result_num = p.result_num,
+                            term_num = p.term_num,
+                            city = p.city,
+                            country = p.country,
+                            url_hash = p.url.GetHashCode(),
+                            awis_site_id = p.awis_site_id,
+                            status = p.status,
+                            disc_url_html = new List<disc_url_html>() { new disc_url_html() {
+                                html = p.html,
+                            } },
+                        } }; //).ToList();
+
+                        additions.ForEach(p2 => { foreach (var cwc in p2.disc_url_cwc) cwc.disc_url = p2; });
+                        additions.ForEach(p2 => { foreach (var osl in p2.disc_url_osl) osl.disc_url = p2; });
+                        additions.ForEach(p2 => { foreach (var disc_url_html in p2.disc_url_html) disc_url_html.disc_url = p2; });
+                        db.disc_url.AddRange(additions);
+
+                        db.disc_term.Add(new disc_term() {
+                            term_id = term_id,
+                            search_utc = DateTime.UtcNow,
+                            added_count = additions.Count,
+                        });
+
+                        g.LogLine($"WRITING: {additions.Count} disc_url for term_id={term_id} country={country} city={city}");
+                        db.SaveChanges_IgnoreDupeKeyEx(); //.SaveChangesTraceValidationErrors();
+                        new_disc_urls++;
+                        g.LogCyan($"DONE: {additions.Count} additions for term_id={term_id} country={country} city={city}");
+                    
+                    //}
+                }
+            });
+
+            g.LogGreen($"ProcessDiscoveries -- DONE: new_discoveries.Count={new_discoveries.Count} new_disc_urls={new_disc_urls}");
+            return new_disc_urls;
         }
 
         // restrict each run to a reasonable batch of terms - prioritize topics never searched
@@ -220,7 +253,6 @@ namespace mm_svc.SmartFinder
         }
 
         private static void DiscoverForTerm(
-            ConcurrentBag<ImportUrlInfo> all_urls,
             long main_term_id, long term_id, int term_num, bool suggestion,
             string country = "singapore", string city = "singapore")
         {
@@ -271,37 +303,40 @@ namespace mm_svc.SmartFinder
                 //    urls.AddRange(events_local);
                 //}
 
-                // site searches
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
+                var imports = new List<ImportUrlInfo>();
 
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.GOOG_YCOMBINATOR, main_term_id, term_id, term_num, suggestion, pages: 1));
+                // site searches
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
+
+                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
+
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
+
+                // all IPs are 429 too many requests; their reset seems quite lengthy - if ever ?! removing for now, pending new IPs or reset on their side
+                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
+
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
+
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.GOOG_YCOMBINATOR, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 if (!suggestion) { // low signal sites
-                    urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:buzzfeed.com", SearchTypeNum.GOOG_BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
-                    urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:mashable.com", SearchTypeNum.GOOG_MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
+                    imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:buzzfeed.com", SearchTypeNum.GOOG_BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
+                    imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:mashable.com", SearchTypeNum.GOOG_MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
                 }
+
+                // cool search 
+                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // news search
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} news", SearchTypeNum.GOOG_NEWS, user_reg_topic_id, term_id, term_num, suggestion));
 
                 // discussion search
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));*/
-
-                // cool search 
-                urls.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, main_term_id, term_id, term_num, suggestion, pages: 1));
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));
 
                 // trending search -- not good: goog itself handles this to a large extent
-                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
+                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
 
-
-                urls.ForEach(p => {
-                    if (!all_urls.Any(p2 => p2.url == p.url))
-                        all_urls.Add(p);
-                });
+                ProcessUrlImports(imports, main_term_id, country, city, db);
             }
         }
     }
