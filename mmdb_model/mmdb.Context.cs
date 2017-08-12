@@ -25,7 +25,6 @@ namespace mmdb_model
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<awis_cat> awis_cat { get; set; }
         public virtual DbSet<term_type> term_type { get; set; }
         public virtual DbSet<cal_entity_type> cal_entity_type { get; set; }
         public virtual DbSet<term_matrix> term_matrix { get; set; }
@@ -57,5 +56,6 @@ namespace mmdb_model
         public virtual DbSet<awis_site> awis_site { get; set; }
         public virtual DbSet<disc_url> disc_url { get; set; }
         public virtual DbSet<disc_url_html> disc_url_html { get; set; }
+        public virtual DbSet<awis_cat> awis_cat { get; set; }
     }
 }

@@ -95,6 +95,7 @@
   <ItemGroup>
     <Compile Include="Discovery\DiscoveryInfo.cs" />
     <Compile Include="Discovery\UserDiscovery.cs" />
+    <Compile Include="Maintenance\DiscUrlsSites.cs" />
     <Compile Include="SmartFinder\FullWebBrowser.cs" />
     <Compile Include="SmartFinder\Search_Goog.cs" />
     <Compile Include="SmartFinder\ImportUrlInfo.cs" />

@@ -16,7 +16,10 @@ namespace mm_svc.Images
         public static string GetTermFilename(term t) {
             return $"t_{t.id}_{t.name.Replace(" ", "")}";
         }
-     
+
+        public static string GetSite_MasterImage_FullUrl(awis_site s) {
+            return $"{AzureImageFile.sites_imageRootPath}/{GetSiteFilename(s)}_M1.jpeg";
+        }
         public static string GetSiteFilename(awis_site s) {
             var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(s.TLD);
             return $"s_{s.id}_{trimmed_tld.Replace(".", "-")}";

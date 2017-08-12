@@ -40,7 +40,7 @@ namespace mm_svc.SmartFinder
             protected override WebRequest GetWebRequest(Uri address)
             {
                 HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-                //request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 return request;
             }
         }
@@ -59,7 +59,7 @@ namespace mm_svc.SmartFinder
                 }
             }
 
-            using (var client = new WebClient()) { // GZipWebClient()) {
+            using (var client = new GZipWebClient()) { // WebClient()) {
                 // from: Chrome OSX Version 59.0.3071.115 (Official Build) (64-bit)
                 //if (rnd.NextDouble() < 0.3)
                 //    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
@@ -71,7 +71,8 @@ namespace mm_svc.SmartFinder
                 client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
 
                 // this seems to cause broken youtube page loading into HAP (even with AutomaticDecompression)
-                //client.Headers[HttpRequestHeader.AcceptEncoding] = "zip, deflate, br";
+                if (!url.Contains("youtube"))
+                    client.Headers[HttpRequestHeader.AcceptEncoding] = "zip, deflate, br";
 again:
                 client.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.8,id;q=0.6";
                 try {

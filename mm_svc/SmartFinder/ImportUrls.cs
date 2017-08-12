@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using mm_global;
 using mm_global.Extensions;
+using mmdb_model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,15 +23,16 @@ namespace mm_svc.SmartFinder
         {
             // awis 1 - run for distinct TLDs; populates new awis_sites in DB
             var tlds_uniq = to_import.Select(p => mm_global.Util.GetTldFromUrl(p.url)).Distinct().ToList();
-            Parallel.ForEach(tlds_uniq, /*new ParallelOptions() { MaxDegreeOfParallelism = max_parallel },*/ (tld) => {
+            Parallel.ForEach(tlds_uniq, new ParallelOptions() { MaxDegreeOfParallelism = 4 }, (tld) => {
                 var site = SiteInfo.GetOrQueryAwis(tld, out bool from_db);
             });
 
             // awis 2 - run for all (retrieves from DB); set site id of urls
-            Parallel.ForEach(to_import, (import) => {
+            Parallel.ForEach(to_import, new ParallelOptions() { MaxDegreeOfParallelism = 4 }, (import) => {
                 var tld = mm_global.Util.GetTldFromUrl(import.url);
                 var site = SiteInfo.GetOrQueryAwis(tld, out bool from_db);
-                import.awis_site_id = site.id;
+                if (site.id != 0) //
+                    import.awis_site_id = site.id;
 
                 if (!tld_last_access.ContainsKey(tld))
                     tld_last_access.TryAdd(tld, DateTime.MinValue);
@@ -65,6 +67,13 @@ namespace mm_svc.SmartFinder
                 Parallel.ForEach(chunk, url_info => {
                     //Debug.WriteLine($"{url_info.url}");
                     //return;
+
+                    // PDFs causing problems (stack overflow)
+                    if (url_info.url.ToLower().Contains(".pdf")) {
+                        url_info.meta_title = null;
+                        g.LogWarn($"skipping PDF url [{url_info.url}]");
+                        return;
+                    }
 
                     // apply rate limit per tld
                     var tld = mm_global.Util.GetTldFromUrl(url_info.url);

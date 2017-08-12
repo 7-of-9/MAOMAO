@@ -95,14 +95,18 @@ namespace mm_jobs
 
                     g.LogYellow($"> added_urls={added_urls}");
                 }
-                else if (args.Contains("-du20")) {
-                    g.LogLine("-"); g.LogInfo("discover-user");
-                    SmartFinder.Find_UserAllTopics(20);
+                else if (args.Contains("-fdus")) { // fixes partial data from main -dtt job
+                    g.LogLine("-"); g.LogInfo("fix-disc_url-sites");
+                    mm_svc.Maintenance.DiscUrlsSites.FindAwisSitesForDiscUrls();
                 }
-                else if (args.Contains("-du15")) {
-                    g.LogLine("-"); g.LogInfo("discover-user");
-                    SmartFinder.Find_UserAllTopics(15);
-                }
+                //else if (args.Contains("-du20")) {
+                //    g.LogLine("-"); g.LogInfo("discover-user");
+                //    SmartFinder.Find_UserAllTopics(20);
+                //}
+                //else if (args.Contains("-du15")) {
+                //    g.LogLine("-"); g.LogInfo("discover-user");
+                //    SmartFinder.Find_UserAllTopics(15);
+                //}
 
                 if (console_present()) {
                     g.LogYellow($">> all done. Press any key...");

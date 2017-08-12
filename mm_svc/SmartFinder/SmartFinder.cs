@@ -27,24 +27,38 @@ namespace mm_svc.SmartFinder
               , new CityCountry() { country = "Singapore", city = "Singapore" }
             };
 
+        //
+        // running without suggestions for now; see what main topic tree turnover/research frequency can be...
+        //
         public static int Find_TopicTree(int n_this = 1, int n_of = 1) {
-            var tree = TopicTree.GetTopicTree(n_this, n_of);
+            var tree = TopicTree.GetTopicTree();// n_this, n_of);
             var tree_topics = new List<long>();
-            var tree_suggestions = new List<long>(); https://maomao.blob.core.windows.net/t-img/t_4990959_History_M1.jpeg
+            var tree_suggestions = new List<long>();
+
             tree.ForEach(p => GetTreeTopics(tree_topics, p));
             tree.ForEach(p => GetTreeSuggestions(tree_suggestions, p));
 
-            var topics_to_search = GetTopicsToSearch(tree_topics);
-            var suggestions_to_search = GetTopicsToSearch(tree_suggestions);
+            tree_topics = tree_topics.Distinct().ToList();
+            tree_suggestions = tree_suggestions.Distinct().ToList();
 
-            g.LogInfo($"topics_to_search={string.Join(",", topics_to_search)}");
-            g.LogInfo($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
-           
+            g.LogYellow($"# tree_topics={tree_topics.Count}");
+            g.LogYellow($"# tree_suggestions={tree_suggestions.Count}");
+
+            var topics_to_search = GetTopicsToSearch(tree_topics, n_this, n_of);
+            //var suggestions_to_search = GetTopicsToSearch(tree_suggestions, n_this, n_of);
+
+            g.LogCyan($"topics_to_search={string.Join(",", topics_to_search)}");
+            //g.LogCyan($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
+
             var ret1 = FindForTopics(topics_to_search, places);
-            var ret2 = FindForTopics(suggestions_to_search, places);
+            //var ret2 = FindForTopics(suggestions_to_search, places); // todo -- enable this (discovery for suggested terms)
+
+            // todo -- how to keep getting new urls on each run?
+            // might need to try pages > 1 to keep finding new things; might need more search engines
+            // might need filter by date (goog)
 
             Maintenance.ImagesSites.Maintain(n_this, n_of);
-            return ret1 + ret2;
+            return ret1;// + ret2;
         }
 
         private static void GetTreeTopics(List<long> terms, TopicTree.TopicTermLink link) {
@@ -97,17 +111,17 @@ namespace mm_svc.SmartFinder
             using (var db = mm02Entities.Create()) {
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
                 int added_urls = 0;
-                foreach (var user_reg_topic_id in topics_to_search) {
+                foreach (var term_id in topics_to_search) {
                     // get term, parents & suggestions
-                    var term = db.terms.Find(user_reg_topic_id);
-                    var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(user_reg_topic_id, reprocess: true);
+                    var term = db.terms.Find(term_id);
+                    var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: true);
                     var topics = parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList();
                     var suggestions = parents.Where(p => p.is_topic == false /*&& p.parent_term.IS_TOPIC == false*/).OrderByDescending(p => p.S).ToList();
 
                     // remove user_reg_topic from topics and renormalize
                     //topics.RemoveAll(p => p.parent_term_id == user_reg_topic_id);
                     //topics.ForEach(p => p.S_norm = p.S / topics.Max(p2 => p2.S));
-                    suggestions.RemoveAll(p => p.parent_term_id == user_reg_topic_id);
+                    suggestions.RemoveAll(p => p.parent_term_id == term_id);
 
                     // topics are actually quite bad -- they are raw gt_parent (PtR) -- we want parents in defined topic_tree instead
                     //topics.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> parent: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")}"));
@@ -128,14 +142,27 @@ namespace mm_svc.SmartFinder
                     //continue;
 
                     // discovery: top n suggestions by s_norm -- todo: let people tell us when to increase n (by topic)
-                    var opts = new ParallelOptions() { MaxDegreeOfParallelism = 1 };
-                    const int SUGGESTIONS_TO_TAKE = 5;
-                    Parallel.ForEach(suggestions.Take(SUGGESTIONS_TO_TAKE), opts, (suggestion) => {
-                        added_urls += DiscoverForTerm(user_reg_topic_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, places: places);
+                    var suggestions_found_urls = 0;
+                    var main_term_found_urls = 0;
+                    const int SUGGESTIONS_TO_TAKE = 3;
+                    Parallel.ForEach(suggestions.Take(SUGGESTIONS_TO_TAKE), new ParallelOptions() { MaxDegreeOfParallelism = 1 }, (suggestion) => {
+                        suggestions_found_urls = DiscoverForTerm(term_id, suggestion.parent_term_id, suggestion.tmp_term_num, suggestion: true, places: places);
                     });
 
-                    // run discovery for user reg topic term
-                    added_urls += DiscoverForTerm(user_reg_topic_id, user_reg_topic_id, term_num: 0, suggestion: false, places: places);
+                    // run discovery for main topic term
+                    main_term_found_urls = DiscoverForTerm(term_id, term_id, term_num: 0, suggestion: false, places: places);
+
+                    added_urls += suggestions_found_urls;
+                    added_urls += main_term_found_urls;
+
+                    // record last discovery pass for term
+                    g.LogCyan($"FindForTopic: term={term.name} - done; added {suggestions_found_urls + main_term_found_urls} URLs.");
+                    db.disc_term.Add(new disc_term() {
+                        term_id = term_id,
+                        search_utc = DateTime.UtcNow,
+                        added_count = suggestions_found_urls + main_term_found_urls,
+                    });
+                    g.RetryMaxOrThrow(() => db.SaveChangesTraceValidationErrors());
                 }
 
                 //return ProcessDiscoveries(topics_to_search, country, city, db, discovered_urls);
@@ -144,11 +171,11 @@ namespace mm_svc.SmartFinder
         }
 
         // restrict each run to a reasonable batch of terms - prioritize topics never searched
-        private static List<long> GetTopicsToSearch(List<long> topic_ids)
+        private static List<long> GetTopicsToSearch(List<long> topic_ids, int n_this = 1, int n_of = 1)
         {
             var to_refresh = new ConcurrentBag<long>();
             var never_searched = new ConcurrentBag<long>();
-            Parallel.ForEach(topic_ids, (topic_id) => {
+            Parallel.ForEach(topic_ids.Where(p => Math.Abs(p.GetHashCode()) % n_of == n_this - 1), (topic_id) => {
                 using (var db2 = mm02Entities.Create()) {
                     var last_search = db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock();
                     if (last_search != null) {
@@ -256,8 +283,10 @@ namespace mm_svc.SmartFinder
 
         private static int ProcessUrlImports(List<ImportUrlInfo> url_imports, long term_id, mm02Entities db)
         {
-            if (url_imports != null)
-                return ProcessDiscoveries(term_id, db, url_imports);
+            if (url_imports != null) {
+                var new_disc_urls = ProcessDiscoveries(term_id, db, url_imports);
+                g.LogCyan($">> new_disc_urls={new_disc_urls}");
+            }
             return 0;
         }
 
@@ -337,12 +366,6 @@ namespace mm_svc.SmartFinder
                     additions.ForEach(p2 => { foreach (var osl in p2.disc_url_osl) osl.disc_url = p2; });
                     additions.ForEach(p2 => { foreach (var disc_url_html in p2.disc_url_html) disc_url_html.disc_url = p2; });
                     db.disc_url.AddRange(additions);
-
-                    db.disc_term.Add(new disc_term() {
-                        term_id = term_id,
-                        search_utc = DateTime.UtcNow,
-                        added_count = additions.Count,
-                    });
 
                     g.LogLine($"WRITING: {additions.Count} disc_url for term_id={term_id}");
                     g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx()); //.SaveChangesTraceValidationErrors();

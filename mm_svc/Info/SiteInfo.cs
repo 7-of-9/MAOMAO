@@ -139,7 +139,7 @@ namespace mm_svc
                 int try_count = 0;
 
 retry:
-                if (try_count > 2)
+                if (try_count > 3)
                     throw new ApplicationException("too many SaveChanges_IgnoreDupeKeyEx failures.");
 
                 // in DB list of known sites?
@@ -177,13 +177,16 @@ retry:
                     db_cat = db.awis_cat.Where(p => p.abs_path == cat_path).FirstOrDefaultNoLock();
                     if (db_cat == null) {
                         db_cat = new awis_cat();
-                        db_cat.abs_path = cat_path.TruncateMax(128);
+                        db_cat.abs_path = cat_path.TruncateMax(512);
                         db_cat.title = cat_title;
                         db.awis_cat.Add(db_cat);
-                        //if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
-                        db.SaveChanges_IgnoreDupeKeyEx();
-
-                        g.LogLine($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
+                        if (!db.SaveChanges_IgnoreDupeKeyEx()) {
+                            Thread.Sleep(1000);
+                            g.LogWarn($"got dupe key exception on +[awis_cat] - retrying load from DB...");
+                            try_count++;
+                            goto retry;
+                        }
+                        g.LogInfo($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
                     }
                     else
                         g.LogLine($"known AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
@@ -192,7 +195,8 @@ retry:
                 // maintain AWIS site -- with or without category
                 var url = (string)content_data.DataUrl;
                 var title = (string)content_data.SiteData.Title;
-                var desc = "?"; try {
+                var desc = "?";
+                try {
                     desc = (string)content_data.SiteData.Description;
                 } catch(Exception ex) {
                     if (ex.Message != "'System.Dynamic.ExpandoObject' does not contain a definition for 'Description'")
@@ -211,11 +215,13 @@ retry:
                 db_site.url = url;
                 db_site.desc = desc;
                 db.awis_site.Add(db_site);
-                //if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
-                db.SaveChanges_IgnoreDupeKeyEx();
-                g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
-
-                //MaintainSiteLogo(db_site);
+                if (!db.SaveChanges_IgnoreDupeKeyEx()) {
+                    Thread.Sleep(1000);
+                    g.LogWarn($"got dupe key exception on +[awis_site] - retrying load from DB...");
+                    try_count++;
+                    goto retry;
+                }
+                g.LogInfo($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
                 returned_from_db = false;
                 return db_site;

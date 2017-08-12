@@ -32,5 +32,22 @@ namespace mm_svc.Discovery
         public int term_num;
         public string city;
         public string country;
+
+        public string site_tld;
+        public string site_img;
+
+        public List<CwcInfo> cwc;
+        public List<OslInfo> osl;
+    }
+
+    public class CwcInfo {
+        public DateTime date;
+        public string desc;
+        public string url;
+    }
+
+    public class OslInfo {
+        public string desc;
+        public string url;
     }
 }

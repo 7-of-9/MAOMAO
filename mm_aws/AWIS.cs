@@ -132,7 +132,7 @@ namespace mm_aws
 
             // generate the url
             var url = new StringBuilder();
-            url.Append("http://awis.amazonaws.com?");
+            url.Append("https://awis.amazonaws.com?");
             url.Append(queryParams);
             url.Append("&Signature=" + UpperCaseUrlEncode(sig));
 

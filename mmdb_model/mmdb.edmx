@@ -11,7 +11,7 @@
           </Key>
           <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="title" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="abs_path" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="abs_path" Type="nvarchar" MaxLength="512" Nullable="false" />
         </EntityType>
         <EntityType Name="awis_site">
           <Key>
@@ -1096,7 +1096,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
         </Function>
                   
         <EntityContainer Name="mm02Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="awis_cat" EntityType="mm02Model.awis_cat" />
           <EntitySet Name="term_type" EntityType="mm02Model.term_type" />
           <EntitySet Name="cal_entity_type" EntityType="mm02Model.cal_entity_type" />
           <EntitySet Name="term_matrix" EntityType="mm02Model.term_matrix" />
@@ -1254,10 +1253,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="disc_term" EntitySet="disc_term" />
           </AssociationSet>
           <EntitySet Name="awis_site" EntityType="mm02Model.awis_site" />
-          <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
-            <End Role="awis_cat" EntitySet="awis_cat" />
-            <End Role="awis_site" EntitySet="awis_site" />
-          </AssociationSet>
           <AssociationSet Name="FK_url_awis_site" Association="mm02Model.FK_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="url" EntitySet="urls" />
@@ -1288,16 +1283,12 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="disc_url" EntitySet="disc_url" />
             <End Role="disc_url_html" EntitySet="disc_url_html" />
           </AssociationSet>
+          <EntitySet Name="awis_cat" EntityType="mm02Model.awis_cat" />
+          <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
+            <End Role="awis_cat" EntitySet="awis_cat" />
+            <End Role="awis_site" EntitySet="awis_site" />
+          </AssociationSet>
           </EntityContainer>
-        <EntityType Name="awis_cat">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="title" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="abs_path" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_cat" ToRole="awis_site" />
-        </EntityType>
         <EntityType Name="term_type">
           <Key>
             <PropertyRef Name="id" />
@@ -2089,22 +2080,10 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="hard_disallow" Type="Boolean" />
           <Property Name="exclude_terms_like_site_title" Type="Boolean" Nullable="false" />
           <Property Name="logo_file_name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="awis_cat" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_site" ToRole="awis_cat" />
           <NavigationProperty Name="urls" Relationship="mm02Model.FK_url_awis_site" FromRole="awis_site" ToRole="url" />
           <NavigationProperty Name="disc_url" Relationship="mm02Model.FK_disc_url_awis_site" FromRole="awis_site" ToRole="disc_url" />
+          <NavigationProperty Name="awis_cat" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_site" ToRole="awis_cat" />
         </EntityType>
-        <Association Name="FK_awis_site_awis_cat">
-          <End Type="mm02Model.awis_cat" Role="awis_cat" Multiplicity="0..1" />
-          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="awis_cat">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="awis_site">
-              <PropertyRef Name="awis_cat_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="1" />
           <End Type="mm02Model.url" Role="url" Multiplicity="*" />
@@ -2226,21 +2205,33 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="awis_cat">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="title" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="abs_path" Type="String" Nullable="false" MaxLength="512" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_awis_site_awis_cat" FromRole="awis_cat" ToRole="awis_site" />
+        </EntityType>
+        <Association Name="FK_awis_site_awis_cat">
+          <End Type="mm02Model.awis_cat" Role="awis_cat" Multiplicity="0..1" />
+          <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="awis_cat">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="awis_site">
+              <PropertyRef Name="awis_cat_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="mm02ModelStoreContainer" CdmEntityContainer="mm02Entities">
-          <EntitySetMapping Name="awis_cat">
-            <EntityTypeMapping TypeName="mm02Model.awis_cat">
-              <MappingFragment StoreEntitySet="awis_cat">
-                <ScalarProperty Name="abs_path" ColumnName="abs_path" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="term_type">
             <EntityTypeMapping TypeName="mm02Model.term_type">
               <MappingFragment StoreEntitySet="term_type">
@@ -2632,6 +2623,15 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <MappingFragment StoreEntitySet="disc_url_html">
                 <ScalarProperty Name="html" ColumnName="html" />
                 <ScalarProperty Name="disc_url_id" ColumnName="disc_url_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="awis_cat">
+            <EntityTypeMapping TypeName="mm02Model.awis_cat">
+              <MappingFragment StoreEntitySet="awis_cat">
+                <ScalarProperty Name="abs_path" ColumnName="abs_path" />
+                <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

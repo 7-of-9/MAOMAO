@@ -5,7 +5,6 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="954005b6bff442abbb576d1ee68fb989" Name="Diagram1" ZoomLevel="75">
-        <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="0.5" />
         <EntityTypeShape EntityType="mm02Model.term_type" Width="1.5" PointX="0.75" PointY="6.875" />
         <EntityTypeShape EntityType="mm02Model.cal_entity_type" Width="1.5" PointX="5.5" PointY="9" />
         <EntityTypeShape EntityType="mm02Model.term_matrix" Width="1.5" PointX="5.625" PointY="5.625" />
@@ -67,7 +66,6 @@
         <EntityTypeShape EntityType="mm02Model.disc_term" Width="1.5" PointX="13" PointY="19.25" />
         <AssociationConnector Association="mm02Model.FK_disc_term_term" />
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="6.125" PointY="0.875" />
-        <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="16" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_disc_url_awis_site" />
@@ -77,6 +75,8 @@
         <AssociationConnector Association="mm02Model.FK_disc_url_term1" />
         <EntityTypeShape EntityType="mm02Model.disc_url_html" Width="1.5" PointX="18.25" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_disc_url_html_disc_url" />
+        <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="1.875" />
+        <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

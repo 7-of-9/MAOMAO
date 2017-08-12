@@ -34,10 +34,10 @@ namespace mmdb_model
         public bool exclude_terms_like_site_title { get; set; }
         public string logo_file_name { get; set; }
     
-        public virtual awis_cat awis_cat { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url> urls { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url> disc_url { get; set; }
+        public virtual awis_cat awis_cat { get; set; }
     }
 }

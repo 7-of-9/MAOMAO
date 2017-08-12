@@ -58,7 +58,7 @@ namespace mm_svc.Terms
 
                 // get roots
                 var root_topic_ids = mm_svc.Terms.GoldenTopics.GetTopicRoot_TermIds();
-                roots = root_topic_ids.Select(p => new TopicTermLink() {
+                roots = root_topic_ids.Where(p => Math.Abs(p.GetHashCode()) % n_of == n_this - 1).Select(p => new TopicTermLink() {
                     level = 1,
                     is_topic = true,
                     parent = null,
