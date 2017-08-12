@@ -60,7 +60,7 @@ namespace mm_svc.SmartFinder
         {
             const double tld_min_secs_interval = 30;
 
-            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(4)) {
+            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(16)) {
 
                 var threads = new List<Thread>();
                 //foreach (var url_info in chunk) {

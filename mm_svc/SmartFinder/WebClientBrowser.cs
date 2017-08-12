@@ -41,6 +41,7 @@ namespace mm_svc.SmartFinder
             {
                 HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.Timeout = 1000 * 10; // 10s
                 return request;
             }
         }
@@ -60,6 +61,7 @@ namespace mm_svc.SmartFinder
             }
 
             using (var client = new GZipWebClient()) { // WebClient()) {
+
                 // from: Chrome OSX Version 59.0.3071.115 (Official Build) (64-bit)
                 //if (rnd.NextDouble() < 0.3)
                 //    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";

@@ -165,7 +165,6 @@ namespace mm_svc.SmartFinder
                     g.RetryMaxOrThrow(() => db.SaveChangesTraceValidationErrors());
                 }
 
-                //return ProcessDiscoveries(topics_to_search, country, city, db, discovered_urls);
                 return added_urls;
             }
         }
@@ -201,23 +200,23 @@ namespace mm_svc.SmartFinder
 
             using (var db = mm02Entities.Create()) {
                 var term = db.terms.Find(term_id);
-                var user_reg_topic = db.terms.Find(main_term_id);
+                var main_term = db.terms.Find(main_term_id);
                 //var user = db.users.Find(user_id);
                 //var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
                 //var user_city = user.last_api_city?.ToLower();
 
                 string search_desc;
                 if (main_term_id == term_id)
-                    search_desc = $"MAIN for [{user_reg_topic.name}]";
+                    search_desc = $"MAIN for [{main_term.name}]";
                 else if (!suggestion)
-                    search_desc = $"PARENT for [{user_reg_topic.name}]";
+                    search_desc = $"PARENT for [{main_term.name}]";
                 else
-                    search_desc = $"SUGGESTION for [{user_reg_topic.name}]";
+                    search_desc = $"SUGGESTION for [{main_term.name}]";
 
                 // for suggestions - also include main (user-reg-topic) term name, for better goog matching
                 string search_str;
                 if (suggestion)
-                    search_str = $"{user_reg_topic.name} {term.name}";
+                    search_str = $"{main_term.name} {term.name}";
                 else
                     search_str = $"{term.name}";
 
@@ -277,17 +276,13 @@ namespace mm_svc.SmartFinder
                 // trending search -- not good: goog itself handles this to a large extent
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
 
-                return ProcessUrlImports(imports, main_term_id, db);
+                if (imports != null) {
+                    var new_disc_urls = ProcessDiscoveries(term_id, db, imports);
+                    g.LogYellow($">> DiscoverForTerm: main_term={main_term.name} term={term.name} suggestion={suggestion}: # new_disc_urls={new_disc_urls}");
+                    return new_disc_urls;
+                }
+                else return 0;
             }
-        }
-
-        private static int ProcessUrlImports(List<ImportUrlInfo> url_imports, long term_id, mm02Entities db)
-        {
-            if (url_imports != null) {
-                var new_disc_urls = ProcessDiscoveries(term_id, db, url_imports);
-                g.LogCyan($">> new_disc_urls={new_disc_urls}");
-            }
-            return 0;
         }
 
         private static int ProcessDiscoveries(long term_id, mm02Entities db, List<ImportUrlInfo> discovered_urls)
@@ -332,51 +327,51 @@ namespace mm_svc.SmartFinder
                     //if (existing == null) {
 
                     var additions = new List<disc_url>() { new disc_url() {  //to_save.Select(p => new disc_url() {
-                            discovered_at_utc = DateTime.UtcNow,
-                            url = p.url,
-                            img_url = p.image_url,
-                            meta_title = p.meta_title,
-                            desc = p.desc,
-                            search_num = (int)p.search_num,
-                            suggested_topic = p.suggestion,
-                            term_id = p.parent_term_id,
-                            main_term_id = p.main_term_id,
-                            disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
-                                date = p2.date,
-                                desc = p2.desc,
-                                href = p2.href,
-                            }).ToList(),
-                            disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
-                                desc = p2.desc,
-                                href = p2.href,
-                            }).ToList(),
-                            result_num = p.result_num,
-                            term_num = p.term_num,
-                            city = p.city,
-                            country = p.country,
-                            url_hash = p.url.GetHashCode(),
-                            awis_site_id = p.awis_site_id,
-                            status = p.status,
-                            disc_url_html = new List<disc_url_html>() { new disc_url_html() {
-                                html = p.html,
-                            } },
-                        } }; //).ToList();
+                        discovered_at_utc = DateTime.UtcNow,
+                        url = p.url,
+                        img_url = p.image_url,
+                        meta_title = p.meta_title,
+                        desc = p.desc,
+                        search_num = (int)p.search_num,
+                        suggested_topic = p.suggestion,
+                        term_id = p.parent_term_id,
+                        main_term_id = p.main_term_id,
+                        disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
+                            date = p2.date,
+                            desc = p2.desc,
+                            href = p2.href,
+                        }).ToList(),
+                        disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
+                            desc = p2.desc,
+                            href = p2.href,
+                        }).ToList(),
+                        result_num = p.result_num,
+                        term_num = p.term_num,
+                        city = p.city,
+                        country = p.country,
+                        url_hash = p.url.GetHashCode(),
+                        awis_site_id = p.awis_site_id,
+                        status = p.status,
+                        disc_url_html = new List<disc_url_html>() { new disc_url_html() {
+                            html = p.html,
+                        } },
+                    } }; //).ToList();
 
                     additions.ForEach(p2 => { foreach (var cwc in p2.disc_url_cwc) cwc.disc_url = p2; });
                     additions.ForEach(p2 => { foreach (var osl in p2.disc_url_osl) osl.disc_url = p2; });
                     additions.ForEach(p2 => { foreach (var disc_url_html in p2.disc_url_html) disc_url_html.disc_url = p2; });
                     db.disc_url.AddRange(additions);
 
-                    g.LogLine($"WRITING: {additions.Count} disc_url for term_id={term_id}");
+                    //g.LogLine($"WRITING: {additions.Count} [disc_url] for term_id={term_id}");
                     g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx()); //.SaveChangesTraceValidationErrors();
                     new_disc_urls++;
-                    g.LogCyan($"DONE: {additions.Count} additions for term_id={term_id}");
+                    g.LogLine($"DONE: {additions.Count} additions for term_id={term_id}");
 
                     //}
                 }
             });
 
-            g.LogGreen($"ProcessDiscoveries -- DONE: new_discoveries.Count={new_discoveries.Count} new_disc_urls={new_disc_urls}");
+            //g.LogGreen($"ProcessDiscoveries -- DONE: new_discoveries.Count={new_discoveries.Count} new_disc_urls={new_disc_urls}");
             return new_disc_urls;
         }
     }
