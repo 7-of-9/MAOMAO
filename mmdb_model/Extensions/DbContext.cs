@@ -51,7 +51,7 @@ namespace mmdb_model
                 if (dbex.InnerException != null && dbex.InnerException.InnerException != null &&
                     (dbex.InnerException.InnerException.Message.StartsWith("Cannot insert duplicate key")
                     || dbex.InnerException.InnerException.Message.StartsWith("Violation of UNIQUE KEY")
-                  //|| dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")
+                    || dbex.InnerException.InnerException.Message.StartsWith("The INSERT statement conflicted")
                     )) {
                     return false;
                 }

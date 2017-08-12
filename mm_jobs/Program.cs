@@ -90,11 +90,8 @@ namespace mm_jobs
                 else if (args.Contains("-dtt")) {
                     g.LogLine("-"); g.LogInfo("discover-topic-tree");
 
-                    var added_urls = SmartFinder.Find_TopicTree(country: null, city: null, n_this: n_this, n_of: n_of);
-                    added_urls += SmartFinder.Find_TopicTree("Singapore", "Singapore", n_this: n_this, n_of: n_of);
-                    added_urls += SmartFinder.Find_TopicTree("US", "San Francisco", n_this: n_this, n_of: n_of);
-                    added_urls += SmartFinder.Find_TopicTree("UK", "London", n_this: n_this, n_of: n_of);
-                    added_urls += SmartFinder.Find_TopicTree("Indonesia", "Bali", n_this: n_this, n_of: n_of);
+                    int added_urls = 0;
+                    added_urls += SmartFinder.Find_TopicTree(n_this, n_of);
 
                     g.LogYellow($"> added_urls={added_urls}");
                 }

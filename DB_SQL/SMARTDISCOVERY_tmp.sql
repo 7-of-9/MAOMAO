@@ -12,14 +12,17 @@ from url_parent_term, term t, user_url uu where suggested_dynamic in (0) and pri
 /* delete from disc_url_cwc
 delete from disc_url_osl
 delete from disc_url */
+
+-- disc_term
 select *, t.name from disc_term, term t where t.id = term_id order by 1 desc -- delete from disc_term where id in (20,21)
 select top 10 * from awis_site order by id asc -- update awis_site set logo_file_name = null
 
+-- disc_url
 select (select [name] from [term] where id=main_term_id) 'main', (select [name] from [term] where id=term_id) 'term',
   [url], [desc], meta_title, img_url, search_num, term_num, result_num, city, country, url_hash from disc_url 
   order by id desc -- main_term_id, term_id, search_num, term_num, result_num
 
-select status, * from disc_url order by id desc
+-- disc_url++
 select * from disc_url_cwc
 select * from disc_url_osl
 select top 10 * from disc_url_html order by id desc
@@ -28,9 +31,6 @@ select top 10 * from disc_url_html order by id desc
 select top 10 --HashBytes('MD5', [url]), 
      * from disc_url where main_term_id = 5010985
 
--- others
-
--- goog image search: for topics, also for websites
 
 https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968
 <meta name="ICBM" content="1.3,103.85" />

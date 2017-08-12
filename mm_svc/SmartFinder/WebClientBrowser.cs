@@ -91,20 +91,25 @@ again:
                 catch (WebException wex) {
                     if (wex.Message.Contains("503")) { // google
                         g.LogError(" **** 503 -- PROBABLE RATE LIMIT !! ****");
-                        fail_count++;
-                        backoff_secs *= fail_count;
-                        g.LogWarn($"ERR: 503 (fail_count={fail_count}); will sleep for {backoff_secs}...");
-                        Thread.Sleep(backoff_secs * 1000);
-                        goto again;
+                        if (url.Contains("google.com")) {
+                            fail_count++;
+                            backoff_secs *= fail_count;
+                            g.LogWarn($"ERR: 503 for GOOG URL [{url}] (fail_count={fail_count}); sleep {backoff_secs} secs & retry...");
+                            Thread.Sleep(backoff_secs * 1000);
+                            goto again;
+                        } else {
+                            g.LogWarn($"ERR: 503 for non-goog URL [{url}] -- will not retry.");
+                            return null;
+                        }
                     }
                     else if (wex.Message.Contains("429")) { // quora
                         g.LogError(" **** 429 -- TOO MANY REQUESTS !! ****");
                         fail_count++;
                         backoff_secs *= fail_count;
                         g.LogWarn($"ERR: 429 (fail_count={fail_count}); will sleep for {backoff_secs}...");
-                        Thread.Sleep(backoff_secs * 1000);
-                        goto again;
-                        //return null;
+                        //Thread.Sleep(backoff_secs * 1000);
+                        //goto again;
+                        return null;
                     }
                     else {
                         g.LogWarn($"FAIL: {wex.Message} url=[{url}]");
