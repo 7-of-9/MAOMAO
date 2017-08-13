@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using mm_global;
 using mm_global.Extensions;
+using mm_svc.Util.Utils;
 using mmdb_model;
 using System;
 using System.Collections.Concurrent;
@@ -34,8 +35,10 @@ namespace mm_svc.SmartFinder
                 if (site.id != 0) //
                     import.awis_site_id = site.id;
 
-                if (!tld_last_access.ContainsKey(tld))
-                    tld_last_access.TryAdd(tld, DateTime.MinValue);
+                // get simple tld - for rate limiting per tld
+                var partial_tld = TldTitle.GetPartialTldNameWithSuffix(tld);
+                if (!tld_last_access.ContainsKey(partial_tld))
+                    tld_last_access.TryAdd(partial_tld, DateTime.MinValue);
             });
 
             // quora going 403!
@@ -58,8 +61,6 @@ namespace mm_svc.SmartFinder
 
         public static void DownlodUrls(List<ImportUrlInfo> to_import)
         {
-            const double tld_min_secs_interval = 5;
-
             foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(64)) {
 
                 var threads = new List<Thread>();
@@ -74,14 +75,19 @@ namespace mm_svc.SmartFinder
 
                     // apply rate limit per tld
                     var tld = mm_global.Util.GetTldFromUrl(url_info.url);
-                    var tld_last_access_key = tld_last_access.Keys.Where(p => p == tld).First();
-                    lock (tld_last_access_key) {
-                        g.LogLine($"[{tld}] got lock...");
+                    var partial_tld = TldTitle.GetPartialTldNameWithSuffix(tld);
+                    double tld_min_secs_interval = 5;
+                    //if (partial_tld == "quora.com")
+                    //    tld_min_secs_interval = 30;
 
-                        if (tld_last_access.TryGetValue(tld, out DateTime last_access)) {
+                    var tld_last_access_key = tld_last_access.Keys.Where(p => p == partial_tld).First();
+                    lock (tld_last_access_key) {
+                        g.LogLine($"[{partial_tld}] got lock...");
+
+                        if (tld_last_access.TryGetValue(partial_tld, out DateTime last_access)) {
                             while (((TimeSpan)DateTime.Now.Subtract(last_access)).TotalSeconds < tld_min_secs_interval) {
                                 Thread.Sleep((int)(tld_min_secs_interval * 1000 / 4));
-                                g.LogLine($"[{tld}] - waiting...");
+                                g.LogLine($"[{partial_tld}] - (tld_min_secs_interval={tld_min_secs_interval}) - waiting...");
                             }
                         }
 
@@ -107,12 +113,13 @@ namespace mm_svc.SmartFinder
                                 g.LogLine($"FETCHING (WebClientBrowser): {url_info.url}...");
                                 doc = WebClientBrowser.Fetch(url_info.url); //*
 
-                                tld_last_access.AddOrUpdate(tld, DateTime.Now, (k, v) => DateTime.Now);
+                                tld_last_access.AddOrUpdate(partial_tld, DateTime.Now, (k, v) => DateTime.Now);
 
                                 if (doc != null) {
                                     g.LogGreen($"fetched: {url_info.url}");
                                     url_info.status = "downloaded";
                                 }
+                                else url_info.status = "download failed";
                             }
                             catch (Exception ex) {
                                 if (++retry_count < 3) {

@@ -103,7 +103,7 @@ warning 6002: The table/view 'mm02.dbo.dbip-city-2016-11' does not have a primar
           <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="disc_url_id" Type="bigint" />
           <Property Name="date" Type="datetime" />
-          <Property Name="desc" Type="nvarchar" MaxLength="128" />
+          <Property Name="desc" Type="nvarchar" MaxLength="512" />
           <Property Name="href" Type="nvarchar" MaxLength="256" Nullable="false" />
         </EntityType>
         <EntityType Name="disc_url_html">
@@ -121,7 +121,7 @@ warning 6002: The table/view 'mm02.dbo.dbip-city-2016-11' does not have a primar
           <Property Name="id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="disc_url_id" Type="bigint" />
           <Property Name="href" Type="nvarchar" MaxLength="256" />
-          <Property Name="desc" Type="nvarchar" MaxLength="128" />
+          <Property Name="desc" Type="nvarchar" MaxLength="512" />
         </EntityType>
         <EntityType Name="golden_term">
           <Key>
@@ -1245,8 +1245,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             <End Role="user" EntitySet="users" />
             <End Role="user_url" EntitySet="user_url" />
           </AssociationSet>
-          <EntitySet Name="disc_url_osl" EntityType="mm02Model.disc_url_osl" />
-          <EntitySet Name="disc_url_cwc" EntityType="mm02Model.disc_url_cwc" />
           <EntitySet Name="disc_term" EntityType="mm02Model.disc_term" />
           <AssociationSet Name="FK_disc_term_term" Association="mm02Model.FK_disc_term_term">
             <End Role="term" EntitySet="terms" />
@@ -1261,14 +1259,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_disc_url_awis_site" Association="mm02Model.FK_disc_url_awis_site">
             <End Role="awis_site" EntitySet="awis_site" />
             <End Role="disc_url" EntitySet="disc_url" />
-          </AssociationSet>
-          <AssociationSet Name="FK_disc_url_cwc_disc_url" Association="mm02Model.FK_disc_url_cwc_disc_url">
-            <End Role="disc_url" EntitySet="disc_url" />
-            <End Role="disc_url_cwc" EntitySet="disc_url_cwc" />
-          </AssociationSet>
-          <AssociationSet Name="FK_disc_url_osl_disc_url" Association="mm02Model.FK_disc_url_osl_disc_url">
-            <End Role="disc_url" EntitySet="disc_url" />
-            <End Role="disc_url_osl" EntitySet="disc_url_osl" />
           </AssociationSet>
           <AssociationSet Name="FK_disc_url_term" Association="mm02Model.FK_disc_url_term">
             <End Role="term" EntitySet="terms" />
@@ -1287,6 +1277,16 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <AssociationSet Name="FK_awis_site_awis_cat" Association="mm02Model.FK_awis_site_awis_cat">
             <End Role="awis_cat" EntitySet="awis_cat" />
             <End Role="awis_site" EntitySet="awis_site" />
+          </AssociationSet>
+          <EntitySet Name="disc_url_cwc" EntityType="mm02Model.disc_url_cwc" />
+          <EntitySet Name="disc_url_osl" EntityType="mm02Model.disc_url_osl" />
+          <AssociationSet Name="FK_disc_url_cwc_disc_url" Association="mm02Model.FK_disc_url_cwc_disc_url">
+            <End Role="disc_url" EntitySet="disc_url" />
+            <End Role="disc_url_cwc" EntitySet="disc_url_cwc" />
+          </AssociationSet>
+          <AssociationSet Name="FK_disc_url_osl_disc_url" Association="mm02Model.FK_disc_url_osl_disc_url">
+            <End Role="disc_url" EntitySet="disc_url" />
+            <End Role="disc_url_osl" EntitySet="disc_url_osl" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="term_type">
@@ -2020,27 +2020,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="disc_url_osl">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="disc_url_id" Type="Int64" />
-          <Property Name="href" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="desc" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="disc_url" Relationship="mm02Model.FK_disc_url_osl_disc_url" FromRole="disc_url_osl" ToRole="disc_url" />
-        </EntityType>
-        <EntityType Name="disc_url_cwc">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="disc_url_id" Type="Int64" />
-          <Property Name="date" Type="DateTime" Precision="3" />
-          <Property Name="desc" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="href" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="disc_url" Relationship="mm02Model.FK_disc_url_cwc_disc_url" FromRole="disc_url_cwc" ToRole="disc_url" />
-        </EntityType>
         <EntityType Name="disc_term">
           <Key>
             <PropertyRef Name="id" />
@@ -2118,11 +2097,11 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
           <Property Name="awis_site_id" Type="Int64" />
           <Property Name="status" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="awis_site" Relationship="mm02Model.FK_disc_url_awis_site" FromRole="disc_url" ToRole="awis_site" />
-          <NavigationProperty Name="disc_url_cwc" Relationship="mm02Model.FK_disc_url_cwc_disc_url" FromRole="disc_url" ToRole="disc_url_cwc" />
-          <NavigationProperty Name="disc_url_osl" Relationship="mm02Model.FK_disc_url_osl_disc_url" FromRole="disc_url" ToRole="disc_url_osl" />
           <NavigationProperty Name="term" Relationship="mm02Model.FK_disc_url_term" FromRole="disc_url" ToRole="term" />
           <NavigationProperty Name="term1" Relationship="mm02Model.FK_disc_url_term1" FromRole="disc_url" ToRole="term" />
           <NavigationProperty Name="disc_url_html" Relationship="mm02Model.FK_disc_url_html_disc_url" FromRole="disc_url" ToRole="disc_url_html" />
+          <NavigationProperty Name="disc_url_cwc" Relationship="mm02Model.FK_disc_url_cwc_disc_url" FromRole="disc_url" ToRole="disc_url_cwc" />
+          <NavigationProperty Name="disc_url_osl" Relationship="mm02Model.FK_disc_url_osl_disc_url" FromRole="disc_url" ToRole="disc_url_osl" />
         </EntityType>
         <Association Name="FK_disc_url_awis_site">
           <End Type="mm02Model.awis_site" Role="awis_site" Multiplicity="0..1" />
@@ -2133,30 +2112,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Principal>
             <Dependent Role="disc_url">
               <PropertyRef Name="awis_site_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_disc_url_cwc_disc_url">
-          <End Type="mm02Model.disc_url" Role="disc_url" Multiplicity="0..1" />
-          <End Type="mm02Model.disc_url_cwc" Role="disc_url_cwc" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="disc_url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="disc_url_cwc">
-              <PropertyRef Name="disc_url_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_disc_url_osl_disc_url">
-          <End Type="mm02Model.disc_url" Role="disc_url" Multiplicity="0..1" />
-          <End Type="mm02Model.disc_url_osl" Role="disc_url_osl" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="disc_url">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="disc_url_osl">
-              <PropertyRef Name="disc_url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2223,6 +2178,51 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
             </Principal>
             <Dependent Role="awis_site">
               <PropertyRef Name="awis_cat_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="disc_url_cwc">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="disc_url_id" Type="Int64" />
+          <Property Name="date" Type="DateTime" Precision="3" />
+          <Property Name="desc" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
+          <Property Name="href" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="disc_url" Relationship="mm02Model.FK_disc_url_cwc_disc_url" FromRole="disc_url_cwc" ToRole="disc_url" />
+        </EntityType>
+        <EntityType Name="disc_url_osl">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="disc_url_id" Type="Int64" />
+          <Property Name="href" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="desc" Type="String" MaxLength="512" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="disc_url" Relationship="mm02Model.FK_disc_url_osl_disc_url" FromRole="disc_url_osl" ToRole="disc_url" />
+        </EntityType>
+        <Association Name="FK_disc_url_cwc_disc_url">
+          <End Type="mm02Model.disc_url" Role="disc_url" Multiplicity="0..1" />
+          <End Type="mm02Model.disc_url_cwc" Role="disc_url_cwc" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="disc_url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="disc_url_cwc">
+              <PropertyRef Name="disc_url_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_disc_url_osl_disc_url">
+          <End Type="mm02Model.disc_url" Role="disc_url" Multiplicity="0..1" />
+          <End Type="mm02Model.disc_url_osl" Role="disc_url_osl" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="disc_url">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="disc_url_osl">
+              <PropertyRef Name="disc_url_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2545,27 +2545,6 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="disc_url_osl">
-            <EntityTypeMapping TypeName="mm02Model.disc_url_osl">
-              <MappingFragment StoreEntitySet="disc_url_osl">
-                <ScalarProperty Name="desc" ColumnName="desc" />
-                <ScalarProperty Name="href" ColumnName="href" />
-                <ScalarProperty Name="disc_url_id" ColumnName="disc_url_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="disc_url_cwc">
-            <EntityTypeMapping TypeName="mm02Model.disc_url_cwc">
-              <MappingFragment StoreEntitySet="disc_url_cwc">
-                <ScalarProperty Name="href" ColumnName="href" />
-                <ScalarProperty Name="desc" ColumnName="desc" />
-                <ScalarProperty Name="date" ColumnName="date" />
-                <ScalarProperty Name="disc_url_id" ColumnName="disc_url_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="disc_term">
             <EntityTypeMapping TypeName="mm02Model.disc_term">
               <MappingFragment StoreEntitySet="disc_term">
@@ -2632,6 +2611,27 @@ warning 6002: The table/view 'mm02.dbo.tmp_is_topic_root_ids' does not have a pr
               <MappingFragment StoreEntitySet="awis_cat">
                 <ScalarProperty Name="abs_path" ColumnName="abs_path" />
                 <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="disc_url_cwc">
+            <EntityTypeMapping TypeName="mm02Model.disc_url_cwc">
+              <MappingFragment StoreEntitySet="disc_url_cwc">
+                <ScalarProperty Name="href" ColumnName="href" />
+                <ScalarProperty Name="desc" ColumnName="desc" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="disc_url_id" ColumnName="disc_url_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="disc_url_osl">
+            <EntityTypeMapping TypeName="mm02Model.disc_url_osl">
+              <MappingFragment StoreEntitySet="disc_url_osl">
+                <ScalarProperty Name="desc" ColumnName="desc" />
+                <ScalarProperty Name="href" ColumnName="href" />
+                <ScalarProperty Name="disc_url_id" ColumnName="disc_url_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

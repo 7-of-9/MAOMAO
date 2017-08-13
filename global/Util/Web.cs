@@ -10,7 +10,8 @@ namespace mm_global
     {
         public static string GetTldFromUrl(string url)
         {
-            if (string.IsNullOrEmpty(url)) return null;
+            if (string.IsNullOrEmpty(url))
+                return null;
 
             // if no schema specified, assume http://
             if (!url.Contains(":"))

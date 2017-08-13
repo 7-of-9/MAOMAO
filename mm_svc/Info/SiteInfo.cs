@@ -136,6 +136,11 @@ namespace mm_svc
             using (var db = mm02Entities.Create())
             {
                 string tld = mm_global.Util.GetTldFromUrl(site_tld_or_url);
+                if (string.IsNullOrEmpty(tld)) {
+                    g.LogError($"got null TLD back from GetTldFromUrl, for URL={site_tld_or_url}");
+                    returned_from_db = false;   
+                    return null;
+                }
                 int try_count = 0;
 
 retry:

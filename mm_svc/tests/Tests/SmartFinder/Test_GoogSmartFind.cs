@@ -36,7 +36,7 @@ namespace tests.Tests.SmartFinder
         [TestMethod]
         public void GoogSearch_Image()
         {
-            var a = TldTitle.GetPartialTldNameWithSuffix("blah.com");
+            var a = TldTitle.GetPartialTldNameWithSuffix("atheistfaq.quora.com");
             var b = TldTitle.GetPartialTldNameWithSuffix("www.blah.com");
             var c = TldTitle.GetPartialTldNameWithSuffix("www.blah.co.uk");
             var d = TldTitle.GetPartialTldNameWithSuffix("blah.co.uk");

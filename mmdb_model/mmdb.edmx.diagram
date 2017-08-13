@@ -61,22 +61,22 @@
         <AssociationConnector Association="mm02Model.FK_user_reg_topic_user" />
         <AssociationConnector Association="mm02Model.fk_user_url_classification_user" />
         <AssociationConnector Association="mm02Model.fk_user_url_user" />
-        <EntityTypeShape EntityType="mm02Model.disc_url_osl" Width="1.5" PointX="15.25" PointY="23.25" />
-        <EntityTypeShape EntityType="mm02Model.disc_url_cwc" Width="1.5" PointX="15.25" PointY="20.25" />
         <EntityTypeShape EntityType="mm02Model.disc_term" Width="1.5" PointX="13" PointY="19.25" />
         <AssociationConnector Association="mm02Model.FK_disc_term_term" />
         <EntityTypeShape EntityType="mm02Model.awis_site" Width="1.5" PointX="6.125" PointY="0.875" />
         <AssociationConnector Association="mm02Model.FK_url_awis_site" />
         <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="16" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_disc_url_awis_site" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
-        <AssociationConnector Association="mm02Model.FK_disc_url_osl_disc_url" />
         <AssociationConnector Association="mm02Model.FK_disc_url_term" />
         <AssociationConnector Association="mm02Model.FK_disc_url_term1" />
         <EntityTypeShape EntityType="mm02Model.disc_url_html" Width="1.5" PointX="18.25" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_disc_url_html_disc_url" />
         <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="1.875" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
+        <EntityTypeShape EntityType="mm02Model.disc_url_cwc" Width="1.5" PointX="18.25" PointY="11.125" />
+        <EntityTypeShape EntityType="mm02Model.disc_url_osl" Width="1.5" PointX="18.25" PointY="8.375" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
+        <AssociationConnector Association="mm02Model.FK_disc_url_osl_disc_url" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

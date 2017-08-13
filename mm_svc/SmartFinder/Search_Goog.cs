@@ -168,7 +168,11 @@ namespace mm_svc.SmartFinder {
                 if (string.IsNullOrEmpty(href))
                     continue;
 
-                href = ParseGoogRedirect(href);  // data-href={a.Attributes["data-href"]?.Value}");
+                var href_parsed = ParseGoogRedirect(href);  // data-href={a.Attributes["data-href"]?.Value}");
+                if (string.IsNullOrEmpty(href_parsed)) {
+                    g.LogError($"null href_parsed for href={href}");
+                    continue;
+                }
 
                 //
                 // (2) 
@@ -184,7 +188,7 @@ namespace mm_svc.SmartFinder {
                 var title = a.InnerText;
 
                 // new url info
-                Debug.WriteLine($"RES: [{title}] desc=[{desc}] href=[{href}]");
+                Debug.WriteLine($"RES: [{title}] desc=[{desc}] href_parsed=[{href_parsed}]");
                 //if (href.StartsWith("/") && Debugger.IsAttached)
                 //    Debugger.Break();
                 var url_info = new ImportUrlInfo() {
@@ -192,7 +196,7 @@ namespace mm_svc.SmartFinder {
                     main_term_id = user_reg_topic_id,
                     parent_term_id = parent_term_id,
                     suggestion = suggestion,
-                    url = href,
+                    url = href_parsed,
                     desc = HttpUtility.HtmlDecode(desc),
                     title = HttpUtility.HtmlDecode(title),
                     result_num = result_num,
@@ -277,8 +281,9 @@ namespace mm_svc.SmartFinder {
                 var startat = "/interstitial?url=".Length;
                 var upto = href.IndexOf("&amp;");
                 if (upto == -1)
-                    return null;
-                return href.Substring(startat, upto - startat);
+                    return href.Substring(startat);
+                else
+                    return href.Substring(startat, upto - startat);
             }
             else return href;
         }

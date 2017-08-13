@@ -229,6 +229,8 @@ namespace mm_svc.SmartFinder
 
                 var imports = new List<ImportUrlInfo>();
 
+                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:wikipedia.org", SearchTypeNum.GOOG_WIKI, main_term_id, term_id, term_num, suggestion, pages: 1));
+
                 // recent search
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", null, SearchTypeNum.GOOG_LAST_24_HOURS, main_term_id, term_id, term_num, suggestion, pages: 1,
                                     additional_goog_args: "&source=lnt&tbs=qdr:d&sa=X&biw=1440&bih=705")); // last one day
@@ -260,7 +262,6 @@ namespace mm_svc.SmartFinder
 
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                // all IPs are 429 too many requests; their reset seems quite lengthy - if ever ?! removing for now, pending new IPs or reset on their side
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));

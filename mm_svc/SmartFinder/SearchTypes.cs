@@ -26,6 +26,7 @@ namespace mm_svc.SmartFinder
             GOOG_VIMEO = 14,
             GOOG_DAILYMOTION = 15,
             GOOG_LAST_24_HOURS = 16,
+            GOOG_WIKI = 17,
         }
     }
 }

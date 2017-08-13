@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.ApplicationInsights.Extensibility;
 using mm_global;
+using mm_svc.Util.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,10 @@ namespace mm_svc.SmartFinder
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
 
+            // https://support.microsoft.com/en-us/help/915599/you-receive-one-or-more-error-messages-when-you-try-to-make-an-http-re
+            // try-fix resolve: "The underlying connection was closed: An unexpected error occurred on a send."
+            ServicePointManager.Expect100Continue = false;
+
 #if DEBUG
             if (Debugger.IsAttached)
                 TelemetryConfiguration.Active.DisableTelemetry = true;
@@ -42,6 +47,11 @@ namespace mm_svc.SmartFinder
                 HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.Timeout = 1000 * 10; // 10s
+
+                // https://support.microsoft.com/en-us/help/915599/you-receive-one-or-more-error-messages-when-you-try-to-make-an-http-re
+                // try-fix resolve: "The underlying connection was closed: An unexpected error occurred on a send."
+                request.KeepAlive = false;
+
                 return request;
             }
         }
@@ -62,13 +72,16 @@ namespace mm_svc.SmartFinder
 
             using (var client = new GZipWebClient()) { // WebClient()) {
 
-                // from: Chrome OSX Version 59.0.3071.115 (Official Build) (64-bit)
-                //if (rnd.NextDouble() < 0.3)
-                //    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36";
-                //else
-                //    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36";
-                //else
-                client.Headers[HttpRequestHeader.UserAgent] = "User-AgentMozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4";
+                var tld = mm_global.Util.GetTldFromUrl(url);
+                var partial_tld = TldTitle.GetPartialTldNameWithSuffix(tld);
+                bool identify_as_google_bot = false;
+                if (partial_tld == "quora.com")
+                    identify_as_google_bot = true;
+
+                if (identify_as_google_bot)
+                    client.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+                else
+                    client.Headers[HttpRequestHeader.UserAgent] = "User-AgentMozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.1.1 Safari/603.2.4";
 
                 client.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
 
@@ -78,7 +91,7 @@ namespace mm_svc.SmartFinder
 again:
                 client.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.8,id;q=0.6";
                 try {
-                    g.LogGreen($"Fetch -- DOWNLOADING: {url}...");
+                    g.LogInfo($"Fetch -- DOWNLOADING: {url}...");
                     Trace.Flush();
 
                     html = client.DownloadString(url);
@@ -109,9 +122,9 @@ again:
                     }
                     else if (wex.Message.Contains("429")) { // quora
                         g.LogError($" **** 429 -- TOO MANY REQUESTS !! [{url}] ****");
-                        fail_count++;
-                        backoff_secs *= fail_count;
-                        g.LogWarn($"ERR: 429 (fail_count={fail_count}); will sleep for {backoff_secs}...");
+                        //fail_count++;
+                        //backoff_secs *= fail_count;
+                        //g.LogWarn($"ERR: 429 (fail_count={fail_count}); will sleep for {backoff_secs}...");
                         //Thread.Sleep(backoff_secs * 1000);
                         //goto again;
                         return null;
