@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static mm_svc.SmartFinder.Search_Goog;
+using static mm_svc.SmartFinder.SearchTypes;
 using static mm_svc.SmartFinder.SmartFinder;
 
 namespace mm_svc.SmartFinder

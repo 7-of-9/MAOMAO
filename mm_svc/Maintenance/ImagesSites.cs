@@ -24,7 +24,7 @@ namespace mm_svc.Maintenance
             using (var db = mm02Entities.Create()) {
                 var sites_mising_logos = g.RetryMaxOrThrow(() => 
                                                 db.awis_site.Where(p => string.IsNullOrEmpty(p.logo_file_name))
-                                                  .Select(p => new { id = p.id, url = p.url }).ToListNoLock());
+                                                  .Select(p => new { id = p.id, url = p.url }).ToListNoLock(), sleepSeconds: 10, retryMax: 3);
                 g.LogInfo($"sites_mising_logos.Count={sites_mising_logos.Count}");
 
                 // using Parallel class causes WebBrowser in STA thread to (after some reps of the loop) start to timeout; no idea why

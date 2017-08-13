@@ -8,12 +8,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using static mm_svc.SmartFinder.SearchTypes;
 using static mm_svc.SmartFinder.SmartFinder;
 
 namespace mm_svc.SmartFinder {
     public static class Search_Goog
     {
-        private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}";
+        private const string gs_url = "http://www.google.com/search?q={0}{1}&start={2}{3}";
         public static bool goog_rate_limit_hit = false;
 
         
@@ -29,25 +30,7 @@ namespace mm_svc.SmartFinder {
 
         internal static int total_searches = 0;
 
-        public enum SearchTypeNum
-        {
-            GOOG_MAIN = 1,           // too general - not relevent enough?
-            GOOG_LOCAL = 2,          // country + city
-            GOOG_DISCUSSION = 3,
-            GOOG_YOUTUBE = 4,
-            GOOG_NEWS = 5,
-            GOOG_COOL = 6,
-            GOOG_TRENDING = 7,
-            GOOG_LOCAL_EVENTS = 8,
-            GOOG_QUORA = 9,
-            GOOG_BUZZFEED = 10,
-            GOOG_MASHABLE = 11,
-            GOOG_MEDIUM = 12,
-            GOOG_YCOMBINATOR = 13,
-            GOOG_VIMEO = 14,
-            GOOG_DAILYMOTION = 15,
-        }
-
+      
         private static string UCaseFirst(string s) {
             if (s.Length > 1) {
                 var r = char.ToUpper(s[0]).ToString();
@@ -70,7 +53,8 @@ namespace mm_svc.SmartFinder {
             long user_reg_topic_id,
             long parent_term_id, int term_num,
             bool suggestion,
-            int pages = 1)
+            int pages = 1,
+            string additional_goog_args = "")
         {
             if (goog_rate_limit_hit == true)
                 return null;
@@ -89,6 +73,7 @@ namespace mm_svc.SmartFinder {
                     fuzzed_word = fuzzed_word.ToUpper();
                 fuzzed_search_term += fuzzed_word + " ";
             }
+            fuzzed_search_term = fuzzed_search_term.Trim().Replace(" ", "+");
             //var ss = fuzzed_search_term.Split(' ').ToList();
             //fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
 
@@ -98,7 +83,7 @@ namespace mm_svc.SmartFinder {
 
             for (int page = 0; page < pages; page++) {
 
-                g.LogGreen($">>> GOOG SEARCH #{total_searches}: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
+                g.LogLine($">>> GOOG SEARCH #{total_searches}: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
                 HtmlDocument doc = null;
                 try {
                     lock (lock_obj) {
@@ -106,9 +91,10 @@ namespace mm_svc.SmartFinder {
                             //g.LogLine("Search_Goog.Search - waiting 1...");
                             System.Threading.Thread.Sleep(1000);
                         }
-                    //}
+                        //}
 
-                        doc = WebClientBrowser.Fetch(string.Format(gs_url, site_search, fuzzed_search_term, page * 10));
+                        var url = string.Format(gs_url, site_search, fuzzed_search_term, page * 10, additional_goog_args);
+                        doc = WebClientBrowser.Fetch(url);
                         if (doc != null)
                             total_searches++;
 
@@ -276,9 +262,19 @@ namespace mm_svc.SmartFinder {
 
         private static string ParseGoogRedirect(string href)
         {
-            // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
-            if (href.StartsWith("/url?q=")) { 
+            if (href.StartsWith("/url?q=")) {
+                // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
+
                 var startat = "/url?q=".Length;
+                var upto = href.IndexOf("&amp;");
+                if (upto == -1)
+                    return null;
+                return href.Substring(startat, upto - startat);
+            }
+            else if (href.StartsWith("/interstitial?url=")) {
+                // sometimes: /interstitial?url=http://sgforums.com/forums/12/topics/453139
+
+                var startat = "/interstitial?url=".Length;
                 var upto = href.IndexOf("&amp;");
                 if (upto == -1)
                     return null;

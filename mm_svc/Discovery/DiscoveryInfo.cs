@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace mm_svc.Discovery
 {
     public class DiscoveryInfo {
+        public long disc_url_id;
         public string url;
         public string title;
         public string desc;

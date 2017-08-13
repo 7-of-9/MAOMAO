@@ -78,7 +78,9 @@ namespace mm_svc.SmartFinder
 again:
                 client.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.8,id;q=0.6";
                 try {
-                    g.LogLine($"Fetch -- DOWNLOADING: {url}...");
+                    g.LogGreen($"Fetch -- DOWNLOADING: {url}...");
+                    Trace.Flush();
+
                     html = client.DownloadString(url);
 
                     success_count++;
@@ -93,7 +95,7 @@ again:
                 }
                 catch (WebException wex) {
                     if (wex.Message.Contains("503")) { // google
-                        g.LogError(" **** 503 -- PROBABLE RATE LIMIT !! ****");
+                        g.LogError($" **** 503 -- PROBABLE RATE LIMIT !! [{url}] ****");
                         if (url.Contains("google.com")) {
                             fail_count++;
                             backoff_secs *= fail_count;
@@ -106,7 +108,7 @@ again:
                         }
                     }
                     else if (wex.Message.Contains("429")) { // quora
-                        g.LogError(" **** 429 -- TOO MANY REQUESTS !! ****");
+                        g.LogError($" **** 429 -- TOO MANY REQUESTS !! [{url}] ****");
                         fail_count++;
                         backoff_secs *= fail_count;
                         g.LogWarn($"ERR: 429 (fail_count={fail_count}); will sleep for {backoff_secs}...");

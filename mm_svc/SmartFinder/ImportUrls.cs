@@ -58,15 +58,12 @@ namespace mm_svc.SmartFinder
 
         public static void DownlodUrls(List<ImportUrlInfo> to_import)
         {
-            const double tld_min_secs_interval = 30;
+            const double tld_min_secs_interval = 5;
 
-            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(16)) {
+            foreach (var chunk in to_import.OrderBy(p => p.url.GetHashCode()).ToList().ChunkBy(64)) {
 
                 var threads = new List<Thread>();
-                //foreach (var url_info in chunk) {
                 Parallel.ForEach(chunk, url_info => {
-                    //Debug.WriteLine($"{url_info.url}");
-                    //return;
 
                     // PDFs causing problems (stack overflow)
                     if (url_info.url.ToLower().Contains(".pdf")) {

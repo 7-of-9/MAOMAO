@@ -16,7 +16,12 @@ namespace mm_global
             if (!url.Contains(":"))
                 url = "http://" + url;
 
-            Uri uri = new Uri(url);
+            Uri uri = null;
+            try {
+                uri = new Uri(url);
+            } catch (Exception ex) {
+                g.LogError($"{ex.Message} - url={url}");
+            }
 
             return uri.Host;    
         }

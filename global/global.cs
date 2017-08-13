@@ -21,6 +21,7 @@ namespace mm_global
     public  static partial class g
     {
         public static bool is_console = false;
+        public static string global_info = "";
         public static TelemetryClient tel_client = new TelemetryClient();
 
         private static object log_locker = "42";
@@ -83,6 +84,7 @@ namespace mm_global
             string logStr = (!Debugger.IsAttached
                           ? ("MM* {" + System.Environment.MachineName + ":" + procName + ":" + cmdLineStr.TruncateMax(20) + "} [" + build + "] @ " + DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss.fff") + " (" + (mb.ReflectedType != null ? (mb.ReflectedType.Name + ".") : "???.") + ") ") 
                           : "")
+                          + $"({global_info})"
                           + $"[{mb.Name}]"
                           + userStr
                           + s

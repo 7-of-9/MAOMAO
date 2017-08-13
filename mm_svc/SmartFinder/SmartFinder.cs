@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static mm_svc.SmartFinder.Search_Goog;
+using static mm_svc.SmartFinder.SearchTypes;
 
 namespace mm_svc.SmartFinder
 {
@@ -45,19 +46,22 @@ namespace mm_svc.SmartFinder
             g.LogYellow($"# tree_suggestions={tree_suggestions.Count}");
 
             var topics_to_search = GetTopicsToSearch(tree_topics, n_this, n_of);
-            //var suggestions_to_search = GetTopicsToSearch(tree_suggestions, n_this, n_of);
+            var suggestions_to_search = GetTopicsToSearch(tree_suggestions, n_this, n_of);
 
             g.LogCyan($"topics_to_search={string.Join(",", topics_to_search)}");
-            //g.LogCyan($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
+            g.LogCyan($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
 
             var ret1 = FindForTopics(topics_to_search, places);
-            //var ret2 = FindForTopics(suggestions_to_search, places); // todo -- enable this (discovery for suggested terms)
+            var ret2 = FindForTopics(suggestions_to_search, places); 
 
             // todo -- how to keep getting new urls on each run?
             // might need to try pages > 1 to keep finding new things; might need more search engines
             // might need filter by date (goog)
 
-            Maintenance.ImagesSites.Maintain(n_this, n_of);
+            // removing this phase for now (to run as separate job); takes too long - would rather have more results
+            // faster with delayed site images
+            //Maintenance.ImagesSites.Maintain(n_this, n_of);
+
             return ret1;// + ret2;
         }
 
@@ -225,6 +229,10 @@ namespace mm_svc.SmartFinder
 
                 var imports = new List<ImportUrlInfo>();
 
+                // recent search
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", null, SearchTypeNum.GOOG_LAST_24_HOURS, main_term_id, term_id, term_num, suggestion, pages: 1,
+                                    additional_goog_args: "&source=lnt&tbs=qdr:d&sa=X&biw=1440&bih=705")); // last one day
+
                 // local searches
                 foreach (var place in places) {
                     var city = place.city;
@@ -253,7 +261,7 @@ namespace mm_svc.SmartFinder
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // all IPs are 429 too many requests; their reset seems quite lengthy - if ever ?! removing for now, pending new IPs or reset on their side
-                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
 
@@ -289,18 +297,20 @@ namespace mm_svc.SmartFinder
         {
             // which things are new?
             var new_conc = new ConcurrentBag<ImportUrlInfo>();
-            Parallel.ForEach(discovered_urls, (url) => {
-                using (var db2 = mm02Entities.Create()) {
-                    if (false == g.RetryMaxOrThrow(() => db2.disc_url.Any(p => // compound uniq key
-                                                p.url == url.url
-                                      && p.search_num == (int)url.search_num
-                                    && p.main_term_id == url.main_term_id
-                                         && p.term_id == url.parent_term_id
-                                 && p.suggested_topic == url.suggestion))) {
-                        new_conc.Add(url);
+            foreach (var chunk in discovered_urls.ChunkBy(4)) {
+                Parallel.ForEach(chunk, (url) => {
+                    using (var db2 = mm02Entities.Create()) {
+                        if (false == g.RetryMaxOrThrow(() => db2.disc_url.Any(p => // compound uniq key
+                                                    p.url == url.url
+                                          && p.search_num == (int)url.search_num
+                                        && p.main_term_id == url.main_term_id
+                                             && p.term_id == url.parent_term_id
+                                     && p.suggested_topic == url.suggestion), sleepSeconds: 3, retryMax: 5)) {
+                            new_conc.Add(url);
+                        }
                     }
-                }
-            });
+                });
+            }
             var new_discoveries = new_conc.ToList();
 
             // get metadata (inc. images) for newly discovered

@@ -30,15 +30,27 @@ namespace mm_jobs
 
         static int n_this = 1;
         static int n_of = 1;
+        static bool log_file_closed = false;
 
         [STAThread]
         static int Main(string[] args)
         {
+            int run_count = 0;
+
+again:
+            run_count++;
+            log_file_closed = false;
+            g.global_info = $"run#={run_count}";
+
             TelemetryConfiguration.Active.DisableTelemetry = true;
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            // prevent re-entry
+            // setup logging
             GetProgramVariables(args);
+            CreateLogDirectory();
+            SetupLogger();
+
+            // prevent re-entry
             bool isSimilarProcessRunning = IsSameProgramAlreadyRunning(args);
             if (isSimilarProcessRunning) {
                 g.LogLine(">>> RUNNING PID IS DUPLICATED ON CMDLINE [" + string.Join(",", args.Select(x => x.ToLower().Replace("-", ""))) + "]");
@@ -52,10 +64,7 @@ namespace mm_jobs
             }
             g.LogLine("(none found, proceeding)");
 
-            // setup
-            CreateLogDirectory();
-            SetupLogger();
-
+            // check/log IP
             var ip80 = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
             var ip443 = new WebClient().DownloadString(@"https://icanhazip.com").Trim();
             var doc1 = mm_svc.SmartFinder.WebClientBrowser.Fetch("http://www.google.com.sg/search?site=&source=hp&q=whatts+my+ip&oq=whatts+my+ip");
@@ -63,18 +72,22 @@ namespace mm_jobs
             g.LogInfo($">> GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443} - RUNNING AS {n_this} OF {n_of}");
             Console.Title = $"{fullArgs} / {n_this} OF {n_of} / GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443}";
 
+            // init
             Environment.CurrentDirectory = exeDir; 
             DateTime startupTime = DateTime.Now;
             bool completedWithoutError = true;
             var db = mm02Entities.Create();
             LogJobStartup(db);
 
+            // ex handlers
             System.AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionTrapper;
-            g.LogInfo("Set System.AppDomain.CurrentDomain.UnhandledException OK.");
+            g.LogLine("Set System.AppDomain.CurrentDomain.UnhandledException OK.");
 
             Application.ThreadException += Application_ThreadException;
-            g.LogInfo("Set Application_ThreadException OK.");
+            g.LogLine("Set Application_ThreadException OK.");
 
+            // go
+            var sw = new Stopwatch(); sw.Start();
             try {
                 // images
                 if (args.Contains("-it")) { 
@@ -108,9 +121,15 @@ namespace mm_jobs
                 //    SmartFinder.Find_UserAllTopics(15);
                 //}
 
+                CloseLogFile(completedWithoutError, DateTime.Now.Subtract(startupTime));
+                g.LogYellow($">> run complete in {sw.Elapsed.TotalMinutes.ToString("0.00")} min(s).");
+                if (args.Contains("-r")) { // repeat
+                    g.LogYellow($"Repeating...");
+                    goto again;
+                }
+
                 if (console_present()) {
-                    g.LogYellow($">> all done. Press any key...");
-                    Console.ReadKey();
+                    g.LogYellow($"Press any key..."); Console.ReadKey();
                 }
                 return 0;
             }
@@ -122,8 +141,13 @@ namespace mm_jobs
                 return 1;
             }
             finally {
-                TimeSpan execTime = DateTime.Now.Subtract(startupTime);
+                CloseLogFile(completedWithoutError, DateTime.Now.Subtract(startupTime));
+            }
+        }
 
+        private static void CloseLogFile(bool completedWithoutError, TimeSpan execTime)
+        {
+            if (!log_file_closed) {
                 Trace.Close();
                 if (completedWithoutError) {
                     File.Move(logFullPath, logFullPath.Replace("INPROCESS.", "OK.") + "_" + execTime.TotalMinutes.ToString("0") + ".MINS.LOG");
@@ -131,6 +155,7 @@ namespace mm_jobs
                 else {
                     File.Move(logFullPath, logFullPath.Replace("INPROCESS.", "FAILED.") + "_" + execTime.TotalMinutes.ToString("0") + ".MINS.LOG");
                 }
+                log_file_closed = true;
             }
         }
 
@@ -246,7 +271,7 @@ namespace mm_jobs
         private static bool IsSameProgramAlreadyRunning(string[] args)
         {
             Process thisProcess = Process.GetCurrentProcess();
-            g.LogInfo("prevent re-entrancy: scanning for already-running process name [" + exeName + "]...");
+            //g.LogInfo("prevent re-entrancy: scanning for already-running process name [" + exeName + "]...");
             foreach (Process p in Process.GetProcesses()) {
                 //g.LogLine($"running process {p.ProcessName}");
 
@@ -264,7 +289,7 @@ namespace mm_jobs
                                     var thisArgsJoined = string.Join(" ", args).Replace("-", "");
                                     foreach (string s in ss.Select(x => x.ToLower()).Where(x => x != "force")) {
                                         g.LogLine($"\t>> matching process {p.ProcessName}: this.args={thisArgsJoined} other.arg={s} >>");
-                                        if (args.Select(x => x.ToLower().Replace("-", "").Replace(" ", "")).Contains(s) || thisArgsJoined.ToLower() == s.ToLower()) {
+                                        if (args.Select(x => x.ToLower().Replace("-", "").Replace(" ", "")).Contains(s) || thisArgsJoined.ToLower().Contains(s.ToLower())) {
                                             g.LogWarn(">>> duplicate PID " + p.Id + " running for " + DateTime.Now.Subtract(p.StartTime).Minutes + " min(s), dupe'd on arg [" + s + "] !");
                                             externalProcessDuplicateCmdLine = s;
                                             return true;

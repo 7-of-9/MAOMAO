@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace mm_svc.Discovery
 {
-    public static class UserDiscovery
+    public static class FetchDiscoveries
     {
-        public static List<DiscoveryInfo> Get(long user_id, int page_num = 0, int per_page = 50)
+        public static List<DiscoveryInfo> GetForUser(long user_id, int page_num = 0, int per_page = 50)
         {
             using (var db = mm02Entities.Create()) {
 
@@ -20,6 +20,7 @@ namespace mm_svc.Discovery
                 var num_topics = user_reg_topics_ids.Count;
                 var urls_per_topic = per_page / num_topics;
                 
+                // todo -- filter by city/country
                 var disc_urls = new ConcurrentBag<disc_url>();
                 Parallel.ForEach(user_reg_topics_ids, (term_id) => {
                     var urls = GetUrlsForTerm(term_id, urls_per_topic * page_num, urls_per_topic);
@@ -29,17 +30,24 @@ namespace mm_svc.Discovery
                 var ordered = disc_urls.ToList().OrderBy(p => p.main_term_id);
                 var ret = ordered.Select(p => InfoFromDiscUrl(p)).ToList();
 
-                ret.ForEach(p => {
-                    p.main_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(p.main_term);
-                    p.sug_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(p.sug_term);
-                });
+                return ret;
+            }
+        }
 
+        public static List<DiscoveryInfo> GetForTerm(long term_id, int page_num = 0, int per_page = 50)
+        {
+            using (var db = mm02Entities.Create()) {
+
+                var disc_urls = GetUrlsForTerm(term_id, per_page * page_num, per_page);
+                var ordered = disc_urls.ToList();//.OrderBy(p => p.url_hash);
+                var ret = ordered.Select(p => InfoFromDiscUrl(p)).ToList();
                 return ret;
             }
         }
 
         private static List<disc_url> GetUrlsForTerm(long term_id, int start_at = 0, int per_page = 50)
         {
+            // todo -- want to partition so that we get some of each search type...
             using (var db = mm02Entities.Create()) {
                 var disc_urls_qry = db.disc_url
                 .Include("awis_site")
@@ -57,7 +65,9 @@ namespace mm_svc.Discovery
         private static DiscoveryInfo InfoFromDiscUrl(disc_url p)
         {
             using (var db = mm02Entities.Create()) {
-                return new DiscoveryInfo() {
+                var ret = new DiscoveryInfo() {
+                    disc_url_id = p.id,
+
                     url = p.url,
                     title = p.meta_title,
                     utc = p.discovered_at_utc,
@@ -85,6 +95,11 @@ namespace mm_svc.Discovery
                     cwc = p.disc_url_cwc.Select(p2 => new CwcInfo() { date = (DateTime)p2.date, desc = p2.desc, url = p2.href }).ToList(),
                     osl = p.disc_url_osl.Select(p2 => new OslInfo() { desc = p2.desc, url = p2.href }).ToList(),
                 };
+
+                ret.main_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.main_term);
+                ret.sug_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.sug_term);
+
+                return ret;
             }
         }
     }
