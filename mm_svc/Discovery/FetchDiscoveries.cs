@@ -70,10 +70,10 @@ namespace mm_svc.Discovery
                     .AsNoTracking()
                     .Where(p => p.main_term_id == term_id);
 
-                if (!string.IsNullOrEmpty(country) && !string.IsNullOrEmpty(city)) {
-                    disc_urls_qry = disc_urls_qry
-                        .Where(p => p.country == country && p.city == city);
-                }
+                if (!string.IsNullOrEmpty(country)) 
+                    disc_urls_qry = disc_urls_qry.Where(p => p.country == country);
+                if (!string.IsNullOrEmpty(city))
+                    disc_urls_qry = disc_urls_qry.Where(p => p.city == city);
 
                 disc_urls_qry = disc_urls_qry
                     .OrderByDescending(p => p.id)

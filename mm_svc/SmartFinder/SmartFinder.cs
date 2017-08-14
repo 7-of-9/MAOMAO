@@ -36,21 +36,34 @@ namespace mm_svc.SmartFinder
             var tree_topics = new List<long>();
             var tree_suggestions = new List<long>();
 
+            // get tree: topics & suggestions
             tree.ForEach(p => GetTreeTopics(tree_topics, p));
             tree.ForEach(p => GetTreeSuggestions(tree_suggestions, p));
-
             tree_topics = tree_topics.Distinct().ToList();
-            tree_suggestions = tree_suggestions.Distinct().ToList();
-
+            tree_suggestions = tree_suggestions.Distinct().Where(p => !tree_topics.Contains(p)).ToList();
             g.LogYellow($"# tree_topics={tree_topics.Count}");
             g.LogYellow($"# tree_suggestions={tree_suggestions.Count}");
 
-            var topics_to_search = GetTopicsToSearch(tree_topics, n_this, n_of);
-            var suggestions_to_search = GetTopicsToSearch(tree_suggestions, n_this, n_of);
+            // dbg
+            using (var db = mm02Entities.Create()) {
+                var user_reg_topics = db.user_reg_topic.Select(p => p.topic_id).Distinct().ToListNoLock();
+                var user_terms_not_in_tree_topics = user_reg_topics.Where(p => !tree_topics.Contains(p)).ToList();
+                var user_terms_not_in_tree_suggestions = user_reg_topics.Where(p => !tree_suggestions.Contains(p)).ToList();
 
+                g.LogError($"user_terms_not_in_tree_topics.Count={user_terms_not_in_tree_topics.Count}");
+                user_terms_not_in_tree_topics.ForEach(p => g.LogError($"user_terms_not_in_tree_topics: term_id={p}"));
+
+                //g.LogYellow($"user_terms_not_in_tree_suggestions.Count={user_terms_not_in_tree_suggestions.Count}");
+                //user_terms_not_in_tree_suggestions.ForEach(p => g.LogYellow($"user_terms_not_in_tree_suggestions: term_id={p}"));
+            }
+
+            // filter 
+            var topics_to_search = GetTopicsToSearch(tree_topics, suggestions: false, n_this: n_this, n_of: n_of);
+            var suggestions_to_search = GetTopicsToSearch(tree_suggestions, suggestions: true, n_this: n_this, n_of: n_of);
             g.LogCyan($"topics_to_search={string.Join(",", topics_to_search)}");
             g.LogCyan($"suggestions_to_search={string.Join(",", suggestions_to_search)}");
 
+            // search
             var ret1 = FindForTopics(topics_to_search, places);
             var ret2 = FindForTopics(suggestions_to_search, places); 
 
@@ -131,7 +144,7 @@ namespace mm_svc.SmartFinder
                     //topics.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> parent: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")}"));
 
                     // suggestions are good
-                    suggestions.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name} --> suggested: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")} is_topic:{p.parent_term.IS_TOPIC}"));
+                    suggestions.ForEach(p => Debug.WriteLine($"user_reg_topic: {term.name}[{term.id}] --> suggested: {p.parent_term} S={p.S.ToString("0.0000")} S_norm={p.S_norm.ToString("0.00000000")} is_topic:{p.parent_term.IS_TOPIC}"));
 
                     // set term numbers (ordering/priority)
                     int term_num;
@@ -174,22 +187,36 @@ namespace mm_svc.SmartFinder
         }
 
         // restrict each run to a reasonable batch of terms - prioritize topics never searched
-        private static List<long> GetTopicsToSearch(List<long> topic_ids, int n_this = 1, int n_of = 1)
+        private static List<long> GetTopicsToSearch(List<long> topic_ids, bool suggestions = false, int n_this = 1, int n_of = 1)
         {
-            var to_refresh = new ConcurrentBag<long>();
-            var never_searched = new ConcurrentBag<long>();
+            var to_refresh = new ConcurrentDictionary<long, TimeSpan>(); // term_id, last search_utc
+            var terms_never_searched = new ConcurrentBag<long>();
             Parallel.ForEach(topic_ids.Where(p => Math.Abs(p.GetHashCode()) % n_of == n_this - 1), (topic_id) => {
                 using (var db2 = mm02Entities.Create()) {
-                    var last_search = db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock();
-                    if (last_search != null) {
-                        var since_last_search = DateTime.UtcNow.Subtract(last_search.search_utc);
-                        if (since_last_search.TotalHours >= TERM_SEARCH_INTERVAL_HOURS)
-                            to_refresh.Add(topic_id);
+
+                    // latest search for this term
+                    var latest_search = db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock();
+                    if (latest_search != null) {
+                        var since_latest_search = DateTime.UtcNow.Subtract(latest_search.search_utc);
+                        if (since_latest_search.TotalHours >= TERM_SEARCH_INTERVAL_HOURS) {
+                            to_refresh.TryAdd(topic_id, since_latest_search);
+                        }
                     }
-                    else never_searched.Add(topic_id);
+                    else
+                        terms_never_searched.Add(topic_id);
                 }
             });
-            var topics_to_search = never_searched.OrderBy(p => p).Union(to_refresh.OrderBy(p => p)).Take(TERM_SEARCH_BATCH_SIZE).ToList();
+            var x = to_refresh.ToList();
+            x.Sort((p1, p2) => p2.Value.CompareTo(p1.Value));
+            x.ForEach(p => g.LogLine($"GetTopicsToSearch(suggestions={suggestions}): refresh term -- since_last_search={p.Value} term_id={p.Key}"));
+            var terms_to_refresh = x.Select(p => p.Key).ToList();
+
+            g.LogWarn($"GetTopicsToSearch(suggestions={suggestions}): terms_never_searched.Count={terms_never_searched.Count} (of {topic_ids.Count}): {string.Join(",", terms_never_searched)}");
+            g.LogInfo($"GetTopicsToSearch(suggestions={suggestions}): terms_to_refresh.Count={terms_to_refresh.Count} (of {topic_ids.Count}): {string.Join(",", terms_to_refresh)}");
+
+            // ordered list of terms to search: terms never never searched first, followed by terms to refresh ordered by last search time
+            var topics_to_search = terms_never_searched.Union(terms_to_refresh)
+                .Take(TERM_SEARCH_BATCH_SIZE).ToList();
             return topics_to_search;
         }
 

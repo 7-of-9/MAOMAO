@@ -172,7 +172,7 @@ again:
                                 string contents = "";
                                 int length = 0;
                                 while ((length = stream.Read(buffer, 0, bytesToRead)) > 0) {
-                                    Debug.WriteLine($"read chunk...");
+                                    //Debug.WriteLine($"read chunk...");
 
                                     contents += Encoding.UTF8.GetString(buffer, 0, length);
 

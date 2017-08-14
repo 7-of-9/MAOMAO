@@ -19,6 +19,7 @@ namespace tests.Tests.Discovery
             var locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
 
             foreach (var location in locations) {
+
                 for (int page = 0; page < 10; page++) {
 
                     var ret = mm_svc.Discovery.FetchDiscoveries.GetForUser(20, page, 50, location.country, location.city);
@@ -39,7 +40,7 @@ namespace tests.Tests.Discovery
         {
             var locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
             foreach (var location in locations) {
-                    for (int page = 0; page < 1; page++) {
+                for (int page = 0; page < 1; page++) {
 
                     var ret = mm_svc.Discovery.FetchDiscoveries.GetForTerm(4991956, page, 50, location.country, location.city);
                     if (ret.Count == 0) {
@@ -62,12 +63,12 @@ namespace tests.Tests.Discovery
 
         private static void LogResult(int page, mm_svc.Discovery.DiscoveryInfo r)
         {
-            Debug.WriteLine($"page={page} [{r.country}/{r.city}] [{r.main_term_name} / {r.sug_term_name}] [{(SearchTypeNum)r.search_num}] {r.site_tld} {r.utc.ToString("dd MMM yyyy HH:mm")} {r.title.nonewline()} {r.desc.nonewline()}");
+            Trace.WriteLine($"page={page} [{r.country}/{r.city}] [{r.main_term_name} / {r.sug_term_name}] [{r.utc.ToString("dd MMM yyyy HH:mm")}] [{(SearchTypeNum)r.search_num}] [{r.site_tld}] [{r.title.nonewline()}]");// {r.desc.nonewline()}");
 
             foreach (var cwc in r.cwc)
-                Debug.WriteLine($"\tCWC: [{cwc.date.ToString("dd MMM yyyy")} / {cwc.desc.nonewline()}]");
+                Trace.WriteLine($"\tCWC: [{cwc.date.ToString("dd MMM yyyy")} / {cwc.desc?.nonewline()}]");
             foreach (var osl in r.osl)
-                Debug.WriteLine($"\tOSL: [{osl.desc.nonewline()}]");
+                Trace.WriteLine($"\tOSL: [{osl.desc?.nonewline()}]");
         }
 
     }

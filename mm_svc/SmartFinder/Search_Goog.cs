@@ -214,7 +214,7 @@ namespace mm_svc.SmartFinder {
                             href = ParseGoogRedirect(osl.Attributes["href"]?.Value)
                         };
                         url_info.osl.Add(osl_info);
-                        Debug.WriteLine($" > OSL: [{osl_info.desc.nonewline()}] href=[{osl_info.desc}]");
+                        Debug.WriteLine($" > OSL: [{osl_info.desc?.nonewline()}] href=[{osl_info.href}]");
                     }
                 }
 
@@ -257,7 +257,7 @@ namespace mm_svc.SmartFinder {
                             href = cwc_link,
                         };
                         url_info.cwc.Add(cwc_info);
-                        Debug.WriteLine($" > CWC: [{cwc_info.date.ToString("dd MMM yyyy")}] [{cwc_info.desc.nonewline()}] href=[{cwc_info.href}]");
+                        Debug.WriteLine($" > CWC: [{cwc_info.date.ToString("dd MMM yyyy")}] [{cwc_info.desc?.nonewline()}] href=[{cwc_info.href}]");
                     }
                 }
 
