@@ -230,11 +230,8 @@ namespace mm_svc.SmartFinder
             }
 
             using (var db = mm02Entities.Create()) {
-                var term = db.terms.Find(term_id);
                 var main_term = db.terms.Find(main_term_id);
-                //var user = db.users.Find(user_id);
-                //var user_country = db.countries.Where(p => p.cc == user.last_api_cc).Select(p => p.name).FirstOrDefault()?.ToLower();
-                //var user_city = user.last_api_city?.ToLower();
+                var term = db.terms.Find(term_id);
 
                 string search_desc;
                 if (main_term_id == term_id)
@@ -245,11 +242,15 @@ namespace mm_svc.SmartFinder
                     search_desc = $"SUGGESTION for [{main_term.name}]";
 
                 // for suggestions - also include main (user-reg-topic) term name, for better goog matching
-                string search_str;
-                if (suggestion)
+                string search_str, search_str_exact;
+                if (suggestion) {
                     search_str = $"{main_term.name} {term.name}";
-                else
-                    search_str = $"{term.name}";
+                    search_str_exact = $@"""{main_term.name}"" ""{term.name}""";
+                }
+                else {
+                    search_str = $"{main_term.name}";
+                    search_str_exact = $@"""{main_term.name}""";
+                }
 
                 var imports = new List<ImportUrlInfo>();
 
@@ -257,13 +258,17 @@ namespace mm_svc.SmartFinder
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
                 // test - wiki
-                /*imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:wikipedia.org", SearchTypeNum.GOOG_WIKI, main_term_id, term_id, term_num, suggestion, pages: 1));*/
+                /*imports.AddRange(Search($"{search_str}", "site:wikipedia.org", SearchTypeNum.GOOG_WIKI, main_term_id, term_id, term_num, suggestion, pages: 1));*/
 
                 // recent search
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", null, SearchTypeNum.GOOG_LAST_24_HOURS, main_term_id, term_id, term_num, suggestion, pages: 1,
-                                    additional_goog_args: "&source=lnt&tbs=qdr:d&sa=X&biw=1440&bih=705")); // last one day
+                imports.AddRange(Search($"{search_str}", null, SearchTypeNum.LAST_24_HOURS, main_term_id, term_id, term_num, suggestion, pages: 1, last_24_hr: true));
+
+                //
+                // todo - figure out which searches can be offloaded to Bing; quality most definitly is not as high as goog
+                //
 
                 // local searches
+                // ** BING AVOID
                 foreach (var place in places) {
                     var city = place.city;
                     var country = place.country;
@@ -272,46 +277,53 @@ namespace mm_svc.SmartFinder
 
                     if (!string.IsNullOrEmpty(country) || !string.IsNullOrEmpty(city)) {
                         // general local
-                        var gen_local = mm_svc.SmartFinder.Search_Goog.Search($"{search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
+                        var gen_local = Search($"{search_str} {city} {country}", null, SearchTypeNum.LOCAL, main_term_id, term_id, term_num, suggestion, pages: 1);
                         gen_local.ForEach(p => { p.city = city; p.country = country; });
                         imports.AddRange(gen_local);
 
                         // events local
-                        var events_local = mm_svc.SmartFinder.Search_Goog.Search($"events {search_str} {city} {country}", null, SearchTypeNum.GOOG_LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
+                        var events_local = Search($"events {search_str} {city} {country}", null, SearchTypeNum.LOCAL_EVENTS, main_term_id, term_id, term_num, suggestion, pages: 1);
                         events_local.ForEach(p => { p.city = city; p.country = country; });
                         imports.AddRange(events_local);
                     }
                 }
 
-                // site searches
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:youtube.com", SearchTypeNum.GOOG_YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
+                // major site searches -- bing maybe ok for these
+                imports.AddRange(Search($"{search_str}", "site:youtube.com", SearchTypeNum.YOUTUBE, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:vimeo.com", SearchTypeNum.GOOG_VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str}", "site:vimeo.com", SearchTypeNum.VIMEO, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.GOOG_DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str}", "site:quora.com", SearchTypeNum.QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:quora.com", SearchTypeNum.GOOG_QUORA, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str}", "site:medium.com", SearchTypeNum.MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:medium.com", SearchTypeNum.GOOG_MEDIUM, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.YCOMBINATOR, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:ycombinator.com", SearchTypeNum.GOOG_YCOMBINATOR, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str}", "site:ted.com", SearchTypeNum.TED, main_term_id, term_id, term_num, suggestion, pages: 1));
 
-                if (!suggestion) { // low signal sites
-                    imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:buzzfeed.com", SearchTypeNum.GOOG_BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
-                    imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:mashable.com", SearchTypeNum.GOOG_MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
-                }
+                // low signal sites - require exact matching 
+                // ** BING AVOID
+                imports.AddRange(Search($"{search_str_exact}", "site:buzzfeed.com", SearchTypeNum.BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_exact}", "site:mashable.com", SearchTypeNum.MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_exact}", "site:popsugar.com", SearchTypeNum.POPSUGAR, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_exact}", "site:upworthy.com", SearchTypeNum.UPWORTHY, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_exact}", "site:boredpanda.com", SearchTypeNum.BOREDPANDA, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // cool search 
-                imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"cool {search_str} stuff", null, SearchTypeNum.GOOG_COOL, main_term_id, term_id, term_num, suggestion, pages: 1));
+                // ** BING AVOID
+                imports.AddRange(Search($"cool {search_str} stuff", null, SearchTypeNum.COOL, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // news search
-                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} news", SearchTypeNum.GOOG_NEWS, user_reg_topic_id, term_id, term_num, suggestion));
+                imports.AddRange(Search($"news {search_str}", null, SearchTypeNum.NEWS, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // discussion search
-                urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));
+                /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{search_str} discussion", SearchTypeNum.GOOG_DISCUSSION, user_reg_topic_id, term_id, term_num, suggestion));
 
                 // trending search -- not good: goog itself handles this to a large extent
                 urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"trending {search_str}", null, SearchTypeNum.GOOG_TRENDING, user_reg_topic_id, term_id, term_num, suggestion, pages: 1));*/
+
+                // mostly pdfs?
+                /*imports.AddRange(Search($"{search_str}", "site:dailymotion.com", SearchTypeNum.DAILYMOTION, main_term_id, term_id, term_num, suggestion, pages: 1));*/
 
                 if (imports != null) {
                     var new_disc_urls = ProcessDiscoveries(term_id, db, imports);
@@ -320,6 +332,31 @@ namespace mm_svc.SmartFinder
                 }
                 else return 0;
             }
+        }
+
+        private static List<ImportUrlInfo> Search(string search_term, string site_search,
+            SearchTypeNum search_num,
+            long user_reg_topic_id,
+            long parent_term_id, int term_num,
+            bool suggestion,
+            int pages = 1,
+            bool last_24_hr = false)
+        {
+            var source = "G";
+
+            // bing as BAD at: events, places; general context awarenes seems bad
+            // small corpus site searches seem particulary BAD
+
+            List<ImportUrlInfo> ret;
+            if (source == "G")
+                ret = mm_svc.SmartFinder.Search_Goog.Search(search_term, site_search, search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, pages, last_24_hr ? "&source=lnt&tbs=qdr:d&sa=X&biw=1440&bih=705" : null);
+            else if (source == "B")
+                ret = mm_svc.SmartFinder.Search_Bing.Search(search_term, site_search, search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, pages, last_24_hr ? @"&filters=ex1%3a""ez1""" : null);
+            else
+                throw new ApplicationException("bad search source");
+
+            ret.ForEach(p => p.from = source);
+            return ret;
         }
 
         private static int ProcessDiscoveries(long term_id, mm02Entities db, List<ImportUrlInfo> discovered_urls)
@@ -394,6 +431,8 @@ namespace mm_svc.SmartFinder
                         disc_url_html = new List<disc_url_html>() { new disc_url_html() {
                             html = p.html,
                         } },
+                        from = p.from,
+                        results_count = p.result_count,
                     } }; //).ToList();
 
                     additions.ForEach(p2 => { foreach (var cwc in p2.disc_url_cwc) cwc.disc_url = p2; });

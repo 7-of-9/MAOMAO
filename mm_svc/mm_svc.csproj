@@ -99,6 +99,7 @@
     <Compile Include="Maintenance\DiscUrlsSites.cs" />
     <Compile Include="SmartFinder\FullWebBrowser.cs" />
     <Compile Include="SmartFinder\SearchTypes.cs" />
+    <Compile Include="SmartFinder\Search_Bing.cs" />
     <Compile Include="SmartFinder\Search_Goog.cs" />
     <Compile Include="SmartFinder\ImportUrlInfo.cs" />
     <Compile Include="SmartFinder\ImportUrls.cs" />

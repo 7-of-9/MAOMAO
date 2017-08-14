@@ -68,9 +68,9 @@
         <EntityTypeShape EntityType="mm02Model.disc_url_html" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="mm02Model.awis_cat" Width="1.5" PointX="3.875" PointY="1.875" />
         <AssociationConnector Association="mm02Model.FK_awis_site_awis_cat" />
-        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="17" PointY="2.5" />
         <EntityTypeShape EntityType="mm02Model.disc_url_cwc" Width="1.5" PointX="19.25" PointY="7.5" />
         <EntityTypeShape EntityType="mm02Model.disc_url_osl" Width="1.5" PointX="19.25" PointY="0.75" />
+        <EntityTypeShape EntityType="mm02Model.disc_url" Width="1.5" PointX="17" PointY="0.75" />
         <AssociationConnector Association="mm02Model.FK_disc_url_awis_site" />
         <AssociationConnector Association="mm02Model.FK_disc_url_cwc_disc_url" />
         <AssociationConnector Association="mm02Model.FK_disc_url_html_disc_url" />

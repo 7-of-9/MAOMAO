@@ -18,7 +18,7 @@ namespace mm_svc.SmartFinder
         public long parent_term_id;
         public bool suggestion;
 
-        public string source;
+        public string from;
         public string title;
         public string desc;
 
@@ -37,6 +37,8 @@ namespace mm_svc.SmartFinder
         public long awis_site_id;
         public string status;
         public string html;
+
+        public long result_count;
     }
 
     public class OnsiteLinkInfo

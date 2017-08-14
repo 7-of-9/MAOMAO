@@ -10,23 +10,27 @@ namespace mm_svc.SmartFinder
     {
         public enum SearchTypeNum
         {
-            GOOG_MAIN = 1,           // too general - not relevent enough?
-            GOOG_LOCAL = 2,          // country + city
-            GOOG_DISCUSSION = 3,
-            GOOG_YOUTUBE = 4,
-            GOOG_NEWS = 5,
-            GOOG_COOL = 6,
-            GOOG_TRENDING = 7,
-            GOOG_LOCAL_EVENTS = 8,
-            GOOG_QUORA = 9,
-            GOOG_BUZZFEED = 10,
-            GOOG_MASHABLE = 11,
-            GOOG_MEDIUM = 12,
-            GOOG_YCOMBINATOR = 13,
-            GOOG_VIMEO = 14,
-            GOOG_DAILYMOTION = 15,
-            GOOG_LAST_24_HOURS = 16,
-            GOOG_WIKI = 17,
+            MAIN = 1,       
+            LOCAL = 2,         
+            DISCUSSION = 3,
+            YOUTUBE = 4,
+            NEWS = 5,
+            COOL = 6,
+            TRENDING = 7,
+            LOCAL_EVENTS = 8,
+            QUORA = 9,
+            BUZZFEED = 10,
+            MASHABLE = 11,
+            MEDIUM = 12,
+            YCOMBINATOR = 13,
+            VIMEO = 14,
+            DAILYMOTION = 15,
+            LAST_24_HOURS = 16,
+            WIKI = 17,
+            POPSUGAR = 18,
+            UPWORTHY = 19,
+            BOREDPANDA = 20,
+            TED = 21,
         }
     }
 }

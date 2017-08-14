@@ -23,11 +23,11 @@ namespace mm_svc.SmartFinder {
         internal static DateTime last_access = DateTime.MinValue;
 
         // us-proxies (L1 SOCKS 5 providers) recommends no more than 15 goog requests per *hour*
-        // for uninterrupted service!!! that's one every four minutes...
+        // for uninterrupted service!!! that's one every four minutes...!
         //internal static double min_secs_interval = 4 * 60; // 4 minutes: ran overnight no 503s
         //internal static double min_secs_interval = 1 * 60; // 1 minutes: testing... ran for a while, no 503s
-        //internal static double min_secs_interval = 1 * 30; // 0.5 minutes: testing... ran for very short time, indeterminate
-        internal static double min_secs_interval = 1 * 15; // 0.25 minutes: testing... 
+        internal static double min_secs_interval = 1 * 30; // 0.5 minutes: testing... ran for very short time, indeterminate
+        //internal static double min_secs_interval = 1 * 15; // 0.25 minutes: testing... saw 1/12 IPs go 503 after couple of hours
 
         internal static int total_searches = 0;
 
@@ -60,23 +60,30 @@ namespace mm_svc.SmartFinder {
             if (goog_rate_limit_hit == true)
                 return null;
 
-            // fuzz search terms
+            // prepare seach term
             var rnd = new Random();
             var words = search_term.Trim().Split(' ');
-            string fuzzed_search_term = "";
-            foreach (var word in words) {
-                var fuzzed_word = word;
-                if (rnd.NextDouble() < 0.5)
-                    fuzzed_word = UCaseFirst(fuzzed_word);
-                if (rnd.NextDouble() < 0.9)
-                    fuzzed_word = OmmitRandom(fuzzed_word);
-                if (rnd.NextDouble() < 0.1)
-                    fuzzed_word = fuzzed_word.ToUpper();
-                fuzzed_search_term += fuzzed_word + " ";
+            string final_search_term = "";
+            bool fuzzed = false;
+            if (search_term.Contains(@"""")) {
+                // preserve exact search term
+                final_search_term = search_term;
             }
-            fuzzed_search_term = fuzzed_search_term.Trim().Replace(" ", "+");
-            //var ss = fuzzed_search_term.Split(' ').ToList();
-            //fuzzed_search_term = string.Join(" ", ss.OrderBy(p => rnd.Next()).ToList());
+            else {
+                // fuzz search terms
+                foreach (var word in words) {
+                    var fuzzed_word = word;
+                    if (rnd.NextDouble() < 0.5)
+                        fuzzed_word = UCaseFirst(fuzzed_word);
+                    if (rnd.NextDouble() < 0.9)
+                        fuzzed_word = OmmitRandom(fuzzed_word);
+                    if (rnd.NextDouble() < 0.1)
+                        fuzzed_word = fuzzed_word.ToUpper();
+                    final_search_term += fuzzed_word + " ";
+                }
+                fuzzed = true;
+            }
+            final_search_term = final_search_term.Trim().Replace(" ", "+");
 
             var urls = new List<ImportUrlInfo>();
             if (!string.IsNullOrEmpty(site_search) && !site_search.EndsWith(" "))
@@ -84,7 +91,7 @@ namespace mm_svc.SmartFinder {
 
             for (int page = 0; page < pages; page++) {
 
-                g.LogLine($">>> GOOG SEARCH #{total_searches}: {site_search} page={page} [{fuzzed_search_term}] (FUZZED)");
+                g.LogGray($">>> GOOG SEARCH #{total_searches}: {site_search} page={page} [{final_search_term}] (fuzzed={fuzzed})");
                 HtmlDocument doc = null;
                 try {
                     lock (lock_obj) {
@@ -94,7 +101,7 @@ namespace mm_svc.SmartFinder {
                         }
                         //}
 
-                        var url = string.Format(gs_url, site_search, fuzzed_search_term, page * 10, additional_goog_args);
+                        var url = string.Format(gs_url, site_search, final_search_term, page * 10, additional_goog_args);
                         doc = WebClientBrowser.Fetch(url);
                         if (doc != null)
                             total_searches++;
@@ -113,8 +120,18 @@ namespace mm_svc.SmartFinder {
                     continue;
 
                 // Google.com.sg -- Aug '17
+                long result_count = -1;
+                var sb_count = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["id"]?.Value == "resultStats").FirstOrDefault();
+                var results_count_text = sb_count?.InnerText;
+                if (!string.IsNullOrEmpty(results_count_text)) { 
+                    var ss = results_count_text.Split(' ');
+                    if (ss != null && ss.Length >= 2 && ss[0] == "About") {
+                        long.TryParse(ss[1]?.Replace(",", ""), out result_count);
+                    }
+                }
+
                 var result_cells = doc.DocumentNode.Descendants("div").Where(p => p.Attributes["class"]?.Value == "g");
-                ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, result_cells);
+                ProcessSearchResults(search_num, user_reg_topic_id, parent_term_id, term_num, suggestion, urls, result_cells, result_count);
 
                 // todo ... place results don't have any obvious url associated, so they really don't fit well into the current schema
                 //  but obviously extremely cool in principle for MMM...
@@ -149,7 +166,7 @@ namespace mm_svc.SmartFinder {
         }
 
         private static void ProcessSearchResults(SearchTypeNum search_num, long user_reg_topic_id, long parent_term_id, int term_num, bool suggestion,
-            List<ImportUrlInfo> urls, IEnumerable<HtmlNode> result_cells)
+            List<ImportUrlInfo> urls, IEnumerable<HtmlNode> result_cells, long result_count)
         {
             int result_num = 0;
             foreach (var result_cell in result_cells) {
@@ -189,7 +206,7 @@ namespace mm_svc.SmartFinder {
                 var title = a.InnerText;
 
                 // new url info
-                Debug.WriteLine($"RES: [{title.nonewline()}] desc=[{desc.nonewline()}] href_parsed=[{href_parsed}]");
+                Debug.WriteLine($"RES (of {result_count}): [{title.nonewline()}] desc=[{desc.nonewline()}] href_parsed=[{href_parsed}]");
                 //if (href.StartsWith("/") && Debugger.IsAttached)
                 //    Debugger.Break();
                 var url_info = new ImportUrlInfo() {
@@ -202,6 +219,7 @@ namespace mm_svc.SmartFinder {
                     title = HttpUtility.HtmlDecode(title),
                     result_num = result_num,
                     term_num = term_num,
+                    result_count = result_count,
                 };
 
                 // on site links
@@ -267,32 +285,21 @@ namespace mm_svc.SmartFinder {
 
         private static string ParseGoogRedirect(string href)
         {
-            if (href.StartsWith("/url?q=")) {
-                // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
-                var startat = "/url?q=".Length;
-                var upto = href.IndexOf("&amp;");
-                if (upto == -1)
-                    return null;
-                return href.Substring(startat, upto - startat);
+            // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
+            // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
+            // sometimes: /interstitial?url=http://sgforums.com/forums/12/topics/453139
+            foreach (var s in new[] { "/url?url=", "/url?q=", "/interstitial?url=" })
+            {
+                if (href.Contains(s)) {
+                    var startat = href.IndexOf(s) + s.Length;
+                    var upto = href.IndexOf("&amp;");
+                    if (upto == -1)
+                        return href.Substring(startat);
+                    else
+                        return href.Substring(startat, upto - startat);
+                }
             }
-            else if (href.StartsWith("/url?url=")) {
-                // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
-                var startat = "/url?url=".Length;
-                var upto = href.IndexOf("&amp;");
-                if (upto == -1)
-                    return null;
-                return href.Substring(startat, upto - startat);
-            }
-            else if (href.StartsWith("/interstitial?url=")) {
-                // sometimes: /interstitial?url=http://sgforums.com/forums/12/topics/453139
-                var startat = "/interstitial?url=".Length;
-                var upto = href.IndexOf("&amp;");
-                if (upto == -1)
-                    return href.Substring(startat);
-                else
-                    return href.Substring(startat, upto - startat);
-            }
-            else return href;
+            return href;
         }
     }
 }

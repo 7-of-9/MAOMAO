@@ -181,8 +181,21 @@ namespace mm_global
                 }
                 Trace.Flush();
             }
-            else
+            else if (s.StartsWith("*g") || s.StartsWith("#g")) // gray
             {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+            }
+            else {
                 lock (log_locker) {
                     if (is_console && s.Contains("!!!"))
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -251,7 +264,11 @@ namespace mm_global
         {
             g.LogLine($"#Y {msg}");
         }
-        
+
+        public static void LogGray(string msg)
+        {
+            g.LogLine($"#g {msg}");
+        }
 
         public static string LogStack()
         {

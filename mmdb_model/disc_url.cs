@@ -39,6 +39,8 @@ namespace mmdb_model
         public int url_hash { get; set; }
         public Nullable<long> awis_site_id { get; set; }
         public string status { get; set; }
+        public string from { get; set; }
+        public long results_count { get; set; }
     
         public virtual awis_site awis_site { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

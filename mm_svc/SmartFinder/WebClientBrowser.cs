@@ -22,7 +22,7 @@ namespace mm_svc.SmartFinder
         internal static DateTime last_access = DateTime.MinValue;
         internal static double min_secs_interval = 1;
 
-        internal static int backoff_secs_base = 30;
+        internal static int backoff_secs_base = 60 * 10; // wait long time on 503
         internal static int backoff_secs = backoff_secs_base;
         internal static int success_count = 0;
         internal static int fail_count = 0;
@@ -98,7 +98,7 @@ namespace mm_svc.SmartFinder
             }
         }
 
-        public static HtmlDocument Fetch(string url, bool internal_rate_limit = false, bool fetch_up_to_head = false)
+        public static HtmlDocument Fetch(string url, bool internal_rate_limit = false, bool fetch_up_to_head = false, bool throw_on_first_503 = false)
         {
             string html = null;
             var rnd = new Random();
@@ -237,10 +237,14 @@ again:
                     }
                 }
                 catch (WebException wex) {
-                    if (wex.Message.Contains("503")) { // google
+                    if (wex.Message.Contains("503")) { // rate limit 
+                        if (throw_on_first_503)
+                            throw wex;
+
                         g.LogError($" **** 503 -- PROBABLE RATE LIMIT !! [{url}] ****");
                         if (url.Contains("google.com")) {
-                            fail_count++;
+                            if (++fail_count == 5)
+                                throw new ApplicationException("too many 503s");
                             backoff_secs *= fail_count;
                             g.LogWarn($"ERR: 503 for GOOG URL [{url}] (fail_count={fail_count}); sleep {backoff_secs} secs & retry...");
                             Thread.Sleep(backoff_secs * 1000);

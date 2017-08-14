@@ -82,6 +82,7 @@
     <Compile Include="Maintenance\TopicTreeImages.cs" />
     <Compile Include="Tests\Discovery\Test_Discovery.cs" />
     <Compile Include="Tests\Discovery\Test_WebClientBrowser.cs" />
+    <Compile Include="Tests\SmartFinder\Test_BingSmartFind.cs" />
     <Compile Include="Tests\SmartFinder\Test_GoogSmartFind.cs" />
     <Compile Include="Tests\Users\Test_UserRegTopics.cs" />
     <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />

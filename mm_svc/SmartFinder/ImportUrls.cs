@@ -66,15 +66,14 @@ namespace mm_svc.SmartFinder
                 var threads = new List<Thread>();
                 Parallel.ForEach(chunk, url_info => {
 
-                    // PDFs causing problems (stack overflow)
+                    // default meta_title to whatever search gave
+                    url_info.meta_title = url_info.title;
+
+                    // don't download pdf content
                     if (url_info.url.ToLower().Contains(".pdf")) {
-                        url_info.meta_title = null;
                         g.LogWarn($"skipping PDF url [{url_info.url}]");
                         return;
                     }
-                    
-                    // default meta_title to whatever search gave
-                    url_info.meta_title = url_info.title;
 
                     // apply rate limit per tld
                     var tld = mm_global.Util.GetTldFromUrl(url_info.url);
@@ -152,13 +151,15 @@ namespace mm_svc.SmartFinder
                                 //g.LogAllExceptionsAndStack(ex);
                                 return;
                             }
+
                             if (doc == null && !skip_download) {
                                 g.LogWarn($"got no HAP obj for [{url_info.url}]");
                                 return;
                             }
-
-                            // extract meta
-                            ExtractMetaData(url_info, doc);
+                            else {
+                                // extract meta
+                                ExtractMetaData(url_info, doc);
+                            }
                         }
                         finally {
                             html_web = null;

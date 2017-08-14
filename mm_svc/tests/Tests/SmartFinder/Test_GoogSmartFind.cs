@@ -65,10 +65,10 @@ namespace tests.Tests.SmartFinder
             //if ((page_meta["thumbnail"] = $('meta[name="thumbnail"]').attr('content')))
             //if ((page_meta["image_src"] = $('link[rel="image_src"]').attr('href')))
 
-            var urls = mm_svc.SmartFinder.Search_Goog.Search("history", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            var urls = mm_svc.SmartFinder.Search_Goog.Search("history", null, SearchTypeNum.MAIN, 0, 0, 0, false);
             ImportUrls.GetMeta(urls);
 
-            urls = mm_svc.SmartFinder.Search_Goog.Search("board games", null, SearchTypeNum.GOOG_MAIN, 0, 0, 0, false);
+            urls = mm_svc.SmartFinder.Search_Goog.Search("board games", null, SearchTypeNum.MAIN, 0, 0, 0, false);
             ImportUrls.GetMeta(urls);
 
             //mm_svc.Discovery.Search_Goog.Search("chess");

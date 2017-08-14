@@ -67,10 +67,15 @@ again:
             // check/log IP
             var ip80 = new WebClient().DownloadString(@"http://icanhazip.com").Trim();
             var ip443 = new WebClient().DownloadString(@"https://icanhazip.com").Trim();
-            var doc1 = mm_svc.SmartFinder.WebClientBrowser.Fetch("http://www.google.com.sg/search?site=&source=hp&q=whatts+my+ip&oq=whatts+my+ip");
-            var ipGoog1 = doc1.DocumentNode?.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_H1m _u2m _kup _I5m").FirstOrDefault()?.InnerText;
-            g.LogInfo($">> GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443} - RUNNING AS {n_this} OF {n_of}");
-            Console.Title = $"{fullArgs} / {n_this} OF {n_of} / GOOG:{ipGoog1} / HTTP:{ip80} / SSL:{ip443}";
+            string ipGoog1 = "?";
+            try {
+                var doc1 = mm_svc.SmartFinder.WebClientBrowser.Fetch("http://www.google.com.sg/search?site=&source=hp&q=whatts+my+ip&oq=whatts+my+ip", internal_rate_limit: false, fetch_up_to_head: false, throw_on_first_503: true);
+                ipGoog1 = doc1.DocumentNode?.Descendants("div").Where(p => p.Attributes["class"]?.Value == "_H1m _u2m _kup _I5m").FirstOrDefault()?.InnerText;
+            } catch(Exception ex) {
+                g.LogError($"FAIL getting GOOG ip addr: {ex.Message}");
+            }
+            g.LogInfo($">> goog:{ipGoog1} / http:{ip80} / ssl:{ip443} - RUNNING AS {n_this} OF {n_of}");
+            Console.Title = $"{fullArgs} / {n_this} OF {n_of} / goog:{ipGoog1} / http:{ip80} / ssl:{ip443}";
 
             // init
             Environment.CurrentDirectory = exeDir; 
