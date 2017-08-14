@@ -13,7 +13,7 @@ import logger from '../../utils/logger'
 
 const parentTopicInfo = (tree, topicId, treeLevel) => {
   if (treeLevel <= 2) {
-    return { topic_id: '', topic_name: '' }
+    return { topic_id: '', topic_name: '', img: '' }
   } else {
     for (let counter = 0; counter < tree.length; counter += 1) {
       const foundTopicTree = _.find(tree[counter].child_topics, item => item.topic_id === topicId)
@@ -60,19 +60,19 @@ class TopicTree extends PureComponent {
     this.props.ui.toggleSelectTopic(isSelect, topicId, title, img)
   }
 
-  onSelect = (topicId, topicName) => {
-    this.props.ui.selectTopicTree(topicId, topicName)
+  onSelect = (topicId, topicName, img) => {
+    this.props.ui.selectTopicTree(topicId, topicName, img)
   }
 
   onBack = () => {
     const { tree } = toJS(this.props.store)
     const { currentTopicId, treeLevel } = toJS(this.props.ui)
     const parentTopic = parentTopicInfo(tree, currentTopicId, treeLevel)
-    this.props.ui.selectTopicTree(parentTopic.topic_id, parentTopic.topic_name, -1)
+    this.props.ui.selectTopicTree(parentTopic.topic_id, parentTopic.topic_name, parentTopic.img, -1)
   }
 
   backButton = () => {
-    const { currentTopicId, currentTopicTitle } = toJS(this.props.ui)
+    const { currentTopicId, currentTopicTitle, currentTopicImage: img } = toJS(this.props.ui)
 
     return (
       <div className='navigation-panel'>
@@ -82,7 +82,15 @@ class TopicTree extends PureComponent {
             <button className='btn back-to-parent' onClick={this.onBack}>
               <i className='fa fa-angle-left' aria-hidden='true' />
             </button>
-            <span onClick={this.onBack} className='text-topic current-topic-name' style={{color: '#000'}}>{currentTopicTitle}</span>
+            <span
+              onClick={this.onBack}
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover'
+              }}
+              className='current-topic-name tags' rel='tag'>
+              {currentTopicTitle}
+            </span>
           </div>
           }
       </div>

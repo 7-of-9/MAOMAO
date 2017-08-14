@@ -119,8 +119,8 @@ class SelectedList extends React.PureComponent {
       ],
       nextArrow: <NextArrow />,
       prevArrow: <PrevArrow />,
-      slidesToShow: 4,
-      slidesToScroll: 4,
+      slidesToShow: Math.floor(window.innerWidth / 200) - 1,
+      slidesToScroll: Math.floor(window.innerWidth / 200) - 1,
       variableWidth: true
     }
     return (

@@ -19,6 +19,7 @@ export class UIStore {
   @observable selectedTopics = []
   @observable currentTopicId = ''
   @observable currentTopicTitle = ''
+  @observable currentTopicImage = ''
   @observable animationType = 'LTR'
   @observable treeLevel = 1
   @observable notifications = []
@@ -54,10 +55,11 @@ export class UIStore {
     }
   }
 
-  @action selectTopicTree (topicId, topicName = '', inc = 1) {
+  @action selectTopicTree (topicId, topicName = '', img = '', inc = 1) {
     logger.warn('selectTopicTree', topicId)
     this.currentTopicId = topicId
     this.currentTopicTitle = topicName
+    this.currentTopicImage = img
     this.treeLevel += inc
     if (inc > 0) {
       this.animationType = 'RTL'

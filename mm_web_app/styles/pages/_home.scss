@@ -534,28 +534,35 @@ the home page
   min-height: 100vh;
 }
 
-.back-to-parent {
-  @include border-radius(0 50% 50% 0);
-  z-index: 9999;
-  text-align: center;
-  font-size: 2rem;
-  color: #fff;
-  animation-name: fadeInLeft;
-  animation-duration: 1.5s;
-  animation-fill-mode: both;
-  .fa {
-    margin-top: 7px;
-    vertical-align: top;
-  }
-  &:hover,
-  &:focus {
+.breadcrum {
+  .back-to-parent {
+    @include border-radius(0 50% 50% 0);
+    z-index: 9999;
+    text-align: center;
+    font-size: 2rem;
     color: #fff;
-    background: rgba(0, 0, 0, .45);
+    animation-name: fadeInLeft;
+    animation-duration: 1.5s;
+    animation-fill-mode: both;
+    .fa {
+      margin-top: 7px;
+      vertical-align: top;
+    }
+    &:hover,
+    &:focus {
+      color: #fff;
+      background: rgba(0, 0, 0, .45);
+    }
   }
   .current-topic-name {
     display: inline-block;
-    padding-top: 30px;
-    font-size: 1.2rem;
+    @include border-radius(20px);
+    margin: 0 2.5px;
+    padding: 10px;
+    font-size: 1.5rem;
+    text-align: left;
+    line-height: 30px;
+    border:1px solid #ccc;
   }
 }
 
@@ -609,13 +616,18 @@ the home page
             display: block;
             overflow: hidden;
             .caption {
-              @include abs-pos ($top: auto, $right: 0, $bottom: 70px, $left: auto);
+              @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
               width: 100%;
               .mix-tag {
                 z-index: 1;
                 .tags {
+                  @include border-radius(20px);
+                  margin: 0 2.5px;
+                  padding: 10px;
                   font-size: 1.5rem;
                   text-align: left;
+                  line-height: 30px;
+                  border:1px solid #ccc;
                 }
               }
             }
@@ -643,7 +655,7 @@ the home page
               bottom: 0;
               left: 0;
               background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .5;
+              opacity: .85;
             }
             &:hover {
               &::before {
@@ -827,6 +839,7 @@ the home page
   .selected-topic {
     @include border-radius(20px);
     position: relative;
+    border:1px solid #ccc;
     margin: 0 2.5px;
     height: 50px;
     padding: 10px;

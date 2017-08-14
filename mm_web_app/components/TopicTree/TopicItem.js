@@ -4,17 +4,13 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 import eventEmitter from '../../utils/eventEmitter'
 
-class TopicItem extends Component {
-  state = {
-    isAnimate: false
-  }
-
+class TopicItem extends PureComponent {
   static propTypes = {
     topic_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
@@ -36,7 +32,7 @@ class TopicItem extends Component {
     hasChild: true,
     childTopics: [],
     onChange: (isSelect, topicId, title, img) => {},
-    onSelect: (isSelect, topicId) => {}
+    onSelect: (isSelect, topicId, img) => {}
   }
 
   onChange = (evt) => {
@@ -51,15 +47,11 @@ class TopicItem extends Component {
     logger.warn('handleClick')
     const { hasChild, topic_id: topicId, title, isSelect, img } = this.props
     if (hasChild) {
-      this.setState(prevState => ({isAnimate: true}), () => {
-        setTimeout(() => {
-          this.props.onSelect(topicId, title)
-          this.props.onChange(!isSelect, topicId, title, img)
-          if (!isSelect) {
-            eventEmitter.emit('carousel', !isSelect)
-          }
-        }, 1000)
-      })
+      this.props.onSelect(topicId, title, img)
+      this.props.onChange(!isSelect, topicId, title, img)
+      if (!isSelect) {
+        eventEmitter.emit('carousel', !isSelect)
+      }
     } else {
       this.props.onChange(!isSelect, topicId, title, img)
       if (!isSelect) {
@@ -75,6 +67,7 @@ class TopicItem extends Component {
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
           {images.map(item =>
             <a
+              key={`thumbnail-${item.name}`}
               style={{ display: 'inline-block' }}
               data-tooltip={item.name}
               data-position='bottom'
@@ -99,9 +92,8 @@ class TopicItem extends Component {
     const { topic_id, title, img, isSelect, totals, childTopics } = this.props
     logger.warn('TopicItem', topic_id, title, img)
     const images = childTopics.map(item => ({img: item.img, name: item.topic_name}))
-    const { isAnimate } = this.state
     return (
-      <div key={topic_id} className={isAnimate ? 'grid-item shuffle-item animated fullscreen zoomIn' : 'grid-item shuffle-item'}>
+      <div key={topic_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
           <div
             className='thumbnail'
@@ -117,7 +109,12 @@ class TopicItem extends Component {
               <div className='caption'>
                 <div className='mix-tag'>
                   <div className='mix-tag-topic'>
-                    <span className={`tags ${tagColor(title)}`} rel='tag'>
+                    <span
+                      style={{
+                        background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                        backgroundSize: 'cover'
+                      }}
+                      className={`tags ${tagColor(title)}`} rel='tag'>
                       {title}
                     </span>
                     {
