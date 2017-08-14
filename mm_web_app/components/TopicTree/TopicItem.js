@@ -4,13 +4,17 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 import eventEmitter from '../../utils/eventEmitter'
 
-class TopicItem extends PureComponent {
+class TopicItem extends Component {
+  state = {
+    isAnimate: false
+  }
+
   static propTypes = {
     topic_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
@@ -47,11 +51,20 @@ class TopicItem extends PureComponent {
     logger.warn('handleClick')
     const { hasChild, topic_id: topicId, title, isSelect, img } = this.props
     if (hasChild) {
-      this.props.onSelect(topicId, title)
-    }
-    this.props.onChange(!isSelect, topicId, title, img)
-    if (!isSelect) {
-      eventEmitter.emit('carousel', !isSelect)
+      this.setState(prevState => ({isAnimate: true}), () => {
+        setTimeout(() => {
+          this.props.onSelect(topicId, title)
+          this.props.onChange(!isSelect, topicId, title, img)
+          if (!isSelect) {
+            eventEmitter.emit('carousel', !isSelect)
+          }
+        }, 1000)
+      })
+    } else {
+      this.props.onChange(!isSelect, topicId, title, img)
+      if (!isSelect) {
+        eventEmitter.emit('carousel', !isSelect)
+      }
     }
   }
 
@@ -86,8 +99,9 @@ class TopicItem extends PureComponent {
     const { topic_id, title, img, isSelect, totals, childTopics } = this.props
     logger.warn('TopicItem', topic_id, title, img)
     const images = childTopics.map(item => ({img: item.img, name: item.topic_name}))
+    const { isAnimate } = this.state
     return (
-      <div key={topic_id} className='grid-item shuffle-item'>
+      <div key={topic_id} className={isAnimate ? 'grid-item shuffle-item animated fullscreen zoomIn' : 'grid-item shuffle-item'}>
         <div className='thumbnail-box'>
           <div
             className='thumbnail'

@@ -4,7 +4,7 @@
 *
 */
 
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -51,7 +51,7 @@ const currentTopicTree = (tree, topicId) => {
 @inject('store')
 @inject('ui')
 @observer
-class TopicTree extends Component {
+class TopicTree extends PureComponent {
   componentDidMount () {
     this.props.store.getTopicTree()
   }
@@ -97,11 +97,9 @@ class TopicTree extends Component {
     }
   }
 
-  componentDidUpdate () {
-    logger.warn('TopicTree componentDidUpdate')
-    setTimeout(() => {
-      this.cleanClassName()
-    }, 1000)
+  componentWillUpdate () {
+    logger.warn('TopicTree componentWillUpdate')
+    this.cleanClassName()
   }
 
   render () {
