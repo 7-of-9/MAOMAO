@@ -89,10 +89,25 @@ class TopicTree extends Component {
     )
   }
 
+  cleanClassName = () => {
+    logger.warn('TopicTree cleanClassName', this.animateEl)
+    if (this.animateEl) {
+      /* global $ */
+      $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
+    }
+  }
+
+  componentDidUpdate () {
+    logger.warn('TopicTree componentDidUpdate')
+    setTimeout(() => {
+      this.cleanClassName()
+    }, 1000)
+  }
+
   render () {
     const items = []
     const { tree } = toJS(this.props.store)
-    const { currentTopicId, treeLevel } = toJS(this.props.ui)
+    const { currentTopicId, treeLevel, animationType } = toJS(this.props.ui)
     logger.warn('TopicTree render', currentTopicId, treeLevel)
 
     _.forEach(currentTopicTree(tree, currentTopicId), (item) => {
@@ -114,13 +129,13 @@ class TopicTree extends Component {
           />
         )
     })
-    const animateClassName = treeLevel === 1 ? 'grid-row' : 'grid-row bounceInRight animated'
+    const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated level-${treeLevel}` : `grid-row bounceInRight animated level-${treeLevel}`
     return (
       <div className='topic-tree'>
         {this.backButton()}
         <div className='main-inner'>
           <div className='container-masonry'>
-            <div className={animateClassName}>
+            <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
               {items}
             </div>
           </div>

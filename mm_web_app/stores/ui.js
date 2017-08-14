@@ -19,6 +19,7 @@ export class UIStore {
   @observable selectedTopics = []
   @observable currentTopicId = ''
   @observable currentTopicTitle = ''
+  @observable animationType = 'LTR'
   @observable treeLevel = 1
   @observable notifications = []
   @observable page = 1
@@ -58,6 +59,11 @@ export class UIStore {
     this.currentTopicId = topicId
     this.currentTopicTitle = topicName
     this.treeLevel += inc
+    if (inc > 0) {
+      this.animationType = 'RTL'
+    } else {
+      this.animationType = 'LTR'
+    }
   }
 
   @action openDiscoveryMode (terms, suggestions) {

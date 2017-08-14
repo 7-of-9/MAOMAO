@@ -625,6 +625,16 @@ the home page
               margin: 0 auto;
               display: block;
             }
+            &.active::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              background-image: linear-gradient(to bottom right,#000,#fff);
+              opacity: .2;
+            }
             &::before {
               content: '';
               position: absolute;
@@ -633,7 +643,7 @@ the home page
               bottom: 0;
               left: 0;
               background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .6;
+              opacity: .5;
             }
           }
           input.select-topic {

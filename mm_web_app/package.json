@@ -101,7 +101,7 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
-    "@storybook/react": "^3.2.3",
+    "@storybook/react": "^3.2.4",
     "autoprefixer": "^7.1.2",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",
