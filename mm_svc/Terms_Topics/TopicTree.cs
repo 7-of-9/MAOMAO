@@ -69,7 +69,7 @@ namespace mm_svc.Terms
 
                 // add children (recursively)
                 roots.ForEach(p => {
-                    if (Math.Abs(p.topic_name.GetHashCode()) % n_of == n_this - 1) // intra-process sharing of work
+                    //if (Math.Abs(p.topic_name.GetHashCode()) % n_of == n_this - 1) // intra-process sharing of work
                         AddChildTopicTerms_Recurse(p);
                 });
 

@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using mm_global;
+using mm_global.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -188,7 +189,7 @@ namespace mm_svc.SmartFinder {
                 var title = a.InnerText;
 
                 // new url info
-                Debug.WriteLine($"RES: [{title}] desc=[{desc}] href_parsed=[{href_parsed}]");
+                Debug.WriteLine($"RES: [{title.nonewline()}] desc=[{desc.nonewline()}] href_parsed=[{href_parsed}]");
                 //if (href.StartsWith("/") && Debugger.IsAttached)
                 //    Debugger.Break();
                 var url_info = new ImportUrlInfo() {
@@ -196,7 +197,7 @@ namespace mm_svc.SmartFinder {
                     main_term_id = user_reg_topic_id,
                     parent_term_id = parent_term_id,
                     suggestion = suggestion,
-                    url = href_parsed,
+                    url = HttpUtility.UrlDecode(href_parsed),
                     desc = HttpUtility.HtmlDecode(desc),
                     title = HttpUtility.HtmlDecode(title),
                     result_num = result_num,
@@ -213,7 +214,7 @@ namespace mm_svc.SmartFinder {
                             href = ParseGoogRedirect(osl.Attributes["href"]?.Value)
                         };
                         url_info.osl.Add(osl_info);
-                        Debug.WriteLine($" > OSL: [{osl_info.desc}] href=[{osl_info.desc}]");
+                        Debug.WriteLine($" > OSL: [{osl_info.desc.nonewline()}] href=[{osl_info.desc}]");
                     }
                 }
 
@@ -256,7 +257,7 @@ namespace mm_svc.SmartFinder {
                             href = cwc_link,
                         };
                         url_info.cwc.Add(cwc_info);
-                        Debug.WriteLine($" > CWC: [{cwc_info.date.ToString("dd MMM yyyy")}] [{cwc_info.desc}] href=[{cwc_info.href}]");
+                        Debug.WriteLine($" > CWC: [{cwc_info.date.ToString("dd MMM yyyy")}] [{cwc_info.desc.nonewline()}] href=[{cwc_info.href}]");
                     }
                 }
 
@@ -268,8 +269,15 @@ namespace mm_svc.SmartFinder {
         {
             if (href.StartsWith("/url?q=")) {
                 // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
-
                 var startat = "/url?q=".Length;
+                var upto = href.IndexOf("&amp;");
+                if (upto == -1)
+                    return null;
+                return href.Substring(startat, upto - startat);
+            }
+            else if (href.StartsWith("/url?url=")) {
+                // e.g. /url?q=http://www.singaporechess.org.sg/training-courses/scf-chess-courses&amp;sa=U&amp;ved=0ahUKEwjrxrf6sbzVAhUEMI8KHViQAc0QFgg...
+                var startat = "/url?url=".Length;
                 var upto = href.IndexOf("&amp;");
                 if (upto == -1)
                     return null;
@@ -277,7 +285,6 @@ namespace mm_svc.SmartFinder {
             }
             else if (href.StartsWith("/interstitial?url=")) {
                 // sometimes: /interstitial?url=http://sgforums.com/forums/12/topics/453139
-
                 var startat = "/interstitial?url=".Length;
                 var upto = href.IndexOf("&amp;");
                 if (upto == -1)

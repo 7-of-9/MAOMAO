@@ -36,8 +36,8 @@ namespace mmdb_model
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url> urls { get; set; }
+        public virtual awis_cat awis_cat { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url> disc_url { get; set; }
-        public virtual awis_cat awis_cat { get; set; }
     }
 }

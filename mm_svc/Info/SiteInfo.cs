@@ -220,7 +220,7 @@ retry:
                 db_site.url = url;
                 db_site.desc = desc;
                 db.awis_site.Add(db_site);
-                if (!db.SaveChanges_IgnoreDupeKeyEx()) {
+                if (!g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx())) {
                     Thread.Sleep(1000);
                     g.LogWarn($"got dupe key exception on +[awis_site] - retrying load from DB...");
                     try_count++;

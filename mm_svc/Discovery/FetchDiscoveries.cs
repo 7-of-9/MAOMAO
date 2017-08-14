@@ -11,7 +11,9 @@ namespace mm_svc.Discovery
 {
     public static class FetchDiscoveries
     {
-        public static List<DiscoveryInfo> GetForUser(long user_id, int page_num = 0, int per_page = 50)
+        // todo -- filter by city/country
+        public static List<DiscoveryInfo> GetForUser(long user_id,
+            int page_num = 0, int per_page = 50, string country = null, string city = null)
         {
             using (var db = mm02Entities.Create()) {
 
@@ -19,11 +21,10 @@ namespace mm_svc.Discovery
 
                 var num_topics = user_reg_topics_ids.Count;
                 var urls_per_topic = per_page / num_topics;
-                
-                // todo -- filter by city/country
+
                 var disc_urls = new ConcurrentBag<disc_url>();
                 Parallel.ForEach(user_reg_topics_ids, (term_id) => {
-                    var urls = GetUrlsForTerm(term_id, urls_per_topic * page_num, urls_per_topic);
+                    var urls = GetUrlsForTerm(term_id, urls_per_topic * page_num, urls_per_topic, country, city);
                     urls.ForEach(p => disc_urls.Add(p));
                 });
 
@@ -34,30 +35,52 @@ namespace mm_svc.Discovery
             }
         }
 
-        public static List<DiscoveryInfo> GetForTerm(long term_id, int page_num = 0, int per_page = 50)
+        // todo -- filter by city/country
+        public static List<DiscoveryInfo> GetForTerm(long term_id,
+            int page_num = 0, int per_page = 50, string country = null, string city = null)
         {
             using (var db = mm02Entities.Create()) {
 
-                var disc_urls = GetUrlsForTerm(term_id, per_page * page_num, per_page);
-                var ordered = disc_urls.ToList();//.OrderBy(p => p.url_hash);
+                var disc_urls = GetUrlsForTerm(term_id, per_page * page_num, per_page, country, city);
+                var ordered = disc_urls.ToList();
                 var ret = ordered.Select(p => InfoFromDiscUrl(p)).ToList();
                 return ret;
             }
         }
 
-        private static List<disc_url> GetUrlsForTerm(long term_id, int start_at = 0, int per_page = 50)
+        public static List<DiscoveryLocationInfo> GetCountryCities()
         {
-            // todo -- want to partition so that we get some of each search type...
             using (var db = mm02Entities.Create()) {
+                var country_cities_qry = db.disc_url.Select(p => new DiscoveryLocationInfo() { country = p.country, city = p.city }).Distinct();
+                //Debug.WriteLine(country_cities_qry.ToString());
+                return country_cities_qry.ToListNoLock();
+            }
+        }
+
+        private static List<disc_url> GetUrlsForTerm(long term_id,
+            int start_at = 0, int per_page = 50, string country = null, string city = null)
+        {
+            // todo --  partition so that we get some of each search type...
+            using (var db = mm02Entities.Create()) {
+
                 var disc_urls_qry = db.disc_url
-                .Include("awis_site")
-                .Include("disc_url_cwc")
-                .Include("disc_url_osl")
-                .AsNoTracking()
-                .Where(p => p.main_term_id == term_id)
-                .OrderByDescending(p => p.id)
-                .Skip(start_at)
-                .Take(per_page);
+                    .Include("awis_site")
+                    .Include("disc_url_cwc")
+                    .Include("disc_url_osl")
+                    .AsNoTracking()
+                    .Where(p => p.main_term_id == term_id);
+
+                if (!string.IsNullOrEmpty(country) && !string.IsNullOrEmpty(city)) {
+                    disc_urls_qry = disc_urls_qry
+                        .Where(p => p.country == country && p.city == city);
+                }
+
+                disc_urls_qry = disc_urls_qry
+                    .OrderByDescending(p => p.id)
+                    .Skip(start_at)
+                    .Take(per_page);
+
+                //Debug.WriteLine(disc_urls_qry.ToString());
                 return disc_urls_qry.ToListNoLock();
             }
         }

@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Discovery\DiscoveryInfo.cs" />
+    <Compile Include="Discovery\DiscoveryLocationInfo.cs" />
     <Compile Include="Discovery\FetchDiscoveries.cs" />
     <Compile Include="Maintenance\DiscUrlsSites.cs" />
     <Compile Include="SmartFinder\FullWebBrowser.cs" />

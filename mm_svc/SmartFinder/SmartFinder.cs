@@ -224,12 +224,13 @@ namespace mm_svc.SmartFinder
                 else
                     search_str = $"{term.name}";
 
+                var imports = new List<ImportUrlInfo>();
+
                 // main search - too general?
                 /*urls.AddRange(mm_svc.Discovery.Search_Goog.Search($"{term.name}", SearchTypeNum.GOOG_MAIN, user_reg_topic_id, term_id, term_num, suggestion));*/
 
-                var imports = new List<ImportUrlInfo>();
-
-                //imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:wikipedia.org", SearchTypeNum.GOOG_WIKI, main_term_id, term_id, term_num, suggestion, pages: 1));
+                // test - wiki
+                /*imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", "site:wikipedia.org", SearchTypeNum.GOOG_WIKI, main_term_id, term_id, term_num, suggestion, pages: 1));*/
 
                 // recent search
                 imports.AddRange(mm_svc.SmartFinder.Search_Goog.Search($"{search_str}", null, SearchTypeNum.GOOG_LAST_24_HOURS, main_term_id, term_id, term_num, suggestion, pages: 1,
@@ -342,18 +343,18 @@ namespace mm_svc.SmartFinder
                         url = p.url,
                         img_url = p.image_url,
                         meta_title = p.meta_title,
-                        desc = p.desc,
+                        desc = p.desc.TruncateEllipsis(512),
                         search_num = (int)p.search_num,
                         suggested_topic = p.suggestion,
                         term_id = p.parent_term_id,
                         main_term_id = p.main_term_id,
-                        disc_url_cwc = p.cwc.Select(p2 => new disc_url_cwc() {
+                        disc_url_cwc = p.cwc.Where(p2 => p2.href.Length < 256).Select(p2 => new disc_url_cwc() {
                             date = p2.date,
-                            desc = p2.desc,
+                            desc = p2.desc.TruncateEllipsis(512),
                             href = p2.href,
                         }).ToList(),
-                        disc_url_osl = p.osl.Select(p2 => new disc_url_osl() {
-                            desc = p2.desc,
+                        disc_url_osl = p.osl.Where(p2 => p2.href.Length < 256).Select(p2 => new disc_url_osl() {
+                            desc = p2.desc.TruncateEllipsis(512),
                             href = p2.href,
                         }).ToList(),
                         result_num = p.result_num,

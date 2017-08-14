@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using mm_svc.SmartFinder;
+using mmdb_model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,25 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void WebClientBrowser_Test0()
         {
-            var test = WebClientBrowser.Fetch("https://en.wikipedia.org/wiki/Timeline_of_feminism_in_the_United_States");
+            var doc = WebClientBrowser.Fetch(
+                "https://www.w3.org/People/Berners-Lee/Weaving/Overview.html",
+                //"http://www.baligatra.com/", 
+                fetch_up_to_head: true);
+
+            ImportUrls.ExtractMetaData(new ImportUrlInfo() { }, doc);
         }
+
+        [TestMethod]
+        public void WebClientBrowser_FetchUpToHead_Test0()
+        {
+            using (var db = mm02Entities.Create()) {
+                var test_urls = db.disc_url.Select(p => p.url).Take(100);
+                Parallel.ForEach(test_urls, (test_url) => {
+                    var doc = WebClientBrowser.Fetch(test_url, fetch_up_to_head: true);
+                    ImportUrls.ExtractMetaData(new ImportUrlInfo() { }, doc);
+                });
+            }
+        }
+        
     }
 }

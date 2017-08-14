@@ -17,8 +17,8 @@ namespace mmdb_model
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public disc_url()
         {
-            this.disc_url_html = new HashSet<disc_url_html>();
             this.disc_url_cwc = new HashSet<disc_url_cwc>();
+            this.disc_url_html = new HashSet<disc_url_html>();
             this.disc_url_osl = new HashSet<disc_url_osl>();
         }
     
@@ -41,13 +41,13 @@ namespace mmdb_model
         public string status { get; set; }
     
         public virtual awis_site awis_site { get; set; }
-        public virtual term term { get; set; }
-        public virtual term term1 { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<disc_url_html> disc_url_html { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_cwc> disc_url_cwc { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_url_html> disc_url_html { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<disc_url_osl> disc_url_osl { get; set; }
+        public virtual term term { get; set; }
+        public virtual term term1 { get; set; }
     }
 }

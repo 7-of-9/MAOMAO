@@ -52,9 +52,9 @@ namespace mmdb_model
         public virtual DbSet<user> users { get; set; }
         public virtual DbSet<disc_term> disc_term { get; set; }
         public virtual DbSet<awis_site> awis_site { get; set; }
-        public virtual DbSet<disc_url> disc_url { get; set; }
         public virtual DbSet<disc_url_html> disc_url_html { get; set; }
         public virtual DbSet<awis_cat> awis_cat { get; set; }
+        public virtual DbSet<disc_url> disc_url { get; set; }
         public virtual DbSet<disc_url_cwc> disc_url_cwc { get; set; }
         public virtual DbSet<disc_url_osl> disc_url_osl { get; set; }
     }
