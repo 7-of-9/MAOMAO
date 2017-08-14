@@ -14,8 +14,9 @@ import logger from '../../utils/logger'
 
 function NextArrow (props) {
   const {className, style, onClick} = props
-  return (
-    <div style={{
+  let customStyle = {}
+  if (className.indexOf('slick-disabled') === -1) {
+    customStyle = Object.assign({}, {
       position: 'absolute',
       right: '0',
       top: '0',
@@ -23,10 +24,13 @@ function NextArrow (props) {
       height: '50px',
       width: '110px',
       backgroundImage: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)'
-    }}>
+    })
+  }
+  return (
+    <div style={customStyle}>
       <div
         className={`${className} carousel-arrow`}
-        style={{...style, right: '-20px'}}
+        style={{...style, right: '-25px'}}
         onClick={onClick}
       />
     </div>
@@ -35,8 +39,9 @@ function NextArrow (props) {
 
 function PrevArrow (props) {
   const {className, style, onClick} = props
-  return (
-    <div style={{
+  let customStyle = {}
+  if (className.indexOf('slick-disabled') === -1) {
+    customStyle = Object.assign({}, {
       position: 'absolute',
       left: '0',
       top: '0',
@@ -44,10 +49,13 @@ function PrevArrow (props) {
       height: '50px',
       width: '110px',
       backgroundImage: 'linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)'
-    }}>
+    })
+  }
+  return (
+    <div style={customStyle}>
       <div
         className={`${className} carousel-arrow`}
-        style={{...style, left: '-20px'}}
+        style={{...style, left: '-25px'}}
         onClick={onClick}
      />
     </div>
@@ -116,7 +124,7 @@ class SelectedList extends React.PureComponent {
       variableWidth: true
     }
     return (
-      <div style={{padding: '0 10px'}}>
+      <div className='carousel-wrapper'>
         <Subscribe target={eventEmitter} eventName='carousel' listener={this.onCarousel} />
         <Slider ref={(el) => { this.slider = el }} {...settings}>
           {
