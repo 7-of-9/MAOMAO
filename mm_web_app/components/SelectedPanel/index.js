@@ -9,6 +9,7 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import Sticky from 'react-sticky-el'
 import SelectedList from './SelectedList'
+import logger from '../../utils/logger'
 
 @inject('store')
 @inject('ui')
@@ -39,6 +40,7 @@ class SelectedPanel extends PureComponent {
 
   render () {
     const { items } = this.props
+    logger.warn('SelectedPanel render', items)
     return (
       <Sticky>
         <div className='selected-panel'>

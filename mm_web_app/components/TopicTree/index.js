@@ -64,6 +64,10 @@ class TopicTree extends PureComponent {
     this.props.ui.selectTopicTree(topicId, topicName, img)
   }
 
+  selectChildTopics = (topics) => {
+    this.props.ui.selectChildTopics(topics)
+  }
+
   onBack = () => {
     const { tree } = toJS(this.props.store)
     const { currentTopicId, treeLevel } = toJS(this.props.ui)
@@ -113,7 +117,7 @@ class TopicTree extends PureComponent {
   render () {
     const items = []
     const { tree } = toJS(this.props.store)
-    const { currentTopicId, treeLevel, animationType } = toJS(this.props.ui)
+    const { currentTopicId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
     logger.warn('TopicTree render', currentTopicId, treeLevel)
 
     _.forEach(currentTopicTree(tree, currentTopicId), (item) => {
@@ -128,6 +132,8 @@ class TopicTree extends PureComponent {
           title={title}
           onChange={this.onChange}
           onSelect={this.onSelect}
+          selectChildTopics={this.selectChildTopics}
+          selectedTopics={selectedTopics}
           hasChild={child_topics.length > 0}
           totals={child_topics.length}
           childTopics={child_topics}

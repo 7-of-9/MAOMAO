@@ -16,10 +16,12 @@ class TopicItem extends PureComponent {
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     childTopics: PropTypes.array.isRequired,
+    selectedTopics: PropTypes.array.isRequired,
     isSelect: PropTypes.bool.isRequired,
     totals: PropTypes.number.isRequired,
     hasChild: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
+    selectChildTopics: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired
   }
 
@@ -31,8 +33,10 @@ class TopicItem extends PureComponent {
     totals: 0,
     hasChild: true,
     childTopics: [],
+    selectedTopics: [],
     onChange: (isSelect, topicId, title, img) => {},
-    onSelect: (isSelect, topicId, img) => {}
+    onSelect: (isSelect, topicId, img) => {},
+    selectChildTopics: (topics) => {}
   }
 
   onChange = (evt) => {
@@ -45,13 +49,14 @@ class TopicItem extends PureComponent {
   handleClick = (evt) => {
     evt.preventDefault()
     logger.warn('handleClick')
-    const { hasChild, topic_id: topicId, title, isSelect, img } = this.props
+    const { hasChild, childTopics, topic_id: topicId, title, isSelect, img } = this.props
     if (hasChild) {
       this.props.onSelect(topicId, title, img)
-      this.props.onChange(!isSelect, topicId, title, img)
       if (!isSelect) {
-        eventEmitter.emit('carousel', !isSelect)
+        this.props.onChange(!isSelect, topicId, title, img)
       }
+      this.props.selectChildTopics(childTopics)
+      eventEmitter.emit('carousel', !isSelect)
     } else {
       this.props.onChange(!isSelect, topicId, title, img)
       if (!isSelect) {
@@ -71,7 +76,7 @@ class TopicItem extends PureComponent {
               style={{ display: 'inline-block' }}
               data-tooltip={item.name}
               data-position='bottom'
-              class='bottom'>
+              className='bottom'>
               <img
                 style={{width: '25px', height: '25px'}}
                 className='thumbnail'
@@ -87,9 +92,15 @@ class TopicItem extends PureComponent {
     }
   }
 
+  hasSelected = (childTopics, topics) => {
+    const topicIds = childTopics.map(item => item.topic_id)
+    const isSelected = topics.length > 0 && topics.find(item => topicIds.indexOf(item.topicId) !== -1)
+    return isSelected ? 'topic-number has-selected' : 'topic-number'
+  }
+
   render () {
     /* eslint-disable camelcase */
-    const { topic_id, title, img, isSelect, totals, childTopics } = this.props
+    const { topic_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
     logger.warn('TopicItem', topic_id, title, img)
     const images = childTopics.map(item => ({img: item.img, name: item.topic_name}))
     return (
@@ -119,7 +130,7 @@ class TopicItem extends PureComponent {
                     </span>
                     {
                       totals > 0 &&
-                      <span className='topic-number'>{totals}</span>
+                      <span className={this.hasSelected(childTopics, selectedTopics)}>{totals}</span>
                     }
                   </div>
                 </div>

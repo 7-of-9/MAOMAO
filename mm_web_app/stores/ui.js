@@ -49,9 +49,25 @@ export class UIStore {
   @action toggleSelectTopic (isSelect, topicId, topicName, img) {
     logger.warn('toggleSelectTopic', isSelect, topicId, topicName, img)
     if (isSelect) {
-      this.selectedTopics.push({topicId, topicName, img})
+      const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.topicId === topicId)
+      if (!isExist) {
+        this.selectedTopics.push({topicId, topicName, img})
+      }
     } else {
       this.selectedTopics = this.selectedTopics.filter(item => item.topicId !== topicId)
+    }
+  }
+
+  @action selectChildTopics (topics) {
+    logger.warn('toggleSelectTopic', topics)
+    if (topics && topics.length) {
+      topics.forEach(topic => {
+        const { topic_id: topicId, topic_name: topicName, img } = topic
+        const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.topicId === topicId)
+        if (!isExist) {
+          this.selectedTopics.push({topicId, topicName, img})
+        }
+      })
     }
   }
 

@@ -745,21 +745,43 @@ the home page
 /* hotfix for carousel arrow */
 .carousel-wrapper {
   padding: 0 10px;
-  .slick-slider {
-    .slick-disabled {
-      display: none !important;
-    }
-    .carousel-arrow {
-      width: 30px;
-      height: 30px;
+  .carousel-outer {
+    &::before {
+      position: absolute;
+      content: " ";
+      left: 0;
+      top: 0;
+      height: 50px;
+      width: 50px;
       z-index: 1;
-      &::before {
-        color: #00558B;
-        font-size: 30px;
-      }
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)
     }
-    .carousel-dots {
-      bottom: -20px;
+    &::after {
+      position: absolute;
+      content: " ";
+      right: 0;
+      top: 0;
+      height: 50px;
+      width: 50px;
+      z-index: 1;
+      background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)
+    }
+  }
+  .carousel-nav {
+    .owl-prev {
+      position: absolute;
+      top: -5px;
+      left: -50px;
+      height: 50px;
+    }
+    .owl-next {
+      position: absolute;
+      top: -5px;
+      right: -50px;
+      height: 50px;
+    }
+    .disabled {
+      display: none;
     }
   }
 }
@@ -772,7 +794,10 @@ the home page
   font-size: 11px;
   text-align: center;
   color: #fff;
-  background-color: #2db7f5;
+  background-color: #ccc;
+  &.has-selected {
+    background-color: #2db7f5;
+  }
   width: 30px;
   height: 30px;
   line-height: 30px;
@@ -830,6 +855,7 @@ the home page
     line-height: 30px;
     width: 30px;
     text-align: center;
+    z-index: 2;
     cursor: pointer;
     &:hover,
     &:focus {
