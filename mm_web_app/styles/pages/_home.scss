@@ -746,39 +746,53 @@ the home page
 .carousel-wrapper {
   padding: 0 10px;
   .carousel-outer {
-    &::before {
-      position: absolute;
-      content: " ";
-      left: 0;
-      top: 0;
-      height: 50px;
-      width: 50px;
-      z-index: 1;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)
+    &.previous {
+      &::before {
+        position: absolute;
+        content: " ";
+        left: 0;
+        top: 0;
+        height: 50px;
+        width: 100px;
+        z-index: 1;
+        background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
     }
-    &::after {
-      position: absolute;
-      content: " ";
-      right: 0;
-      top: 0;
-      height: 50px;
-      width: 50px;
-      z-index: 1;
-      background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%)
+    &.next {
+      &::after{
+        position: absolute;
+        content: " ";
+        right: 0;
+        top: 0;
+        height: 50px;
+        width: 100px;
+        z-index: 1;
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
     }
   }
   .carousel-nav {
     .owl-prev {
       position: absolute;
       top: -5px;
-      left: -50px;
+      left: -25px;
       height: 50px;
+      background: #fff;
+      color: #d6d6d6;
+      font-size: 1.5rem;
+      padding: 10px;
+      margin-top: 5px;
     }
     .owl-next {
       position: absolute;
       top: -5px;
-      right: -50px;
+      right: -25px;
       height: 50px;
+      background: #fff;
+      color: #d6d6d6;
+      font-size: 1.5rem;
+      padding: 10px;
+      margin-top: 5px;
     }
     .disabled {
       display: none;
@@ -818,6 +832,7 @@ the home page
   transition: all .3s linear;
   .topic-guide {
     height: 50px;
+    text-align: center;
   }
   .btn-sign-up {
     background: #008000;

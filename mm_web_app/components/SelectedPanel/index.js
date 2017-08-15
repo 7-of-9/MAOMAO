@@ -30,9 +30,9 @@ class SelectedPanel extends PureComponent {
   renderView = (items) => {
     if (!items || items.length === 0) {
       return (
-        <p className='topic-guide'>
-        What kind of things are you interested in…
-        </p>
+        <h3 className='topic-guide'>
+        Select your interests...
+        </h3>
       )
     }
     return (<SelectedList items={items} onRemove={this.onRemove} />)
