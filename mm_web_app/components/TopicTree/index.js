@@ -11,18 +11,18 @@ import _ from 'lodash'
 import TopicItem from './TopicItem'
 import logger from '../../utils/logger'
 
-const parentTopicInfo = (tree, topicId, treeLevel) => {
+const parentTopicInfo = (tree, termId, treeLevel) => {
   if (treeLevel <= 2) {
-    return { topic_id: '', topic_name: '', img: '' }
+    return { term_id: '', term_name: '', img: '' }
   } else {
     for (let counter = 0; counter < tree.length; counter += 1) {
-      const foundTopicTree = _.find(tree[counter].child_topics, item => item.topic_id === topicId)
+      const foundTopicTree = _.find(tree[counter].child_topics, item => item.term_id === termId)
       if (foundTopicTree) {
         return tree[counter]
       }
     }
     for (let counter = 0; counter < tree.length; counter += 1) {
-      const foundChild = parentTopicInfo(tree[counter].child_topics, topicId, treeLevel)
+      const foundChild = parentTopicInfo(tree[counter].child_topics, termId, treeLevel)
       if (foundChild) {
         return foundChild
       }
@@ -30,16 +30,16 @@ const parentTopicInfo = (tree, topicId, treeLevel) => {
   }
 }
 
-const currentTopicTree = (tree, topicId) => {
-  if (topicId === '') {
+const currentTopicTree = (tree, termId) => {
+  if (termId === '') {
     return tree
   } else {
-    const foundTree = _.find(tree, item => item.topic_id === topicId)
+    const foundTree = _.find(tree, item => item.term_id === termId)
     if (foundTree) {
       return foundTree.child_topics
     } else {
       for (let counter = 0; counter < tree.length; counter += 1) {
-        const topic = currentTopicTree(tree[counter].child_topics, topicId)
+        const topic = currentTopicTree(tree[counter].child_topics, termId)
         if (topic) {
           return topic
         }
@@ -56,12 +56,12 @@ class TopicTree extends PureComponent {
     this.props.store.getTopicTree()
   }
 
-  onChange = (isSelect, topicId, title, img) => {
-    this.props.ui.toggleSelectTopic(isSelect, topicId, title, img)
+  onChange = (isSelect, termId, title, img) => {
+    this.props.ui.toggleSelectTopic(isSelect, termId, title, img)
   }
 
-  onSelect = (topicId, topicName, img) => {
-    this.props.ui.selectTopicTree(topicId, topicName, img)
+  onSelect = (termId, termName, img) => {
+    this.props.ui.selectTopicTree(termId, termName, img)
   }
 
   selectChildTopics = (topics) => {
@@ -71,18 +71,18 @@ class TopicTree extends PureComponent {
 
   onBack = () => {
     const { tree } = toJS(this.props.store)
-    const { currentTopicId, treeLevel } = toJS(this.props.ui)
-    const parentTopic = parentTopicInfo(tree, currentTopicId, treeLevel)
-    this.props.ui.selectTopicTree(parentTopic.topic_id, parentTopic.topic_name, parentTopic.img, -1)
+    const { currentTermId, treeLevel } = toJS(this.props.ui)
+    const parentTopic = parentTopicInfo(tree, currentTermId, treeLevel)
+    this.props.ui.selectTopicTree(parentTopic.term_id, parentTopic.term_name, parentTopic.img, -1)
   }
 
   backButton = () => {
-    const { currentTopicId, currentTopicTitle, currentTopicImage: img } = toJS(this.props.ui)
+    const { currentTermId, currentTermTitle, currentTermImage: img } = toJS(this.props.ui)
 
     return (
       <div className='navigation-panel'>
         {
-          currentTopicId && currentTopicId !== '' &&
+          currentTermId && currentTermId !== '' &&
           <div className='breadcrum'>
             <button className='btn back-to-parent' onClick={this.onBack}>
               <i className='fa fa-angle-left' aria-hidden='true' />
@@ -94,7 +94,7 @@ class TopicTree extends PureComponent {
                 backgroundSize: 'cover'
               }}
               className='current-topic-name tags' rel='tag'>
-              {currentTopicTitle}
+              {currentTermTitle}
             </span>
           </div>
           }
@@ -118,17 +118,17 @@ class TopicTree extends PureComponent {
   render () {
     const items = []
     const { tree } = toJS(this.props.store)
-    const { currentTopicId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
-    logger.warn('TopicTree render', currentTopicId, treeLevel)
+    const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
+    logger.warn('TopicTree render', currentTermId, treeLevel)
 
-    _.forEach(currentTopicTree(tree, currentTopicId), (item) => {
+    _.forEach(currentTopicTree(tree, currentTermId), (item) => {
        /* eslint-disable camelcase */
-      const { topic_id, topic_name: title, img, child_topics } = item
-      const isSelect = this.props.ui.selectedTopics.find(item => item.topicId === topic_id)
+      const { term_id, term_name: title, img, child_topics } = item
+      const isSelect = this.props.ui.selectedTopics.find(item => item.termId === term_id)
       items.push(
         <TopicItem
-          key={topic_id}
-          topic_id={topic_id}
+          key={term_id}
+          term_id={term_id}
           isSelect={!!isSelect}
           title={title}
           onChange={this.onChange}

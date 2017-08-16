@@ -62,7 +62,7 @@ class AppHeader extends React.Component {
     this.props.store.internalLogin((user) => {
       logger.warn('test user', user)
       const { selectedTopics } = this.props.ui
-      this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
+      this.props.store.saveTopics(selectedTopics.map(item => item.termId))
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -228,7 +228,7 @@ class AppHeader extends React.Component {
                               email: item.email, name, picture, google_user_id
                             }, () => {
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
+                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                             })
                           }
                         })
@@ -237,7 +237,7 @@ class AppHeader extends React.Component {
                           email, name, picture, google_user_id
                         }, () => {
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
+                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -248,7 +248,7 @@ class AppHeader extends React.Component {
                               email: item.email, name, picture, fb_user_id
                             }, () => {
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
+                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                             })
                           }
                         })
@@ -257,7 +257,7 @@ class AppHeader extends React.Component {
                           email, name, picture, fb_user_id
                         }, () => {
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.topicId))
+                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                         })
                       }
                     } else if (sign_in_provider === 'password') {

@@ -84,7 +84,8 @@ export class HomeStore extends CoreStore {
   }
 
   @action saveTopics (ids) {
-    if (ids && ids.length) {
+    logger.warn('saveTopics', ids)
+    if (ids && ids.length > 0) {
       const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
       when(
           () => saveTopicRequest.state !== 'pending',

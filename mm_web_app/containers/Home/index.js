@@ -150,7 +150,7 @@ class Home extends React.Component {
         </div>
       )
     }
-    const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.topicId, name: item.topicName})) : []
+    const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.termId, name: item.termName})) : []
     return (
       <div className='wrapper-slide'>
         <SelectedPanel

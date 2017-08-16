@@ -12,7 +12,7 @@ import eventEmitter from '../../utils/eventEmitter'
 
 class TopicItem extends PureComponent {
   static propTypes = {
-    topic_id: PropTypes.number.isRequired,
+    term_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     childTopics: PropTypes.array.isRequired,
@@ -26,7 +26,7 @@ class TopicItem extends PureComponent {
   }
 
   static defaultProps = {
-    topic_id: 0,
+    term_id: 0,
     title: '',
     img: '',
     isSelect: false,
@@ -34,31 +34,31 @@ class TopicItem extends PureComponent {
     hasChild: true,
     childTopics: [],
     selectedTopics: [],
-    onChange: (isSelect, topicId, title, img) => {},
-    onSelect: (isSelect, topicId, img) => {},
+    onChange: (isSelect, termId, title, img) => {},
+    onSelect: (isSelect, termId, img) => {},
     selectChildTopics: (topics) => {}
   }
 
   onChange = (evt) => {
     logger.warn('onChange', evt)
-    const { topic_id: topicId, title, isSelect, img } = this.props
-    this.props.onChange(!isSelect, topicId, title, img)
+    const { term_id: termId, title, isSelect, img } = this.props
+    this.props.onChange(!isSelect, termId, title, img)
     eventEmitter.emit('carousel', !isSelect)
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
     logger.warn('handleClick')
-    const { hasChild, childTopics, topic_id: topicId, title, isSelect, img } = this.props
+    const { hasChild, childTopics, term_id: termId, title, isSelect, img } = this.props
     if (hasChild) {
-      this.props.onSelect(topicId, title, img)
+      this.props.onSelect(termId, title, img)
       if (!isSelect) {
-        this.props.onChange(!isSelect, topicId, title, img)
+        this.props.onChange(!isSelect, termId, title, img)
       }
       this.props.selectChildTopics(childTopics)
       eventEmitter.emit('carousel', !isSelect)
     } else {
-      this.props.onChange(!isSelect, topicId, title, img)
+      this.props.onChange(!isSelect, termId, title, img)
       if (!isSelect) {
         eventEmitter.emit('carousel', !isSelect)
       }
@@ -93,18 +93,18 @@ class TopicItem extends PureComponent {
   }
 
   hasSelected = (childTopics, topics) => {
-    const topicIds = childTopics.map(item => item.topic_id)
-    const isSelected = topics.length > 0 && topics.find(item => topicIds.indexOf(item.topicId) !== -1)
+    const termIds = childTopics.map(item => item.term_id)
+    const isSelected = topics.length > 0 && topics.find(item => termIds.indexOf(item.termId) !== -1)
     return isSelected ? 'topic-number has-selected' : 'topic-number'
   }
 
   render () {
     /* eslint-disable camelcase */
-    const { topic_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
-    logger.warn('TopicItem', topic_id, title, img)
-    const images = childTopics.map(item => ({img: item.img, name: item.topic_name}))
+    const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
+    logger.warn('TopicItem', term_id, title, img)
+    const images = childTopics.map(item => ({img: item.img, name: item.term_name}))
     return (
-      <div key={topic_id} className='grid-item shuffle-item'>
+      <div key={term_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
           <div
             className='thumbnail'

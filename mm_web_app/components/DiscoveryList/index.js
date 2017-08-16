@@ -16,18 +16,37 @@ import logger from '../../utils/logger'
 @inject('ui')
 @observer
 class DiscoveryList extends PureComponent {
-  onChange = (isSelect, topicId, title, img) => {
-  }
-
-  onSelect = (topicId, topicName, img) => {
+  onSelect = (item) => {
+    this.props.ui.selectDiscoveryItem(item)
   }
 
   onBack = () => {
+    this.props.ui.backToRootDiscovery()
   }
 
   backButton = () => {
+    const { discoveryUrlId, selectedDiscoveryItem: { main_term_img: img, main_term_name: title } } = toJS(this.props.ui)
+
     return (
-      <div className='navigation-panel' />
+      <div className='navigation-panel'>
+        {
+          discoveryUrlId && discoveryUrlId !== -1 &&
+          <div className='breadcrum'>
+            <button className='btn back-to-parent' onClick={this.onBack}>
+              <i className='fa fa-angle-left' aria-hidden='true' />
+            </button>
+            <span
+              onClick={this.onBack}
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover'
+              }}
+              className='current-topic-name tags' rel='tag'>
+              {title}
+            </span>
+          </div>
+        }
+      </div>
     )
   }
 
@@ -39,24 +58,57 @@ class DiscoveryList extends PureComponent {
     }
   }
 
+  renderDetail = (selectedDiscoveryItem) => {
+    const { selectedDiscoveryItem: { url, title, desc, utc } } = toJS(this.props.ui)
+    const PROXY_URL = '/api/preview'
+    const proxyUrl = `${PROXY_URL}?url=${url}`
+    return (
+      <div
+        style={{backgroundColor: '#fff', width: '100%', height: '100vh'}}
+        >
+        <h1>{title}</h1>
+        <p>{desc}</p>
+        <span>{utc}</span>
+        <iframe
+          className='iframe-view'
+          sandbox='allow-same-origin'
+          id={`frame-${url}`}
+          name={`frame-${url}`}
+          width='100%'
+          height='100%'
+          frameBorder='0'
+          allowFullScreen
+          allowTransparency
+          src={proxyUrl}
+        />
+      </div>
+    )
+  }
+
+  renderList = () => {
+    const items = []
+    const { discoveries } = toJS(this.props.term)
+    _.forEach(discoveries, (item) => {
+      /* eslint-disable camelcase */
+      items.push(
+        <DiscoveryItem
+          key={`${item.disc_url_id}-${item.title}`}
+          onSelect={this.onSelect}
+          {...item}
+         />
+       )
+    })
+    return items
+  }
+
   componentWillUpdate () {
     logger.warn('TopicTree componentWillUpdate')
     this.cleanClassName()
   }
 
   render () {
-    const items = []
-    const { discoveries } = toJS(this.props.term)
-    const { animationType } = toJS(this.props.ui)
-    _.forEach(discoveries, (item) => {
-       /* eslint-disable camelcase */
-      items.push(
-        <DiscoveryItem
-          key={`${item.disc_url_id}-${item.title}`}
-          {...item}
-          />
-        )
-    })
+    const { animationType, discoveryUrlId } = toJS(this.props.ui)
+
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     return (
       <div className='topic-tree'>
@@ -64,7 +116,8 @@ class DiscoveryList extends PureComponent {
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
-              {items}
+              {discoveryUrlId === -1 && this.renderList()}
+              {discoveryUrlId !== -1 && this.renderDetail()}
             </div>
           </div>
         </div>
