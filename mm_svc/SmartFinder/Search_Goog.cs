@@ -26,7 +26,7 @@ namespace mm_svc.SmartFinder {
         // for uninterrupted service!!! that's one every four minutes...!
         //internal static double min_secs_interval = 4 * 60; // 4 minutes: ran overnight no 503s
         //internal static double min_secs_interval = 1 * 60; // 1 minutes: testing... ran for a while, no 503s
-        internal static double min_secs_interval = 1 * 30; // 0.5 minutes: testing... ran for very short time, indeterminate
+        internal static double min_secs_interval = 1 * 30; // 0.5 minutes: testing... ran overnight 7 instances, no 503s
         //internal static double min_secs_interval = 1 * 15; // 0.25 minutes: testing... saw 1/12 IPs go 503 after couple of hours
 
         internal static int total_searches = 0;

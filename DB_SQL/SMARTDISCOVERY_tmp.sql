@@ -1,5 +1,5 @@
 select * from [user]
-select * from user_reg_topic
+select * from user_reg_topic where user_id = 20
 select * from [term] where id in ( 4990979,  4990980 ) --name = 'buddhism'
 
 insert into user_reg_topic values (20, 5032082) -- dom
@@ -14,12 +14,13 @@ delete from disc_url_osl
 delete from disc_url */
 
 -- disc_term
+select distinct count (term_id) from disc_term -- 459
 select *, t.name from disc_term, term t where t.id = term_id order by 1 desc -- delete from disc_term where id in (20,21) -- truncate table disc_term
-select distinct count (term_id) from disc_term
-select term_id, count(*) from disc_term group by term_id order by 2 desc 
+select term_id, t.name, count(*) from disc_term, term t where t.id = term_id group by term_id, t.name order by 3 desc 
 
 -- disc_url
-select id, (select [name] from [term] where id=main_term_id) 'main', (select [name] from [term] where id=term_id) 'term', city, country, search_num, 
+select count(*) from disc_url -- 142107
+select [from], id, (select [name] from [term] where id=main_term_id) 'main', (select [name] from [term] where id=term_id) 'term', city, country, search_num, 
   [url], [desc], meta_title, img_url, term_num, result_num, url_hash from disc_url where id > 70983
   order by id desc -- main_term_id, term_id, search_num, term_num, result_num
 
@@ -33,9 +34,4 @@ select top 10 --HashBytes('MD5', [url]),
      * from disc_url where main_term_id = 5010985
 
 
-https://www.meetup.com/Boardgames-Singapore/messages/boards/thread/50319968
-<meta name="ICBM" content="1.3,103.85" />
-<meta name="geo.position" content="1.3;103.85" />
-<meta name="geo.placename" content="Singapore, Singapore" />
-<meta name="geo.region" content="SG" />
 

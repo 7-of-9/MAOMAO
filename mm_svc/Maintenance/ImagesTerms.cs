@@ -21,7 +21,7 @@ namespace mm_svc.Maintenance
                 // intra-process sharing of work
                 //if (Math.Abs(p.topic_name.GetHashCode()) % n_of == n_this - 1) {
 
-                    g.LogLine($">> {n_this} OF {n_of}: taking: {p.topic_name}");
+                    g.LogLine($">> {n_this} OF {n_of}: taking: {p.term_name}");
 
                     ProcessImages(p);
                 //}
@@ -35,12 +35,12 @@ namespace mm_svc.Maintenance
             // maintain image for parent term/topic
             using (var db = mm02Entities.Create()) {
 
-                var term = db.terms.Find(link.topic_id);
+                var term = db.terms.Find(link.term_id);
                 var filename = ImageNames.GetTermFilename(term);
                 var master_jpeg = filename + "_M1.jpeg";
 
                 var exists = AzureImageFile.Exists(AzureImageFileType.TermPicture, master_jpeg);
-                if (link.topic_id == 5008058)
+                if (link.term_id == 5008058)
                     g.LogError($"5008058: master_jpeg={master_jpeg} exists={exists}");
 
                 if (!exists) {// && !AzureImageFile.Exists(AzureImageFileType.TermPicture, master_png)) {

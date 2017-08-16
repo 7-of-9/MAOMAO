@@ -17,15 +17,19 @@ namespace mm_svc.Discovery
 
         [NonSerialized]
         public term main_term;
-        public string main_term_name;
+        //public string main_term_name; // remove
         public long main_term_id;
-        public string main_term_img;
+        //public string main_term_img; // remove
+        public List<long> main_term_related_topics_term_ids;
+        public List<long> main_term_related_suggestions_term_ids;
 
         [NonSerialized]
-        public term sug_term;
-        public string sug_term_name;
-        public long? sug_term_id;
-        public string sug_term_img;
+        public term sub_term;
+        //public string sub_term_name; // remove
+        public long? sub_term_id;
+        //public string sub_term_img; // remove
+        public List<long> sub_term_related_topics_term_ids;
+        public List<long> sub_term_related_suggestions_term_ids;
 
         public int search_num;
         public bool suggested_topic;

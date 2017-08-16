@@ -1,4 +1,5 @@
-﻿using mmdb_model;
+﻿using mm_svc.Terms;
+using mmdb_model;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ namespace mm_svc.Discovery
 {
     public static class FetchDiscoveries
     {
-        // todo -- filter by city/country
         public static List<DiscoveryInfo> GetForUser(long user_id,
             int page_num = 0, int per_page = 50, string country = null, string city = null)
         {
@@ -34,8 +34,7 @@ namespace mm_svc.Discovery
                 return ret;
             }
         }
-
-        // todo -- filter by city/country
+        
         public static List<DiscoveryInfo> GetForTerm(long term_id,
             int page_num = 0, int per_page = 50, string country = null, string city = null)
         {
@@ -88,6 +87,21 @@ namespace mm_svc.Discovery
         private static DiscoveryInfo InfoFromDiscUrl(disc_url p)
         {
             using (var db = mm02Entities.Create()) {
+                GoldenParents.use_stored_parents_cache = true;
+
+                // get suggestions for search main term and sub-term (aka search suggested term)
+                var main_term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.main_term_id, reprocess: false);
+                var main_term_related_topics = main_term_parents.Where(p2 => p2.is_topic).OrderByDescending(p2 => p2.S).ToList();
+                var main_term_related_suggestions = main_term_parents.Where(p2 => p2.is_topic == false).OrderByDescending(p2 => p2.S).ToList();
+
+                var sub_term_related_topics = new List<gt_parent>();
+                var sub_term_related_suggestions = new List<gt_parent>();
+                if (p.term_id != null) {
+                    var sub_term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.main_term_id, reprocess: false);
+                    sub_term_related_topics = sub_term_parents.Where(p2 => p2.is_topic).OrderByDescending(p2 => p2.S).ToList();
+                    sub_term_related_suggestions = sub_term_parents.Where(p2 => p2.is_topic == false).OrderByDescending(p2 => p2.S).ToList();
+                }
+
                 var ret = new DiscoveryInfo() {
                     disc_url_id = p.id,
 
@@ -98,11 +112,15 @@ namespace mm_svc.Discovery
 
                     main_term_id = p.main_term_id,
                     main_term = db.terms.Find(p.main_term_id),
-                    main_term_name = db.terms.Find(p.main_term_id).name,
+                    //main_term_name = db.terms.Find(p.main_term_id).name,
+                    main_term_related_topics_term_ids = main_term_related_topics.Select(p2 => p2.parent_term_id).ToList(),
+                    main_term_related_suggestions_term_ids = main_term_related_suggestions.Select(p2 => p2.parent_term_id).ToList(),
 
-                    sug_term_id = p.term_id,
-                    sug_term = db.terms.Find(p.term_id),
-                    sug_term_name = db.terms.Find(p.term_id).name,
+                    sub_term_id = p.term_id,
+                    sub_term = db.terms.Find(p.term_id),
+                    //sub_term_name = db.terms.Find(p.term_id).name,
+                    sub_term_related_topics_term_ids = sub_term_related_topics.Select(p2 => p2.parent_term_id).ToList(),
+                    sub_term_related_suggestions_term_ids = sub_term_related_suggestions.Select(p2 => p2.parent_term_id).ToList(),
 
                     search_num = p.search_num,
                     suggested_topic = p.suggested_topic,
@@ -119,8 +137,8 @@ namespace mm_svc.Discovery
                     osl = p.disc_url_osl.Select(p2 => new OslInfo() { desc = p2.desc, url = p2.href }).ToList(),
                 };
 
-                ret.main_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.main_term);
-                ret.sug_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.sug_term);
+                //ret.main_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.main_term);
+                //ret.sub_term_img = Images.ImageNames.GetTerm_MasterImage_FullUrl(ret.sub_term);
 
                 return ret;
             }

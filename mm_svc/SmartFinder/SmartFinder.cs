@@ -29,20 +29,22 @@ namespace mm_svc.SmartFinder
             };
 
         //
-        // running without suggestions for now; see what main topic tree turnover/research frequency can be...
+        // Smart Finder - entry
         //
         public static int Find_TopicTree(int n_this = 1, int n_of = 1) {
-            var tree = TopicTree.GetTopicTree();// n_this, n_of);
+            // get full tree: all suggestions -- todo: suggestions for suggestions!
+            var tree = TopicTree.GetTopicTree(n_this: 1, n_of: 1, suggestions_min_s_norm: 0.0);
             var tree_topics = new List<long>();
             var tree_suggestions = new List<long>();
 
-            // get tree: topics & suggestions
+            // separate tree: topics & suggestions
             tree.ForEach(p => GetTreeTopics(tree_topics, p));
             tree.ForEach(p => GetTreeSuggestions(tree_suggestions, p));
             tree_topics = tree_topics.Distinct().ToList();
             tree_suggestions = tree_suggestions.Distinct().Where(p => !tree_topics.Contains(p)).ToList();
             g.LogYellow($"# tree_topics={tree_topics.Count}");
             g.LogYellow($"# tree_suggestions={tree_suggestions.Count}");
+            g.LogYellow($"# TOTAL SEARCHABLE MAIN-TERMS, ALL TOPIC TREE = {tree_topics.Count + tree_suggestions.Count}");
 
             // dbg
             using (var db = mm02Entities.Create()) {
@@ -80,12 +82,12 @@ namespace mm_svc.SmartFinder
 
         private static void GetTreeTopics(List<long> terms, TopicTree.TopicTermLink link) {
             if (link.is_topic == true)
-                terms.Add(link.topic_id);
+                terms.Add(link.term_id);
             link.child_topics.ForEach(p => GetTreeTopics(terms, p));
         }
         private static void GetTreeSuggestions(List<long> terms, TopicTree.TopicTermLink link) {
             if (link.is_topic == false)
-                terms.Add(link.topic_id);
+                terms.Add(link.term_id);
             link.child_suggestions.ForEach(p => GetTreeSuggestions(terms, p));
         }
 
@@ -129,9 +131,13 @@ namespace mm_svc.SmartFinder
                 var discovered_urls = new ConcurrentBag<ImportUrlInfo>();
                 int added_urls = 0;
                 foreach (var term_id in topics_to_search) {
+
+                    // todo --  record related suggestions (FindForTopic peer terms) for each disc_url -- for better smart browsing point n click
+
                     // get term, parents & suggestions
                     var term = db.terms.Find(term_id);
-                    var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: true);
+                    GoldenParents.use_stored_parents_cache = true;
+                    var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: false);
                     var topics = parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList();
                     var suggestions = parents.Where(p => p.is_topic == false /*&& p.parent_term.IS_TOPIC == false*/).OrderByDescending(p => p.S).ToList();
 
@@ -195,7 +201,7 @@ namespace mm_svc.SmartFinder
                 using (var db2 = mm02Entities.Create()) {
 
                     // latest search for this term
-                    var latest_search = db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock();
+                    var latest_search = g.RetryMaxOrThrow(() => db2.disc_term.AsNoTracking().Where(p => p.term_id == topic_id).OrderByDescending(p => p.search_utc).FirstOrDefaultNoLock(), sleepSeconds: 3, retryMax: 6);
                     if (latest_search != null) {
                         var since_latest_search = DateTime.UtcNow.Subtract(latest_search.search_utc);
                         if (since_latest_search.TotalHours >= TERM_SEARCH_INTERVAL_HOURS) {
@@ -242,14 +248,14 @@ namespace mm_svc.SmartFinder
                     search_desc = $"SUGGESTION for [{main_term.name}]";
 
                 // for suggestions - also include main (user-reg-topic) term name, for better goog matching
-                string search_str, search_str_exact;
+                string search_str, search_str_all_exact;
                 if (suggestion) {
-                    search_str = $"{main_term.name} {term.name}";
-                    search_str_exact = $@"""{main_term.name}"" ""{term.name}""";
+                    search_str = $@"""{main_term.name}"" {term.name}"; // main term exact + suggested non-exact
+                    search_str_all_exact = $@"""{main_term.name}"" ""{term.name}""";
                 }
                 else {
                     search_str = $"{main_term.name}";
-                    search_str_exact = $@"""{main_term.name}""";
+                    search_str_all_exact = $@"""{main_term.name}""";
                 }
 
                 var imports = new List<ImportUrlInfo>();
@@ -303,11 +309,11 @@ namespace mm_svc.SmartFinder
 
                 // low signal sites - require exact matching 
                 // ** BING AVOID
-                imports.AddRange(Search($"{search_str_exact}", "site:buzzfeed.com", SearchTypeNum.BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
-                imports.AddRange(Search($"{search_str_exact}", "site:mashable.com", SearchTypeNum.MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
-                imports.AddRange(Search($"{search_str_exact}", "site:popsugar.com", SearchTypeNum.POPSUGAR, main_term_id, term_id, term_num, suggestion, pages: 1));
-                imports.AddRange(Search($"{search_str_exact}", "site:upworthy.com", SearchTypeNum.UPWORTHY, main_term_id, term_id, term_num, suggestion, pages: 1));
-                imports.AddRange(Search($"{search_str_exact}", "site:boredpanda.com", SearchTypeNum.BOREDPANDA, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_all_exact}", "site:buzzfeed.com", SearchTypeNum.BUZZFEED, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_all_exact}", "site:mashable.com", SearchTypeNum.MASHABLE, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_all_exact}", "site:popsugar.com", SearchTypeNum.POPSUGAR, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_all_exact}", "site:upworthy.com", SearchTypeNum.UPWORTHY, main_term_id, term_id, term_num, suggestion, pages: 1));
+                imports.AddRange(Search($"{search_str_all_exact}", "site:boredpanda.com", SearchTypeNum.BOREDPANDA, main_term_id, term_id, term_num, suggestion, pages: 1));
 
                 // cool search 
                 // ** BING AVOID
