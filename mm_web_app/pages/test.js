@@ -1,69 +1,58 @@
 import React from 'react'
-import Head from 'next/head'
-import { Navbar, Footer, Page } from 'neal-react'
-import Raven from 'raven-js'
-import logger from '../utils/logger'
+import { Provider } from 'mobx-react'
+import { initStore } from '../stores/home'
+import { initUIStore } from '../stores/ui'
+import { initTermStore } from '../stores/term'
+import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
-import Header from '../components/Header'
-import LogoIcon from '../components/LogoIcon'
-import Slogan from '../components/Slogan'
-
-const brand = () => (
-  <Header>
-    <LogoIcon />
-    <Slogan />
-  </Header>
-)
-const brandName = 'maomao'
-const businessAddress = (
-  <address>
-    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
-  </address>
-)
+import logger from '../utils/logger'
 
 export default class Test extends React.Component {
+  static async getInitialProps ({ req, query }) {
+    const isServer = !!req
+    let userAgent = ''
+    if (req && req.headers && req.headers['user-agent']) {
+      userAgent = req.headers['user-agent']
+    }
+    const user = req && req.session ? req.session.decodedToken : null
+    const store = initStore(isServer, userAgent, user, false)
+    const uiStore = initUIStore(isServer)
+
+    const term = initTermStore(isServer, userAgent, user)
+    return { isServer, ...store, ...uiStore, ...term }
+  }
+
+  constructor (props) {
+    super(props)
+    logger.warn('Index', props)
+    this.store = initStore(props.isServer, props.userAgent, props.user, false)
+    this.uiStore = initUIStore(props.isServer)
+    this.store.checkEnvironment()
+    this.term = initTermStore(props.isServer, props.userAgent, props.user)
+  }
+
   componentDidMount () {
-    logger.warn('Smart componentDidMount', this.props, this.state)
-    Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then(registration => {
+          logger.log('service worker registration successful')
+        })
+        .catch(err => {
+          logger.warn('service worker registration failed', err.message)
+        })
+    }
   }
 
   render () {
+    logger.warn('Index render', this.store)
     return (
-      <Page>
-        <Head>
-          <meta charSet='utf-8' />
+      <Provider store={this.store} term={this.term} ui={this.uiStore}>
+        <div className='discover'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <title>maomao - discover & share</title>
-          <meta name='apple-mobile-web-app-capable' content='yes' />
-          <meta name='mobile-web-app-capable' content='yes' />
-          <meta name='apple-mobile-web-app-title' content='Maomao' />
-          <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
-          <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
-          <meta name='google-site-verification' content='AmFFr6xg5Htf_GFkf0psWvL1r9JKBMhGEkmAJ7UmafM' />
-          <link rel='apple-touch-icon' href='/static/images/logo.png' />
-          <link rel='icon' href='/static/images/logo.png' />
-          <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />
-          <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
-          <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
-          <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-          <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-          <script src='/static/js/google-custom-search.js' />
-        </Head>
-        <div className='smart'>
-          <Navbar className='header-nav animated fadeInDown' brand={brand()} />
-          <div
-            style={{backgroundColor: '#fff', width: '100%', height: '100%'}}
-             >
-            <div dangerouslySetInnerHTML={{ __html: '<gcse:search></gcse:search>' }} />
-          </div>
-          <div className='footer-area'>
-            <Footer brandName={brandName}
-              facebookUrl='https://www.facebook.com/maomao.hiring'
-              address={businessAddress}
-          />
-          </div>
+          <Discover />
         </div>
-      </Page>
+      </Provider>
     )
   }
 }

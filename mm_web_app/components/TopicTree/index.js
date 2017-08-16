@@ -65,7 +65,8 @@ class TopicTree extends PureComponent {
   }
 
   selectChildTopics = (topics) => {
-    this.props.ui.selectChildTopics(topics)
+    logger.warn('selectChildTopics', topics)
+    // this.props.ui.selectChildTopics(topics)
   }
 
   onBack = () => {

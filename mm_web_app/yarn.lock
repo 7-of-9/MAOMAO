@@ -7018,9 +7018,9 @@ react-motion@^0.4.4:
     prop-types "^15.5.8"
     raf "^3.1.0"
 
-react-notification@^6.7.1:
-  version "6.7.1"
-  resolved "https://registry.yarnpkg.com/react-notification/-/react-notification-6.7.1.tgz#fec45cc6d369f4bbf7b4072fe58ddb3bc262c898"
+react-notification@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/react-notification/-/react-notification-6.8.0.tgz#9cb7aa06c8e5085b4c0dc2e8d9aa1da1fbc61d93"
   dependencies:
     prop-types "^15.5.10"
 

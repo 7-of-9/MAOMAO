@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
+import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
@@ -109,6 +110,11 @@ class AppHeader extends React.Component {
         this.props.store.logoutUser()
       })
       this.addNotification('You have successfully signed out.')
+      /* global URL */
+      const { pathname } = new URL(window.location.href)
+      if (pathname !== '/') {
+        Router.push('/')
+      }
     }).catch((error) => {
       logger.warn(error)
     })

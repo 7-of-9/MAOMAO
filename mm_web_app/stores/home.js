@@ -49,11 +49,11 @@ export class HomeStore extends CoreStore {
   facebookUser = {}
   userHistory = { mine: {}, received: [], topics: [] }
 
-  constructor (isServer, userAgent, user) {
+  constructor (isServer, userAgent, user, isHome = true) {
     super(isServer, userAgent, user)
     reaction(() => this.userHash.length,
       (userHash) => {
-        if (userHash > 0) {
+        if (userHash > 0 && isHome) {
           this.getUserHistory()
         }
       })
@@ -84,13 +84,15 @@ export class HomeStore extends CoreStore {
   }
 
   @action saveTopics (ids) {
-    const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
-    when(
-      () => saveTopicRequest.state !== 'pending',
-      () => {
-        logger.warn('saveTopics result', saveTopicRequest.data)
-      }
-    )
+    if (ids && ids.length) {
+      const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
+      when(
+          () => saveTopicRequest.state !== 'pending',
+          () => {
+            logger.warn('saveTopics result', saveTopicRequest.data)
+          }
+        )
+    }
   }
 
   @action internalLogin (callback) {
@@ -118,7 +120,6 @@ export class HomeStore extends CoreStore {
         }
         this.login(this.userId, this.userHash)
         callback(Object.assign({}, this.user, {userHash}))
-        this.getUserHistory()
       }
     )
   }
@@ -139,7 +140,6 @@ export class HomeStore extends CoreStore {
       sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: id }))
     }
     this.login(this.userId, this.userHash)
-    this.getUserHistory()
   }
 
   @action googleConnect (info, callback) {
@@ -178,7 +178,6 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', {}))
         }
         this.login(this.userId, this.userHash)
-        this.getUserHistory()
         callback && callback()
       }
     )
@@ -219,7 +218,6 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
         }
         this.login(this.userId, this.userHash)
-        this.getUserHistory()
         callback && callback()
       }
     )
@@ -414,12 +412,12 @@ export class HomeStore extends CoreStore {
   }
 }
 
-export function initStore (isServer, userAgent, user) {
+export function initStore (isServer, userAgent, user, isHome = true) {
   if (isServer && typeof window === 'undefined') {
-    return new HomeStore(isServer, userAgent, user)
+    return new HomeStore(isServer, userAgent, user, isHome)
   } else {
     if (store === null) {
-      store = new HomeStore(isServer, userAgent, user)
+      store = new HomeStore(isServer, userAgent, user, isHome)
     }
     return store
   }
