@@ -33,46 +33,17 @@ class SelectedList extends React.PureComponent {
     }
   }
 
-  toggleFadeStyle = () => {
-    logger.warn('SelectedList toggleFadeStyle')
-    /* global $ */
-    if (!$('.carousel-nav .owl-prev').hasClass('disabled')) {
-      $('.carousel-outer').addClass('previous')
-    } else {
-      $('.carousel-outer').removeClass('previous')
-    }
-
-    if (!$('.carousel-nav .owl-next').hasClass('disabled')) {
-      $('.carousel-outer').addClass('next')
-    } else {
-      $('.carousel-outer').removeClass('next')
-    }
-  }
-
-  onChanged = (data) => {
-    this.toggleFadeStyle()
-  }
-
-  componentDidMount () {
-    logger.warn('SelectedList componentDidMount')
-    this.toggleFadeStyle()
-  }
-
-  componentDidUpdate () {
-    logger.warn('SelectedList componentDidUpdate')
-    this.toggleFadeStyle()
-  }
-
   render () {
     const { items } = this.props
     const settings = {
       navContainerClass: 'carousel-nav owl-nav',
       stageOuterClass: 'carousel-outer owl-stage-outer',
+      stageClass: 'carousel-stage owl-stage',
       nav: true,
       autoWidth: true,
       navText: [
-        '>',
-        '<'
+        '<',
+        '>'
       ]
     }
     return (
@@ -81,21 +52,17 @@ class SelectedList extends React.PureComponent {
         <OwlCarousel
           className='owl-theme'
           ref={(el) => { this.slider = el }}
-          onChanged={this.onChanged}
-          onResized={this.onChanged}
-          onRefreshed={this.onChanged}
           {...settings}
           >
           {
           items.map(({name, img, id}) => (
-            <div key={`${id}-${name}`}>
-              <SelectedItem
-                name={name}
-                img={img}
-                id={id}
-                onRemove={this.props.onRemove}
-              />
-            </div>
+            <SelectedItem
+              key={`${id}-${name}`}
+              name={name}
+              img={img}
+              id={id}
+              onRemove={this.props.onRemove}
+            />
           ))
           }
         </OwlCarousel>

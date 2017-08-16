@@ -754,6 +754,7 @@ the home page
         top: 0;
         height: 50px;
         width: 100px;
+        cursor: pointer;
         z-index: 1;
         background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
       }
@@ -766,6 +767,7 @@ the home page
         top: 0;
         height: 50px;
         width: 100px;
+        cursor: pointer;
         z-index: 1;
         background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
       }
@@ -774,25 +776,37 @@ the home page
   .carousel-nav {
     .owl-prev {
       position: absolute;
+      text-align: left;
       top: -5px;
       left: -25px;
       height: 50px;
-      background: #fff;
+      width: 120px;
       color: #d6d6d6;
       font-size: 1.5rem;
-      padding: 10px;
+      padding: 10px 2px;
       margin-top: 5px;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      &:hover {
+        color: #000;
+        background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
     }
     .owl-next {
       position: absolute;
+      text-align: right;
       top: -5px;
       right: -25px;
       height: 50px;
-      background: #fff;
+      width: 120px;
       color: #d6d6d6;
       font-size: 1.5rem;
-      padding: 10px;
+      padding: 10px 2px;
       margin-top: 5px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      &:hover {
+        color: #000;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
     }
     .disabled {
       display: none;
@@ -858,25 +872,6 @@ the home page
       color: #fff;
     }
   }
-  .btn-box-remove {
-    @include opacity(0.5);
-    @include border-radius(50%);
-    margin-left: 5px;
-    background-color: #fff;
-    color: #abbaa8;
-    display: inline-block;
-    font-weight: normal;
-    height: 30px;
-    line-height: 30px;
-    width: 30px;
-    text-align: center;
-    z-index: 2;
-    cursor: pointer;
-    &:hover,
-    &:focus {
-      color: #222;
-    }
-  }
   .selected-topic {
     @include border-radius(20px);
     position: relative;
@@ -884,7 +879,27 @@ the home page
     margin: 0 2.5px;
     height: 50px;
     padding: 10px;
-    opacity: 0.8
+    opacity: 0.8;
+    .btn-box-remove {
+      @include opacity(0.5);
+      @include border-radius(50%);
+      margin-left: 5px;
+      background-color: #fff;
+      color: #abbaa8;
+      font-weight: normal;
+      height: 30px;
+      line-height: 30px;
+      width: 30px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+      display: inline-block;
+    }
+    &:hover .btn-box-remove,
+    &:focus .btn-box-remove{
+      color: #222;
+    }
   }
 }
 
