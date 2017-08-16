@@ -1,33 +1,21 @@
 import {
   action,
-  reaction,
   when,
   observable
  } from 'mobx'
-import { CoreStore } from './core'
 import { rootDiscover, termDiscover } from '../services/topic'
 import logger from '../utils/logger'
 
 let store = null
 
-class TermStore extends CoreStore {
+class TermStore {
   @observable pendings = []
   @observable discoveries = []
   @observable terms = []
 
-  constructor (isServer, userAgent, user) {
-    super(isServer, userAgent, user)
-    reaction(() => this.userHash.length,
-      (userHash) => {
-        if (userHash > 0) {
-          this.getRootDiscover()
-        }
-      })
-  }
-
-  @action getRootDiscover () {
+  @action getRootDiscover (userId, userHash) {
     logger.warn('getRootDiscover')
-    const rootData = rootDiscover(this.userId, this.userHash)
+    const rootData = rootDiscover(userId, userHash)
     this.pendings.push('rootData')
     when(
       () => rootData.state !== 'pending',
@@ -41,11 +29,11 @@ class TermStore extends CoreStore {
     )
   }
 
-  @action getTermDiscover (termId) {
+  @action getTermDiscover (userId, userHash, termId) {
     logger.warn('getTermDiscover')
     const isExist = this.terms.find(item => item.termId === termId)
     if (!isExist) {
-      const termData = termDiscover(this.userId, this.userHash, termId)
+      const termData = termDiscover(userId, userHash, termId)
       this.pendings.push('termData')
       when(
         () => termData.state !== 'pending',
@@ -64,12 +52,12 @@ class TermStore extends CoreStore {
   }
 }
 
-export function initTermStore (isServer, userAgent = '', user = null) {
+export function initTermStore (isServer) {
   if (isServer && typeof window === 'undefined') {
-    return new TermStore(isServer, userAgent, user)
+    return new TermStore(isServer)
   } else {
     if (store === null) {
-      store = new TermStore(isServer, userAgent, user)
+      store = new TermStore(isServer)
     }
     return store
   }

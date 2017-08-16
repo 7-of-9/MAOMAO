@@ -13,6 +13,7 @@ import Raven from 'raven-js'
 import { Footer, Page } from 'neal-react'
 import NProgress from 'nprogress'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
+import DiscoveryList from '../../components/DiscoveryList'
 import Loading from '../../components/Loading'
 import Notification from '../../components/Notification'
 import logger from '../../utils/logger'
@@ -45,15 +46,31 @@ const businessAddress = (
 @inject('ui')
 @observer
 class Discover extends React.PureComponent {
+  renderRootDiscover = (userId, userHash) => {
+    return (
+      <div className='wrapper-slide'>
+        <DiscoveryList />
+      </div>)
+  }
+
   componentDidMount () {
-    logger.warn('Home componentDidMount')
+    logger.warn('Discover componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+  }
+
+  componentWillReact () {
+    const { userId, userHash } = this.props.store
+    logger.warn('Discover componentWillReact', userId, userHash)
+    if (userId > 0) {
+      this.props.term.getRootDiscover(userId, userHash)
+    }
   }
 
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
     logger.warn('Discover render', this.props)
+    const { userId, userHash } = this.props.store
     return (
       <Page>
         <Head>
@@ -80,6 +97,7 @@ class Discover extends React.PureComponent {
           <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
         </Head>
         <AppHeader />
+        {this.renderRootDiscover(userId, userHash)}
         <Notification />
         <div className='footer-area'>
           <Footer brandName={brandName}

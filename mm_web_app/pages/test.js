@@ -17,8 +17,7 @@ export default class Test extends React.Component {
     const user = req && req.session ? req.session.decodedToken : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
-
-    const term = initTermStore(isServer, userAgent, user)
+    const term = initTermStore(isServer)
     return { isServer, ...store, ...uiStore, ...term }
   }
 
@@ -28,7 +27,7 @@ export default class Test extends React.Component {
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
-    this.term = initTermStore(props.isServer, props.userAgent, props.user)
+    this.term = initTermStore(props.isServer)
   }
 
   componentDidMount () {
