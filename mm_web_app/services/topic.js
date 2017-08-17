@@ -25,3 +25,8 @@ export function termDiscover (user_id, hash, term_id) {
   const apiUrl = `${MAOMAO_API_URL}disc/term?${queryString.stringify({user_id, hash, term_id})}`
   return fromPromise(axios.get(apiUrl))
 }
+
+export function getTerm (termId) {
+  const apiUrl = `${MAOMAO_API_URL}term/${termId}`
+  return fromPromise(axios.get(apiUrl))
+}

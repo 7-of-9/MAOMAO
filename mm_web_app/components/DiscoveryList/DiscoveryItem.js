@@ -41,7 +41,6 @@ export default class DiscoveryItem extends PureComponent {
   }
 
   renderThumnails = (images) => {
-    logger.warn('renderThumnails', images)
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '30px' }}>

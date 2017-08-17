@@ -37,8 +37,7 @@ class DiscoveryList extends PureComponent {
   backButton = () => {
     const { discoveryUrlId, selectedDiscoveryItem: { main_term_id } } = toJS(this.props.ui)
     if (discoveryUrlId && discoveryUrlId !== -1) {
-      const { entities: { terms } } = toJS(this.props.store.normalizedTerm)
-      const { img, term_name: title } = terms[main_term_id]
+      const { img, term_name: title } = this.props.store.getCurrentTerm(main_term_id)
       return (
         <div className='navigation-panel'>
           <div className='breadcrum'>
@@ -93,10 +92,9 @@ class DiscoveryList extends PureComponent {
   renderList = () => {
     const items = []
     const { discoveries } = toJS(this.props.term)
-    const { entities: { terms } } = toJS(this.props.store.normalizedTerm)
     _.forEach(discoveries, (item) => {
       /* eslint-disable camelcase */
-      const { img: main_term_img, term_name: main_term_name } = terms[item.main_term_id]
+      const { img: main_term_img, term_name: main_term_name } = this.props.store.getCurrentTerm(item.main_term_id)
       items.push(
         <DiscoveryItem
           key={`${item.disc_url_id}-${item.title}`}

@@ -19,6 +19,14 @@ export default class InlinePreview extends Component {
     allowScript: PropTypes.bool.isRequired
   }
 
+  static defaultProps = {
+    url: '',
+    closePreview: () => {},
+    width: '100%',
+    height: '100%',
+    allowScript: false
+  }
+
   state = {
     isLoading: false
   }

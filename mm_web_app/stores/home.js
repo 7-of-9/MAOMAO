@@ -5,7 +5,7 @@ import { normalizedHistoryData } from './schema/history'
 import { normalizedTermData } from './schema/tree'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
-import { getAllTopicTree, addBulkTopics } from '../services/topic'
+import { getAllTopicTree, addBulkTopics, getTerm } from '../services/topic'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -34,6 +34,7 @@ export class HomeStore extends CoreStore {
   @observable isProcessingRegister = false
   @observable isProcessingTopicTree = false
   @observable isProcessingHistory = false
+  @observable pendings = []
   @observable codes = {
     all: null,
     sites: [],
@@ -83,6 +84,32 @@ export class HomeStore extends CoreStore {
       })
     }
     return sharesReveived
+  }
+
+  @action getCurrentTerm (termId) {
+    const { entities: { terms } } = this.normalizedTerm
+    if (terms[termId]) {
+      return terms[termId]
+    } else {
+      const termInfo = getTerm(termId)
+      if (this.pendings.indexOf(termId) === -1) {
+        this.pendings.push(termId)
+        when(
+          () => termInfo.state !== 'pending',
+          () => {
+            const { term } = termInfo.value.data
+            logger.warn('get term result', termInfo.value.data)
+            this.normalizedTerm.entities.terms[term.term_id] = term
+            this.pendings.splice(this.pendings.indexOf(termId), 1)
+          }
+        )
+      }
+      return {
+        term_id: -1,
+        term_name: '...',
+        img: '/static/images/no-image.png'
+      }
+    }
   }
 
   @action saveTopics (ids) {
