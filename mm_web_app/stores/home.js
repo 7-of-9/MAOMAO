@@ -2,6 +2,7 @@ import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
+import { normalizedTermData } from './schema/tree'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { getAllTopicTree, addBulkTopics } from '../services/topic'
@@ -39,6 +40,7 @@ export class HomeStore extends CoreStore {
     topics: []
   }
   normalizedData = { entities: {}, result: {} }
+  normalizedTerm = { entities: {}, result: {} }
   tree = []
   users = []
   topics = []
@@ -234,7 +236,9 @@ export class HomeStore extends CoreStore {
       () => {
         this.isProcessingTopicTree = false
         this.tree = allTopics.value.data.tree || []
+        this.normalizedTerm = normalizedTermData(allTopics.value.data)
         logger.warn('getTopicTree', this.tree)
+        logger.warn('getTopicTree normalizedTerm', this.normalizedTerm)
       })
     }
   }

@@ -52,10 +52,6 @@ const currentTopicTree = (tree, termId) => {
 @inject('ui')
 @observer
 class TopicTree extends PureComponent {
-  componentDidMount () {
-    this.props.store.getTopicTree()
-  }
-
   onChange = (isSelect, termId, title, img) => {
     this.props.ui.toggleSelectTopic(isSelect, termId, title, img)
   }

@@ -110,6 +110,7 @@ class AppHeader extends React.Component {
         this.props.store.logoutUser()
       })
       this.addNotification('You have successfully signed out.')
+      this.props.ui.clean()
       /* global URL */
       const { pathname } = new URL(window.location.href)
       if (pathname !== '/') {

@@ -228,6 +228,16 @@ export class UIStore {
     this.selectedDiscoveryItem = {}
     this.animationType = 'LTR'
   }
+
+  @action clean () {
+    this.selectedDiscoveryItem = {}
+    this.currentTermId = ''
+    this.selectedTopics = []
+    this.shareTopics = []
+    this.shareUrlId = -1
+    this.userId = -1
+    this.title = 'Sign In'
+  }
 }
 
 export function initUIStore (isServer) {

@@ -106,6 +106,7 @@ class Home extends React.Component {
   componentDidMount () {
     logger.warn('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+    this.props.store.getTopicTree()
     if (this.props.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {
