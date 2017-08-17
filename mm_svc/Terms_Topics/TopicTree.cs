@@ -15,39 +15,39 @@ namespace mm_svc.Terms
             [NonSerialized]
             public TopicTermLink parent;
 
-            [JsonProperty(PropertyName = "l")]
+            //[JsonProperty(PropertyName = "l")]
             public int level;
 
-            [JsonProperty(PropertyName = "t")]
+            //[JsonProperty(PropertyName = "t")]
             public bool is_topic; 
 
-            [JsonProperty(PropertyName = "i")]
+            //[JsonProperty(PropertyName = "i")]
             public long term_id;
 
-            [JsonProperty(PropertyName = "n")]
+            //[JsonProperty(PropertyName = "n")]
             public string term_name;
 
-            [JsonProperty(PropertyName = "m")]
+            //[JsonProperty(PropertyName = "m")]
             public string img;
 
-            [JsonProperty(PropertyName = "c")]
+            //[JsonProperty(PropertyName = "c")]
             public List<TopicTermLink> child_topics = new List<TopicTermLink>();
 
-            [JsonProperty(PropertyName = "s")]
+            //[JsonProperty(PropertyName = "s")]
             public List<TopicTermLink> child_suggestions = new List<TopicTermLink>();
         }
 
         public class TermInfo {
-            [JsonProperty(PropertyName = "t")]
+            //[JsonProperty(PropertyName = "t")]
             public bool is_topic;
 
-            [JsonProperty(PropertyName = "i")]
+            //[JsonProperty(PropertyName = "i")]
             public long term_id;
 
-            [JsonProperty(PropertyName = "n")]
+            //[JsonProperty(PropertyName = "n")]
             public string term_name;
 
-            [JsonProperty(PropertyName = "m")]
+            //[JsonProperty(PropertyName = "m")]
             public string img;
         }
 

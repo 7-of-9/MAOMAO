@@ -12,31 +12,31 @@ namespace mmapi00.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]  
     public class UserTopicsController : ApiController
     {
-        [Route("user_topics/bulkadd")]
-        [HttpGet]
+        [Route("user_topics/bulk")]
+        [HttpPost]
         public IHttpActionResult AddUserTopic(
           long user_id, string hash,
-          [FromUri] List<long> t)
+          [FromUri] List<long> topic_ids)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            int n = mm_svc.UserTopics.AddUserTopics(user_id, t);
+            int n = mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
             return Ok(new { added = n });
         }
 
-        [Route("user_topics/add")]
-        [HttpGet]
-        public IHttpActionResult AddUserTopic(
-            long user_id, string hash,
-            long topic_id)
-        {
-            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+        //[Route("user_topics")]
+        //[HttpPost]
+        //public IHttpActionResult AddUserTopic(
+        //    long user_id, string hash,
+        //    [FromBody] long topic_id)
+        //{
+        //    if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            mm_svc.UserTopics.AddUserTopic(user_id, topic_id);
-            return Ok(new {});
-        }
+        //    mm_svc.UserTopics.AddUserTopic(user_id, topic_id);
+        //    return Ok(new {});
+        //}
 
-        [Route("user_topics/remove")]
+        [Route("user_topics/{topic_id}")]
         [HttpDelete]
         public IHttpActionResult RemoveUserTopic(
            long user_id, string hash,

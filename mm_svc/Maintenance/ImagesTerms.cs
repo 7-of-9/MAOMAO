@@ -15,16 +15,12 @@ namespace mm_svc.Maintenance
     {
         public static void Maintain(int n_this = 1, int n_of = 1)
         {
-            var tree = TopicTree.GetTopicTree(n_this, n_of);
+            var tree = TopicTree.GetTopicTree(n_this, n_of, suggestions_min_s_norm: 0); // all suggestions
 
             tree.ForEach(p => {
-                // intra-process sharing of work
-                //if (Math.Abs(p.topic_name.GetHashCode()) % n_of == n_this - 1) {
+                g.LogLine($">> {n_this} OF {n_of}: taking: {p.term_name}");
 
-                    g.LogLine($">> {n_this} OF {n_of}: taking: {p.term_name}");
-
-                    ProcessImages(p);
-                //}
+                ProcessImages(p);
             });
 
             g.LogLine("all done.");
@@ -40,10 +36,8 @@ namespace mm_svc.Maintenance
                 var master_jpeg = filename + "_M1.jpeg";
 
                 var exists = AzureImageFile.Exists(AzureImageFileType.TermPicture, master_jpeg);
-                if (link.term_id == 5008058)
-                    g.LogError($"5008058: master_jpeg={master_jpeg} exists={exists}");
 
-                if (!exists) {// && !AzureImageFile.Exists(AzureImageFileType.TermPicture, master_png)) {
+                if (!exists) {
                     Search_GoogImage.Search(out bool none_found, term.name, AzureImageFileType.TermPicture, filename);
                 }
             }
