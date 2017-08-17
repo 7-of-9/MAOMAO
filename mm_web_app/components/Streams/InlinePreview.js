@@ -15,7 +15,8 @@ export default class InlinePreview extends Component {
     url: PropTypes.string.isRequired,
     closePreview: PropTypes.func,
     width: PropTypes.any.isRequired,
-    height: PropTypes.any.isRequired
+    height: PropTypes.any.isRequired,
+    allowScript: PropTypes.bool.isRequired
   }
 
   state = {
@@ -49,7 +50,7 @@ export default class InlinePreview extends Component {
   }
 
   renderIframe = () => {
-    const { url, width, height } = this.props
+    const { url, width, height, allowScript } = this.props
     const { isLoading } = this.state
     logger.warn('renderIframe', url, width, height)
     if (!url) {
@@ -69,7 +70,7 @@ export default class InlinePreview extends Component {
         <Loading isLoading={isLoading} />
         <iframe
           className={isLoading ? 'hidden-view' : 'iframe-view'}
-          sandbox='allow-same-origin'
+          sandbox={allowScript ? 'allow-same-origin allow-scripts allow-forms allow-presentation allow-popups' : 'allow-same-origin allow-forms allow-presentation allow-popups'}
           id={`frame-${url}`}
           name={`frame-${url}`}
           ref={(iframe) => { this.iframe = iframe }}

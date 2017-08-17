@@ -13,16 +13,16 @@ class TermStore {
   @observable discoveries = []
   @observable terms = []
 
-  @action getRootDiscover (userId, userHash) {
+  @action getRootDiscover (userId, userHash, page = 1) {
     logger.warn('getRootDiscover')
-    const rootData = rootDiscover(userId, userHash)
+    const rootData = rootDiscover(userId, userHash, page)
     this.pendings.push('rootData')
     when(
       () => rootData.state !== 'pending',
       () => {
         if (rootData.value && rootData.value.data) {
           const { discoveries } = rootData.value.data
-          this.discoveries = discoveries || []
+          this.discoveries.push(...discoveries || [])
         }
         this.pendings.splice(0, 1)
       }

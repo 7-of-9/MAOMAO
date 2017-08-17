@@ -5,11 +5,21 @@
 */
 
 import React, { PureComponent } from 'react'
+import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
+import Sticky from 'react-sticky-el'
 import DiscoveryItem from './DiscoveryItem'
+import InlinePreview from '../Streams/InlinePreview'
 import logger from '../../utils/logger'
+
+const DiscoveryNavigation = dynamic(
+  import('./DiscoveryNavigation'),
+  {
+    ssr: false
+  }
+ )
 
 @inject('term')
 @inject('store')
@@ -25,12 +35,12 @@ class DiscoveryList extends PureComponent {
   }
 
   backButton = () => {
-    const { discoveryUrlId, selectedDiscoveryItem: { main_term_img: img, main_term_name: title } } = toJS(this.props.ui)
-
-    return (
-      <div className='navigation-panel'>
-        {
-          discoveryUrlId && discoveryUrlId !== -1 &&
+    const { discoveryUrlId, selectedDiscoveryItem: { main_term_id } } = toJS(this.props.ui)
+    if (discoveryUrlId && discoveryUrlId !== -1) {
+      const { entities: { terms } } = toJS(this.props.store.normalizedTerm)
+      const { img, term_name: title } = terms[main_term_id]
+      return (
+        <div className='navigation-panel'>
           <div className='breadcrum'>
             <button className='btn back-to-parent' onClick={this.onBack}>
               <i className='fa fa-angle-left' aria-hidden='true' />
@@ -45,9 +55,10 @@ class DiscoveryList extends PureComponent {
               {title}
             </span>
           </div>
-        }
-      </div>
-    )
+        </div>
+      )
+    }
+    return null
   }
 
   cleanClassName = () => {
@@ -59,27 +70,21 @@ class DiscoveryList extends PureComponent {
   }
 
   renderDetail = (selectedDiscoveryItem) => {
-    const { selectedDiscoveryItem: { url, title, desc, utc } } = toJS(this.props.ui)
-    const PROXY_URL = '/api/preview'
-    const proxyUrl = `${PROXY_URL}?url=${url}`
+    const { selectedDiscoveryItem: { url, title, utc } } = toJS(this.props.ui)
     return (
-      <div
-        style={{backgroundColor: '#fff', width: '100%', height: '100vh'}}
-        >
+      <div>
+        <Sticky>
+          <div className='selected-panel'>
+            <DiscoveryNavigation />
+          </div>
+        </Sticky>
         <h1>{title}</h1>
-        <p>{desc}</p>
         <span>{utc}</span>
-        <iframe
-          className='iframe-view'
-          sandbox='allow-same-origin'
-          id={`frame-${url}`}
-          name={`frame-${url}`}
-          width='100%'
-          height='100%'
-          frameBorder='0'
-          allowFullScreen
-          allowTransparency
-          src={proxyUrl}
+        <InlinePreview
+          width={'100%'}
+          height={'100vh'}
+          url={url}
+          allowScript
         />
       </div>
     )
@@ -88,11 +93,15 @@ class DiscoveryList extends PureComponent {
   renderList = () => {
     const items = []
     const { discoveries } = toJS(this.props.term)
+    const { entities: { terms } } = toJS(this.props.store.normalizedTerm)
     _.forEach(discoveries, (item) => {
       /* eslint-disable camelcase */
+      const { img: main_term_img, term_name: main_term_name } = terms[item.main_term_id]
       items.push(
         <DiscoveryItem
           key={`${item.disc_url_id}-${item.title}`}
+          main_term_img={main_term_img}
+          main_term_name={main_term_name}
           onSelect={this.onSelect}
           {...item}
          />

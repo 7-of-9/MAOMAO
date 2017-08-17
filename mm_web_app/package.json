@@ -48,7 +48,7 @@
     "prop-types": "^15.5.10",
     "pusher-js": "^4.1.0",
     "query-string": "^5.0.0",
-    "raven": "^2.1.2",
+    "raven": "2.1.1",
     "raven-js": "^3.17.0",
     "rc-steps": "^2.5.1",
     "react": "^15.6.1",
@@ -101,7 +101,7 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
-    "@storybook/react": "^3.2.4",
+    "@storybook/react": "^3.2.5",
     "autoprefixer": "^7.1.2",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",

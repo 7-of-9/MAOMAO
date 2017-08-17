@@ -525,6 +525,14 @@ img {
   display: none;
 }
 
+.grid-item--full {
+  iframe {
+    z-index: 1;
+    background: #fff;
+    height: 100vh;
+  }
+}
+
 .sticky-view {
   .resizable {
     .grid-item--full {

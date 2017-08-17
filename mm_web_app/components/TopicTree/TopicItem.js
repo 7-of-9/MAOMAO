@@ -65,6 +65,10 @@ class TopicItem extends PureComponent {
     }
   }
 
+  noImage = (evt) => {
+    evt.target.src = '/static/images/no-image.png'
+  }
+
   renderThumnails = (images) => {
     logger.warn('renderThumnails', images)
     if (images.length > 0) {
@@ -82,6 +86,7 @@ class TopicItem extends PureComponent {
                 className='thumbnail'
                 width='25'
                 height='25'
+                onError={this.noImage}
                 src={item.img}
                 alt={item.name}
                 />

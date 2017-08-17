@@ -9,6 +9,7 @@ import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
 import TopicItem from './TopicItem'
+import Loading from '../Loading'
 import logger from '../../utils/logger'
 
 const parentTopicInfo = (tree, termId, treeLevel) => {
@@ -113,7 +114,10 @@ class TopicTree extends PureComponent {
 
   render () {
     const items = []
-    const { tree } = toJS(this.props.store)
+    const { tree, isProcessingTopicTree } = toJS(this.props.store)
+    if (isProcessingTopicTree) {
+      return (<Loading isLoading />)
+    }
     const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
     logger.warn('TopicTree render', currentTermId, treeLevel)
 
