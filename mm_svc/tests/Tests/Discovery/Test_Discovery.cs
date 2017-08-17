@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using mm_global.Extensions;
+using mm_svc.Terms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,6 +60,14 @@ namespace tests.Tests.Discovery
         public void LocationsDiscovery_Test0()
         {
             var ret = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
+        }
+
+        [TestMethod]
+        public void TreeTerms_vs_SmartFinderTerms_Test0()
+        {
+            var tree = TopicTree.GetTopicTree(suggestions_min_s_norm: 0);
+            var disc = mm_svc.Discovery.FetchDiscoveries.GetForUser(20, 0, 50);
+
         }
 
         private static void LogResult(int page, mm_svc.Discovery.DiscoveryInfo r)

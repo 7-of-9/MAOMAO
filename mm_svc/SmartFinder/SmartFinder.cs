@@ -132,8 +132,6 @@ namespace mm_svc.SmartFinder
                 int added_urls = 0;
                 foreach (var term_id in topics_to_search) {
 
-                    // todo --  record related suggestions (FindForTopic peer terms) for each disc_url -- for better smart browsing point n click
-
                     // get term, parents & suggestions
                     var term = db.terms.Find(term_id);
                     GoldenParents.use_stored_parents_cache = true;

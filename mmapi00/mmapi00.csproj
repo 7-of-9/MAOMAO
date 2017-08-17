@@ -344,6 +344,7 @@
     <Compile Include="Attributes\AiExceptionFilterAttribute.cs" />
     <Compile Include="Controllers\DiscoveryController.cs" />
     <Compile Include="Controllers\ShareController.cs" />
+    <Compile Include="Controllers\TermController.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\TopicTreeController.cs" />
     <Compile Include="Controllers\UrlInfoController.cs" />

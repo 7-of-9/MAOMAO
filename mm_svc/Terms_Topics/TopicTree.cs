@@ -1,4 +1,5 @@
 ﻿using mmdb_model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,42 +11,45 @@ namespace mm_svc.Terms
 {
     public static class TopicTree
     {
-        public class TopicTermLink
-        {
+        public class TopicTermLink {
             [NonSerialized]
             public TopicTermLink parent;
 
+            [JsonProperty(PropertyName = "l")]
             public int level;
-            public bool is_topic;
+
+            [JsonProperty(PropertyName = "t")]
+            public bool is_topic; 
+
+            [JsonProperty(PropertyName = "i")]
             public long term_id;
+
+            [JsonProperty(PropertyName = "n")]
             public string term_name;
 
+            [JsonProperty(PropertyName = "m")]
             public string img;
 
+            [JsonProperty(PropertyName = "c")]
             public List<TopicTermLink> child_topics = new List<TopicTermLink>();
+
+            [JsonProperty(PropertyName = "s")]
             public List<TopicTermLink> child_suggestions = new List<TopicTermLink>();
         }
 
-        //
-        // Get topic parents & adjacencies
-        //
-        //public static List<TopicTermLink> GetTopicTreePartial(long topic_id, int parent_height)
-        //{
-        //    using (var db = mm02Entities.Create()) {
+        public class TermInfo {
+            [JsonProperty(PropertyName = "t")]
+            public bool is_topic;
 
-        //        // get parent term link
-        //        var parent_link = db.topic_link.Include("term").Include("term1").AsNoTracking().Where(p => p.child_term_id == topic_id && p.disabled == false).FirstOrDefaultNoLock();
-        //        var parent = new TopicTermLink() {
-        //            parent = null,
-        //            topic_id = parent_link.parent_term_id,
-        //            topic_name = parent_link.parent_term.name,
-        //        };
+            [JsonProperty(PropertyName = "i")]
+            public long term_id;
 
-        //        // get children of parent (i.e. direct adjacencies for supplied topic)
-        //        var parent_child_links = db.topic_link.Include("term").Include("term1").AsNoTracking().Where(p => p.parent_term_id == parent.topic_id && p.disabled == false).ToListNoLock();
+            [JsonProperty(PropertyName = "n")]
+            public string term_name;
 
-        //    }
-        //}
+            [JsonProperty(PropertyName = "m")]
+            public string img;
+        }
 
         //
         // Get entire topic tree
@@ -73,6 +77,22 @@ namespace mm_svc.Terms
                 });
 
                 return roots;
+            }
+        }
+
+        //
+        // Gets just one term info
+        //
+        public static TermInfo GetTermInfo(long term_id)
+        {
+            using (var db = mm02Entities.Create()) {
+                var t = db.terms.Find(term_id);
+                return new TermInfo() {
+                    is_topic = t.IS_TOPIC,
+                    term_id = t.id,
+                    term_name = t.name,
+                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(t)
+                };
             }
         }
 
@@ -136,6 +156,7 @@ namespace mm_svc.Terms
                 }
             }
         }
+
 
         private static bool TermInParentsChain(TopicTermLink link, long term_id) {
             if (link.term_id == term_id)

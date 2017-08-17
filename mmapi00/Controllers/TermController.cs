@@ -7,24 +7,25 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
 
+
 namespace mmapi00.Controllers
 {
     [EnableCors(origins: "*", headers: "*", methods: "*")]
-    public class TopicTreeController : ApiController
+    public class TermController : ApiController
     {
         /// <summary>
-        /// Gets the entire MM topic tree hierarchy.
+        /// Gets info for a term_id.
         /// </summary>
         /// <returns>The topic tree.</returns>
-        [Route("topic_tree/get")]
+        [Route("term/get")]
         [HttpGet]
-        [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 1 hr / 24 hrs
-        public IHttpActionResult GetTopicTree()
+        [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 24 hr / 24 hrs
+        public IHttpActionResult GetTerm(long term_id)
         {
-            var topic_tree = mm_svc.Terms.TopicTree.GetTopicTree(suggestions_min_s_norm: 99); // don't get suggestions -- json is too large
+            var term_info = mm_svc.Terms.TopicTree.GetTermInfo(term_id);
 
             return Ok(new {
-                tree = topic_tree,
+                term = term_info
             });
         }
     }
