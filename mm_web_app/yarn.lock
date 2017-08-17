@@ -2517,9 +2517,9 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
 
-detect-browser@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-1.8.0.tgz#dba63c428127df0e63737954cde214e31b8a01e0"
+detect-browser@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-1.9.0.tgz#a13af00c777893e7a1d09b43374f5d40b40376e9"
 
 detect-indent@^4.0.0:
   version "4.0.0"
@@ -3331,9 +3331,9 @@ find-up@^2.0.0, find-up@^2.1.0:
   dependencies:
     locate-path "^2.0.0"
 
-firebase-admin@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-5.2.0.tgz#b5a6dbbed482d030d8d55f4b1ce0a7ea2642d11d"
+firebase-admin@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/firebase-admin/-/firebase-admin-5.2.1.tgz#1c732dddc8c1ce8e02d76c682cea2c550ed65a47"
   dependencies:
     "@google-cloud/storage" "^1.2.1"
     "@types/jsonwebtoken" "^7.1.33"
@@ -5593,9 +5593,9 @@ nested-error-stacks@^1.0.0:
   dependencies:
     inherits "~2.0.1"
 
-next@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/next/-/next-3.0.3.tgz#35128ba8359064ffe8d1d5e5543410319c6d66d3"
+next@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/next/-/next-3.0.6.tgz#14d9330b1f4eab60fdb84523034a3016f16fe414"
   dependencies:
     ansi-html "0.0.7"
     babel-core "6.25.0"
@@ -6803,9 +6803,9 @@ raven-js@^3.17.0:
   version "3.17.0"
   resolved "https://registry.yarnpkg.com/raven-js/-/raven-js-3.17.0.tgz#779457ac7910512c3c2cc9bb6d0a9eeb59a969ec"
 
-raven@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/raven/-/raven-2.1.1.tgz#b3a974c6c29315c677c079e168435ead196525cd"
+raven@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/raven/-/raven-2.1.2.tgz#4aa7a72c4b3061d7fde06bfc62d669a74a651e27"
   dependencies:
     cookie "0.3.1"
     json-stringify-safe "5.0.1"
@@ -7253,9 +7253,9 @@ rechoir@^0.6.2:
   dependencies:
     resolve "^1.1.6"
 
-recompose@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.24.0.tgz#262e93f974439eb17e7779824d88cce90492a5dd"
+recompose@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/recompose/-/recompose-0.25.0.tgz#e2ec723692ff0fdab3d62bd22c1da69af1985acd"
   dependencies:
     change-emitter "^0.1.2"
     fbjs "^0.8.1"

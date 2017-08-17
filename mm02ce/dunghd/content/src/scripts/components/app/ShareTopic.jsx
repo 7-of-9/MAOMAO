@@ -1,6 +1,6 @@
 import React from 'react';
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import ToggleDisplay from 'react-toggle-display';
 import Steps, { Step } from 'rc-steps';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -238,7 +238,7 @@ const ShareTopic = enhance(({
       description={item.description}
     />
   ));
-  let component = null;
+  let component = <div />;
   if (enable && type.indexOf('Facebook') === -1) {
     component = (
       <div style={style.container}>
@@ -289,13 +289,14 @@ const ShareTopic = enhance(({
     );
   }
   return (
-    <CSSTransitionGroup
-      transitionName="maomao"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={300}
-    >
-      {component}
-    </CSSTransitionGroup>
+    <TransitionGroup>
+      <CSSTransition
+        classNames="maomao"
+        timeout={{ enter: 500, exit: 300 }}
+      >
+        {component}
+      </CSSTransition>
+    </TransitionGroup>
   );
 },
 );

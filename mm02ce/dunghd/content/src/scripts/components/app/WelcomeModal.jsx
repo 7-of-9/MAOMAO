@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleDisplay from 'react-toggle-display';
-import { CSSTransitionGroup } from 'react-transition-group';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { onlyUpdateForKeys, flattenProp, lifecycle, compose } from 'recompose';
 import $ from 'jquery';
 import Radium from 'radium';
@@ -105,7 +105,7 @@ function WelcomeModal({
   onFacebookLogin, onGoogleLogin,
   onClose, onLogout }) {
   logger.info('WelcomeModal isLogin, info, isOpen', isLogin, info, isOpen);
-  let component = null;
+  let component = <div />;
   if (isOpen) {
     component = (
       <div style={customStyles.overlay}>
@@ -147,13 +147,14 @@ function WelcomeModal({
     );
   }
   return (
-    <CSSTransitionGroup
-      transitionName="maomao"
-      transitionEnterTimeout={500}
-      transitionLeaveTimeout={300}
-    >
-      {component}
-    </CSSTransitionGroup>
+    <TransitionGroup>
+      <CSSTransition
+        classNames="maomao"
+        timeout={{ enter: 500, exit: 300 }}
+      >
+        {component}
+      </CSSTransition>
+    </TransitionGroup>
   );
 }
 
