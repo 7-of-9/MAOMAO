@@ -17,12 +17,12 @@ namespace mmapi00.Controllers
         /// Gets info for a term_id.
         /// </summary>
         /// <returns>The topic tree.</returns>
-        [Route("term/get")]
+        [Route("term/{id}")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 24 hr / 24 hrs
-        public IHttpActionResult GetTerm(long term_id)
+        public IHttpActionResult GetTerm(long id)
         {
-            var term_info = mm_svc.Terms.TopicTree.GetTermInfo(term_id);
+            var term_info = mm_svc.Terms.TopicTree.GetTermInfo(id);
 
             return Ok(new {
                 term = term_info

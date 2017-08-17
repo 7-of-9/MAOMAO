@@ -16,7 +16,7 @@ namespace mmapi00.Controllers
         /// Gets the entire MM topic tree hierarchy.
         /// </summary>
         /// <returns>The topic tree.</returns>
-        [Route("topic_tree/get")]
+        [Route("topic_tree")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 1 hr / 24 hrs
         public IHttpActionResult GetTopicTree()
