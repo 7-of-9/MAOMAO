@@ -137,7 +137,13 @@ namespace mm_svc.SmartFinder
                     // get term, parents & suggestions
                     var term = db.terms.Find(term_id);
                     GoldenParents.use_stored_parents_cache = true;
-                    var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: false);
+                    List<gt_parent> parents;
+                    try {
+                        parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: false);
+                    } catch(Exception ex) {
+                        g.LogError($"failed getting parents -- aborting: {ex.Message}");
+                        return 0;
+                    }
                     var topics = parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList();
                     var suggestions = parents.Where(p => p.is_topic == false /*&& p.parent_term.IS_TOPIC == false*/).OrderByDescending(p => p.S).ToList();
 

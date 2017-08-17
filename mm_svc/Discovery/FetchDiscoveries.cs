@@ -112,13 +112,13 @@ namespace mm_svc.Discovery
 
                     main_term_id = p.main_term_id,
                     main_term = db.terms.Find(p.main_term_id),
-                    //main_term_name = db.terms.Find(p.main_term_id).name,
+                    main_term_name = db.terms.Find(p.main_term_id).name,
                     main_term_related_topics_term_ids = main_term_related_topics.Select(p2 => p2.parent_term_id).ToList(),
                     main_term_related_suggestions_term_ids = main_term_related_suggestions.Select(p2 => p2.parent_term_id).ToList(),
 
                     sub_term_id = p.term_id,
                     sub_term = db.terms.Find(p.term_id),
-                    //sub_term_name = db.terms.Find(p.term_id).name,
+                    sub_term_name = db.terms.Find(p.term_id).name,
                     sub_term_related_topics_term_ids = sub_term_related_topics.Select(p2 => p2.parent_term_id).ToList(),
                     sub_term_related_suggestions_term_ids = sub_term_related_suggestions.Select(p2 => p2.parent_term_id).ToList(),
 

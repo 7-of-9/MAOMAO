@@ -44,9 +44,15 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
-                if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
+                if (    (  
+                            (use_stored_parents_cache && stored_parents_cache.TryGetValue(term_id, out List<gt_parent> tmp)) // lookup cache if enabled
+                        || 
+                            (!use_stored_parents_cache && db.gt_parent.Any(p => p.child_term_id == term_id)) // lookup DB if cache disabled
+                        )
+                    && reprocess == false) {
                     return GetStoredParents(term_id);
-
+                }
+                
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
