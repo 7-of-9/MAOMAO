@@ -1,25 +1,17 @@
 /**
 *
-* TopicTree
+* DiscoveryList
 *
 */
 
 import React, { PureComponent } from 'react'
-import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
-import Sticky from 'react-sticky-el'
+import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
-import InlinePreview from '../Streams/InlinePreview'
+import DiscoveryDetail from './DiscoveryDetail'
 import logger from '../../utils/logger'
-
-const DiscoveryNavigation = dynamic(
-  import('./DiscoveryNavigation'),
-  {
-    ssr: false
-  }
- )
 
 @inject('term')
 @inject('store')
@@ -41,16 +33,15 @@ class DiscoveryList extends PureComponent {
       return (
         <div className='navigation-panel'>
           <div className='breadcrum'>
-            <button className='btn back-to-parent' onClick={this.onBack}>
-              <i className='fa fa-angle-left' aria-hidden='true' />
-            </button>
             <span
               onClick={this.onBack}
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover'
+                backgroundSize: 'cover',
+                cursor: 'pointer'
               }}
               className='current-topic-name tags' rel='tag'>
+              <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
               {title}
             </span>
           </div>
@@ -61,31 +52,36 @@ class DiscoveryList extends PureComponent {
   }
 
   cleanClassName = () => {
-    logger.warn('TopicTree cleanClassName', this.animateEl)
-    if (this.animateEl) {
-      /* global $ */
+    logger.warn('DiscoveryList cleanClassName', this.animateEl)
+    /* global $ */
+    if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
     }
   }
 
+  loadMore = () => {
+    logger.warn('DiscoveryList loadMore')
+    this.props.term.loadMore()
+  }
+
   renderDetail = (selectedDiscoveryItem) => {
-    const { selectedDiscoveryItem: { url, title, utc } } = toJS(this.props.ui)
+    const { selectedDiscoveryItem: { url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const items = []
+    termIds.forEach(id => {
+      if (id !== termId) {
+        const term = this.props.store.getCurrentTerm(id)
+        if (term) {
+          items.push(term)
+        }
+      }
+    })
     return (
-      <div>
-        <Sticky>
-          <div className='selected-panel'>
-            <DiscoveryNavigation />
-          </div>
-        </Sticky>
-        <h1>{title}</h1>
-        <span>{utc}</span>
-        <InlinePreview
-          width={'100%'}
-          height={'100vh'}
-          url={url}
-          allowScript
-        />
-      </div>
+      <DiscoveryDetail
+        items={items}
+        title={title}
+        url={url}
+        utc={utc}
+      />
     )
   }
 
@@ -94,28 +90,43 @@ class DiscoveryList extends PureComponent {
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
       /* eslint-disable camelcase */
-      const { img: main_term_img, term_name: main_term_name } = this.props.store.getCurrentTerm(item.main_term_id)
-      items.push(
-        <DiscoveryItem
-          key={`${item.disc_url_id}-${item.title}`}
-          main_term_img={main_term_img}
-          main_term_name={main_term_name}
-          onSelect={this.onSelect}
-          {...item}
-         />
-       )
+      const term = this.props.store.getCurrentTerm(item.main_term_id)
+      if (term) {
+        const { img: main_term_img, term_name: main_term_name } = term
+        items.push(
+          <DiscoveryItem
+            key={`${item.disc_url_id}-${item.title}`}
+            main_term_img={main_term_img}
+            main_term_name={main_term_name}
+            onSelect={this.onSelect}
+            {...item}
+           />
+         )
+      }
     })
     return items
   }
 
   componentWillUpdate () {
-    logger.warn('TopicTree componentWillUpdate')
+    logger.warn('DiscoveryList componentWillUpdate')
     this.cleanClassName()
+  }
+
+  componentWillReact () {
+    const { userId, userHash } = this.props.store
+    logger.warn('DiscoveryList componentWillReact', userId, userHash)
+  }
+
+  componentDidMount () {
+    const { userId, userHash } = this.props.store
+    const { page } = this.props.term
+    logger.warn('DiscoveryList componentDidMount', userId, userHash)
+    this.props.term.getRootDiscover(userId, userHash, page)
   }
 
   render () {
     const { animationType, discoveryUrlId } = toJS(this.props.ui)
-
+    logger.warn('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     return (
       <div className='topic-tree'>
@@ -123,7 +134,16 @@ class DiscoveryList extends PureComponent {
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
-              {discoveryUrlId === -1 && this.renderList()}
+              {
+                discoveryUrlId === -1 &&
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMore}
+                  hasMore={this.props.term.hasMore}
+                >
+                  {this.renderList()}
+                </InfiniteScroll>
+              }
               {discoveryUrlId !== -1 && this.renderDetail()}
             </div>
           </div>

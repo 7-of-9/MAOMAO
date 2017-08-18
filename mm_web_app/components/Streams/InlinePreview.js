@@ -7,6 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactPlayer from 'react-player'
+import urlParser from 'js-video-url-parser'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
@@ -102,22 +103,20 @@ export default class InlinePreview extends Component {
 
   render () {
     const { url } = this.props
+    const parsed = urlParser.parse(url)
+    logger.warn('video parse result', parsed)
+    const isVideoPlayer = !!parsed
+    logger.warn('isVideoPlayer', isVideoPlayer)
     return (
       <div className='grid-item--full'>
         <div className='close_button' onClick={this.props.closePreview} />
         {
-          (
-            url.indexOf('vimeo.com') !== -1 ||
-            url.indexOf('youtube.com') !== -1
-          ) &&
+          isVideoPlayer &&
           this.renderPlayer()
-          }
+        }
         {
-        (
-          url.indexOf('vimeo.com') === -1 &&
-          url.indexOf('youtube.com') === -1
-        ) &&
-        this.renderIframe()
+          !isVideoPlayer &&
+          this.renderIframe()
         }
       </div>
     )

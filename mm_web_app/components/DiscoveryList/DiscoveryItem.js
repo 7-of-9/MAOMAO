@@ -5,10 +5,12 @@
 */
 
 import React, { PureComponent } from 'react'
+import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
+@observer
 export default class DiscoveryItem extends PureComponent {
   static propTypes = {
     disc_url_id: PropTypes.number.isRequired,
@@ -38,6 +40,10 @@ export default class DiscoveryItem extends PureComponent {
 
   noImage = (evt) => {
     evt.target.src = '/static/images/no-image.png'
+  }
+
+  renderSubTerms = () => {
+
   }
 
   renderThumnails = (images) => {
@@ -86,7 +92,7 @@ export default class DiscoveryItem extends PureComponent {
               onClick={this.handleClick}
               >
               <p className='discovery-title'>{title}</p>
-              <div className='caption'>
+              <div className='caption' style={{ bottom: '72px', right: '-12px' }}>
                 <div className='mix-tag'>
                   <div className='mix-tag-topic'>
                     <span
@@ -102,6 +108,7 @@ export default class DiscoveryItem extends PureComponent {
               </div>
             </a>
             {this.renderThumnails(images)}
+            {this.renderSubTerms()}
             <span style={{ fontSize: '11px' }}>S: {search_num} ID: {disc_url_id}</span>
           </div>
         </div>

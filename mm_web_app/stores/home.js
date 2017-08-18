@@ -40,8 +40,8 @@ export class HomeStore extends CoreStore {
     sites: [],
     topics: []
   }
+  @observable terms = {}
   normalizedData = { entities: {}, result: {} }
-  normalizedTerm = { entities: {}, result: {} }
   tree = []
   users = []
   topics = []
@@ -87,9 +87,8 @@ export class HomeStore extends CoreStore {
   }
 
   @action getCurrentTerm (termId) {
-    const { entities: { terms } } = this.normalizedTerm
-    if (terms[termId]) {
-      return terms[termId]
+    if (this.terms[termId]) {
+      return this.terms[termId]
     } else {
       const termInfo = getTerm(termId)
       if (this.pendings.indexOf(termId) === -1) {
@@ -97,18 +96,16 @@ export class HomeStore extends CoreStore {
         when(
           () => termInfo.state !== 'pending',
           () => {
-            const { term } = termInfo.value.data
-            logger.warn('get term result', termInfo.value.data)
-            this.normalizedTerm.entities.terms[term.term_id] = term
+            if (termInfo.value.data) {
+              const { term } = termInfo.value.data
+              logger.warn('get term result', termId, termInfo.value.data)
+              this.terms[term.term_id] = term
+            }
             this.pendings.splice(this.pendings.indexOf(termId), 1)
           }
         )
       }
-      return {
-        term_id: -1,
-        term_name: '...',
-        img: '/static/images/no-image.png'
-      }
+      return null
     }
   }
 
@@ -263,9 +260,10 @@ export class HomeStore extends CoreStore {
       () => {
         this.isProcessingTopicTree = false
         this.tree = allTopics.value.data.tree || []
-        this.normalizedTerm = normalizedTermData(allTopics.value.data)
+        const { entities: { terms } } = normalizedTermData(allTopics.value.data)
+        this.terms = terms || {}
         logger.warn('getTopicTree', this.tree)
-        logger.warn('getTopicTree normalizedTerm', this.normalizedTerm)
+        logger.warn('terms', this.terms)
       })
     }
   }

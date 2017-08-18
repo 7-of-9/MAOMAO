@@ -1,15 +1,17 @@
 /**
 *
-* SearchBar
+* DiscoveryNavigation
 *
 */
 
-import React from 'react'
+import React, { PureComponent } from 'react'
+import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import OwlCarousel from 'react-owl-carousel'
 import logger from '../../utils/logger'
 
-class DiscoveryNavigation extends React.PureComponent {
+@observer
+class DiscoveryNavigation extends PureComponent {
   static propTypes = {
     items: PropTypes.array.isRequired
   }
@@ -28,7 +30,12 @@ class DiscoveryNavigation extends React.PureComponent {
     }
   }
 
+  componentWillReact () {
+    logger.warn('DiscoveryNavigation componentWillReact')
+  }
+
   render () {
+    logger.warn('DiscoveryNavigation render')
     const { items } = this.props
     const settings = {
       navContainerClass: 'carousel-nav owl-nav',
@@ -47,7 +54,7 @@ class DiscoveryNavigation extends React.PureComponent {
           className='owl-theme'
           ref={(el) => { this.slider = el }}
           {...settings}
-          >
+            >
           {
           items.map(({name, img, id}) => (
             <div className='selected-topic' key={`topic-${id}`}

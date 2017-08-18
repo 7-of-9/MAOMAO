@@ -47,24 +47,19 @@ const businessAddress = (
 @observer
 class Discover extends React.PureComponent {
   renderRootDiscover = (userId, userHash) => {
-    return (
-      <div className='wrapper-slide'>
-        <DiscoveryList />
-      </div>)
+    if (userId > 0) {
+      return (
+        <div className='wrapper-slide'>
+          <DiscoveryList />
+        </div>)
+    }
+    return (<Loading isLoading />)
   }
 
   componentDidMount () {
     logger.warn('Discover componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     this.props.store.getTopicTree()
-  }
-
-  componentWillReact () {
-    const { userId, userHash } = this.props.store
-    logger.warn('Discover componentWillReact', userId, userHash)
-    if (userId > 0) {
-      this.props.term.getRootDiscover(userId, userHash)
-    }
   }
 
   render () {

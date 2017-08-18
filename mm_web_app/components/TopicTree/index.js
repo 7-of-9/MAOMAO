@@ -81,16 +81,15 @@ class TopicTree extends PureComponent {
         {
           currentTermId && currentTermId !== '' &&
           <div className='breadcrum'>
-            <button className='btn back-to-parent' onClick={this.onBack}>
-              <i className='fa fa-angle-left' aria-hidden='true' />
-            </button>
             <span
               onClick={this.onBack}
               style={{
                 background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover'
+                backgroundSize: 'cover',
+                cursor: 'pointer'
               }}
               className='current-topic-name tags' rel='tag'>
+              <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp; &nbsp;
               {currentTermTitle}
             </span>
           </div>
@@ -101,8 +100,8 @@ class TopicTree extends PureComponent {
 
   cleanClassName = () => {
     logger.warn('TopicTree cleanClassName', this.animateEl)
-    if (this.animateEl) {
-      /* global $ */
+    /* global $ */
+    if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
     }
   }

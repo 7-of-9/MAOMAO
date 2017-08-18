@@ -5,6 +5,7 @@ import {
  } from 'mobx'
 import { rootDiscover, termDiscover } from '../services/topic'
 import logger from '../utils/logger'
+import _ from 'lodash'
 
 let store = null
 
@@ -12,9 +13,14 @@ class TermStore {
   @observable pendings = []
   @observable discoveries = []
   @observable terms = []
+  @observable page = 0
+  @observable hasMore = true
 
-  @action getRootDiscover (userId, userHash, page = 1) {
+  @action getRootDiscover (userId, userHash, page) {
+    const MAX_ITEM_PER_PAGE = 50
     logger.warn('getRootDiscover')
+    this.page = page
+    this.hasMore = false
     const rootData = rootDiscover(userId, userHash, page)
     this.pendings.push('rootData')
     when(
@@ -22,11 +28,25 @@ class TermStore {
       () => {
         if (rootData.value && rootData.value.data) {
           const { discoveries } = rootData.value.data
-          this.discoveries.push(...discoveries || [])
+          logger.warn('getRootDiscover', discoveries)
+          if (discoveries.length < MAX_ITEM_PER_PAGE) {
+            this.hasMore = false
+          } else {
+            this.hasMore = true
+          }
+          _.forEach(discoveries, item => {
+            if (!_.includes(this.discoveries, item)) {
+              this.discoveries.push(item)
+            }
+          })
         }
         this.pendings.splice(0, 1)
       }
     )
+  }
+
+  @action loadMore () {
+    this.page += 1
   }
 
   @action getTermDiscover (userId, userHash, termId) {
