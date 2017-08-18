@@ -31,6 +31,7 @@ export class UIStore {
   @observable notifications = []
   /* discover mode */
   @observable discoveryUrlId = -1
+  @observable isSplitView = false
   selectedDiscoveryItem = {}
   shareTopics = []
   shareUrlId = -1
@@ -223,10 +224,15 @@ export class UIStore {
     this.animationType = 'RTL'
   }
 
+  @action selectDiscoveryTerm (termId) {
+    this.isSplitView = termId > 0
+  }
+
   @action backToRootDiscovery () {
     this.discoveryUrlId = -1
     this.selectedDiscoveryItem = {}
     this.animationType = 'LTR'
+    this.isSplitView = false
   }
 
   @action clean () {

@@ -4,39 +4,72 @@
 *
 */
 
-import React, { PureComponent } from 'react'
-import { observer } from 'mobx-react'
+import React, { Component } from 'react'
+import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import OwlCarousel from 'react-owl-carousel'
+import Loading from '../Loading'
 import logger from '../../utils/logger'
 
+@inject('store')
+@inject('term')
+@inject('ui')
 @observer
-class DiscoveryNavigation extends PureComponent {
+class DiscoveryNavigation extends Component {
   static propTypes = {
-    items: PropTypes.array.isRequired
+    items: PropTypes.array.isRequired,
+    termIds: PropTypes.array.isRequired,
+    isReady: PropTypes.bool.isRequired
   }
 
   static defaultProps = {
-    items: []
+    items: [],
+    termIds: [],
+    isReady: false
   }
 
-  onCarousel = (isAdd) => {
-    logger.warn('onCarousel', isAdd, this.slider)
-    const { items } = this.props
-    if (items.length > 0 && isAdd) {
-      this.slider.next()
-    } else {
-      this.slider.prev()
-    }
+  state = {
+    isDone: false,
+    currentItems: []
+  }
+
+  selectTerm = (termId) => {
+    logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
+    this.props.ui.selectDiscoveryTerm(termId)
   }
 
   componentWillReact () {
     logger.warn('DiscoveryNavigation componentWillReact')
   }
 
+  componentDidMount () {
+    logger.warn('DiscoveryNavigation componentDidMount')
+    const { isReady, termIds } = this.props
+    if (!isReady) {
+      setTimeout(() => {
+        const existTerms = []
+        termIds.forEach(id => {
+          const term = this.props.store.getCurrentTerm(id)
+          if (term) {
+            existTerms.push(term)
+          }
+        })
+        if (existTerms.length === termIds.length) {
+          this.setState({
+            currentItems: existTerms.map(item => ({ img: item.img, name: item.term_name, id: item.term_id })),
+            isDone: true
+          })
+        }
+      }, 1000)
+    } else {
+      this.setState({ isDone: true })
+    }
+  }
+
   render () {
-    logger.warn('DiscoveryNavigation render')
-    const { items } = this.props
+    const { items, isReady } = this.props
+    const { isDone, currentItems } = this.state
+    logger.warn('DiscoveryNavigation render', isReady, items, this.props)
     const settings = {
       navContainerClass: 'carousel-nav owl-nav',
       stageOuterClass: 'carousel-outer owl-stage-outer',
@@ -48,6 +81,7 @@ class DiscoveryNavigation extends PureComponent {
         '>'
       ]
     }
+    const selectedItems = currentItems.length ? currentItems : items
     return (
       <div className='carousel-wrapper'>
         <OwlCarousel
@@ -56,19 +90,23 @@ class DiscoveryNavigation extends PureComponent {
           {...settings}
             >
           {
-          items.map(({name, img, id}) => (
-            <div className='selected-topic' key={`topic-${id}`}
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover'
-              }}>
-              <p className='blur-bg'>
-                <span className='text-topic'>{name}</span>
-              </p>
-            </div>
+            selectedItems.map(({name, img, id}) => (
+              <div
+                className='selected-topic' key={`topic-${id}`}
+                style={{
+                  background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                  backgroundSize: 'cover'
+                }}
+                onClick={() => this.selectTerm(id)}
+              >
+                <p className='blur-bg'>
+                  <span className='text-topic'>{name}</span>
+                </p>
+              </div>
           ))
           }
         </OwlCarousel>
+        <Loading isLoading={!isDone} />
       </div>
     )
   }

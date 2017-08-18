@@ -107,7 +107,7 @@ class Home extends React.Component {
     logger.warn('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     this.props.store.getTopicTree()
-    if (this.props.store.isLogin) {
+    if (this.props.store.userId > 0) {
       this.props.store.getUserHistory()
     }
     if (this.props.isMobile) {

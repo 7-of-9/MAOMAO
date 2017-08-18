@@ -11,6 +11,7 @@ import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
+import Loading from '../Loading'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -64,7 +65,7 @@ class DiscoveryList extends PureComponent {
     this.props.term.loadMore()
   }
 
-  renderDetail = (selectedDiscoveryItem) => {
+  renderDetail = () => {
     const { selectedDiscoveryItem: { url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const items = []
     termIds.forEach(id => {
@@ -79,9 +80,10 @@ class DiscoveryList extends PureComponent {
       <DiscoveryDetail
         items={items}
         title={title}
+        termIds={termIds}
         url={url}
         utc={utc}
-      />
+        />
     )
   }
 
@@ -134,17 +136,17 @@ class DiscoveryList extends PureComponent {
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
-              {
-                discoveryUrlId === -1 &&
-                <InfiniteScroll
-                  pageStart={0}
-                  loadMore={this.loadMore}
-                  hasMore={this.props.term.hasMore}
-                >
-                  {this.renderList()}
-                </InfiniteScroll>
-              }
-              {discoveryUrlId !== -1 && this.renderDetail()}
+              <InfiniteScroll
+                pageStart={0}
+                loadMore={this.loadMore}
+                hasMore={this.props.term.hasMore}
+                loader={<Loading isLoading />}
+              >
+                <div className='discover-root'>
+                  {discoveryUrlId === -1 && this.renderList(discoveryUrlId)}
+                </div>
+              </InfiniteScroll>
+              {discoveryUrlId !== -1 && this.renderDetail(discoveryUrlId)}
             </div>
           </div>
         </div>
