@@ -9,7 +9,7 @@ import { inject, observer } from 'mobx-react'
 import ReactResizeDetector from 'react-resize-detector'
 import Masonry from 'react-masonry-component'
 import { Subscribe } from 'react-subscribe'
-import layoutEmitter from '../../utils/layoutEmitter'
+import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
 
 const masonryOptions = {
@@ -39,7 +39,7 @@ class GridView extends React.PureComponent {
   render () {
     return (
       <div className='main-inner'>
-        <Subscribe target={layoutEmitter} eventName='layout' listener={this.onLayout} />
+        <Subscribe target={eventEmitter} eventName='layout' listener={this.onLayout} />
         <ReactResizeDetector handleWidth handleHeight onResize={this.onLayout} />
         <Masonry
           className='container-masonry'

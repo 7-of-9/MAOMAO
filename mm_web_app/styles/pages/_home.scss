@@ -8,7 +8,7 @@ the home page
 .neal-hero {
   &.banner-hero {
     position: relative;
-    min-height: 220px;
+    min-height: 150px;
     padding-left: 1.25rem;
     padding-right: 1.25rem;
     -moz-animation: fadeIn 1s both;
@@ -534,12 +534,45 @@ the home page
   min-height: 100vh;
 }
 
+.breadcrum {
+  .back-to-parent {
+    @include border-radius(0 50% 50% 0);
+    z-index: 9999;
+    text-align: center;
+    font-size: 2rem;
+    color: #fff;
+    animation-name: fadeInLeft;
+    animation-duration: 1.5s;
+    animation-fill-mode: both;
+    .fa {
+      margin-top: 7px;
+      vertical-align: top;
+    }
+    &:hover,
+    &:focus {
+      color: #fff;
+      background: rgba(0, 0, 0, .45);
+    }
+  }
+  .current-topic-name {
+    display: inline-block;
+    @include border-radius(20px);
+    margin: 0 2.5px;
+    padding: 10px;
+    font-size: 1.5rem;
+    text-align: left;
+    line-height: 30px;
+    border:1px solid #ccc;
+  }
+}
+
 .topic-tree {
  .container-masonry {
     z-index: 1;
+    margin-top: 50px;
     .grid-row {
       .grid-sizer, .grid-item {
-        width: 33.33%;
+        width: 20%;
         @include border-radius(5px);
         &::before {
           @include transform(scale(0.96));
@@ -563,6 +596,12 @@ the home page
           -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
           animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
         }
+        @media (max-width: 1440px) {
+          width: 25%;
+        }
+        @media (max-width: 1024px) {
+          width: 33.3%;
+        }
         @media (max-width: 750px) {
           width: 50%;
         }
@@ -577,13 +616,19 @@ the home page
             display: block;
             overflow: hidden;
             .caption {
-              padding: 0px;
-              h4 {
-                  position: absolute;
-                  right: 0;
-                  bottom: 0;
-                  color: #000;
-                  font-family: 'Orbitron-Light';
+              @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
+              width: 100%;
+              .mix-tag {
+                z-index: 1;
+                .tags {
+                  @include border-radius(20px);
+                  margin: 0 2.5px;
+                  padding: 10px;
+                  font-size: 1.5rem;
+                  text-align: left;
+                  line-height: 30px;
+                  border:1px solid #ccc;
+                }
               }
             }
             img {
@@ -591,6 +636,16 @@ the home page
               object-fit: contain;
               margin: 0 auto;
               display: block;
+            }
+            &.active::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              background-image: linear-gradient(to bottom right,#000,#fff);
+              opacity: .01;
             }
             &::before {
               content: '';
@@ -600,7 +655,19 @@ the home page
               bottom: 0;
               left: 0;
               background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .6;
+              opacity: .85;
+            }
+            &:hover {
+              &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-image: linear-gradient(to bottom right,#000,#fff);
+                opacity: .01;
+              }
             }
           }
           input.select-topic {
@@ -609,8 +676,8 @@ the home page
             top: 0;
             right: 0;
             -webkit-appearance:none;
-            width:24px;
-            height:24px;
+            width:40px;
+            height:40px;
             background-color: #fff;
             border-radius:2px;
             border:1px solid #ccc;
@@ -634,6 +701,136 @@ the home page
   }
 }
 
+.preview-child-topics {
+  &::before {
+    @include transform(scale(0.96));
+    @include border-radius(5px);
+    @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+    @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
+    -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+    -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+    opacity: 0;
+    content: " ";
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    z-index: 3;
+  }
+  &:hover::before {
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+    -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+    -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+    animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+  }
+  .thumbnail {
+    margin: 1px 2px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    &:hover,
+    &:focus {
+      box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+      -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+/* tooltip */
+
+
+/* hotfix for carousel arrow */
+.carousel-wrapper {
+  padding: 0 10px;
+  .carousel-outer {
+    &.previous {
+      &::before {
+        position: absolute;
+        content: " ";
+        left: 0;
+        top: 0;
+        height: 50px;
+        width: 100px;
+        cursor: pointer;
+        z-index: 1;
+        background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
+    }
+    &.next {
+      &::after{
+        position: absolute;
+        content: " ";
+        right: 0;
+        top: 0;
+        height: 50px;
+        width: 100px;
+        cursor: pointer;
+        z-index: 1;
+        background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
+    }
+  }
+  .carousel-nav {
+    .owl-prev {
+      position: absolute;
+      text-align: left;
+      top: -5px;
+      left: -25px;
+      height: 50px;
+      width: 120px;
+      color: #d6d6d6;
+      font-size: 1.5rem;
+      padding: 10px 2px;
+      margin-top: 5px;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      &:hover {
+        color: #000;
+        background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
+    }
+    .owl-next {
+      position: absolute;
+      text-align: right;
+      top: -5px;
+      right: -25px;
+      height: 50px;
+      width: 120px;
+      color: #d6d6d6;
+      font-size: 1.5rem;
+      padding: 10px 2px;
+      margin-top: 5px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      &:hover {
+        color: #000;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 90%);
+      }
+    }
+    .disabled {
+      display: none;
+    }
+  }
+}
+
+
+.topic-number {
+  @include border-radius(50%);
+  @include abs-pos ($top: -5px, $right: -15px, $bottom: auto, $left: auto);
+  z-index: 100;
+  font-size: 11px;
+  text-align: center;
+  color: #fff;
+  background-color: #ccc;
+  &.has-selected {
+    background-color: #2db7f5;
+  }
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+}
+
 .wrapper-slide {
   .sticky {
     z-index: 100;
@@ -646,23 +843,69 @@ the home page
   z-index: 9999;
   padding: 15px;
   background: #fff;
-  @include border-radius(5px);
-  @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
-  -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
-  -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
   transition: all .3s linear;
-  .toolbar {
-    position: absolute;
-    right:0;
-    top: 0;
-    z-index: 100;
+  .topic-guide {
+    height: 50px;
+    text-align: center;
   }
-  .btn-login {
+  .btn-sign-up {
     background: #008000;
-    border: 1px solid #1a8000;
+    color: #fff;
     font-size: 1.2rem;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    &:hover,
+    &:focus {
+      box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+      -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+    }
   }
+  span.text-topic {
+    font-size: 1.5rem !important;
+    max-width: 400px !important;
+    line-height: 30px;
+  }
+  p.blur-bg {
+    .text-topic {
+      color: #fff;
+    }
+  }
+  .selected-topic {
+    @include border-radius(20px);
+    position: relative;
+    border:1px solid #ccc;
+    margin: 0 2.5px;
+    height: 50px;
+    padding: 10px;
+    opacity: 0.8;
+    .btn-box-remove {
+      @include opacity(0.5);
+      @include border-radius(50%);
+      margin-left: 5px;
+      background-color: #fff;
+      color: #abbaa8;
+      font-weight: normal;
+      height: 30px;
+      line-height: 30px;
+      width: 30px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      cursor: pointer;
+      display: inline-block;
+    }
+    &:hover .btn-box-remove,
+    &:focus .btn-box-remove{
+      color: #222;
+    }
+  }
+}
+
+.navigation-panel {
+  position: fixed;
+  z-index: 100;
 }
 
 /*animation download*/

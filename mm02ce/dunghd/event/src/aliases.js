@@ -40,10 +40,8 @@ function logout(auth) {
       chrome.identity.removeCachedAuthToken({ token: auth.googleToken }, () => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
-        } else {
-          // validate token
-          resolve({ token: '', info: {} });
         }
+        resolve({ token: '', info: {} });
       });
     } else {
       resolve({ token: '', info: {} });

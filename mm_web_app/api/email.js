@@ -1,8 +1,9 @@
 const express = require('express')
+const mailgun = require('mailgun.js')
 const router = express.Router()
 const MAILGUN_KEY = 'key-6acu-fqm4j325jes59jc31rq557e83l6'
-const mailgun = require('mailgun-js')({apiKey: MAILGUN_KEY, domain: 'productsway.com'})
-const mailcomposer = require('mailcomposer')
+const DOMAIN = 'productsway.com'
+const mg = mailgun.client({username: 'api', key: MAILGUN_KEY})
 
 router.post('/', (req, res) => {
   if (!req.body) return res.sendStatus(400)
@@ -200,28 +201,14 @@ function sendHTMLEmail (fromEmail, fullName, name, email, topic, url, cb) {
       </body>
     </html>`
   const joinEmailAddress = 'join@maomao.rocks'
-
-  const mail = mailcomposer({
+  mg.messages.create(DOMAIN, {
     from: joinEmailAddress,
     to: email,
     subject: title,
-    text: 'Test email text',
     html: emailTemplate
   })
-
-  mail.build((mailBuildError, message) => {
-    const dataToSend = {
-      to: email,
-      message: message.toString('ascii')
-    }
-
-    mailgun.messages().sendMime(dataToSend, (sendError, body) => {
-      if (sendError) {
-        console.error(sendError)
-      }
-      cb(sendError)
-    })
-  })
+  .then(msg => cb(null, msg)) // logs response data
+  .catch(err => cb(err)) // logs any error
 }
 
 module.exports = router

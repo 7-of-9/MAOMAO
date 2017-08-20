@@ -344,7 +344,7 @@ the header section
         margin: 21px 0 0 10px;
       }
       .stamp-logo {
-        @include abs-pos ($top: -23px, $right: auto, $bottom: auto, $left: -25px);
+        @include abs-pos ($top: 0px, $right: auto, $bottom: auto, $left: 0px);
         background: url('/static/images/demo.png') no-repeat;
         background-size: contain;
         width: 40px;

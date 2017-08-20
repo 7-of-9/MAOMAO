@@ -28,14 +28,6 @@ const AppHeader = dynamic(
   }
 )
 
-// const AnimateBox = dynamic(
-//  import('../../components/AnimateBox'),
-//   {
-//     loading: () => (<Loading isLoading />),
-//     ssr: false
-//   }
-// )
-
 const Discovery = dynamic(
  import('../Discovery'),
   {
@@ -75,7 +67,8 @@ import('../../components/TopicTree'),
 const SelectedPanel = dynamic(
 import('../../components/SelectedPanel'),
   {
-    loading: () => (<Loading isLoading />)
+    loading: () => (<Loading isLoading />),
+    ssr: false
   }
 )
 
@@ -91,10 +84,6 @@ const businessAddress = (
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
   </address>
 )
-
-const replaceMMIcon = (desc) => {
-  return desc.replace('maomao', "<img className='logo-image' src='/static/images/maomao.png' alt='maomao' />")
-}
 
 @inject('store')
 @inject('ui')
@@ -117,6 +106,10 @@ class Home extends React.Component {
   componentDidMount () {
     logger.warn('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
+    this.props.store.getTopicTree()
+    if (this.props.store.userId > 0) {
+      this.props.store.getUserHistory()
+    }
     if (this.props.isMobile) {
       // TODO: support chrome (android)
       if (window.navigator.standalone) {
@@ -161,31 +154,20 @@ class Home extends React.Component {
         </div>
       )
     }
-    const selectedItems = selectedTopics ? selectedTopics.map(item => ({id: item.topicId, name: item.topicName})) : []
+    const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.termId, name: item.termName})) : []
     return (
-      <div>
-        <div className='wrap-main' style={{ textAlign: 'center' }}>
-          <div
-            className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero'
-            >
-            <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('maomao smart browsing & discovery') }} />
-            <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon('To get started, please tell maomao what kind of things are you interested in…') }} />
-          </div>
-        </div>
-        <div className='wrapper-slide'>
-          <SelectedPanel
-            total={selectedTopics && selectedTopics.length}
-            items={selectedItems}
+      <div className='wrapper-slide'>
+        <SelectedPanel
+          items={selectedItems}
             />
-          {
-               currentViewer !== 'discovery' &&
-               <TopicTree />
-            }
-          {
-              currentViewer === 'discovery' &&
-              <Discovery />
-            }
-        </div>
+        {
+            currentViewer !== 'discovery' &&
+            <TopicTree />
+          }
+        {
+            currentViewer === 'discovery' &&
+            <Discovery />
+          }
       </div>)
   }
 

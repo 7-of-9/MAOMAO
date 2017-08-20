@@ -9,46 +9,44 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import Sticky from 'react-sticky-el'
 import SelectedList from './SelectedList'
+import logger from '../../utils/logger'
 
 @inject('store')
 @inject('ui')
 @observer
 class SelectedPanel extends PureComponent {
   static propTypes = {
-    total: PropTypes.number.isRequired,
     items: PropTypes.array.isRequired
   }
 
   static defaultProps = {
-    total: 0,
     items: []
   }
 
-  onRemove = (id, name) => {
-    this.props.ui.toggleSelectTopic(false, id, name)
+  onRemove = (id, name, img) => {
+    this.props.ui.toggleSelectTopic(false, id, name, img)
   }
 
-  showSignUp = () => {
-    this.props.ui.toggleSignIn(true, 'Sign Up')
+  renderView = (items) => {
+    if (!items || items.length === 0) {
+      return (
+        <h3 className='topic-guide'>
+        Select your interests...
+        </h3>
+      )
+    }
+    return (<SelectedList items={items} onRemove={this.onRemove} />)
   }
 
   render () {
-    const { total, items } = this.props
+    const { items } = this.props
+    logger.warn('SelectedPanel render', items)
     return (
-        total > 0 &&
-        <Sticky className='animated fadeInUp'>
-          <div className='selected-panel'>
-            <div>
-              <SelectedList items={items} onRemove={this.onRemove} />
-              <br />
-              <div className='block-button' style={{ textAlign: 'center' }}>
-                <button className='btn btn-login' onClick={this.showSignUp}>
-                  <i className='fa fa-sign-in' aria-hidden='true' /> Ok! Let’s go
-                </button>
-              </div>
-            </div>
-          </div>
-        </Sticky>
+      <Sticky>
+        <div className='selected-panel'>
+          {this.renderView(items)}
+        </div>
+      </Sticky>
     )
   }
 }

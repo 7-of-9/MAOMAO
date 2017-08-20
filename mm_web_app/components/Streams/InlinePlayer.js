@@ -7,7 +7,7 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import ReactPlayer from 'react-player'
-import layoutEmitter from '../../utils/layoutEmitter'
+import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
 
 @inject('ui')
@@ -19,11 +19,11 @@ class InlinePlayer extends Component {
   }
 
   onReady = () => {
-    layoutEmitter.emit('layout')
+    eventEmitter.emit('layout')
   }
   onError = (err) => {
     logger.warn('onError', err)
-    layoutEmitter.emit('layout')
+    eventEmitter.emit('layout')
   }
 
   noImage = (evt) => {
@@ -36,7 +36,7 @@ class InlinePlayer extends Component {
       window.open(this.props.href, '_blank')
     } else {
       this.props.onPreview(this.props.href)
-      layoutEmitter.emit('layout')
+      eventEmitter.emit('layout')
     }
   }
 

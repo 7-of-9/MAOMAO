@@ -6,23 +6,22 @@ var ping_interval_secs = 3;
 
 // $(document).ready(function () {
 
-  var poll_loop = setInterval(function () {
-    //log.warn('poll_loop');
+var poll_loop = setInterval(function () {
+  //log.warn('poll_loop');
 
-    chrome.tabs.query({ audible: true }, function (tabs) {
-      if (chrome.runtime.lastError)
-        log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
-      else {
-        _.each(tabs, function (a) {
-          var session = session_get_by_tab(a, false);
-          if (session != null) {
-            session_inc_audible_pings(session);
-            // log.warn(' >> audible: [' + session.url + '] est_audible_time=' + session.est_audible_time() + ' sec(s) sid=' + session.sid);
-          }
-        });
+  chrome.tabs.query({ audible: true }, function (tabs) {
+    if (chrome.runtime.lastError) {
+      log.warn('CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
+    }
+    _.each(tabs, function (a) {
+      var session = session_get_by_tab(a, false);
+      if (session != null) {
+        session_inc_audible_pings(session);
+        // log.warn(' >> audible: [' + session.url + '] est_audible_time=' + session.est_audible_time() + ' sec(s) sid=' + session.sid);
       }
     });
+  });
 
-  }, ping_interval_secs * 1000);
+}, ping_interval_secs * 1000);
 
 // });

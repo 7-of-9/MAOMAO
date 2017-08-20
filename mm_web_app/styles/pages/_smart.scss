@@ -1,4 +1,18 @@
 .smart {
+   .url-info {
+    font-size: 12px;
+    font-style: italic;
+    font-weight: lighter;
+    width: 100%;
+    width: -moz-fit-content;
+    width: -webkit-fit-content;
+    width: -ms-fit-content;
+    width: -o-fit-content;
+    width: fit-content;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+   }
    iframe {
       z-index: 1;
       background: #fff;

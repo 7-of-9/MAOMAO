@@ -14,7 +14,7 @@ class InviteStore extends HomeStore {
   @observable shareInfo = {}
 
   constructor (isServer, userAgent, user, shareCode, shareInfo) {
-    super(isServer, userAgent, user)
+    super(isServer, userAgent, user, true)
     this.shareCode = shareCode
     this.shareInfo = shareInfo
     reaction(() => this.userHash.length,

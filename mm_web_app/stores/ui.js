@@ -5,8 +5,10 @@ import logger from '../utils/logger'
 let store = null
 
 export class UIStore {
+  /* app header component - show modal */
   @observable showSignInModal = false
   @observable showExtensionModal = false
+  /* homepage filter */
   @observable onlyMe = false
   @observable sortBy = 'rating'
   @observable sortDirection = 'desc'
@@ -15,10 +17,22 @@ export class UIStore {
   @observable discoveryTerms = []
   @observable discoverySuggestionTerms = []
   @observable rating = 1
-  @observable currentViewer = 'streams'
-  @observable selectedTopics = []
-  @observable notifications = []
   @observable page = 1
+  @observable currentViewer = 'streams'
+  /* landing page */
+  @observable selectedTopics = []
+  @observable currentTermId = ''
+  @observable currentTermTitle = ''
+  @observable currentTermImage = ''
+  @observable treeLevel = 1
+  /* animation type */
+  @observable animationType = 'LTR'
+  /* notification compnent */
+  @observable notifications = []
+  /* discover mode */
+  @observable discoveryUrlId = -1
+  @observable isSplitView = false
+  selectedDiscoveryItem = {}
   shareTopics = []
   shareUrlId = -1
   userId = -1
@@ -41,12 +55,41 @@ export class UIStore {
     }
   }
 
-  @action toggleSelectTopic (isSelect, topicId, topicName) {
-    logger.warn('toggleSelectTopic', isSelect, topicId, topicName)
+  @action toggleSelectTopic (isSelect, termId, termName, img) {
+    logger.warn('toggleSelectTopic', isSelect, termId, termName, img)
     if (isSelect) {
-      this.selectedTopics.push({topicId, topicName})
+      const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.termId === termId)
+      if (!isExist) {
+        this.selectedTopics.push({termId, termName, img})
+      }
     } else {
-      this.selectedTopics = this.selectedTopics.filter(item => item.topicId !== topicId)
+      this.selectedTopics = this.selectedTopics.filter(item => item.termId !== termId)
+    }
+  }
+
+  @action selectChildTopics (topics) {
+    logger.warn('toggleSelectTopic', topics)
+    if (topics && topics.length) {
+      topics.forEach(topic => {
+        const { topic_id: termId, topic_name: termName, img } = topic
+        const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.termId === termId)
+        if (!isExist) {
+          this.selectedTopics.push({termId, termName, img})
+        }
+      })
+    }
+  }
+
+  @action selectTopicTree (termId, termName = '', img = '', inc = 1) {
+    logger.warn('selectTopicTree', termId)
+    this.currentTermId = termId
+    this.currentTermTitle = termName
+    this.currentTermImage = img
+    this.treeLevel += inc
+    if (inc > 0) {
+      this.animationType = 'RTL'
+    } else {
+      this.animationType = 'LTR'
     }
   }
 
@@ -173,6 +216,33 @@ export class UIStore {
   @action nextPage () {
     logger.warn('nextPage')
     this.page += 1
+  }
+
+  @action selectDiscoveryItem (item) {
+    this.discoveryUrlId = item.disc_url_id
+    this.selectedDiscoveryItem = item
+    this.animationType = 'RTL'
+  }
+
+  @action selectDiscoveryTerm (termId) {
+    this.isSplitView = termId > 0
+  }
+
+  @action backToRootDiscovery () {
+    this.discoveryUrlId = -1
+    this.selectedDiscoveryItem = {}
+    this.animationType = 'LTR'
+    this.isSplitView = false
+  }
+
+  @action clean () {
+    this.selectedDiscoveryItem = {}
+    this.currentTermId = ''
+    this.selectedTopics = []
+    this.shareTopics = []
+    this.shareUrlId = -1
+    this.userId = -1
+    this.title = 'Sign In'
   }
 }
 

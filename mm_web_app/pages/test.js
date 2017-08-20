@@ -2,12 +2,12 @@ import React from 'react'
 import { Provider } from 'mobx-react'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
-import { initDiscoveryStore } from '../stores/discovery'
-import Home from '../containers/Home'
+import { initTermStore } from '../stores/term'
+import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-export default class Index extends React.Component {
+export default class Test extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''
@@ -15,26 +15,19 @@ export default class Index extends React.Component {
       userAgent = req.headers['user-agent']
     }
     const user = req && req.session ? req.session.decodedToken : null
-    const store = initStore(isServer, userAgent, user, true)
+    const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
-
-    let terms = []
-    const { search } = query
-    if (search) {
-      terms = search.split(',')
-    }
-    logger.warn('terms', terms)
-    const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
-    return { isServer, ...store, ...uiStore, ...discovery }
+    const term = initTermStore(isServer)
+    return { isServer, ...store, ...uiStore, ...term }
   }
 
   constructor (props) {
     super(props)
     logger.warn('Index', props)
-    this.store = initStore(props.isServer, props.userAgent, props.user, true)
+    this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
-    this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
+    this.term = initTermStore(props.isServer)
   }
 
   componentDidMount () {
@@ -53,10 +46,10 @@ export default class Index extends React.Component {
   render () {
     logger.warn('Index render', this.store)
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
-        <div className='home'>
+      <Provider store={this.store} term={this.term} ui={this.uiStore}>
+        <div className='discover'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Home />
+          <Discover />
         </div>
       </Provider>
     )

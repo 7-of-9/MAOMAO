@@ -317,7 +317,7 @@ const render = (
           onClick={onGoogleLogin}
         >
           <span><i className="icons-googleplus" /></span>
-          SIGN IN WITH FACEBOOK
+          SIGN IN WITH GOOGLE
         </button>
         <button
           className="btn btn-block btn-social btn-internal-lab"

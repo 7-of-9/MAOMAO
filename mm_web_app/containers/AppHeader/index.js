@@ -7,6 +7,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Link from 'next/link'
+import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
@@ -19,7 +20,11 @@ import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
 
-const brand = <Header><LogoIcon /><Slogan /></Header>
+const brand = () => (
+  <Header>
+    <LogoIcon />
+    <Slogan />
+  </Header>)
 
 const avatar = (user) => {
   if (user && (user.picture || user.avatar)) {
@@ -56,6 +61,8 @@ class AppHeader extends React.Component {
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
       logger.warn('test user', user)
+      const { selectedTopics } = this.props.ui
+      this.props.store.saveTopics(selectedTopics.map(item => item.termId))
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -103,6 +110,12 @@ class AppHeader extends React.Component {
         this.props.store.logoutUser()
       })
       this.addNotification('You have successfully signed out.')
+      this.props.ui.clean()
+      /* global URL */
+      const { pathname } = new URL(window.location.href)
+      if (pathname !== '/') {
+        Router.push('/')
+      }
     }).catch((error) => {
       logger.warn(error)
     })
@@ -116,6 +129,11 @@ class AppHeader extends React.Component {
   showSignIn = (evt) => {
     evt.preventDefault()
     this.props.ui.toggleSignIn(true, 'Sign In')
+  }
+
+  showSignUp = (evt) => {
+    evt.preventDefault()
+    this.props.ui.toggleSignIn(true, 'Sign Up')
   }
 
   openShareManagement = (evt) => {
@@ -209,12 +227,18 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
+                            }, () => {
+                              const { selectedTopics } = this.props.ui
+                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                             })
                           }
                         })
                       } else {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
+                        }, () => {
+                          const { selectedTopics } = this.props.ui
+                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -223,12 +247,18 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
+                            }, () => {
+                              const { selectedTopics } = this.props.ui
+                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                             })
                           }
                         })
                       } else {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
+                        }, () => {
+                          const { selectedTopics } = this.props.ui
+                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
                         })
                       }
                     } else if (sign_in_provider === 'password') {
@@ -288,15 +318,19 @@ class AppHeader extends React.Component {
 
   render () {
     const { isLogin, userId, user, isInstalledOnChromeDesktop, isChrome, isMobile } = this.props.store
-    const { showSignInModal, title } = this.props.ui
+    const { showSignInModal, title, selectedTopics } = this.props.ui
+
     return (
-      <Navbar className='header-nav animated fadeInDown' brand={brand}>
+      <Navbar className='header-nav animated fadeInDown' brand={brand()}>
+        {
+          !isLogin && selectedTopics.length > 0 &&
+          <NavItem className='fadeIn'>
+            <button style={{ fontSize: '1.2rem' }} className='btn btn-addto' onClick={this.showSignUp}> <i className='fa fa-sign-in' aria-hidden='true' /> Let's go!</button>
+          </NavItem>
+        }
         <NavItem>
-          <a data-toggle='dropdown'>
-            <i className='fa fa-briefcase fa-2x' aria-hidden='true' />
-            <span className='notifications-number notifications-hiring'>
-              <i className='fa fa-bullhorn' aria-hidden='true' /> We're hiring !
-              </span>
+          <a data-toggle='dropdown' style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }}>
+            Hiring
             <i className='fa fa-chevron-circle-down' aria-hidden='true' />
           </a>
           <ul className='dropdown-menu dropdown-hiring pull-right'>
@@ -313,7 +347,7 @@ class AppHeader extends React.Component {
           </ul>
         </NavItem>
         {
-          (!isMobile && isChrome && !isInstalledOnChromeDesktop) &&
+          (!isMobile && isLogin && isChrome && !isInstalledOnChromeDesktop) &&
           <NavItem>
             <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>
           </NavItem>
@@ -347,33 +381,33 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {!isLogin && <button className='btn btn-login' onClick={this.showSignIn}><i className='fa fa-sign-in' aria-hidden='true' /> Sign In</button>}
-          <Modal
-            isOpen={showSignInModal}
-            onRequestClose={this.onClose}
-            portalClassName='SignInModal'
-            contentLabel={title}
-          >
-            <h2 ref='subtitle'>{title}</h2>
-            <div className='social-action' >
-              <div className='block-button'>
-                <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
-                  <i className='fa fa-facebook' /> {title} with Facebook
-               </a>
-              </div>
-              <div className='block-button'>
-                <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
-                  <i className='fa fa-google' /> {title} with Google
-                </a>
-              </div>
-              <div className='block-button'>
-                <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
-                  <i className='fa icon-internal-lab' /> Test Internal: New User
-                </a>
-              </div>
-            </div>
-          </Modal>
+          {!isLogin && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
         </NavItem>
+        <Modal
+          isOpen={showSignInModal}
+          onRequestClose={this.onClose}
+          portalClassName='SignInModal'
+          contentLabel={title}
+          >
+          <h2 ref='subtitle'>{title}</h2>
+          <div className='social-action' >
+            <div className='block-button'>
+              <a className='btn btn-social btn-facebook' onClick={this.onFacebookLogin}>
+                <i className='fa fa-facebook' /> {title} with Facebook
+               </a>
+            </div>
+            <div className='block-button'>
+              <a className='btn btn-social btn-google' onClick={this.onGoogleLogin}>
+                <i className='fa fa-google' /> {title} with Google
+                </a>
+            </div>
+            <div className='block-button'>
+              <a className='btn btn-social btn-internal-lab' onClick={this.onInternalLogin}>
+                <i className='fa icon-internal-lab' /> Test Internal: New User
+                </a>
+            </div>
+          </div>
+        </Modal>
         <Modal
           isOpen={this.props.ui.showExtensionModal}
           onRequestClose={this.onCloseExtensionModal}
