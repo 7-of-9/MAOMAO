@@ -17,13 +17,15 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void UserDiscovery_Test0()
         {
+            var all = mm_svc.Discovery.FetchDiscoveries.GetForUser(15, 0, 50);
+
             var locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
 
             foreach (var location in locations) {
 
                 for (int page = 0; page < 10; page++) {
 
-                    var ret = mm_svc.Discovery.FetchDiscoveries.GetForUser(20, page, 50, location.country, location.city);
+                    var ret = mm_svc.Discovery.FetchDiscoveries.GetForUser(15, page, 50, location.country, location.city);
                     if (ret.Count == 0) {
                         Debug.WriteLine($"** END OF RESULTS (country={location.country}, city={location.city}) **");
                         break;

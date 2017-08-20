@@ -32,7 +32,8 @@ namespace mm_svc.SmartFinder
         // Smart Finder - entry
         //
         public static int Find_TopicTree(int n_this = 1, int n_of = 1) {
-            // get full tree: all suggestions -- todo: suggestions for suggestions!
+            // get full tree: all suggestions 
+            GoldenParents.use_stored_parents_cache = true;
             var tree = TopicTree.GetTopicTree(n_this: 1, n_of: 1, suggestions_min_s_norm: 0.0);
             var tree_topics = new List<long>();
             var tree_suggestions = new List<long>();

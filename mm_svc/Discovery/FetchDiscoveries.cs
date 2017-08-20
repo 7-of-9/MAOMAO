@@ -18,6 +18,8 @@ namespace mm_svc.Discovery
             using (var db = mm02Entities.Create()) {
 
                 var user_reg_topics_ids = db.user_reg_topic.Where(p => p.user_id == user_id).Select(p => p.topic_id).ToListNoLock();
+                if (user_reg_topics_ids.Count == 0)
+                    return new List<DiscoveryInfo>();
 
                 var num_topics = user_reg_topics_ids.Count;
                 var urls_per_topic = per_page / num_topics;
