@@ -29,7 +29,8 @@ class DiscoveryDetail extends PureComponent {
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     utc: PropTypes.string.isRequired,
-    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    closePreview: PropTypes.func
   }
 
   static defaultProps = {
@@ -38,7 +39,8 @@ class DiscoveryDetail extends PureComponent {
     title: '',
     url: '',
     utc: '',
-    width: '100%'
+    width: '100%',
+    closePreview: () => {}
   }
 
   handleClick = (event) => {
@@ -77,6 +79,7 @@ class DiscoveryDetail extends PureComponent {
             height={'100vh'}
             url={url}
             allowScript
+            closePreview={this.props.closePreview}
           />
         </Sticky>
       </div>

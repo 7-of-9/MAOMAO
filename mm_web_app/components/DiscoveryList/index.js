@@ -31,6 +31,11 @@ class DiscoveryList extends Component {
     this.props.ui.selectDiscoveryItem(item)
   }
 
+  onChangePreviewItem = (item) => {
+    this.props.ui.toggleSplitView(true)
+    this.props.ui.selectDiscoveryItem(item)
+  }
+
   onBack = () => {
     this.props.ui.backToRootDiscovery()
   }
@@ -55,13 +60,13 @@ class DiscoveryList extends Component {
   }
 
   backButton = () => {
-    const { discoveryUrlId, selectedDiscoveryItem: { main_term_id } } = toJS(this.props.ui)
+    const { discoveryUrlId, selectedDiscoveryItem: { main_term_id }, isSplitView } = toJS(this.props.ui)
     if (discoveryUrlId && discoveryUrlId !== -1) {
       const term = this.props.store.getCurrentTerm(main_term_id)
       if (term) {
         const { img, term_name: title } = term
         return (
-          <div className='navigation-panel'>
+          <div className={isSplitView ? 'navigation-panel bounceInLeft animated' : 'navigation-pane bounceInRight animated'} style={{'right': '0'}}>
             <div className='breadcrum'>
               <span
                 onClick={this.onBack}
@@ -95,7 +100,11 @@ class DiscoveryList extends Component {
     this.props.term.loadMore()
   }
 
-  renderTermSuggestionList = (discoveryTermId, terms, urlId) => {
+  closePreview = () => {
+    this.props.ui.toggleSplitView(false)
+  }
+
+  renderTermSuggestionList = (isSplitView, discoveryTermId, terms, urlId) => {
     logger.warn('renderTermSuggestionList', discoveryTermId, terms)
     const { currentWidth } = this.state
     if (terms.length) {
@@ -113,18 +122,18 @@ class DiscoveryList extends Component {
                   key={`${item.disc_url_id}-${item.title}`}
                   main_term_img={main_term_img}
                   main_term_name={main_term_name}
-                  onSelect={this.onSelect}
+                  onSelect={this.onChangePreviewItem}
                   {...item}
                  />
                )
             }
           }
         })
-        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 50 }}>
+        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
           {items}
         </div>)
       } else {
-        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 50 }}>
+        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
           <Loading isLoading />
         </div>)
       }
@@ -147,22 +156,28 @@ class DiscoveryList extends Component {
     if (isSplitView) {
       return (
         <div className='discovery-list'>
-          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
-          <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-            {(width, height) => (
-              <DiscoveryDetail
-                items={items}
-                title={title}
-                termIds={termIds}
-                url={url}
-                utc={utc}
-                width={currentWidth - 5}
+          { !isResize && this.renderTermSuggestionList(isSplitView, discoveryTermId, terms, urlId) }
+          {
+            isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
+              {(width, height) => (
+                <DiscoveryDetail
+                  items={items}
+                  title={title}
+                  termIds={termIds}
+                  url={url}
+                  utc={utc}
+                  width={currentWidth - 5}
+                  closePreview={this.closePreview}
               />
             )
+            }
+            </SplitView>
           }
-          </SplitView>
         </div>
       )
+    }
+    if (discoveryTermId > 0) {
+      return this.renderTermSuggestionList(isSplitView, discoveryTermId, terms, urlId)
     }
     return (
       <DiscoveryDetail
@@ -172,6 +187,7 @@ class DiscoveryList extends Component {
         url={url}
         utc={utc}
         width={'100%'}
+        closePreview={this.closePreview}
     />
     )
   }

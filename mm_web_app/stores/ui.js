@@ -230,8 +230,13 @@ export class UIStore {
     this.discoveryTermId = termId
   }
 
+  @action toggleSplitView (isSelect) {
+    this.isSplitView = isSelect
+  }
+
   @action backToRootDiscovery () {
     this.discoveryUrlId = -1
+    this.discoveryTermId = -1
     this.selectedDiscoveryItem = {}
     this.animationType = 'LTR'
     this.isSplitView = false

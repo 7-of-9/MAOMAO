@@ -572,6 +572,7 @@ the home page
     margin-top: 50px;
     .grid-row {
       .grid-item--full {
+        background: url("/static/images/balls.svg") no-repeat center gray;
         iframe {
           z-index: 1;
           min-height: 90vh;
@@ -585,7 +586,18 @@ the home page
             position: fixed;
             background: url("/static/images/balls.svg") no-repeat center gray;
             .close_button {
-              display: none;
+              z-index: 9999;
+              position: absolute;
+              width: 40px;
+              height: 40px;
+              top: -16px;
+              right: -16px;
+              border: 0;
+              background: $close-btn-img no-repeat center center;
+              &:hover {
+                text-decoration: none;
+                cursor: pointer;
+              }
             }
             iframe {
               z-index: 1;
