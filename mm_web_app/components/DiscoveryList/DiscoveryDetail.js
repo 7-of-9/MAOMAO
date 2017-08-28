@@ -57,28 +57,28 @@ class DiscoveryDetail extends PureComponent {
     const isReady = termIds.length === items.length
     return (
       <div>
-        {
-        items.length > 0 &&
         <Sticky>
-          <div className='selected-panel'>
-            <DiscoveryNavigation
-              items={items.map(item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
-              termIds={termIds}
-              isReady={isReady}
-              />
+          {
+          items.length > 0 &&
+            <div className='selected-panel'>
+              <DiscoveryNavigation
+                items={items.map(item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
+                termIds={termIds}
+                isReady={isReady}
+                />
+            </div>
+          }
+          <div className='discovery-detail'>
+            <h3><a onClick={this.handleClick}>{title}</a></h3>
+            <span>{utc}</span>
           </div>
+          <InlinePreview
+            width={width}
+            height={'100vh'}
+            url={url}
+            allowScript
+          />
         </Sticky>
-        }
-        <div className='discovery-detail'>
-          <h3><a onClick={this.handleClick}>{title}</a></h3>
-          <span>{utc}</span>
-        </div>
-        <InlinePreview
-          width={width}
-          height={'100vh'}
-          url={url}
-          allowScript
-      />
       </div>
     )
   }

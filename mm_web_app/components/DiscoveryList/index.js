@@ -147,6 +147,7 @@ class DiscoveryList extends Component {
     if (isSplitView) {
       return (
         <div className='discovery-list'>
+          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
           <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
             {(width, height) => (
               <DiscoveryDetail
@@ -155,12 +156,11 @@ class DiscoveryList extends Component {
                 termIds={termIds}
                 url={url}
                 utc={utc}
-                width={currentWidth}
+                width={currentWidth - 5}
               />
             )
           }
           </SplitView>
-          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
         </div>
       )
     }

@@ -571,6 +571,13 @@ the home page
     z-index: 1;
     margin-top: 50px;
     .grid-row {
+      .grid-item--full {
+        iframe {
+          z-index: 1;
+          min-height: 90vh;
+          height: 100%;
+        }
+      }
       .discovery-list {
         .resizable {
           .grid-item--full {
@@ -578,23 +585,13 @@ the home page
             position: fixed;
             background: url("/static/images/balls.svg") no-repeat center gray;
             .close_button {
-              z-index: 9999;
-              position: absolute;
-              width: 40px;
-              height: 40px;
-              top: -16px;
-              right: -16px;
-              border: 0;
-              background: $close-btn-img no-repeat center center;
-              &:hover {
-                text-decoration: none;
-                cursor: pointer;
-              }
+              display: none;
             }
             iframe {
               z-index: 1;
               background: #fff;
-              height: 100vh;
+              min-height: 65vh;
+              height: 100%;
             }
           }
           .on-resize {
@@ -609,6 +606,8 @@ the home page
           }
         }
         .split-view {
+          height: 90vh;
+          overflow: auto;
           .grid-item {
             width: 310px;
           }
@@ -658,6 +657,9 @@ the home page
             position: relative;
             display: block;
             overflow: hidden;
+            .discovery-title {
+              color: #fff;
+            }
             .caption {
               @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
               width: 100%;
@@ -701,6 +703,10 @@ the home page
               opacity: .85;
             }
             &:hover {
+              .discovery-title {
+                background: #fff;
+                color: #000;
+              }
               &::before {
                 content: '';
                 position: absolute;
