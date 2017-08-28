@@ -1,8 +1,4 @@
-import {
-  action,
-  when,
-  observable
- } from 'mobx'
+import { action, when, observable } from 'mobx'
 import { rootDiscover, termDiscover } from '../services/topic'
 import logger from '../utils/logger'
 import _ from 'lodash'
@@ -52,9 +48,10 @@ class TermStore {
   @action getTermDiscover (userId, userHash, termId) {
     logger.warn('getTermDiscover')
     const isExist = this.terms.find(item => item.termId === termId)
-    if (!isExist) {
+    const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
+    if (!isExist && !isProcess) {
       const termData = termDiscover(userId, userHash, termId)
-      this.pendings.push('termData')
+      this.pendings.push(`termData${termId}`)
       when(
         () => termData.state !== 'pending',
         () => {

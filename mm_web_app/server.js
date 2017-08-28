@@ -58,10 +58,8 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
     const dirBuild = '.next'
-    log.warn('pathname', pathname)
     if (pathname === '/service-worker.js') {
       const filePath = join(__dirname, dirBuild, pathname)
-      log.warn('filePath', filePath)
       app.serveStatic(req, res, filePath)
     } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
@@ -77,6 +75,7 @@ app.prepare().then(() => {
     } else {
       // Hack: support FB open graph
       const code = pathname.substr(1)
+      log.warn('pathname', pathname)
       log.warn('code', code)
       request('https://mmapi00.azurewebsites.net/share/info?share_code=' + code, (error, response, body) => {
         if (error) {

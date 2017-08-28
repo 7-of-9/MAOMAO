@@ -54,7 +54,7 @@ class DiscoveryDetail extends PureComponent {
     const { items, title, url, utc, termIds } = this.props
     const isReady = termIds.length === items.length
     return (
-      <div>
+      <div style={{height: '100vh'}}>
         {
         items.length > 0 &&
         <Sticky>

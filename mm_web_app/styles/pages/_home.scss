@@ -567,6 +567,18 @@ the home page
 }
 
 .topic-tree {
+  .container-masonry {
+    z-index: 1;
+    .grid-row {
+      .discovery-list {
+          .split-view {
+            .grid-item {
+              width: 280px;
+            }
+        }
+      }
+    }
+  }
  .container-masonry {
     z-index: 1;
     margin-top: 50px;

@@ -17,11 +17,11 @@
     "@vimeo/player": "^2.1.0",
     "autosuggest-highlight": "^3.1.0",
     "axios": "^0.16.2",
-    "blueimp-md5": "^2.8.0",
+    "blueimp-md5": "^2.10.0",
     "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",
     "compression": "^1.7.0",
-    "detect-browser": "^1.9.0",
+    "detect-browser": "^1.10.0",
     "expose-loader": "^0.7.3",
     "express": "^4.15.4",
     "express-session": "^1.15.5",
@@ -102,7 +102,7 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
-    "@storybook/react": "^3.2.5",
+    "@storybook/react": "^3.2.8",
     "autoprefixer": "^7.1.2",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",

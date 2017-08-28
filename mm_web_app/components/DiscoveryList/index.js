@@ -4,13 +4,15 @@
 *
 */
 
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
+import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
+import SplitView from '../SplitView'
 import Loading from '../Loading'
 import logger from '../../utils/logger'
 
@@ -18,7 +20,13 @@ import logger from '../../utils/logger'
 @inject('store')
 @inject('ui')
 @observer
-class DiscoveryList extends PureComponent {
+class DiscoveryList extends Component {
+  state = {
+    innerWidth: window.innerWidth,
+    currentWidth: window.innerWidth / 2,
+    isResize: false
+  }
+
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
   }
@@ -27,27 +35,49 @@ class DiscoveryList extends PureComponent {
     this.props.ui.backToRootDiscovery()
   }
 
+  onResizeStart = () => {
+    this.setState({ isResize: true })
+  }
+
+  onResizeStop = (width) => {
+    this.setState({ currentWidth: width, isResize: false })
+  }
+
+  onZoomLayout = () => {
+    const { innerWidth } = this.state
+    if (innerWidth !== window.innerWidth) {
+      logger.warn('onZoomLayout')
+      this.setState({
+        currentWidth: window.innerWidth / 2,
+        innerWidth: window.innerWidth
+      })
+    }
+  }
+
   backButton = () => {
     const { discoveryUrlId, selectedDiscoveryItem: { main_term_id } } = toJS(this.props.ui)
     if (discoveryUrlId && discoveryUrlId !== -1) {
-      const { img, term_name: title } = this.props.store.getCurrentTerm(main_term_id)
-      return (
-        <div className='navigation-panel'>
-          <div className='breadcrum'>
-            <span
-              onClick={this.onBack}
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover',
-                cursor: 'pointer'
-              }}
-              className='current-topic-name tags' rel='tag'>
-              <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-              {title}
-            </span>
+      const term = this.props.store.getCurrentTerm(main_term_id)
+      if (term) {
+        const { img, term_name: title } = term
+        return (
+          <div className='navigation-panel'>
+            <div className='breadcrum'>
+              <span
+                onClick={this.onBack}
+                style={{
+                  background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+                  backgroundSize: 'cover',
+                  cursor: 'pointer'
+                }}
+                className='current-topic-name tags' rel='tag'>
+                <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+                {title}
+              </span>
+            </div>
           </div>
-        </div>
-      )
+        )
+      }
     }
     return null
   }
@@ -65,8 +95,44 @@ class DiscoveryList extends PureComponent {
     this.props.term.loadMore()
   }
 
+  renderTermSuggestionList = (discoveryTermId, terms, urlId) => {
+    logger.warn('renderTermSuggestionList', discoveryTermId, terms)
+    const { currentWidth } = this.state
+    if (terms.length) {
+      const topics = terms.find(item => item.termId === discoveryTermId)
+      if (topics && topics.discoveries && topics.discoveries.length) {
+        const items = []
+        _.forEach(topics.discoveries, (item) => {
+          /* eslint-disable camelcase */
+          if (urlId !== item.disc_url_id) {
+            const term = this.props.store.getCurrentTerm(item.main_term_id)
+            if (term) {
+              const { img: main_term_img, term_name: main_term_name } = term
+              items.push(
+                <DiscoveryItem
+                  key={`${item.disc_url_id}-${item.title}`}
+                  main_term_img={main_term_img}
+                  main_term_name={main_term_name}
+                  onSelect={this.onSelect}
+                  {...item}
+                 />
+               )
+            }
+          }
+        })
+        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 30 }}>
+          {items}
+        </div>)
+      } else {
+        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 30 }}>
+          <Loading isLoading />
+        </div>)
+      }
+    }
+  }
+
   renderDetail = () => {
-    const { selectedDiscoveryItem: { url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { isSplitView, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const items = []
     termIds.forEach(id => {
       if (id !== termId) {
@@ -76,6 +142,28 @@ class DiscoveryList extends PureComponent {
         }
       }
     })
+    const { currentWidth, isResize } = this.state
+    const { terms } = toJS(this.props.term)
+    if (isSplitView) {
+      return (
+        <div className='discovery-list'>
+          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
+          <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
+            {(width, height) => (
+              <DiscoveryDetail
+                items={items}
+                title={title}
+                termIds={termIds}
+                url={url}
+                utc={utc}
+                width={currentWidth}
+              />
+            )
+          }
+          </SplitView>
+        </div>
+      )
+    }
     return (
       <DiscoveryDetail
         items={items}
@@ -83,7 +171,7 @@ class DiscoveryList extends PureComponent {
         termIds={termIds}
         url={url}
         utc={utc}
-        />
+    />
     )
   }
 
@@ -106,7 +194,7 @@ class DiscoveryList extends PureComponent {
          )
       }
     })
-    return items
+    return (<div className='discovery-list'> {items} </div>)
   }
 
   componentWillUpdate () {
@@ -133,6 +221,7 @@ class DiscoveryList extends PureComponent {
     return (
       <div className='topic-tree'>
         {this.backButton()}
+        <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>

@@ -36,6 +36,8 @@ class DiscoveryNavigation extends Component {
   selectTerm = (termId) => {
     logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
+    const { userId, userHash } = this.props.store
+    this.props.term.getTermDiscover(userId, userHash, termId)
   }
 
   componentWillReact () {
