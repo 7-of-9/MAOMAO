@@ -28,7 +28,8 @@ class DiscoveryDetail extends PureComponent {
     termIds: PropTypes.array.isRequired,
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
-    utc: PropTypes.string.isRequired
+    utc: PropTypes.string.isRequired,
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
   }
 
   static defaultProps = {
@@ -36,7 +37,8 @@ class DiscoveryDetail extends PureComponent {
     termIds: [],
     title: '',
     url: '',
-    utc: ''
+    utc: '',
+    width: '100%'
   }
 
   handleClick = (event) => {
@@ -51,10 +53,10 @@ class DiscoveryDetail extends PureComponent {
   render () {
     logger.warn('DiscoveryDetail render')
     /* eslint-disable camelcase */
-    const { items, title, url, utc, termIds } = this.props
+    const { items, title, url, utc, termIds, width } = this.props
     const isReady = termIds.length === items.length
     return (
-      <div style={{height: '100vh'}}>
+      <div>
         {
         items.length > 0 &&
         <Sticky>
@@ -67,10 +69,12 @@ class DiscoveryDetail extends PureComponent {
           </div>
         </Sticky>
         }
-        <h3><a onClick={this.handleClick}>{title}</a></h3>
-        <span>{utc}</span>
+        <div className='discovery-detail'>
+          <h3><a onClick={this.handleClick}>{title}</a></h3>
+          <span>{utc}</span>
+        </div>
         <InlinePreview
-          width={'100%'}
+          width={width}
           height={'100vh'}
           url={url}
           allowScript

@@ -567,22 +567,53 @@ the home page
 }
 
 .topic-tree {
-  .container-masonry {
-    z-index: 1;
-    .grid-row {
-      .discovery-list {
-          .split-view {
-            .grid-item {
-              width: 280px;
-            }
-        }
-      }
-    }
-  }
  .container-masonry {
     z-index: 1;
     margin-top: 50px;
     .grid-row {
+      .discovery-list {
+        .resizable {
+          .grid-item--full {
+            z-index: 1000;
+            position: fixed;
+            background: url("/static/images/balls.svg") no-repeat center gray;
+            .close_button {
+              z-index: 9999;
+              position: absolute;
+              width: 40px;
+              height: 40px;
+              top: -16px;
+              right: -16px;
+              border: 0;
+              background: $close-btn-img no-repeat center center;
+              &:hover {
+                text-decoration: none;
+                cursor: pointer;
+              }
+            }
+            iframe {
+              z-index: 1;
+              background: #fff;
+              height: 100vh;
+            }
+          }
+          .on-resize {
+            background: #2db7f5;
+            height: 100vh !important;
+            width: 100%;
+          }
+          & > :not(:first-child) {
+            background: #2db7f5;
+            height: 100vh !important;
+            z-index: 999;
+          }
+        }
+        .split-view {
+          .grid-item {
+            width: 310px;
+          }
+        }
+      }
       .grid-sizer, .grid-item {
         width: 20%;
         @include border-radius(5px);
@@ -917,7 +948,7 @@ the home page
 
 .navigation-panel {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
 }
 
 /*animation download*/

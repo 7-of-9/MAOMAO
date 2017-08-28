@@ -120,11 +120,11 @@ class DiscoveryList extends Component {
             }
           }
         })
-        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 30 }}>
+        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 50 }}>
           {items}
         </div>)
       } else {
-        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 30 }}>
+        return (<div className='split-view' style={{ width: window.innerWidth - currentWidth - 50 }}>
           <Loading isLoading />
         </div>)
       }
@@ -147,7 +147,6 @@ class DiscoveryList extends Component {
     if (isSplitView) {
       return (
         <div className='discovery-list'>
-          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
           <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
             {(width, height) => (
               <DiscoveryDetail
@@ -161,6 +160,7 @@ class DiscoveryList extends Component {
             )
           }
           </SplitView>
+          { !isResize && this.renderTermSuggestionList(discoveryTermId, terms, urlId) }
         </div>
       )
     }
@@ -171,6 +171,7 @@ class DiscoveryList extends Component {
         termIds={termIds}
         url={url}
         utc={utc}
+        width={'100%'}
     />
     )
   }
