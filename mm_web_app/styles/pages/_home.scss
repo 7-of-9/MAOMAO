@@ -621,7 +621,15 @@ the home page
           height: 90vh;
           overflow: auto;
           .grid-item {
-            width: 310px;
+            width: 250px;
+            .tags {
+              line-height: 15px;
+              font-size: 0.8rem !important;
+            }
+            img.thumbnail {
+              width: 25px !important;
+              height: 25px !important;
+            }
           }
         }
       }
@@ -670,11 +678,19 @@ the home page
             display: block;
             overflow: hidden;
             opacity: 0.8;
+            .discovery-description {
+              display: none;
+            }
             .discovery-title {
-              color: white;
-              background: rgb(0, 0, 0); /* fallback color */
-              background: rgba(0, 0, 0, 0.7);
-              padding: 2px;
+              color:#000;
+              background: rgb(255, 255, 255); /* fallback color */
+              background: rgba(255, 255, 255, 0.7);
+              padding: 10px;
+              font-size: 1.2rem;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
             }
             .caption {
               @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
@@ -695,9 +711,20 @@ the home page
             &:hover {
               opacity: 1.0;
               .discovery-title {
-                background: #fff;
-                color: #000;
+                display: none;
               }
+              .discovery-description {
+                display: block;
+                color:#fff;
+                background: rgb(0, 0, 0); /* fallback color */
+                background: rgba(0, 0, 0, 0.7);
+                padding: 2px;
+                margin: 0;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 8;
+                -webkit-box-orient: vertical;
+                }
             }
           }
           input.select-topic {

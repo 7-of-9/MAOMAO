@@ -60,9 +60,9 @@ class DiscoveryList extends Component {
   }
 
   backButton = () => {
-    const { discoveryUrlId, selectedDiscoveryItem: { main_term_id }, isSplitView } = toJS(this.props.ui)
+    const { discoveryUrlId, discoveryTermId, isSplitView } = toJS(this.props.ui)
     if (discoveryUrlId && discoveryUrlId !== -1) {
-      const term = this.props.store.getCurrentTerm(main_term_id)
+      const term = this.props.store.getCurrentTerm(discoveryTermId)
       if (term) {
         const { img, term_name: title } = term
         return (
