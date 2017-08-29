@@ -62,11 +62,11 @@ class DiscoveryList extends Component {
   backButton = () => {
     const { discoveryUrlId, discoveryTermId, isSplitView, selectedDiscoveryItem: { main_term_id: mainTermId } } = toJS(this.props.ui)
     if (discoveryUrlId && discoveryUrlId !== -1) {
-      const term = this.props.store.getCurrentTerm(isSplitView ? discoveryTermId : mainTermId)
+      const term = this.props.store.getCurrentTerm(discoveryTermId > 0 ? discoveryTermId : mainTermId)
       if (term) {
         const { img, term_name: title } = term
         return (
-          <div className={isSplitView ? 'navigation-panel bounceInLeft animated' : 'navigation-pane bounceInRight animated'}>
+          <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>
             <div className='breadcrum'>
               <span
                 onClick={this.onBack}
@@ -162,6 +162,7 @@ class DiscoveryList extends Component {
       return (
         <div className='discovery-list'>
           { !isResize && this.renderTermSuggestionList(isSplitView, discoveryTermId, terms, urlId) }
+          { !isResize && <div className='close_button' onClick={this.closePreview} /> }
           {
             isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
               {(width, height) => (
