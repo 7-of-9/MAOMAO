@@ -220,8 +220,8 @@ export class UIStore {
   }
 
   @action selectDiscoveryItem (item) {
-    this.discoveryUrlId = item.disc_url_id
-    this.discoveryTermId = item.main_term_id
+    const { disc_url_id: urlId } = item
+    this.discoveryUrlId = urlId
     this.selectedDiscoveryItem = item
     this.animationType = 'RTL'
   }
