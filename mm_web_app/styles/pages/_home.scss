@@ -669,8 +669,12 @@ the home page
             position: relative;
             display: block;
             overflow: hidden;
+            opacity: 0.8;
             .discovery-title {
-              color: #fff;
+              color: white;
+              background: rgb(0, 0, 0); /* fallback color */
+              background: rgba(0, 0, 0, 0.7);
+              padding: 2px;
             }
             .caption {
               @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
@@ -688,46 +692,11 @@ the home page
                 }
               }
             }
-            img {
-              @include border-radius(8px);
-              object-fit: contain;
-              margin: 0 auto;
-              display: block;
-            }
-            &.active::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              right: 0;
-              bottom: 0;
-              left: 0;
-              background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .01;
-            }
-            &::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              right: 0;
-              bottom: 0;
-              left: 0;
-              background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .85;
-            }
             &:hover {
+              opacity: 1.0;
               .discovery-title {
                 background: #fff;
                 color: #000;
-              }
-              &::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-image: linear-gradient(to bottom right,#000,#fff);
-                opacity: .01;
               }
             }
           }

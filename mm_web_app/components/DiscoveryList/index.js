@@ -115,13 +115,17 @@ class DiscoveryList extends Component {
           /* eslint-disable camelcase */
           if (urlId !== item.disc_url_id) {
             const term = this.props.store.getCurrentTerm(item.main_term_id)
-            if (term) {
+            const subTerm = this.props.store.getCurrentTerm(item.sub_term_id)
+            if (term && subTerm) {
               const { img: main_term_img, term_name: main_term_name } = term
+              const { img: sub_term_img, term_name: sub_term_name } = subTerm
               items.push(
                 <DiscoveryItem
                   key={`${item.disc_url_id}-${item.title}`}
                   main_term_img={main_term_img}
                   main_term_name={main_term_name}
+                  sub_term_img={sub_term_img}
+                  sub_term_name={sub_term_name}
                   onSelect={this.onChangePreviewItem}
                   {...item}
                  />
@@ -198,13 +202,17 @@ class DiscoveryList extends Component {
     _.forEach(discoveries, (item) => {
       /* eslint-disable camelcase */
       const term = this.props.store.getCurrentTerm(item.main_term_id)
-      if (term) {
+      const subTerm = this.props.store.getCurrentTerm(item.sub_term_id)
+      if (term && subTerm) {
         const { img: main_term_img, term_name: main_term_name } = term
+        const { img: sub_term_img, term_name: sub_term_name } = subTerm
         items.push(
           <DiscoveryItem
             key={`${item.disc_url_id}-${item.title}`}
             main_term_img={main_term_img}
             main_term_name={main_term_name}
+            sub_term_img={sub_term_img}
+            sub_term_name={sub_term_name}
             onSelect={this.onSelect}
             {...item}
            />

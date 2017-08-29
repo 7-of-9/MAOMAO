@@ -14,20 +14,28 @@ import { tagColor } from '../../utils/helper'
 export default class DiscoveryItem extends PureComponent {
   static propTypes = {
     disc_url_id: PropTypes.number.isRequired,
+    main_term_id: PropTypes.number.isRequired,
+    sub_term_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     main_term_name: PropTypes.string.isRequired,
+    sub_term_name: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
     main_term_img: PropTypes.string.isRequired,
+    sub_term_img: PropTypes.string.isRequired,
     search_num: PropTypes.number.isRequired,
     onSelect: PropTypes.func.isRequired
   }
 
   static defaultProps = {
     disc_url_id: 0,
+    main_term_id: 0,
+    sub_term_id: 0,
     title: '',
     main_term_name: '',
+    sub_term_name: '',
     img: '',
     main_term_img: '',
+    sub_term_img: '',
     search_num: 0,
     onSelect: (item) => {}
   }
@@ -42,8 +50,36 @@ export default class DiscoveryItem extends PureComponent {
     evt.target.src = '/static/images/no-image.png'
   }
 
-  renderSubTerms = () => {
-
+  renderTerms = () => {
+    /* eslint-disable camelcase */
+    const { main_term_img, main_term_name, sub_term_img, sub_term_name } = this.props
+    return (
+      <div className='mix-tag'>
+        <div className='mix-tag-topic'>
+          <span
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover'
+            }}
+            className={`tags ${tagColor(main_term_name)}`} rel='tag'>
+            {main_term_name}
+          </span>
+        </div>
+        {
+        sub_term_name && sub_term_name !== main_term_name &&
+        <div className='mix-tag-topic'>
+          <span
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover'
+            }}
+            className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
+            {sub_term_name}
+          </span>
+        </div>
+        }
+      </div>
+    )
   }
 
   renderThumnails = (images) => {
@@ -58,10 +94,10 @@ export default class DiscoveryItem extends PureComponent {
               data-position='bottom'
               className='bottom'>
               <img
-                style={{width: '25px', height: '25px'}}
+                style={{width: '40px', height: '40px'}}
                 className='thumbnail'
-                width='25'
-                height='25'
+                width='40'
+                height='40'
                 onError={this.noImage}
                 src={item.img}
                 alt={item.name}
@@ -75,7 +111,7 @@ export default class DiscoveryItem extends PureComponent {
 
   render () {
     /* eslint-disable camelcase */
-    const { disc_url_id, site_tld, site_img, title, search_num, img, main_term_img, main_term_name } = this.props
+    const { disc_url_id, site_tld, site_img, title, search_num, img } = this.props
     const images = [{ name: site_tld, img: site_img }]
     return (
       <div key={disc_url_id} className='grid-item shuffle-item'>
@@ -93,22 +129,10 @@ export default class DiscoveryItem extends PureComponent {
               >
               <p className='discovery-title'>{title}</p>
               <div className='caption' style={{ bottom: '72px', right: '-12px' }}>
-                <div className='mix-tag'>
-                  <div className='mix-tag-topic'>
-                    <span
-                      style={{
-                        background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
-                        backgroundSize: 'cover'
-                      }}
-                      className={`tags ${tagColor(main_term_name)}`} rel='tag'>
-                      {main_term_name}
-                    </span>
-                  </div>
-                </div>
+                {this.renderTerms()}
               </div>
             </a>
             {this.renderThumnails(images)}
-            {this.renderSubTerms()}
             <span style={{ fontSize: '11px' }}>S: {search_num} ID: {disc_url_id}</span>
           </div>
         </div>
