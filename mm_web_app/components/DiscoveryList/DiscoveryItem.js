@@ -28,7 +28,8 @@ export default class DiscoveryItem extends PureComponent {
     main_term_img: PropTypes.string.isRequired,
     sub_term_img: PropTypes.string.isRequired,
     search_num: PropTypes.number.isRequired,
-    onSelect: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    onSelectTerm: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -43,7 +44,8 @@ export default class DiscoveryItem extends PureComponent {
     main_term_img: '',
     sub_term_img: '',
     search_num: 0,
-    onSelect: (item) => {}
+    onSelect: (item) => {},
+    onSelectTerm: (termId) => {}
   }
 
   handleClick = (evt) => {
@@ -56,6 +58,18 @@ export default class DiscoveryItem extends PureComponent {
     evt.target.src = '/static/images/no-image.png'
   }
 
+  selectMainTerm = () => {
+    const { main_term_id } = this.props
+    logger.warn('selectMainTerm', main_term_id)
+    this.props.onSelectTerm(main_term_id)
+  }
+
+  selectSubTerm = () => {
+    const { sub_term_id } = this.props
+    logger.warn('selectSubTerm', sub_term_id)
+    this.props.onSelectTerm(sub_term_id)
+  }
+
   renderTerms = () => {
     /* eslint-disable camelcase */
     const { main_term_img, main_term_name, sub_term_img, sub_term_name } = this.props
@@ -65,7 +79,7 @@ export default class DiscoveryItem extends PureComponent {
     }
     return (
       <div className='mix-tag' style={customStyle}>
-        <div className='mix-tag-topic'>
+        <div className='mix-tag-topic' onClick={this.selectMainTerm}>
           <span
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
@@ -78,7 +92,7 @@ export default class DiscoveryItem extends PureComponent {
         </div>
         {
         sub_term_name && sub_term_name !== main_term_name &&
-        <div className='mix-tag-topic'>
+        <div className='mix-tag-topic' onClick={this.selectSubTerm}>
           <span
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,

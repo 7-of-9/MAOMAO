@@ -27,6 +27,13 @@ class DiscoveryList extends Component {
     isResize: false
   }
 
+  onSelectTerm = (termId) => {
+    logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
+    this.props.ui.selectDiscoveryTerm(termId)
+    const { userId, userHash } = this.props.store
+    this.props.term.getTermDiscover(userId, userHash, termId)
+  }
+
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
   }
@@ -127,6 +134,7 @@ class DiscoveryList extends Component {
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
                   onSelect={this.onChangePreviewItem}
+                  onSelectTerm={this.onSelectTerm}
                   {...item}
                  />
                )
@@ -217,6 +225,7 @@ class DiscoveryList extends Component {
             sub_term_img={sub_term_img}
             sub_term_name={sub_term_name}
             onSelect={this.onSelect}
+            onSelectTerm={this.onSelectTerm}
             {...item}
            />
          )
