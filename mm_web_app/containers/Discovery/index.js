@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import Sticky from 'react-sticky-el'
@@ -184,7 +184,7 @@ function mashUp (store, masonry) {
 @inject('ui')
 @inject('store')
 @observer
-class Discovery extends PureComponent {
+class Discovery extends Component {
   componentDidMount () {
     if (this.props.ui.discoveryTerms.length) {
       this.props.discovery.changeTerms(this.props.ui.discoveryTerms)
@@ -221,7 +221,7 @@ class Discovery extends PureComponent {
         <div className='bounceInRight animated'>
           <Sticky>
             <div className='standand-sort'>
-              <SearchBar terms={toJS(this.props.ui.discoveryTerms)} suggestions={toJS(this.props.ui.discoverySuggestionTerms)} onChange={this.onChange} />
+              <SearchBar terms={toJS(this.props.discovery.terms)} suggestions={toJS(this.props.ui.discoverySuggestionTerms)} onChange={this.onChange} />
             </div>
           </Sticky>
           <InfiniteScroll

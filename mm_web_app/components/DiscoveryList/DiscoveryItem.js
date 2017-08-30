@@ -50,7 +50,7 @@ export default class DiscoveryItem extends PureComponent {
 
   handleClick = (evt) => {
     evt.preventDefault()
-    logger.warn('handleClick')
+    logger.warn('handleClick', evt.target)
     this.props.onSelect(this.props)
   }
 
@@ -58,15 +58,17 @@ export default class DiscoveryItem extends PureComponent {
     evt.target.src = '/static/images/no-image.png'
   }
 
-  selectMainTerm = () => {
+  selectMainTerm = (evt) => {
+    evt.preventDefault()
     const { main_term_id } = this.props
-    logger.warn('selectMainTerm', main_term_id)
+    logger.warn('selectMainTerm', main_term_id, evt.target)
     this.props.onSelectTerm(main_term_id)
   }
 
-  selectSubTerm = () => {
+  selectSubTerm = (evt) => {
+    evt.preventDefault()
     const { sub_term_id } = this.props
-    logger.warn('selectSubTerm', sub_term_id)
+    logger.warn('selectSubTerm', sub_term_id, evt.target)
     this.props.onSelectTerm(sub_term_id)
   }
 

@@ -27,6 +27,11 @@ class DiscoveryList extends Component {
     isResize: false
   }
 
+  onSelectTermFromRoot = (termId) => {
+    this.onSelectTerm(termId)
+    this.props.ui.toggleSplitView(false)
+  }
+
   onSelectTerm = (termId) => {
     logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
@@ -111,8 +116,8 @@ class DiscoveryList extends Component {
     this.props.ui.toggleSplitView(false)
   }
 
-  renderTermSuggestionList = (isSplitView, discoveryTermId, terms, urlId) => {
-    logger.warn('renderTermSuggestionList', discoveryTermId, terms)
+  renderTermList = (isSplitView, discoveryTermId, terms, urlId) => {
+    logger.warn('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
     if (terms.length) {
       const topics = terms.find(item => item.termId === discoveryTermId)
@@ -134,7 +139,7 @@ class DiscoveryList extends Component {
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
                   onSelect={this.onChangePreviewItem}
-                  onSelectTerm={this.onSelectTerm}
+                  onSelectTerm={this.onSelectTermFromRoot}
                   {...item}
                  />
                )
@@ -169,7 +174,7 @@ class DiscoveryList extends Component {
     if (isSplitView) {
       return (
         <div className='discovery-list'>
-          { !isResize && this.renderTermSuggestionList(isSplitView, discoveryTermId, terms, urlId) }
+          { !isResize && this.renderTermList(isSplitView, discoveryTermId, terms, urlId) }
           { !isResize && <div className='close_button' onClick={this.closePreview} /> }
           {
             isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
@@ -192,7 +197,7 @@ class DiscoveryList extends Component {
     }
     logger.warn('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
-      return this.renderTermSuggestionList(isSplitView, discoveryTermId, terms, urlId)
+      return this.renderTermList(isSplitView, discoveryTermId, terms, urlId)
     }
     return (
       <DiscoveryDetail
@@ -225,7 +230,7 @@ class DiscoveryList extends Component {
             sub_term_img={sub_term_img}
             sub_term_name={sub_term_name}
             onSelect={this.onSelect}
-            onSelectTerm={this.onSelectTerm}
+            onSelectTerm={this.onSelectTermFromRoot}
             {...item}
            />
          )

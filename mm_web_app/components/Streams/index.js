@@ -182,13 +182,10 @@ class Streams extends React.Component {
     const { urls, users, topics, owners, isInstall } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
     logger.warn('Streams render', urls, users, topics, owners, myUrls)
-    if (urls && urls.length === 0) {
+    if (urls && urls.length === 0 && isInstall) {
       return (
         <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
-          { isInstall && <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3> }
-          <p>
-            Now you can start browsing and sharing with your friends. Come back here after you’ve shared with your friends.
-          </p>
+          <h3>Congratulations for installing <img src='/static/images/maomao.png' className='maomao-img' alt='maomao' /> !</h3>
         </Section>
       )
     }
