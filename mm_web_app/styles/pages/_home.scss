@@ -571,6 +571,101 @@ the home page
     z-index: 1;
     margin-top: 50px;
     .grid-row {
+      .grid-item--full {
+        background: url("/static/images/balls.svg") no-repeat center gray;
+        iframe {
+          z-index: 1;
+          min-height: 90vh;
+          height: 100%;
+        }
+      }
+      .discovery-list {
+        &::after {
+          content: "";
+          clear: both;
+        }
+        .splitter-view {
+          min-height: 100vh;
+          overflow: hidden;
+          @include border-radius(5px);
+          &::before {
+            @include transform(scale(0.96));
+            @include border-radius(5px);
+            @include abs-pos ($top: 0, $right: 0, $bottom: 0, $left: 0);
+            @include transition (all 0.3s cubic-bezier(.25, .8, .25, 1));
+            -webkit-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+            -moz-box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+            box-shadow: 0 0px 5px rgba(0, 0, 0, 0.12), 0 0px 5px rgba(0, 0, 0, 0.24);
+            opacity: 0;
+            content: " ";
+            height: 100%;
+            width: 100%;
+            pointer-events: none;
+            z-index: 3;
+          }
+          &:hover::before {
+            -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+            -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+            -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+            animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+          }
+        }
+        .close_button {
+          z-index: 9999;
+          position: absolute;
+          width: 40px;
+          height: 40px;
+          top: -16px;
+          left: -16px;
+          border: 0;
+          background: $close-btn-img no-repeat center center;
+          &:hover {
+            text-decoration: none;
+            cursor: pointer;
+          }
+        }
+        .resizable {
+          .grid-item--full {
+            z-index: 1000;
+            position: fixed;
+            background: url("/static/images/balls.svg") no-repeat center gray;
+            .close_button {
+              display: none;
+            }
+            iframe {
+              z-index: 1;
+              background: #fff;
+              min-height: 65vh;
+              height: 100%;
+            }
+          }
+          .on-resize {
+            background: #2db7f5;
+            height: 100vh !important;
+            width: 100%;
+          }
+          & > :not(:first-child) {
+            background: #2db7f5;
+            height: 100vh !important;
+            z-index: 999;
+          }
+        }
+        .split-view {
+          .grid-item {
+            width: 250px;
+            z-index: 100;
+            .tags {
+              line-height: 15px !important;
+              font-size: 0.8rem !important;
+            }
+            img.thumbnail {
+              width: 30px !important;
+              height: 30px !important;
+            }
+          }
+        }
+      }
       .grid-sizer, .grid-item {
         width: 20%;
         @include border-radius(5px);
@@ -615,6 +710,21 @@ the home page
             position: relative;
             display: block;
             overflow: hidden;
+            opacity: 0.8;
+            .discovery-description {
+              display: none;
+            }
+            .discovery-title {
+              color:#000;
+              background: rgb(255, 255, 255); /* fallback color */
+              background: rgba(255, 255, 255, 0.7);
+              padding: 10px;
+              font-size: 1.2rem;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
+            }
             .caption {
               @include abs-pos ($top: auto, $right: 0, $bottom: 50px, $left: auto);
               width: 100%;
@@ -631,43 +741,23 @@ the home page
                 }
               }
             }
-            img {
-              @include border-radius(8px);
-              object-fit: contain;
-              margin: 0 auto;
-              display: block;
-            }
-            &.active::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              right: 0;
-              bottom: 0;
-              left: 0;
-              background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .01;
-            }
-            &::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              right: 0;
-              bottom: 0;
-              left: 0;
-              background-image: linear-gradient(to bottom right,#000,#fff);
-              opacity: .85;
-            }
             &:hover {
-              &::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-image: linear-gradient(to bottom right,#000,#fff);
-                opacity: .01;
+              opacity: 1.0;
+              .discovery-title {
+                display: none;
               }
+              .discovery-description {
+                display: block;
+                color:#fff;
+                background: rgb(0, 0, 0); /* fallback color */
+                background: rgba(0, 0, 0, 0.7);
+                padding: 2px;
+                margin: 0;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 8;
+                -webkit-box-orient: vertical;
+                }
             }
           }
           input.select-topic {
@@ -833,7 +923,7 @@ the home page
 
 .wrapper-slide {
   .sticky {
-    z-index: 100;
+    z-index: 10;
   }
 }
 
@@ -905,7 +995,7 @@ the home page
 
 .navigation-panel {
   position: fixed;
-  z-index: 100;
+  z-index: 1000;
 }
 
 /*animation download*/

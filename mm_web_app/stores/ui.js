@@ -31,6 +31,7 @@ export class UIStore {
   @observable notifications = []
   /* discover mode */
   @observable discoveryUrlId = -1
+  @observable discoveryTermId = -1
   @observable isSplitView = false
   selectedDiscoveryItem = {}
   shareTopics = []
@@ -219,17 +220,23 @@ export class UIStore {
   }
 
   @action selectDiscoveryItem (item) {
-    this.discoveryUrlId = item.disc_url_id
+    const { disc_url_id: urlId } = item
+    this.discoveryUrlId = urlId
     this.selectedDiscoveryItem = item
     this.animationType = 'RTL'
   }
 
   @action selectDiscoveryTerm (termId) {
-    this.isSplitView = termId > 0
+    this.discoveryTermId = termId
+  }
+
+  @action toggleSplitView (isSelect) {
+    this.isSplitView = isSelect
   }
 
   @action backToRootDiscovery () {
     this.discoveryUrlId = -1
+    this.discoveryTermId = -1
     this.selectedDiscoveryItem = {}
     this.animationType = 'LTR'
     this.isSplitView = false

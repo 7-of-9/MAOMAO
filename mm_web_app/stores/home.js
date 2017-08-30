@@ -98,7 +98,6 @@ export class HomeStore extends CoreStore {
           () => {
             if (termInfo.value.data) {
               const { term } = termInfo.value.data
-              logger.warn('get term result', termId, termInfo.value.data)
               this.terms[term.term_id] = term
             }
             this.pendings.splice(this.pendings.indexOf(termId), 1)

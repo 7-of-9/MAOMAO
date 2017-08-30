@@ -6,7 +6,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import { compose, withState, withHandlers } from 'recompose'
+import { compose, withState, withHandlers, onlyUpdateForKeys } from 'recompose'
 import DebounceInput from 'react-debounce-input'
 import Form from './Form'
 import logger from '../../utils/logger'
@@ -40,7 +40,8 @@ const enhance = compose(
       props.onChange(props.terms)
       props.changeValue('')
     }
-  })
+  }),
+  onlyUpdateForKeys(['terms', 'suggestions', 'value'])
 )
 
 const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handleAdd, handleDelete }) => {
@@ -49,6 +50,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
     value,
     onChange: onInput
   }
+  logger.warn('SearchBar', terms, suggestions, value)
   return (
     <Form onSubmit={onSearch}>
       <nav className='navbar'>

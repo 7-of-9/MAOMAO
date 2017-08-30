@@ -36,6 +36,9 @@ class DiscoveryNavigation extends Component {
   selectTerm = (termId) => {
     logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
+    this.props.ui.toggleSplitView(true)
+    const { userId, userHash } = this.props.store
+    this.props.term.getTermDiscover(userId, userHash, termId)
   }
 
   componentWillReact () {
@@ -95,7 +98,8 @@ class DiscoveryNavigation extends Component {
                 className='selected-topic' key={`topic-${id}`}
                 style={{
                   background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                  backgroundSize: 'cover'
+                  backgroundSize: 'cover',
+                  cursor: 'pointer'
                 }}
                 onClick={() => this.selectTerm(id)}
               >

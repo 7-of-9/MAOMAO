@@ -51,9 +51,9 @@ class Discover extends React.PureComponent {
       return (
         <div className='wrapper-slide'>
           <DiscoveryList />
-        </div>)
+        </div>
+      )
     }
-    return (<Loading isLoading />)
   }
 
   componentDidMount () {

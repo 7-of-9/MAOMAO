@@ -1,13 +1,10 @@
-import {
-  action,
-  when,
-  observable
- } from 'mobx'
+import { action, when, observable } from 'mobx'
 import { rootDiscover, termDiscover } from '../services/topic'
 import logger from '../utils/logger'
 import _ from 'lodash'
 
 let store = null
+const MAX_ITEM_PER_PAGE = 50
 
 class TermStore {
   @observable pendings = []
@@ -17,7 +14,6 @@ class TermStore {
   @observable hasMore = true
 
   @action getRootDiscover (userId, userHash, page) {
-    const MAX_ITEM_PER_PAGE = 50
     logger.warn('getRootDiscover')
     this.page = page
     this.hasMore = false
@@ -39,6 +35,7 @@ class TermStore {
               this.discoveries.push(item)
             }
           })
+          this.discoveries = _.uniqBy(this.discoveries, 'disc_url_id')
         }
         this.pendings.splice(0, 1)
       }
@@ -52,9 +49,10 @@ class TermStore {
   @action getTermDiscover (userId, userHash, termId) {
     logger.warn('getTermDiscover')
     const isExist = this.terms.find(item => item.termId === termId)
-    if (!isExist) {
+    const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
+    if (!isExist && !isProcess) {
       const termData = termDiscover(userId, userHash, termId)
-      this.pendings.push('termData')
+      this.pendings.push(`termData${termId}`)
       when(
         () => termData.state !== 'pending',
         () => {
@@ -62,7 +60,7 @@ class TermStore {
             const { discoveries } = termData.value.data
             this.terms.push({
               termId,
-              discoveries: discoveries || []
+              discoveries: _.uniqBy(discoveries, 'disc_url_id') || []
             })
           }
           this.pendings.splice(0, 1)
