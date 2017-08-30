@@ -22,7 +22,7 @@ namespace mmapi00.Controllers
 
             var ret = new {
                   locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities(),
-                discoveries = mm_svc.Discovery.FetchDiscoveries.GetForUser(user_id, page_num, per_page: 50, country: country, city: city),
+                discoveries = mm_svc.Discovery.FetchDiscoveries.GetForUser(user_id, page_num, per_page: 120, country: country, city: city),
             };
             return Ok(ret);
         }
@@ -36,7 +36,7 @@ namespace mmapi00.Controllers
 
             var ret = new {
                   locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities(),
-                discoveries = mm_svc.Discovery.FetchDiscoveries.GetForTerm(term_id, page_num, per_page: 50, country: country, city: city),
+                discoveries = mm_svc.Discovery.FetchDiscoveries.GetForTerm(term_id, page_num, per_page: 120, country: country, city: city),
             };
             return Ok(ret);
         }

@@ -13,7 +13,7 @@ namespace mm_svc.Discovery
     public static class FetchDiscoveries
     {
         public static List<DiscoveryInfo> GetForUser(long user_id,
-            int page_num = 0, int per_page = 50, string country = null, string city = null)
+            int page_num = 0, int per_page = 120, string country = null, string city = null)
         {
             using (var db = mm02Entities.Create()) {
 
@@ -22,7 +22,7 @@ namespace mm_svc.Discovery
                     return new List<DiscoveryInfo>();
 
                 var num_topics = user_reg_topics_ids.Count;
-                var urls_per_topic = per_page / num_topics;
+                var urls_per_topic = per_page / num_topics; // (int)Math.Ceiling((double)per_page / num_topics);
 
                 var disc_urls = new ConcurrentBag<disc_url>();
                 Parallel.ForEach(user_reg_topics_ids, (term_id) => {
@@ -38,7 +38,7 @@ namespace mm_svc.Discovery
         }
         
         public static List<DiscoveryInfo> GetForTerm(long term_id,
-            int page_num = 0, int per_page = 50, string country = null, string city = null)
+            int page_num = 0, int per_page = 120, string country = null, string city = null)
         {
             using (var db = mm02Entities.Create()) {
 
@@ -93,15 +93,15 @@ namespace mm_svc.Discovery
 
                 // get suggestions for search main term and sub-term (aka search suggested term)
                 var main_term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.main_term_id, reprocess: false);
-                var main_term_related_topics = main_term_parents.Where(p2 => p2.is_topic).OrderByDescending(p2 => p2.S).ToList();
-                var main_term_related_suggestions = main_term_parents.Where(p2 => p2.is_topic == false).OrderByDescending(p2 => p2.S).ToList();
+                var main_term_related_topics = main_term_parents.Where(p2 => p2.is_topic && p2.parent_term_id != p.main_term_id).OrderByDescending(p2 => p2.S).Take(2).ToList();
+                var main_term_related_suggestions = main_term_parents.Where(p2 => p2.is_topic == false && p2.S_norm > 0.3).OrderByDescending(p2 => p2.S).ToList();
 
                 var sub_term_related_topics = new List<gt_parent>();
                 var sub_term_related_suggestions = new List<gt_parent>();
                 if (p.term_id != null) {
-                    var sub_term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(p.main_term_id, reprocess: false);
-                    sub_term_related_topics = sub_term_parents.Where(p2 => p2.is_topic).OrderByDescending(p2 => p2.S).ToList();
-                    sub_term_related_suggestions = sub_term_parents.Where(p2 => p2.is_topic == false).OrderByDescending(p2 => p2.S).ToList();
+                    var sub_term_parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics((long)p.term_id, reprocess: false);
+                    sub_term_related_topics = sub_term_parents.Where(p2 => p2.is_topic && p2.parent_term_id != p.term_id).OrderByDescending(p2 => p2.S).Take(2).ToList();
+                    sub_term_related_suggestions = sub_term_parents.Where(p2 => p2.is_topic == false && p2.S_norm > 0.3).OrderByDescending(p2 => p2.S).ToList();
                 }
 
                 var ret = new DiscoveryInfo() {

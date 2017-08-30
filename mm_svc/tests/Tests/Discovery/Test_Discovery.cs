@@ -17,10 +17,14 @@ namespace tests.Tests.Discovery
         [TestMethod]
         public void UserDiscovery_Test0()
         {
-            var all = mm_svc.Discovery.FetchDiscoveries.GetForUser(15, 0, 50);
+            // all
+            var all = mm_svc.Discovery.FetchDiscoveries.GetForUser(20);
+            foreach (var r in all) {
+                LogResult(0, r);
+            }
 
+            // by geo
             var locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
-
             foreach (var location in locations) {
 
                 for (int page = 0; page < 10; page++) {
@@ -41,6 +45,11 @@ namespace tests.Tests.Discovery
         [TestMethod]    
         public void TermDiscovery_Test0()
         {
+            var test_one = mm_svc.Discovery.FetchDiscoveries.GetForTerm(4995445);
+            foreach (var r in test_one) {
+                LogResult(0, r);
+            }
+
             var locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities();
             foreach (var location in locations) {
                 for (int page = 0; page < 1; page++) {
