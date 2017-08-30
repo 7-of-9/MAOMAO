@@ -580,6 +580,10 @@ the home page
         }
       }
       .discovery-list {
+        &::after {
+          content: "";
+          clear: both;
+        }
         .splitter-view {
           min-height: 100vh;
           overflow: hidden;
@@ -648,8 +652,6 @@ the home page
           }
         }
         .split-view {
-          height: 90vh;
-          overflow: auto;
           .grid-item {
             width: 250px;
             .tags {

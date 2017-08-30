@@ -8,6 +8,7 @@ import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
+import Sticky from 'react-sticky-el'
 import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
@@ -175,23 +176,25 @@ class DiscoveryList extends Component {
       return (
         <div className='discovery-list'>
           { !isResize && this.renderTermList(isSplitView, discoveryTermId, terms, urlId) }
-          { !isResize && <div className='close_button' onClick={this.closePreview} /> }
-          {
-            isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
-              {(width, height) => (
-                <DiscoveryDetail
-                  items={items}
-                  title={title}
-                  termIds={termIds}
-                  url={url}
-                  utc={utc}
-                  width={currentWidth - 5}
-                  closePreview={this.closePreview}
-              />
-            )
+          <Sticky>
+            { !isResize && <div className='close_button' onClick={this.closePreview} /> }
+            {
+             isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
+               {(width, height) => (
+                 <DiscoveryDetail
+                   items={items}
+                   title={title}
+                   termIds={termIds}
+                   url={url}
+                   utc={utc}
+                   width={currentWidth - 5}
+                   closePreview={this.closePreview}
+                  />
+                  )
+              }
+             </SplitView>
             }
-            </SplitView>
-          }
+          </Sticky>
         </div>
       )
     }
