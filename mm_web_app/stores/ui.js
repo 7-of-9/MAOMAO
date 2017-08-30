@@ -227,7 +227,6 @@ export class UIStore {
   }
 
   @action selectDiscoveryTerm (termId) {
-    this.isSplitView = termId > 0
     this.discoveryTermId = termId
   }
 

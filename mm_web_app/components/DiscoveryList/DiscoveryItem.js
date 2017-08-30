@@ -11,7 +11,9 @@ import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
 const dynamicFontSize = (text) => {
-  return text.length > 12 ? '1rem' : '1.5rem'
+  if (text.length > 20) return '0.8rem'
+  if (text.length > 12) return '1rem'
+  return '1.5rem'
 }
 
 @observer
@@ -28,6 +30,7 @@ export default class DiscoveryItem extends PureComponent {
     main_term_img: PropTypes.string.isRequired,
     sub_term_img: PropTypes.string.isRequired,
     search_num: PropTypes.number.isRequired,
+    ingoreTerms: PropTypes.array.isRequired,
     onSelect: PropTypes.func.isRequired,
     onSelectTerm: PropTypes.func.isRequired
   }
@@ -44,14 +47,17 @@ export default class DiscoveryItem extends PureComponent {
     main_term_img: '',
     sub_term_img: '',
     search_num: 0,
+    ingoreTerms: [],
     onSelect: (item) => {},
     onSelectTerm: (termId) => {}
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
-    logger.warn('handleClick', evt.target)
-    this.props.onSelect(this.props)
+    if (!this.clickOnTerm) {
+      logger.warn('handleClick', evt.target)
+      this.props.onSelect(this.props)
+    }
   }
 
   noImage = (evt) => {
@@ -62,6 +68,7 @@ export default class DiscoveryItem extends PureComponent {
     evt.preventDefault()
     const { main_term_id } = this.props
     logger.warn('selectMainTerm', main_term_id, evt.target)
+    this.clickOnTerm = true
     this.props.onSelectTerm(main_term_id)
   }
 
@@ -69,12 +76,13 @@ export default class DiscoveryItem extends PureComponent {
     evt.preventDefault()
     const { sub_term_id } = this.props
     logger.warn('selectSubTerm', sub_term_id, evt.target)
+    this.clickOnTerm = true
     this.props.onSelectTerm(sub_term_id)
   }
 
   renderTerms = () => {
     /* eslint-disable camelcase */
-    const { main_term_img, main_term_name, sub_term_img, sub_term_name } = this.props
+    const { main_term_img, main_term_name, sub_term_img, sub_term_name, main_term_id, sub_term_id, ingoreTerms } = this.props
     let customStyle = { height: '52px' }
     if (sub_term_name !== main_term_name) {
       customStyle = Object.assign({}, customStyle, { top: '-15px' })
@@ -86,7 +94,8 @@ export default class DiscoveryItem extends PureComponent {
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
-              fontSize: dynamicFontSize(main_term_name)
+              fontSize: dynamicFontSize(main_term_name),
+              cursor: ingoreTerms.indexOf(main_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(main_term_name)}`} rel='tag'>
             {main_term_name}
@@ -99,7 +108,8 @@ export default class DiscoveryItem extends PureComponent {
             style={{
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
-              fontSize: dynamicFontSize(sub_term_name)
+              fontSize: dynamicFontSize(sub_term_name),
+              cursor: ingoreTerms.indexOf(sub_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
             {sub_term_name}

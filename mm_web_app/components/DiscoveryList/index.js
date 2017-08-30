@@ -15,6 +15,7 @@ import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import SplitView from '../SplitView'
 import Loading from '../Loading'
+import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -28,11 +29,6 @@ class DiscoveryList extends Component {
     isResize: false
   }
 
-  onSelectTermFromRoot = (termId) => {
-    this.onSelectTerm(termId)
-    this.props.ui.toggleSplitView(false)
-  }
-
   onSelectTerm = (termId) => {
     logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
@@ -42,11 +38,7 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
-  }
-
-  onChangePreviewItem = (item) => {
     this.props.ui.toggleSplitView(true)
-    this.props.ui.selectDiscoveryItem(item)
   }
 
   onBack = () => {
@@ -72,9 +64,9 @@ class DiscoveryList extends Component {
     }
   }
 
-  backButton = () => {
-    const { discoveryUrlId, discoveryTermId, isSplitView, selectedDiscoveryItem: { main_term_id: mainTermId } } = toJS(this.props.ui)
-    if (discoveryUrlId && discoveryUrlId !== -1) {
+  backButton = (isRootView) => {
+    const { discoveryTermId, isSplitView, selectedDiscoveryItem: { main_term_id: mainTermId } } = toJS(this.props.ui)
+    if (!isRootView) {
       const term = this.props.store.getCurrentTerm(discoveryTermId > 0 ? discoveryTermId : mainTermId)
       if (term) {
         const { img, term_name: title } = term
@@ -117,7 +109,7 @@ class DiscoveryList extends Component {
     this.props.ui.toggleSplitView(false)
   }
 
-  renderTermList = (isSplitView, discoveryTermId, terms, urlId) => {
+  renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
     logger.warn('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
     if (terms.length) {
@@ -134,13 +126,14 @@ class DiscoveryList extends Component {
               const { img: sub_term_img, term_name: sub_term_name } = subTerm
               items.push(
                 <DiscoveryItem
-                  key={`${item.disc_url_id}-${item.title}`}
+                  key={guid()}
+                  ingoreTerms={ingoreTerms}
                   main_term_img={main_term_img}
                   main_term_name={main_term_name}
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
-                  onSelect={this.onChangePreviewItem}
-                  onSelectTerm={this.onSelectTermFromRoot}
+                  onSelect={this.onSelect}
+                  onSelectTerm={this.onSelectTerm}
                   {...item}
                  />
                )
@@ -159,23 +152,32 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
-    const { isSplitView, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
+    const ingoreTerms = []
+    if (discoveryTermId !== -1) {
+      ingoreTerms.push(discoveryTermId)
+    }
+    if (termId !== -1) {
+      ingoreTerms.push(termId)
+    }
     const items = []
-    termIds.forEach(id => {
-      if (id !== termId) {
-        const term = this.props.store.getCurrentTerm(id)
-        if (term) {
-          items.push(term)
+    if (termIds) {
+      termIds.forEach(id => {
+        if (id !== termId) {
+          const term = this.props.store.getCurrentTerm(id)
+          if (term) {
+            items.push(term)
+          }
         }
-      }
-    })
+      })
+    }
     const { currentWidth, isResize } = this.state
     const { terms } = toJS(this.props.term)
     logger.warn('isSplitView', isSplitView)
-    if (isSplitView) {
+    if (isSplitView && discoveryUrlId !== -1) {
       return (
         <div className='discovery-list'>
-          { !isResize && this.renderTermList(isSplitView, discoveryTermId, terms, urlId) }
+          { !isResize && this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId) }
           <Sticky>
             { !isResize && <div className='close_button' onClick={this.closePreview} /> }
             {
@@ -200,7 +202,7 @@ class DiscoveryList extends Component {
     }
     logger.warn('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
-      return this.renderTermList(isSplitView, discoveryTermId, terms, urlId)
+      return this.renderTermList(isSplitView && discoveryUrlId !== -1, ingoreTerms, discoveryTermId, terms, urlId)
     }
     return (
       <DiscoveryDetail
@@ -215,7 +217,7 @@ class DiscoveryList extends Component {
     )
   }
 
-  renderList = () => {
+  renderRootList = () => {
     const items = []
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
@@ -227,13 +229,13 @@ class DiscoveryList extends Component {
         const { img: sub_term_img, term_name: sub_term_name } = subTerm
         items.push(
           <DiscoveryItem
-            key={`${item.disc_url_id}-${item.title}`}
+            key={guid()}
             main_term_img={main_term_img}
             main_term_name={main_term_name}
             sub_term_img={sub_term_img}
             sub_term_name={sub_term_name}
             onSelect={this.onSelect}
-            onSelectTerm={this.onSelectTermFromRoot}
+            onSelectTerm={this.onSelectTerm}
             {...item}
            />
          )
@@ -260,27 +262,31 @@ class DiscoveryList extends Component {
   }
 
   render () {
-    const { animationType, discoveryUrlId } = toJS(this.props.ui)
+    const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
     logger.warn('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
+    const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
     return (
       <div className='topic-tree'>
-        {this.backButton()}
+        {this.backButton(isRootView)}
         <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
         <div className='main-inner'>
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
-              <InfiniteScroll
-                pageStart={0}
-                loadMore={this.loadMore}
-                hasMore={this.props.term.hasMore}
-                loader={<Loading isLoading />}
-              >
-                <div className='discover-root'>
-                  {discoveryUrlId === -1 && this.renderList(discoveryUrlId)}
-                </div>
-              </InfiniteScroll>
-              {discoveryUrlId !== -1 && this.renderDetail(discoveryUrlId)}
+              {
+                isRootView &&
+                <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadMore}
+                  hasMore={this.props.term.hasMore}
+                  loader={<Loading isLoading />}
+                >
+                  <div className='discover-root'>
+                    {this.renderRootList()}
+                  </div>
+                </InfiniteScroll>
+              }
+              { !isRootView && this.renderDetail()}
             </div>
           </div>
         </div>
