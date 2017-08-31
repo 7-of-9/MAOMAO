@@ -42,6 +42,7 @@ export class HomeStore extends CoreStore {
   }
   @observable terms = {}
   normalizedData = { entities: {}, result: {} }
+  user = {}
   tree = []
   users = []
   topics = []
@@ -134,7 +135,7 @@ export class HomeStore extends CoreStore {
         this.isLogin = true
         this.userId = data.id
         this.userHash = userHash
-        this.user = {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+        this.user = Object.assign({}, data, {name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'})
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: data.id }))
@@ -145,7 +146,7 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
         }
         this.login(this.userId, this.userHash)
-        callback(Object.assign({}, this.user, {userHash}))
+        callback && callback(Object.assign({}, this.user, {userHash}))
       }
     )
   }
@@ -182,11 +183,11 @@ export class HomeStore extends CoreStore {
         this.userId = data.id
         this.userHash = userHash
         this.googleUser = Object.assign({}, data, { userHash }, info)
-        this.user = {
+        this.user = Object.assign({}, data, {
           name: info.name,
           email: info.email || data.email,
           picture: info.picture
-        }
+        })
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.google_user_id }))
@@ -204,7 +205,7 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('FETCH_CONTACTS', {}))
         }
         this.login(this.userId, this.userHash)
-        callback && callback()
+        callback && callback(this.user)
       }
     )
   }
@@ -223,11 +224,11 @@ export class HomeStore extends CoreStore {
         this.userHash = userHash
         this.isLogin = true
         this.facebookUser = Object.assign({}, data, { userHash }, info)
-        this.user = {
+        this.user = Object.assign({}, data, {
           name: info.name,
           email: info.email || data.email,
           picture: info.picture
-        }
+        })
         // send data to chrome extension
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: info.fb_user_id }))
@@ -244,7 +245,7 @@ export class HomeStore extends CoreStore {
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
         }
         this.login(this.userId, this.userHash)
-        callback && callback()
+        callback && callback(this.user)
       }
     )
   }

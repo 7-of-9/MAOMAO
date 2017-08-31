@@ -24,8 +24,15 @@ router.post('/login', (req, res) => {
       .catch((error) => res.json({ error }))
 })
 
+router.post('/profile', (req, res) => {
+  if (!req.body) return res.sendStatus(400)
+  req.session.discoverRootUrl = req.body.url
+  res.json({ status: true, discoverRootUrl: req.session.discoverRootUrl })
+})
+
 router.post('/logout', (req, res) => {
   req.session.decodedToken = null
+  req.session.discoverRootUrl = null
   res.json({ status: true })
 })
 

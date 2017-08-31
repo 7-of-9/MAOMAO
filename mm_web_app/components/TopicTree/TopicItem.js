@@ -117,7 +117,8 @@ class TopicItem extends PureComponent {
             <a
               style={{
                 backgroundImage: `url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover'
+                backgroundSize: 'cover',
+                opacity: '1.0'
               }}
               className={isSelect ? 'thumbnail-image active' : 'thumbnail-image'}
               onClick={this.handleClick}

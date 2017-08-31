@@ -62,6 +62,8 @@ app.prepare().then(() => {
     if (pathname === '/service-worker.js') {
       const filePath = join(__dirname, dirBuild, pathname)
       app.serveStatic(req, res, filePath)
+    } else if (pathname === encodeURI(req.session.discoverRootUrl)) {
+      app.render(req, res, '/discover')
     } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
@@ -82,8 +84,9 @@ app.prepare().then(() => {
         if (error) {
           log.error(error)
           throw error
+        } else {
+          return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo: JSON.parse(body) }))
         }
-        return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo: JSON.parse(body) }))
       })
     }
   })

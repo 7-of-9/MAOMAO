@@ -185,6 +185,21 @@ class AppHeader extends React.Component {
     this.props.ui.removeNotification(uuid)
   }
 
+  saveProfileUrl = (url) => {
+    /* global URL */
+    const { pathname } = new URL(window.location.href)
+    logger.warn('pathname', pathname)
+    if (pathname !== encodeURI(`/${url}`)) {
+      fetch('/api/auth/profile', {
+        method: 'POST',
+              // eslint-disable-next-line no-undef
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        credentials: 'same-origin',
+        body: JSON.stringify({ url: `/${url}` })
+      })
+    }
+  }
+
   /* global fetch */
   componentDidMount () {
     logger.warn('AppHeader componentDidMount')
@@ -227,18 +242,22 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
-                            }, () => {
+                            }, (currentUser) => {
+                              logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                              this.saveProfileUrl(currentUser.nav_id)
                             })
                           }
                         })
                       } else {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
-                        }, () => {
+                        }, (currentUser) => {
+                          logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                          this.saveProfileUrl(currentUser.nav_id)
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -247,18 +266,22 @@ class AppHeader extends React.Component {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
-                            }, () => {
+                            }, (currentUser) => {
+                              logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                              this.saveProfileUrl(currentUser.nav_id)
                             })
                           }
                         })
                       } else {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
-                        }, () => {
+                        }, (currentUser) => {
+                          logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                          this.saveProfileUrl(currentUser.nav_id)
                         })
                       }
                     } else if (sign_in_provider === 'password') {
@@ -267,6 +290,7 @@ class AppHeader extends React.Component {
                       // hack here, try to store intenal user
                       try {
                         const loggedUser = JSON.parse(photoURL)
+                        // TODO: need to get nav_id for internal user
                         this.props.store.retrylLoginForInternalUser(loggedUser)
                       } catch (error) {
                         logger.warn(error)
@@ -373,9 +397,13 @@ class AppHeader extends React.Component {
               </a>
               <ul className='dropdown-menu pull-right'>
                 {user && user.name &&
-                  <div className='account-dropdown__identity account-dropdown__segment'>
-                    Signed in as <strong>{user.name} ({user.email})</strong>
-                  </div>
+                  <Link prefetch href={`/${user.nav_id}`}>
+                    <div className='account-dropdown__identity account-dropdown__segment'>
+                      <a href={`/${user.nav_id}`}>
+                       Your discover <strong>({user.name} ({user.email}))</strong>
+                      </a>
+                    </div>
+                  </Link>
                 }
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
               </ul>

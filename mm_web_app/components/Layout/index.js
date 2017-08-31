@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Router from 'next/router'
 import NProgress from 'nprogress'
+import NoSSR from 'react-no-ssr'
 import { Footer, Page } from 'neal-react'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
@@ -50,7 +51,9 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <script src='/static/vendors/js/snoowrap-v1.min.js' />
       <script src='/static/vendors/js/addtohomescreen.min.js' />
     </Head>
-    <AppHeader />
+    <NoSSR>
+      <AppHeader />
+    </NoSSR>
     { children }
     <Notification />
     <div className='footer-area'>

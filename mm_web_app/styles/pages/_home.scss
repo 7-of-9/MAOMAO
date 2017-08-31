@@ -755,6 +755,9 @@ the home page
                 height: 240px;
                 }
             }
+            &.active {
+              border: 2px solid #008000;
+            }
           }
           input.select-topic {
             position: absolute;
