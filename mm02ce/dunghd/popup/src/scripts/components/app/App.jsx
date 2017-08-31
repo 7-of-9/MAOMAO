@@ -13,7 +13,7 @@ import { isInternalTab, openUrl, removeHashFromUrl, fbScrapeShareUrl } from './u
 
 require('../../stylesheets/main.scss');
 
-const SITE_URL = 'https://maomaoweb.azurewebsites.net';
+const SITE_URL = 'http://www.maomao.rocks';
 const FB_APP_ID = '386694335037120';
 
 const propTypes = {

@@ -100,7 +100,7 @@ const ShareOptions = enhance(({ url, isProcessingNlp, topics, active, onChange }
                       <span className="icons-labs" />
                       <a
                         className="icons-search"
-                        href={`http://maomaoweb.azurewebsites.net/discovery?search=${topic.name.substr(0, topic.name.indexOf('[') !== -1 ? topic.name.indexOf('[') : topic.name.length)}`}
+                        href={`http://www.maomao.rocks/discovery?search=${topic.name.substr(0, topic.name.indexOf('[') !== -1 ? topic.name.indexOf('[') : topic.name.length)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       />

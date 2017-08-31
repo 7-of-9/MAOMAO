@@ -92,7 +92,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
                   <span className="labs">
                     {topic.name.toUpperCase()}
                     <span className="icons-labs" />
-                    <a className="icons-search" href={`http://maomaoweb.azurewebsites.net/discovery?search=${topic.name}`} target="_blank" rel="noopener noreferrer" />
+                    <a className="icons-search" href={`http://www.maomao.rocks/discovery?search=${topic.name}`} target="_blank" rel="noopener noreferrer" />
                   </span>
                 </label>
               </div>),
