@@ -81,6 +81,12 @@ namespace tests.Tests.Discovery
 
         }
 
+        [TestMethod]
+        public void TermByName_Test0()
+        {
+            var info = TopicTree.GetTermInfo("chess");
+        }
+
         private static void LogResult(int page, mm_svc.Discovery.DiscoveryInfo r)
         {
             Trace.WriteLine($"page={page} [{r.country}/{r.city}] [{r.main_term_name} (#{r.main_term_id}) / {r.sub_term_name} (#{r.sub_term_id})] [{r.utc.ToString("dd MMM yyyy HH:mm")}] [{(SearchTypeNum)r.search_num}] [{r.site_tld}] [{r.title.nonewline()}]");// {r.desc.nonewline()}");

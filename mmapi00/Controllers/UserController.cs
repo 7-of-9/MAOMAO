@@ -21,7 +21,7 @@ namespace mmapi00.Controllers
     public class UserController : ApiController
     {
         /// <summary>
-        /// Register new internal test user
+        /// Register new internal test user, or return existing test user.
         /// </summary>
         /// <returns></returns>
         [Route("user/test")]
@@ -31,11 +31,13 @@ namespace mmapi00.Controllers
             var db_user = mm_svc.UserRegister.CreateNewTestUser();
 
             return Ok(new { id = db_user.id, email = db_user.email,
-                            firstname = db_user.firstname, lastname = db_user.lastname });
+                            firstname = db_user.firstname, lastname = db_user.lastname,
+                            nav_id = db_user.email
+            });
         }
 
         /// <summary>
-        /// Register new user by google
+        /// Register new user by google, or return existing google user.
         /// </summary>
         /// <returns></returns>
         [Route("user/google")]
@@ -46,11 +48,13 @@ namespace mmapi00.Controllers
             var db_user = mm_svc.UserRegister.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
-                            firstname = db_user.firstname, lastname = db_user.lastname });
+                            firstname = db_user.firstname, lastname = db_user.lastname,
+                            nav_id  = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", "")
+            });
         }
 
         /// <summary>
-        /// Register new user by FB
+        /// Register new user by FB, or return existing FB user.
         /// </summary>
         /// <returns></returns>
         [Route("user/fb")]
@@ -61,7 +65,9 @@ namespace mmapi00.Controllers
             var db_user = mm_svc.UserRegister.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
-                            firstname = db_user.firstname,lastname = db_user.lastname });
+                            firstname = db_user.firstname, lastname = db_user.lastname,
+                            nav_id = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", "")
+            });
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using mmdb_model;
+﻿using mm_global;
+using mmdb_model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,36 +19,26 @@ namespace mm_svc.Terms
             //[JsonProperty(PropertyName = "l")]
             public int level;
 
-            //[JsonProperty(PropertyName = "t")]
             public bool is_topic; 
 
-            //[JsonProperty(PropertyName = "i")]
             public long term_id;
 
-            //[JsonProperty(PropertyName = "n")]
             public string term_name;
 
-            //[JsonProperty(PropertyName = "m")]
             public string img;
 
-            //[JsonProperty(PropertyName = "c")]
             public List<TopicTermLink> child_topics = new List<TopicTermLink>();
 
-            //[JsonProperty(PropertyName = "s")]
             public List<TopicTermLink> child_suggestions = new List<TopicTermLink>();
         }
 
         public class TermInfo {
-            //[JsonProperty(PropertyName = "t")]
             public bool is_topic;
 
-            //[JsonProperty(PropertyName = "i")]
             public long term_id;
 
-            //[JsonProperty(PropertyName = "n")]
             public string term_name;
 
-            //[JsonProperty(PropertyName = "m")]
             public string img;
         }
 
@@ -87,6 +78,48 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 var t = db.terms.Find(term_id);
+                return new TermInfo() {
+                    is_topic = t.IS_TOPIC,
+                    term_id = t.id,
+                    term_name = t.name,
+                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(t)
+                };
+            }
+        }
+
+        public static TermInfo GetTermInfo(string term_name) {
+            using (var db = mm02Entities.Create()) {
+                // find by name - todo: might have problems with case sensitive terms (would return > 2)
+                var terms = db.terms.Where(p => (p.term_type_id == (int)g.TT.WIKI_NS_0 || p.term_type_id == (int)g.TT.WIKI_NS_14) && p.name == term_name).ToListNoLock();
+                if (terms.Count == 0)
+                    return null;
+
+                term t = null;
+                if (terms.Count == 1)
+                    t = terms[0];
+                else if (terms.Count == 2) { //* 
+                    // more than one matching by name? (wiki NS 14 || 0)
+                    // then try to disambiguate by picking the one that's in [gt_parent], as it's the source for topic-tree
+                    var a = terms[0];
+                    var b = terms[1];
+                    var a_in_gt_parent = false;
+                    var b_in_gt_parent = false;
+
+                    if (db.gt_parent.Any(p => p.child_term_id == a.id || p.parent_term_id == a.id))
+                        a_in_gt_parent = true;
+                    if (db.gt_parent.Any(p => p.child_term_id == b.id || p.parent_term_id == b.id))
+                        b_in_gt_parent = true;
+
+                    if (a_in_gt_parent && b_in_gt_parent) throw new ApplicationException($"two term IDs {a.id} {b.id} both in gt_parent; unexpected.");
+                    if (!a_in_gt_parent && !b_in_gt_parent) throw new ApplicationException($"neither term ID {a.id} {b.id} in gt_parent; unexpected.");
+
+                    if (a_in_gt_parent)
+                        t = a;
+                    else
+                        t = b;
+                }
+                else throw new ApplicationException("got >2 terms; unexpected.");
+
                 return new TermInfo() {
                     is_topic = t.IS_TOPIC,
                     term_id = t.id,

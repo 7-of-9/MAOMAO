@@ -14,15 +14,31 @@ namespace mmapi00.Controllers
     public class TermController : ApiController
     {
         /// <summary>
-        /// Gets info for a term_id.
+        /// Gets term by id.
         /// </summary>
-        /// <returns>The topic tree.</returns>
+        /// <returns>Term info.</returns>
         [Route("term/{id}")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 24 hr / 24 hrs
         public IHttpActionResult GetTerm(long id)
         {
             var term_info = mm_svc.Terms.TopicTree.GetTermInfo(id);
+
+            return Ok(new {
+                term = term_info
+            });
+        }
+
+        /// <summary>
+        /// Get term by name.
+        /// </summary>
+        /// <returns>Term info.</returns>
+        [Route("term/lookup/{name}")]
+        [HttpGet]
+        [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 24 hr / 24 hrs
+        public IHttpActionResult GetTerm(string name)
+        {
+            var term_info = mm_svc.Terms.TopicTree.GetTermInfo(name);
 
             return Ok(new {
                 term = term_info
