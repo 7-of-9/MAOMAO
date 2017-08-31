@@ -22,6 +22,14 @@ const Discovery = dynamic(
   }
 )
 
+const ChromeInstall = dynamic(
+ import('../ChromeInstall'),
+  {
+    loading: () => (<Loading isLoading />),
+    ssr: false
+  }
+)
+
 const Share = dynamic(
  import('../Share'),
   {
@@ -118,7 +126,7 @@ class Home extends React.Component {
   }
 
   renderBaseOnAuthentication = () => {
-    const { isLogin, isProcessing } = this.props.store
+    const { isLogin, isProcessing, shareInfo } = this.props.store
     const { currentViewer, selectedTopics } = this.props.ui
     if (isLogin) {
       return (
@@ -131,9 +139,13 @@ class Home extends React.Component {
     const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.termId, name: item.termName})) : []
     return (
       <div className='wrapper-slide'>
-        <SelectedPanel
-          items={selectedItems}
+        { shareInfo && <ChromeInstall /> }
+        {
+          selectedItems.length > 0 &&
+          <SelectedPanel
+            items={selectedItems}
             />
+        }
         {
             currentViewer !== 'discovery' &&
             <TopicTree />

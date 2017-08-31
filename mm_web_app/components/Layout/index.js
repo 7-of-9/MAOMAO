@@ -1,11 +1,10 @@
 import Head from 'next/head'
 import Router from 'next/router'
-import dynamic from 'next/dynamic'
 import NProgress from 'nprogress'
 import { Footer, Page } from 'neal-react'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
+import AppHeader from '../../containers/AppHeader'
 import Notification from '../../components/Notification'
-import Loading from '../../components/Loading'
 
 Router.onRouteChangeStart = (url) => {
   NProgress.start()
@@ -19,14 +18,6 @@ const businessAddress = (
     <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
   </address>
 )
-
-const AppHeader = dynamic(
-  import('../../containers/AppHeader'),
-  {
-    loading: () => (<Loading isLoading />),
-    ssr: false
-  }
- )
 
 export default ({ children, title = 'homepage', description = 'discover & share ' }) => (
   <Page>
@@ -43,7 +34,7 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <meta name='og:image' content={`${MAOMAO_SITE_URL}static/images/logo.png`} />
       <meta name='fb:app_id' content={FACEBOOK_APP_ID} />
       <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
-      <meta name='google-site-verification' content='AmFFr6xg5Htf_GFkf0psWvL1r9JKBMhGEkmAJ7UmafM' />
+      <meta name='google-site-verification' content='R5eOMNDR503rLLPoq12fEQbVWTWxBWaRYqUJiKasHkk' />
       <link rel='apple-touch-icon' href='/static/images/logo.png' />
       <link rel='icon' href='/static/images/logo.png' />
       <link rel='chrome-webstore-item' href='https://chrome.google.com/webstore/detail/onkinoggpeamajngpakinabahkomjcmk' />

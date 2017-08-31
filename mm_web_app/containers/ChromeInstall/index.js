@@ -5,9 +5,7 @@
 */
 
 import React from 'react'
-import PropTypes from 'prop-types'
 import { inject, observer } from 'mobx-react'
-import UnlockNow from '../../components/UnlockNow'
 import logger from '../../utils/logger'
 
 const replaceMMIcon = (desc) => {
@@ -24,13 +22,30 @@ class ChromeInstall extends React.PureComponent {
     this.props.ui.toggleSignIn(true)
   }
 
+  onOpenExtensionModal = (evt) => {
+    evt.preventDefault()
+    this.props.ui.openExtensionModal()
+  }
+
   render () {
-    const { title, description, store: { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } } = this.props
+    const { isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo } = this.props.store
+    let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
+    if (shareInfo) {
+      const { fullname, share_all: shareAll, topic_title: topicTitle, url_title: urlTitle } = shareInfo
+      if (shareAll) {
+        description = `${fullname} would like to share all maomao stream with you`
+      } else if (urlTitle && urlTitle.length) {
+        description = `${fullname} would like to share "${urlTitle}" with you`
+      } else if (topicTitle && topicTitle.length) {
+        description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
+      }
+    }
     logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
     let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
+
     return (
       <div className='wrap-main' style={{ textAlign: 'center', display: isInstall && isLogin ? 'none' : '' }}>
-        {isLogin && !isMobile && isChrome && !isInstall &&
+        {isLogin &&
         <div
           className='neal-hero jumbotron jumbotron-fluid text-xs-center banner-hero banner-case'
           style={{ background: this.props.store.bgImage && this.props.store.bgImage.length > 0 ? `url(${this.props.store.bgImage}) fixed` : 'url(/static/images/bg_hero.jpg) repeat-x fixed' }}
@@ -44,7 +59,7 @@ class ChromeInstall extends React.PureComponent {
           }
           <p className='text-engine animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={this.onOpen}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
+            {!isInstall && !isMobile && isChrome && <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> INSTALL <img src='/static/images/maomao.png' className='logo-image' alt='maomao' /></button>}
           </div>
         </div>
           }
@@ -55,8 +70,14 @@ class ChromeInstall extends React.PureComponent {
             >
           <h1 className='animated fadeInUp' dangerouslySetInnerHTML={{ __html: replaceMMIcon(description) }} />
           <div className='hero-caption animated fadeInUp'>
-            {!isInstall && !isMobile && isChrome && !!shareInfo && <UnlockNow install={this.onOpen} title={title} />}
-            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={this.onOpen}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
+            {!isInstall && !isMobile && isChrome && !!shareInfo &&
+              <button
+                className='btn btn-unlock'
+                onClick={this.onOpenExtensionModal} >
+                {joinMsg}
+                </button>
+              }
+            {!isInstall && !isMobile && isChrome && !shareInfo && <button className='btn btn-addto' onClick={this.onOpenExtensionModal}> <i className='fa fa-plus' aria-hidden='true' /> ADD TO CHROME</button>}
             {
               (isMobile || !isChrome || (isChrome && isInstall)) &&
               <div className='block-button'>
@@ -71,12 +92,6 @@ class ChromeInstall extends React.PureComponent {
       </div>
     )
   }
-}
-
-ChromeInstall.propTypes = {
-  install: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired
 }
 
 export default ChromeInstall

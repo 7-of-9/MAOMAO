@@ -119,7 +119,6 @@ export default class Hiring extends React.Component {
     logger.warn('Hiring render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
-
         <Layout title={"Maomao is coming, and we're hiring..."}>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           { type === 'js' && hiringJs() }

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { ctxMenuLogin, ctxMenuLogout } from './helpers';
+import extensionInfo from '../../../../app/manifest.json';
 
 const MIN_NSS = 10;
 
@@ -120,7 +121,7 @@ export default (state = initialState, action, auth, nlp) => {
     case 'MAOMAO_DISABLE': {
       chrome.contextMenus.removeAll();
       chrome.contextMenus.create({
-        title: 'v0.6.11',
+        title: `v${extensionInfo.version}`,
         contexts: ['browser_action'],
         id: 'mm-btn-version',
       });
