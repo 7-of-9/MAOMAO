@@ -751,12 +751,8 @@ the home page
                 color:#fff;
                 background: rgb(0, 0, 0); /* fallback color */
                 background: rgba(0, 0, 0, 0.7);
-                padding: 2px;
                 margin: 0;
-                overflow: hidden;
-                display: -webkit-box;
-                -webkit-line-clamp: 8;
-                -webkit-box-orient: vertical;
+                height: 240px;
                 }
             }
           }

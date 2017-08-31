@@ -7,7 +7,7 @@ import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
-export default class Test extends React.Component {
+export default class DiscoverPage extends React.Component {
   static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''

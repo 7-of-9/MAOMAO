@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const compression = require('compression')
 const Raven = require('raven')
@@ -51,7 +52,7 @@ app.prepare().then(() => {
     '/discovery',
     '/hiring',
     '/smart',
-    '/test'
+    '/discover'
   ]
 
   server.get('*', (req, res) => {

@@ -6,9 +6,8 @@ const _ = require('lodash')
 const queryString = require('query-string')
 const url = require('url')
 const log = require('loglevel')
-const dev = process.env.NODE_ENV !== 'production'
 
-const SITE_URL = dev ? 'http://localhost:3000/' : 'https://maomaoweb-dev.azurewebsites.net/'
+const SITE_URL = process.env.SITE_URL
 
 const parseUrl = (baseUrl, query) => {
   if (Object.keys(query).length !== 1) {

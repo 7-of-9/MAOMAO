@@ -15,7 +15,6 @@ import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import SplitView from '../SplitView'
 import Loading from '../Loading'
-import { guid } from '../../utils/hash'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -38,7 +37,6 @@ class DiscoveryList extends Component {
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
-    this.props.ui.toggleSplitView(true)
   }
 
   onBack = () => {
@@ -126,7 +124,7 @@ class DiscoveryList extends Component {
               const { img: sub_term_img, term_name: sub_term_name } = subTerm
               items.push(
                 <DiscoveryItem
-                  key={guid()}
+                  key={`${item.disc_url_id}-${item.url}`}
                   ingoreTerms={ingoreTerms}
                   main_term_img={main_term_img}
                   main_term_name={main_term_name}
@@ -229,7 +227,7 @@ class DiscoveryList extends Component {
         const { img: sub_term_img, term_name: sub_term_name } = subTerm
         items.push(
           <DiscoveryItem
-            key={guid()}
+            key={`${item.disc_url_id}-${item.url}`}
             main_term_img={main_term_img}
             main_term_name={main_term_name}
             sub_term_img={sub_term_img}

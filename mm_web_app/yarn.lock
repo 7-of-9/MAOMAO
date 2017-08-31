@@ -793,6 +793,12 @@ babel-plugin-dynamic-import-node@1.0.2:
     babel-template "^6.24.1"
     babel-types "^6.24.1"
 
+babel-plugin-inline-dotenv@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-inline-dotenv/-/babel-plugin-inline-dotenv-1.1.1.tgz#6dbdfad53cd3292382f72d1031c80c0f70cf05e8"
+  dependencies:
+    dotenv "^2.0.0"
+
 babel-plugin-inline-react-svg@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-inline-react-svg/-/babel-plugin-inline-react-svg-0.4.0.tgz#940f77be66324f2c75a0fb64f287f459c40602a7"
@@ -1229,6 +1235,10 @@ babel-plugin-transform-function-bind@^6.22.0:
 babel-plugin-transform-inline-consecutive-adds@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.2.0.tgz#15dae78921057f4004f8eafd79e15ddc5f12f426"
+
+babel-plugin-transform-inline-environment-variables@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-inline-environment-variables/-/babel-plugin-transform-inline-environment-variables-0.2.0.tgz#37dad411a819667fd69c33e72f7a14ea1a50ba98"
 
 babel-plugin-transform-member-expression-literals@^6.8.5:
   version "6.8.5"
@@ -2824,6 +2834,14 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
+dotenv@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-2.0.0.tgz#bd759c357aaa70365e01c96b7b0bec08a6e0d949"
+
+dotenv@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
+
 duplexer2@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer2/-/duplexer2-0.1.4.tgz#8b12dab878c0d69e3e7891051662a32fc6bddcc1"
@@ -4043,6 +4061,10 @@ hoek@2.x.x:
 hoist-non-react-statics@1.x.x, hoist-non-react-statics@^1.0.0, hoist-non-react-statics@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
+
+hoist-non-react-statics@^2.2.2:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.3.1.tgz#343db84c6018c650778898240135a1420ee22ce0"
 
 home-or-tmp@^2.0.0:
   version "2.0.0"
@@ -5789,9 +5811,9 @@ nested-error-stacks@^1.0.0:
   dependencies:
     inherits "~2.0.1"
 
-next@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/next/-/next-3.0.6.tgz#14d9330b1f4eab60fdb84523034a3016f16fe414"
+next@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/next/-/next-3.2.1.tgz#6d694823ac6e74e9be4553117144a6402220490f"
   dependencies:
     ansi-html "0.0.7"
     babel-core "6.25.0"
@@ -5818,6 +5840,7 @@ next@^3.0.6:
     friendly-errors-webpack-plugin "1.5.0"
     glob "7.1.1"
     glob-promise "3.1.0"
+    hoist-non-react-statics "^2.2.2"
     htmlescape "1.1.1"
     http-status "1.0.1"
     json-loader "0.5.4"
@@ -5835,7 +5858,7 @@ next@^3.0.6:
     recursive-copy "^2.0.6"
     send "^0.15.3"
     source-map-support "0.4.15"
-    strip-ansi "4.0.0"
+    strip-ansi "3.0.1"
     styled-jsx "^1.0.8"
     touch "3.1.0"
     unfetch "3.0.0"
@@ -8162,17 +8185,17 @@ stringstream@~0.0.4:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/stringstream/-/stringstream-0.0.5.tgz#4e484cd4de5a0bbbee18e46307710a8a81621878"
 
-strip-ansi@4.0.0, strip-ansi@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
-  dependencies:
-    ansi-regex "^3.0.0"
-
-strip-ansi@^3.0.0, strip-ansi@^3.0.1:
+strip-ansi@3.0.1, strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-3.0.1.tgz#6a385fb8853d952d5ff05d0e8aaf94278dc63dcf"
   dependencies:
     ansi-regex "^2.0.0"
+
+strip-ansi@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
+  dependencies:
+    ansi-regex "^3.0.0"
 
 strip-bom@3.0.0, strip-bom@^3.0.0:
   version "3.0.0"

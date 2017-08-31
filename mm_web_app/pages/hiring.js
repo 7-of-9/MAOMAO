@@ -1,29 +1,11 @@
 import React from 'react'
-import Head from 'next/head'
-import Router from 'next/router'
-import Link from 'next/link'
-import { Footer, Navbar, NavItem, Page } from 'neal-react'
-import NProgress from 'nprogress'
-import Header from '../components/Header'
-import LogoIcon from '../components/LogoIcon'
-import Slogan from '../components/Slogan'
+import { Provider } from 'mobx-react'
+import { initStore } from '../stores/home'
+import { initUIStore } from '../stores/ui'
+import { initDiscoveryStore } from '../stores/discovery'
+import Layout from '../components/Layout'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
-
-Router.onRouteChangeStart = (url) => {
-  NProgress.start()
-}
-Router.onRouteChangeComplete = () => NProgress.done()
-Router.onRouteChangeError = () => NProgress.done()
-
-const brandName = 'maomao'
-const brand = <Header><LogoIcon /><Slogan /></Header>
-
-const businessAddress = (
-  <address>
-    <img src='/static/images/maomao.png' className='logo-image' alt='maomao' />
-  </address>
-)
 
 const hiringJs = () => (
   <div style={{ textAlign: 'center', margin: '0 auto', background: '#fff', verticalAlign: 'middle' }}>
@@ -97,8 +79,26 @@ const hiringVp = () => (
 )
 
 export default class Hiring extends React.Component {
-  static getInitialProps ({ query: { type } }) {
-    return { type }
+  static getInitialProps ({ req, query: { type } }) {
+    const isServer = !!req
+    let userAgent = ''
+    if (req && req.headers && req.headers['user-agent']) {
+      userAgent = req.headers['user-agent']
+    }
+    const user = req && req.session ? req.session.decodedToken : null
+    const store = initStore(isServer, userAgent, user, true)
+    const uiStore = initUIStore(isServer)
+    const discovery = initDiscoveryStore(isServer, userAgent, user, [])
+    return { isServer, type, ...store, ...uiStore, ...discovery }
+  }
+
+  constructor (props) {
+    super(props)
+    logger.warn('Hiring', props)
+    this.store = initStore(props.isServer, props.userAgent, props.user, true)
+    this.uiStore = initUIStore(props.isServer)
+    this.store.checkEnvironment()
+    this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
   }
 
   componentDidMount () {
@@ -118,34 +118,15 @@ export default class Hiring extends React.Component {
     const { type } = this.props
     logger.warn('Hiring render')
     return (
-      <div>
-        <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-        <Page>
-          <Head>
-            <title>Maomao is coming, and we're hiring...</title>
-            <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />
-            <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-            <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' />
-            <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
-            <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-            <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css' />
-            <link rel='stylesheet' href='/static/vendors/css/nprogress.css' />
-            <link rel='stylesheet' href='/static/vendors/css/addtohomescreen.css' />
-            <script src='/static/vendors/js/addtohomescreen.min.js' />
-          </Head>
-          <Navbar className='header-nav animated fadeInDown' brand={brand}>
-            <NavItem><Link prefetch href='/'><a href='/'>Home</a></Link></NavItem>
-          </Navbar>
+      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
+
+        <Layout title={"Maomao is coming, and we're hiring..."}>
+          <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           { type === 'js' && hiringJs() }
           { type === 'vp' && hiringVp() }
-          <div className='footer-area'>
-            <Footer brandName={brandName}
-              facebookUrl='https://www.facebook.com/maomao.hiring'
-              address={businessAddress}
-          />
-          </div>
-        </Page>
-      </div>
+        </Layout>
+      </Provider>
+
     )
   }
 }

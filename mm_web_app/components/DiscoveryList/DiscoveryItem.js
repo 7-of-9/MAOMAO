@@ -166,7 +166,9 @@ export default class DiscoveryItem extends PureComponent {
               onClick={this.handleClick}
               >
               <p className='discovery-title'>{title}</p>
-              <p className='discovery-description'>{desc}</p>
+              <p className='discovery-description' >
+                {desc}
+              </p>
               <div className='caption' style={{ bottom: '72px', right: '-12px' }}>
                 {this.renderTerms()}
               </div>
