@@ -16,56 +16,60 @@ namespace tests
 
         List<long> test_terms_ids = new List<long>() {
 
-                6095926, // arvind swamy
+                5885321,  // sam harris
 
-                5354849, // bill clinton
+                //5085691, // science fiction
 
-                5067658, // netflix
-                5747890, //  Ballet 
+                //6095926, // arvind swamy
 
-                7479589, // Pixar -- NO ROOT PATHS CONTAINING EXPECTED "animation" ... similar root paths issue as Ballet? or maybe not;
-                         // its paths are quite extensive, just not including "animation" in the abstract; that may be reasonable/correct
-                         // simply following the data itself: it does have lots of results for "animation company" after all
+                //5354849, // bill clinton
 
-                // pixar get PtR perf - longs, no terms: 51secs for 295 paths
-                // pixar get PtR perf - terms: 57secs for 295 paths
-                // pixar - terms, w/ cache -- DONE: 13.7929475 sec(s) - root_paths.Count=289
+                //5067658, // netflix
+                //5747890, //  Ballet 
 
-                5250600, // Gundam
-                5078100, // Superheroes
-                5871074, // Hypertrophy 
-                6334777, // Wesley So
-                5374213, // Formula One
-                5115096, // StarCraft
-                11418240, // Calvinism
-                7479589,  // Pixar
-                9790110,  // Dream Theater
-                10413303, // Alternative rock
-                5209410, // American feminists
+                //7479589, // Pixar -- NO ROOT PATHS CONTAINING EXPECTED "animation" ... similar root paths issue as Ballet? or maybe not;
+                //         // its paths are quite extensive, just not including "animation" in the abstract; that may be reasonable/correct
+                //         // simply following the data itself: it does have lots of results for "animation company" after all
 
-                5249821, // Batman
-                5131916, // Tom and Jerry
-                5988770, // rosario dawson
-                5997771, // bernie sanders
+                //// pixar get PtR perf - longs, no terms: 51secs for 295 paths
+                //// pixar get PtR perf - terms: 57secs for 295 paths
+                //// pixar - terms, w/ cache -- DONE: 13.7929475 sec(s) - root_paths.Count=289
 
-                7088192, // "boris (band)" -- duplicates by name, ns14/0
+                //5250600, // Gundam
+                //5078100, // Superheroes
+                //5871074, // Hypertrophy 
+                //6334777, // Wesley So
+                //5374213, // Formula One
+                //5115096, // StarCraft
+                //11418240, // Calvinism
+                //7479589,  // Pixar
+                //9790110,  // Dream Theater
+                //10413303, // Alternative rock
+                //5209410, // American feminists
 
-                5140670, // September 11 **
-                5101699, // EDM
+                //5249821, // Batman
+                //5131916, // Tom and Jerry
+                //5988770, // rosario dawson
+                //5997771, // bernie sanders
 
-                7355885, // node.js
+                //7088192, // "boris (band)" -- duplicates by name, ns14/0
 
-                8080633, // french defence
-                5011841, // cats
+                //5140670, // September 11 **
+                //5101699, // EDM
 
-                6016816, // React (media franchise)
-                5667534, // cross platform software
-                7151070, // React (JavaScript library)
-                11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
-                12332349, // Ajax -- disambiguation term
-                7514235, // Reactive programming
+                //7355885, // node.js
 
-                5552478, // NASDAQ **
+                //8080633, // french defence
+                //5011841, // cats
+
+                //6016816, // React (media franchise)
+                //5667534, // cross platform software
+                //7151070, // React (JavaScript library)
+                //11220299, // Amorphous carbon -- https://en.wikipedia.org/wiki/Portal:Nanotechnology term
+                //12332349, // Ajax -- disambiguation term
+                //7514235, // Reactive programming
+
+                //5552478, // NASDAQ **
             };
 
         [TestMethod]

@@ -16,12 +16,13 @@ namespace mmapi00.Controllers
         /// Gets the entire MM topic tree hierarchy.
         /// </summary>
         /// <returns>The topic tree.</returns>
-        [Route("topic_tree/get")]
+        [Route("topic_tree")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 1 hr / 24 hrs
         public IHttpActionResult GetTopicTree()
         {
-            var topic_tree = mm_svc.Terms.TopicTree.GetTopicTree();
+            var topic_tree = mm_svc.Terms.TopicTree.GetTopicTree(suggestions_min_s_norm: 99); // don't get suggestions -- json is too large
+
             return Ok(new {
                 tree = topic_tree,
             });

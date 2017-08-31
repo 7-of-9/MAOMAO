@@ -16,7 +16,8 @@ namespace tests
         [TestMethod]
         public void GetTopicTree_Test0()
         {
-            var data = mm_svc.Terms.TopicTree.GetTopicTree();
+            GoldenParents.use_stored_parents_cache = true;  
+            var data = mm_svc.Terms.TopicTree.GetTopicTree(suggestions_min_s_norm: 0.0); // all!
         }
 
         [TestMethod]

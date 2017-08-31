@@ -74,6 +74,21 @@
     <Compile Include="dbip_city_2016_11.cs">
       <DependentUpon>mmdb.tt</DependentUpon>
     </Compile>
+    <Compile Include="disc_term.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="disc_url.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="disc_url_cwc.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="disc_url_html.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="disc_url_osl.cs">
+      <DependentUpon>mmdb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\BulkCopy.cs" />
     <Compile Include="Extensions\DbContext.cs" />
     <Compile Include="Extensions\Factory.cs" />

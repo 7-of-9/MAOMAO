@@ -20,7 +20,9 @@ namespace tests
         [TestMethod]
         public void GetSiteInfo()
         {
-            bool  returned_from_db;    
+            bool  returned_from_db;
+
+            mm_svc.SiteInfo.GetOrQueryAwis("www.usfca.edu", out returned_from_db);
 
             mm_svc.SiteInfo.GetOrQueryAwis("www.hungry-girl.com", out returned_from_db);
 

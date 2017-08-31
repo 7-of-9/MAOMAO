@@ -18,6 +18,7 @@ namespace mmdb_model
         public awis_site()
         {
             this.urls = new HashSet<url>();
+            this.disc_url = new HashSet<disc_url>();
         }
     
         public long id { get; set; }
@@ -31,9 +32,12 @@ namespace mmdb_model
         public Nullable<long> awis_cat_id { get; set; }
         public Nullable<bool> hard_disallow { get; set; }
         public bool exclude_terms_like_site_title { get; set; }
+        public string logo_file_name { get; set; }
     
-        public virtual awis_cat awis_cat { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<url> urls { get; set; }
+        public virtual awis_cat awis_cat { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_url> disc_url { get; set; }
     }
 }

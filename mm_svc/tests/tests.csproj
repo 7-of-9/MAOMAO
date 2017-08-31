@@ -43,6 +43,12 @@
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.5.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlAgilityPack.1.5.2-beta4\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.2.4.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -54,6 +60,10 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Diagnostics.DiagnosticSource.4.4.0\lib\net45\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -68,7 +78,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Tests\Discovery\Test_GoogDiscovery.cs" />
+    <Compile Include="Maintenance\SiteImages.cs" />
+    <Compile Include="Maintenance\TopicTreeImages.cs" />
+    <Compile Include="Tests\Discovery\Test_Discovery.cs" />
+    <Compile Include="Tests\Discovery\Test_WebClientBrowser.cs" />
+    <Compile Include="Tests\SmartFinder\Test_BingSmartFind.cs" />
+    <Compile Include="Tests\SmartFinder\Test_GoogSmartFind.cs" />
+    <Compile Include="Tests\Users\Test_UserRegTopics.cs" />
     <Compile Include="Tests\Util_Misc\Test_DOS_Filter.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Flow.cs" />
     <Compile Include="Tests\ProcessingFlow\Test_Golden.cs" />

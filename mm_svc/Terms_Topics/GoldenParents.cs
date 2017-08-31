@@ -44,9 +44,15 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 // if already stored, nop
-                if (db.gt_parent.Any(p => p.child_term_id == term_id) && reprocess == false)
+                if (    (  
+                            (use_stored_parents_cache && stored_parents_cache.TryGetValue(term_id, out List<gt_parent> tmp)) // lookup cache if enabled
+                        || 
+                            (!use_stored_parents_cache && db.gt_parent.Any(p => p.child_term_id == term_id)) // lookup DB if cache disabled
+                        )
+                    && reprocess == false) {
                     return GetStoredParents(term_id);
-
+                }
+                
                 // get term & root paths
                 var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
@@ -130,7 +136,9 @@ namespace mm_svc.Terms
                     .Where(p => p.t.name != "Contents") // noise
                     .ToList();
 
-            return ret.Where(p => p != null && p.t != null).ToList();
+            return ret.Where(p => p != null && p.t != null 
+                            //&& !p.t.IS_TOPIC          // value in letting this algo also work on defined topics - can filter them out after as desired
+                             ).ToList();
         }
 
         // group by term, rank each term by sum of NSLW (wiki namespace count level weighted) scaled by term's original distance from leaf (closer to leaf is better / more relevant)
@@ -190,7 +198,10 @@ namespace mm_svc.Terms
             //grouped_terms.ForEach(p => p.S = p.sum_NSLW / Math.Pow(p.avg_gl_distance, 2)); // naive - sum of NSLWs / inverse square distance
             //grouped_terms.ForEach(p => p.S = p.avg_NSLW / Math.Pow(p.avg_gl_distance, 2)); // avg NSLW (no regard repetitions) / inversely square of distance
             //grouped_terms.ForEach(p => p.S = p.avg_NSLW * Math.Sqrt(p.NSLWs.Count) / Math.Sqrt(p.avg_gl_distance)); // blend -avg NSLW * sqrt repetitions / inverse root of distance
-            grouped_terms.ForEach(p => p.S = Math.Pow(p.avg_NSLW, 2) * Math.Pow(p.NSLWs.Count, (1.0 / 4.0)) / Math.Pow(p.avg_gl_distance, 1.5)); // blend - sq. avg NSLW *  root 4 repetitions / inverse ~sq. of avg sdistance
+            grouped_terms.ForEach(p => p.S = Math.Pow(p.avg_NSLW, 0.5)             // NS level-weighted
+                                           * Math.Pow(p.NSLWs.Count, 0.75)         // repetitions
+                                           / Math.Pow(p.avg_gl_distance, 1.1));    // inverse avg distance
+
             grouped_terms.ForEach(p => p.S_norm = p.S / grouped_terms.Max(p2 => p2.S));
 
             // cap list for better repeat analaysis -- remove long tail on mega terms

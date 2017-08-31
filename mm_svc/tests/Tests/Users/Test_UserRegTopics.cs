@@ -5,16 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace tests.Tests.Discovery
+namespace tests.Tests.Users
 {
     [TestClass]
-    public class Test_GoogDiscovery
+    public class Test_UserRegTopics
     {
         [TestMethod]
-        public void GoogDiscovery_Test0()
+        public void UserRegTopics_BulkAdd_Test0()
         {
-            //var data = 
-                mm_svc.Discovery.GOOG.Search("chess singapore");
+             mm_svc.UserTopics.AddUserTopics(15, new List<long> { 5011256 });
         }
     }
 }

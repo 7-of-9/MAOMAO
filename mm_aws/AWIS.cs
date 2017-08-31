@@ -25,6 +25,11 @@ namespace mm_aws
 
         public static dynamic GetTldInfo(string tld)
         {
+            if (string.IsNullOrEmpty(tld)) {
+                g.LogWarn($"AWIS.GetTldInfo - got null TLD; ignoring.");
+                return null;
+            }
+
             string request = "UrlInfo";
 
             // add the extra values
@@ -34,7 +39,7 @@ namespace mm_aws
             // run the request with amazon
             var res = RunRequest(request, extra);
 
-            Debug.WriteLine(res);
+            //Debug.WriteLine(res);
 
             XDocument doc = XDocument.Parse(res);
             dynamic info = new ExpandoObject();
@@ -113,10 +118,15 @@ namespace mm_aws
 
             foreach (var v in sorted)
             {
-                if (url.Length > 0)
-                    url.Append("&");
+                if (string.IsNullOrEmpty(v.Value)) {
+                    g.LogWarn($"AWIS.GetQueryParams: v={v} v.Value=null");
+                }
+                else {
+                    if (url.Length > 0)
+                        url.Append("&");
 
-                url.Append(v.Key + "=" + UpperCaseUrlEncode(v.Value));
+                    url.Append(v.Key + "=" + UpperCaseUrlEncode(v.Value));
+                }
             }
 
             return url.ToString();
@@ -132,7 +142,7 @@ namespace mm_aws
 
             // generate the url
             var url = new StringBuilder();
-            url.Append("http://awis.amazonaws.com?");
+            url.Append("https://awis.amazonaws.com?");
             url.Append(queryParams);
             url.Append("&Signature=" + UpperCaseUrlEncode(sig));
 

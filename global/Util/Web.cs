@@ -10,13 +10,19 @@ namespace mm_global
     {
         public static string GetTldFromUrl(string url)
         {
-            if (string.IsNullOrEmpty(url)) return null;
+            if (string.IsNullOrEmpty(url))
+                return null;
 
             // if no schema specified, assume http://
             if (!url.Contains(":"))
                 url = "http://" + url;
 
-            Uri uri = new Uri(url);
+            Uri uri = null;
+            try {
+                uri = new Uri(url);
+            } catch (Exception ex) {
+                g.LogError($"{ex.Message} - url={url}");
+            }
 
             return uri.Host;    
         }

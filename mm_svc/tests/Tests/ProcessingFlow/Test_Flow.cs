@@ -15,6 +15,12 @@ namespace tests
     public class Test_Flow
     {
         [TestMethod]
+        public void TrackUrl_Test0()
+        {
+            UserHistory.TrackUrl("https://github.com/reactjs/react-transition-group/blob/master/Migration.md", "46e19508744f4ce492cf084a9a0b8b8f", 15, 0, 0, 0);
+        }
+
+        [TestMethod]
         public void TestFlow_Test0()
         {
             var test_url = "http://datagenetics.com/blog/march12011/index.html";

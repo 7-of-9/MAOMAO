@@ -32,6 +32,9 @@ namespace mmdb_model
             this.url_parent_term = new HashSet<url_parent_term>();
             this.shares = new HashSet<share>();
             this.user_reg_topic = new HashSet<user_reg_topic>();
+            this.disc_term = new HashSet<disc_term>();
+            this.disc_url = new HashSet<disc_url>();
+            this.disc_url1 = new HashSet<disc_url>();
         }
     
         public long id { get; set; }
@@ -75,5 +78,11 @@ namespace mmdb_model
         public virtual ICollection<share> shares { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<user_reg_topic> user_reg_topic { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_term> disc_term { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_url> disc_url { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<disc_url> disc_url1 { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace mm_global
     public  static partial class g
     {
         public static bool is_console = false;
+        public static string global_info = "";
         public static TelemetryClient tel_client = new TelemetryClient();
 
         private static object log_locker = "42";
@@ -83,6 +84,7 @@ namespace mm_global
             string logStr = (!Debugger.IsAttached
                           ? ("MM* {" + System.Environment.MachineName + ":" + procName + ":" + cmdLineStr.TruncateMax(20) + "} [" + build + "] @ " + DateTime.Now.ToString("dd-MMM-yyyy HH:mm:ss.fff") + " (" + (mb.ReflectedType != null ? (mb.ReflectedType.Name + ".") : "???.") + ") ") 
                           : "")
+                          + $"({global_info})"
                           + $"[{mb.Name}]"
                           + userStr
                           + s
@@ -97,7 +99,7 @@ namespace mm_global
                     }
 
                     Trace.TraceInformation(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Information);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Information);
 
                     if (is_console)
                         Console.ResetColor();
@@ -113,7 +115,6 @@ namespace mm_global
                     }
 
                     Trace.TraceError(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Error);
 
                     if (is_console)
                         Console.ResetColor();
@@ -129,21 +130,78 @@ namespace mm_global
                     }
 
                     Trace.TraceWarning(logStr);
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Warning);
 
                     if (is_console)
                         Console.ResetColor();
                 }
                 Trace.Flush();
             }
-            else
+            else if (s.StartsWith("*G") || s.StartsWith("#G")) // green
             {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*C") || s.StartsWith("#C")) // Cyan
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*Y") || s.StartsWith("#Y")) // yellow
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+                Trace.Flush();
+            }
+            else if (s.StartsWith("*g") || s.StartsWith("#g")) // gray
+            {
+                lock (log_locker) {
+                    if (is_console) {
+                        Console.BackgroundColor = ConsoleColor.DarkGray;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+
+                    Trace.TraceInformation(logStr);
+
+                    if (is_console)
+                        Console.ResetColor();
+                }
+            }
+            else {
                 lock (log_locker) {
                     if (is_console && s.Contains("!!!"))
                         Console.ForegroundColor = ConsoleColor.Red;
 
                     Trace.WriteLine(logStr); // verbose level, no email
-                    g.tel_client.TrackTrace(logStr, SeverityLevel.Verbose);
+                    //g.tel_client.TrackTrace(logStr, SeverityLevel.Verbose);
 
                     if (is_console && s.Contains("!!!"))
                         Console.ResetColor();
@@ -180,6 +238,36 @@ namespace mm_global
         public static void LogInfo(string msg)
         {
             g.LogLine($"# {msg}");
+        }
+
+        public static void LogWarn(string msg)
+        {
+            g.LogLine($"** {msg}");
+        }
+
+        public static void LogError(string msg)
+        {
+            g.LogLine($"### {msg}");
+        }
+
+        public static void LogGreen(string msg)
+        {
+            g.LogLine($"#G {msg}");
+        }
+
+        public static void LogCyan(string msg)
+        {
+            g.LogLine($"#C {msg}");
+        }
+
+        public static void LogYellow(string msg)
+        {
+            g.LogLine($"#Y {msg}");
+        }
+
+        public static void LogGray(string msg)
+        {
+            g.LogLine($"#g {msg}");
         }
 
         public static string LogStack()

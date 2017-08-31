@@ -9,6 +9,11 @@ using mm_global;
 using mm_aws;
 using System.Diagnostics;
 using mm_global.Extensions;
+using mm_svc.SmartFinder;
+using mm_svc.Images;
+using System.Threading;
+using System.Windows.Forms;
+using mm_svc.Util.Utils;
 
 namespace mm_svc
 {
@@ -81,24 +86,75 @@ namespace mm_svc
             return allowable;
         }
 
+        private static void MaintainSiteLogo(awis_site site, string meta_title)
+        {
+            // Azure WebApp runs in Sandbox mode -- access to out of process components is restricted by design
+            // (call to WebBrowser via HAP fails below under Azure, works under local IIS Express); would work under a Cloud App/Worker Role combo in Azure
+            /*Task.Run(() => { 
+                // maintain TLD logo (google image search)
+                var th = new Thread(() => { //Task.Run(() => {
+                    g.LogInfo($"MaintainSiteLogo -- Task.Run about to start STA thread...");
+
+                    Application.DoEvents();
+                    using (var db2 = mm02Entities.Create()) {
+                        var db_site2 = db2.awis_site.Find(site.id);
+                        var filename = ImageNames.GetSiteFilename(db_site2);
+                        var master_jpeg = filename + "_M1.jpeg";
+                        var master_png = filename + "_M1.png";
+
+                        if (!AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_jpeg) && !AzureImageFile.Exists(AzureImageFileType.SiteLogo, master_png)) {
+
+                            // (1) tld search
+                            var trimmed_tld = TldTitle.GetPartialTldNameWithSuffix(site.TLD);
+                            var saved = Search_GoogImage.Search($"{trimmed_tld} website logo", AzureImageFileType.SiteLogo, filename, 1, 0, clipart: true);
+                            if (saved.Count > 0) { 
+                                db_site2.logo_file_name = saved[0];
+                                db2.SaveChangesTraceValidationErrors();
+                            }
+
+                            // (2) meta_title search -- not much good
+                            //saved = Search_GoogImage.Search($@"{meta_title} ""website logo""", AzureImageFileType.SiteLogo, filename + $"_MT", 1, 0, clipart: true);
+                        }
+                    }
+                });
+                th.SetApartmentState(ApartmentState.STA);
+                th.Start();
+                var sw = new Stopwatch(); sw.Start();
+                while (th.ThreadState != System.Threading.ThreadState.Stopped && sw.ElapsedMilliseconds < 10000) { // run STA thread for 10s
+                    Thread.Sleep(100);
+                }
+                try {
+                    g.LogInfo($"MaintainSiteLogo -- Task.Run aborting STA thread...");
+                    th.Abort();
+                }
+                catch { }
+            });*/
+        }
+
         public static awis_site GetOrQueryAwis(string site_tld_or_url, out bool returned_from_db)
         {
             using (var db = mm02Entities.Create())
             {
                 string tld = mm_global.Util.GetTldFromUrl(site_tld_or_url);
+                if (string.IsNullOrEmpty(tld)) {
+                    g.LogError($"got null TLD back from GetTldFromUrl, for URL={site_tld_or_url}");
+                    returned_from_db = false;   
+                    return null;
+                }
                 int try_count = 0;
 
 retry:
-                if (try_count > 2)
+                if (try_count > 3)
                     throw new ApplicationException("too many SaveChanges_IgnoreDupeKeyEx failures.");
 
                 // in DB list of known sites?
                 awis_cat db_cat = null;
                 var db_site_qry = db.awis_site.Include("awis_cat").Where(p => p.TLD == tld);
-                var db_site = db_site_qry.FirstOrDefaultNoLock();
+                var db_site = g.RetryMaxOrThrow(() => db_site_qry.FirstOrDefaultNoLock(), retryMax: 6, sleepSeconds: 10);
                 if (db_site != null) {
                     g.LogLine($"returning AWIS DB info for site_id={db_site.id}, as_of={db_site.as_of_utc}");
                     returned_from_db = true;
+                    //MaintainSiteLogo(db_site);
                     return db_site;
                 }
 
@@ -114,7 +170,7 @@ retry:
                 }
                 catch (Exception ex) {  // handle no returned AWIS category -- assign to stoplist by virtue of missing AWIS category
                     if (ex.Message == "'System.Dynamic.ExpandoObject' does not contain a definition for 'Categories'")
-                        g.LogInfo($"WARN: got no AWIS category info unknown tld={tld} - {ex.Message}!");
+                        g.LogWarn($"WARN: got no AWIS category info unknown tld={tld} - {ex.Message}!");
                     else throw;
                 }
 
@@ -126,12 +182,16 @@ retry:
                     db_cat = db.awis_cat.Where(p => p.abs_path == cat_path).FirstOrDefaultNoLock();
                     if (db_cat == null) {
                         db_cat = new awis_cat();
-                        db_cat.abs_path = cat_path.TruncateMax(128);
+                        db_cat.abs_path = cat_path.TruncateMax(512);
                         db_cat.title = cat_title;
                         db.awis_cat.Add(db_cat);
-                        if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
-
-                        g.LogLine($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
+                        if (!db.SaveChanges_IgnoreDupeKeyEx()) {
+                            Thread.Sleep(1000);
+                            g.LogWarn($"got dupe key exception on +[awis_cat] - retrying load from DB...");
+                            try_count++;
+                            goto retry;
+                        }
+                        g.LogInfo($"wrote new AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
                     }
                     else
                         g.LogLine($"known AWIS cat_id={db_cat.id} [{db_cat.abs_path}]");
@@ -140,7 +200,8 @@ retry:
                 // maintain AWIS site -- with or without category
                 var url = (string)content_data.DataUrl;
                 var title = (string)content_data.SiteData.Title;
-                var desc = "?"; try {
+                var desc = "?";
+                try {
                     desc = (string)content_data.SiteData.Description;
                 } catch(Exception ex) {
                     if (ex.Message != "'System.Dynamic.ExpandoObject' does not contain a definition for 'Description'")
@@ -154,13 +215,18 @@ retry:
                 db_site.as_of_utc = DateTime.UtcNow;
                 db_site.awis_cat_id = db_cat != null ? (long?)db_cat.id : null;
                 db_site.lang = lang;
-                db_site.title = title;
+                db_site.title = title.TruncateEllipsis(128);
                 db_site.TLD = tld;
                 db_site.url = url;
                 db_site.desc = desc;
                 db.awis_site.Add(db_site);
-                if (db.SaveChanges_IgnoreDupeKeyEx() == false) { try_count++; goto retry; }
-                g.LogLine($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
+                if (!g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx())) {
+                    Thread.Sleep(1000);
+                    g.LogWarn($"got dupe key exception on +[awis_site] - retrying load from DB...");
+                    try_count++;
+                    goto retry;
+                }
+                g.LogInfo($"wrote new AWIS site_id={db_site.id} [{db_site.url}]");
 
                 returned_from_db = false;
                 return db_site;
