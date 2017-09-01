@@ -140,7 +140,11 @@ export class HomeStore extends CoreStore {
         if (this.isInstalledOnChromeDesktop) {
           sendMsgToChromeExtension(actionCreator('USER_HASH', { userHash: data.id }))
           sendMsgToChromeExtension(actionCreator('AUTH_FULFILLED', {
-            info: {...data, name: `${data.firstname} ${data.lastname}`, picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'}
+            info: {
+              ...data,
+              name: `${data.firstname} ${data.lastname}`,
+              picture: 'http://maomaoweb.azurewebsites.net/static/images/no-avatar.png'
+            }
           }))
           sendMsgToChromeExtension(actionCreator('USER_AFTER_LOGIN', { userId: data.id }))
           sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: data.id }))
@@ -195,6 +199,7 @@ export class HomeStore extends CoreStore {
             googleUserId: info.google_user_id,
             googleToken: info.accessToken,
             info: {
+              ...data,
               name: info.name,
               email: info.email || data.email,
               picture: info.picture
@@ -236,6 +241,7 @@ export class HomeStore extends CoreStore {
             facebookUserId: info.fb_user_id,
             facebookToken: info.accessToken,
             info: {
+              ...data,
               name: info.name,
               email: info.email || data.email,
               picture: info.picture

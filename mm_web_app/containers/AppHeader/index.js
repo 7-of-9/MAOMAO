@@ -99,6 +99,12 @@ class AppHeader extends React.Component {
     })
   }
 
+  isHomePage = () => {
+    /* global URL */
+    const { pathname } = new URL(window.location.href)
+    return pathname === '/'
+  }
+
   onLogout = (evt) => {
     evt.preventDefault()
     logger.warn('onLogout', this.props)
@@ -111,9 +117,7 @@ class AppHeader extends React.Component {
       })
       this.addNotification('You have successfully signed out.')
       this.props.ui.clean()
-      /* global URL */
-      const { pathname } = new URL(window.location.href)
-      if (pathname !== '/') {
+      if (!this.isHomePage()) {
         Router.push('/')
       }
     }).catch((error) => {
@@ -380,7 +384,7 @@ class AppHeader extends React.Component {
           </NavItem>
         }
         {
-          isLogin &&
+          isLogin && this.isHomePage() &&
           <NavItem>
             <a onClick={this.openShareManagement}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />
@@ -399,17 +403,20 @@ class AppHeader extends React.Component {
                 <span className='nav-text'>Sign Out</span>
               </a>
               <ul className='dropdown-menu pull-right'>
-                {user && user.name &&
-                <div className='account-dropdown__identity account-dropdown__segment'>
+                {
+                  user && user.name &&
+                  <div className='account-dropdown__identity account-dropdown__segment'>
                   Signed in as <strong>({user.name} ({user.email}))</strong>
-                </div>
+                  </div>
                 }
-
-                <li style={{color: '#333', backgroundColor: '#fff'}}>
-                  <Link prefetch href='/discover' as={`/${user.nav_id}`}>
-                    <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
-                  </Link>
-                </li>
+                {
+                  user && user.name &&
+                  <li style={{color: '#333', backgroundColor: '#fff'}}>
+                    <Link prefetch href='/discover' as={`/${user.nav_id}`}>
+                      <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
+                    </Link>
+                  </li>
+                }
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
               </ul>
             </div>
