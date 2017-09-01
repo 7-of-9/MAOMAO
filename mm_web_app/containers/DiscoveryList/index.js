@@ -13,8 +13,8 @@ import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
-import SplitView from '../SplitView'
-import Loading from '../Loading'
+import SplitView from '../../components/SplitView'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -23,16 +23,13 @@ import logger from '../../utils/logger'
 @observer
 class DiscoveryList extends Component {
   state = {
-    innerWidth: window.innerWidth,
-    currentWidth: window.innerWidth / 2,
     isResize: false
   }
 
   onSelectTerm = (termId) => {
     logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
-    const { userId, userHash } = this.props.store
-    this.props.term.getTermDiscover(userId, userHash, termId)
+    this.props.term.getTermDiscover(termId)
   }
 
   onSelect = (item) => {
@@ -256,10 +253,17 @@ class DiscoveryList extends Component {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
     logger.warn('DiscoveryList componentDidMount', userId, userHash)
-    this.props.term.getRootDiscover(userId, userHash, page)
+    if (userId > 0) {
+      this.props.term.getRootDiscover(userId, userHash, page)
+    }
+    this.setState({
+      innerWidth: window.innerWidth,
+      currentWidth: window.innerWidth / 2
+    })
   }
 
   render () {
+    const { userId } = this.props.store
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
     logger.warn('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
@@ -272,7 +276,7 @@ class DiscoveryList extends Component {
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
               {
-                isRootView &&
+                isRootView && userId > 0 &&
                 <InfiniteScroll
                   pageStart={0}
                   loadMore={this.loadMore}

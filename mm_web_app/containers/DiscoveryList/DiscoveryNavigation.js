@@ -8,7 +8,7 @@ import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import OwlCarousel from 'react-owl-carousel'
-import Loading from '../Loading'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 @inject('store')

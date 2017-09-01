@@ -8,8 +8,8 @@ import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import InlinePreview from '../Streams/InlinePreview'
-import Loading from '../Loading'
+import InlinePreview from '../../components/Streams/InlinePreview'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 const DiscoveryNavigation = dynamic(

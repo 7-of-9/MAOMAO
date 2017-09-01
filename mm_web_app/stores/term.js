@@ -14,8 +14,12 @@ class TermStore {
   terms = []
   userId = -1
   userHash = ''
+  findTerms = []
+  termsInfo = { terms: [] }
 
-  constructor () {
+  constructor (isServer, findTerms, termsInfo) {
+    this.findTerms = findTerms
+    this.termsInfo = termsInfo
     reaction(() => this.page,
     (page) => {
       if (this.userId > 0) {
@@ -67,11 +71,11 @@ class TermStore {
     this.page += 1
   }
 
-  @action getTermDiscover (userId, userHash, termId) {
+  @action getTermDiscover (termId) {
     const isExist = this.terms.find(item => item.termId === termId)
     const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
     if (!isExist && !isProcess) {
-      const termData = termDiscover(userId, userHash, termId)
+      const termData = termDiscover(termId)
       this.pendings.push(`termData${termId}`)
       when(
         () => termData.state !== 'pending',
@@ -90,12 +94,12 @@ class TermStore {
   }
 }
 
-export function initTermStore (isServer) {
+export function initTermStore (isServer, findTerms = [], termsInfo = { terms: [] }) {
   if (isServer && typeof window === 'undefined') {
-    return new TermStore(isServer)
+    return new TermStore(isServer, findTerms, termsInfo)
   } else {
     if (store === null) {
-      store = new TermStore(isServer)
+      store = new TermStore(isServer, findTerms, termsInfo)
     }
     return store
   }

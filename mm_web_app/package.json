@@ -1,6 +1,6 @@
 {
   "name": "mm-web-app",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Maomao web app",
   "repository": {
     "type": "git",
@@ -17,8 +17,6 @@
     "@vimeo/player": "^2.1.1",
     "autosuggest-highlight": "^3.1.0",
     "axios": "^0.16.2",
-    "babel-plugin-inline-dotenv": "^1.1.1",
-    "babel-plugin-transform-inline-environment-variables": "^0.2.0",
     "blueimp-md5": "^2.10.0",
     "body-parser": "^1.17.2",
     "cheerio": "^1.0.0-rc.2",

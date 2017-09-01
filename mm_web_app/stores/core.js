@@ -28,7 +28,8 @@ export class CoreStore {
   constructor (isServer, userAgent, user) {
     this.userAgent = userAgent
     this.user = user
-    if (this.user) {
+    if (this.user && this.user.name) {
+      logger.warn('user', user)
       this.isLogin = true
     }
     this.isMobile = isMobileBrowser(userAgent)
