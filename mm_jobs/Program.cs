@@ -153,7 +153,9 @@ again:
         private static void CloseLogFile(bool completedWithoutError, TimeSpan execTime)
         {
             if (!log_file_closed) {
+                Trace.Flush();
                 Trace.Close();
+                Trace.Listeners.Clear();
                 if (completedWithoutError) {
                     File.Move(logFullPath, logFullPath.Replace("INPROCESS.", "OK.") + "_" + execTime.TotalMinutes.ToString("0") + ".MINS.LOG");
                 }

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using WebApi.OutputCache.V2;
-
+using static mm_svc.Terms.TopicTree;
 
 namespace mmapi00.Controllers
 {
@@ -33,15 +34,18 @@ namespace mmapi00.Controllers
         /// Get term by name.
         /// </summary>
         /// <returns>Term info.</returns>
-        [Route("term/lookup/{name}")]
+        [Route("term/lookup")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 24)] // 24 hr / 24 hrs
-        public IHttpActionResult GetTerm(string name)
+        public IHttpActionResult GetTerm([FromUri]string[] names)
         {
-            var term_info = mm_svc.Terms.TopicTree.GetTermInfo(name);
+            var term_infos = new List<TermInfo>();
+            Parallel.ForEach(names, (name) => {
+                term_infos.Add(mm_svc.Terms.TopicTree.GetTermInfo(name));
+            });
 
             return Ok(new {
-                term = term_info
+                terms = term_infos
             });
         }
     }
