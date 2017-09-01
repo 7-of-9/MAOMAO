@@ -85,7 +85,12 @@ app.prepare().then(() => {
           log.error(error)
           throw error
         } else {
-          return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo: JSON.parse(body) }))
+          const shareInfo = JSON.parse(body)
+          if (shareInfo && shareInfo.fullname) {
+            return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
+          } else {
+            return handle(req, res, '/404')
+          }
         }
       })
     }

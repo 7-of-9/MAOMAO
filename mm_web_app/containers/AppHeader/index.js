@@ -196,6 +196,9 @@ class AppHeader extends React.Component {
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
         body: JSON.stringify({ url: `/${url}` })
+      }).then(() => {
+        // prefetch disocver page
+        Router.prefetch('/discover')
       })
     }
   }
@@ -397,14 +400,16 @@ class AppHeader extends React.Component {
               </a>
               <ul className='dropdown-menu pull-right'>
                 {user && user.name &&
-                  <Link prefetch href={`/${user.nav_id}`}>
-                    <div className='account-dropdown__identity account-dropdown__segment'>
-                      <a href={`/${user.nav_id}`}>
-                       Your discover <strong>({user.name} ({user.email}))</strong>
-                      </a>
-                    </div>
-                  </Link>
+                <div className='account-dropdown__identity account-dropdown__segment'>
+                  Signed in as <strong>({user.name} ({user.email}))</strong>
+                </div>
                 }
+
+                <li style={{color: '#333', backgroundColor: '#fff'}}>
+                  <Link prefetch href='/discover' as={`/${user.nav_id}`}>
+                    <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
+                  </Link>
+                </li>
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>
               </ul>
             </div>

@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@vimeo/player": "^2.1.0",
+    "@vimeo/player": "^2.1.1",
     "autosuggest-highlight": "^3.1.0",
     "axios": "^0.16.2",
     "babel-plugin-inline-dotenv": "^1.1.1",
