@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const next = require('next')
+const pathMatch = require('path-match')
 const { parse } = require('url')
 const { join } = require('path')
 const mobxReact = require('mobx-react')
@@ -54,7 +55,9 @@ app.prepare().then(() => {
     '/smart',
     '/discover'
   ]
-
+  const route = pathMatch()
+  const matchRoute = route('/:code')
+  const API_URL = process.env.API_URL
   server.get('*', (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname, query } = parsedUrl
@@ -77,22 +80,77 @@ app.prepare().then(() => {
       return handle(req, res, parsedUrl)
     } else {
       // Hack: support FB open graph
-      const code = pathname.substr(1)
-      log.warn('pathname', pathname)
-      log.warn('code', code)
-      request('https://mmapi00.azurewebsites.net/share/info?share_code=' + code, (error, response, body) => {
-        if (error) {
-          log.error(error)
-          throw error
-        } else {
-          const shareInfo = JSON.parse(body)
-          if (shareInfo && shareInfo.fullname) {
-            return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
+      const params = matchRoute(pathname)
+      log.warn('params', params)
+      if (params) {
+        const { code } = params
+        log.warn('pathname', pathname)
+        log.warn('code', code)
+        request(`${API_URL}share/info?share_code=${code}`, (error, response, body) => {
+          if (error) {
+            log.error(error)
+            throw error
           } else {
-            return handle(req, res, '/404')
+            let shareInfo
+            try {
+              shareInfo = JSON.parse(body)
+            } catch (error) {
+              return handle(req, res, '_error')
+            }
+            if (shareInfo && shareInfo.fullname) {
+              return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
+            } else {
+              // check that is term for discover mode
+              request(`${API_URL}term/lookup?names[]=${code}`, (error, response, body) => {
+                if (error) {
+                  log.error(error)
+                  throw error
+                } else {
+                  log.warn('body', body)
+                  let termsInfo
+                  try {
+                    termsInfo = JSON.parse(body)
+                  } catch (error) {
+                    return handle(req, res, '_error')
+                  }
+                  if (termsInfo && termsInfo.terms && termsInfo.terms.indexOf(null) === -1) {
+                    return app.render(req, res, '/discover', Object.assign(query, { findTerms: [code], termsInfo }))
+                  } else {
+                    return handle(req, res, '/404')
+                  }
+                }
+              })
+            }
           }
-        }
-      })
+        })
+      } else {
+        // maybe that is multi terms
+        const findTerms = pathname.split('/').filter(item => item.length > 0)
+        const lockupTerms = findTerms.map(item => `names[]=${item}`).join('&')
+        request(`${API_URL}term/lookup?${lockupTerms}`, (error, response, body) => {
+          if (error) {
+            log.error(error)
+            throw error
+          } else {
+            log.warn('body', body)
+            log.warn('findTerms', findTerms)
+            log.warn('lockupTerms', lockupTerms)
+            let termsInfo
+            try {
+              termsInfo = JSON.parse(body)
+            } catch (error) {
+              return handle(req, res, '_error')
+            }
+            log.warn('termsInfo', termsInfo)
+            if (termsInfo && termsInfo.terms && termsInfo.terms.indexOf(null) === -1 && termsInfo.terms.length === findTerms.length) {
+              return app.render(req, res, '/discover', Object.assign(query, { findTerms, termsInfo }))
+            } else {
+              // show 404 when one of terms is not correct
+              return handle(req, res, '/404')
+            }
+          }
+        })
+      }
     }
   })
 
