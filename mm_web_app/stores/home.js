@@ -87,6 +87,12 @@ export class HomeStore extends CoreStore {
     return sharesReveived
   }
 
+  @action setTerms (findTerms) {
+    for (let term of findTerms) {
+      this.terms[term.term_id] = term
+    }
+  }
+
   @action getCurrentTerm (termId) {
     if (this.terms[termId]) {
       return this.terms[termId]
@@ -105,7 +111,7 @@ export class HomeStore extends CoreStore {
           }
         )
       }
-      return null
+      return { termId, term_name: '...', img: '/static/images/no-image.png' }
     }
   }
 

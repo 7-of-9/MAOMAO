@@ -5,6 +5,7 @@
 */
 
 import React, { Component } from 'react'
+import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -36,8 +37,27 @@ class DiscoveryList extends Component {
     this.props.ui.selectDiscoveryItem(item)
   }
 
-  onBack = () => {
-    this.props.ui.backToRootDiscovery()
+  onBack = (term) => {
+    logger.warn('termId', term)
+    const terms = this.props.term.findTerms.filter(item => item.toLowerCase() !== term.term_name.toLowerCase())
+    this.props.term.setCurrentTerms(terms)
+    if (terms.length) {
+      const href = `/${terms.join('/')}`
+      Router.push('/discover', href, { shallow: true })
+      const currentTerm = this.props.term.termsInfo.terms.find(item => item.term_name.toLowerCase() === terms[terms.length - 1].toLowerCase())
+      if (currentTerm && currentTerm.term_id) {
+        this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
+        this.props.term.getTermDiscover(currentTerm.term_id)
+      }
+    } else {
+      if (this.props.store.userId > 0) {
+        this.props.ui.backToRootDiscovery()
+        const { user } = this.props.store
+        Router.push('/discover', `/${user.nav_id}`, { shallow: true })
+      } else {
+        Router.push('/')
+      }
+    }
   }
 
   onResizeStart = () => {
@@ -60,25 +80,29 @@ class DiscoveryList extends Component {
   }
 
   backButton = (isRootView) => {
-    const { discoveryTermId, isSplitView, selectedDiscoveryItem: { main_term_id: mainTermId } } = toJS(this.props.ui)
+    const { isSplitView } = toJS(this.props.ui)
     if (!isRootView) {
-      const term = this.props.store.getCurrentTerm(discoveryTermId > 0 ? discoveryTermId : mainTermId)
-      if (term) {
+      const { findTerms, termsInfo: { terms } } = this.props.term
+      const items = terms.filter(item => findTerms.indexOf(item.term_name.toLowerCase()) !== -1).map(term => {
         const { img, term_name: title } = term
+        return <span
+          key={`back-to-${title}`}
+          onClick={() => this.onBack(term)}
+          style={{
+            background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+            backgroundSize: 'cover',
+            cursor: 'pointer'
+          }}
+          className='current-topic-name tags' rel='tag'>
+          <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+          {title}
+        </span>
+      }).reverse()
+      if (items.length) {
         return (
           <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>
             <div className='breadcrum'>
-              <span
-                onClick={this.onBack}
-                style={{
-                  background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                  backgroundSize: 'cover',
-                  cursor: 'pointer'
-                }}
-                className='current-topic-name tags' rel='tag'>
-                <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-                {title}
-              </span>
+              {items}
             </div>
           </div>
         )

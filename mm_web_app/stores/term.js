@@ -11,10 +11,10 @@ class TermStore {
   @observable discoveries = []
   @observable page = 0
   @observable hasMore = true
+  @observable findTerms = []
   terms = []
   userId = -1
   userHash = ''
-  findTerms = []
   termsInfo = { terms: [] }
 
   constructor (isServer, findTerms, termsInfo) {
@@ -26,6 +26,10 @@ class TermStore {
         this.getRootDiscover(this.userId, this.userHash, page)
       }
     })
+  }
+
+  @action setCurrentTerms (findTerms) {
+    this.findTerms = findTerms
   }
 
   @action getRootDiscover (userId, userHash, page) {

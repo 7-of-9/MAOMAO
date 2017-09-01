@@ -45,6 +45,7 @@ export default class DiscoverPage extends React.Component {
     }
     const { findTerms, termsInfo } = toJS(this.term)
     const currentTerm = termsInfo.terms.find(item => item.term_name.toLowerCase() === findTerms[findTerms.length - 1].toLowerCase())
+    this.store.setTerms(termsInfo.terms)
     if (currentTerm && currentTerm.term_id) {
       this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
       this.term.getTermDiscover(currentTerm.term_id)
