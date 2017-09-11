@@ -8,6 +8,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import OwlCarousel from 'react-owl-carousel'
 import { Subscribe } from 'react-subscribe'
+import _ from 'lodash'
 import SelectedItem from './SelectedItem'
 import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
@@ -55,7 +56,7 @@ class SelectedList extends React.PureComponent {
           {...settings}
           >
           {
-          items.map(({name, img, id}) => (
+          _.map(items, ({name, img, id}) => (
             <SelectedItem
               key={`${id}-${name}`}
               name={name}

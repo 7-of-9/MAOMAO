@@ -7,6 +7,7 @@
 import React, { Component } from 'react'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import OwlCarousel from 'react-owl-carousel'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
@@ -51,7 +52,7 @@ class DiscoveryNavigation extends Component {
     if (!isReady) {
       setTimeout(() => {
         const existTerms = []
-        termIds.forEach(id => {
+        _.forEach(termIds, id => {
           const term = this.props.store.getCurrentTerm(id)
           if (term) {
             existTerms.push(term)
@@ -59,7 +60,7 @@ class DiscoveryNavigation extends Component {
         })
         if (existTerms.length === termIds.length) {
           this.setState({
-            currentItems: existTerms.map(item => ({ img: item.img, name: item.term_name, id: item.term_id })),
+            currentItems: _.map(existTerms, item => ({ img: item.img, name: item.term_name, id: item.term_id })),
             isDone: true
           })
         }
@@ -93,7 +94,7 @@ class DiscoveryNavigation extends Component {
           {...settings}
             >
           {
-            selectedItems.map(({name, img, id}) => (
+            _.map(selectedItems, ({name, img, id}) => (
               <div
                 className='selected-topic' key={`topic-${id}`}
                 style={{

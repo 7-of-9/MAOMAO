@@ -6,8 +6,9 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
-import ShareTopic from '../../components/ShareTopic'
+import _ from 'lodash'
 import { toJS } from 'mobx'
+import ShareTopic from '../../components/ShareTopic'
 import logger from '../../utils/logger'
 import { checkGoogleAuth, fetchContacts } from '../../utils/google'
 import { shareAll, shareThisSite, shareTheTopic } from '../../utils/share'
@@ -19,11 +20,11 @@ const FB_APP_ID = '386694335037120'
 
 const parseShareCode = (codes, urlId, shareTopics) => {
   logger.warn('parseShareCode', codes, urlId, shareTopics)
-  const findUrlCode = codes.sites.find(item => item && item.url_id === urlId)
+  const findUrlCode = _.find(codes.sites, item => item && item.url_id === urlId)
   const topics = {}
   if (shareTopics && shareTopics.length) {
-    shareTopics.forEach(topic => {
-      const findCode = codes.topics.find(item => item && item.id === topic.topic_id)
+    _.forEach(shareTopics, topic => {
+      const findCode = _.find(codes.topics, item => item && item.id === topic.topic_id)
       if (findCode) {
         topics[topic.id] = findCode.share_code
       }
@@ -52,7 +53,7 @@ export default class Share extends React.Component {
     const { shareUrlId, shareTopics } = this.props.ui
     logger.warn('Share componentDidMount')
 
-    const findUrlCode = sites.find(item => item && item.url_id === shareUrlId)
+    const findUrlCode = _.find(sites, item => item && item.url_id === shareUrlId)
 
     if (!findUrlCode) {
       shareThisSite(userId, userHash, shareUrlId).then(result => {
@@ -71,8 +72,8 @@ export default class Share extends React.Component {
     }
 
     if (shareTopics && shareTopics.length) {
-      shareTopics.forEach(topic => {
-        const findTopicCode = topics.find(item => item && item.id === topic.topic_id)
+      _.forEach(shareTopics, topic => {
+        const findTopicCode = _.find(topics, item => item && item.id === topic.topic_id)
         if (!findTopicCode) {
           shareTheTopic(userId, userHash, topic.topic_id).then(result => {
             const { share_code: code } = result.data

@@ -8,6 +8,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, onlyUpdateForKeys } from 'recompose'
 import DebounceInput from 'react-debounce-input'
+import _ from 'lodash'
 import Form from './Form'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
@@ -61,7 +62,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
-                      terms.map((item, index) => (
+                      _.map(terms, (item, index) => (
                         <li className={tagColor(item)} key={`topic-${item}`}>
                           <span className='text-topic'>{item}</span>
                           <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
@@ -84,7 +85,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
             {
               suggestions && suggestions.length > 0 &&
               <div className='suggestion-topic'>
-                {suggestions.map((item) => terms.indexOf(item) === -1 && (
+                {_.map(suggestions, (item) => terms.indexOf(item) === -1 && (
                   <div key={`suggest-${item}`} className={`suggestion-topic-item ${tagColor(item)}`}>
                     <span className='text-topic'>{item}</span>
                     <a className='btn-box-remove' onClick={() => handleAdd(item)} ><i className='fa fa-plus' /></a>

@@ -6,6 +6,7 @@
 
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 import eventEmitter from '../../utils/eventEmitter'
@@ -74,7 +75,7 @@ class TopicItem extends PureComponent {
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
-          {images.map(item =>
+          {_.map(images, item =>
             <a
               key={`thumbnail-${item.name}`}
               style={{ display: 'inline-block' }}
@@ -98,8 +99,8 @@ class TopicItem extends PureComponent {
   }
 
   hasSelected = (childTopics, topics) => {
-    const termIds = childTopics.map(item => item.term_id)
-    const isSelected = topics.length > 0 && topics.find(item => termIds.indexOf(item.termId) !== -1)
+    const termIds = _.map(childTopics, item => item.term_id)
+    const isSelected = topics.length > 0 && _.find(topics, item => termIds.indexOf(item.termId) !== -1)
     return isSelected ? 'topic-number has-selected' : 'topic-number'
   }
 
@@ -107,7 +108,7 @@ class TopicItem extends PureComponent {
     /* eslint-disable camelcase */
     const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
     logger.warn('TopicItem', term_id, title, img)
-    const images = childTopics.map(item => ({img: item.img, name: item.term_name}))
+    const images = _.map(childTopics, item => ({img: item.img, name: item.term_name}))
     return (
       <div key={term_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>

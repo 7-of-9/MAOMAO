@@ -101,55 +101,14 @@ app.prepare().then(() => {
               return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
             } else {
               // check that is term for discover mode
-              request(`${API_URL}term/lookup?names[]=${code}`, (error, response, body) => {
-                if (error) {
-                  log.error(error)
-                  throw error
-                } else {
-                  log.warn('body', body)
-                  let termsInfo
-                  try {
-                    termsInfo = JSON.parse(body)
-                  } catch (error) {
-                    return handle(req, res, '_error')
-                  }
-                  if (termsInfo && termsInfo.terms && termsInfo.terms.indexOf(null) === -1) {
-                    return app.render(req, res, '/discover', Object.assign(query, { findTerms: [code], termsInfo }))
-                  } else {
-                    return handle(req, res, '/404')
-                  }
-                }
-              })
+              return app.render(req, res, '/discover', Object.assign(query, { findTerms: [code] }))
             }
           }
         })
       } else {
         // maybe that is multi terms
         const findTerms = pathname.split('/').filter(item => item.length > 0)
-        const lockupTerms = findTerms.map(item => `names[]=${item}`).join('&')
-        request(`${API_URL}term/lookup?${lockupTerms}`, (error, response, body) => {
-          if (error) {
-            log.error(error)
-            throw error
-          } else {
-            log.warn('body', body)
-            log.warn('findTerms', findTerms)
-            log.warn('lockupTerms', lockupTerms)
-            let termsInfo
-            try {
-              termsInfo = JSON.parse(body)
-            } catch (error) {
-              return handle(req, res, '_error')
-            }
-            log.warn('termsInfo', termsInfo)
-            if (termsInfo && termsInfo.terms && termsInfo.terms.indexOf(null) === -1 && termsInfo.terms.length === findTerms.length) {
-              return app.render(req, res, '/discover', Object.assign(query, { findTerms, termsInfo }))
-            } else {
-              // show 404 when one of terms is not correct
-              return handle(req, res, '/404')
-            }
-          }
-        })
+        return app.render(req, res, '/discover', Object.assign(query, { findTerms }))
       }
     }
   })

@@ -76,7 +76,7 @@ class TermStore {
   }
 
   @action getTermDiscover (termId) {
-    const isExist = this.terms.find(item => item.termId === termId)
+    const isExist = _.find(this.terms, item => item.termId === termId)
     const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
     if (!isExist && !isProcess) {
       const termData = termDiscover(termId)

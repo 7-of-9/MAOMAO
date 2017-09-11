@@ -6,6 +6,7 @@
 
 import React, { PureComponent } from 'react'
 import { inject, observer } from 'mobx-react'
+import _ from 'lodash'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import PlaceHolder from '../../components/PlaceHolder'
 import InlinePlayer from './InlinePlayer'
@@ -47,7 +48,7 @@ class StreamItem extends PureComponent {
                         />
                     </a>
                     {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-                    {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                    {urlOwner(_.filter(owners, item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
                   </div>
                   <div className='caption'>
                     <h4 className='caption-title'>

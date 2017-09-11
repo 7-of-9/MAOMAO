@@ -7,6 +7,7 @@
 import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
 
@@ -124,7 +125,7 @@ export default class DiscoveryItem extends PureComponent {
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '30px' }}>
-          {images.map(item =>
+          {_.map(images, item =>
             <a
               key={`thumbnail-${item.name}`}
               style={{ display: 'inline-block' }}

@@ -21,7 +21,7 @@ const calcRate = (score, timeOnTab) => {
 
 function flattenTopics (topics, counter = 0) {
   const result = []
-  topics.forEach(item => {
+  _.forEach(topics, item => {
     result.push({ level: counter, id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions })
     if (item.child_topics && item.child_topics.length) {
       result.push(...flattenTopics(item.child_topics, counter + 1))
@@ -77,7 +77,7 @@ export class HomeStore extends CoreStore {
     // listen new data and reload all
     const friends = toJS(sharesReveived)
     if (friends.length > 0) {
-      friends.forEach(friend => {
+      _.forEach(friends, friend => {
         // TODO: Check new data is belong to sharing topics or share all
         this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'process-url', (data) => {
           this.getUserHistory()
@@ -301,14 +301,14 @@ export class HomeStore extends CoreStore {
             let users = []
             let owners = []
             if (myUrls && myUrls.length) {
-              urls.push(...myUrls.map(item => ({
+              urls.push(..._.map(myUrls, item => ({
                 url_id: item.url_id,
                 title: item.title,
                 href: item.href,
                 img: item.img
               }
               )))
-              myUrls.forEach(item => {
+              _.forEach(myUrls, item => {
                 owners.push({
                   owner: user_id,
                   url_id: item.url_id,
@@ -318,21 +318,21 @@ export class HomeStore extends CoreStore {
                   rate: calcRate(item.im_score, item.time_on_tab)
                 })
               })
-              users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
+              users.push({ user_id, fullname, avatar, urlIds: _.map(myUrls, item => item.url_id) })
             }
 
             _.forEach(friends, friend => {
               const { user_id, fullname, avatar, shares: list } = friend
               const urlIds = []
               _.forEach(list, item => {
-                urls.push(...item.urls.map(item => ({
+                urls.push(..._.map(item.urls, item => ({
                   url_id: item.url_id,
                   title: item.title,
                   href: item.href,
                   img: item.img
                 }
               )))
-                item.urls.forEach(item => {
+                _.forEach(item.urls, item => {
                   owners.push({
                     owner: user_id,
                     url_id: item.url_id,
@@ -342,13 +342,13 @@ export class HomeStore extends CoreStore {
                     rate: calcRate(item.im_score, item.time_on_tab)
                   })
                 })
-                urlIds.push(...item.urls.map(item => item.url_id))
+                urlIds.push(..._.map(item.urls, item => item.url_id))
               })
               users.push({ user_id, fullname, avatar, urlIds })
             })
             this.urls = _.uniqBy(urls, 'url_id')
             this.topics = flattenTopics(topics)
-            this.firstLevelTopics = topics.map(item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
+            this.firstLevelTopics = _.map(topics, item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
             this.users = users
             this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
             logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
@@ -375,9 +375,9 @@ export class HomeStore extends CoreStore {
             if (safeCheckResult.state === 'fulfilled') {
               const { matches } = safeCheckResult.value.data
               if (matches) {
-                const ingoreUrls = matches.map(item => item && item.threat && item.threat.url)
+                const ingoreUrls = _.map(matches, item => item && item.threat && item.threat.url)
                 logger.warn('safeBrowsingLoockup ingoreUrls', ingoreUrls)
-                this.urls = urls.filter(item => ingoreUrls.indexOf(item.href) === -1)
+                this.urls = _.filter(urls, item => ingoreUrls.indexOf(item.href) === -1)
               }
             }
             this.isProcessingHistory = false
@@ -389,7 +389,7 @@ export class HomeStore extends CoreStore {
   @action findUserRating (item, userIds) {
     logger.warn('findUserRating')
     if (userIds.length) {
-      const owner = item.owners.find(item => userIds.indexOf(item.owner) !== -1)
+      const owner = _.find(item.owners, item => userIds.indexOf(item.owner) !== -1)
       return owner.rate
     }
     return item.owners[0].rate
@@ -413,10 +413,10 @@ export class HomeStore extends CoreStore {
           foundIds = userUrlIds
         }
       }
-      const result = this.urls.filter(item => foundIds.indexOf(item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
+      const result = _.filter(this.urls, item => foundIds.indexOf(item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
       return result
     }
-    const result = this.urls.filter(item => item.owners[0].rate >= rating)
+    const result = _.filter(this.urls, item => item.owners[0].rate >= rating)
     return result
   }
 

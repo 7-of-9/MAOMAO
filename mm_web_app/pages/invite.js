@@ -1,5 +1,6 @@
 import React from 'react'
 import { Provider } from 'mobx-react'
+import _ from 'lodash'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
@@ -23,7 +24,7 @@ export default class Invite extends React.Component {
     try {
       logger.warn('bgImageResult', bgImageResult)
       const { result } = bgImageResult.data
-      const images = result.filter(item => item.img && item.img.length > 0)
+      const images = _.filter(result, item => item.img && item.img.length > 0)
       if (images.length > 0) {
         store.bgImage = images[Math.floor(Math.random() * images.length)].img
       } else {

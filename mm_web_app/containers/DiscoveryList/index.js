@@ -28,7 +28,7 @@ class DiscoveryList extends Component {
   }
 
   onSelectTerm = (termId) => {
-    logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
+    logger.warn('DiscoveryList onSelectTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
     this.props.term.getTermDiscover(termId)
   }
@@ -38,13 +38,13 @@ class DiscoveryList extends Component {
   }
 
   onBack = (term) => {
-    logger.warn('termId', term)
-    const terms = this.props.term.findTerms.filter(item => item.toLowerCase() !== term.term_name.toLowerCase())
+    logger.warn('onBack termId', term)
+    const terms = _.filter(this.props.term.findTerms, item => item.toLowerCase() !== term.term_name.toLowerCase())
     this.props.term.setCurrentTerms(terms)
     if (terms.length) {
       const href = `/${terms.join('/')}`
       Router.push('/discover', href, { shallow: true })
-      const currentTerm = this.props.term.termsInfo.terms.find(item => item.term_name.toLowerCase() === terms[terms.length - 1].toLowerCase())
+      const currentTerm = _.find(this.props.term.termsInfo.terms, item => item.term_name.toLowerCase() === terms[terms.length - 1].toLowerCase())
       if (currentTerm && currentTerm.term_id) {
         this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
         this.props.term.getTermDiscover(currentTerm.term_id)
@@ -55,7 +55,7 @@ class DiscoveryList extends Component {
         const { user } = this.props.store
         Router.push('/discover', `/${user.nav_id}`, { shallow: true })
       } else {
-        Router.push('/')
+        Router.push('/', '/', { shallow: true })
       }
     }
   }
@@ -83,9 +83,11 @@ class DiscoveryList extends Component {
     const { isSplitView } = toJS(this.props.ui)
     if (!isRootView) {
       const { findTerms, termsInfo: { terms } } = this.props.term
-      const items = terms.filter(item => findTerms.indexOf(item.term_name.toLowerCase()) !== -1).map(term => {
+      const items = []
+      _.forEach(findTerms, item => {
+        const term = _.find(terms, term => term.term_name.toLowerCase() === item.toLowerCase())
         const { img, term_name: title } = term
-        return <span
+        items.push(<span
           key={`back-to-${title}`}
           onClick={() => this.onBack(term)}
           style={{
@@ -96,8 +98,8 @@ class DiscoveryList extends Component {
           className='current-topic-name tags' rel='tag'>
           <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
           {title}
-        </span>
-      }).reverse()
+        </span>)
+      })
       if (items.length) {
         return (
           <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>
@@ -132,7 +134,7 @@ class DiscoveryList extends Component {
     logger.warn('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
     if (terms.length) {
-      const topics = terms.find(item => item.termId === discoveryTermId)
+      const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
         const items = []
         _.forEach(topics.discoveries, (item) => {
@@ -181,7 +183,7 @@ class DiscoveryList extends Component {
     }
     const items = []
     if (termIds) {
-      termIds.forEach(id => {
+      _.forEach(termIds, id => {
         if (id !== termId) {
           const term = this.props.store.getCurrentTerm(id)
           if (term) {
@@ -275,6 +277,14 @@ class DiscoveryList extends Component {
 
   componentDidMount () {
     const { userId, userHash } = this.props.store
+    const { findTerms, termsInfo } = toJS(this.props.term)
+    const currentTerm = _.find(termsInfo.terms, item => item.term_name.toLowerCase() === findTerms[findTerms.length - 1].toLowerCase())
+    this.props.store.setTerms(termsInfo.terms)
+    if (currentTerm && currentTerm.term_id) {
+      this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
+      this.props.term.getTermDiscover(currentTerm.term_id)
+    }
+
     const { page } = this.props.term
     logger.warn('DiscoveryList componentDidMount', userId, userHash)
     if (userId > 0) {

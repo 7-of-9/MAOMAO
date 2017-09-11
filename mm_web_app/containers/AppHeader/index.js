@@ -11,6 +11,7 @@ import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
+import _ from 'lodash'
 import Modal from 'react-modal'
 import { Navbar, NavItem } from 'neal-react'
 import Header from '../../components/Header'
@@ -62,7 +63,7 @@ class AppHeader extends React.Component {
     this.props.store.internalLogin((user) => {
       logger.warn('test user', user)
       const { selectedTopics } = this.props.ui
-      this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+      this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -245,14 +246,14 @@ class AppHeader extends React.Component {
                     let user_email = identities['email'] && identities['email'][0]
                     if (sign_in_provider === 'google.com') {
                       if (!email) {
-                        user.providerData.forEach(item => {
+                        _.forEach(user.providerData, item => {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
                             }, (currentUser) => {
                               logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                              this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                               this.saveProfileUrl(currentUser.nav_id)
                             })
                           }
@@ -263,20 +264,20 @@ class AppHeader extends React.Component {
                         }, (currentUser) => {
                           logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                          this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl(currentUser.nav_id)
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
                       if (!email) {
-                        user.providerData.forEach(item => {
+                        _.forEach(user.providerData, item => {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
                             }, (currentUser) => {
                               logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                              this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                               this.saveProfileUrl(currentUser.nav_id)
                             })
                           }
@@ -287,7 +288,7 @@ class AppHeader extends React.Component {
                         }, (currentUser) => {
                           logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+                          this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl(currentUser.nav_id)
                         })
                       }

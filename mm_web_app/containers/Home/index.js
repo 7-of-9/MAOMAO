@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic'
 import { observer, inject } from 'mobx-react'
 import Head from 'next/head'
 import Raven from 'raven-js'
+import _ from 'lodash'
 import Loading from '../../components/Loading'
 import Layout from '../../components/Layout'
 import AddToHome from '../../components/AddToHome'
@@ -136,7 +137,7 @@ class Home extends React.Component {
         </div>
       )
     }
-    const selectedItems = selectedTopics ? selectedTopics.map(item => ({img: item.img, id: item.termId, name: item.termName})) : []
+    const selectedItems = selectedTopics ? _.map(selectedTopics, item => ({img: item.img, id: item.termId, name: item.termName})) : []
     return (
       <div className='wrapper-slide'>
         { shareInfo && <ChromeInstall /> }

@@ -71,7 +71,7 @@ const getSuggestions = (value, users, firstLevelTopics) => {
     data: fuseTopic.search(value)
   })
 
-  return sections.filter(section => section.data.length > 0)
+  return _.filter(sections, section => section.data.length > 0)
 }
 
 const getSectionSuggestions = (section) => {
@@ -116,7 +116,7 @@ const renderSectionTitle = (section) => {
 const ratingCount = (urls, owners, rate) => {
   let counter = 0
   _.forEach(urls, url => {
-    if (owners.find(owner => owner.rate === rate && owner.url_id === url.url_id)) {
+    if (_.find(owners, owner => owner.rate === rate && owner.url_id === url.url_id)) {
       counter += 1
     }
   })
@@ -221,7 +221,7 @@ class FilterSearch extends React.Component {
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
-                      filterByTopic.map(item => (
+                      _.map(filterByTopic, item => (
                         <li className={tagColor(item.label)} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
@@ -231,7 +231,7 @@ class FilterSearch extends React.Component {
                       ))
                     }
                     {
-                    filterByUser.map(item => (
+                    _.map(filterByUser, item => (
                       <li key={`filter-user-${item.label}`} className='search-item tags-color-1'>
                         <div className='search-media'>
                           <div className='search-media-left'>
@@ -275,7 +275,7 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Streams</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {firstLevelTopics.filter(item => urlsCount(item, filterByUser)).map(topic => (
+                  {_.filter(firstLevelTopics, item => urlsCount(item, filterByUser)).map(topic => (
                     <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}>
                       <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name} ({urlsCount(topic, filterByUser)})</span>
                     </li>
@@ -290,7 +290,7 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Users</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {users.map(user =>
+                  {_.map(users, user =>
                   (<li onClick={() => this.props.ui.selectUser(user)} key={`user-${user.user_id}`}>
                     <div className='user-share'>
                       <div className='user-share-img'>

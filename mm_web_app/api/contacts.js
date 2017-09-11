@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const request = require('request')
+const _ = require('lodash')
 
 router.post('/', (req, res) => {
   const { token, limit } = req.body
@@ -24,7 +25,7 @@ router.post('/', (req, res) => {
     const contacts = []
     const data = JSON.parse(body)
     if (data.feed && data.feed.entry) {
-      data.feed.entry.forEach((item) => {
+      _.forEach(data.feed.entry, (item) => {
         const ref = item.gd$email
         let image = ''
         if (item.link && item.link[0] && item.link[0].href) {

@@ -1,11 +1,12 @@
 {
   "name": "maomao",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "maomao extension",
   "scripts": {
     "test-app": "tape -r babel-register -r ./dunghd/content/src/scripts/test/setup-jsdom.js ./dunghd/content/src/scripts/test/*-test.js | faucet",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "build": "cross-env NODE_ENV=production gulp build"
   },
   "keywords": [
     "maomao"
@@ -88,9 +89,10 @@
     "babel-preset-stage-0": "^6.16.0",
     "babel-preset-stage-1": "^6.13.0",
     "babel-register": "^6.26.0",
+    "cross-env": "^5.0.5",
     "css-loader": "^0.28.7",
     "enzyme": "^2.9.1",
-    "eslint": "^4.5.0",
+    "eslint": "^4.6.1",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",

@@ -1,9 +1,12 @@
 import React from 'react'
-import { toJS } from 'mobx'
 import { Provider } from 'mobx-react'
+import Error from 'next/error'
+import 'isomorphic-fetch'
+import _ from 'lodash'
 import { initStore } from '../stores/home'
 import { initUIStore } from '../stores/ui'
 import { initTermStore } from '../stores/term'
+import { MAOMAO_API_URL } from '../containers/App/constants'
 import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
@@ -15,12 +18,31 @@ export default class DiscoverPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    logger.warn('Discover query', query)
+    logger.warn('DiscoverPage query', query)
     const user = req && req.session ? req.session.decodedToken : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
-    const term = initTermStore(isServer, query.findTerms, query.termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms: query.findTerms, termsInfo: query.termsInfo }
+    let termsInfo = {terms: []}
+    let findTerms = []
+    let statusCode = true
+    if (query) {
+      if (query.findTerms) {
+        findTerms = query.findTerms
+      }
+      const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
+      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+      /* global fetch */
+      const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+      const json = await res.json()
+      statusCode = res.statusCode > 200 ? res.statusCode : false
+      logger.warn('fetch json', json)
+      termsInfo = json
+      if (termsInfo.terms.indexOf(null) !== -1 || termsInfo.terms.length !== findTerms.length) {
+        statusCode = 404
+      }
+    }
+    const term = initTermStore(isServer, findTerms, termsInfo)
+    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode }
   }
 
   constructor (props) {
@@ -43,17 +65,22 @@ export default class DiscoverPage extends React.Component {
           logger.warn('service worker registration failed', err.message)
         })
     }
-    const { findTerms, termsInfo } = toJS(this.term)
-    const currentTerm = termsInfo.terms.find(item => item.term_name.toLowerCase() === findTerms[findTerms.length - 1].toLowerCase())
-    this.store.setTerms(termsInfo.terms)
-    if (currentTerm && currentTerm.term_id) {
-      this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
-      this.term.getTermDiscover(currentTerm.term_id)
+    logger.warn('DiscoverPage componentDidMount')
+  }
+
+  componentWillUpdate () {
+    logger.warn('DiscoverPage componentWillUpdate', this)
+    // FIXME: back button on browser
+    if (this.term.findTerms.length !== this.props.findTerms.length) {
+      // this.term.setCurrentTerms(this.props.findTerms)
     }
   }
 
   render () {
-    logger.warn('Discover render', this.store)
+    logger.warn('DiscoverPage render', this.store)
+    if (this.props.statusCode) {
+      return <Error statusCode={this.props.statusCode} />
+    }
     return (
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         <div className='discover'>

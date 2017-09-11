@@ -9,7 +9,7 @@ import { GoogleShare, ShareOptions, Toolbar } from '../share';
 import openUrl from '../utils/popup';
 import fbScrapeShareUrl from '../utils/fb';
 
-const SITE_URL = 'http://wwww.maomao.rocks';
+const SITE_URL = 'http://www.maomao.rocks';
 const FB_APP_ID = '386694335037120';
 const style = {
   container: {

@@ -8,6 +8,7 @@ import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
+import _ from 'lodash'
 import InlinePreview from '../../components/Streams/InlinePreview'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
@@ -62,7 +63,7 @@ class DiscoveryDetail extends PureComponent {
           items.length > 0 &&
             <div className='selected-panel'>
               <DiscoveryNavigation
-                items={items.map(item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
+                items={_.map(items, item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
                 termIds={termIds}
                 isReady={isReady}
                 />

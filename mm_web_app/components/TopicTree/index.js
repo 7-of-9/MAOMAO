@@ -123,7 +123,7 @@ class TopicTree extends PureComponent {
     _.forEach(currentTopicTree(tree, currentTermId), (item) => {
        /* eslint-disable camelcase */
       const { term_id, term_name: title, img, child_topics } = item
-      const isSelect = this.props.ui.selectedTopics.find(item => item.termId === term_id)
+      const isSelect = _.find(this.props.ui.selectedTopics, item => item.termId === term_id)
       items.push(
         <TopicItem
           key={term_id}
