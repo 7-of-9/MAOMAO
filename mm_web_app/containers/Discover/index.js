@@ -25,7 +25,7 @@ class Discover extends React.PureComponent {
   }
 
   componentDidMount () {
-    logger.warn('Discover componentDidMount', this.props)
+    logger.info('Discover componentDidMount', this.props)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     this.props.store.getTopicTree()
   }
@@ -33,7 +33,7 @@ class Discover extends React.PureComponent {
   render () {
     const title = 'maomao - discover & share'
     let description = 'maomao is a peer-to-peer real time content sharing network, powered by a deep learning engine.'
-    logger.warn('Discover render', this.props)
+    logger.info('Discover render', this.props)
     return (
       <Layout title={title} description={description}>
         {this.renderRootDiscover()}

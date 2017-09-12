@@ -94,7 +94,7 @@ export default class Hiring extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.warn('Hiring', props)
+    logger.info('Hiring', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, true)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
@@ -109,14 +109,14 @@ export default class Hiring extends React.Component {
           logger.log('service worker registration successful')
         })
         .catch(err => {
-          logger.warn('service worker registration failed', err.message)
+          logger.info('service worker registration failed', err.message)
         })
     }
   }
 
   render () {
     const { type } = this.props
-    logger.warn('Hiring render')
+    logger.info('Hiring render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <Layout title={"Maomao is coming, and we're hiring..."}>

@@ -71,21 +71,21 @@ app.prepare().then(() => {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
       app.render(req, res, '/hiring', {type: 'vp'})
-    } else if (_.includes(pages, pathname) || pathname.indexOf('_next') !== -1 ||
-     pathname.indexOf('favicon') !== -1 || pathname.indexOf('static') !== -1 ||
-     pathname.indexOf('.') !== -1 || pathname.indexOf('%20') !== -1 ||
-     pathname.indexOf('|') !== -1 || pathname.indexOf('-') !== -1 ||
+    } else if (_.includes(pages, pathname) || _.indexOf(pathname, '_next') !== -1 ||
+     _.indexOf(pathname, 'favicon') !== -1 || _.indexOf(pathname, 'static') !== -1 ||
+     _.indexOf(pathname, '.') !== -1 || _.indexOf(pathname, '%20') !== -1 ||
+     _.indexOf(pathname, '|') !== -1 || _.indexOf(pathname, '-') !== -1 ||
      pathname === '/'
     ) {
       return handle(req, res, parsedUrl)
     } else {
       // Hack: support FB open graph
       const params = matchRoute(pathname)
-      log.warn('params', params)
+      log.info('params', params)
       if (params) {
         const { code } = params
-        log.warn('pathname', pathname)
-        log.warn('code', code)
+        log.info('pathname', pathname)
+        log.info('code', code)
         request(`${API_URL}share/info?share_code=${code}`, (error, response, body) => {
           if (error) {
             log.error(error)
@@ -120,6 +120,6 @@ app.prepare().then(() => {
       log.error(err)
       throw err
     }
-    log.warn(`> Ready on http://localhost:${port}`)
+    log.info(`> Ready on http://localhost:${port}`)
   })
 })

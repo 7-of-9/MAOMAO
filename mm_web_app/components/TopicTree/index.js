@@ -62,7 +62,7 @@ class TopicTree extends PureComponent {
   }
 
   selectChildTopics = (topics) => {
-    logger.warn('selectChildTopics', topics)
+    logger.info('selectChildTopics', topics)
     // this.props.ui.selectChildTopics(topics)
   }
 
@@ -99,7 +99,7 @@ class TopicTree extends PureComponent {
   }
 
   cleanClassName = () => {
-    logger.warn('TopicTree cleanClassName', this.animateEl)
+    logger.info('TopicTree cleanClassName', this.animateEl)
     /* global $ */
     if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
@@ -107,7 +107,7 @@ class TopicTree extends PureComponent {
   }
 
   componentWillUpdate () {
-    logger.warn('TopicTree componentWillUpdate')
+    logger.info('TopicTree componentWillUpdate')
     this.cleanClassName()
   }
 
@@ -118,7 +118,7 @@ class TopicTree extends PureComponent {
       return (<Loading isLoading />)
     }
     const { currentTermId, treeLevel, animationType, selectedTopics } = toJS(this.props.ui)
-    logger.warn('TopicTree render', currentTermId, treeLevel)
+    logger.info('TopicTree render', currentTermId, treeLevel)
 
     _.forEach(currentTopicTree(tree, currentTermId), (item) => {
        /* eslint-disable camelcase */

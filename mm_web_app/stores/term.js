@@ -33,7 +33,7 @@ class TermStore {
   }
 
   @action getRootDiscover (userId, userHash, page) {
-    logger.warn('getRootDiscover', userId, userHash, page)
+    logger.info('getRootDiscover', userId, userHash, page)
     this.page = page
     this.userId = userId
     this.userHash = userHash
@@ -45,7 +45,7 @@ class TermStore {
       () => {
         if (rootData.value && rootData.value.data) {
           const { discoveries } = rootData.value.data
-          logger.warn('getRootDiscover result', discoveries)
+          logger.info('getRootDiscover result', discoveries)
           if (discoveries.length === 0) {
             this.hasMore = false
           } else {
@@ -77,7 +77,7 @@ class TermStore {
 
   @action getTermDiscover (termId) {
     const isExist = _.find(this.terms, item => item.termId === termId)
-    const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
+    const isProcess = _.indexOf(this.pendings, `termData${termId}`) !== -1
     if (!isExist && !isProcess) {
       const termData = termDiscover(termId)
       this.pendings.push(`termData${termId}`)

@@ -12,7 +12,7 @@ const SITE_URL = process.env.SITE_URL
 const parseUrl = (baseUrl, query) => {
   if (Object.keys(query).length !== 1) {
     const rawUrl = url.parse(baseUrl)
-    log.warn('rawUrl', rawUrl)
+    log.info('rawUrl', rawUrl)
     return `${rawUrl.protocol}//${rawUrl.hostname}${rawUrl.pathname}?${queryString.stringify(Object.assign(rawUrl.search ? queryString.parse(rawUrl.search) : {}, _.omit(query, 'url')))}`
   }
   return baseUrl
@@ -21,7 +21,7 @@ const parseUrl = (baseUrl, query) => {
 router.get('/', (req, res) => {
   const { query, body, params } = req
   const { url: baseUrl } = req.query
-  log.warn('GET: Load url via proxy', baseUrl, query, body, params)
+  log.info('GET: Load url via proxy', baseUrl, query, body, params)
   if (!baseUrl) {
     res.status(404).send('Sorry, we cannot find that!')
   } else {
@@ -32,7 +32,7 @@ router.get('/', (req, res) => {
       if (error) {
         res.status(500).send({ error })
       } else {
-        log.warn('href', response.request.uri.href)
+        log.info('href', response.request.uri.href)
         const replace = String.prototype.replace
         const html = replace.call(body, '<head>', `<head><base href="${response.request.uri.href}">`)
         const $ = cheerio.load(html)

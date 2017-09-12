@@ -28,7 +28,7 @@ class DiscoveryList extends Component {
   }
 
   onSelectTerm = (termId) => {
-    logger.warn('DiscoveryList onSelectTerm', termId)
+    logger.info('DiscoveryList onSelectTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
     this.props.term.getTermDiscover(termId)
   }
@@ -38,13 +38,20 @@ class DiscoveryList extends Component {
   }
 
   onBack = (term) => {
-    logger.warn('onBack termId', term)
-    const terms = _.filter(this.props.term.findTerms, item => item.toLowerCase() !== term.term_name.toLowerCase())
+    logger.info('onBack termId', term)
+    const terms = _.filter(this.props.term.findTerms, item => _.toLower(item) !== _.toLower(term.term_name))
     this.props.term.setCurrentTerms(terms)
     if (terms.length) {
       const href = `/${terms.join('/')}`
-      Router.push('/discover', href, { shallow: true })
-      const currentTerm = _.find(this.props.term.termsInfo.terms, item => item.term_name.toLowerCase() === terms[terms.length - 1].toLowerCase())
+      Router.push(
+        {
+          pathname: '/discover',
+          query: { findTerms: terms }
+        },
+        href,
+       { shallow: true }
+      )
+      const currentTerm = _.find(this.props.term.termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(terms[terms.length - 1]))
       if (currentTerm && currentTerm.term_id) {
         this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
         this.props.term.getTermDiscover(currentTerm.term_id)
@@ -71,7 +78,7 @@ class DiscoveryList extends Component {
   onZoomLayout = () => {
     const { innerWidth } = this.state
     if (innerWidth !== window.innerWidth) {
-      logger.warn('onZoomLayout')
+      logger.info('onZoomLayout')
       this.setState({
         currentWidth: window.innerWidth / 2,
         innerWidth: window.innerWidth
@@ -85,7 +92,7 @@ class DiscoveryList extends Component {
       const { findTerms, termsInfo: { terms } } = this.props.term
       const items = []
       _.forEach(findTerms, item => {
-        const term = _.find(terms, term => term.term_name.toLowerCase() === item.toLowerCase())
+        const term = _.find(terms, term => _.toLower(term.term_name) === _.toLower(item))
         const { img, term_name: title } = term
         items.push(<span
           key={`back-to-${title}`}
@@ -114,7 +121,7 @@ class DiscoveryList extends Component {
   }
 
   cleanClassName = () => {
-    logger.warn('DiscoveryList cleanClassName', this.animateEl)
+    logger.info('DiscoveryList cleanClassName', this.animateEl)
     /* global $ */
     if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
@@ -122,7 +129,7 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    logger.warn('DiscoveryList loadMore')
+    logger.info('DiscoveryList loadMore')
     this.props.term.loadMore()
   }
 
@@ -131,7 +138,7 @@ class DiscoveryList extends Component {
   }
 
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
-    logger.warn('renderTermList', isSplitView, discoveryTermId, terms)
+    logger.info('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
     if (terms.length) {
       const topics = _.find(terms, item => item.termId === discoveryTermId)
@@ -194,7 +201,7 @@ class DiscoveryList extends Component {
     }
     const { currentWidth, isResize } = this.state
     const { terms } = toJS(this.props.term)
-    logger.warn('isSplitView', isSplitView)
+    logger.info('isSplitView', isSplitView)
     if (isSplitView && discoveryUrlId !== -1) {
       return (
         <div className='discovery-list'>
@@ -221,7 +228,7 @@ class DiscoveryList extends Component {
         </div>
       )
     }
-    logger.warn('discoveryTermId', discoveryTermId)
+    logger.info('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
       return this.renderTermList(isSplitView && discoveryUrlId !== -1, ingoreTerms, discoveryTermId, terms, urlId)
     }
@@ -266,27 +273,19 @@ class DiscoveryList extends Component {
   }
 
   componentWillUpdate () {
-    logger.warn('DiscoveryList componentWillUpdate')
+    logger.info('DiscoveryList componentWillUpdate')
     this.cleanClassName()
   }
 
   componentWillReact () {
     const { userId, userHash } = this.props.store
-    logger.warn('DiscoveryList componentWillReact', userId, userHash)
+    logger.info('DiscoveryList componentWillReact', userId, userHash)
   }
 
   componentDidMount () {
     const { userId, userHash } = this.props.store
-    const { findTerms, termsInfo } = toJS(this.props.term)
-    const currentTerm = _.find(termsInfo.terms, item => item.term_name.toLowerCase() === findTerms[findTerms.length - 1].toLowerCase())
-    this.props.store.setTerms(termsInfo.terms)
-    if (currentTerm && currentTerm.term_id) {
-      this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
-      this.props.term.getTermDiscover(currentTerm.term_id)
-    }
-
     const { page } = this.props.term
-    logger.warn('DiscoveryList componentDidMount', userId, userHash)
+    logger.info('DiscoveryList componentDidMount', userId, userHash)
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
@@ -299,7 +298,7 @@ class DiscoveryList extends Component {
   render () {
     const { userId } = this.props.store
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
-    logger.warn('DiscoveryList render ', this.props.term.hasMore)
+    logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
     return (

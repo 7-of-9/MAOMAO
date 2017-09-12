@@ -196,12 +196,12 @@ class Discovery extends Component {
   }
 
   loadMore = () => {
-    logger.warn('loadMore')
+    logger.info('loadMore')
     this.props.discovery.loadMore()
   }
 
   onChange = (terms) => {
-    logger.warn('onChange terms', terms)
+    logger.info('onChange terms', terms)
     this.props.discovery.changeTerms(terms)
   }
 
@@ -210,7 +210,7 @@ class Discovery extends Component {
   }
 
   render () {
-    logger.warn('Discovery render', this.props)
+    logger.info('Discovery render', this.props)
     return (
       <div>
         <div className='back'>

@@ -79,7 +79,7 @@ const enhance = compose(
   withHandlers({
     onSuggestionsFetchRequested: props => () => {
       const emails = _.map(props.selectedContacts, item => item.email)
-      const sources = _.filter(props.contacts, item => emails.indexOf(item.email) === -1)
+      const sources = _.filter(props.contacts, item => _.indexOf(emails, item.email) === -1)
       props.changeSuggestions(getSuggestions(sources, props.value))
     },
     onSuggestionsClearRequested: props => () => {
@@ -101,7 +101,7 @@ const enhance = compose(
       event.preventDefault()
       logger.info('onSubmit value', props.value)
       const emails = _.map(props.selectedContacts, item => item.email)
-      const sources = _.filter(props.contacts, item => emails.indexOf(item.email) === -1)
+      const sources = _.filter(props.contacts, item => _.indexOf(emails, item.email) === -1)
       const selected = getSuggestions(sources, props.value)
       logger.info('onSubmit selected', selected)
       const result = [].concat(props.selectedContacts, (selected && selected[0]) || [])

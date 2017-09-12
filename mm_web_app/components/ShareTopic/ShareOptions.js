@@ -27,8 +27,8 @@ const enhance = compose(
 )
 
 const ShareOptions = enhance(({ topics, active, onChange }) => {
-  const tld = _.find(topics, item => item.id.indexOf('tld') !== -1)
-  const experimentalTopics = _.filter(topics, item => item.id.indexOf('beta') !== -1)
+  const tld = _.find(topics, item => _.indexOf(item.id, 'tld') !== -1)
+  const experimentalTopics = _.filter(topics, item => _.indexOf(item.id, 'beta') !== -1)
   const isToggleTopic = !!_.find(topics, item => item.id === active)
   return (<div style={style} className='share-topic'>
     <div className='switch-list'>

@@ -41,7 +41,7 @@ export class UIStore {
   title = 'Sign In'
 
   @action toggleOnlyMe (userId, users) {
-    logger.warn('toggleOnlyMe', userId, users)
+    logger.info('toggleOnlyMe', userId, users)
     this.onlyMe = !this.onlyMe
     if (this.onlyMe) {
       this.userId = userId
@@ -58,7 +58,7 @@ export class UIStore {
   }
 
   @action toggleSelectTopic (isSelect, termId, termName, img) {
-    logger.warn('toggleSelectTopic', isSelect, termId, termName, img)
+    logger.info('toggleSelectTopic', isSelect, termId, termName, img)
     if (isSelect) {
       const isExist = this.selectedTopics.length > 0 && _.find(this.selectedTopics, item => item.termId === termId)
       if (!isExist) {
@@ -70,7 +70,7 @@ export class UIStore {
   }
 
   @action selectChildTopics (topics) {
-    logger.warn('toggleSelectTopic', topics)
+    logger.info('toggleSelectTopic', topics)
     if (topics && topics.length) {
       _.forEach(topics, topic => {
         const { topic_id: termId, topic_name: termName, img } = topic
@@ -83,7 +83,7 @@ export class UIStore {
   }
 
   @action selectTopicTree (termId, termName = '', img = '', inc = 1) {
-    logger.warn('selectTopicTree', termId)
+    logger.info('selectTopicTree', termId)
     this.currentTermId = termId
     this.currentTermTitle = termName
     this.currentTermImage = img
@@ -108,7 +108,7 @@ export class UIStore {
   }
 
   @action openShareTopic (urlId, selectedTopic, otherTopics) {
-    logger.warn('share topic', urlId, selectedTopic, otherTopics)
+    logger.info('share topic', urlId, selectedTopic, otherTopics)
     this.shareUrlId = urlId
     this.shareTopics = [ { id: `${selectedTopic.id}-tld-${selectedTopic.name}`, topic_id: selectedTopic.id, name: selectedTopic.name } ]
     _.forEach(otherTopics, (topic) => {
@@ -129,7 +129,7 @@ export class UIStore {
   }
 
   @action changeSortOrder (type, direction) {
-    logger.warn('changeSortOrder', type, direction)
+    logger.info('changeSortOrder', type, direction)
     this.sortBy = type
     this.sortDirection = direction
     this.page = 1
@@ -216,7 +216,7 @@ export class UIStore {
   }
 
   @action nextPage () {
-    logger.warn('nextPage')
+    logger.info('nextPage')
     this.page += 1
   }
 

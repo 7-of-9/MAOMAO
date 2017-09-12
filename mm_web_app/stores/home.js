@@ -98,7 +98,7 @@ export class HomeStore extends CoreStore {
       return this.terms[termId]
     } else {
       const termInfo = getTerm(termId)
-      if (this.pendings.indexOf(termId) === -1) {
+      if (_.indexOf(this.pendings, termId) === -1) {
         this.pendings.push(termId)
         when(
           () => termInfo.state !== 'pending',
@@ -107,7 +107,7 @@ export class HomeStore extends CoreStore {
               const { term } = termInfo.value.data
               this.terms[term.term_id] = term
             }
-            this.pendings.splice(this.pendings.indexOf(termId), 1)
+            this.pendings.splice(_.indexOf(this.pendings, termId), 1)
           }
         )
       }
@@ -116,20 +116,20 @@ export class HomeStore extends CoreStore {
   }
 
   @action saveTopics (ids) {
-    logger.warn('saveTopics', ids)
+    logger.info('saveTopics', ids)
     if (ids && ids.length > 0) {
       const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
       when(
           () => saveTopicRequest.state !== 'pending',
           () => {
-            logger.warn('saveTopics result', saveTopicRequest.data)
+            logger.info('saveTopics result', saveTopicRequest.data)
           }
         )
     }
   }
 
   @action internalLogin (callback) {
-    logger.warn('internalLogin')
+    logger.info('internalLogin')
     const registerNewUser = testInternalUser()
     this.isProcessingRegister = true
     when(
@@ -162,7 +162,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action retrylLoginForInternalUser (user) {
-    logger.warn('retrylLoginForInternalUser', user)
+    logger.info('retrylLoginForInternalUser', user)
     const { id, userHash } = user
     this.isLogin = true
     this.userId = id
@@ -180,7 +180,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action googleConnect (info, callback) {
-    logger.warn('googleConnect', info)
+    logger.info('googleConnect', info)
     const googleConnectResult = loginWithGoogle(info)
     this.isProcessingRegister = true
     when(
@@ -222,7 +222,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action facebookConnect (info, callback) {
-    logger.warn('facebookConnect', info)
+    logger.info('facebookConnect', info)
     const facebookConnectResult = loginWithFacebook(info)
     this.isProcessingRegister = true
     when(
@@ -263,7 +263,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action getTopicTree () {
-    logger.warn('getTopicTree')
+    logger.info('getTopicTree')
     if (!this.isProcessingTopicTree) {
       const allTopics = getAllTopicTree()
       this.isProcessingTopicTree = true
@@ -274,14 +274,14 @@ export class HomeStore extends CoreStore {
         this.tree = allTopics.value.data.tree || []
         const { entities: { terms } } = normalizedTermData(allTopics.value.data)
         this.terms = terms || {}
-        logger.warn('getTopicTree', this.tree)
-        logger.warn('terms', this.terms)
+        logger.info('getTopicTree', this.tree)
+        logger.info('terms', this.terms)
       })
     }
   }
 
   @action getUserHistory () {
-    logger.warn('getUserHistory')
+    logger.info('getUserHistory')
     if (!this.isProcessingHistory) {
       this.isProcessingHistory = true
       const userHistoryResult = getUserHistory(this.userId, this.userHash)
@@ -291,7 +291,7 @@ export class HomeStore extends CoreStore {
           if (userHistoryResult.state === 'fulfilled') {
             this.userHistory = userHistoryResult.value.data
             const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-            logger.warn('normalizedData', normalizedData)
+            logger.info('normalizedData', normalizedData)
             this.normalizedData = normalizedData
 
             const { received, mine, topics } = this.userHistory
@@ -351,7 +351,7 @@ export class HomeStore extends CoreStore {
             this.firstLevelTopics = _.map(topics, item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
             this.users = users
             this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
-            logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
+            logger.info('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
           }
           this.checkSafeUrls()
         }
@@ -360,7 +360,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action checkSafeUrls () {
-    logger.warn('safeBrowsingLoockup', this.urls)
+    logger.info('safeBrowsingLoockup', this.urls)
     const urls = toJS(this.urls)
     const MAX_ITEM = 500
     const totalPage = urls.length / MAX_ITEM
@@ -376,8 +376,8 @@ export class HomeStore extends CoreStore {
               const { matches } = safeCheckResult.value.data
               if (matches) {
                 const ingoreUrls = _.map(matches, item => item && item.threat && item.threat.url)
-                logger.warn('safeBrowsingLoockup ingoreUrls', ingoreUrls)
-                this.urls = _.filter(urls, item => ingoreUrls.indexOf(item.href) === -1)
+                logger.info('safeBrowsingLoockup ingoreUrls', ingoreUrls)
+                this.urls = _.filter(urls, item => _.indexOf(ingoreUrls, item.href) === -1)
               }
             }
             this.isProcessingHistory = false
@@ -387,16 +387,16 @@ export class HomeStore extends CoreStore {
   }
 
   @action findUserRating (item, userIds) {
-    logger.warn('findUserRating')
+    logger.info('findUserRating')
     if (userIds.length) {
-      const owner = _.find(item.owners, item => userIds.indexOf(item.owner) !== -1)
+      const owner = _.find(item.owners, item => _.indexOf(userIds, item.owner) !== -1)
       return owner.rate
     }
     return item.owners[0].rate
   }
 
   @action filterUrls (filterByTopic, filterByUser, rating) {
-    logger.warn('filterUrls')
+    logger.info('filterUrls')
     const topics = toJS(filterByTopic)
     const users = toJS(filterByUser)
     if (topics.length > 0 || users.length > 0) {
@@ -413,7 +413,7 @@ export class HomeStore extends CoreStore {
           foundIds = userUrlIds
         }
       }
-      const result = _.filter(this.urls, item => foundIds.indexOf(item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
+      const result = _.filter(this.urls, item => _.indexOf(foundIds, item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
       return result
     }
     const result = _.filter(this.urls, item => item.owners[0].rate >= rating)
@@ -421,7 +421,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action sortByOrdering (sortedUrls, sortBy, sortDirection) {
-    logger.warn('sortByOrdering')
+    logger.info('sortByOrdering')
     if (sortBy === 'date') {
       return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => _.max(url.owners[0].hit_utc)])) : _.sortBy(sortedUrls, [(url) => url.owners[0].hit_utc])
     } else {

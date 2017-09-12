@@ -15,7 +15,7 @@ class AnimateBox extends PureComponent {
   }
 
   render () {
-    logger.warn('AnimateBox render')
+    logger.info('AnimateBox render')
     return (
       <Flight interactive ref={flight => (this.flight = flight)}>
         <Flight.Frame duration={this.props.duration} source interactive>

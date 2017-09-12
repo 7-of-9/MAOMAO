@@ -23,7 +23,7 @@ class InlinePlayer extends Component {
     eventEmitter.emit('layout')
   }
   onError = (err) => {
-    logger.warn('onError', err)
+    logger.info('onError', err)
     eventEmitter.emit('layout')
   }
 

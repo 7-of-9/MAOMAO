@@ -55,7 +55,7 @@ class DiscoveryStore extends CoreStore {
   }
 
   @action search () {
-    logger.warn('searh terms', this.terms)
+    logger.info('searh terms', this.terms)
     _.forEach(this.terms, (term) => {
       const googleSearch = googleSearchByTerm(term, this.page)
       this.pendings.push('google')

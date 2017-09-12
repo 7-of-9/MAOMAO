@@ -56,7 +56,7 @@ export default class DiscoveryItem extends PureComponent {
   handleClick = (evt) => {
     evt.preventDefault()
     if (!this.clickOnTerm) {
-      logger.warn('handleClick', evt.target)
+      logger.info('handleClick', evt.target)
       this.props.onSelect(this.props)
     }
   }
@@ -68,7 +68,7 @@ export default class DiscoveryItem extends PureComponent {
   selectMainTerm = (evt) => {
     evt.preventDefault()
     const { main_term_id } = this.props
-    logger.warn('selectMainTerm', main_term_id, evt.target)
+    logger.info('selectMainTerm', main_term_id, evt.target)
     this.clickOnTerm = true
     this.props.onSelectTerm(main_term_id)
   }
@@ -76,7 +76,7 @@ export default class DiscoveryItem extends PureComponent {
   selectSubTerm = (evt) => {
     evt.preventDefault()
     const { sub_term_id } = this.props
-    logger.warn('selectSubTerm', sub_term_id, evt.target)
+    logger.info('selectSubTerm', sub_term_id, evt.target)
     this.clickOnTerm = true
     this.props.onSelectTerm(sub_term_id)
   }
@@ -96,7 +96,7 @@ export default class DiscoveryItem extends PureComponent {
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
               fontSize: dynamicFontSize(main_term_name),
-              cursor: ingoreTerms.indexOf(main_term_id) === -1 ? 'pointer' : 'default'
+              cursor: _.indexOf(ingoreTerms, main_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(main_term_name)}`} rel='tag'>
             {main_term_name}
@@ -110,7 +110,7 @@ export default class DiscoveryItem extends PureComponent {
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
               fontSize: dynamicFontSize(sub_term_name),
-              cursor: ingoreTerms.indexOf(sub_term_id) === -1 ? 'pointer' : 'default'
+              cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
             {sub_term_name}

@@ -6,12 +6,25 @@ import { Footer, Page } from 'neal-react'
 import { FACEBOOK_APP_ID, MAOMAO_SITE_URL } from '../../containers/App/constants'
 import AppHeader from '../../containers/AppHeader'
 import Notification from '../../components/Notification'
+import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
+  logger.warn('onRouteChangeStart', url)
   NProgress.start()
 }
-Router.onRouteChangeComplete = () => NProgress.done()
-Router.onRouteChangeError = () => NProgress.done()
+Router.onRouteChangeComplete = () => {
+  logger.warn('onRouteChangeComplete')
+  NProgress.done()
+}
+Router.onRouteChangeError = (err, url) => {
+  logger.warn('onRouteChangeError', err, url)
+  NProgress.done()
+}
+Router.onAppUpdated = nextUrl => {
+  // persist the local state
+  logger.warn('onAppUpdated', nextUrl)
+  window.location.href = nextUrl
+}
 
 const brandName = 'maomao'
 const businessAddress = (

@@ -26,20 +26,10 @@ export default class DiscoverPage extends React.Component {
     let findTerms = []
     let statusCode = true
     if (query) {
-      if (query.findTerms) {
-        findTerms = query.findTerms
-      }
-      const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
-      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
-      /* global fetch */
-      const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
-      const json = await res.json()
-      statusCode = res.statusCode > 200 ? res.statusCode : false
-      logger.warn('fetch json', json)
-      termsInfo = json
-      if (termsInfo.terms.indexOf(null) !== -1 || termsInfo.terms.length !== findTerms.length) {
-        statusCode = 404
-      }
+      findTerms = query.findTerms
+      const termsResult = await DiscoverPage.lockupTerms(findTerms, statusCode, termsInfo)
+      statusCode = termsResult.statusCode
+      termsInfo = termsResult.termsInfo
     }
     const term = initTermStore(isServer, findTerms, termsInfo)
     return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode }
@@ -47,11 +37,39 @@ export default class DiscoverPage extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.warn('Discover', props)
+    logger.info('Discover', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
     this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
+  }
+
+  static async lockupTerms (findTerms, statusCode, termsInfo) {
+    if (_.isArray(findTerms)) {
+      const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
+      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+        /* global fetch */
+      const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+      const json = await res.json()
+      statusCode = res.statusCode > 200 ? res.statusCode : false
+      logger.info('fetch json', json)
+      termsInfo = json
+      if (_.indexOf(termsInfo.terms, null) !== -1 || termsInfo.terms.length !== findTerms.length) {
+        statusCode = 404
+      }
+    } else {
+      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
+        /* global fetch */
+      const res = await fetch(`${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
+      const json = await res.json()
+      statusCode = res.statusCode > 200 ? res.statusCode : false
+      logger.info('fetch json', json)
+      termsInfo = json
+      if (_.indexOf(termsInfo.terms, null) !== -1) {
+        statusCode = 404
+      }
+    }
+    return { statusCode, termsInfo }
   }
 
   componentDidMount () {
@@ -62,22 +80,56 @@ export default class DiscoverPage extends React.Component {
           logger.log('service worker registration successful')
         })
         .catch(err => {
-          logger.warn('service worker registration failed', err.message)
+          logger.info('service worker registration failed', err.message)
         })
     }
-    logger.warn('DiscoverPage componentDidMount')
+    const { findTerms, termsInfo } = this.term
+    const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+    this.store.setTerms(termsInfo.terms)
+    if (currentTerm && currentTerm.term_id) {
+      this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
+      this.term.getTermDiscover(currentTerm.term_id)
+    }
+    logger.warn('DiscoverPage componentDidMount', this)
   }
 
-  componentWillUpdate () {
-    logger.warn('DiscoverPage componentWillUpdate', this)
-    // FIXME: back button on browser
-    if (this.term.findTerms.length !== this.props.findTerms.length) {
-      // this.term.setCurrentTerms(this.props.findTerms)
+  componentWillReceiveProps (nextProps) {
+    const { pathname, query } = nextProps.url
+    // fetch data based on the new query
+    logger.warn('DiscoverPage componentWillReceiveProps', pathname, query)
+    const { findTerms } = query
+    if (findTerms) {
+      // edge case, term is a string, e.g: mm.rocks/nature
+      if (_.isString(findTerms)) {
+        this.term.setCurrentTerms([].concat(findTerms))
+        const { termsInfo } = this.term
+        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms))
+        logger.warn('currentTerm', currentTerm, termsInfo, findTerms)
+        this.store.setTerms(termsInfo.terms)
+        if (currentTerm && currentTerm.term_id) {
+          this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
+          this.term.getTermDiscover(currentTerm.term_id)
+        } else {
+          window.location.reload()
+        }
+      } else {
+        this.term.setCurrentTerms(findTerms)
+        const { termsInfo } = this.term
+        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+        logger.warn('currentTerm', currentTerm, termsInfo, findTerms)
+        this.store.setTerms(termsInfo.terms)
+        if (currentTerm && currentTerm.term_id) {
+          this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
+          this.term.getTermDiscover(currentTerm.term_id)
+        } else {
+          window.location.reload()
+        }
+      }
     }
   }
 
   render () {
-    logger.warn('DiscoverPage render', this.store)
+    logger.info('DiscoverPage render', this.store)
     if (this.props.statusCode) {
       return <Error statusCode={this.props.statusCode} />
     }

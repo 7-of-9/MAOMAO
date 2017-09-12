@@ -1,5 +1,6 @@
 import { observable, computed, action } from 'mobx'
 import Pusher from 'pusher-js'
+import _ from 'lodash'
 import { isMobileBrowser, browserName } from '../utils/detector'
 import { PUSHER_KEY } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
@@ -29,7 +30,7 @@ export class CoreStore {
     this.userAgent = userAgent
     this.user = user
     if (this.user && this.user.name) {
-      logger.warn('user', user)
+      logger.info('user', user)
       this.isLogin = true
     }
     this.isMobile = isMobileBrowser(userAgent)
@@ -47,7 +48,7 @@ export class CoreStore {
 
   @action checkEnvironment () {
     this.isChrome = this.browserName === 'chrome'
-    logger.warn('browserName', this.browserName)
+    logger.info('browserName', this.browserName)
   }
 
   @action checkInstall () {
@@ -62,11 +63,11 @@ export class CoreStore {
   }
 
   @action checkAuthFromExtension () {
-    logger.warn('checkAuthFromExtension')
+    logger.info('checkAuthFromExtension')
     if (this.isInstall && this.isChrome && !this.isMobile && this.userId < 0) {
       sendMsgToChromeExtension(actionCreator('WEB_CHECK_AUTH', {}), (error, data) => {
         if (error) {
-          logger.warn('WEB_CHECK_AUTH error', error)
+          logger.info('WEB_CHECK_AUTH error', error)
         } else {
           this.autoLogin(data.payload)
         }
@@ -75,21 +76,21 @@ export class CoreStore {
   }
 
   @action checkGoogleContacts () {
-    logger.warn('checkGoogleContacts')
+    logger.info('checkGoogleContacts')
     if (this.isInstall && this.userId > 0) {
       sendMsgToChromeExtension(actionCreator('WEB_GOOGLE_CONTACTS', {}), (error, data) => {
         if (error) {
-          logger.warn('WEB_GOOGLE_CONTACTS error', error)
+          logger.info('WEB_GOOGLE_CONTACTS error', error)
         } else {
           this.contacts = data.payload
-          logger.warn('contacts', this.contacts)
+          logger.info('contacts', this.contacts)
         }
       })
     }
   }
 
   @action saveGoogleContacts (contacts, googleToken, googleUserId) {
-    logger.warn('saveGoogleContacts', contacts, googleToken, googleUserId)
+    logger.info('saveGoogleContacts', contacts, googleToken, googleUserId)
     this.contacts = contacts
     if (this.isInstall) {
       downloadPhoto(googleToken, googleUserId)
@@ -110,7 +111,7 @@ export class CoreStore {
   }
 
   @action autoLogin (auth) {
-    logger.warn('autoLogin', auth)
+    logger.info('autoLogin', auth)
     const { userId, userHash, info } = auth
     if (userId > 0) {
       this.isLogin = true
@@ -127,8 +128,8 @@ export class CoreStore {
   }
 
   @action onSubscribe (channelName, eventName, callback) {
-    if (this.channels.indexOf(channelName) === -1) {
-      logger.warn('channelName', channelName)
+    if (_.indexOf(this.channels, channelName) === -1) {
+      logger.info('channelName', channelName)
       if (!this.pusher) {
         this.pusher = new Pusher(PUSHER_KEY, {
           cluster: 'ap1',

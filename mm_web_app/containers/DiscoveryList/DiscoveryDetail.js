@@ -49,11 +49,11 @@ class DiscoveryDetail extends PureComponent {
   }
 
   componentWillReact () {
-    logger.warn('DiscoveryDetail componentWillReact', this.props)
+    logger.info('DiscoveryDetail componentWillReact', this.props)
   }
 
   render () {
-    logger.warn('DiscoveryDetail render')
+    logger.info('DiscoveryDetail render')
     /* eslint-disable camelcase */
     const { items, title, url, utc, termIds, width } = this.props
     const isReady = termIds.length === items.length

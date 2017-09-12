@@ -35,7 +35,7 @@ class DiscoveryNavigation extends Component {
   }
 
   selectTerm = (termId) => {
-    logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
+    logger.info('DiscoveryNavigation selectDiscoveryTerm', termId)
     this.props.ui.selectDiscoveryTerm(termId)
     this.props.ui.toggleSplitView(true)
     const { userId, userHash } = this.props.store
@@ -43,11 +43,11 @@ class DiscoveryNavigation extends Component {
   }
 
   componentWillReact () {
-    logger.warn('DiscoveryNavigation componentWillReact')
+    logger.info('DiscoveryNavigation componentWillReact')
   }
 
   componentDidMount () {
-    logger.warn('DiscoveryNavigation componentDidMount')
+    logger.info('DiscoveryNavigation componentDidMount')
     const { isReady, termIds } = this.props
     if (!isReady) {
       setTimeout(() => {
@@ -73,7 +73,7 @@ class DiscoveryNavigation extends Component {
   render () {
     const { items, isReady } = this.props
     const { isDone, currentItems } = this.state
-    logger.warn('DiscoveryNavigation render', isReady, items, this.props)
+    logger.info('DiscoveryNavigation render', isReady, items, this.props)
     const settings = {
       navContainerClass: 'carousel-nav owl-nav',
       stageOuterClass: 'carousel-outer owl-stage-outer',

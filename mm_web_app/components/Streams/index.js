@@ -44,9 +44,9 @@ function urlOwner (owners, users, onSelectUser) {
 }
 
 function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
-  const currentTopics = _.filter(topics, item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
+  const currentTopics = _.filter(topics, item => item.urlIds && _.indexOf(item.urlIds, urlId) !== -1)
   const items = []
-  const isOwner = myUrlIds.indexOf(urlId) !== -1
+  const isOwner = _.indexOf(myUrlIds, urlId) !== -1
   const maxLevel = _.maxBy(currentTopics, 'level')
   _.forEach(_.filter(currentTopics, item => item.level === maxLevel.level), (topic) => {
     items.push(
@@ -72,7 +72,7 @@ function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
 function filterbyRating (item, owners, userIds, rating) {
   const users = _.filter(owners, user => user.url_id === item.url_id)
   if (userIds.length) {
-    return !!_.find(users, user => userIds.indexOf(user.owner) !== -1 && user.rate >= rating)
+    return !!_.find(users, user => _.indexOf(userIds, user.owner) !== -1 && user.rate >= rating)
   }
   return !!_.find(users, user => user.rate >= rating)
 }
@@ -110,7 +110,7 @@ function filterUrls (urls, owners, filterByTopic, filterByUser, rating, sortBy, 
         foundIds = userUrlIds
       }
     }
-    const result = _.filter(urls, item => foundIds.indexOf(item.url_id) !== -1 && filterbyRating(item, owners, userIds, rating))
+    const result = _.filter(urls, item => _.indexOf(foundIds, item.url_id) !== -1 && filterbyRating(item, owners, userIds, rating))
     return orderBy(result, owners, sortBy, sortDirection)
   }
   const result = _.filter(urls, item => filterbyRating(item, owners, [], rating))
@@ -139,12 +139,12 @@ class Streams extends React.Component {
   }
 
   loadMore = () => {
-    logger.warn('loadMore')
+    logger.info('loadMore')
     this.props.ui.page += 1
   }
 
   onPreview = (url) => {
-    logger.warn('onPreview', url)
+    logger.info('onPreview', url)
     const { isMobile } = this.props.store
     if (!isMobile) {
       this.setState({ currentUrl: url })
@@ -154,7 +154,7 @@ class Streams extends React.Component {
   }
 
   closePreview = () => {
-    logger.warn('closePreview')
+    logger.info('closePreview')
     this.setState({ currentUrl: '' })
   }
 
@@ -169,7 +169,7 @@ class Streams extends React.Component {
   onZoomLayout = () => {
     const { innerWidth } = this.state
     if (innerWidth !== window.innerWidth) {
-      logger.warn('onZoomLayout')
+      logger.info('onZoomLayout')
       this.setState({
         currentWidth: window.innerWidth / 2,
         innerWidth: window.innerWidth
@@ -181,7 +181,7 @@ class Streams extends React.Component {
     // populate urls and users
     const { urls, users, topics, owners, isInstall } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
-    logger.warn('Streams render', urls, users, topics, owners, myUrls)
+    logger.info('Streams render', urls, users, topics, owners, myUrls)
     if (urls && urls.length === 0 && isInstall) {
       return (
         <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
@@ -196,7 +196,7 @@ class Streams extends React.Component {
     /* eslint-disable camelcase */
     const currentUrls = _.slice(this.sortedUrls, 0, (this.props.ui.page + 1) * LIMIT)
     const myUrlIds = myUrls ? myUrls && _.map(myUrls, item => item.url_id) : []
-    logger.warn('currentUrls', currentUrls)
+    logger.info('currentUrls', currentUrls)
     const { currentUrl, currentWidth, isResize } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
@@ -204,7 +204,7 @@ class Streams extends React.Component {
         if (currentUrl !== href) {
           let discoveryKeys = []
           const suggestionKeys = []
-          const currentTopics = _.filter(topics, item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
+          const currentTopics = _.filter(topics, item => item.urlIds && _.indexOf(item.urlIds, url_id) !== -1)
           const maxLevel = _.maxBy(currentTopics, 'level')
           const deepestTopics = _.filter(currentTopics, item => item.level === maxLevel.level)
           discoveryKeys = discoveryKeys.concat(_.map(deepestTopics, 'name'))

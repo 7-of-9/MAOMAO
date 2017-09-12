@@ -77,7 +77,7 @@ class Home extends React.Component {
   }
 
   addToHomeOnMobile = () => {
-    logger.warn('Home addToHomeOnMobile')
+    logger.info('Home addToHomeOnMobile')
     if (this.props.isMobile) {
       this.addToHome.show(true)
       this.setState({
@@ -87,7 +87,7 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('Home componentDidMount')
+    logger.info('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     this.props.store.getTopicTree()
     if (this.props.store.userId > 0) {
@@ -107,7 +107,7 @@ class Home extends React.Component {
           detectHomescreen: true,
           startDelay: 0
         })
-        logger.warn('addToHome', this.addToHome)
+        logger.info('addToHome', this.addToHome)
       }
     }
   }
@@ -173,7 +173,7 @@ class Home extends React.Component {
       }
     }
     const { hasAddToHome } = this.state
-    logger.warn('Home render', this.props)
+    logger.info('Home render', this.props)
     return (
       <Layout title={title} description={description}>
         <Head>

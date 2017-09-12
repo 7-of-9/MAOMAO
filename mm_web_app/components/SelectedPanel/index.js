@@ -40,7 +40,7 @@ class SelectedPanel extends PureComponent {
 
   render () {
     const { items } = this.props
-    logger.warn('SelectedPanel render', items)
+    logger.info('SelectedPanel render', items)
     return (
       <Sticky>
         <div className='selected-panel'>

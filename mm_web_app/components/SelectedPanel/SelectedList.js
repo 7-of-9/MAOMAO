@@ -25,7 +25,7 @@ class SelectedList extends React.PureComponent {
   }
 
   onCarousel = (isAdd) => {
-    logger.warn('onCarousel', isAdd, this.slider)
+    logger.info('onCarousel', isAdd, this.slider)
     const { items } = this.props
     if (items.length > 0 && isAdd) {
       this.slider.next()

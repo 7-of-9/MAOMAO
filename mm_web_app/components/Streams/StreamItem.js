@@ -35,8 +35,8 @@ class StreamItem extends PureComponent {
         <div className='thumbnail-box'>
           {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
           {
-              href.indexOf('youtube.com') === -1 &&
-              href.indexOf('vimeo.com') === -1 &&
+              _.indexOf(href, 'youtube.com') === -1 &&
+              _.indexOf(href, 'vimeo.com') === -1 &&
               <PlaceHolder>
                 <div className='thumbnail'>
                   <div className='thumbnail-image'>
@@ -62,7 +62,7 @@ class StreamItem extends PureComponent {
               </PlaceHolder>
           }
           {
-            href.indexOf('youtube.com') !== -1 &&
+            _.indexOf(href, 'youtube.com') !== -1 &&
             <InlinePlayer
               href={href}
               img={img}
@@ -80,7 +80,7 @@ class StreamItem extends PureComponent {
               />
           }
           {
-              href.indexOf('vimeo.com') !== -1 &&
+              _.indexOf(href, 'vimeo.com') !== -1 &&
               <InlinePlayer
                 href={href}
                 img={img}

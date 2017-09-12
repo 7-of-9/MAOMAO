@@ -41,7 +41,7 @@ class TopicItem extends PureComponent {
   }
 
   onChange = (evt) => {
-    logger.warn('onChange', evt)
+    logger.info('onChange', evt)
     const { term_id: termId, title, isSelect, img } = this.props
     this.props.onChange(!isSelect, termId, title, img)
     eventEmitter.emit('carousel', !isSelect)
@@ -49,7 +49,7 @@ class TopicItem extends PureComponent {
 
   handleClick = (evt) => {
     evt.preventDefault()
-    logger.warn('handleClick')
+    logger.info('handleClick')
     const { hasChild, childTopics, term_id: termId, title, isSelect, img } = this.props
     if (hasChild) {
       this.props.onSelect(termId, title, img)
@@ -71,7 +71,7 @@ class TopicItem extends PureComponent {
   }
 
   renderThumnails = (images) => {
-    logger.warn('renderThumnails', images)
+    logger.info('renderThumnails', images)
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
@@ -100,14 +100,14 @@ class TopicItem extends PureComponent {
 
   hasSelected = (childTopics, topics) => {
     const termIds = _.map(childTopics, item => item.term_id)
-    const isSelected = topics.length > 0 && _.find(topics, item => termIds.indexOf(item.termId) !== -1)
+    const isSelected = topics.length > 0 && _.find(topics, item => _.indexOf(termIds, item.termId) !== -1)
     return isSelected ? 'topic-number has-selected' : 'topic-number'
   }
 
   render () {
     /* eslint-disable camelcase */
     const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
-    logger.warn('TopicItem', term_id, title, img)
+    logger.info('TopicItem', term_id, title, img)
     const images = _.map(childTopics, item => ({img: item.img, name: item.term_name}))
     return (
       <div key={term_id} className='grid-item shuffle-item'>

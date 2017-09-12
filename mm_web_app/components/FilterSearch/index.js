@@ -141,22 +141,22 @@ class FilterSearch extends React.Component {
   }
 
   onSuggestionsFetchRequested = ({ value }) => {
-    logger.warn('onSuggestionsFetchRequested')
+    logger.info('onSuggestionsFetchRequested')
     const { users, firstLevelTopics } = this.props.store
     this.setState({ suggestions: getSuggestions(value, users, firstLevelTopics) })
   }
 
   onSuggestionsClearRequested = () => {
-    logger.warn('onSuggestionsClearRequested')
+    logger.info('onSuggestionsClearRequested')
     this.setState({suggestions: [ ]})
   }
 
   onChange = (event, { newValue, method }) => {
-    logger.warn('onChange newValue, method', newValue, method)
+    logger.info('onChange newValue, method', newValue, method)
     if (method === 'click' || method === 'enter') {
       const { users, firstLevelTopics } = this.props.store
       const selected = getSuggestions(newValue, users, firstLevelTopics)
-      logger.warn('selected', selected)
+      logger.info('selected', selected)
       if (selected && selected.length > 0) {
         if (selected[0].title === 'User') {
           this.props.ui.selectUser(selected[0].data[0])
@@ -188,7 +188,7 @@ class FilterSearch extends React.Component {
     }
     const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
-    logger.warn('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
+    logger.info('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
 
     return (
       <nav className='navbar'>

@@ -42,8 +42,8 @@ class ShareList extends React.PureComponent {
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
-    logger.warn('ShareList friendStreams', friendStreams)
-    logger.warn('ShareList shareLists', shareLists)
+    logger.info('ShareList friendStreams', friendStreams)
+    logger.info('ShareList shareLists', shareLists)
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
     return (
       <div>
