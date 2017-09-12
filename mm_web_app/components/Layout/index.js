@@ -9,20 +9,20 @@ import Notification from '../../components/Notification'
 import logger from '../../utils/logger'
 
 Router.onRouteChangeStart = (url) => {
-  logger.warn('onRouteChangeStart', url)
+  logger.info('onRouteChangeStart', url)
   NProgress.start()
 }
 Router.onRouteChangeComplete = () => {
-  logger.warn('onRouteChangeComplete')
+  logger.info('onRouteChangeComplete')
   NProgress.done()
 }
 Router.onRouteChangeError = (err, url) => {
-  logger.warn('onRouteChangeError', err, url)
+  logger.info('onRouteChangeError', err, url)
   NProgress.done()
 }
 Router.onAppUpdated = nextUrl => {
   // persist the local state
-  logger.warn('onAppUpdated', nextUrl)
+  logger.info('onAppUpdated', nextUrl)
   window.location.href = nextUrl
 }
 

@@ -66,7 +66,8 @@ app.prepare().then(() => {
       const filePath = join(__dirname, dirBuild, pathname)
       app.serveStatic(req, res, filePath)
     } else if (pathname === encodeURI(req.session.discoverRootUrl)) {
-      app.render(req, res, '/discover')
+      log.warn('found special route url', req.session.discoverRootUrl)
+      app.render(req, res, '/discover', Object.assign({}, query, { profileUrl: req.session.discoverRootUrl, currentUser: req.session.currentUser }))
     } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {

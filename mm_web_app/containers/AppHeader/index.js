@@ -190,7 +190,7 @@ class AppHeader extends React.Component {
     this.props.ui.removeNotification(uuid)
   }
 
-  saveProfileUrl = (url) => {
+  saveProfileUrl = ({url, id, fb_user_id, google_user_id}) => {
     /* global URL */
     const { pathname } = new URL(window.location.href)
     logger.info('pathname', pathname)
@@ -200,10 +200,10 @@ class AppHeader extends React.Component {
               // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
-        body: JSON.stringify({ url: `/${url}` })
+        body: JSON.stringify({ url: `/${url}`, id, fb_user_id, google_user_id })
       }).then(() => {
         // prefetch disocver page
-        Router.prefetch('/discover')
+        // Router.prefetch('/discover')
       })
     }
   }
@@ -251,10 +251,10 @@ class AppHeader extends React.Component {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
                             }, (currentUser) => {
-                              logger.info('currentUser', currentUser)
+                              logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                              this.saveProfileUrl(currentUser.nav_id)
+                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                             })
                           }
                         })
@@ -262,10 +262,10 @@ class AppHeader extends React.Component {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
                         }, (currentUser) => {
-                          logger.info('currentUser', currentUser)
+                          logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                          this.saveProfileUrl(currentUser.nav_id)
+                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -275,10 +275,10 @@ class AppHeader extends React.Component {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
                             }, (currentUser) => {
-                              logger.info('currentUser', currentUser)
+                              logger.warn('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                              this.saveProfileUrl(currentUser.nav_id)
+                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                             })
                           }
                         })
@@ -286,10 +286,10 @@ class AppHeader extends React.Component {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
                         }, (currentUser) => {
-                          logger.info('currentUser', currentUser)
+                          logger.warn('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                          this.saveProfileUrl(currentUser.nav_id)
+                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'password') {
@@ -413,7 +413,7 @@ class AppHeader extends React.Component {
                 {
                   user && user.name &&
                   <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link prefetch href='/discover' as={`/${user.nav_id}`}>
+                    <Link replace href={`/${user.nav_id}`}>
                       <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
                     </Link>
                   </li>

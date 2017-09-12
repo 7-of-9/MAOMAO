@@ -15,11 +15,11 @@ import logger from '../../utils/logger'
 @inject('store')
 @inject('ui')
 @observer
-class Discover extends React.PureComponent {
+class Discover extends React.Component {
   renderRootDiscover = () => {
     return (
       <div className='wrapper-slide'>
-        <DiscoveryList />
+        <DiscoveryList {...this.props} />
       </div>
     )
   }

@@ -98,6 +98,7 @@ export class CoreStore {
   }
 
   @action login (userId, userHash) {
+    logger.warn('login', userId, userHash)
     this.userId = userId
     this.userHash = userHash
     this.isLogin = true

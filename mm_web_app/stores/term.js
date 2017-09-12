@@ -9,7 +9,7 @@ let store = null
 class TermStore {
   @observable pendings = []
   @observable discoveries = []
-  @observable page = 0
+  @observable page = 1
   @observable hasMore = true
   @observable findTerms = []
   terms = []
@@ -33,7 +33,7 @@ class TermStore {
   }
 
   @action getRootDiscover (userId, userHash, page) {
-    logger.info('getRootDiscover', userId, userHash, page)
+    logger.warn('getRootDiscover', userId, userHash, page)
     this.page = page
     this.userId = userId
     this.userHash = userHash

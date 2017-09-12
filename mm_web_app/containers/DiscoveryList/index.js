@@ -5,6 +5,7 @@
 */
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
@@ -23,6 +24,13 @@ import logger from '../../utils/logger'
 @inject('ui')
 @observer
 class DiscoveryList extends Component {
+  static propTypes = {
+    profileUrl: PropTypes.string.isRequired
+  }
+
+  static defaultProps = {
+    profileUrl: ''
+  }
   state = {
     isResize: false
   }
@@ -279,13 +287,14 @@ class DiscoveryList extends Component {
 
   componentWillReact () {
     const { userId, userHash } = this.props.store
-    logger.info('DiscoveryList componentWillReact', userId, userHash)
+    const { page } = this.props.term
+    logger.warn('DiscoveryList componentWillReact', userId, userHash, page)
   }
 
   componentDidMount () {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
-    logger.info('DiscoveryList componentDidMount', userId, userHash)
+    logger.warn('DiscoveryList componentDidMount', userId, userHash)
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
@@ -296,7 +305,7 @@ class DiscoveryList extends Component {
   }
 
   render () {
-    const { userId } = this.props.store
+    const { profileUrl } = this.props
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
     logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
@@ -309,7 +318,7 @@ class DiscoveryList extends Component {
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
               {
-                isRootView && userId > 0 &&
+                isRootView && profileUrl.length > 0 &&
                 <InfiniteScroll
                   pageStart={0}
                   loadMore={this.loadMore}

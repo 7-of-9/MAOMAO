@@ -9,6 +9,7 @@ import { initTermStore } from '../stores/term'
 import { MAOMAO_API_URL } from '../containers/App/constants'
 import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
+import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
 
 export default class DiscoverPage extends React.Component {
@@ -18,21 +19,24 @@ export default class DiscoverPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    logger.warn('DiscoverPage query', query)
+    logger.info('DiscoverPage query', query)
     const user = req && req.session ? req.session.decodedToken : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
     let termsInfo = {terms: []}
     let findTerms = []
-    let statusCode = true
-    if (query) {
+    let statusCode = !query.profileUrl
+    let profileUrl = query.profileUrl ? query.profileUrl : ''
+    let currentUser = query.currentUser ? query.currentUser : null
+    if (query && query.findTerms) {
       findTerms = query.findTerms
       const termsResult = await DiscoverPage.lockupTerms(findTerms, statusCode, termsInfo)
+      logger.warn('termsResult', termsResult)
       statusCode = termsResult.statusCode
       termsInfo = termsResult.termsInfo
     }
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode }
+    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser }
   }
 
   constructor (props) {
@@ -47,7 +51,7 @@ export default class DiscoverPage extends React.Component {
   static async lockupTerms (findTerms, statusCode, termsInfo) {
     if (_.isArray(findTerms)) {
       const lockupTerms = _.map(findTerms, item => `names[]=${item}`).join('&')
-      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
+      logger.info('fetch URL', `${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
         /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?${lockupTerms}`)
       const json = await res.json()
@@ -58,7 +62,7 @@ export default class DiscoverPage extends React.Component {
         statusCode = 404
       }
     } else {
-      logger.warn('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
+      logger.info('fetch URL', `${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
         /* global fetch */
       const res = await fetch(`${MAOMAO_API_URL}term/lookup?names[]=${findTerms}`)
       const json = await res.json()
@@ -84,11 +88,20 @@ export default class DiscoverPage extends React.Component {
         })
     }
     const { findTerms, termsInfo } = this.term
-    const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
-    this.store.setTerms(termsInfo.terms)
-    if (currentTerm && currentTerm.term_id) {
-      this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
-      this.term.getTermDiscover(currentTerm.term_id)
+    if (termsInfo.terms && termsInfo.terms.length) {
+      logger.warn('terms findTerms', termsInfo.terms, findTerms)
+      const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+      this.store.setTerms(termsInfo.terms)
+      if (currentTerm && currentTerm.term_id) {
+        this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
+        this.term.getTermDiscover(currentTerm.term_id)
+      }
+    }
+    // login for special route
+    if (this.props.profileUrl && this.props.profileUrl.length) {
+      const { id: userId, fb_user_id: fbUserId, google_user_id: googleUserId } = this.props.currentUser
+      const userHash = md5hash(fbUserId || googleUserId)
+      this.term.getRootDiscover(userId, userHash, 1)
     }
     logger.warn('DiscoverPage componentDidMount', this)
   }
@@ -96,7 +109,7 @@ export default class DiscoverPage extends React.Component {
   componentWillReceiveProps (nextProps) {
     const { pathname, query } = nextProps.url
     // fetch data based on the new query
-    logger.warn('DiscoverPage componentWillReceiveProps', pathname, query)
+    logger.info('DiscoverPage componentWillReceiveProps', pathname, query)
     const { findTerms } = query
     if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
@@ -104,7 +117,7 @@ export default class DiscoverPage extends React.Component {
         this.term.setCurrentTerms([].concat(findTerms))
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms))
-        logger.warn('currentTerm', currentTerm, termsInfo, findTerms)
+        logger.info('currentTerm', currentTerm, termsInfo, findTerms)
         this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
@@ -116,7 +129,7 @@ export default class DiscoverPage extends React.Component {
         this.term.setCurrentTerms(findTerms)
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
-        logger.warn('currentTerm', currentTerm, termsInfo, findTerms)
+        logger.info('currentTerm', currentTerm, termsInfo, findTerms)
         this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
@@ -129,7 +142,7 @@ export default class DiscoverPage extends React.Component {
   }
 
   render () {
-    logger.info('DiscoverPage render', this.store)
+    logger.warn('DiscoverPage render', this)
     if (this.props.statusCode) {
       return <Error statusCode={this.props.statusCode} />
     }
@@ -137,7 +150,7 @@ export default class DiscoverPage extends React.Component {
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         <div className='discover'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Discover />
+          <Discover profileUrl={this.props.profileUrl} />
         </div>
       </Provider>
     )
