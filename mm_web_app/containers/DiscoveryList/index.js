@@ -46,8 +46,9 @@ class DiscoveryList extends Component {
   }
 
   onBack = (term) => {
-    logger.info('onBack termId', term)
-    const terms = _.filter(this.props.term.findTerms, item => _.toLower(item) !== _.toLower(term.term_name))
+    logger.info('onBack term', term)
+    const position = _.findIndex(this.props.term.findTerms, item => _.toLower(item) === _.toLower(term.term_name))
+    const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
     this.props.term.setCurrentTerms(terms)
     if (terms.length) {
       const href = `/${terms.join('/')}`
