@@ -68,7 +68,7 @@ class DiscoveryList extends Component {
       if (this.props.store.userId > 0) {
         this.props.ui.backToRootDiscovery()
         const { user } = this.props.store
-        Router.push('/discover', `/${user.nav_id}`, { shallow: true })
+        Router.push({ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
       } else {
         Router.push('/', '/', { shallow: true })
       }

@@ -413,7 +413,7 @@ class AppHeader extends React.Component {
                 {
                   user && user.name &&
                   <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link replace href={`/${user.nav_id}`}>
+                    <Link prefetch href={{ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }} as={`/${user.nav_id}`}>
                       <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
                     </Link>
                   </li>

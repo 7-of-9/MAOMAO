@@ -13,6 +13,10 @@ import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
 
 export default class DiscoverPage extends React.Component {
+  state = {
+    profileUrl: ''
+  }
+
   static async getInitialProps ({ req, query }) {
     const isServer = !!req
     let userAgent = ''
@@ -76,6 +80,12 @@ export default class DiscoverPage extends React.Component {
     return { statusCode, termsInfo }
   }
 
+  componentWillMount () {
+    if (this.props.profileUrl) {
+      this.setState({ profileUrl: this.props.profileUrl })
+    }
+  }
+
   componentDidMount () {
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -98,7 +108,7 @@ export default class DiscoverPage extends React.Component {
       }
     }
     // login for special route
-    if (this.props.profileUrl && this.props.profileUrl.length) {
+    if (this.state.profileUrl && this.state.profileUrl.length && this.props.currentUser) {
       const { id: userId, fb_user_id: fbUserId, google_user_id: googleUserId } = this.props.currentUser
       const userHash = md5hash(fbUserId || googleUserId)
       this.term.getRootDiscover(userId, userHash, 1)
@@ -107,11 +117,20 @@ export default class DiscoverPage extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    // back button on browser logic
     const { pathname, query } = nextProps.url
     // fetch data based on the new query
-    logger.info('DiscoverPage componentWillReceiveProps', pathname, query)
-    const { findTerms } = query
-    if (findTerms) {
+    logger.warn('DiscoverPage componentWillReceiveProps', pathname, query)
+    const { findTerms, profileUrl } = query
+    if (profileUrl) {
+      if (profileUrl !== this.state.profileUrl) {
+        this.setState({ profileUrl })
+      }
+      const { userId, userHash } = this.store
+      this.term.setCurrentTerms([])
+      this.uiStore.backToRootDiscovery()
+      this.term.getRootDiscover(userId, userHash, 1)
+    } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature
       if (_.isString(findTerms)) {
         this.term.setCurrentTerms([].concat(findTerms))
@@ -143,6 +162,7 @@ export default class DiscoverPage extends React.Component {
 
   render () {
     logger.warn('DiscoverPage render', this)
+    const { profileUrl } = this.state
     if (this.props.statusCode) {
       return <Error statusCode={this.props.statusCode} />
     }
@@ -150,7 +170,7 @@ export default class DiscoverPage extends React.Component {
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         <div className='discover'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-          <Discover profileUrl={this.props.profileUrl} />
+          <Discover profileUrl={profileUrl} />
         </div>
       </Provider>
     )
