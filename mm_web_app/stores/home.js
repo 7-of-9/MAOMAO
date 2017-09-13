@@ -92,6 +92,19 @@ export class HomeStore extends CoreStore {
     }
   }
 
+  @action loadNewTerm (termId) {
+    const termInfo = getTerm(termId)
+    when(
+      () => termInfo.state !== 'pending',
+      () => {
+        if (termInfo.value.data) {
+          const { term } = termInfo.value.data
+          this.terms[term.term_id] = term
+        }
+      }
+    )
+  }
+
   @action getCurrentTerm (termId) {
     if (this.terms[termId]) {
       return toJS(this.terms[termId])

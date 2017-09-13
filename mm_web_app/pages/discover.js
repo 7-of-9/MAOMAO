@@ -10,6 +10,7 @@ import { MAOMAO_API_URL } from '../containers/App/constants'
 import Discover from '../containers/Discover'
 import stylesheet from '../styles/index.scss'
 import { md5hash } from '../utils/hash'
+import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 
 export default class DiscoverPage extends React.Component {
@@ -102,7 +103,7 @@ export default class DiscoverPage extends React.Component {
     if (this.props.statusCode === false) {
       if (termsInfo.terms && termsInfo.terms.length) {
         logger.warn('terms findTerms', termsInfo.terms, findTerms)
-        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+        const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
         this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
@@ -138,26 +139,22 @@ export default class DiscoverPage extends React.Component {
       if (_.isString(findTerms)) {
         this.term.setCurrentTerms([].concat(findTerms))
         const { termsInfo } = this.term
-        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms))
+        const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms))
         logger.info('currentTerm', currentTerm, termsInfo, findTerms)
-        this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
+          this.store.setTerms(termsInfo.terms)
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
           this.term.getTermDiscover(currentTerm.term_id)
-        } else {
-          window.location.reload()
         }
       } else {
         this.term.setCurrentTerms(findTerms)
         const { termsInfo } = this.term
-        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+        const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
         logger.info('currentTerm', currentTerm, termsInfo, findTerms)
-        this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
+          this.store.setTerms(termsInfo.terms)
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
           this.term.getTermDiscover(currentTerm.term_id)
-        } else {
-          window.location.reload()
         }
       }
     }

@@ -102,13 +102,13 @@ app.prepare().then(() => {
               return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
             } else {
               // check that is term for discover mode
-              return app.render(req, res, '/discover', Object.assign(query, { findTerms: [code] }))
+              return app.render(req, res, '/discover', Object.assign(query, { findTerms: [decodeURI(code)] }))
             }
           }
         })
       } else {
         // maybe that is multi terms
-        const findTerms = pathname.split('/').filter(item => item.length > 0)
+        const findTerms = pathname.split('/').filter(item => item.length > 0).map(item => decodeURI(item))
         return app.render(req, res, '/discover', Object.assign(query, { findTerms }))
       }
     }

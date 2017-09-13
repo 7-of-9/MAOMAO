@@ -1,5 +1,6 @@
 import { action, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm } from '../services/topic'
+import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 import _ from 'lodash'
 
@@ -30,6 +31,23 @@ class TermStore {
 
   @action setCurrentTerms (findTerms) {
     this.findTerms = findTerms
+  }
+
+  @action addNewTerm (newTerm) {
+    if (!this.termsInfo.terms.find(item => isSameStringOnUrl(item.term_name, newTerm.term_name))) {
+      this.termsInfo.terms.push(newTerm)
+      const termInfo = getTerm(newTerm.term_id)
+      when(
+        () => termInfo.state !== 'pending',
+        () => {
+          if (termInfo.value.data) {
+            const { term } = termInfo.value.data
+            const terms = this.termsInfo.terms.filter(item => !isSameStringOnUrl(item.term_name, term.term_name))
+            this.termsInfo.terms = [...terms, term]
+          }
+        }
+      )
+    }
   }
 
   @action getRootDiscover (userId, userHash, page) {

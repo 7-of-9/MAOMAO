@@ -17,6 +17,7 @@ import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
 import SplitView from '../../components/SplitView'
 import Loading from '../../components/Loading'
+import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -52,7 +53,8 @@ class DiscoveryList extends Component {
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
     logger.warn('findTerms', findTerms)
-    this.props.term.setCurrentTerms(findTerms)
+    this.props.store.loadNewTerm(term.term_id)
+    this.props.term.addNewTerm(term)
     const href = `/${findTerms.join('/')}`
     Router.push(
       {
@@ -66,7 +68,7 @@ class DiscoveryList extends Component {
 
   onBack = (term) => {
     logger.info('onBack term', term)
-    const position = _.findIndex(this.props.term.findTerms, item => _.toLower(item) === _.toLower(term.term_name))
+    const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
     this.props.term.setCurrentTerms(terms)
     if (terms.length) {
@@ -79,7 +81,7 @@ class DiscoveryList extends Component {
         href,
        { shallow: true }
       )
-      const currentTerm = _.find(this.props.term.termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(terms[terms.length - 1]))
+      const currentTerm = _.find(this.props.term.termsInfo.terms, item => isSameStringOnUrl(item.term_name, terms[terms.length - 1]))
       if (currentTerm && currentTerm.term_id) {
         this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
         this.props.term.getTermDiscover(currentTerm.term_id)
@@ -141,26 +143,29 @@ class DiscoveryList extends Component {
 
     if (!isRootView) {
       const { findTerms, termsInfo: { terms } } = this.props.term
+      logger.warn('terms', terms)
       const items = []
       _.forEach(findTerms, item => {
-        const term = _.find(terms, term => _.toLower(term.term_name) === _.toLower(item))
-        const { img, term_name: title } = term
-        items.push(<span
-          key={`back-to-${title}`}
-          onClick={() => this.onBack(term)}
-          style={{
-            background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-            backgroundSize: 'cover',
-            cursor: 'pointer'
-          }}
-          className='current-topic-name tags' rel='tag'>
-          <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-          {title}
-        </span>)
+        const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
+        if (term) {
+          const { img, term_name: title } = term
+          items.push(<span
+            key={`back-to-${title}`}
+            onClick={() => this.onBack(term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+            {title}
+          </span>)
+        }
       })
       _.forEach(topics, term => {
         const { img, term_name: title } = term
-        if (!_.find(findTerms, term => _.toLower(term) === _.toLower(title))) {
+        if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
           items.push(<span
             key={`navigate-to-${title}`}
             onClick={() => this.onSelectChildTerm(term)}
