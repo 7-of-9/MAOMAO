@@ -2,7 +2,6 @@ import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
-import { normalizedTermData } from './schema/tree'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { getAllTopicTree, addBulkTopics, getTerm } from '../services/topic'
@@ -95,7 +94,7 @@ export class HomeStore extends CoreStore {
 
   @action getCurrentTerm (termId) {
     if (this.terms[termId]) {
-      return this.terms[termId]
+      return toJS(this.terms[termId])
     } else {
       const termInfo = getTerm(termId)
       if (_.indexOf(this.pendings, termId) === -1) {
@@ -111,7 +110,7 @@ export class HomeStore extends CoreStore {
           }
         )
       }
-      return { termId, term_name: '...', img: '/static/images/no-image.png' }
+      return { termId, term_name: '...', img: '/static/images/no-image.png', child_suggestions: [], child_topics: [] }
     }
   }
 
@@ -272,10 +271,7 @@ export class HomeStore extends CoreStore {
       () => {
         this.isProcessingTopicTree = false
         this.tree = allTopics.value.data.tree || []
-        const { entities: { terms } } = normalizedTermData(allTopics.value.data)
-        this.terms = terms || {}
         logger.info('getTopicTree', this.tree)
-        logger.info('terms', this.terms)
       })
     }
   }

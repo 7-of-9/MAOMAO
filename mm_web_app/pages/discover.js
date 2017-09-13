@@ -23,7 +23,7 @@ export default class DiscoverPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    logger.info('DiscoverPage query', query)
+    logger.warn('DiscoverPage query', query)
     const user = req && req.session ? req.session.decodedToken : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
@@ -45,7 +45,7 @@ export default class DiscoverPage extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.info('Discover', props)
+    logger.warn('Discover', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
@@ -81,6 +81,7 @@ export default class DiscoverPage extends React.Component {
   }
 
   componentWillMount () {
+    logger.warn('DiscoverPage componentWillMount')
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }
@@ -98,20 +99,22 @@ export default class DiscoverPage extends React.Component {
         })
     }
     const { findTerms, termsInfo } = this.term
-    if (termsInfo.terms && termsInfo.terms.length) {
-      logger.warn('terms findTerms', termsInfo.terms, findTerms)
-      const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
-      this.store.setTerms(termsInfo.terms)
-      if (currentTerm && currentTerm.term_id) {
-        this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
-        this.term.getTermDiscover(currentTerm.term_id)
+    if (this.props.statusCode === false) {
+      if (termsInfo.terms && termsInfo.terms.length) {
+        logger.warn('terms findTerms', termsInfo.terms, findTerms)
+        const currentTerm = _.find(termsInfo.terms, item => _.toLower(item.term_name) === _.toLower(findTerms[findTerms.length - 1]))
+        this.store.setTerms(termsInfo.terms)
+        if (currentTerm && currentTerm.term_id) {
+          this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
+          this.term.getTermDiscover(currentTerm.term_id)
+        }
       }
-    }
-    // login for special route
-    if (this.state.profileUrl && this.state.profileUrl.length && this.props.currentUser) {
-      const { id: userId, fb_user_id: fbUserId, google_user_id: googleUserId } = this.props.currentUser
-      const userHash = md5hash(fbUserId || googleUserId)
-      this.term.getRootDiscover(userId, userHash, 1)
+      // login for special route
+      if (this.state.profileUrl && this.state.profileUrl.length && this.props.currentUser) {
+        const { id: userId, fb_user_id: fbUserId, google_user_id: googleUserId } = this.props.currentUser
+        const userHash = md5hash(fbUserId || googleUserId)
+        this.term.getRootDiscover(userId, userHash, 1)
+      }
     }
     logger.warn('DiscoverPage componentDidMount', this)
   }

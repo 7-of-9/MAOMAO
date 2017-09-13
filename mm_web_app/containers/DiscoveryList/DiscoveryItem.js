@@ -9,13 +9,7 @@ import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import logger from '../../utils/logger'
-import { tagColor } from '../../utils/helper'
-
-const dynamicFontSize = (text) => {
-  if (text.length > 20) return '0.8rem'
-  if (text.length > 12) return '1rem'
-  return '1.5rem'
-}
+import { tagColor, dynamicFontSize } from '../../utils/helper'
 
 @observer
 export default class DiscoveryItem extends PureComponent {

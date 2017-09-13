@@ -45,6 +45,25 @@ class DiscoveryList extends Component {
     this.props.ui.selectDiscoveryItem(item)
   }
 
+  onSelectChildTerm = (term) => {
+    logger.warn('onSelectChildTerm term', term)
+    this.props.ui.selectDiscoveryTerm(term.term_id)
+    this.props.term.getTermDiscover(term.term_id)
+    const { findTerms } = toJS(this.props.term)
+    findTerms.push(_.toLower(term.term_name))
+    logger.warn('findTerms', findTerms)
+    this.props.term.setCurrentTerms(findTerms)
+    const href = `/${findTerms.join('/')}`
+    Router.push(
+      {
+        pathname: '/discover',
+        query: { findTerms }
+      },
+      href,
+     { shallow: true }
+    )
+  }
+
   onBack = (term) => {
     logger.info('onBack term', term)
     const position = _.findIndex(this.props.term.findTerms, item => _.toLower(item) === _.toLower(term.term_name))
@@ -96,7 +115,30 @@ class DiscoveryList extends Component {
   }
 
   backButton = (isRootView) => {
-    const { isSplitView } = toJS(this.props.ui)
+    const { isSplitView, discoveryTermId } = toJS(this.props.ui)
+    logger.warn('discoveryTermId', discoveryTermId)
+    const topics = []
+    if (discoveryTermId > 0) {
+      const currentTerm = this.props.store.getCurrentTerm(discoveryTermId)
+      const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
+      logger.warn('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
+      if (childSuggestions) {
+        _.forEach(childSuggestions, term => {
+          if (term.term_name !== '...') {
+            topics.push(term)
+          }
+        })
+      }
+      if (childTopics) {
+        _.forEach(childTopics, term => {
+          if (term.term_name !== '...') {
+            topics.push(term)
+          }
+        })
+      }
+    }
+    logger.warn('topics', topics)
+
     if (!isRootView) {
       const { findTerms, termsInfo: { terms } } = this.props.term
       const items = []
@@ -115,6 +157,24 @@ class DiscoveryList extends Component {
           <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
           {title}
         </span>)
+      })
+      _.forEach(topics, term => {
+        const { img, term_name: title } = term
+        if (!_.find(findTerms, term => _.toLower(term) === _.toLower(title))) {
+          items.push(<span
+            key={`navigate-to-${title}`}
+            onClick={() => this.onSelectChildTerm(term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              padding: '3px'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            {title}
+          </span>)
+        }
       })
       if (items.length) {
         return (
