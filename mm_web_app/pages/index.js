@@ -23,14 +23,13 @@ export default class Index extends React.Component {
     if (search) {
       terms = search.split(',')
     }
-    logger.warn('terms', terms)
     const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
     return { isServer, ...store, ...uiStore, ...discovery }
   }
 
   constructor (props) {
     super(props)
-    logger.warn('Index', props)
+    logger.info('Index', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, true)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
@@ -45,13 +44,13 @@ export default class Index extends React.Component {
           logger.log('service worker registration successful')
         })
         .catch(err => {
-          logger.warn('service worker registration failed', err.message)
+          logger.info('service worker registration failed', err.message)
         })
     }
   }
 
   render () {
-    logger.warn('Index render', this.store)
+    logger.info('Index render', this.store)
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='home'>

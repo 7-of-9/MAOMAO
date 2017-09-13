@@ -15,7 +15,7 @@ export function fetchContacts (token, limit) {
 }
 
 export function checkGoogleAuth () {
-  logger.warn('checkGoogleAuth', firebase.auth().currentUser)
+  logger.info('checkGoogleAuth', firebase.auth().currentUser)
   const promise = new Promise((resolve, reject) => {
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')

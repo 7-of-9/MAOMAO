@@ -28,7 +28,7 @@ function urlOwner (owners, users, onSelectUser) {
   const items = []
   _.forEach(owners, user => {
     const { hit_utc: hitUtc, owner: userId } = user
-    const owner = users.find(item => item.user_id === userId)
+    const owner = _.find(users, item => item.user_id === userId)
     items.push(
       <div key={`${owner.fullname}-${hitUtc}`} className='panel-user-img'>
         <a onClick={() => { onSelectUser(owner) }} className='credit-user' title={`${owner.fullname} visited ${moment.utc(hitUtc).fromNow()}`}>
@@ -44,11 +44,11 @@ function urlOwner (owners, users, onSelectUser) {
 }
 
 function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
-  const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(urlId) !== -1)
+  const currentTopics = _.filter(topics, item => item.urlIds && _.indexOf(item.urlIds, urlId) !== -1)
   const items = []
-  const isOwner = myUrlIds.indexOf(urlId) !== -1
+  const isOwner = _.indexOf(myUrlIds, urlId) !== -1
   const maxLevel = _.maxBy(currentTopics, 'level')
-  _.forEach(currentTopics.filter(item => item.level === maxLevel.level), (topic) => {
+  _.forEach(_.filter(currentTopics, item => item.level === maxLevel.level), (topic) => {
     items.push(
       <div className='mix-tag-topic' key={`${urlId}-${topic.name}`}>
         <span className={`tags ${tagColor(topic.name)}`} rel='tag'>
@@ -70,24 +70,24 @@ function urlTopic (urlId, topics, onSelectTopic, myUrlIds, onShareTopic) {
 }
 
 function filterbyRating (item, owners, userIds, rating) {
-  const users = owners.filter(user => user.url_id === item.url_id)
+  const users = _.filter(owners, user => user.url_id === item.url_id)
   if (userIds.length) {
-    return !!users.find(user => userIds.indexOf(user.owner) !== -1 && user.rate >= rating)
+    return !!_.find(users, user => _.indexOf(userIds, user.owner) !== -1 && user.rate >= rating)
   }
-  return !!users.find(user => user.rate >= rating)
+  return !!_.find(users, user => user.rate >= rating)
 }
 
 function orderBy (result, owners, sortBy, sortDirection) {
   if (sortBy === 'date') {
     const sortResult = _.sortBy(result, (url) => {
-      const users = owners.filter(item => item.url_id === url.url_id)
-      return _.max(users.map(item => item.hit_utc))
+      const users = _.filter(owners, item => item.url_id === url.url_id)
+      return _.max(_.map(users, item => item.hit_utc))
     })
     return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   } else {
     const sortResult = _.sortBy(result, (url) => {
-      const users = owners.filter(item => item.url_id === url.url_id)
-      return _.max(users.map(item => item.rate))
+      const users = _.filter(owners, item => item.url_id === url.url_id)
+      return _.max(_.map(users, item => item.rate))
     })
     return sortDirection === 'desc' ? _.reverse(sortResult) : sortResult
   }
@@ -110,10 +110,10 @@ function filterUrls (urls, owners, filterByTopic, filterByUser, rating, sortBy, 
         foundIds = userUrlIds
       }
     }
-    const result = urls.filter(item => foundIds.indexOf(item.url_id) !== -1 && filterbyRating(item, owners, userIds, rating))
+    const result = _.filter(urls, item => _.indexOf(foundIds, item.url_id) !== -1 && filterbyRating(item, owners, userIds, rating))
     return orderBy(result, owners, sortBy, sortDirection)
   }
-  const result = urls.filter(item => filterbyRating(item, owners, [], rating))
+  const result = _.filter(urls, item => filterbyRating(item, owners, [], rating))
   return orderBy(result, owners, sortBy, sortDirection)
 }
 
@@ -139,12 +139,12 @@ class Streams extends React.Component {
   }
 
   loadMore = () => {
-    logger.warn('loadMore')
+    logger.info('loadMore')
     this.props.ui.page += 1
   }
 
   onPreview = (url) => {
-    logger.warn('onPreview', url)
+    logger.info('onPreview', url)
     const { isMobile } = this.props.store
     if (!isMobile) {
       this.setState({ currentUrl: url })
@@ -154,7 +154,7 @@ class Streams extends React.Component {
   }
 
   closePreview = () => {
-    logger.warn('closePreview')
+    logger.info('closePreview')
     this.setState({ currentUrl: '' })
   }
 
@@ -169,7 +169,7 @@ class Streams extends React.Component {
   onZoomLayout = () => {
     const { innerWidth } = this.state
     if (innerWidth !== window.innerWidth) {
-      logger.warn('onZoomLayout')
+      logger.info('onZoomLayout')
       this.setState({
         currentWidth: window.innerWidth / 2,
         innerWidth: window.innerWidth
@@ -181,7 +181,7 @@ class Streams extends React.Component {
     // populate urls and users
     const { urls, users, topics, owners, isInstall } = toJS(this.props.store)
     const { urls: myUrls } = toJS(this.props.store.myStream)
-    logger.warn('Streams render', urls, users, topics, owners, myUrls)
+    logger.info('Streams render', urls, users, topics, owners, myUrls)
     if (urls && urls.length === 0 && isInstall) {
       return (
         <Section className='section-empty-list' style={{ backgroundColor: '#fff' }}>
@@ -194,9 +194,9 @@ class Streams extends React.Component {
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection } = this.props.ui
     this.sortedUrls = filterUrls(urls, owners, filterByTopic, filterByUser, rating, sortBy, sortDirection)
     /* eslint-disable camelcase */
-    const currentUrls = this.sortedUrls.slice(0, (this.props.ui.page + 1) * LIMIT)
-    const myUrlIds = myUrls ? myUrls && myUrls.map(item => item.url_id) : []
-    logger.warn('currentUrls', currentUrls)
+    const currentUrls = _.slice(this.sortedUrls, 0, (this.props.ui.page + 1) * LIMIT)
+    const myUrlIds = myUrls ? myUrls && _.map(myUrls, item => item.url_id) : []
+    logger.info('currentUrls', currentUrls)
     const { currentUrl, currentWidth, isResize } = this.state
     if (currentUrls && currentUrls.length) {
       _.forEach(currentUrls, (item) => {
@@ -204,12 +204,12 @@ class Streams extends React.Component {
         if (currentUrl !== href) {
           let discoveryKeys = []
           const suggestionKeys = []
-          const currentTopics = topics.filter(item => item.urlIds && item.urlIds.indexOf(url_id) !== -1)
+          const currentTopics = _.filter(topics, item => item.urlIds && _.indexOf(item.urlIds, url_id) !== -1)
           const maxLevel = _.maxBy(currentTopics, 'level')
-          const deepestTopics = currentTopics.filter(item => item.level === maxLevel.level)
+          const deepestTopics = _.filter(currentTopics, item => item.level === maxLevel.level)
           discoveryKeys = discoveryKeys.concat(_.map(deepestTopics, 'name'))
           if (deepestTopics.length) {
-            deepestTopics.forEach(item => {
+            _.forEach(deepestTopics, item => {
               suggestionKeys.push(..._.map(item.suggestions.slice(0, 5), 'term_name'))
             })
           }

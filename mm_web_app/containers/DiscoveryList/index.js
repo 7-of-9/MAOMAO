@@ -5,6 +5,8 @@
 */
 
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -13,8 +15,9 @@ import ReactResizeDetector from 'react-resize-detector'
 import InfiniteScroll from 'react-infinite-scroller'
 import DiscoveryItem from './DiscoveryItem'
 import DiscoveryDetail from './DiscoveryDetail'
-import SplitView from '../SplitView'
-import Loading from '../Loading'
+import SplitView from '../../components/SplitView'
+import Loading from '../../components/Loading'
+import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -22,25 +25,71 @@ import logger from '../../utils/logger'
 @inject('ui')
 @observer
 class DiscoveryList extends Component {
-  state = {
-    innerWidth: window.innerWidth,
-    currentWidth: window.innerWidth / 2,
-    isResize: false
+  static propTypes = {
+    profileUrl: PropTypes.string.isRequired
   }
 
-  onSelectTerm = (termId) => {
-    logger.warn('DiscoveryNavigation selectDiscoveryTerm', termId)
-    this.props.ui.selectDiscoveryTerm(termId)
-    const { userId, userHash } = this.props.store
-    this.props.term.getTermDiscover(userId, userHash, termId)
+  static defaultProps = {
+    profileUrl: ''
+  }
+  state = {
+    isResize: false
   }
 
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
   }
 
-  onBack = () => {
-    this.props.ui.backToRootDiscovery()
+  onSelectChildTerm = (term) => {
+    logger.info('onSelectChildTerm term', term)
+    this.props.ui.selectDiscoveryTerm(term.term_id)
+    this.props.term.getTermDiscover(term.term_id)
+    const { findTerms } = toJS(this.props.term)
+    findTerms.push(_.toLower(term.term_name))
+    logger.info('findTerms', findTerms)
+    this.props.store.loadNewTerm(term.term_id)
+    this.props.term.setCurrentTerms(findTerms)
+    this.props.term.addNewTerm(term)
+    const href = `/${findTerms.join('/')}`
+    Router.push(
+      {
+        pathname: '/discover',
+        query: { findTerms }
+      },
+      href,
+     { shallow: true }
+    )
+  }
+
+  onBack = (term) => {
+    logger.info('onBack term', term)
+    const position = _.findIndex(this.props.term.findTerms, item => isSameStringOnUrl(item, term.term_name))
+    const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
+    this.props.term.setCurrentTerms(terms)
+    if (terms.length) {
+      const href = `/${terms.join('/')}`
+      Router.push(
+        {
+          pathname: '/discover',
+          query: { findTerms: terms }
+        },
+        href,
+       { shallow: true }
+      )
+      const currentTerm = _.find(this.props.term.termsInfo.terms, item => isSameStringOnUrl(item.term_name, terms[terms.length - 1]))
+      if (currentTerm && currentTerm.term_id) {
+        this.props.ui.selectDiscoveryTerm(currentTerm.term_id)
+        this.props.term.getTermDiscover(currentTerm.term_id)
+      }
+    } else {
+      if (this.props.store.userId > 0) {
+        this.props.ui.backToRootDiscovery()
+        const { user } = this.props.store
+        Router.push({ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+      } else {
+        Router.push('/', '/', { shallow: true })
+      }
+    }
   }
 
   onResizeStart = () => {
@@ -54,7 +103,7 @@ class DiscoveryList extends Component {
   onZoomLayout = () => {
     const { innerWidth } = this.state
     if (innerWidth !== window.innerWidth) {
-      logger.warn('onZoomLayout')
+      logger.info('onZoomLayout')
       this.setState({
         currentWidth: window.innerWidth / 2,
         innerWidth: window.innerWidth
@@ -63,25 +112,73 @@ class DiscoveryList extends Component {
   }
 
   backButton = (isRootView) => {
-    const { discoveryTermId, isSplitView, selectedDiscoveryItem: { main_term_id: mainTermId } } = toJS(this.props.ui)
+    const { isSplitView, discoveryTermId } = toJS(this.props.ui)
+    logger.info('discoveryTermId', discoveryTermId)
+    const topics = []
+    if (discoveryTermId > 0) {
+      const currentTerm = this.props.store.getCurrentTerm(discoveryTermId)
+      const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
+      logger.info('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
+      if (childSuggestions) {
+        _.forEach(childSuggestions, term => {
+          if (term.term_name !== '...') {
+            topics.push(term)
+          }
+        })
+      }
+      if (childTopics) {
+        _.forEach(childTopics, term => {
+          if (term.term_name !== '...') {
+            topics.push(term)
+          }
+        })
+      }
+    }
+
     if (!isRootView) {
-      const term = this.props.store.getCurrentTerm(discoveryTermId > 0 ? discoveryTermId : mainTermId)
-      if (term) {
+      const { findTerms, termsInfo: { terms } } = this.props.term
+      const items = []
+      _.forEach(findTerms, item => {
+        const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
+        if (term) {
+          const { img, term_name: title } = term
+          items.push(<span
+            key={`back-to-${title}`}
+            onClick={() => this.onBack(term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
+            {title}
+          </span>)
+        }
+      })
+      _.forEach(topics, term => {
         const { img, term_name: title } = term
+        if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
+          items.push(<span
+            key={`navigate-to-${title}`}
+            onClick={() => this.onSelectChildTerm(term)}
+            style={{
+              background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
+              backgroundSize: 'cover',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              padding: '3px'
+            }}
+            className='current-topic-name tags' rel='tag'>
+            {title}
+          </span>)
+        }
+      })
+      if (items.length) {
         return (
           <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>
             <div className='breadcrum'>
-              <span
-                onClick={this.onBack}
-                style={{
-                  background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-                  backgroundSize: 'cover',
-                  cursor: 'pointer'
-                }}
-                className='current-topic-name tags' rel='tag'>
-                <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-                {title}
-              </span>
+              {items}
             </div>
           </div>
         )
@@ -91,7 +188,7 @@ class DiscoveryList extends Component {
   }
 
   cleanClassName = () => {
-    logger.warn('DiscoveryList cleanClassName', this.animateEl)
+    logger.info('DiscoveryList cleanClassName', this.animateEl)
     /* global $ */
     if (this.animateEl && typeof $ !== 'undefined') {
       $(this.animateEl).removeClass('bounceInLeft animated bounceInRight')
@@ -99,7 +196,7 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    logger.warn('DiscoveryList loadMore')
+    logger.info('DiscoveryList loadMore')
     this.props.term.loadMore()
   }
 
@@ -108,10 +205,15 @@ class DiscoveryList extends Component {
   }
 
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
-    logger.warn('renderTermList', isSplitView, discoveryTermId, terms)
+    logger.info('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
+    if (this.props.term.isLoading) {
+      return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
+        <Loading isLoading />
+      </div>)
+    }
     if (terms.length) {
-      const topics = terms.find(item => item.termId === discoveryTermId)
+      const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
         const items = []
         _.forEach(topics.discoveries, (item) => {
@@ -131,7 +233,7 @@ class DiscoveryList extends Component {
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
                   onSelect={this.onSelect}
-                  onSelectTerm={this.onSelectTerm}
+                  onSelectTerm={this.onSelectChildTerm}
                   {...item}
                  />
                )
@@ -143,7 +245,7 @@ class DiscoveryList extends Component {
         </div>)
       } else {
         return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
-          <Loading isLoading />
+          <p className='text-engine animated fadeInUp'>Coming soon...</p>
         </div>)
       }
     }
@@ -160,7 +262,7 @@ class DiscoveryList extends Component {
     }
     const items = []
     if (termIds) {
-      termIds.forEach(id => {
+      _.forEach(termIds, id => {
         if (id !== termId) {
           const term = this.props.store.getCurrentTerm(id)
           if (term) {
@@ -171,7 +273,7 @@ class DiscoveryList extends Component {
     }
     const { currentWidth, isResize } = this.state
     const { terms } = toJS(this.props.term)
-    logger.warn('isSplitView', isSplitView)
+    logger.info('isSplitView', isSplitView)
     if (isSplitView && discoveryUrlId !== -1) {
       return (
         <div className='discovery-list'>
@@ -198,7 +300,7 @@ class DiscoveryList extends Component {
         </div>
       )
     }
-    logger.warn('discoveryTermId', discoveryTermId)
+    logger.info('discoveryTermId', discoveryTermId)
     if (discoveryTermId > 0) {
       return this.renderTermList(isSplitView && discoveryUrlId !== -1, ingoreTerms, discoveryTermId, terms, urlId)
     }
@@ -233,7 +335,7 @@ class DiscoveryList extends Component {
             sub_term_img={sub_term_img}
             sub_term_name={sub_term_name}
             onSelect={this.onSelect}
-            onSelectTerm={this.onSelectTerm}
+            onSelectTerm={this.onSelectChildTerm}
             {...item}
            />
          )
@@ -243,25 +345,33 @@ class DiscoveryList extends Component {
   }
 
   componentWillUpdate () {
-    logger.warn('DiscoveryList componentWillUpdate')
+    logger.info('DiscoveryList componentWillUpdate')
     this.cleanClassName()
   }
 
   componentWillReact () {
     const { userId, userHash } = this.props.store
-    logger.warn('DiscoveryList componentWillReact', userId, userHash)
+    const { page } = this.props.term
+    logger.info('DiscoveryList componentWillReact', userId, userHash, page)
   }
 
   componentDidMount () {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
-    logger.warn('DiscoveryList componentDidMount', userId, userHash)
-    this.props.term.getRootDiscover(userId, userHash, page)
+    logger.info('DiscoveryList componentDidMount', userId, userHash)
+    if (userId > 0) {
+      this.props.term.getRootDiscover(userId, userHash, page)
+    }
+    this.setState({
+      innerWidth: window.innerWidth,
+      currentWidth: window.innerWidth / 2
+    })
   }
 
   render () {
+    const { profileUrl } = this.props
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
-    logger.warn('DiscoveryList render ', this.props.term.hasMore)
+    logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
     return (
@@ -272,7 +382,7 @@ class DiscoveryList extends Component {
           <div className='container-masonry'>
             <div ref={(el) => { this.animateEl = el }} className={animateClassName}>
               {
-                isRootView &&
+                isRootView && profileUrl.length > 0 &&
                 <InfiniteScroll
                   pageStart={0}
                   loadMore={this.loadMore}

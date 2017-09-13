@@ -1,5 +1,6 @@
-import { action, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover } from '../services/topic'
+import { action, computed, reaction, when, observable } from 'mobx'
+import { rootDiscover, termDiscover, getTerm } from '../services/topic'
+import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 import _ from 'lodash'
 
@@ -9,13 +10,17 @@ let store = null
 class TermStore {
   @observable pendings = []
   @observable discoveries = []
-  @observable page = 0
+  @observable page = 1
   @observable hasMore = true
+  @observable findTerms = []
   terms = []
   userId = -1
   userHash = ''
+  termsInfo = { terms: [] }
 
-  constructor () {
+  constructor (isServer, findTerms, termsInfo) {
+    this.findTerms = findTerms
+    this.termsInfo = termsInfo
     reaction(() => this.page,
     (page) => {
       if (this.userId > 0) {
@@ -24,8 +29,33 @@ class TermStore {
     })
   }
 
+ @computed get isLoading () {
+   return this.pendings.length > 0
+ }
+
+  @action setCurrentTerms (findTerms) {
+    this.findTerms = findTerms
+  }
+
+  @action addNewTerm (newTerm) {
+    if (!this.termsInfo.terms.find(item => isSameStringOnUrl(item.term_name, newTerm.term_name))) {
+      this.termsInfo.terms.push(newTerm)
+      const termInfo = getTerm(newTerm.term_id)
+      when(
+        () => termInfo.state !== 'pending',
+        () => {
+          if (termInfo.value.data) {
+            const { term } = termInfo.value.data
+            const terms = this.termsInfo.terms.filter(item => !isSameStringOnUrl(item.term_name, term.term_name))
+            this.termsInfo.terms = [...terms, term]
+          }
+        }
+      )
+    }
+  }
+
   @action getRootDiscover (userId, userHash, page) {
-    logger.warn('getRootDiscover', userId, userHash, page)
+    logger.info('getRootDiscover', userId, userHash, page)
     this.page = page
     this.userId = userId
     this.userHash = userHash
@@ -37,7 +67,7 @@ class TermStore {
       () => {
         if (rootData.value && rootData.value.data) {
           const { discoveries } = rootData.value.data
-          logger.warn('getRootDiscover result', discoveries)
+          logger.info('getRootDiscover result', discoveries)
           if (discoveries.length === 0) {
             this.hasMore = false
           } else {
@@ -67,11 +97,11 @@ class TermStore {
     this.page += 1
   }
 
-  @action getTermDiscover (userId, userHash, termId) {
-    const isExist = this.terms.find(item => item.termId === termId)
-    const isProcess = this.pendings.indexOf(`termData${termId}`) !== -1
+  @action getTermDiscover (termId) {
+    const isExist = _.find(this.terms, item => item.termId === termId)
+    const isProcess = _.indexOf(this.pendings, `termData${termId}`) !== -1
     if (!isExist && !isProcess) {
-      const termData = termDiscover(userId, userHash, termId)
+      const termData = termDiscover(termId)
       this.pendings.push(`termData${termId}`)
       when(
         () => termData.state !== 'pending',
@@ -90,12 +120,12 @@ class TermStore {
   }
 }
 
-export function initTermStore (isServer) {
+export function initTermStore (isServer, findTerms = [], termsInfo = { terms: [] }) {
   if (isServer && typeof window === 'undefined') {
-    return new TermStore(isServer)
+    return new TermStore(isServer, findTerms, termsInfo)
   } else {
     if (store === null) {
-      store = new TermStore(isServer)
+      store = new TermStore(isServer, findTerms, termsInfo)
     }
     return store
   }

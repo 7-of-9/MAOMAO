@@ -1,6 +1,7 @@
 import { fromPromise } from 'mobx-utils'
 import axios from 'axios'
 import queryString from 'query-string'
+import _ from 'lodash'
 import { LIMIT, GOOGLE_API_KEY } from '../containers/App/constants'
 
 /**
@@ -60,7 +61,7 @@ export function safeBrowsingLoockup (urls = []) {
         threatTypes: ['MALWARE', 'SOCIAL_ENGINEERING'],
         platformTypes: ['ANY_PLATFORM'],
         threatEntryTypes: ['URL'],
-        threatEntries: urls.map(item => ({ url: item }))
+        threatEntries: _.map(urls, item => ({ url: item }))
       }
     }
   }))

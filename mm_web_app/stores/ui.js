@@ -1,4 +1,5 @@
 import { observable, action, toJS } from 'mobx'
+import _ from 'lodash'
 import { guid } from '../utils/hash'
 import logger from '../utils/logger'
 
@@ -8,6 +9,7 @@ export class UIStore {
   /* app header component - show modal */
   @observable showSignInModal = false
   @observable showExtensionModal = false
+  @observable isRedirectToUrl = false
   /* homepage filter */
   @observable onlyMe = false
   @observable sortBy = 'rating'
@@ -39,41 +41,45 @@ export class UIStore {
   userId = -1
   title = 'Sign In'
 
+  @action redirectToSpecialUrl (isEnable) {
+    this.isRedirectToUrl = isEnable
+  }
+
   @action toggleOnlyMe (userId, users) {
-    logger.warn('toggleOnlyMe', userId, users)
+    logger.info('toggleOnlyMe', userId, users)
     this.onlyMe = !this.onlyMe
     if (this.onlyMe) {
       this.userId = userId
     }
 
     if (this.onlyMe) {
-      const user = users.find(item => item.user_id === userId)
+      const user = _.find(users, item => item.user_id === userId)
       if (user) {
         this.filterByUser = [{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }]
       }
     } else {
-      this.filterByUser = this.filterByUser.filter(item => item.user_id !== userId)
+      this.filterByUser = _.filter(this.filterByUser, item => item.user_id !== userId)
     }
   }
 
   @action toggleSelectTopic (isSelect, termId, termName, img) {
-    logger.warn('toggleSelectTopic', isSelect, termId, termName, img)
+    logger.info('toggleSelectTopic', isSelect, termId, termName, img)
     if (isSelect) {
-      const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.termId === termId)
+      const isExist = this.selectedTopics.length > 0 && _.find(this.selectedTopics, item => item.termId === termId)
       if (!isExist) {
         this.selectedTopics.push({termId, termName, img})
       }
     } else {
-      this.selectedTopics = this.selectedTopics.filter(item => item.termId !== termId)
+      this.selectedTopics = _.filter(this.selectedTopics, item => item.termId !== termId)
     }
   }
 
   @action selectChildTopics (topics) {
-    logger.warn('toggleSelectTopic', topics)
+    logger.info('toggleSelectTopic', topics)
     if (topics && topics.length) {
-      topics.forEach(topic => {
+      _.forEach(topics, topic => {
         const { topic_id: termId, topic_name: termName, img } = topic
-        const isExist = this.selectedTopics.length > 0 && this.selectedTopics.find(item => item.termId === termId)
+        const isExist = this.selectedTopics.length > 0 && _.find(this.selectedTopics, item => item.termId === termId)
         if (!isExist) {
           this.selectedTopics.push({termId, termName, img})
         }
@@ -82,7 +88,7 @@ export class UIStore {
   }
 
   @action selectTopicTree (termId, termName = '', img = '', inc = 1) {
-    logger.warn('selectTopicTree', termId)
+    logger.info('selectTopicTree', termId)
     this.currentTermId = termId
     this.currentTermTitle = termName
     this.currentTermImage = img
@@ -107,10 +113,10 @@ export class UIStore {
   }
 
   @action openShareTopic (urlId, selectedTopic, otherTopics) {
-    logger.warn('share topic', urlId, selectedTopic, otherTopics)
+    logger.info('share topic', urlId, selectedTopic, otherTopics)
     this.shareUrlId = urlId
     this.shareTopics = [ { id: `${selectedTopic.id}-tld-${selectedTopic.name}`, topic_id: selectedTopic.id, name: selectedTopic.name } ]
-    otherTopics.forEach((topic) => {
+    _.forEach(otherTopics, (topic) => {
       if (topic.id !== selectedTopic.id) {
         this.shareTopics.push({ id: `${topic.id}-beta-${topic.name}`, topic_id: topic.id, name: topic.name })
       }
@@ -128,7 +134,7 @@ export class UIStore {
   }
 
   @action changeSortOrder (type, direction) {
-    logger.warn('changeSortOrder', type, direction)
+    logger.info('changeSortOrder', type, direction)
     this.sortBy = type
     this.sortDirection = direction
     this.page = 1
@@ -149,7 +155,7 @@ export class UIStore {
 
   @action removeNotification (uuid) {
     if (this.notifications) {
-      this.notifications = this.notifications.filter((item) => item && item.key !== uuid)
+      this.notifications = _.filter(this.notifications, (item) => item && item.key !== uuid)
     } else {
       this.clearNotifications()
     }
@@ -175,7 +181,7 @@ export class UIStore {
     logger.info('removeTopic topic', topic)
     const filterByTopic = toJS(this.filterByTopic)
     logger.info('removeTopic filterByTopic', filterByTopic)
-    this.filterByTopic = filterByTopic.filter(item => item.label !== topic.label)
+    this.filterByTopic = _.filter(filterByTopic, item => item.label !== topic.label)
     this.page = 1
   }
 
@@ -183,25 +189,25 @@ export class UIStore {
     logger.info('selectTopic', topic, this)
     const filterByTopic = toJS(this.filterByTopic)
     logger.info('selectTopic filterByTopic', filterByTopic)
-    if (!filterByTopic.find(item => item.label === topic.name)) {
-      this.filterByTopic = filterByTopic.filter(item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
+    if (!_.find(filterByTopic, item => item.label === topic.name)) {
+      this.filterByTopic = _.filter(filterByTopic, item => item.label !== topic.name).concat([{ value: topic.urlIds, label: topic.name }])
     }
     this.page = 1
   }
 
   @action removeUser (user) {
     logger.info('removeUser', user, this)
-    this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id)
+    this.filterByUser = _.filter(this.filterByUser, item => item.user_id !== user.user_id)
     if (this.filterByUser.length <= 1) {
-      this.onlyMe = !!this.filterByUser.find(item => item.user_id === this.userId)
+      this.onlyMe = !!_.find(this.filterByUser, item => item.user_id === this.userId)
     }
     this.page = 1
   }
 
   @action selectUser (user) {
     logger.info('selectUser', user, this)
-    if (!this.filterByUser.find(item => item.user_id === user.user_id)) {
-      this.filterByUser = this.filterByUser.filter(item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
+    if (!_.find(this.filterByUser, item => item.user_id === user.user_id)) {
+      this.filterByUser = _.filter(this.filterByUser, item => item.user_id !== user.user_id).concat([{ value: user.urlIds, label: user.fullname, user_id: user.user_id, avatar: user.avatar }])
     }
     if (this.filterByUser.length > 1) {
       this.onlyMe = false
@@ -215,7 +221,7 @@ export class UIStore {
   }
 
   @action nextPage () {
-    logger.warn('nextPage')
+    logger.info('nextPage')
     this.page += 1
   }
 

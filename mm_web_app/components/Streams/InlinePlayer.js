@@ -7,6 +7,7 @@
 import React, { Component } from 'react'
 import { inject, observer } from 'mobx-react'
 import ReactPlayer from 'react-player'
+import _ from 'lodash'
 import eventEmitter from '../../utils/eventEmitter'
 import logger from '../../utils/logger'
 
@@ -22,7 +23,7 @@ class InlinePlayer extends Component {
     eventEmitter.emit('layout')
   }
   onError = (err) => {
-    logger.warn('onError', err)
+    logger.info('onError', err)
     eventEmitter.emit('layout')
   }
 
@@ -52,7 +53,7 @@ class InlinePlayer extends Component {
           onError={this.noImage}
           />
         {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-        {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+        {urlOwner(_.filter(owners, item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
       </div>
     )
   }
@@ -90,7 +91,7 @@ class InlinePlayer extends Component {
           controls
       />
         {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-        {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+        {urlOwner(_.filter(owners, item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
       </div>)
   }
 

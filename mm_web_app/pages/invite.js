@@ -1,5 +1,6 @@
 import React from 'react'
 import { Provider } from 'mobx-react'
+import _ from 'lodash'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
 import { initDiscoveryStore } from '../stores/discovery'
@@ -15,15 +16,15 @@ export default class Invite extends React.Component {
       userAgent = req.headers['user-agent']
     }
     const user = req && req.session ? req.session.decodedToken : null
-    logger.warn('user', user)
+    logger.info('user', user)
     const store = initStore(isServer, userAgent, user, code, shareInfo)
     const uiStore = initUIStore(isServer)
-    logger.warn('Invite', code, shareInfo)
+    logger.info('Invite', code, shareInfo)
     const bgImageResult = await store.searchBgImage()
     try {
-      logger.warn('bgImageResult', bgImageResult)
+      logger.info('bgImageResult', bgImageResult)
       const { result } = bgImageResult.data
-      const images = result.filter(item => item.img && item.img.length > 0)
+      const images = _.filter(result, item => item.img && item.img.length > 0)
       if (images.length > 0) {
         store.bgImage = images[Math.floor(Math.random() * images.length)].img
       } else {
@@ -38,7 +39,7 @@ export default class Invite extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.warn('Invite', props)
+    logger.info('Invite', props)
     this.uiStore = initUIStore(props.isServer)
     this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
@@ -54,13 +55,13 @@ export default class Invite extends React.Component {
           logger.log('service worker registration successful')
         })
         .catch(err => {
-          logger.warn('service worker registration failed', err.message)
+          logger.info('service worker registration failed', err.message)
         })
     }
   }
 
   render () {
-    logger.warn('Invite render')
+    logger.info('Invite render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='invite'>

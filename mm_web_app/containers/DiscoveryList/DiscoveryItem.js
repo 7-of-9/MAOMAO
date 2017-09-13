@@ -7,14 +7,9 @@
 import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import logger from '../../utils/logger'
-import { tagColor } from '../../utils/helper'
-
-const dynamicFontSize = (text) => {
-  if (text.length > 20) return '0.8rem'
-  if (text.length > 12) return '1rem'
-  return '1.5rem'
-}
+import { tagColor, dynamicFontSize } from '../../utils/helper'
 
 @observer
 export default class DiscoveryItem extends PureComponent {
@@ -49,13 +44,13 @@ export default class DiscoveryItem extends PureComponent {
     search_num: 0,
     ingoreTerms: [],
     onSelect: (item) => {},
-    onSelectTerm: (termId) => {}
+    onSelectTerm: (term) => {}
   }
 
   handleClick = (evt) => {
     evt.preventDefault()
     if (!this.clickOnTerm) {
-      logger.warn('handleClick', evt.target)
+      logger.info('handleClick', evt.target)
       this.props.onSelect(this.props)
     }
   }
@@ -66,18 +61,18 @@ export default class DiscoveryItem extends PureComponent {
 
   selectMainTerm = (evt) => {
     evt.preventDefault()
-    const { main_term_id } = this.props
-    logger.warn('selectMainTerm', main_term_id, evt.target)
+    const { main_term_id, main_term_img, main_term_name } = this.props
+    logger.info('selectMainTerm', main_term_id, evt.target)
     this.clickOnTerm = true
-    this.props.onSelectTerm(main_term_id)
+    this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
   }
 
   selectSubTerm = (evt) => {
     evt.preventDefault()
-    const { sub_term_id } = this.props
-    logger.warn('selectSubTerm', sub_term_id, evt.target)
+    const { sub_term_id, sub_term_img, sub_term_name } = this.props
+    logger.info('selectSubTerm', sub_term_id, evt.target)
     this.clickOnTerm = true
-    this.props.onSelectTerm(sub_term_id)
+    this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
   }
 
   renderTerms = () => {
@@ -95,7 +90,7 @@ export default class DiscoveryItem extends PureComponent {
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${main_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
               fontSize: dynamicFontSize(main_term_name),
-              cursor: ingoreTerms.indexOf(main_term_id) === -1 ? 'pointer' : 'default'
+              cursor: _.indexOf(ingoreTerms, main_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(main_term_name)}`} rel='tag'>
             {main_term_name}
@@ -109,7 +104,7 @@ export default class DiscoveryItem extends PureComponent {
               background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${sub_term_img || '/static/images/no-image.png'})`,
               backgroundSize: 'cover',
               fontSize: dynamicFontSize(sub_term_name),
-              cursor: ingoreTerms.indexOf(sub_term_id) === -1 ? 'pointer' : 'default'
+              cursor: _.indexOf(ingoreTerms, sub_term_id) === -1 ? 'pointer' : 'default'
             }}
             className={`tags ${tagColor(sub_term_name)}`} rel='tag'>
             {sub_term_name}
@@ -124,7 +119,7 @@ export default class DiscoveryItem extends PureComponent {
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '30px' }}>
-          {images.map(item =>
+          {_.map(images, item =>
             <a
               key={`thumbnail-${item.name}`}
               style={{ display: 'inline-block' }}

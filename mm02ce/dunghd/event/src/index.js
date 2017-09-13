@@ -51,7 +51,7 @@ const store = createStore(enableBatching(rootReducer), {}, composeEnhancers(
   applyMiddleware(...middleware),
 ));
 
-persistStore(store);
+persistStore(store, { debounce: 30 * 1000 }); // auto save in 30 seconds
 
 wrapStore(store, {
   portName: 'maomao-extension',

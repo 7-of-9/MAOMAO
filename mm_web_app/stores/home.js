@@ -2,7 +2,6 @@ import { action, reaction, when, computed, toJS, observable } from 'mobx'
 import _ from 'lodash'
 import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
-import { normalizedTermData } from './schema/tree'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
 import { getAllTopicTree, addBulkTopics, getTerm } from '../services/topic'
@@ -21,7 +20,7 @@ const calcRate = (score, timeOnTab) => {
 
 function flattenTopics (topics, counter = 0) {
   const result = []
-  topics.forEach(item => {
+  _.forEach(topics, item => {
     result.push({ level: counter, id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions })
     if (item.child_topics && item.child_topics.length) {
       result.push(...flattenTopics(item.child_topics, counter + 1))
@@ -77,7 +76,7 @@ export class HomeStore extends CoreStore {
     // listen new data and reload all
     const friends = toJS(sharesReveived)
     if (friends.length > 0) {
-      friends.forEach(friend => {
+      _.forEach(friends, friend => {
         // TODO: Check new data is belong to sharing topics or share all
         this.onSubscribe(`my-friend-stream-${friend.user_id}`, 'process-url', (data) => {
           this.getUserHistory()
@@ -87,12 +86,35 @@ export class HomeStore extends CoreStore {
     return sharesReveived
   }
 
+  @action setTerms (findTerms) {
+    for (let term of findTerms) {
+      this.terms[term.term_id] = term
+    }
+  }
+
+  @action loadNewTerm (termId) {
+    const termInfo = getTerm(termId)
+    this.pendings.push(termId)
+    logger.info('loadNewTerm', this.pendings)
+    when(
+      () => termInfo.state !== 'pending',
+      () => {
+        if (termInfo.value.data) {
+          const { term } = termInfo.value.data
+          this.terms[term.term_id] = term
+        }
+        this.pendings.splice(_.indexOf(this.pendings, termId), 1)
+        logger.info('loadNewTerm result', this.pendings, termInfo.value.data)
+      }
+    )
+  }
+
   @action getCurrentTerm (termId) {
     if (this.terms[termId]) {
-      return this.terms[termId]
+      return toJS(this.terms[termId])
     } else {
       const termInfo = getTerm(termId)
-      if (this.pendings.indexOf(termId) === -1) {
+      if (_.indexOf(this.pendings, termId) === -1) {
         this.pendings.push(termId)
         when(
           () => termInfo.state !== 'pending',
@@ -101,29 +123,29 @@ export class HomeStore extends CoreStore {
               const { term } = termInfo.value.data
               this.terms[term.term_id] = term
             }
-            this.pendings.splice(this.pendings.indexOf(termId), 1)
+            this.pendings.splice(_.indexOf(this.pendings, termId), 1)
           }
         )
       }
-      return null
+      return { termId, term_name: '...', img: '/static/images/no-image.png', child_suggestions: [], child_topics: [] }
     }
   }
 
   @action saveTopics (ids) {
-    logger.warn('saveTopics', ids)
+    logger.info('saveTopics', ids)
     if (ids && ids.length > 0) {
       const saveTopicRequest = addBulkTopics(this.userId, this.userHash, ids)
       when(
           () => saveTopicRequest.state !== 'pending',
           () => {
-            logger.warn('saveTopics result', saveTopicRequest.data)
+            logger.info('saveTopics result', saveTopicRequest.data)
           }
         )
     }
   }
 
   @action internalLogin (callback) {
-    logger.warn('internalLogin')
+    logger.info('internalLogin')
     const registerNewUser = testInternalUser()
     this.isProcessingRegister = true
     when(
@@ -156,7 +178,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action retrylLoginForInternalUser (user) {
-    logger.warn('retrylLoginForInternalUser', user)
+    logger.info('retrylLoginForInternalUser', user)
     const { id, userHash } = user
     this.isLogin = true
     this.userId = id
@@ -174,7 +196,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action googleConnect (info, callback) {
-    logger.warn('googleConnect', info)
+    logger.info('googleConnect', info)
     const googleConnectResult = loginWithGoogle(info)
     this.isProcessingRegister = true
     when(
@@ -216,7 +238,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action facebookConnect (info, callback) {
-    logger.warn('facebookConnect', info)
+    logger.info('facebookConnect', info)
     const facebookConnectResult = loginWithFacebook(info)
     this.isProcessingRegister = true
     when(
@@ -257,7 +279,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action getTopicTree () {
-    logger.warn('getTopicTree')
+    logger.info('getTopicTree')
     if (!this.isProcessingTopicTree) {
       const allTopics = getAllTopicTree()
       this.isProcessingTopicTree = true
@@ -266,16 +288,13 @@ export class HomeStore extends CoreStore {
       () => {
         this.isProcessingTopicTree = false
         this.tree = allTopics.value.data.tree || []
-        const { entities: { terms } } = normalizedTermData(allTopics.value.data)
-        this.terms = terms || {}
-        logger.warn('getTopicTree', this.tree)
-        logger.warn('terms', this.terms)
+        logger.info('getTopicTree', this.tree)
       })
     }
   }
 
   @action getUserHistory () {
-    logger.warn('getUserHistory')
+    logger.info('getUserHistory')
     if (!this.isProcessingHistory) {
       this.isProcessingHistory = true
       const userHistoryResult = getUserHistory(this.userId, this.userHash)
@@ -285,7 +304,7 @@ export class HomeStore extends CoreStore {
           if (userHistoryResult.state === 'fulfilled') {
             this.userHistory = userHistoryResult.value.data
             const normalizedData = normalizedHistoryData(toJS(this.userHistory))
-            logger.warn('normalizedData', normalizedData)
+            logger.info('normalizedData', normalizedData)
             this.normalizedData = normalizedData
 
             const { received, mine, topics } = this.userHistory
@@ -295,14 +314,14 @@ export class HomeStore extends CoreStore {
             let users = []
             let owners = []
             if (myUrls && myUrls.length) {
-              urls.push(...myUrls.map(item => ({
+              urls.push(..._.map(myUrls, item => ({
                 url_id: item.url_id,
                 title: item.title,
                 href: item.href,
                 img: item.img
               }
               )))
-              myUrls.forEach(item => {
+              _.forEach(myUrls, item => {
                 owners.push({
                   owner: user_id,
                   url_id: item.url_id,
@@ -312,21 +331,21 @@ export class HomeStore extends CoreStore {
                   rate: calcRate(item.im_score, item.time_on_tab)
                 })
               })
-              users.push({ user_id, fullname, avatar, urlIds: myUrls.map(item => item.url_id) })
+              users.push({ user_id, fullname, avatar, urlIds: _.map(myUrls, item => item.url_id) })
             }
 
             _.forEach(friends, friend => {
               const { user_id, fullname, avatar, shares: list } = friend
               const urlIds = []
               _.forEach(list, item => {
-                urls.push(...item.urls.map(item => ({
+                urls.push(..._.map(item.urls, item => ({
                   url_id: item.url_id,
                   title: item.title,
                   href: item.href,
                   img: item.img
                 }
               )))
-                item.urls.forEach(item => {
+                _.forEach(item.urls, item => {
                   owners.push({
                     owner: user_id,
                     url_id: item.url_id,
@@ -336,16 +355,16 @@ export class HomeStore extends CoreStore {
                     rate: calcRate(item.im_score, item.time_on_tab)
                   })
                 })
-                urlIds.push(...item.urls.map(item => item.url_id))
+                urlIds.push(..._.map(item.urls, item => item.url_id))
               })
               users.push({ user_id, fullname, avatar, urlIds })
             })
             this.urls = _.uniqBy(urls, 'url_id')
             this.topics = flattenTopics(topics)
-            this.firstLevelTopics = topics.map(item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
+            this.firstLevelTopics = _.map(topics, item => ({ id: item.term_id, name: item.term_name, urlIds: item.url_ids, suggestions: item.suggestions }))
             this.users = users
             this.owners = _.uniqBy(owners, (item) => `${item.owner}-${item.url_id}`)
-            logger.warn('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
+            logger.info('findAllUrlsAndTopics urls, users, topics', this.urls, this.users, this.topics, this.owners)
           }
           this.checkSafeUrls()
         }
@@ -354,7 +373,7 @@ export class HomeStore extends CoreStore {
   }
 
   @action checkSafeUrls () {
-    logger.warn('safeBrowsingLoockup', this.urls)
+    logger.info('safeBrowsingLoockup', this.urls)
     const urls = toJS(this.urls)
     const MAX_ITEM = 500
     const totalPage = urls.length / MAX_ITEM
@@ -369,9 +388,9 @@ export class HomeStore extends CoreStore {
             if (safeCheckResult.state === 'fulfilled') {
               const { matches } = safeCheckResult.value.data
               if (matches) {
-                const ingoreUrls = matches.map(item => item && item.threat && item.threat.url)
-                logger.warn('safeBrowsingLoockup ingoreUrls', ingoreUrls)
-                this.urls = urls.filter(item => ingoreUrls.indexOf(item.href) === -1)
+                const ingoreUrls = _.map(matches, item => item && item.threat && item.threat.url)
+                logger.info('safeBrowsingLoockup ingoreUrls', ingoreUrls)
+                this.urls = _.filter(urls, item => _.indexOf(ingoreUrls, item.href) === -1)
               }
             }
             this.isProcessingHistory = false
@@ -381,16 +400,16 @@ export class HomeStore extends CoreStore {
   }
 
   @action findUserRating (item, userIds) {
-    logger.warn('findUserRating')
+    logger.info('findUserRating')
     if (userIds.length) {
-      const owner = item.owners.find(item => userIds.indexOf(item.owner) !== -1)
+      const owner = _.find(item.owners, item => _.indexOf(userIds, item.owner) !== -1)
       return owner.rate
     }
     return item.owners[0].rate
   }
 
   @action filterUrls (filterByTopic, filterByUser, rating) {
-    logger.warn('filterUrls')
+    logger.info('filterUrls')
     const topics = toJS(filterByTopic)
     const users = toJS(filterByUser)
     if (topics.length > 0 || users.length > 0) {
@@ -407,15 +426,15 @@ export class HomeStore extends CoreStore {
           foundIds = userUrlIds
         }
       }
-      const result = this.urls.filter(item => foundIds.indexOf(item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
+      const result = _.filter(this.urls, item => _.indexOf(foundIds, item.id) !== -1 && this.findUserRating(item, userIds) >= rating)
       return result
     }
-    const result = this.urls.filter(item => item.owners[0].rate >= rating)
+    const result = _.filter(this.urls, item => item.owners[0].rate >= rating)
     return result
   }
 
   @action sortByOrdering (sortedUrls, sortBy, sortDirection) {
-    logger.warn('sortByOrdering')
+    logger.info('sortByOrdering')
     if (sortBy === 'date') {
       return sortDirection === 'desc' ? _.reverse(_.sortBy(sortedUrls, [(url) => _.max(url.owners[0].hit_utc)])) : _.sortBy(sortedUrls, [(url) => url.owners[0].hit_utc])
     } else {

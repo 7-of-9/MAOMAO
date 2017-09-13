@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import _ from 'lodash'
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose'
 import Steps, { Step } from 'rc-steps'
 import StepOne from './StepOne'
@@ -39,7 +40,7 @@ const selectTopics = (topics, type) => {
   if (type === 'all') {
     return 'My browsing history'
   }
-  const currentTopic = topics.find(item => item.id === type)
+  const currentTopic = _.find(topics, item => item.id === type)
   return currentTopic && currentTopic.name
 }
 
@@ -58,7 +59,7 @@ const enhance = compose(
           topic = document.title
         }
         const url = `${SITE_URL}/${selectUrl(props.code, props.shareOption)}`
-        props.recipients.forEach((item) => {
+        _.forEach(props.recipients, (item) => {
           // TODO: validate email addr
           props.sendEmail(item.name, item.email, topic, url)
         })

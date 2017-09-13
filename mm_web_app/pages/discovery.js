@@ -15,7 +15,7 @@ export default class DiscoveryPage extends React.Component {
       userAgent = req.headers['user-agent']
     }
     const user = req && req.session ? req.session.decodedToken : null
-    logger.warn('user', user)
+    logger.info('user', user)
     const store = initStore(isServer, userAgent, user)
     const uiStore = initUIStore(isServer)
     let terms = []
@@ -23,7 +23,6 @@ export default class DiscoveryPage extends React.Component {
     if (search) {
       terms = search.split(',')
     }
-    logger.warn('terms', terms)
 
     const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
     return { isServer, ...store, ...uiStore, ...discovery }
@@ -46,13 +45,13 @@ export default class DiscoveryPage extends React.Component {
           logger.log('service worker registration successful')
         })
         .catch(err => {
-          logger.warn('service worker registration failed', err.message)
+          logger.info('service worker registration failed', err.message)
         })
     }
   }
 
   render () {
-    logger.warn('Discovey render')
+    logger.info('Discovey render')
     return (
       <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
         <div className='discovery'>

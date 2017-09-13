@@ -21,8 +21,8 @@ export function rootDiscover (user_id, hash, page_num = 1) {
 }
 
 /* eslint-disable camelcase */
-export function termDiscover (user_id, hash, term_id) {
-  const apiUrl = `${MAOMAO_API_URL}disc/term?${queryString.stringify({user_id, hash, term_id})}`
+export function termDiscover (term_id) {
+  const apiUrl = `${MAOMAO_API_URL}disc/term?${queryString.stringify({term_id})}`
   return fromPromise(axios.get(apiUrl))
 }
 

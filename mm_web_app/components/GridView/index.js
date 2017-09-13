@@ -24,7 +24,7 @@ const masonryOptions = {
 @observer
 class GridView extends React.PureComponent {
   onLayout = () => {
-    logger.warn('onLayout', this.masonry)
+    logger.info('onLayout', this.masonry)
     this.masonry && this.masonry.layout()
   }
 

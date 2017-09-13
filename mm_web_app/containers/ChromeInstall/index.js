@@ -18,7 +18,7 @@ const replaceMMIcon = (desc) => {
 class ChromeInstall extends React.PureComponent {
   showSignIn = (evt) => {
     evt.preventDefault()
-    logger.warn('showSignIn', this.props)
+    logger.info('showSignIn', this.props)
     this.props.ui.toggleSignIn(true)
   }
 
@@ -40,7 +40,7 @@ class ChromeInstall extends React.PureComponent {
         description = `${fullname} would like to share the maomao stream with you: "${topicTitle}"`
       }
     }
-    logger.warn('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
+    logger.info('ChromeInstall isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo', isChrome, browserName, userAgent, isMobile, isInstall, isLogin, shareInfo)
     let joinMsg = shareInfo ? `JOIN NOW TO VIEW ${shareInfo.fullname}'s STREAM` : 'JOIN NOW'
 
     return (

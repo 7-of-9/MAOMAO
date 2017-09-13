@@ -34,7 +34,7 @@ export default class InlinePreview extends Component {
 
   renderPlayer = () => {
     const { url, width, height } = this.props
-    logger.warn('renderPlayer', url, width, height)
+    logger.info('renderPlayer', url, width, height)
     if (!url) {
       return (
         <div
@@ -54,14 +54,14 @@ export default class InlinePreview extends Component {
   }
 
   onLoadIframe = () => {
-    logger.warn('iframe', this.iframe)
+    logger.info('iframe', this.iframe)
     this.setState({isLoading: false})
   }
 
   renderIframe = () => {
     const { url, width, height, allowScript } = this.props
     const { isLoading } = this.state
-    logger.warn('renderIframe', url, width, height)
+    logger.info('renderIframe', url, width, height)
     if (!url) {
       return (
         <div
@@ -104,9 +104,9 @@ export default class InlinePreview extends Component {
   render () {
     const { url } = this.props
     const parsed = urlParser.parse(url)
-    logger.warn('video parse result', parsed)
+    logger.info('video parse result', parsed)
     const isVideoPlayer = !!parsed
-    logger.warn('isVideoPlayer', isVideoPlayer)
+    logger.info('isVideoPlayer', isVideoPlayer)
     return (
       <div className='grid-item--full'>
         <div className='close_button' onClick={this.props.closePreview} />

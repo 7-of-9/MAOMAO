@@ -11,6 +11,7 @@ import Router from 'next/router'
 import { inject, observer } from 'mobx-react'
 import firebase from 'firebase'
 import 'isomorphic-fetch'
+import _ from 'lodash'
 import Modal from 'react-modal'
 import { Navbar, NavItem } from 'neal-react'
 import Header from '../../components/Header'
@@ -20,10 +21,10 @@ import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
 
-const brand = () => (
+const brand = (user) => (
   <Header>
     <LogoIcon />
-    <Slogan />
+    <Slogan redirectUrl={user.nav_id} />
   </Header>)
 
 const avatar = (user) => {
@@ -56,13 +57,14 @@ class AppHeader extends React.Component {
   }
 
   onInternalLogin = () => {
-    logger.warn('onInternalLogin', this.props)
+    logger.info('onInternalLogin', this.props)
     this.addNotification('Test Internal: New User')
+    this.props.ui.redirectToSpecialUrl(true)
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
-      logger.warn('test user', user)
+      logger.info('test user', user)
       const { selectedTopics } = this.props.ui
-      this.props.store.saveTopics(selectedTopics.map(item => item.termId))
+      this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -79,7 +81,8 @@ class AppHeader extends React.Component {
 
   onFacebookLogin = (evt) => {
     evt.preventDefault()
-    logger.warn('onFacebookLogin', this.props, evt)
+    logger.info('onFacebookLogin', this.props, evt)
+    this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
     firebase.auth().signInWithPopup(provider).catch((error) => {
@@ -89,7 +92,8 @@ class AppHeader extends React.Component {
 
   onGoogleLogin = (evt) => {
     evt.preventDefault()
-    logger.warn('onGoogleLogin', this.props, evt)
+    logger.info('onGoogleLogin', this.props, evt)
+    this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')
     provider.addScope('https://www.googleapis.com/auth/userinfo.email')
@@ -107,7 +111,7 @@ class AppHeader extends React.Component {
 
   onLogout = (evt) => {
     evt.preventDefault()
-    logger.warn('onLogout', this.props)
+    logger.info('onLogout', this.props)
     firebase.auth().signOut().then(() => {
       fetch('/api/auth/logout', {
         method: 'POST',
@@ -121,12 +125,12 @@ class AppHeader extends React.Component {
         Router.push('/')
       }
     }).catch((error) => {
-      logger.warn(error)
+      logger.info(error)
     })
   }
 
   onClose = () => {
-    logger.warn('onClose', this.props)
+    logger.info('onClose', this.props)
     this.props.ui.toggleSignIn(false)
   }
 
@@ -189,33 +193,35 @@ class AppHeader extends React.Component {
     this.props.ui.removeNotification(uuid)
   }
 
-  saveProfileUrl = (url) => {
+  saveProfileUrl = ({url, id, fb_user_id, google_user_id}) => {
     /* global URL */
     const { pathname } = new URL(window.location.href)
-    logger.warn('pathname', pathname)
+    logger.info('pathname', pathname)
     if (pathname !== encodeURI(`/${url}`)) {
       fetch('/api/auth/profile', {
         method: 'POST',
               // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
-        body: JSON.stringify({ url: `/${url}` })
+        body: JSON.stringify({ url: `/${url}`, id, fb_user_id, google_user_id })
       }).then(() => {
-        // prefetch disocver page
-        Router.prefetch('/discover')
+        if (this.props.ui.isRedirectToUrl) {
+          Router.push({ pathname: '/discover', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+          this.props.ui.redirectToSpecialUrl(false)
+        }
       })
     }
   }
 
   /* global fetch */
   componentDidMount () {
-    logger.warn('AppHeader componentDidMount')
+    logger.info('AppHeader componentDidMount', this.props.store)
     if (firebase.apps.length === 0) {
       firebase.initializeApp(clientCredentials)
       firebase.auth().onAuthStateChanged(user => {
-        logger.warn('firebase - onAuthStateChanged', user)
+        logger.info('firebase - onAuthStateChanged', user)
         if (user) {
-          logger.warn('firebase - user', user)
+          logger.info('firebase - user', user)
           const { photoURL } = user
           return user.getIdToken()
           .then((token) => {
@@ -234,26 +240,26 @@ class AppHeader extends React.Component {
               // register for new user
                 res.json().then(json => {
                   // register new user
-                  logger.warn('logged-in user', json)
+                  logger.info('logged-in user', json)
                   if (!user.isAnonymous) {
                     const { decodedToken: { email, name, picture, firebase: { sign_in_provider, identities } } } = json
                   /* eslint-disable camelcase */
-                    logger.warn('sign_in_provider', sign_in_provider)
-                    logger.warn('identities', identities)
+                    logger.info('sign_in_provider', sign_in_provider)
+                    logger.info('identities', identities)
                     let fb_user_id = identities['facebook.com'] && identities['facebook.com'][0]
                     let google_user_id = identities['google.com'] && identities['google.com'][0]
                     let user_email = identities['email'] && identities['email'][0]
                     if (sign_in_provider === 'google.com') {
                       if (!email) {
-                        user.providerData.forEach(item => {
+                        _.forEach(user.providerData, item => {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
                             }, (currentUser) => {
-                              logger.warn('currentUser', currentUser)
+                              logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
-                              this.saveProfileUrl(currentUser.nav_id)
+                              this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                             })
                           }
                         })
@@ -261,23 +267,23 @@ class AppHeader extends React.Component {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
                         }, (currentUser) => {
-                          logger.warn('currentUser', currentUser)
+                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
-                          this.saveProfileUrl(currentUser.nav_id)
+                          this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
                       if (!email) {
-                        user.providerData.forEach(item => {
+                        _.forEach(user.providerData, item => {
                           if (item.providerId === sign_in_provider) {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
                             }, (currentUser) => {
-                              logger.warn('currentUser', currentUser)
+                              logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
-                              this.props.store.saveTopics(selectedTopics.map(item => item.termId))
-                              this.saveProfileUrl(currentUser.nav_id)
+                              this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                             })
                           }
                         })
@@ -285,22 +291,22 @@ class AppHeader extends React.Component {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
                         }, (currentUser) => {
-                          logger.warn('currentUser', currentUser)
+                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
-                          this.props.store.saveTopics(selectedTopics.map(item => item.termId))
-                          this.saveProfileUrl(currentUser.nav_id)
+                          this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'password') {
-                      logger.warn('found user email', user_email)
-                      logger.warn('photoURL', photoURL)
+                      logger.info('found user email', user_email)
+                      logger.info('photoURL', photoURL)
                       // hack here, try to store intenal user
                       try {
                         const loggedUser = JSON.parse(photoURL)
                         // TODO: need to get nav_id for internal user
                         this.props.store.retrylLoginForInternalUser(loggedUser)
                       } catch (error) {
-                        logger.warn(error)
+                        logger.info(error)
                       }
                     }
                   } else {
@@ -324,25 +330,25 @@ class AppHeader extends React.Component {
       if (this.props.store.isChrome && !this.props.store.isMobile && counter < 10) {
         this.props.store.checkInstall()
         if (this.props.store.isInstalledOnChromeDesktop) {
-          logger.warn('AppHeader clearInterval')
+          logger.info('AppHeader clearInterval')
           this.setState({isHide: true})
           clearInterval(this.timer)
         }
       } else {
-        logger.warn('AppHeader clearInterval')
+        logger.info('AppHeader clearInterval')
         clearInterval(this.timer)
       }
     }, 2 * 1000) // check mm extension has installed on every 2s
   }
 
   componentWillReact () {
-    logger.warn('AppHeader componentWillReact')
+    logger.info('AppHeader componentWillReact')
   }
 
   componentWillUnmount () {
-    logger.warn('AppHeader componentWillUnmount')
+    logger.info('AppHeader componentWillUnmount')
     if (this.timer) {
-      logger.warn('AppHeader clearInterval')
+      logger.info('AppHeader clearInterval')
       clearInterval(this.timer)
     }
   }
@@ -352,7 +358,7 @@ class AppHeader extends React.Component {
     const { showSignInModal, title, selectedTopics } = this.props.ui
 
     return (
-      <Navbar className='header-nav animated fadeInDown' brand={brand()}>
+      <Navbar className='header-nav animated fadeInDown' brand={brand(user)}>
         {
           !isLogin && selectedTopics.length > 0 &&
           <NavItem className='fadeIn'>
@@ -412,7 +418,7 @@ class AppHeader extends React.Component {
                 {
                   user && user.name &&
                   <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link prefetch href='/discover' as={`/${user.nav_id}`}>
+                    <Link prefetch href={{ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }} as={`/${user.nav_id}`}>
                       <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
                     </Link>
                   </li>

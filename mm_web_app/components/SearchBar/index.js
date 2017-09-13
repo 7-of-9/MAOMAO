@@ -8,6 +8,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { compose, withState, withHandlers, onlyUpdateForKeys } from 'recompose'
 import DebounceInput from 'react-debounce-input'
+import _ from 'lodash'
 import Form from './Form'
 import logger from '../../utils/logger'
 import { tagColor } from '../../utils/helper'
@@ -16,11 +17,11 @@ const enhance = compose(
   withState('value', 'changeValue', ''),
   withHandlers({
     onInput: (props) => (event) => {
-      logger.warn('onInput', event)
+      logger.info('onInput', event)
       props.changeValue(event.target.value)
     },
     onSearch: (props) => (event) => {
-      logger.warn('onSearch', event)
+      logger.info('onSearch', event)
       if (event !== undefined && event.preventDefault) {
         event.preventDefault()
       }
@@ -34,7 +35,7 @@ const enhance = compose(
       props.onChange(props.terms)
     },
     handleDelete: (props) => (index) => {
-      logger.warn('handleDelete', index, props.terms)
+      logger.info('handleDelete', index, props.terms)
       props.terms.splice(index, 1)
       props.changeValue(props.terms.length)
       props.onChange(props.terms)
@@ -50,7 +51,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
     value,
     onChange: onInput
   }
-  logger.warn('SearchBar', terms, suggestions, value)
+  logger.info('SearchBar', terms, suggestions, value)
   return (
     <Form onSubmit={onSearch}>
       <nav className='navbar'>
@@ -61,7 +62,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
-                      terms.map((item, index) => (
+                      _.map(terms, (item, index) => (
                         <li className={tagColor(item)} key={`topic-${item}`}>
                           <span className='text-topic'>{item}</span>
                           <a className='btn-box-remove' onClick={() => { handleDelete(index) }}>
@@ -84,7 +85,7 @@ const SearchBar = enhance(({ terms, suggestions, value, onInput, onSearch, handl
             {
               suggestions && suggestions.length > 0 &&
               <div className='suggestion-topic'>
-                {suggestions.map((item) => terms.indexOf(item) === -1 && (
+                {_.map(suggestions, (item) => _.indexOf(terms, item) === -1 && (
                   <div key={`suggest-${item}`} className={`suggestion-topic-item ${tagColor(item)}`}>
                     <span className='text-topic'>{item}</span>
                     <a className='btn-box-remove' onClick={() => handleAdd(item)} ><i className='fa fa-plus' /></a>

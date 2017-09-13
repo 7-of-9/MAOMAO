@@ -6,6 +6,7 @@
 
 import React, { PureComponent } from 'react'
 import { inject, observer } from 'mobx-react'
+import _ from 'lodash'
 import DiscoveryButton from '../../components/DiscoveryButton'
 import PlaceHolder from '../../components/PlaceHolder'
 import InlinePlayer from './InlinePlayer'
@@ -34,8 +35,8 @@ class StreamItem extends PureComponent {
         <div className='thumbnail-box'>
           {discoveryKeys && discoveryKeys.length > 0 && <DiscoveryButton openDiscoveryMode={() => this.props.ui.openDiscoveryMode(discoveryKeys, suggestionKeys)} />}
           {
-              href.indexOf('youtube.com') === -1 &&
-              href.indexOf('vimeo.com') === -1 &&
+              _.indexOf(href, 'youtube.com') === -1 &&
+              _.indexOf(href, 'vimeo.com') === -1 &&
               <PlaceHolder>
                 <div className='thumbnail'>
                   <div className='thumbnail-image'>
@@ -47,7 +48,7 @@ class StreamItem extends PureComponent {
                         />
                     </a>
                     {urlTopic(url_id, topics, (topic) => this.props.ui.selectTopic(topic), myUrlIds, (topic) => this.props.ui.openShareTopic(url_id, topic, deepestTopics))}
-                    {urlOwner(owners.filter(item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
+                    {urlOwner(_.filter(owners, item => item.url_id === url_id), users, (user) => this.props.ui.selectUser(user))}
                   </div>
                   <div className='caption'>
                     <h4 className='caption-title'>
@@ -61,7 +62,7 @@ class StreamItem extends PureComponent {
               </PlaceHolder>
           }
           {
-            href.indexOf('youtube.com') !== -1 &&
+            _.indexOf(href, 'youtube.com') !== -1 &&
             <InlinePlayer
               href={href}
               img={img}
@@ -79,7 +80,7 @@ class StreamItem extends PureComponent {
               />
           }
           {
-              href.indexOf('vimeo.com') !== -1 &&
+              _.indexOf(href, 'vimeo.com') !== -1 &&
               <InlinePlayer
                 href={href}
                 img={img}

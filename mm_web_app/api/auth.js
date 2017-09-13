@@ -27,12 +27,14 @@ router.post('/login', (req, res) => {
 router.post('/profile', (req, res) => {
   if (!req.body) return res.sendStatus(400)
   req.session.discoverRootUrl = req.body.url
-  res.json({ status: true, discoverRootUrl: req.session.discoverRootUrl })
+  req.session.currentUser = req.body
+  res.json({ status: true, currentUser: req.session.currentUser, discoverRootUrl: req.session.discoverRootUrl })
 })
 
 router.post('/logout', (req, res) => {
   req.session.decodedToken = null
   req.session.discoverRootUrl = null
+  req.session.currentUser = null
   res.json({ status: true })
 })
 

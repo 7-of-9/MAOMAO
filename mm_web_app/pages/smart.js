@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import _ from 'lodash'
 import { Navbar, Footer, Page } from 'neal-react'
 import Raven from 'raven-js'
 import queryString from 'query-string'
@@ -32,35 +33,35 @@ export default class Smart extends React.Component {
   }
 
   onLoadIframe = (evt) => {
-    logger.warn('onLoadIframe', evt, this.iframe)
+    logger.info('onLoadIframe', evt, this.iframe)
     try {
       if (this.iframe && this.iframe.contentWindow) {
-        logger.warn('iframe addEventListener click')
+        logger.info('iframe addEventListener click')
         this.iframe.contentWindow.addEventListener('click', (event) => {
-          logger.warn('iframe click', event)
-          if (event.target && event.target.tagName === 'A' && event.target.href.indexOf('#') === -1) {
+          logger.info('iframe click', event)
+          if (event.target && event.target.tagName === 'A' && _.indexOf(event.target.href, '#') === -1) {
             event.preventDefault()
             const { href: url, innerText: title } = event.target
-            logger.warn('iframe link', url, title)
+            logger.info('iframe link', url, title)
             this.setState(prevState => ({ isLoading: true, url, title }))
-          } else if (event.target && event.target.parentNode.nodeName === 'A' && event.target.parentNode.href.indexOf('#') === -1) {
+          } else if (event.target && event.target.parentNode.nodeName === 'A' && _.indexOf(event.target.parentNode.href, '#') === -1) {
             event.preventDefault()
             const { href: url, innerText: title } = event.target.parentNode
-            logger.warn('iframe link', url, title)
+            logger.info('iframe link', url, title)
             this.setState(prevState => ({ isLoading: true, url, title }))
           }
         }, false)
         const { title } = this.iframe.contentDocument
         const { search } = this.iframe.contentWindow.location
-        logger.warn('iframe title', title)
-        logger.warn('iframe search', queryString.parse(search))
-        logger.warn('iframe contentDocument', this.iframe.contentDocument)
-        logger.warn('iframe contentWindow', this.iframe.contentWindow)
+        logger.info('iframe title', title)
+        logger.info('iframe search', queryString.parse(search))
+        logger.info('iframe contentDocument', this.iframe.contentDocument)
+        logger.info('iframe contentWindow', this.iframe.contentWindow)
         this.setState(prevState => ({ isLoading: false, title }))
       }
     } catch (err) {
       const { url, title } = this.state
-      logger.warn('found error', err, url, title, this.iframe)
+      logger.info('found error', err, url, title, this.iframe)
       this.setState(prevState => ({ isLoading: false }))
     }
   }
@@ -91,13 +92,13 @@ export default class Smart extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('Smart componentDidMount', this.props, this.state)
+    logger.info('Smart componentDidMount', this.props, this.state)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     const { query: { url } } = this.props.url
     if (!url) {
       this.setState({ url: 'http://google.com' })
     } else {
-      if (url.indexOf('http') === -1) {
+      if (_.indexOf(url, 'http') === -1) {
         this.setState({ url: `http://${url}` })
       } else {
         this.setState({ url })

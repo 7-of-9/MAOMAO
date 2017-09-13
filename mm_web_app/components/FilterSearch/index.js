@@ -71,7 +71,7 @@ const getSuggestions = (value, users, firstLevelTopics) => {
     data: fuseTopic.search(value)
   })
 
-  return sections.filter(section => section.data.length > 0)
+  return _.filter(sections, section => section.data.length > 0)
 }
 
 const getSectionSuggestions = (section) => {
@@ -116,7 +116,7 @@ const renderSectionTitle = (section) => {
 const ratingCount = (urls, owners, rate) => {
   let counter = 0
   _.forEach(urls, url => {
-    if (owners.find(owner => owner.rate === rate && owner.url_id === url.url_id)) {
+    if (_.find(owners, owner => owner.rate === rate && owner.url_id === url.url_id)) {
       counter += 1
     }
   })
@@ -141,22 +141,22 @@ class FilterSearch extends React.Component {
   }
 
   onSuggestionsFetchRequested = ({ value }) => {
-    logger.warn('onSuggestionsFetchRequested')
+    logger.info('onSuggestionsFetchRequested')
     const { users, firstLevelTopics } = this.props.store
     this.setState({ suggestions: getSuggestions(value, users, firstLevelTopics) })
   }
 
   onSuggestionsClearRequested = () => {
-    logger.warn('onSuggestionsClearRequested')
+    logger.info('onSuggestionsClearRequested')
     this.setState({suggestions: [ ]})
   }
 
   onChange = (event, { newValue, method }) => {
-    logger.warn('onChange newValue, method', newValue, method)
+    logger.info('onChange newValue, method', newValue, method)
     if (method === 'click' || method === 'enter') {
       const { users, firstLevelTopics } = this.props.store
       const selected = getSuggestions(newValue, users, firstLevelTopics)
-      logger.warn('selected', selected)
+      logger.info('selected', selected)
       if (selected && selected.length > 0) {
         if (selected[0].title === 'User') {
           this.props.ui.selectUser(selected[0].data[0])
@@ -188,7 +188,7 @@ class FilterSearch extends React.Component {
     }
     const { users, firstLevelTopics, userId } = toJS(this.props.store)
     const { filterByTopic, filterByUser, rating, sortBy, sortDirection, onlyMe } = this.props.ui
-    logger.warn('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
+    logger.info('FilterSearch render', users, firstLevelTopics, userId, filterByUser)
 
     return (
       <nav className='navbar'>
@@ -221,7 +221,7 @@ class FilterSearch extends React.Component {
                 <div className='search-box-drop'>
                   <ul className='search-box-list'>
                     {
-                      filterByTopic.map(item => (
+                      _.map(filterByTopic, item => (
                         <li className={tagColor(item.label)} key={`filter-topic-${item.label}`}>
                           <span className='text-topic'>{item.label}</span>
                           <a className='btn-box-remove' onClick={() => { this.props.ui.removeTopic(item) }}>
@@ -231,7 +231,7 @@ class FilterSearch extends React.Component {
                       ))
                     }
                     {
-                    filterByUser.map(item => (
+                    _.map(filterByUser, item => (
                       <li key={`filter-user-${item.label}`} className='search-item tags-color-1'>
                         <div className='search-media'>
                           <div className='search-media-left'>
@@ -275,7 +275,7 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Streams</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {firstLevelTopics.filter(item => urlsCount(item, filterByUser)).map(topic => (
+                  {_.filter(firstLevelTopics, item => urlsCount(item, filterByUser)).map(topic => (
                     <li key={`topic-${topic.name}`} onClick={() => this.props.ui.selectTopic(topic)}>
                       <span className='topic-name'><i className='fa fa-angle-right' aria-hidden='true' /> {topic.name} ({urlsCount(topic, filterByUser)})</span>
                     </li>
@@ -290,7 +290,7 @@ class FilterSearch extends React.Component {
                   <span className='nav-text'>List Users</span>
                 </a>
                 <ul className='dropdown-menu'>
-                  {users.map(user =>
+                  {_.map(users, user =>
                   (<li onClick={() => this.props.ui.selectUser(user)} key={`user-${user.user_id}`}>
                     <div className='user-share'>
                       <div className='user-share-img'>

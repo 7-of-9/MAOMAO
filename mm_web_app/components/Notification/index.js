@@ -18,11 +18,11 @@ class Notification extends React.PureComponent {
   }
 
   componentWillReact () {
-    logger.warn('Notification componentWillReact')
+    logger.info('Notification componentWillReact')
   }
 
   componentWillUnmount () {
-    logger.warn('Notification componentWillUnmount')
+    logger.info('Notification componentWillUnmount')
     this.props.ui.clearNotifications()
   }
 

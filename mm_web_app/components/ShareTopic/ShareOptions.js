@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { onlyUpdateForKeys, compose } from 'recompose'
 import styled from 'styled-components'
+import _ from 'lodash'
 import ToggleButton from 'react-toggle-button'
 import { guid } from '../../utils/hash'
 
@@ -26,9 +27,9 @@ const enhance = compose(
 )
 
 const ShareOptions = enhance(({ topics, active, onChange }) => {
-  const tld = topics.find(item => item.id.indexOf('tld') !== -1)
-  const experimentalTopics = topics.filter(item => item.id.indexOf('beta') !== -1)
-  const isToggleTopic = !!topics.find(item => item.id === active)
+  const tld = _.find(topics, item => _.indexOf(item.id, 'tld') !== -1)
+  const experimentalTopics = _.filter(topics, item => _.indexOf(item.id, 'beta') !== -1)
+  const isToggleTopic = !!_.find(topics, item => item.id === active)
   return (<div style={style} className='share-topic'>
     <div className='switch-list'>
       <div className='checkbox__content'>
@@ -76,7 +77,7 @@ const ShareOptions = enhance(({ topics, active, onChange }) => {
             </div>
           }
           {isToggleTopic && experimentalTopics.length > 0 &&
-            experimentalTopics.map(topic =>
+            _.map(experimentalTopics, topic =>
               (<div key={guid()} className='radio__regular'>
                 <input
                   type='radio'

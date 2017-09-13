@@ -25,7 +25,7 @@ class SelectedItem extends PureComponent {
 
   render () {
     const { name, id, img } = this.props
-    logger.warn('SelectedItem', name, id, img)
+    logger.info('SelectedItem', name, id, img)
     return (
       <div className='selected-topic' key={`topic-${id}`}
         style={{

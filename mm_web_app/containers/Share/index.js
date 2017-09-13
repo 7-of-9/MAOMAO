@@ -6,8 +6,9 @@
 
 import React from 'react'
 import { inject, observer } from 'mobx-react'
-import ShareTopic from '../../components/ShareTopic'
+import _ from 'lodash'
 import { toJS } from 'mobx'
+import ShareTopic from '../../components/ShareTopic'
 import logger from '../../utils/logger'
 import { checkGoogleAuth, fetchContacts } from '../../utils/google'
 import { shareAll, shareThisSite, shareTheTopic } from '../../utils/share'
@@ -18,12 +19,12 @@ const SITE_URL = 'https://maomaoweb.azurewebsites.net'
 const FB_APP_ID = '386694335037120'
 
 const parseShareCode = (codes, urlId, shareTopics) => {
-  logger.warn('parseShareCode', codes, urlId, shareTopics)
-  const findUrlCode = codes.sites.find(item => item && item.url_id === urlId)
+  logger.info('parseShareCode', codes, urlId, shareTopics)
+  const findUrlCode = _.find(codes.sites, item => item && item.url_id === urlId)
   const topics = {}
   if (shareTopics && shareTopics.length) {
-    shareTopics.forEach(topic => {
-      const findCode = codes.topics.find(item => item && item.id === topic.topic_id)
+    _.forEach(shareTopics, topic => {
+      const findCode = _.find(codes.topics, item => item && item.id === topic.topic_id)
       if (findCode) {
         topics[topic.id] = findCode.share_code
       }
@@ -50,9 +51,9 @@ export default class Share extends React.Component {
     this.props.store.checkGoogleContacts()
     const { userId, userHash, codes: { sites, topics, all } } = this.props.store
     const { shareUrlId, shareTopics } = this.props.ui
-    logger.warn('Share componentDidMount')
+    logger.info('Share componentDidMount')
 
-    const findUrlCode = sites.find(item => item && item.url_id === shareUrlId)
+    const findUrlCode = _.find(sites, item => item && item.url_id === shareUrlId)
 
     if (!findUrlCode) {
       shareThisSite(userId, userHash, shareUrlId).then(result => {
@@ -71,8 +72,8 @@ export default class Share extends React.Component {
     }
 
     if (shareTopics && shareTopics.length) {
-      shareTopics.forEach(topic => {
-        const findTopicCode = topics.find(item => item && item.id === topic.topic_id)
+      _.forEach(shareTopics, topic => {
+        const findTopicCode = _.find(topics, item => item && item.id === topic.topic_id)
         if (!findTopicCode) {
           shareTheTopic(userId, userHash, topic.topic_id).then(result => {
             const { share_code: code } = result.data
@@ -90,22 +91,22 @@ export default class Share extends React.Component {
   }
 
   componentWillReact () {
-    logger.warn('Share componentWillReact')
+    logger.info('Share componentWillReact')
   }
 
   changeShareType = (type, shareOption, currentStep) => {
-    if (type.indexOf('Facebook') !== -1) {
+    if (_.indexOf(type, 'Facebook') !== -1) {
       const { shareUrlId, shareTopics } = this.props.ui
       const code = parseShareCode(toJS(this.props.store.codes), shareUrlId, shareTopics)
       const url = `${SITE_URL}/${code[shareOption]}`
       const closePopupUrl = `${SITE_URL}/static/success.html`
       if (type === 'Facebook') {
         const src = `https://www.facebook.com/dialog/share?app_id=${FB_APP_ID}&display=popup&href=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}&hashtag=${encodeURI('#maomao.rocks')}`
-        logger.warn('shareUrl', src)
+        logger.info('shareUrl', src)
         openUrl(src)
       } else {
         const src = `https://www.facebook.com/dialog/send?app_id=${FB_APP_ID}&display=popup&link=${encodeURI(url)}&redirect_uri=${encodeURI(closePopupUrl)}`
-        logger.warn('shareUrl', src)
+        logger.info('shareUrl', src)
         openUrl(src)
       }
     } else {
@@ -120,7 +121,7 @@ export default class Share extends React.Component {
     .then((data) => {
       // download data
       const { googleToken, googleUserId } = data
-      logger.warn('checkGoogleAuth result', googleToken, data)
+      logger.info('checkGoogleAuth result', googleToken, data)
       this.props.ui.addNotification('Loading google contacts')
       return fetchContacts(googleToken, 1000).then((result) => {
         result.json().then(resp => {
@@ -130,13 +131,13 @@ export default class Share extends React.Component {
     }).catch((error) => {
         // Try to logout and remove cache token
       this.props.ui.addNotification(`Oops! Something went wrong: ${error.message}`)
-      logger.warn(error)
+      logger.info(error)
     })
   }
 
   sendInvitations = (name, email, topic, url) => {
     const { name: fullName, email: fromEmail } = this.props.store.user
-    logger.warn('sendInvitations', fullName, fromEmail, name, email, topic, url)
+    logger.info('sendInvitations', fullName, fromEmail, name, email, topic, url)
     this.props.ui.addNotification('Sending invitations...')
      /* global fetch */
     fetch('/api/email', {

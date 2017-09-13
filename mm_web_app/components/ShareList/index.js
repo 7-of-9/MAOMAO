@@ -18,8 +18,8 @@ const avatar = (user) => {
 }
 
 const shareStat = (friend, shareLists) => {
-  const isAll = friend.shares.filter(code => shareLists[code].type === 'all').length
-  const allTopics = friend.shares.filter(code => shareLists[code].type === 'topic').length
+  const isAll = _.filter(friend.shares, code => shareLists[code].type === 'all').length
+  const allTopics = _.filter(friend.shares, code => shareLists[code].type === 'topic').length
   if (isAll) {
     return 'All'
   }
@@ -27,8 +27,8 @@ const shareStat = (friend, shareLists) => {
 }
 
 const hasShareTopic = (friend, shareLists) => {
-  const isAll = friend.shares.filter(code => shareLists[code].type === 'all').length
-  const allTopics = friend.shares.filter(code => shareLists[code].type === 'topic').length
+  const isAll = _.filter(friend.shares, code => shareLists[code].type === 'all').length
+  const allTopics = _.filter(friend.shares, code => shareLists[code].type === 'topic').length
   return isAll || allTopics
 }
 
@@ -42,8 +42,8 @@ class ShareList extends React.PureComponent {
   render () {
     const { user, userId } = this.props.store
     const { entities: { friendStreams, shareLists, urls }, result: { shares_issued } } = this.props.store.normalizedData
-    logger.warn('ShareList friendStreams', friendStreams)
-    logger.warn('ShareList shareLists', shareLists)
+    logger.info('ShareList friendStreams', friendStreams)
+    logger.info('ShareList shareLists', shareLists)
     const friends = _.filter(friendStreams, friend => hasShareTopic(friend, shareLists))
     return (
       <div>

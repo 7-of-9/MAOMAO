@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import validate from 'validate.js'
 import Fuse from 'fuse.js'
 import Autosuggest from 'react-autosuggest'
+import _ from 'lodash'
 import match from 'autosuggest-highlight/match'
 import parse from 'autosuggest-highlight/parse'
 import { onlyUpdateForKeys, withState, withHandlers, compose } from 'recompose'
@@ -59,7 +60,7 @@ function renderSuggestion (suggestion, { query }) {
       </span>
       <span className='name'>
         {
-          parts.map((part) => {
+          _.map(parts, (part) => {
             const className = part.highlight ? 'highlight' : null
             return (
               <span className={className} key={guid()}>{part.text}</span>
@@ -77,36 +78,36 @@ const enhance = compose(
   withState('value', 'changeValue', ''),
   withHandlers({
     onSuggestionsFetchRequested: props => () => {
-      const emails = props.selectedContacts.map(item => item.email)
-      const sources = props.contacts.filter(item => emails.indexOf(item.email) === -1)
+      const emails = _.map(props.selectedContacts, item => item.email)
+      const sources = _.filter(props.contacts, item => _.indexOf(emails, item.email) === -1)
       props.changeSuggestions(getSuggestions(sources, props.value))
     },
     onSuggestionsClearRequested: props => () => {
       props.changeSuggestions([])
     },
     addContact: props => (contact) => {
-      const emails = props.selectedContacts.map(item => item.email)
+      const emails = _.map(props.selectedContacts, item => item.email)
       if (!emails.includes(contact.email)) {
         props.changeSelectedContacts([].concat(props.selectedContacts, contact))
         props.handleChange([].concat(props.selectedContacts, contact))
       }
     },
     removeContact: props => (contact) => {
-      const sources = props.selectedContacts.filter(item => item.email !== contact.email)
+      const sources = _.filter(props.selectedContacts, item => item.email !== contact.email)
       props.handleChange(sources)
       props.changeSelectedContacts(sources)
     },
     onSubmit: props => (event) => {
       event.preventDefault()
       logger.info('onSubmit value', props.value)
-      const emails = props.selectedContacts.map(item => item.email)
-      const sources = props.contacts.filter(item => emails.indexOf(item.email) === -1)
+      const emails = _.map(props.selectedContacts, item => item.email)
+      const sources = _.filter(props.contacts, item => _.indexOf(emails, item.email) === -1)
       const selected = getSuggestions(sources, props.value)
       logger.info('onSubmit selected', selected)
       const result = [].concat(props.selectedContacts, (selected && selected[0]) || [])
       logger.info('onSubmit result', result)
       const isEmail = validate.single(props.value, { presence: true, email: true })
-      const isExist = props.selectedContacts.find(item => item.email === props.value)
+      const isExist = _.find(props.selectedContacts, item => item.email === props.value)
       logger.info('onSubmit props.value, isEmail', props.value, isEmail)
       if (selected.length === 0 && !isEmail && !isExist) {
         // validate email
@@ -146,8 +147,8 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
   (<div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
-        mostRecentUses.map((contact) => {
-          if (!selectedContacts.map(item => item.email).includes(contact.email)) {
+        _.map(mostRecentUses, (contact) => {
+          if (!_.map(selectedContacts, item => item.email).includes(contact.email)) {
             return (
               <Contact
                 onClick={() => { addContact(contact) }}
@@ -181,7 +182,7 @@ const GoogleShare = enhance(({ value, mostRecentUses, selectedContacts, addConta
     </div>
     <div style={{ display: 'inline-block', width: '100%' }}>
       {
-        selectedContacts.map(contact => (
+        _.map(selectedContacts, contact => (
           <Contact isEdit onRemove={() => { removeContact(contact) }} key={`SC-${contact.email}`} name={contact.name} email={contact.email} image={contact.image} />
         ))
       }

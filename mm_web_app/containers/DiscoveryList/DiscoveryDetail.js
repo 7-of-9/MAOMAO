@@ -8,8 +8,9 @@ import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import InlinePreview from '../Streams/InlinePreview'
-import Loading from '../Loading'
+import _ from 'lodash'
+import InlinePreview from '../../components/Streams/InlinePreview'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 const DiscoveryNavigation = dynamic(
@@ -48,11 +49,11 @@ class DiscoveryDetail extends PureComponent {
   }
 
   componentWillReact () {
-    logger.warn('DiscoveryDetail componentWillReact', this.props)
+    logger.info('DiscoveryDetail componentWillReact', this.props)
   }
 
   render () {
-    logger.warn('DiscoveryDetail render')
+    logger.info('DiscoveryDetail render')
     /* eslint-disable camelcase */
     const { items, title, url, utc, termIds, width } = this.props
     const isReady = termIds.length === items.length
@@ -62,7 +63,7 @@ class DiscoveryDetail extends PureComponent {
           items.length > 0 &&
             <div className='selected-panel'>
               <DiscoveryNavigation
-                items={items.map(item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
+                items={_.map(items, item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
                 termIds={termIds}
                 isReady={isReady}
                 />

@@ -25,13 +25,13 @@ class SplitView extends React.Component {
   }
 
   onResizeStart = () => {
-    logger.warn('onResizeStart', this.resizable)
+    logger.info('onResizeStart', this.resizable)
     this.props.onResizeStart()
     this.setState({ ready: false })
   }
 
   onResizeStop = () => {
-    logger.warn('onResizeStop', this.resizable)
+    logger.info('onResizeStop', this.resizable)
     const { width } = this.resizable.state
     this.props.onResizeStop(width)
     this.setState({ ready: true })
