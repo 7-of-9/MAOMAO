@@ -21,10 +21,10 @@ import { guid } from '../../utils/hash'
 import { clientCredentials } from '../../firebaseCredentials'
 import logger from '../../utils/logger'
 
-const brand = () => (
+const brand = (user) => (
   <Header>
     <LogoIcon />
-    <Slogan />
+    <Slogan redirectUrl={user.nav_id} />
   </Header>)
 
 const avatar = (user) => {
@@ -59,6 +59,7 @@ class AppHeader extends React.Component {
   onInternalLogin = () => {
     logger.info('onInternalLogin', this.props)
     this.addNotification('Test Internal: New User')
+    this.props.ui.redirectToSpecialUrl(true)
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
       logger.info('test user', user)
@@ -81,6 +82,7 @@ class AppHeader extends React.Component {
   onFacebookLogin = (evt) => {
     evt.preventDefault()
     logger.info('onFacebookLogin', this.props, evt)
+    this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.FacebookAuthProvider()
     provider.addScope('email')
     firebase.auth().signInWithPopup(provider).catch((error) => {
@@ -91,6 +93,7 @@ class AppHeader extends React.Component {
   onGoogleLogin = (evt) => {
     evt.preventDefault()
     logger.info('onGoogleLogin', this.props, evt)
+    this.props.ui.redirectToSpecialUrl(true)
     const provider = new firebase.auth.GoogleAuthProvider()
     provider.addScope('https://www.googleapis.com/auth/plus.me')
     provider.addScope('https://www.googleapis.com/auth/userinfo.email')
@@ -202,8 +205,10 @@ class AppHeader extends React.Component {
         credentials: 'same-origin',
         body: JSON.stringify({ url: `/${url}`, id, fb_user_id, google_user_id })
       }).then(() => {
-        // prefetch disocver page
-        // Router.prefetch('/discover')
+        if (this.props.ui.isRedirectToUrl) {
+          Router.push({ pathname: '/discover', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+          this.props.ui.redirectToSpecialUrl(false)
+        }
       })
     }
   }
@@ -353,7 +358,7 @@ class AppHeader extends React.Component {
     const { showSignInModal, title, selectedTopics } = this.props.ui
 
     return (
-      <Navbar className='header-nav animated fadeInDown' brand={brand()}>
+      <Navbar className='header-nav animated fadeInDown' brand={brand(user)}>
         {
           !isLogin && selectedTopics.length > 0 &&
           <NavItem className='fadeIn'>

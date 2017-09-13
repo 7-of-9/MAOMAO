@@ -9,6 +9,7 @@ export class UIStore {
   /* app header component - show modal */
   @observable showSignInModal = false
   @observable showExtensionModal = false
+  @observable isRedirectToUrl = false
   /* homepage filter */
   @observable onlyMe = false
   @observable sortBy = 'rating'
@@ -39,6 +40,10 @@ export class UIStore {
   shareUrlId = -1
   userId = -1
   title = 'Sign In'
+
+  @action redirectToSpecialUrl (isEnable) {
+    this.isRedirectToUrl = isEnable
+  }
 
   @action toggleOnlyMe (userId, users) {
     logger.info('toggleOnlyMe', userId, users)
