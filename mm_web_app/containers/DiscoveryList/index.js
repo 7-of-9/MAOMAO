@@ -156,24 +156,28 @@ class DiscoveryList extends Component {
           </span>)
         }
       })
-      _.forEach(topics, term => {
-        const { img, term_name: title } = term
-        if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
-          items.push(<span
-            key={`navigate-to-${title}`}
-            onClick={() => this.onSelectChildTerm(term)}
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              padding: '3px'
-            }}
-            className='current-topic-name tags' rel='tag'>
-            {title}
-          </span>)
-        }
-      })
+      if (topics.length) {
+        const carouselItems = []
+        _.forEach(topics, term => {
+          const { img, term_name: title } = term
+          if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
+            carouselItems.push(<span
+              key={`navigate-to-${title}`}
+              onClick={() => this.onSelectChildTerm(term)}
+              style={{
+                background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
+                backgroundSize: 'cover',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                padding: '3px'
+              }}
+              className='current-topic-name tags' rel='tag'>
+              {title}
+            </span>)
+          }
+        })
+        items.push(carouselItems)
+      }
       if (items.length) {
         return (
           <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>

@@ -242,7 +242,7 @@ const ShareTopic = enhance(({
   if (enable && type.indexOf('Facebook') === -1) {
     component = (
       <div style={style.container}>
-        <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+        <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
           <div className="maomao-logo" />
         </a>
         <a className="close_popup" onTouchTap={closeShare}><i className="icons-close" /></a>

@@ -148,7 +148,7 @@ const render = (
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+          <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
             <span className="maomao-logo" />
             <span className="maomao-text" />
           </a>
@@ -164,7 +164,7 @@ const render = (
     return (
       <div className="popup-browser">
         <h3 className="share-heading">
-          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+          <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
             <span className="maomao-logo" />
             <span className="maomao-text" />
           </a>
@@ -196,7 +196,7 @@ const render = (
           <div className="map-browser">
             {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
-              <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+              <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
@@ -258,7 +258,7 @@ const render = (
           <div className="map-browser">
             {auth.isLogin && userMenu(auth, dispatch)}
             <h3 className="share-heading">
-              <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+              <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
                 <span className="maomao-logo" />
                 <span className="maomao-text" />
               </a>
@@ -276,7 +276,7 @@ const render = (
         <div className="map-browser">
           {auth.isLogin && userMenu(auth, dispatch)}
           <h3 className="share-heading">
-            <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+            <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
               <span className="maomao-logo" />
               <span className="maomao-text" />
             </a>
@@ -298,7 +298,7 @@ const render = (
   return (
     <div className="popup-browser">
       <h3 className="share-heading">
-        <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+        <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
           <span className="maomao-logo" />
           <span className="maomao-text" />
         </a>

@@ -14,6 +14,7 @@ var cs_log_style_hi = "background: blue; color: white; font-weight:bold;";
 $(document).ready(function () { // fires more than once! observed; proven. lol.
   logger().info("%c **** CS HANDLERS RUNNING... [" + window.location + "] ****", cs_log_style_hi);
   // setup up IM events
+  // FIXME: scroll is slow down the web page
   listenAndCoalesce(document, "scroll");
 
   // For some reason, "resize" doesn't seem to work with addEventListener.

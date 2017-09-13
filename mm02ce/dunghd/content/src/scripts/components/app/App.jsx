@@ -306,7 +306,7 @@ function sendHTMLEmail(fromEmail, fullName, name, email, topic, url, dispatch) {
                   <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
                     <tr>
                       <td class="content-block powered-by" style="font-family: sans-serif; vertical-align: top; padding-top: 10px; padding-bottom: 10px; font-size: 12px; color: #999999; text-align: center;" valign="top" align="center">
-                        Powered by <a href="http://maomao.rocks" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">maomao.rocks</a>.
+                        Powered by <a href="http://www.maomao.rocks" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">maomao.rocks</a>.
                       </td>
                     </tr>
                   </table>

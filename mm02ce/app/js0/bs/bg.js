@@ -53,6 +53,9 @@ $(document).ready(function () {
 
 
 var isFlashingDog = false;
+// FIXME: change browser icon is not good way
+// refer to tip https://developer.chrome.com/extensions/pageAction
+// Don't constantly animate your icon. That's just annoying.
 function animationIcon(tabId, round) {
   log.info('animationIcon on tabId', tabId);
   var sizes = [
@@ -95,7 +98,7 @@ function animationIcon(tabId, round) {
 function setIconApp(rawUrl, image, msg, color) {
   if (!rawUrl) {
     log.warn('not found url', rawUrl);
-    log.trace('not found url');
+    // // log.trace('not found url');
     return;
   }
 
@@ -105,7 +108,7 @@ function setIconApp(rawUrl, image, msg, color) {
   });
   log.info('currentTab', rawUrl, tabmap, currentTab, image, msg, color);
   if (bglib_remove_hash_url(sessionObservable.activeUrl) === url) {
-    log.trace('set icon', rawUrl, image, msg, color);
+    // log.trace('set icon', rawUrl, image, msg, color);
     chrome.browserAction.setIcon({
       path: 'img/logo/maomao_' + image + '.png',
       tabId: currentTab && currentTab.id,
@@ -785,7 +788,7 @@ function tabNavigated(tabId, changeInfo, tab) {
         sessionObservable.activeUrl = changeInfo.url;
         if (process_url(changeInfo.url)) {
           var session = session_get_by_tab(tab, true);
-          log.trace('set active url');
+          // log.trace('set active url');
           session_add_view_instance(session);
         }
       }
@@ -842,7 +845,7 @@ function tabActivated(o) { // why getting object here?!
     if (new_tab != null && new_tab.active) {
       log.info('%c >tabActivated: [' + new_tab.url + ']', events_style_hi);
       // set current tab session
-      log.trace('set active url');
+      // log.trace('set active url');
       sessionObservable.activeUrl = new_tab.url;
 
       // stop TOT for previously focused
@@ -894,7 +897,7 @@ function windowFocusChanged(windowId) {
         log.warn('windowFocusChanged CHROME ERR ON CALLBACK -- ' + chrome.runtime.lastError.message);
       }
       log.warn('windowFocusChanged active tabs', tabs)
-      log.trace('set active url');
+      // log.trace('set active url');
       if (tabs.length > 0 && tabs[0].active) {
         sessionObservable.activeUrl = tabs[0].url;
       } else {
@@ -904,7 +907,7 @@ function windowFocusChanged(windowId) {
     });
   } else {
     log.warn('windowFocusChanged active activeUrl', sessionObservable.activeUrl)
-    log.trace('set active url');
+    // log.trace('set active url');
     sessionObservable.activeUrl = 'N/A';
   }
 }
@@ -921,7 +924,7 @@ function TOT_start_current_focused() {
 
     if (tabs.length > 0) {
       TOT_active_tab = tabs[0];
-      log.trace('set active url');
+      // log.trace('set active url');
       sessionObservable.activeUrl = tabs[0].url;
       // start TOT for newly focused
       var new_session = session_get_by_tab(TOT_active_tab, true); //***
@@ -930,7 +933,7 @@ function TOT_start_current_focused() {
         session_start_TOT(new_session);
       }
     } else {
-      log.trace('set active url');
+      // log.trace('set active url');
       sessionObservable.activeUrl = 'N/A';
     }
   });

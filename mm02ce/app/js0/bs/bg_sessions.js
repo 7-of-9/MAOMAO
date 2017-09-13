@@ -66,7 +66,7 @@ function fn_page_meta_image() { return this.ip_thumbnail_url || this.og_image; }
 ///   (*) does allowable lookup -- then does CS injection if url is allowable
 //
 function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
-  log.trace('>>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, tab, reinject_cs_handlers_on_existing_session);
+  // log.trace('>>> get_session_by_tab (' + mm.all_sessions.length + ') - url: ' + tab.url, tab, reinject_cs_handlers_on_existing_session);
   // log.trace('checking session for tab', tab);
 
   var session = null;
@@ -97,7 +97,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
     if (!session_injected_cs) { // never injected
 
       // only inject CS if the TLD is allowable
-      log.trace('inject CS only if TLD is allowable');
+      // log.trace('inject CS only if TLD is allowable');
       ajax_isTldAllowable(url_ex_hash, function (data) {
         log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 
@@ -136,7 +136,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
 
     if (process_url(tab.url) && tab.active) {
       // call info/allowable for the new session URL
-      log.trace('>>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...');
+      // log.trace('>>> get_session_by_tab - NEW: ' + tab.url + ' -- calling /allowable...');
 
       // record session
       session = new_session(url_ex_hash);
@@ -144,7 +144,7 @@ function session_get_by_tab(tab, reinject_cs_handlers_on_existing_session) {
       mm_update(session, true);
 
       // inject CS only if TLD is allowable
-      log.trace('inject CS only if TLD is allowable');
+      // log.trace('inject CS only if TLD is allowable');
       ajax_isTldAllowable(url_ex_hash, function (data) {
         log.info('%c /allowable... got: ' + JSON.stringify(data), ajax_style_hi);
 

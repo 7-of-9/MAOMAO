@@ -14,7 +14,8 @@ export function googleAutoLogin(store, syncImScore, config, googleUserId, user) 
       store.dispatch({
         type: 'FETCH_CONTACTS',
       });
-      syncImScore(false);
+      // TODO: needo to refactor
+      // syncImScore(false);
       const names = user.displayName.split(' ');
       const firstName = names[0];
       const lastName = names.slice(1, names.length).join(' ');
@@ -42,7 +43,7 @@ export function googleAutoLogin(store, syncImScore, config, googleUserId, user) 
             userId,
           },
         });
-    }).catch(error => logger.warn(error));
+      }).catch(error => logger.warn(error));
     }).catch((error) => {
       // Try to logout and remove cache token
       if (firebase.auth().currentUser) {
@@ -58,7 +59,8 @@ export function facebookAutoLogin(store, syncImScore, config, facebookUserId, em
     .then((data) => {
       store.dispatch(actionCreator('USER_HASH', { userHash: facebookUserId }));
       store.dispatch(actionCreator('AUTH_FULFILLED', data));
-      syncImScore(false);
+      // TODO: needo to refactor
+      // syncImScore(false);
       const names = user.displayName.split(' ');
       const firstName = names[0];
       const lastName = names.slice(1, names.length).join(' ');

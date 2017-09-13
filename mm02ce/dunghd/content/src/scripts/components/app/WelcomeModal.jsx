@@ -111,7 +111,7 @@ function WelcomeModal({
       <div style={customStyles.overlay}>
         <div style={customStyles.content}>
           <a tabIndex="0" role="button" className="close_popup" onClick={onClose}><i className="icons-close" /></a>
-          <a href="http://maomao.rocks" target="_blank" rel="noopener noreferrer">
+          <a href="http://www.maomao.rocks" target="_blank" rel="noopener noreferrer">
             <div className="maomao-logo" />
           </a>
           <h1 className="welcome-heading">
