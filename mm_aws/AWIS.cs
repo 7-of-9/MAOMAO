@@ -37,7 +37,7 @@ namespace mm_aws
             extra.Add("Url", tld);
 
             // run the request with amazon
-            var res = RunRequest(request, extra);
+            var res = g.RetryMaxOrThrow(() => RunRequest(request, extra), sleepSeconds: 5, retryMax: 3);
 
             //Debug.WriteLine(res);
 

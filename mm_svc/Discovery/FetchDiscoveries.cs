@@ -69,7 +69,7 @@ namespace mm_svc.Discovery
                     .Include("disc_url_cwc")
                     .Include("disc_url_osl")
                     .AsNoTracking()
-                    .Where(p => p.main_term_id == term_id);
+                    .Where(p => p.main_term_id == term_id || p.term_id == term_id);
 
                 if (!string.IsNullOrEmpty(country)) 
                     disc_urls_qry = disc_urls_qry.Where(p => p.country == country);
