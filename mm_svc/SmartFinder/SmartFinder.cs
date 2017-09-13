@@ -144,7 +144,7 @@ namespace mm_svc.SmartFinder
                         return 0;
                     }
                     var topics = parents.Where(p => p.is_topic).OrderByDescending(p => p.S).ToList();
-                    var suggestions = parents.Where(p => p.is_topic == false /*&& p.parent_term.IS_TOPIC == false*/).OrderByDescending(p => p.S).ToList();
+                    var suggestions = parents.Where(p => p.is_topic == false).OrderByDescending(p => p.S).ToList();
 
                     // remove user_reg_topic from topics and renormalize
                     //topics.RemoveAll(p => p.parent_term_id == user_reg_topic_id);
@@ -452,7 +452,7 @@ namespace mm_svc.SmartFinder
                     db.disc_url.AddRange(additions);
 
                     //g.LogLine($"WRITING: {additions.Count} [disc_url] for term_id={term_id}");
-                    g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx()); //.SaveChangesTraceValidationErrors();
+                    g.RetryMaxOrThrow(() => db.SaveChanges_IgnoreDupeKeyEx(), sleepSeconds: 10, retryMax: 3); //.SaveChangesTraceValidationErrors();
                     new_disc_urls++;
                     g.LogLine($"DONE: {additions.Count} additions for term_id={term_id}");
 

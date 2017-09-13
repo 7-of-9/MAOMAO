@@ -32,7 +32,8 @@ namespace mmapi00.Controllers
 
             return Ok(new { id = db_user.id, email = db_user.email,
                             firstname = db_user.firstname, lastname = db_user.lastname,
-                            nav_id = db_user.email
+                            nav_id = db_user.email,
+                            new_user = true,
             });
         }
 
@@ -45,11 +46,12 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserGoogle([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.UserRegister.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id);
+            var db_user = mm_svc.UserRegister.CreateGoogleUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.google_user_id, out bool new_user);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
                             firstname = db_user.firstname, lastname = db_user.lastname,
-                            nav_id  = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", "")
+                            nav_id  = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", ""),
+                            new_user = new_user
             });
         }
 
@@ -62,11 +64,12 @@ namespace mmapi00.Controllers
         public IHttpActionResult CreateUserFb([FromBody]user user)
         {
             if (user == null) return BadRequest("bad user input");
-            var db_user = mm_svc.UserRegister.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id);
+            var db_user = mm_svc.UserRegister.CreateFacebookUserIfNotExist(user.firstname, user.lastname, user.email, user.gender, user.avatar, user.fb_user_id, out bool new_user);
 
             return Ok(new { id = db_user.id, email = db_user.email, google_user_id = user.google_user_id, fb_user_id = user.fb_user_id,
                             firstname = db_user.firstname, lastname = db_user.lastname,
-                            nav_id = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", "")
+                            nav_id = db_user.firstname.Replace(" ", "") + db_user.lastname.Replace(" ", ""),
+                            new_user = new_user
             });
         }
 

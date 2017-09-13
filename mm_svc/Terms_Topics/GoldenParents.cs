@@ -25,10 +25,12 @@ namespace mm_svc.Terms
                 return stored_parents_cache[term_id];
 
             using (var db = mm02Entities.Create()) {
-                var ret =  db.gt_parent.AsNoTracking().Include("term").Include("term1")
-                             .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
-                             .DistinctBy(p => p.parent_term_id.ToString() + p.is_topic) // could have concurrent writes to gt_parent table
-                             .ToList();
+                var ret =  g.RetryMaxOrThrow(() =>
+                                db.gt_parent.AsNoTracking().Include("term").Include("term1")
+                                  .Where(p => p.child_term_id == term_id).OrderByDescending(p => p.S_norm).ToListNoLock()
+                                  .DistinctBy(p => p.parent_term_id.ToString() + p.is_topic) // could have concurrent writes to gt_parent table
+                                  .ToList()
+                           , sleepSeconds: 10, retryMax: 3);
 
                 if (use_stored_parents_cache)
                     stored_parents_cache.AddOrUpdate(term_id, ret, (key, oldValue) => ret);
@@ -52,9 +54,9 @@ namespace mm_svc.Terms
                     && reprocess == false) {
                     return GetStoredParents(term_id);
                 }
-                
+
                 // get term & root paths
-                var term = db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id);
+                var term = g.RetryMaxOrThrow(() => db.terms.AsNoTracking().Include("gt_path_to_root1").Include("gt_path_to_root1.term").Single(p => p.id == term_id), sleepSeconds: 10, retryMax: 3);
                 var paths = GoldenPaths.GetOrProcessPathsToRoot(term.id); //GoldenPaths.GetStoredPathsToRoot(term);
 
                 // static - pick out editorially defined topics from paths to root

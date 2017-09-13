@@ -40,7 +40,7 @@ namespace mm_svc
         //
         // New Google-authenticated user
         //
-        public static user CreateGoogleUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string google_user_id)
+        public static user CreateGoogleUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string google_user_id, out bool new_user)
         {
             using (var db = mm02Entities.Create()) {
                 // check that Google email is exist 
@@ -52,6 +52,7 @@ namespace mm_svc
                         db_user.avatar = avatar;
                         db.SaveChangesTraceValidationErrors();
                     }
+                    new_user = false;
                     return db_user;
                 }
                 else {
@@ -67,6 +68,7 @@ namespace mm_svc
 
                     db.users.Add(db_user);
                     db.SaveChangesTraceValidationErrors();
+                    new_user = true;
                     return db_user;
                 }
 
@@ -76,7 +78,7 @@ namespace mm_svc
         //
         // New FB-authenticated user
         //
-        public static user CreateFacebookUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string fb_user_id)
+        public static user CreateFacebookUserIfNotExist(string firstname, string lastname, string email, string gender, string avatar, string fb_user_id, out bool new_user)
         {
             using (var db = mm02Entities.Create()) {
                 // check that Google email is exist 
@@ -88,6 +90,7 @@ namespace mm_svc
                         db_user.avatar = avatar;
                         db.SaveChangesTraceValidationErrors();
                     }
+                    new_user = false;
                     return db_user;
                 }
                 else {
@@ -103,6 +106,8 @@ namespace mm_svc
 
                     db.users.Add(db_user);
                     db.SaveChangesTraceValidationErrors();
+
+                    new_user = true;
                     return db_user;
                 }
 

@@ -12,6 +12,8 @@ namespace mm_svc.Terms
 {
     public static class TopicTree
     {
+        private const double MIN_SUGGESTION_S_NORM = 0.33;
+
         public class TopicTermLink {
             [NonSerialized]
             public TopicTermLink parent;
@@ -34,18 +36,17 @@ namespace mm_svc.Terms
 
         public class TermInfo {
             public bool is_topic;
-
             public long term_id;
-
             public string term_name;
-
             public string img;
+            public List<TermInfo> child_topics = new List<TermInfo>();
+            public List<TermInfo> child_suggestions = new List<TermInfo>();
         }
 
         //
         // Get entire topic tree
         //
-        public static List<TopicTermLink> GetTopicTree(int n_this = 1, int n_of = 1, double suggestions_min_s_norm = 0.33)
+        public static List<TopicTermLink> GetTopicTree(int n_this = 1, int n_of = 1, double suggestions_min_s_norm = MIN_SUGGESTION_S_NORM)
         {
             var roots = new List<TopicTermLink>();
 
@@ -78,12 +79,7 @@ namespace mm_svc.Terms
         {
             using (var db = mm02Entities.Create()) {
                 var t = db.terms.Find(term_id);
-                return new TermInfo() {
-                    is_topic = t.IS_TOPIC,
-                    term_id = t.id,
-                    term_name = t.name,
-                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(t)
-                };
+                return GetTermInfo(t);
             }
         }
 
@@ -110,21 +106,60 @@ namespace mm_svc.Terms
                     if (db.gt_parent.Any(p => p.child_term_id == b.id || p.parent_term_id == b.id))
                         b_in_gt_parent = true;
 
-                    if (a_in_gt_parent && b_in_gt_parent) throw new ApplicationException($"two term IDs {a.id} {b.id} both in gt_parent; unexpected.");
-                    if (!a_in_gt_parent && !b_in_gt_parent) throw new ApplicationException($"neither term ID {a.id} {b.id} in gt_parent; unexpected.");
+                    if (a_in_gt_parent && b_in_gt_parent) return null;// throw new ApplicationException($"two term IDs {a.id} {b.id} both in gt_parent; unexpected.");
+                    if (!a_in_gt_parent && !b_in_gt_parent) return null;//throw new ApplicationException($"neither term ID {a.id} {b.id} in gt_parent; unexpected.");
 
                     if (a_in_gt_parent)
                         t = a;
                     else
                         t = b;
                 }
-                else throw new ApplicationException("got >2 terms; unexpected.");
+                else return null; //throw new ApplicationException("got >2 terms; unexpected.");
+
+                return GetTermInfo(t);
+            }
+        }
+
+        private static TermInfo GetTermInfo(term t)
+        {
+            using (var db = mm02Entities.Create()) {
+                var term_id = t.id;
+
+                // get suggestions
+                var parents = GoldenParents.GetOrProcessParents_SuggestedAndTopics(term_id, reprocess: false);
+                var suggestions = parents.Where(p => !p.is_topic && p.S_norm > MIN_SUGGESTION_S_NORM).OrderByDescending(p => p.S).ToList();
+                //var suggestion_term_ids = suggestions.Select(p => (long?)p.parent_term_id).ToList();
+
+                // get child topics, if any
+                var topic_links = db.topic_link.Include("term").Include("term1").AsNoTracking()
+                    .Where(p => p.parent_term_id == term_id && !p.disabled)
+                    .ToListNoLock();
+                //var child_topic_ids = topic_links.Select(p => p.child_term_id).ToList();
+
+                // todo ... remove suggestions (and topics?) for terms without any disc-url's ...
+                //var sug_a = db.disc_url.Where(p => suggestion_term_ids.Contains(p.main_term_id)).Select(p => p.main_term_id).Distinct().ToListNoLock()
+                //     .Union(db.disc_url.Where(p => suggestion_term_ids.Contains(p.term_id)).Select(p => p.term_id).Distinct().ToListNoLock()).Distinct().ToList();
+                //...
 
                 return new TermInfo() {
                     is_topic = t.IS_TOPIC,
                     term_id = t.id,
                     term_name = t.name,
-                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(t)
+                    img = Images.ImageNames.GetTerm_MasterImage_FullUrl(t),
+
+                    child_topics = topic_links.Select(p => new TermInfo() {
+                        is_topic = true,
+                        term_id = p.child_term.id,
+                        term_name = p.child_term.name,
+                        img = Images.ImageNames.GetTerm_MasterImage_FullUrl(p.child_term),
+                    }).ToList(),
+
+                    child_suggestions = suggestions.Select(p => new TermInfo() {
+                        is_topic = false,
+                        term_id = p.parent_term_id,
+                        term_name = p.parent_term.name,
+                        img = Images.ImageNames.GetTerm_MasterImage_FullUrl(p.parent_term),
+                    }).ToList()
                 };
             }
         }

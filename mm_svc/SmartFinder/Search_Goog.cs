@@ -24,9 +24,9 @@ namespace mm_svc.SmartFinder {
 
         // us-proxies (L1 SOCKS 5 providers) recommends no more than 15 goog requests per *hour*
         // for uninterrupted service!!! that's one every four minutes...!
-        //internal static double min_secs_interval = 4 * 60; // 4 minutes: ran overnight no 503s
-        //internal static double min_secs_interval = 1 * 60; // 1 minutes: testing... ran for a while, no 503s
-        internal static double min_secs_interval = 1 * 45; // testing...
+        //internal static double min_secs_interval = 4 * 60; // testing (10 new IP's, with -r) ...
+        internal static double min_secs_interval = 2 * 60; // testing: (10 new IP's, with -r) ...
+        //internal static double min_secs_interval = 1 * 45; // ran for a long time (~12hrs?) - but all 12 instances were limited
         //internal static double min_secs_interval = 1 * 30; // 0.5 minutes: ran for 1/2 days many instances; only one instance had any issue
         //internal static double min_secs_interval = 1 * 15; // 0.25 minutes: testing... saw 1/12 IPs go 503 after couple of hours
 
