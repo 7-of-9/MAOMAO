@@ -23,7 +23,6 @@ export default class DiscoveryPage extends React.Component {
     if (search) {
       terms = search.split(',')
     }
-    logger.info('terms', terms)
 
     const discovery = initDiscoveryStore(isServer, userAgent, user, terms)
     return { isServer, ...store, ...uiStore, ...discovery }

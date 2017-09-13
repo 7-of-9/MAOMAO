@@ -94,6 +94,8 @@ export class HomeStore extends CoreStore {
 
   @action loadNewTerm (termId) {
     const termInfo = getTerm(termId)
+    this.pendings.push(termId)
+    logger.info('loadNewTerm', this.pendings)
     when(
       () => termInfo.state !== 'pending',
       () => {
@@ -101,6 +103,8 @@ export class HomeStore extends CoreStore {
           const { term } = termInfo.value.data
           this.terms[term.term_id] = term
         }
+        this.pendings.splice(_.indexOf(this.pendings, termId), 1)
+        logger.info('loadNewTerm result', this.pendings, termInfo.value.data)
       }
     )
   }

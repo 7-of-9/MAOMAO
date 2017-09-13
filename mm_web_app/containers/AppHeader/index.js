@@ -256,7 +256,7 @@ class AppHeader extends React.Component {
                             this.props.store.googleConnect({
                               email: item.email, name, picture, google_user_id
                             }, (currentUser) => {
-                              logger.warn('currentUser', currentUser)
+                              logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                               this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
@@ -267,7 +267,7 @@ class AppHeader extends React.Component {
                         this.props.store.googleConnect({
                           email, name, picture, google_user_id
                         }, (currentUser) => {
-                          logger.warn('currentUser', currentUser)
+                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
@@ -280,7 +280,7 @@ class AppHeader extends React.Component {
                             this.props.store.facebookConnect({
                               email: item.email, name, picture, fb_user_id
                             }, (currentUser) => {
-                              logger.warn('currentUser', currentUser)
+                              logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                               this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
@@ -291,7 +291,7 @@ class AppHeader extends React.Component {
                         this.props.store.facebookConnect({
                           email, name, picture, fb_user_id
                         }, (currentUser) => {
-                          logger.warn('currentUser', currentUser)
+                          logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
                           this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })

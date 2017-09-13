@@ -24,7 +24,7 @@ export default class DiscoverPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    logger.warn('DiscoverPage query', query)
+    logger.info('DiscoverPage query', query)
     const user = req && req.session ? req.session.decodedToken : null
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
@@ -36,7 +36,7 @@ export default class DiscoverPage extends React.Component {
     if (query && query.findTerms) {
       findTerms = query.findTerms
       const termsResult = await DiscoverPage.lockupTerms(findTerms, statusCode, termsInfo)
-      logger.warn('termsResult', termsResult)
+      logger.info('termsResult', termsResult)
       statusCode = termsResult.statusCode
       termsInfo = termsResult.termsInfo
     }
@@ -46,7 +46,7 @@ export default class DiscoverPage extends React.Component {
 
   constructor (props) {
     super(props)
-    logger.warn('Discover', props)
+    logger.info('Discover', props)
     this.store = initStore(props.isServer, props.userAgent, props.user, false)
     this.uiStore = initUIStore(props.isServer)
     this.store.checkEnvironment()
@@ -82,7 +82,7 @@ export default class DiscoverPage extends React.Component {
   }
 
   componentWillMount () {
-    logger.warn('DiscoverPage componentWillMount')
+    logger.info('DiscoverPage componentWillMount')
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }
@@ -102,7 +102,7 @@ export default class DiscoverPage extends React.Component {
     const { findTerms, termsInfo } = this.term
     if (this.props.statusCode === false) {
       if (termsInfo.terms && termsInfo.terms.length) {
-        logger.warn('terms findTerms', termsInfo.terms, findTerms)
+        logger.info('terms findTerms', termsInfo.terms, findTerms)
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
         this.store.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
@@ -117,14 +117,14 @@ export default class DiscoverPage extends React.Component {
         this.term.getRootDiscover(userId, userHash, 1)
       }
     }
-    logger.warn('DiscoverPage componentDidMount', this)
+    logger.info('DiscoverPage componentDidMount', this)
   }
 
   componentWillReceiveProps (nextProps) {
     // back button on browser logic
     const { pathname, query } = nextProps.url
     // fetch data based on the new query
-    logger.warn('DiscoverPage componentWillReceiveProps', pathname, query)
+    logger.info('DiscoverPage componentWillReceiveProps', pathname, query)
     const { findTerms, profileUrl } = query
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
@@ -161,7 +161,7 @@ export default class DiscoverPage extends React.Component {
   }
 
   render () {
-    logger.warn('DiscoverPage render', this)
+    logger.info('DiscoverPage render', this)
     const { profileUrl } = this.state
     if (this.props.statusCode) {
       return <Error statusCode={this.props.statusCode} />

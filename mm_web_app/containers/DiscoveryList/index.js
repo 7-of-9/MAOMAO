@@ -36,24 +36,19 @@ class DiscoveryList extends Component {
     isResize: false
   }
 
-  onSelectTerm = (termId) => {
-    logger.info('DiscoveryList onSelectTerm', termId)
-    this.props.ui.selectDiscoveryTerm(termId)
-    this.props.term.getTermDiscover(termId)
-  }
-
   onSelect = (item) => {
     this.props.ui.selectDiscoveryItem(item)
   }
 
   onSelectChildTerm = (term) => {
-    logger.warn('onSelectChildTerm term', term)
+    logger.info('onSelectChildTerm term', term)
     this.props.ui.selectDiscoveryTerm(term.term_id)
     this.props.term.getTermDiscover(term.term_id)
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
-    logger.warn('findTerms', findTerms)
+    logger.info('findTerms', findTerms)
     this.props.store.loadNewTerm(term.term_id)
+    this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
     const href = `/${findTerms.join('/')}`
     Router.push(
@@ -118,12 +113,12 @@ class DiscoveryList extends Component {
 
   backButton = (isRootView) => {
     const { isSplitView, discoveryTermId } = toJS(this.props.ui)
-    logger.warn('discoveryTermId', discoveryTermId)
+    logger.info('discoveryTermId', discoveryTermId)
     const topics = []
     if (discoveryTermId > 0) {
       const currentTerm = this.props.store.getCurrentTerm(discoveryTermId)
       const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
-      logger.warn('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
+      logger.info('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
       if (childSuggestions) {
         _.forEach(childSuggestions, term => {
           if (term.term_name !== '...') {
@@ -139,11 +134,9 @@ class DiscoveryList extends Component {
         })
       }
     }
-    logger.warn('topics', topics)
 
     if (!isRootView) {
       const { findTerms, termsInfo: { terms } } = this.props.term
-      logger.warn('terms', terms)
       const items = []
       _.forEach(findTerms, item => {
         const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
@@ -214,6 +207,11 @@ class DiscoveryList extends Component {
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
     logger.info('renderTermList', isSplitView, discoveryTermId, terms)
     const { currentWidth } = this.state
+    if (this.props.term.isLoading) {
+      return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
+        <Loading isLoading />
+      </div>)
+    }
     if (terms.length) {
       const topics = _.find(terms, item => item.termId === discoveryTermId)
       if (topics && topics.discoveries && topics.discoveries.length) {
@@ -235,7 +233,7 @@ class DiscoveryList extends Component {
                   sub_term_img={sub_term_img}
                   sub_term_name={sub_term_name}
                   onSelect={this.onSelect}
-                  onSelectTerm={this.onSelectTerm}
+                  onSelectTerm={this.onSelectChildTerm}
                   {...item}
                  />
                )
@@ -247,7 +245,7 @@ class DiscoveryList extends Component {
         </div>)
       } else {
         return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
-          <Loading isLoading />
+          <p className='text-engine animated fadeInUp'>Coming soon...</p>
         </div>)
       }
     }
@@ -337,7 +335,7 @@ class DiscoveryList extends Component {
             sub_term_img={sub_term_img}
             sub_term_name={sub_term_name}
             onSelect={this.onSelect}
-            onSelectTerm={this.onSelectTerm}
+            onSelectTerm={this.onSelectChildTerm}
             {...item}
            />
          )
@@ -354,13 +352,13 @@ class DiscoveryList extends Component {
   componentWillReact () {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
-    logger.warn('DiscoveryList componentWillReact', userId, userHash, page)
+    logger.info('DiscoveryList componentWillReact', userId, userHash, page)
   }
 
   componentDidMount () {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
-    logger.warn('DiscoveryList componentDidMount', userId, userHash)
+    logger.info('DiscoveryList componentDidMount', userId, userHash)
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }

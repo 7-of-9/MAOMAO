@@ -1,4 +1,4 @@
-import { action, reaction, when, observable } from 'mobx'
+import { action, computed, reaction, when, observable } from 'mobx'
 import { rootDiscover, termDiscover, getTerm } from '../services/topic'
 import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
@@ -29,6 +29,10 @@ class TermStore {
     })
   }
 
+ @computed get isLoading () {
+   return this.pendings.length > 0
+ }
+
   @action setCurrentTerms (findTerms) {
     this.findTerms = findTerms
   }
@@ -51,7 +55,7 @@ class TermStore {
   }
 
   @action getRootDiscover (userId, userHash, page) {
-    logger.warn('getRootDiscover', userId, userHash, page)
+    logger.info('getRootDiscover', userId, userHash, page)
     this.page = page
     this.userId = userId
     this.userHash = userHash

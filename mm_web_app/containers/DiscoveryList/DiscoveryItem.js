@@ -44,7 +44,7 @@ export default class DiscoveryItem extends PureComponent {
     search_num: 0,
     ingoreTerms: [],
     onSelect: (item) => {},
-    onSelectTerm: (termId) => {}
+    onSelectTerm: (term) => {}
   }
 
   handleClick = (evt) => {
@@ -61,18 +61,18 @@ export default class DiscoveryItem extends PureComponent {
 
   selectMainTerm = (evt) => {
     evt.preventDefault()
-    const { main_term_id } = this.props
+    const { main_term_id, main_term_img, main_term_name } = this.props
     logger.info('selectMainTerm', main_term_id, evt.target)
     this.clickOnTerm = true
-    this.props.onSelectTerm(main_term_id)
+    this.props.onSelectTerm({ term_id: main_term_id, term_name: main_term_name, img: main_term_img })
   }
 
   selectSubTerm = (evt) => {
     evt.preventDefault()
-    const { sub_term_id } = this.props
+    const { sub_term_id, sub_term_img, sub_term_name } = this.props
     logger.info('selectSubTerm', sub_term_id, evt.target)
     this.clickOnTerm = true
-    this.props.onSelectTerm(sub_term_id)
+    this.props.onSelectTerm({ term_id: sub_term_id, term_name: sub_term_name, img: sub_term_img })
   }
 
   renderTerms = () => {
