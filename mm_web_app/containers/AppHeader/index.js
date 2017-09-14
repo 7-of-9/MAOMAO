@@ -103,10 +103,10 @@ class AppHeader extends React.Component {
     })
   }
 
-  isHomePage = () => {
+  isOldHomePage = () => {
     /* global URL */
     const { pathname } = new URL(window.location.href)
-    return pathname === '/'
+    return pathname === '/old'
   }
 
   onLogout = (evt) => {
@@ -121,9 +121,7 @@ class AppHeader extends React.Component {
       })
       this.addNotification('You have successfully signed out.')
       this.props.ui.clean()
-      if (!this.isHomePage()) {
-        Router.push('/')
-      }
+      window.location.href = '/' // go to home page
     }).catch((error) => {
       logger.info(error)
     })
@@ -390,7 +388,7 @@ class AppHeader extends React.Component {
           </NavItem>
         }
         {
-          isLogin && this.isHomePage() &&
+          isLogin && this.isOldHomePage() &&
           <NavItem>
             <a onClick={this.openShareManagement}>
               <i className='fa fa-share-alt fa-2x' aria-hidden='true' />

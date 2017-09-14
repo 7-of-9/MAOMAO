@@ -16,8 +16,37 @@ import AddToHome from '../../components/AddToHome'
 import logger from '../../utils/logger'
 
 // dynaymic load container component
+const Discovery = dynamic(
+ import('../Discovery'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
 const ChromeInstall = dynamic(
  import('../ChromeInstall'),
+  {
+    loading: () => (<Loading isLoading />),
+    ssr: false
+  }
+)
+
+const Share = dynamic(
+ import('../Share'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const ShareList = dynamic(
+import('../../components/ShareList'),
+  {
+    loading: () => (<Loading isLoading />)
+  }
+)
+
+const Streams = dynamic(
+import('../../components/Streams'),
   {
     loading: () => (<Loading isLoading />),
     ssr: false
@@ -42,7 +71,7 @@ import('../../components/SelectedPanel'),
 @inject('store')
 @inject('ui')
 @observer
-class Home extends React.Component {
+class OldHome extends React.Component {
   state = {
     hasAddToHome: false
   }
@@ -83,20 +112,27 @@ class Home extends React.Component {
     }
   }
 
-  redirectToProfile = () => {
-    const { user } = this.props.store
-    if (user.nav_id) {
-      window.location.href = `/${user.nav_id}`
+  renderViewer = (currentViewer) => {
+    switch (currentViewer) {
+      case 'share':
+        return (<ShareList />)
+      case 'sharetopic':
+        return (<Share />)
+      case 'discovery':
+        return (<Discovery />)
+      case 'streams':
+      default:
+        return (<Streams />)
     }
   }
 
   renderBaseOnAuthentication = () => {
     const { isLogin, isProcessing, shareInfo } = this.props.store
-    const { selectedTopics } = this.props.ui
+    const { currentViewer, selectedTopics } = this.props.ui
     if (isLogin) {
       return (
         <div className='wrapper-slide'>
-          {this.redirectToProfile()}
+          {this.renderViewer(currentViewer)}
           <Loading isLoading={isProcessing} />
         </div>
       )
@@ -111,7 +147,14 @@ class Home extends React.Component {
             items={selectedItems}
             />
         }
-        <TopicTree />
+        {
+            currentViewer !== 'discovery' &&
+            <TopicTree />
+          }
+        {
+            currentViewer === 'discovery' &&
+            <Discovery />
+          }
       </div>)
   }
 
@@ -146,4 +189,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home
+export default OldHome

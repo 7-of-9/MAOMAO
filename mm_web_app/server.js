@@ -50,6 +50,7 @@ app.prepare().then(() => {
   server.use('/api/twitter', twitter)
 
   const pages = [
+    '/old',
     '/discovery',
     '/hiring',
     '/smart',
@@ -75,8 +76,7 @@ app.prepare().then(() => {
     } else if (_.includes(pages, pathname) || _.indexOf(pathname, '_next') !== -1 ||
      _.indexOf(pathname, 'favicon') !== -1 || _.indexOf(pathname, 'static') !== -1 ||
      _.indexOf(pathname, '.') !== -1 || _.indexOf(pathname, '%20') !== -1 ||
-     _.indexOf(pathname, '|') !== -1 || _.indexOf(pathname, '-') !== -1 ||
-     pathname === '/'
+     _.indexOf(pathname, '|') !== -1 || _.indexOf(pathname, '-') !== -1 || pathname === '/'
     ) {
       return handle(req, res, parsedUrl)
     } else {

@@ -115,6 +115,16 @@ export class CoreStore {
     logger.info('autoLogin', auth)
     const { userId, userHash, info } = auth
     if (userId > 0) {
+      const { id, fb_user_id, google_user_id, nav_id: profileUrl } = info
+      fetch('/api/auth/profile', {
+        method: 'POST',
+              // eslint-disable-next-line no-undef
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        credentials: 'same-origin',
+        body: JSON.stringify({ url: `/${profileUrl}`, id, fb_user_id, google_user_id })
+      }).then(() => {
+        logger.warn('save profile', auth)
+      })
       this.isLogin = true
       this.user = info
       this.login(userId, userHash)
