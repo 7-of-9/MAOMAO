@@ -14,6 +14,7 @@ import { md5hash } from '../utils/hash'
 import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 
+// @observer
 export default class IndexPage extends React.Component {
   state = {
     profileUrl: ''
@@ -25,8 +26,8 @@ export default class IndexPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    logger.warn('IndexPage query', query)
-    const user = req && req.session ? req.session.decodedToken : null
+    const user = req && req.session ? req.session.currentUser : null
+    logger.warn('IndexPage query', query, user)
     const store = initStore(isServer, userAgent, user, false)
     const uiStore = initUIStore(isServer)
     let termsInfo = {terms: []}
@@ -86,6 +87,9 @@ export default class IndexPage extends React.Component {
     logger.warn('IndexPage componentWillMount')
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
+    }
+    if (this.store.isLogin && this.store.user) {
+      this.setState({ profileUrl: `/${this.store.user.nav_id}` })
     }
   }
 
@@ -162,7 +166,8 @@ export default class IndexPage extends React.Component {
   }
 
   isDiscoverMode = () => {
-    return this.term.findTerms && this.term.findTerms.length > 0
+    logger.warn('isDiscoverMode', this.term.findTerms, this.state.profileUrl.length, this.store.isLogin)
+    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.profileUrl.length > 0 || this.store.isLogin
   }
 
   render () {
@@ -171,11 +176,10 @@ export default class IndexPage extends React.Component {
     if (_.isNumber(this.props.statusCode)) {
       return <Error statusCode={this.props.statusCode} />
     }
-    const { isLogin } = this.store
     return (
       <Provider store={this.store} term={this.term} ui={this.uiStore}>
         {
-        isLogin || this.isDiscoverMode()
+          this.isDiscoverMode()
           ? <div className='discover'>
             <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
             <Discover profileUrl={profileUrl} />

@@ -12,5 +12,5 @@ export function dynamicFontSize (text) {
 }
 
 export function isSameStringOnUrl (str1, str2) {
-  return encodeURI(toLowerCase.call(str1)) === encodeURI(toLowerCase.call(str2))
+  return str1 && str2 && encodeURI(toLowerCase.call(str1)) === encodeURI(toLowerCase.call(str2))
 }

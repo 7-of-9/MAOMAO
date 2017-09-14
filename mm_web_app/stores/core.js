@@ -7,6 +7,7 @@ import { PUSHER_KEY } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
 import logger from '../utils/logger'
 import { downloadPhoto } from '../utils/google'
+import { md5hash } from '../utils/hash'
 
 let store = null
 
@@ -30,9 +31,10 @@ export class CoreStore {
   constructor (isServer, userAgent, user) {
     this.userAgent = userAgent
     this.user = user
-    if (this.user && this.user.name) {
-      logger.info('user', user)
+    if (this.user && this.user.id) {
       this.isLogin = true
+      this.userId = this.user.id
+      this.userHash = md5hash(this.user.fb_user_id || this.user.google_user_id)
     }
     this.isMobile = isMobileBrowser(userAgent)
     this.browserName = browserName()
@@ -113,23 +115,25 @@ export class CoreStore {
   }
 
   @action autoLogin (auth) {
-    logger.info('autoLogin', auth)
+    logger.warn('autoLogin', auth)
     const { userId, userHash, info } = auth
     if (userId > 0) {
-      const { id, fb_user_id, google_user_id, nav_id: profileUrl } = info
+      this.isLogin = true
+      this.user = info
+      this.login(userId, userHash)
+      const { nav_id: profileUrl } = info
       /* global fetch */
       fetch('/api/auth/profile', {
         method: 'POST',
         // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
-        body: JSON.stringify({ url: `/${profileUrl}`, id, fb_user_id, google_user_id })
+        body: JSON.stringify({ url: `/${profileUrl}`, ...info })
       }).then(() => {
         logger.warn('save profile', auth)
+        // TODO: redirect to homepage with message
+        window.location.href = '/'
       })
-      this.isLogin = true
-      this.user = info
-      this.login(userId, userHash)
     }
   }
 

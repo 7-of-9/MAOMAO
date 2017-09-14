@@ -20,6 +20,8 @@ import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
 
+const MARGIN_FOR_SLITTER = 50
+
 @inject('term')
 @inject('store')
 @inject('ui')
@@ -89,7 +91,9 @@ class DiscoveryList extends Component {
       if (this.props.store.userId > 0) {
         this.props.ui.backToRootDiscovery()
         const { user } = this.props.store
-        Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+        if (user) {
+          Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+        }
       } else {
         Router.push('/', '/', { shallow: true })
       }
@@ -125,6 +129,7 @@ class DiscoveryList extends Component {
 
   backButton = (isRootView) => {
     const { isSplitView, discoveryTermId } = toJS(this.props.ui)
+    const { currentWidth } = this.state
     logger.info('discoveryTermId', discoveryTermId)
     const topics = []
     if (discoveryTermId > 0) {
@@ -192,7 +197,7 @@ class DiscoveryList extends Component {
       }
       if (items.length) {
         return (
-          <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{left: '50%'}}>
+          <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth + MARGIN_FOR_SLITTER / 2 }}>
             <div className='breadcrum'>
               {items}
             </div>
@@ -224,7 +229,7 @@ class DiscoveryList extends Component {
     logger.warn('renderTermList')
     const { currentWidth } = this.state
     if (this.props.term.isLoading || this.props.store.isLoading) {
-      return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
+      return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
         <Loading isLoading />
       </div>)
     }
@@ -256,11 +261,11 @@ class DiscoveryList extends Component {
             }
           }
         })
-        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
+        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
           {items}
         </div>)
       } else {
-        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
+        return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
           <p className='text-engine animated fadeInUp'>Coming soon...</p>
         </div>)
       }

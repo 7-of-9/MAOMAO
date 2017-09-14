@@ -53,6 +53,7 @@ export class HomeStore extends CoreStore {
 
   constructor (isServer, userAgent, user, isHome = true) {
     super(isServer, userAgent, user)
+    this.user = user
     reaction(() => this.userHash.length,
       (userHash) => {
         if (userHash > 0 && isHome) {

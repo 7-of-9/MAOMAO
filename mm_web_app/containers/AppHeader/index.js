@@ -24,7 +24,7 @@ import logger from '../../utils/logger'
 const brand = (user) => (
   <Header>
     <LogoIcon />
-    <Slogan redirectUrl={user.nav_id} />
+    <Slogan redirectUrl={user && user.nav_id} />
   </Header>)
 
 const avatar = (user) => {
@@ -191,8 +191,10 @@ class AppHeader extends React.Component {
     this.props.ui.removeNotification(uuid)
   }
 
-  saveProfileUrl = ({url, id, fb_user_id, google_user_id}) => {
+  saveProfileUrl = (user) => {
+    logger.warn('saveProfileUrl', user)
     /* global URL */
+    const { url } = user
     const { pathname } = new URL(window.location.href)
     logger.info('pathname', pathname)
     if (pathname !== encodeURI(`/${url}`)) {
@@ -201,7 +203,7 @@ class AppHeader extends React.Component {
               // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
-        body: JSON.stringify({ url: `/${url}`, id, fb_user_id, google_user_id })
+        body: JSON.stringify(user)
       }).then(() => {
         if (this.props.ui.isRedirectToUrl) {
           Router.push({ pathname: '/', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
