@@ -85,7 +85,7 @@ export default class Hiring extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    const user = req && req.session ? req.session.decodedToken : null
+    const user = req && req.session ? req.session.currentUser : null
     const store = initStore(isServer, userAgent, user, true)
     const uiStore = initUIStore(isServer)
     const discovery = initDiscoveryStore(isServer, userAgent, user, [])

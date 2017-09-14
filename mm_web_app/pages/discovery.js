@@ -14,7 +14,7 @@ export default class DiscoveryPage extends React.Component {
     if (req && req.headers && req.headers['user-agent']) {
       userAgent = req.headers['user-agent']
     }
-    const user = req && req.session ? req.session.decodedToken : null
+    const user = req && req.session ? req.session.currentUser : null
     logger.info('user', user)
     const store = initStore(isServer, userAgent, user)
     const uiStore = initUIStore(isServer)

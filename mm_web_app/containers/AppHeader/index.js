@@ -62,9 +62,10 @@ class AppHeader extends React.Component {
     this.props.ui.redirectToSpecialUrl(true)
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
-      logger.info('test user', user)
+      logger.warn('test user', user)
       const { selectedTopics } = this.props.ui
       this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+      this.saveProfileUrl({ url: `/${user.nav_id}`, ...user })
       const { email, name: displayName } = user
       firebase.auth().createUserWithEmailAndPassword(email, 'maomao').then((newUser) => {
         newUser.updateProfile({
@@ -197,16 +198,16 @@ class AppHeader extends React.Component {
     const { url } = user
     const { pathname } = new URL(window.location.href)
     logger.info('pathname', pathname)
-    if (pathname !== encodeURI(`/${url}`)) {
+    if (pathname !== encodeURI(url)) {
       fetch('/api/auth/profile', {
         method: 'POST',
-              // eslint-disable-next-line no-undef
+        // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
         body: JSON.stringify(user)
       }).then(() => {
         if (this.props.ui.isRedirectToUrl) {
-          Router.push({ pathname: '/', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+          Router.push({ pathname: '/', query: { profileUrl: url } }, url, { shallow: true })
           this.props.ui.redirectToSpecialUrl(false)
         }
       })
@@ -259,7 +260,7 @@ class AppHeader extends React.Component {
                               logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
+                              this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                             })
                           }
                         })
@@ -270,7 +271,7 @@ class AppHeader extends React.Component {
                           logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
+                          this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'facebook.com') {
@@ -283,7 +284,7 @@ class AppHeader extends React.Component {
                               logger.info('currentUser', currentUser)
                               const { selectedTopics } = this.props.ui
                               this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                              this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
+                              this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                             })
                           }
                         })
@@ -294,7 +295,7 @@ class AppHeader extends React.Component {
                           logger.info('currentUser', currentUser)
                           const { selectedTopics } = this.props.ui
                           this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
-                          this.saveProfileUrl({ url: currentUser.nav_id, ...currentUser })
+                          this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       }
                     } else if (sign_in_provider === 'password') {
@@ -304,9 +305,14 @@ class AppHeader extends React.Component {
                       try {
                         const loggedUser = JSON.parse(photoURL)
                         // TODO: need to get nav_id for internal user
-                        this.props.store.retrylLoginForInternalUser(loggedUser)
+                        this.props.store.retrylLoginForInternalUser(loggedUser, (currentUser) => {
+                          logger.info('currentUser', currentUser)
+                          const { selectedTopics } = this.props.ui
+                          this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
+                          this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
+                        })
                       } catch (error) {
-                        logger.info(error)
+                        logger.warn(error)
                       }
                     }
                   } else {

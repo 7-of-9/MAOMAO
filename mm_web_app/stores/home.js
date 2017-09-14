@@ -136,7 +136,7 @@ export class HomeStore extends CoreStore {
     )
   }
 
-  @action retrylLoginForInternalUser (user) {
+  @action retrylLoginForInternalUser (user, callback) {
     logger.info('retrylLoginForInternalUser', user)
     const { id, userHash } = user
     this.isLogin = true
@@ -152,6 +152,7 @@ export class HomeStore extends CoreStore {
       sendMsgToChromeExtension(actionCreator('PRELOAD_SHARE_ALL', { userId: id }))
     }
     this.login(this.userId, this.userHash)
+    callback && callback(Object.assign({}, this.user, {userHash}))
   }
 
   @action googleConnect (info, callback) {

@@ -34,7 +34,7 @@ export class CoreStore {
     if (this.user && this.user.id) {
       this.isLogin = true
       this.userId = this.user.id
-      this.userHash = md5hash(this.user.fb_user_id || this.user.google_user_id)
+      this.userHash = md5hash(this.user.fb_user_id || this.user.google_user_id || this.user.id)
     }
     this.isMobile = isMobileBrowser(userAgent)
     this.browserName = browserName()
