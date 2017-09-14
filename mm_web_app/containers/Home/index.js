@@ -40,6 +40,7 @@ import('../../components/SelectedPanel'),
 )
 
 @inject('store')
+@inject('term')
 @inject('ui')
 @observer
 class Home extends React.Component {
@@ -58,13 +59,13 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    logger.info('Home componentDidMount')
+    logger.warn('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.store.userId > 0 && this.props.store.isHome) {
       this.props.store.getUserHistory()
     }
     if (!this.props.store.isLogin) {
-      this.props.store.getTopicTree()
+      this.props.term.getTopicTree()
     }
     if (this.props.isMobile) {
       // TODO: support chrome (android)

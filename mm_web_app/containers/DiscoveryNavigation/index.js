@@ -59,9 +59,9 @@ class DiscoveryNavigation extends Component {
     }
   }
 
-  componentWillMount () {
+  componentDidMount () {
     const { items } = this.props
-    logger.warn('DiscoveryNavigation componentWillMount selectedItems', items)
+    logger.warn('DiscoveryNavigation componentDidMount selectedItems', items)
     _.forEach(items, ({ term_id }) => this.props.term.loadNewTerm(term_id))
   }
 

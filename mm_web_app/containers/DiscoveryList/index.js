@@ -369,10 +369,6 @@ class DiscoveryList extends Component {
     return (<div className='discovery-list'> {items} </div>)
   }
 
-  componentWillMount () {
-    logger.warn('DiscoveryList componentWillMount', this)
-  }
-
   componentWillUpdate () {
     logger.info('DiscoveryList componentWillUpdate')
     this.cleanClassName()

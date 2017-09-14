@@ -84,7 +84,7 @@ export default class IndexPage extends React.Component {
   }
 
   componentWillMount () {
-    logger.warn('IndexPage componentWillMount')
+    logger.warn('IndexPage componentWillMount', this)
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }

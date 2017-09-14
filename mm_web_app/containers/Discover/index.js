@@ -23,10 +23,11 @@ class Discover extends React.Component {
       </div>
     )
   }
+
   componentDidMount () {
     logger.info('Discover componentDidMount', this.props)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
-    this.props.store.getTopicTree()
+    this.props.term.getTopicTree(true)
   }
 
   render () {

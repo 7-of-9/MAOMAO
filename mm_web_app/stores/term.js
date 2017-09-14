@@ -1,5 +1,5 @@
 import { action, computed, reaction, when, observable } from 'mobx'
-import { rootDiscover, termDiscover, getTerm } from '../services/topic'
+import { rootDiscover, termDiscover, getTerm, getAllTopicTree } from '../services/topic'
 import logger from '../utils/logger'
 import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
@@ -11,7 +11,9 @@ class TermStore {
   @observable discoveries = []
   @observable page = 1
   @observable hasMore = true
+  @observable isProcessingTopicTree = false
   @observable findTerms = []
+  tree = []
   terms = []
   termsCache = {}
   userId = -1
@@ -43,15 +45,57 @@ class TermStore {
    }
  }
 
+ @action getTopicTree (preload = false) {
+   logger.warn('getTopicTree')
+   if (!this.isProcessingTopicTree) {
+     const allTopics = getAllTopicTree()
+     this.isProcessingTopicTree = true
+     when(
+    () => allTopics.state !== 'pending',
+    () => {
+      this.isProcessingTopicTree = false
+      const { tree } = allTopics.value.data
+      this.tree = tree
+      logger.warn('tree', tree)
+      // preload 2 level
+      if (preload) {
+        _.forEach(tree, term => {
+          this.termsCache[term.term_id] = term
+          this.preloadTerm(term.term_id)
+          _.forEach(term.child_topics, item => {
+            this.termsCache[item.term_id] = item
+            this.preloadTerm(item.term_id)
+          })
+        })
+      }
+    })
+   }
+ }
+
   @action setCurrentTerms (findTerms) {
     this.findTerms = findTerms
   }
 
+  @action preloadTerm (termId) {
+    const termInfo = getTerm(termId)
+    logger.warn('preloadTerm', termId)
+    when(
+      () => termInfo.state !== 'pending',
+      () => {
+        if (termInfo.value.data) {
+          const { term } = termInfo.value.data
+          this.termsCache[term.term_id] = term
+        }
+        logger.info('preloadTerm result', termInfo.value.data)
+      }
+    )
+  }
+
   @action loadNewTerm (termId) {
-    if (!this.termsCache[termId]) {
+    if (!this.termsCache[termId] && this.pendings.indexOf(termId) === -1) {
       const termInfo = getTerm(termId)
       this.pendings.push(termId)
-      logger.info('loadNewTerm', this.pendings)
+      logger.warn('loadNewTerm', termId)
       when(
         () => termInfo.state !== 'pending',
         () => {

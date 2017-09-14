@@ -50,6 +50,7 @@ const currentTopicTree = (tree, termId) => {
 }
 
 @inject('store')
+@inject('term')
 @inject('ui')
 @observer
 class TopicTree extends PureComponent {
@@ -113,7 +114,7 @@ class TopicTree extends PureComponent {
 
   render () {
     const items = []
-    const { tree, isProcessingTopicTree } = toJS(this.props.store)
+    const { tree, isProcessingTopicTree } = toJS(this.props.term)
     if (isProcessingTopicTree) {
       return (<Loading isLoading />)
     }

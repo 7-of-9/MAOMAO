@@ -69,6 +69,7 @@ import('../../components/SelectedPanel'),
 )
 
 @inject('store')
+@inject('term')
 @inject('ui')
 @observer
 class OldHome extends React.Component {
@@ -89,7 +90,7 @@ class OldHome extends React.Component {
   componentDidMount () {
     logger.info('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
-    this.props.store.getTopicTree()
+    this.props.term.getTopicTree()
     if (this.props.store.userId > 0) {
       this.props.store.getUserHistory()
     }
