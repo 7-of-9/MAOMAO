@@ -5,13 +5,12 @@
 */
 
 import React from 'react'
-import Router from 'next/router'
 import logger from '../../utils/logger'
 
 const redirectToSpecialUrl = (evt, url) => {
   evt.preventDefault()
   if (url && url.length > 0) {
-    Router.push({ pathname: '/', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+    window.location.href = `/${url}`
   } else {
     window.location.href = '/'
   }

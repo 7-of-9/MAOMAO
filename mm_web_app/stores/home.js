@@ -50,10 +50,11 @@ export class HomeStore extends CoreStore {
   googleUser = {}
   facebookUser = {}
   userHistory = { mine: {}, received: [], topics: [] }
-
+  isHome = false
   constructor (isServer, userAgent, user, isHome = true) {
     super(isServer, userAgent, user)
     this.user = user
+    this.isHome = isHome
     reaction(() => this.userHash.length,
       (userHash) => {
         if (userHash > 0 && isHome) {

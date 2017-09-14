@@ -14,9 +14,10 @@ class InviteStore extends HomeStore {
   @observable shareInfo = {}
 
   constructor (isServer, userAgent, user, shareCode, shareInfo) {
-    super(isServer, userAgent, user, true)
+    super(isServer, userAgent, user, false)
     this.shareCode = shareCode
     this.shareInfo = shareInfo
+    this.user = user
     reaction(() => this.userHash.length,
      (userHash) => {
        if (userHash > 0) {
@@ -39,7 +40,9 @@ class InviteStore extends HomeStore {
       () => this.acceptInviteResult.state !== 'pending',
       () => {
         this.inviteResult = this.acceptInviteResult.value
-        this.getUserHistory()
+        if (this.isHome) {
+          this.getUserHistory()
+        }
       }
     )
   }

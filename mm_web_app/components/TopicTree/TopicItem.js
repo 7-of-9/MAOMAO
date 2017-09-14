@@ -49,7 +49,6 @@ class TopicItem extends PureComponent {
 
   handleClick = (evt) => {
     evt.preventDefault()
-    logger.info('handleClick')
     const { hasChild, childTopics, term_id: termId, title, isSelect, img } = this.props
     if (hasChild) {
       this.props.onSelect(termId, title, img)
@@ -71,7 +70,6 @@ class TopicItem extends PureComponent {
   }
 
   renderThumnails = (images) => {
-    logger.info('renderThumnails', images)
     if (images.length > 0) {
       return (
         <div className='preview-child-topics' style={{ width: 'fit-content', position: 'absolute', bottom: '0' }}>
@@ -107,7 +105,6 @@ class TopicItem extends PureComponent {
   render () {
     /* eslint-disable camelcase */
     const { term_id, title, img, isSelect, totals, childTopics, selectedTopics } = this.props
-    logger.info('TopicItem', term_id, title, img)
     const images = _.map(childTopics, item => ({img: item.img, name: item.term_name}))
     return (
       <div key={term_id} className='grid-item shuffle-item'>

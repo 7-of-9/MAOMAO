@@ -60,9 +60,11 @@ class Home extends React.Component {
   componentDidMount () {
     logger.info('Home componentDidMount')
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
-    this.props.store.getTopicTree()
-    if (this.props.store.userId > 0) {
+    if (this.props.store.userId > 0 && this.props.store.isHome) {
       this.props.store.getUserHistory()
+    }
+    if (!this.props.store.isLogin) {
+      this.props.store.getTopicTree()
     }
     if (this.props.isMobile) {
       // TODO: support chrome (android)
@@ -84,9 +86,10 @@ class Home extends React.Component {
   }
 
   renderTopicTree = () => {
-    const { shareInfo } = this.props.store
+    const { shareInfo, isLogin } = this.props.store
     const { selectedTopics } = this.props.ui
     const selectedItems = selectedTopics ? _.map(selectedTopics, item => ({img: item.img, id: item.termId, name: item.termName})) : []
+    // TODO: show msg wheen logged in a user is on invite page
     return (
       <div className='wrapper-slide'>
         { shareInfo && <ChromeInstall /> }
@@ -96,7 +99,7 @@ class Home extends React.Component {
             items={selectedItems}
             />
         }
-        <TopicTree />
+        { !isLogin && <TopicTree /> }
       </div>)
   }
 

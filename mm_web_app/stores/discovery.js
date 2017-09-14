@@ -31,6 +31,7 @@ class DiscoveryStore extends CoreStore {
   constructor (isServer, userAgent, user, terms) {
     super(isServer, userAgent, user)
     this.terms = terms
+    this.user = user
   }
 
   @action changeTerms (terms) {
