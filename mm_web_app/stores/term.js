@@ -24,6 +24,10 @@ class TermStore {
     reaction(() => this.page,
     (page) => {
       if (this.userId > 0) {
+        logger.warn('reaction to page', page, this.userId, this.userHash)
+        if (page === 1) {
+          this.discoveries = []
+        }
         this.getRootDiscover(this.userId, this.userHash, page)
       }
     })

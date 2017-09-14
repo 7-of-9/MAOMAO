@@ -62,6 +62,10 @@ export class HomeStore extends CoreStore {
       })
   }
 
+  @computed get isLoading () {
+    return this.pendings.length > 0
+  }
+
   @computed get isProcessing () {
     return this.isProcessingRegister || this.isProcessingHistory || this.isProcessingTopicTree
   }

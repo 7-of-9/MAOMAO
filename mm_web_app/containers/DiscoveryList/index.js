@@ -37,7 +37,11 @@ class DiscoveryList extends Component {
   }
 
   onSelect = (item) => {
+    logger.warn('onSelect', item)
     this.props.ui.selectDiscoveryItem(item)
+    if (this.props.ui.discoveryTermId > 0) {
+      this.props.ui.toggleSplitView(true)
+    }
   }
 
   onSelectChildTerm = (term) => {
@@ -200,7 +204,7 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    logger.info('DiscoveryList loadMore')
+    logger.warn('DiscoveryList loadMore')
     this.props.term.loadMore()
   }
 
@@ -209,9 +213,9 @@ class DiscoveryList extends Component {
   }
 
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
-    logger.info('renderTermList', isSplitView, discoveryTermId, terms)
+    logger.warn('renderTermList')
     const { currentWidth } = this.state
-    if (this.props.term.isLoading) {
+    if (this.props.term.isLoading || this.props.store.isLoading) {
       return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - 50 : '100%' }}>
         <Loading isLoading />
       </div>)
@@ -256,6 +260,7 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
+    logger.warn('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const ingoreTerms = []
     if (discoveryTermId !== -1) {
@@ -295,6 +300,7 @@ class DiscoveryList extends Component {
                    utc={utc}
                    width={currentWidth - 5}
                    closePreview={this.closePreview}
+                   onSelectTerm={this.onSelectChildTerm}
                   />
                   )
               }
@@ -317,11 +323,13 @@ class DiscoveryList extends Component {
         utc={utc}
         width={'100%'}
         closePreview={this.closePreview}
+        onSelectTerm={this.onSelectChildTerm}
     />
     )
   }
 
   renderRootList = () => {
+    logger.warn('renderRootList')
     const items = []
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
@@ -362,10 +370,10 @@ class DiscoveryList extends Component {
   componentDidMount () {
     const { userId, userHash } = this.props.store
     const { page } = this.props.term
-    logger.info('DiscoveryList componentDidMount', userId, userHash)
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
+    logger.warn('DiscoveryList componentDidMount', userId, userHash, page)
     this.setState({
       innerWidth: window.innerWidth,
       currentWidth: window.innerWidth / 2
@@ -394,9 +402,13 @@ class DiscoveryList extends Component {
                   loader={<Loading isLoading />}
                 >
                   <div className='discover-root'>
-                    {this.renderRootList()}
+                    { this.renderRootList() }
                   </div>
                 </InfiniteScroll>
+              }
+              {
+                isRootView && profileUrl.length > 0 &&
+                <Loading isLoading={this.props.term.isLoading} />
               }
               { !isRootView && this.renderDetail()}
             </div>

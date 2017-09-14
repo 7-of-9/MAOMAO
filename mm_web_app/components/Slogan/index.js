@@ -18,7 +18,7 @@ const redirectToSpecialUrl = (evt, url) => {
 }
 
 function Slogan ({ redirectUrl }) {
-  logger.info('Slogan redirectUrl', redirectUrl)
+  logger.info('special url', redirectUrl)
   return (
     <div style={{margin: '0 16px'}}>
       <img className='logo-image' onClick={(evt) => redirectToSpecialUrl(evt, redirectUrl)} src='/static/images/maomao.png' alt='maomao' width='165' height='24' />

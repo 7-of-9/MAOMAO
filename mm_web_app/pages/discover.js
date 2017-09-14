@@ -130,9 +130,9 @@ export default class DiscoverPage extends React.Component {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })
       }
-      const { userId, userHash } = this.store
       this.term.setCurrentTerms([])
       this.uiStore.backToRootDiscovery()
+      const { userId, userHash } = this.store
       this.term.getRootDiscover(userId, userHash, 1)
     } else if (findTerms) {
       // edge case, term is a string, e.g: mm.rocks/nature

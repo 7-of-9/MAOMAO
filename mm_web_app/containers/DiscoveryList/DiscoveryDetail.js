@@ -8,13 +8,13 @@ import React, { PureComponent } from 'react'
 import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import dynamic from 'next/dynamic'
-import _ from 'lodash'
+// import _ from 'lodash'
 import InlinePreview from '../../components/Streams/InlinePreview'
 import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 const DiscoveryNavigation = dynamic(
-  import('./DiscoveryNavigation'),
+  import('../../containers/DiscoveryNavigation'),
   {
     loading: () => (<Loading isLoading />),
     ssr: false
@@ -30,7 +30,8 @@ class DiscoveryDetail extends PureComponent {
     url: PropTypes.string.isRequired,
     utc: PropTypes.string.isRequired,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    closePreview: PropTypes.func
+    closePreview: PropTypes.func.isRequired,
+    onSelectTerm: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -40,7 +41,8 @@ class DiscoveryDetail extends PureComponent {
     url: '',
     utc: '',
     width: '100%',
-    closePreview: () => {}
+    closePreview: () => {},
+    onSelectTerm: (term) => {}
   }
 
   handleClick = (event) => {
@@ -63,9 +65,10 @@ class DiscoveryDetail extends PureComponent {
           items.length > 0 &&
             <div className='selected-panel'>
               <DiscoveryNavigation
-                items={_.map(items, item => ({ img: item.img, name: item.term_name, id: item.term_id }))}
+                items={items}
                 termIds={termIds}
                 isReady={isReady}
+                onSelectTerm={this.props.onSelectTerm}
                 />
             </div>
           }
