@@ -1,6 +1,7 @@
 import { observable, computed, action } from 'mobx'
 import Pusher from 'pusher-js'
 import _ from 'lodash'
+import 'isomorphic-fetch'
 import { isMobileBrowser, browserName } from '../utils/detector'
 import { PUSHER_KEY } from '../containers/App/constants'
 import { hasInstalledExtension, actionCreator, sendMsgToChromeExtension } from '../utils/chrome'
@@ -116,9 +117,10 @@ export class CoreStore {
     const { userId, userHash, info } = auth
     if (userId > 0) {
       const { id, fb_user_id, google_user_id, nav_id: profileUrl } = info
+      /* global fetch */
       fetch('/api/auth/profile', {
         method: 'POST',
-              // eslint-disable-next-line no-undef
+        // eslint-disable-next-line no-undef
         headers: new Headers({ 'Content-Type': 'application/json' }),
         credentials: 'same-origin',
         body: JSON.stringify({ url: `/${profileUrl}`, id, fb_user_id, google_user_id })

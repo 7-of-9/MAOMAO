@@ -204,7 +204,7 @@ class AppHeader extends React.Component {
         body: JSON.stringify({ url: `/${url}`, id, fb_user_id, google_user_id })
       }).then(() => {
         if (this.props.ui.isRedirectToUrl) {
-          Router.push({ pathname: '/discover', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+          Router.push({ pathname: '/', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
           this.props.ui.redirectToSpecialUrl(false)
         }
       })
@@ -397,7 +397,7 @@ class AppHeader extends React.Component {
           </NavItem>
         }
         <NavItem>
-          {isLogin &&
+          {userId > 0 &&
             <div className='dropdown account-dropdown'>
               <a className='dropdown-toggle' data-toggle='dropdown'>
                 <img onError={this.noImage} className='image-account' src={avatar(user)} alt={userId} width='33' height='33' />
@@ -416,7 +416,7 @@ class AppHeader extends React.Component {
                 {
                   user && user.name &&
                   <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <Link prefetch href={{ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }} as={`/${user.nav_id}`}>
+                    <Link prefetch href={{ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }} as={`/${user.nav_id}`}>
                       <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
                     </Link>
                   </li>
@@ -425,7 +425,7 @@ class AppHeader extends React.Component {
               </ul>
             </div>
           }
-          {!isLogin && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
+          {userId < 0 && <a style={{ color: '#666', fontWeight: 'normal', paddingTop: '30px' }} onClick={this.showSignIn}>Sign In</a>}
         </NavItem>
         <Modal
           isOpen={showSignInModal}

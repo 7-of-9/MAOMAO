@@ -4,7 +4,7 @@ import { CoreStore } from './core'
 import { normalizedHistoryData } from './schema/history'
 import { loginWithGoogle, loginWithFacebook, testInternalUser, getUserHistory } from '../services/user'
 import { safeBrowsingLoockup } from '../services/google'
-import { getAllTopicTree, addBulkTopics, getTerm } from '../services/topic'
+import { getAllTopicTree, addBulkTopics } from '../services/topic'
 import { sendMsgToChromeExtension, actionCreator } from '../utils/chrome'
 import { md5hash } from '../utils/hash'
 import logger from '../utils/logger'
@@ -39,7 +39,6 @@ export class HomeStore extends CoreStore {
     sites: [],
     topics: []
   }
-  @observable terms = {}
   normalizedData = { entities: {}, result: {} }
   user = {}
   tree = []
@@ -88,51 +87,6 @@ export class HomeStore extends CoreStore {
       })
     }
     return sharesReveived
-  }
-
-  @action setTerms (findTerms) {
-    for (let term of findTerms) {
-      this.terms[term.term_id] = term
-    }
-  }
-
-  @action loadNewTerm (termId) {
-    const termInfo = getTerm(termId)
-    this.pendings.push(termId)
-    logger.info('loadNewTerm', this.pendings)
-    when(
-      () => termInfo.state !== 'pending',
-      () => {
-        if (termInfo.value.data) {
-          const { term } = termInfo.value.data
-          this.terms[term.term_id] = term
-        }
-        this.pendings.splice(_.indexOf(this.pendings, termId), 1)
-        logger.info('loadNewTerm result', this.pendings, termInfo.value.data)
-      }
-    )
-  }
-
-  @action getCurrentTerm (termId) {
-    if (this.terms[termId]) {
-      return toJS(this.terms[termId])
-    } else {
-      const termInfo = getTerm(termId)
-      if (_.indexOf(this.pendings, termId) === -1) {
-        this.pendings.push(termId)
-        when(
-          () => termInfo.state !== 'pending',
-          () => {
-            if (termInfo.value.data) {
-              const { term } = termInfo.value.data
-              this.terms[term.term_id] = term
-            }
-            this.pendings.splice(_.indexOf(this.pendings, termId), 1)
-          }
-        )
-      }
-      return { termId, term_name: '...', img: '/static/images/no-image.png', child_suggestions: [], child_topics: [] }
-    }
   }
 
   @action saveTopics (ids) {

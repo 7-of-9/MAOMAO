@@ -1,11 +1,10 @@
 import { action, computed, reaction, when, observable } from 'mobx'
 import { rootDiscover, termDiscover, getTerm } from '../services/topic'
-import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
+import { isSameStringOnUrl } from '../utils/helper'
 import _ from 'lodash'
 
 let store = null
-// const MAX_ITEM_PER_PAGE = 120
 
 class TermStore {
   @observable pendings = []
@@ -14,6 +13,7 @@ class TermStore {
   @observable hasMore = true
   @observable findTerms = []
   terms = []
+  termsCache = {}
   userId = -1
   userHash = ''
   termsInfo = { terms: [] }
@@ -37,8 +37,33 @@ class TermStore {
    return this.pendings.length > 0
  }
 
+ @action setTerms (findTerms) {
+   for (let term of findTerms) {
+     this.termsCache[term.term_id] = term
+   }
+ }
+
   @action setCurrentTerms (findTerms) {
     this.findTerms = findTerms
+  }
+
+  @action loadNewTerm (termId) {
+    if (!this.termsCache[termId]) {
+      const termInfo = getTerm(termId)
+      this.pendings.push(termId)
+      logger.info('loadNewTerm', this.pendings)
+      when(
+        () => termInfo.state !== 'pending',
+        () => {
+          if (termInfo.value.data) {
+            const { term } = termInfo.value.data
+            this.termsCache[term.term_id] = term
+          }
+          this.pendings.splice(_.indexOf(this.pendings, termId), 1)
+          logger.info('loadNewTerm result', this.pendings, termInfo.value.data)
+        }
+      )
+    }
   }
 
   @action addNewTerm (newTerm) {
@@ -80,14 +105,6 @@ class TermStore {
           _.forEach(discoveries, item => {
             if (!_.includes(this.discoveries, item)) {
               this.discoveries.push(item)
-              // preload data for terms
-              // this.getTermDiscover(userId, userHash, item.main_term_id)
-              // this.getTermDiscover(userId, userHash, item.sub_term_id)
-              // if (item.main_term_related_suggestions_term_ids && item.main_term_related_suggestions_term_ids.length) {
-              //   _.forEach(item.main_term_related_suggestions_term_ids, termId => {
-              //     this.getTermDiscover(userId, userHash, termId)
-              //   })
-              // }
             }
           })
           this.discoveries = _.uniqBy(this.discoveries, 'url')

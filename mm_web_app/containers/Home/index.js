@@ -83,24 +83,9 @@ class Home extends React.Component {
     }
   }
 
-  redirectToProfile = () => {
-    const { user } = this.props.store
-    if (user.nav_id) {
-      window.location.href = `/${user.nav_id}`
-    }
-  }
-
-  renderBaseOnAuthentication = () => {
-    const { isLogin, isProcessing, shareInfo } = this.props.store
+  renderTopicTree = () => {
+    const { shareInfo } = this.props.store
     const { selectedTopics } = this.props.ui
-    if (isLogin) {
-      return (
-        <div className='wrapper-slide'>
-          {this.redirectToProfile()}
-          <Loading isLoading={isProcessing} />
-        </div>
-      )
-    }
     const selectedItems = selectedTopics ? _.map(selectedTopics, item => ({img: item.img, id: item.termId, name: item.termName})) : []
     return (
       <div className='wrapper-slide'>
@@ -136,7 +121,7 @@ class Home extends React.Component {
         <Head>
           <meta name='og:image' content={bgImage} />
         </Head>
-        { this.renderBaseOnAuthentication() }
+        { this.renderTopicTree() }
         {
           isMobile && !hasAddToHome &&
           <AddToHome onClick={this.addToHomeOnMobile} />

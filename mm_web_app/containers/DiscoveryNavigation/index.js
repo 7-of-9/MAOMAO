@@ -9,6 +9,7 @@ import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import OwlCarousel from 'react-owl-carousel'
+import Loading from '../../components/Loading'
 import logger from '../../utils/logger'
 
 @inject('store')
@@ -42,15 +43,26 @@ class DiscoveryNavigation extends Component {
 
   renderNavigationItems (selectedItems) {
     logger.warn('selectedItems', selectedItems)
-    return _.map(selectedItems, (term) => (<div className='selected-topic' key={`topic-${term.term_id}`} style={{
-      background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(${term.img || '/static/images/no-image.png'}) `,
-      backgroundSize: 'cover',
-      cursor: 'pointer'
-    }} onClick={() => this.selectTerm(term)}>
-      <p className='blur-bg'>
-        <span className='text-topic'>{term.term_name}</span>
-      </p>
-    </div>))
+    const validTerms = _.filter(selectedItems, item => item.term_name !== '...')
+    if (validTerms && validTerms.length) {
+      return _.map(validTerms, (term) => (<div className='selected-topic' key={`topic-${term.term_id}`} style={{
+        background: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url(${term.img || '/static/images/no-image.png'}) `,
+        backgroundSize: 'cover',
+        cursor: 'pointer'
+      }} onClick={() => this.selectTerm(term)}>
+        <p className='blur-bg'>
+          <span className='text-topic'>{term.term_name}</span>
+        </p>
+      </div>))
+    } else {
+      return (<Loading isLoading />)
+    }
+  }
+
+  componentWillMount () {
+    const { items } = this.props
+    logger.warn('DiscoveryNavigation componentWillMount selectedItems', items)
+    _.forEach(items, ({ term_id }) => this.props.term.loadNewTerm(term_id))
   }
 
   render () {
@@ -67,7 +79,6 @@ class DiscoveryNavigation extends Component {
         '>'
       ]
     }
-    const selectedItems = items
     return (
       <div className='carousel-wrapper'>
         <OwlCarousel
@@ -76,7 +87,7 @@ class DiscoveryNavigation extends Component {
           {...settings}
             >
           {
-              this.renderNavigationItems(selectedItems)
+              this.renderNavigationItems(items)
           }
         </OwlCarousel>
       </div>

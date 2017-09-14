@@ -53,8 +53,7 @@ app.prepare().then(() => {
     '/old',
     '/discovery',
     '/hiring',
-    '/smart',
-    '/discover'
+    '/smart'
   ]
   const route = pathMatch()
   const matchRoute = route('/:code')
@@ -68,7 +67,7 @@ app.prepare().then(() => {
       app.serveStatic(req, res, filePath)
     } else if (pathname === encodeURI(req.session.discoverRootUrl)) {
       log.warn('found special route url', req.session.discoverRootUrl)
-      app.render(req, res, '/discover', Object.assign({}, query, { profileUrl: req.session.discoverRootUrl, currentUser: req.session.currentUser }))
+      app.render(req, res, '/', Object.assign({}, query, { profileUrl: req.session.discoverRootUrl, currentUser: req.session.currentUser }))
     } else if (pathname === '/hiring-js') {
       app.render(req, res, '/hiring', {type: 'js'})
     } else if (pathname === '/hiring-vp') {
@@ -102,14 +101,14 @@ app.prepare().then(() => {
               return app.render(req, res, '/invite', Object.assign(query, { code, shareInfo }))
             } else {
               // check that is term for discover mode
-              return app.render(req, res, '/discover', Object.assign(query, { findTerms: [decodeURI(code)] }))
+              return app.render(req, res, '/', Object.assign(query, { findTerms: [decodeURI(code)] }))
             }
           }
         })
       } else {
         // maybe that is multi terms
         const findTerms = pathname.split('/').filter(item => item.length > 0).map(item => decodeURI(item))
-        return app.render(req, res, '/discover', Object.assign(query, { findTerms }))
+        return app.render(req, res, '/', Object.assign(query, { findTerms }))
       }
     }
   })

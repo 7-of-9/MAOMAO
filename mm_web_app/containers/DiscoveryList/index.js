@@ -45,19 +45,19 @@ class DiscoveryList extends Component {
   }
 
   onSelectChildTerm = (term) => {
-    logger.info('onSelectChildTerm term', term)
+    logger.warn('onSelectChildTerm term', term)
     this.props.ui.selectDiscoveryTerm(term.term_id)
-    this.props.term.getTermDiscover(term.term_id)
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
     logger.info('findTerms', findTerms)
-    this.props.store.loadNewTerm(term.term_id)
+    this.props.term.getTermDiscover(term.term_id)
     this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
+    this.props.term.loadNewTerm(term.term_id)
     const href = `/${findTerms.join('/')}`
     Router.push(
       {
-        pathname: '/discover',
+        pathname: '/',
         query: { findTerms }
       },
       href,
@@ -74,7 +74,7 @@ class DiscoveryList extends Component {
       const href = `/${terms.join('/')}`
       Router.push(
         {
-          pathname: '/discover',
+          pathname: '/',
           query: { findTerms: terms }
         },
         href,
@@ -89,7 +89,7 @@ class DiscoveryList extends Component {
       if (this.props.store.userId > 0) {
         this.props.ui.backToRootDiscovery()
         const { user } = this.props.store
-        Router.push({ pathname: '/discover', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
+        Router.push({ pathname: '/', query: { profileUrl: `/${user.nav_id}` } }, `/${user.nav_id}`, { shallow: true })
       } else {
         Router.push('/', '/', { shallow: true })
       }
@@ -115,12 +115,20 @@ class DiscoveryList extends Component {
     }
   }
 
+  getCurrentTerm = (termId) => {
+    if (this.props.term.termsCache[termId]) {
+      return toJS(this.props.term.termsCache[termId])
+    } else {
+      return { term_id: termId, term_name: '...', img: '/static/images/no-image.png', child_suggestions: [], child_topics: [] }
+    }
+  }
+
   backButton = (isRootView) => {
     const { isSplitView, discoveryTermId } = toJS(this.props.ui)
     logger.info('discoveryTermId', discoveryTermId)
     const topics = []
     if (discoveryTermId > 0) {
-      const currentTerm = this.props.store.getCurrentTerm(discoveryTermId)
+      const currentTerm = this.getCurrentTerm(discoveryTermId)
       const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
       logger.info('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
       if (childSuggestions) {
@@ -227,8 +235,8 @@ class DiscoveryList extends Component {
         _.forEach(topics.discoveries, (item) => {
           /* eslint-disable camelcase */
           if (urlId !== item.disc_url_id) {
-            const term = this.props.store.getCurrentTerm(item.main_term_id)
-            const subTerm = this.props.store.getCurrentTerm(item.sub_term_id)
+            const term = this.getCurrentTerm(item.main_term_id)
+            const subTerm = this.getCurrentTerm(item.sub_term_id)
             if (term && subTerm) {
               const { img: main_term_img, term_name: main_term_name } = term
               const { img: sub_term_img, term_name: sub_term_name } = subTerm
@@ -273,7 +281,7 @@ class DiscoveryList extends Component {
     if (termIds) {
       _.forEach(termIds, id => {
         if (id !== termId) {
-          const term = this.props.store.getCurrentTerm(id)
+          const term = this.getCurrentTerm(id)
           if (term) {
             items.push(term)
           }
@@ -334,8 +342,8 @@ class DiscoveryList extends Component {
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
       /* eslint-disable camelcase */
-      const term = this.props.store.getCurrentTerm(item.main_term_id)
-      const subTerm = this.props.store.getCurrentTerm(item.sub_term_id)
+      const term = this.getCurrentTerm(item.main_term_id)
+      const subTerm = this.getCurrentTerm(item.sub_term_id)
       if (term && subTerm) {
         const { img: main_term_img, term_name: main_term_name } = term
         const { img: sub_term_img, term_name: sub_term_name } = subTerm
@@ -354,6 +362,10 @@ class DiscoveryList extends Component {
       }
     })
     return (<div className='discovery-list'> {items} </div>)
+  }
+
+  componentWillMount () {
+    logger.warn('DiscoveryList componentWillMount', this)
   }
 
   componentWillUpdate () {

@@ -11,7 +11,7 @@ import logger from '../../utils/logger'
 const redirectToSpecialUrl = (evt, url) => {
   evt.preventDefault()
   if (url && url.length > 0) {
-    Router.push({ pathname: '/discover', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
+    Router.push({ pathname: '/', query: { profileUrl: `/${url}` } }, `/${url}`, { shallow: true })
   } else {
     window.location.href = '/'
   }
