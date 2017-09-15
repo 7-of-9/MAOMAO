@@ -16,7 +16,8 @@ import logger from '../utils/logger'
 
 export default class IndexPage extends React.Component {
   state = {
-    profileUrl: ''
+    profileUrl: '',
+    urlId: -1
   }
 
   static async getInitialProps ({ req, query }) {
@@ -41,8 +42,9 @@ export default class IndexPage extends React.Component {
       statusCode = termsResult.statusCode
       termsInfo = termsResult.termsInfo
     }
+    let urlId = query && query.urlId ? Number(query.urlId) : -1
     const term = initTermStore(isServer, findTerms, termsInfo)
-    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser }
+    return { isServer, ...store, ...uiStore, ...term, findTerms, termsInfo, statusCode, profileUrl, currentUser, urlId }
   }
 
   constructor (props) {
@@ -87,6 +89,9 @@ export default class IndexPage extends React.Component {
     if (this.props.profileUrl) {
       this.setState({ profileUrl: this.props.profileUrl })
     }
+    if (this.props.urlId) {
+      this.setState({ urlId: this.props.urlId })
+    }
     if (this.store.isLogin && this.store.user) {
       this.setState({ profileUrl: `/${this.store.user.nav_id}` })
     }
@@ -121,6 +126,22 @@ export default class IndexPage extends React.Component {
         this.term.getRootDiscover(userId, userHash, 1)
       }
     }
+    if (Number(this.state.urlId) > 0) {
+      const { urlId } = this.state
+      if (urlId) {
+        // preview current item
+        const selectedTile = this.term.getSelectDiscoverItem(urlId)
+        logger.warn('selectedTile', selectedTile)
+        if (selectedTile) {
+          this.uiStore.selectDiscoveryItem(selectedTile)
+          if (this.uiStore.discoveryTermId > 0) {
+            this.uiStore.toggleSplitView(true)
+          }
+        }
+      }
+    } else {
+      this.uiStore.toggleSplitView(false)
+    }
     this.term.getTopicTree()
     logger.warn('IndexPage componentDidMount', this)
   }
@@ -129,8 +150,8 @@ export default class IndexPage extends React.Component {
     // back button on browser logic
     const { pathname, query } = nextProps.url
     // fetch data based on the new query
-    logger.warn('IndexPage componentWillReceiveProps', pathname, query)
-    const { findTerms, profileUrl } = query
+    const { findTerms, profileUrl, urlId } = query
+    logger.warn('IndexPage componentWillReceiveProps', pathname, query, findTerms, profileUrl, urlId)
     if (profileUrl) {
       if (profileUrl !== this.state.profileUrl) {
         this.setState({ profileUrl })
@@ -163,16 +184,31 @@ export default class IndexPage extends React.Component {
         }
       }
     }
+
+    if (urlId !== this.state.urlId) {
+      this.setState({ urlId })
+    }
+    if (Number(urlId) > 0) {
+      // preview current item
+      const selectedTile = this.term.getSelectDiscoverItem(urlId)
+      logger.warn('selectedTile', selectedTile)
+      if (selectedTile) {
+        this.uiStore.selectDiscoveryItem(selectedTile)
+        if (this.uiStore.discoveryTermId > 0) {
+          this.uiStore.toggleSplitView(true)
+        }
+      }
+    } else {
+      this.uiStore.toggleSplitView(false)
+    }
   }
 
   isDiscoverMode = () => {
-    logger.warn('isDiscoverMode', this.term.findTerms, this.state.profileUrl.length, this.store.isLogin)
-    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.profileUrl.length > 0 || this.store.isLogin
+    return (this.term.findTerms && this.term.findTerms.length > 0) || this.state.urlId > 0 || this.state.profileUrl.length > 0 || this.store.isLogin
   }
 
   render () {
     logger.warn('IndexPage render', this)
-    const { profileUrl } = this.state
     if (_.isNumber(this.props.statusCode)) {
       return <Error statusCode={this.props.statusCode} />
     }
@@ -182,7 +218,7 @@ export default class IndexPage extends React.Component {
           this.isDiscoverMode()
           ? <div className='discover'>
             <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
-            <Discover profileUrl={profileUrl} />
+            <Discover {...this.state} />
           </div>
         : <div className='home'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />

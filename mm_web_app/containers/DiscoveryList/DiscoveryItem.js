@@ -51,7 +51,7 @@ export default class DiscoveryItem extends PureComponent {
   handleClick = (evt) => {
     evt.preventDefault()
     if (!this.clickOnTerm) {
-      logger.warn('handleClick', evt.target)
+      logger.info('handleClick', evt.target)
       this.props.onSelect(this.props)
     }
   }

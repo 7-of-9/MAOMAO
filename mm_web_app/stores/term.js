@@ -27,7 +27,7 @@ class TermStore {
     reaction(() => this.page,
     (page) => {
       if (this.userId > 0) {
-        logger.warn('reaction to page', page, this.userId, this.userHash)
+        logger.info('reaction to page', page, this.userId, this.userHash)
         if (page === 1) {
           this.discoveries = []
         }
@@ -37,24 +37,23 @@ class TermStore {
   }
 
  @computed get isLoading () {
-   logger.warn('isLoading', this.pendings.length, this.pendings, this.preloadProcesses)
+   logger.info('isLoading', this.pendings.length, this.pendings, this.preloadProcesses)
    return this.pendings.length > 0 || this.preloadProcesses > 0
  }
 
- @computed get isProcess () {
-   logger.warn('isProcess', this.pendings.length, this.pendings)
-   return this.pendings.length > 0
- }
-
  @action setTerms (findTerms) {
-   logger.warn('setTerms', findTerms)
+   logger.info('setTerms', findTerms)
    for (let term of findTerms) {
      if (term.child_suggestions || term.child_topics) { this.termsCache[term.term_id] = term }
    }
  }
 
+ @action getSelectDiscoverItem (urlId) {
+   return _.find(this.discoveries, item => Number(item.disc_url_id) === Number(urlId))
+ }
+
  @action getTopicTree () {
-   logger.warn('getTopicTree')
+   logger.info('getTopicTree')
    if (!this.isProcessingTopicTree && this.tree.length === 0) {
      const allTopics = getAllTopicTree()
      this.isProcessingTopicTree = true
@@ -72,7 +71,7 @@ class TermStore {
           this.preloadTerm(item.term_id)
         })
       })
-      logger.warn('tree', tree)
+      logger.info('tree', tree)
     })
    }
  }
@@ -86,7 +85,7 @@ class TermStore {
     if (tracking) {
       this.preloadProcesses += 1
     }
-    logger.warn('preloadTerm', termId)
+    logger.info('preloadTerm', termId)
     when(
       () => termInfo.state !== 'pending',
       () => {
@@ -104,7 +103,7 @@ class TermStore {
 
   @action loadNewTerm (termId) {
     const existTerm = this.termsCache[termId]
-    logger.warn('loadNewTerm', termId, existTerm)
+    logger.info('loadNewTerm', termId, existTerm)
     const keyCache = `loadNewTerm-${termId}`
     if (
       (!existTerm && _.indexOf(this.pendings, keyCache) === -1) ||

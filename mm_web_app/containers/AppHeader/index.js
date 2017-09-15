@@ -62,7 +62,7 @@ class AppHeader extends React.Component {
     this.props.ui.redirectToSpecialUrl(true)
     this.props.ui.toggleSignIn(false)
     this.props.store.internalLogin((user) => {
-      logger.warn('test user', user)
+      logger.info('test user', user)
       const { selectedTopics } = this.props.ui
       this.props.store.saveTopics(_.map(selectedTopics, item => item.termId))
       this.saveProfileUrl({ url: `/${user.nav_id}`, ...user })
@@ -193,7 +193,7 @@ class AppHeader extends React.Component {
   }
 
   saveProfileUrl = (user) => {
-    logger.warn('saveProfileUrl', user)
+    logger.info('saveProfileUrl', user)
     /* global URL */
     const { url } = user
     const { pathname } = new URL(window.location.href)
@@ -312,7 +312,7 @@ class AppHeader extends React.Component {
                           this.saveProfileUrl({ url: `/${currentUser.nav_id}`, ...currentUser })
                         })
                       } catch (error) {
-                        logger.warn(error)
+                        logger.info(error)
                       }
                     }
                   } else {

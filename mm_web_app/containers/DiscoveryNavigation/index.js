@@ -32,7 +32,7 @@ class DiscoveryNavigation extends Component {
   }
 
   selectTerm = (term) => {
-    logger.warn('DiscoveryNavigation selectDiscoveryTerm', term)
+    logger.info('DiscoveryNavigation selectDiscoveryTerm', term)
     this.props.onSelectTerm(term)
     this.props.ui.toggleSplitView(true)
   }
@@ -42,7 +42,7 @@ class DiscoveryNavigation extends Component {
   }
 
   renderNavigationItems (selectedItems) {
-    logger.warn('selectedItems', selectedItems)
+    logger.info('selectedItems', selectedItems)
     const validTerms = _.filter(selectedItems, item => item.term_name !== '...')
     if (validTerms && validTerms.length) {
       return _.map(validTerms, (term) => (<div className='selected-topic' key={`topic-${term.term_id}`} style={{
@@ -61,7 +61,7 @@ class DiscoveryNavigation extends Component {
 
   componentDidMount () {
     const { items } = this.props
-    logger.warn('DiscoveryNavigation componentDidMount selectedItems', items)
+    logger.info('DiscoveryNavigation componentDidMount selectedItems', items)
     _.forEach(items, ({ term_id }) => this.props.term.loadNewTerm(term_id))
   }
 

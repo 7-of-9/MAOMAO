@@ -115,7 +115,7 @@ export class CoreStore {
   }
 
   @action autoLogin (auth) {
-    logger.warn('autoLogin', auth)
+    logger.info('autoLogin', auth)
     const { userId, userHash, info } = auth
     if (userId > 0) {
       this.isLogin = true
@@ -130,7 +130,7 @@ export class CoreStore {
         credentials: 'same-origin',
         body: JSON.stringify({ url: `/${profileUrl}`, ...info })
       }).then(() => {
-        logger.warn('save profile', auth)
+        logger.info('save profile', auth)
         // TODO: redirect to homepage with message
         window.location.href = '/'
       })

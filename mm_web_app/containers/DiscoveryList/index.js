@@ -38,11 +38,13 @@ const MARGIN_FOR_SLITTER = 50
 @observer
 class DiscoveryList extends Component {
   static propTypes = {
-    profileUrl: PropTypes.string.isRequired
+    profileUrl: PropTypes.string.isRequired,
+    urlId: PropTypes.number.isRequired
   }
 
   static defaultProps = {
-    profileUrl: ''
+    profileUrl: '',
+    urlId: -1
   }
   state = {
     isResize: false,
@@ -50,15 +52,25 @@ class DiscoveryList extends Component {
   }
 
   onSelect = (item) => {
-    logger.warn('onSelect', item)
+    logger.info('onSelect', item)
     this.props.ui.selectDiscoveryItem(item)
     if (this.props.ui.discoveryTermId > 0) {
       this.props.ui.toggleSplitView(true)
     }
+    const { findTerms } = toJS(this.props.term)
+    const href = `/${findTerms.join('/')}?urlId=${item.disc_url_id}`
+    Router.push(
+      {
+        pathname: '/',
+        query: { findTerms, urlId: item.disc_url_id }
+      },
+      href,
+     { shallow: true }
+    )
   }
 
   onSelectChildTerm = (term) => {
-    logger.warn('onSelectChildTerm term', term)
+    logger.info('onSelectChildTerm term', term)
     this.props.ui.selectDiscoveryTerm(term.term_id)
     const { findTerms } = toJS(this.props.term)
     findTerms.push(_.toLower(term.term_name))
@@ -67,11 +79,11 @@ class DiscoveryList extends Component {
     this.props.term.setCurrentTerms(findTerms)
     this.props.term.addNewTerm(term)
     this.props.term.loadNewTerm(term.term_id)
-    const href = `/${findTerms.join('/')}`
+    const href = this.props.urlId > 0 ? `/${findTerms.join('/')}?urlId=${this.props.urlId}` : `/${findTerms.join('/')}`
     Router.push(
       {
         pathname: '/',
-        query: { findTerms }
+        query: { findTerms, urlId: this.props.urlId }
       },
       href,
      { shallow: true }
@@ -84,11 +96,11 @@ class DiscoveryList extends Component {
     const terms = _.dropRight(this.props.term.findTerms, this.props.term.findTerms.length - position)
     this.props.term.setCurrentTerms(terms)
     if (terms.length) {
-      const href = `/${terms.join('/')}`
+      const href = this.props.urlId > 0 ? `/${terms.join('/')}?urlId=${this.props.urlId}` : `/${terms.join('/')}`
       Router.push(
         {
           pathname: '/',
-          query: { findTerms: terms }
+          query: { findTerms: terms, urlId: this.props.urlId }
         },
         href,
        { shallow: true }
@@ -147,18 +159,28 @@ class DiscoveryList extends Component {
   }
 
   loadMore = () => {
-    logger.warn('DiscoveryList loadMore')
+    logger.info('DiscoveryList loadMore')
     this.props.term.loadMore()
   }
 
   closePreview = () => {
     this.props.ui.toggleSplitView(false)
+    const { findTerms } = toJS(this.props.term)
+    const href = `/${findTerms.join('/')}`
+    Router.push(
+      {
+        pathname: '/',
+        query: { findTerms }
+      },
+      href,
+     { shallow: true }
+    )
   }
 
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
-    logger.warn('renderTermList')
+    logger.info('renderTermList')
     const { currentWidth } = this.state
-    if (this.props.term.isProcess) {
+    if (this.props.term.isLoading) {
       return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
         <Loading isLoading />
       </div>)
@@ -203,7 +225,7 @@ class DiscoveryList extends Component {
   }
 
   renderDetail = () => {
-    logger.warn('renderDetail')
+    logger.info('renderDetail')
     const { isSplitView, discoveryUrlId, discoveryTermId, selectedDiscoveryItem: { disc_url_id: urlId, url, title, utc, main_term_id: termId, main_term_related_suggestions_term_ids: termIds } } = toJS(this.props.ui)
     const ingoreTerms = []
     if (discoveryTermId !== -1) {
@@ -272,7 +294,7 @@ class DiscoveryList extends Component {
   }
 
   renderRootList = () => {
-    logger.warn('renderRootList')
+    logger.info('renderRootList')
     const items = []
     const { discoveries } = toJS(this.props.term)
     _.forEach(discoveries, (item) => {
@@ -316,7 +338,7 @@ class DiscoveryList extends Component {
     if (userId > 0) {
       this.props.term.getRootDiscover(userId, userHash, page)
     }
-    logger.warn('DiscoveryList componentDidMount', userId, userHash, page)
+    logger.info('DiscoveryList componentDidMount', userId, userHash, page)
     this.setState({
       innerWidth: window.innerWidth,
       currentWidth: window.innerWidth / 2
