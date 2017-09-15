@@ -41,6 +41,11 @@ class TermStore {
    return this.pendings.length > 0 || this.preloadProcesses > 0
  }
 
+ @computed get isProcess () {
+   logger.warn('isProcess', this.pendings.length, this.pendings)
+   return this.pendings.length > 0
+ }
+
  @action setTerms (findTerms) {
    logger.warn('setTerms', findTerms)
    for (let term of findTerms) {
@@ -76,9 +81,11 @@ class TermStore {
     this.findTerms = findTerms
   }
 
-  @action preloadTerm (termId) {
+  @action preloadTerm (termId, tracking = true) {
     const termInfo = getTerm(termId)
-    this.preloadProcesses += 1
+    if (tracking) {
+      this.preloadProcesses += 1
+    }
     logger.warn('preloadTerm', termId)
     when(
       () => termInfo.state !== 'pending',
@@ -88,7 +95,9 @@ class TermStore {
           this.termsCache[term.term_id] = term
         }
         logger.info('preloadTerm result', termInfo.value.data)
-        this.preloadProcesses -= 1
+        if (tracking) {
+          this.preloadProcesses -= 1
+        }
       }
     )
   }

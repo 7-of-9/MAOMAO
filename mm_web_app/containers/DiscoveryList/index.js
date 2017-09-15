@@ -158,7 +158,7 @@ class DiscoveryList extends Component {
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
     logger.warn('renderTermList')
     const { currentWidth } = this.state
-    if (this.props.term.isLoading) {
+    if (this.props.term.isProcess) {
       return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
         <Loading isLoading />
       </div>)

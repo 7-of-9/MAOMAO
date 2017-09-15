@@ -5,12 +5,13 @@
 */
 
 import React, { PureComponent } from 'react'
-import { observer } from 'mobx-react'
+import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import logger from '../../utils/logger'
 import { tagColor, dynamicFontSize } from '../../utils/helper'
 
+@inject('term')
 @observer
 export default class DiscoveryItem extends PureComponent {
   static propTypes = {
@@ -113,6 +114,16 @@ export default class DiscoveryItem extends PureComponent {
         }
       </div>
     )
+  }
+
+  componentDidMount () {
+    const { main_term_id, sub_term_id } = this.props
+    if (!this.props.term.termsCache[main_term_id]) {
+      this.props.term.preloadTerm(main_term_id, false)
+    }
+    if (!this.props.term.termsCache[sub_term_id]) {
+      this.props.term.preloadTerm(sub_term_id, false)
+    }
   }
 
   renderThumnails = (images) => {
