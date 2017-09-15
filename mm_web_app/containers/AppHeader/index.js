@@ -207,7 +207,7 @@ class AppHeader extends React.Component {
         body: JSON.stringify(user)
       }).then(() => {
         if (this.props.ui.isRedirectToUrl) {
-          Router.push({ pathname: '/', query: { profileUrl: url } }, url, { shallow: true })
+          Router.push({ pathname: '/', query: { profileUrl: url } }, url)
           this.props.ui.redirectToSpecialUrl(false)
         }
       })
@@ -424,7 +424,15 @@ class AppHeader extends React.Component {
                 {
                   user && user.name &&
                   <li style={{color: '#333', backgroundColor: '#fff'}}>
-                    <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
+                    <Link
+                      as={`/${user.nav_id}`}
+                      prefetch
+                      href={{
+                        pathname: '/',
+                        query: { profileUrl: `/${user.nav_id}` }
+                      }}>
+                      <a href={`/${user.nav_id}`}><i className='fa fa-magic' /> <strong>Your discover</strong></a>
+                    </Link>
                   </li>
                 }
                 <li><button className='btn btn-logout' onClick={this.onLogout}><i className='fa fa-sign-out' /> Sign Out</button></li>

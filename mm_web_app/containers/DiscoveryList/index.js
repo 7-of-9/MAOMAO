@@ -7,6 +7,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Router from 'next/router'
+import dynamic from 'next/dynamic'
 import { inject, observer } from 'mobx-react'
 import { toJS } from 'mobx'
 import _ from 'lodash'
@@ -19,6 +20,15 @@ import SplitView from '../../components/SplitView'
 import Loading from '../../components/Loading'
 import { isSameStringOnUrl } from '../../utils/helper'
 import logger from '../../utils/logger'
+
+// dynaymic load container component
+const DiscoveryPath = dynamic(
+  import('./DiscoveryPath'),
+  {
+    loading: () => (<Loading isLoading />),
+    ssr: false
+  }
+ )
 
 const MARGIN_FOR_SLITTER = 50
 
@@ -35,7 +45,8 @@ class DiscoveryList extends Component {
     profileUrl: ''
   }
   state = {
-    isResize: false
+    isResize: false,
+    currentWidth: '100%'
   }
 
   onSelect = (item) => {
@@ -127,87 +138,6 @@ class DiscoveryList extends Component {
     }
   }
 
-  backButton = (isRootView) => {
-    const { isSplitView, discoveryTermId } = toJS(this.props.ui)
-    const { currentWidth } = this.state
-    logger.info('discoveryTermId', discoveryTermId)
-    const topics = []
-    if (discoveryTermId > 0) {
-      const currentTerm = this.getCurrentTerm(discoveryTermId)
-      const { child_suggestions: childSuggestions, child_topics: childTopics } = currentTerm
-      logger.info('currentTerm, childSuggestions, childTopics', currentTerm, childSuggestions, childTopics)
-      if (childSuggestions) {
-        _.forEach(childSuggestions, term => {
-          if (term.term_name !== '...') {
-            topics.push(term)
-          }
-        })
-      }
-      if (childTopics) {
-        _.forEach(childTopics, term => {
-          if (term.term_name !== '...') {
-            topics.push(term)
-          }
-        })
-      }
-    }
-
-    if (!isRootView) {
-      const { findTerms, termsInfo: { terms } } = this.props.term
-      const items = []
-      _.forEach(findTerms, item => {
-        const term = _.find(terms, term => isSameStringOnUrl(term.term_name, item))
-        if (term) {
-          const { img, term_name: title } = term
-          items.push(<span
-            key={`back-to-${title}`}
-            onClick={() => this.onBack(term)}
-            style={{
-              background: `linear-gradient(rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.5)), url(${img || '/static/images/no-image.png'})`,
-              backgroundSize: 'cover',
-              cursor: 'pointer'
-            }}
-            className='current-topic-name tags' rel='tag'>
-            <i className='fa fa-angle-left' aria-hidden='true' /> &nbsp;&nbsp;
-            {title}
-          </span>)
-        }
-      })
-      if (topics.length) {
-        const carouselItems = []
-        _.forEach(topics, term => {
-          const { img, term_name: title } = term
-          if (!_.find(findTerms, term => isSameStringOnUrl(term, title))) {
-            carouselItems.push(<span
-              key={`navigate-to-${title}`}
-              onClick={() => this.onSelectChildTerm(term)}
-              style={{
-                background: `linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.8)), url(${img || '/static/images/no-image.png'})`,
-                backgroundSize: 'cover',
-                cursor: 'pointer',
-                fontSize: '0.8rem',
-                padding: '3px'
-              }}
-              className='current-topic-name tags' rel='tag'>
-              {title}
-            </span>)
-          }
-        })
-        items.push(carouselItems)
-      }
-      if (items.length) {
-        return (
-          <div className={isSplitView ? 'navigation-panel bounceInRight animated' : 'navigation-pane bounceInLeft animated'} style={{ left: currentWidth + MARGIN_FOR_SLITTER / 2 }}>
-            <div className='breadcrum'>
-              {items}
-            </div>
-          </div>
-        )
-      }
-    }
-    return null
-  }
-
   cleanClassName = () => {
     logger.info('DiscoveryList cleanClassName', this.animateEl)
     /* global $ */
@@ -228,7 +158,7 @@ class DiscoveryList extends Component {
   renderTermList = (isSplitView, ingoreTerms, discoveryTermId, terms, urlId) => {
     logger.warn('renderTermList')
     const { currentWidth } = this.state
-    if (this.props.term.isLoading || this.props.store.isLoading) {
+    if (this.props.term.isLoading) {
       return (<div className='split-view' style={{ width: isSplitView ? window.innerWidth - currentWidth - MARGIN_FOR_SLITTER : '100%' }}>
         <Loading isLoading />
       </div>)
@@ -395,13 +325,21 @@ class DiscoveryList extends Component {
 
   render () {
     const { profileUrl } = this.props
+    const { currentWidth } = this.state
     const { animationType, discoveryUrlId, discoveryTermId } = toJS(this.props.ui)
     logger.info('DiscoveryList render ', this.props.term.hasMore)
     const animateClassName = animationType === 'LTR' ? `grid-row bounceInLeft animated` : `grid-row bounceInRight animated`
     const isRootView = discoveryUrlId === -1 && discoveryTermId === -1
     return (
       <div className='topic-tree'>
-        {this.backButton(isRootView)}
+        {
+          !isRootView &&
+          <DiscoveryPath
+            currentWidth={currentWidth}
+            onBack={this.onBack}
+            onSelectChildTerm={this.onSelectChildTerm}
+          />
+        }
         <ReactResizeDetector handleWidth handleHeight onResize={this.onZoomLayout} />
         <div className='main-inner'>
           <div className='container-masonry'>

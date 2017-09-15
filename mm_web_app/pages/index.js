@@ -14,7 +14,6 @@ import { md5hash } from '../utils/hash'
 import { isSameStringOnUrl } from '../utils/helper'
 import logger from '../utils/logger'
 
-// @observer
 export default class IndexPage extends React.Component {
   state = {
     profileUrl: ''
@@ -122,6 +121,7 @@ export default class IndexPage extends React.Component {
         this.term.getRootDiscover(userId, userHash, 1)
       }
     }
+    this.term.getTopicTree()
     logger.warn('IndexPage componentDidMount', this)
   }
 
@@ -146,9 +146,9 @@ export default class IndexPage extends React.Component {
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms))
         logger.warn('IndexPage currentTerm', currentTerm, termsInfo, findTerms)
+        this.term.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
-          this.term.setTerms(termsInfo.terms)
           this.term.getTermDiscover(currentTerm.term_id)
         }
       } else {
@@ -156,9 +156,9 @@ export default class IndexPage extends React.Component {
         const { termsInfo } = this.term
         const currentTerm = _.find(termsInfo.terms, item => isSameStringOnUrl(item.term_name, findTerms[findTerms.length - 1]))
         logger.warn('IndexPage currentTerm', currentTerm, termsInfo, findTerms)
+        this.term.setTerms(termsInfo.terms)
         if (currentTerm && currentTerm.term_id) {
           this.uiStore.selectDiscoveryTerm(currentTerm.term_id)
-          this.term.setTerms(termsInfo.terms)
           this.term.getTermDiscover(currentTerm.term_id)
         }
       }

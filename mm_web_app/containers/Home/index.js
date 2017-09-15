@@ -59,7 +59,7 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    logger.warn('Home componentDidMount')
+    logger.warn('Home componentDidMount', this)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
     if (this.props.store.userId > 0 && this.props.store.isHome) {
       this.props.store.getUserHistory()

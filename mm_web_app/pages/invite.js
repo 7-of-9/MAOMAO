@@ -1,13 +1,14 @@
 import React from 'react'
-import { Provider } from 'mobx-react'
+import { Provider, observer } from 'mobx-react'
 import _ from 'lodash'
 import { initStore } from '../stores/invite'
 import { initUIStore } from '../stores/ui'
-import { initDiscoveryStore } from '../stores/discovery'
+import { initTermStore } from '../stores/term'
 import Home from '../containers/Home'
 import stylesheet from '../styles/index.scss'
 import logger from '../utils/logger'
 
+@observer
 export default class Invite extends React.Component {
   static async getInitialProps ({ req, query: { code, shareInfo } }) {
     const isServer = !!req
@@ -33,21 +34,22 @@ export default class Invite extends React.Component {
     } catch (err) {
       store.bgImage = ''
     }
-    const discovery = initDiscoveryStore(isServer, userAgent, user, [])
-    return { isServer, ...store, ...uiStore, ...discovery }
+    const term = initTermStore(isServer, [], { terms: [] })
+    return { isServer, ...store, ...uiStore, ...term }
   }
 
   constructor (props) {
     super(props)
     logger.info('Invite', props)
     this.uiStore = initUIStore(props.isServer)
-    this.discovery = initDiscoveryStore(props.isServer, props.userAgent, props.user, props.terms)
+    this.term = initTermStore(props.isServer, props.findTerms, props.termsInfo)
     this.store = initStore(props.isServer, props.userAgent, props.user, props.shareCode, props.shareInfo)
     this.store.bgImage = props.bgImage
     this.store.checkEnvironment()
   }
 
   componentDidMount () {
+    logger.warn('Invite componentDidMount', this)
     if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/service-worker.js')
@@ -58,12 +60,18 @@ export default class Invite extends React.Component {
           logger.info('service worker registration failed', err.message)
         })
     }
+    // TODO: accept invite code
+    if (this.store.isLogin) {
+      this.uiStore.redirectToSpecialUrl(true)
+      this.uiStore.addNotification('You will redirect to your profile.')
+      window.location.href = '/'
+    }
   }
 
   render () {
     logger.info('Invite render')
     return (
-      <Provider store={this.store} discovery={this.discovery} ui={this.uiStore}>
+      <Provider store={this.store} term={this.term} ui={this.uiStore}>
         <div className='invite'>
           <style dangerouslySetInnerHTML={{ __html: stylesheet }} />
           <Home />

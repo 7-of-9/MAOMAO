@@ -7,8 +7,8 @@
 import React from 'react'
 import { observer, inject } from 'mobx-react'
 import Raven from 'raven-js'
-import Layout from '../../components/Layout'
 import DiscoveryList from '../../containers/DiscoveryList'
+import Layout from '../../components/Layout'
 import logger from '../../utils/logger'
 
 @inject('term')
@@ -16,18 +16,9 @@ import logger from '../../utils/logger'
 @inject('ui')
 @observer
 class Discover extends React.Component {
-  renderRootDiscover = () => {
-    return (
-      <div className='wrapper-slide'>
-        <DiscoveryList {...this.props} />
-      </div>
-    )
-  }
-
   componentDidMount () {
     logger.info('Discover componentDidMount', this.props)
     Raven.config('https://85aabb7a13e843c5a992da888d11a11c@sentry.io/191653').install()
-    this.props.term.getTopicTree(true)
   }
 
   render () {
@@ -36,7 +27,9 @@ class Discover extends React.Component {
     logger.info('Discover render', this.props)
     return (
       <Layout title={title} description={description}>
-        {this.renderRootDiscover()}
+        <div className='wrapper-slide'>
+          <DiscoveryList {...this.props} />
+        </div>
       </Layout>
     )
   }
