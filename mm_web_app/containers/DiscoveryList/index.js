@@ -263,7 +263,7 @@ class DiscoveryList extends Component {
                    termIds={termIds}
                    url={url}
                    utc={utc}
-                   width={currentWidth - 5}
+                   width={width - 5}
                    closePreview={this.closePreview}
                    onSelectTerm={this.onSelectChildTerm}
                   />

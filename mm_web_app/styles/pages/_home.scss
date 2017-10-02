@@ -591,8 +591,6 @@ the home page
           -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
           -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
           box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
-          -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
-          animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
         }
         .close_button {
           z-index: 9999;
@@ -623,14 +621,34 @@ the home page
             }
           }
           .on-resize {
-            background: #2db7f5;
+            background: #CCE0E7;
             height: 100vh !important;
             width: 100%;
           }
-          & > :not(:first-child) {
-            background: #2db7f5;
+          & > :last-child {
+            background: #B1C3CA;
             height: 100vh !important;
             z-index: 999;
+            &::before {
+              content: "<>";
+              width: 10px;
+              line-height: 10px;
+              font-size: 9px;
+              position: relative;
+              top: 40%;
+              left: 0px;
+              border-color: #2db7f5;
+              background-color: #2db7f5;
+              padding: 40px 0;
+              color: #fff;
+            }
+            &:hover::before {
+              -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+              -moz-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+              box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2), 0 3px 9px rgba(0, 0, 0, 0.18);
+              -webkit-animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+              animation: tapAnimation 0.25s cubic-bezier(0.31, 1, 0.34, 1) forwards;
+            }
           }
         }
         .split-view {
