@@ -59,8 +59,6 @@ export default ({ children, title = 'homepage', description = 'discover & share 
       <script src='https://code.jquery.com/jquery-3.2.1.slim.min.js' />
       <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' />
       <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js' />
-      <script src='/static/vendors/js/jquery.slabtext.min.js' />
-      <script src='/static/vendors/js/jquery.textfill.min.js' />
       <script src='/static/vendors/js/snoowrap-v1.min.js' />
       <script src='/static/vendors/js/addtohomescreen.min.js' />
     </Head>
