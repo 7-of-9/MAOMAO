@@ -253,7 +253,7 @@ class DiscoveryList extends Component {
         <div className='discovery-list'>
           { !isResize && this.renderTermList(isSplitView, ingoreTerms, discoveryTermId, terms, urlId) }
           <Sticky>
-            { !isResize && <div className='close_button' onClick={this.closePreview} /> }
+            { !isResize && <div style={{ left: currentWidth - 20 }} className='close_button' onClick={this.closePreview} /> }
             {
              isSplitView && <SplitView onResizeStart={this.onResizeStart} onResizeStop={this.onResizeStop}>
                {(width, height) => (
