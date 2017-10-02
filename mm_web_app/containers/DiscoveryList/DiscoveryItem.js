@@ -7,6 +7,7 @@
 import React, { PureComponent } from 'react'
 import { observer, inject } from 'mobx-react'
 import PropTypes from 'prop-types'
+import { Textfit } from 'react-textfit'
 import _ from 'lodash'
 import logger from '../../utils/logger'
 import { tagColor, dynamicFontSize } from '../../utils/helper'
@@ -153,10 +154,20 @@ export default class DiscoveryItem extends PureComponent {
     }
   }
 
+  onFitTextReady = (fontSize) => {
+    /* global $ */
+    if (this.textContainer && typeof $ !== 'undefined') {
+      $(this.textContainer).addClass('discovery-description')
+    }
+  }
+
   render () {
     /* eslint-disable camelcase */
     const { disc_url_id, site_tld, site_img, title, desc, search_num, img } = this.props
     const images = [{ name: site_tld, img: site_img }]
+    const inlineStyle = {
+      height: 240
+    }
     return (
       <div key={disc_url_id} className='grid-item shuffle-item'>
         <div className='thumbnail-box'>
@@ -172,9 +183,15 @@ export default class DiscoveryItem extends PureComponent {
               onClick={this.handleClick}
               >
               <p className='discovery-title'>{title}</p>
-              <p className='discovery-description' >
-                {desc}
-              </p>
+              <div ref={el => { this.textContainer = el }} >
+                <Textfit
+                  mode='multi'
+                  style={inlineStyle}
+                  onReady={this.onFitTextReady}
+                >
+                  {desc}
+                </Textfit>
+              </div>
               <div className='caption' style={{ bottom: '72px', right: '-12px' }}>
                 {this.renderTerms()}
               </div>
