@@ -3,17 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}"
-	ProjectSection(SolutionItems) = preProject
-		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
-		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{84595920-CF25-481D-A8FF-8D47BBF1BB9F}"
-	ProjectSection(SolutionItems) = preProject
-		PublishScripts\Configurations\web1-WAWS-dev.json = PublishScripts\Configurations\web1-WAWS-dev.json
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BrowserExtension", "BrowserExtension", "{303B31D1-A582-4C5F-B138-8160E99480B2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Websites", "Websites", "{5C39C6C8-67C0-4DA9-966D-DD06D9A61452}"
@@ -44,59 +33,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_global", "global\mm_glob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mmapi00", "mmapi00\mmapi00.csproj", "{EDBAA806-6223-44E0-A828-A90DE275A56B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm02ce", "mm02ce\mm02ce.csproj", "{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaomaoWeb", "MaomaoWeb\MaomaoWeb.csproj", "{4189327E-C2CF-4D8E-9E42-63DB5C305858}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wowmao", "wowmao\wowmao.csproj", "{C4D1A008-DACA-469E-9458-3FA758AA5BB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki_cat_crawler", "wiki_cat_crawler\wiki_cat_crawler.csproj", "{0364D81E-9497-499A-84CD-1F6D26B1D682}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wiki_walker", "wiki_walker\wiki_walker.csproj", "{BE74CB97-5171-49EB-86CB-BD8DA900C87E}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mm_web_app", "mm_web_app\", "{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_21092"
-		Debug.AspNetCompiler.PhysicalPath = "mm_web_app\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21092\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_21092"
-		Release.AspNetCompiler.PhysicalPath = "mm_web_app\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21092\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "21092"
-		SlnRelativePath = "mm_web_app\"
-	EndProjectSection
-EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "mm_web_services", "mm_web_services\", "{9E009D5F-7D23-4403-BD04-3AC9480658D1}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_21296"
-		Debug.AspNetCompiler.PhysicalPath = "mm_web_services\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21296\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_21296"
-		Release.AspNetCompiler.PhysicalPath = "mm_web_services\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_21296\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "21296"
-		SlnRelativePath = "mm_web_services\"
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm_jobs", "mm_jobs\mm_jobs.csproj", "{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mm02ce", "..\maomao_web\mm02ce\mm02ce.csproj", "{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -192,28 +137,6 @@ Global
 		{EDBAA806-6223-44E0-A828-A90DE275A56B}.Release|x64.Build.0 = Release|Any CPU
 		{EDBAA806-6223-44E0-A828-A90DE275A56B}.Release|x86.ActiveCfg = Release|Any CPU
 		{EDBAA806-6223-44E0-A828-A90DE275A56B}.Release|x86.Build.0 = Release|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x64.Build.0 = Debug|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x86.Build.0 = Debug|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x64.ActiveCfg = Release|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x64.Build.0 = Release|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x86.ActiveCfg = Release|Any CPU
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x86.Build.0 = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|x64.Build.0 = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Debug|x86.Build.0 = Debug|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|x64.ActiveCfg = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|x64.Build.0 = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|x86.ActiveCfg = Release|Any CPU
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858}.Release|x86.Build.0 = Release|Any CPU
 		{C4D1A008-DACA-469E-9458-3FA758AA5BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4D1A008-DACA-469E-9458-3FA758AA5BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4D1A008-DACA-469E-9458-3FA758AA5BB8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -250,28 +173,6 @@ Global
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|x64.Build.0 = Release|Any CPU
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|x86.ActiveCfg = Release|Any CPU
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E}.Release|x86.Build.0 = Release|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|x64.Build.0 = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Debug|x86.Build.0 = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|x64.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|x64.Build.0 = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|x86.ActiveCfg = Debug|Any CPU
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045}.Release|x86.Build.0 = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|x64.Build.0 = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Debug|x86.Build.0 = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|x64.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|x64.Build.0 = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|x86.ActiveCfg = Debug|Any CPU
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1}.Release|x86.Build.0 = Debug|Any CPU
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -284,13 +185,23 @@ Global
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Release|x64.Build.0 = Release|Any CPU
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Release|x86.ActiveCfg = Release|Any CPU
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9}.Release|x86.Build.0 = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Debug|x86.Build.0 = Debug|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x64.Build.0 = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x86.ActiveCfg = Release|Any CPU
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E5A5F709-0A3B-410A-A4C1-1EB514B24DFE} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
-		{84595920-CF25-481D-A8FF-8D47BBF1BB9F} = {E5A5F709-0A3B-410A-A4C1-1EB514B24DFE}
 		{2A14FBEE-79BC-4845-9129-0F3527426A4E} = {BB2DF415-8703-467C-BABB-763B99582B3F}
 		{CDC450EA-3727-4BB5-BD2D-124FC51F272F} = {28F502E6-9CE4-4A26-9F42-FA96FEFDC965}
 		{70056333-80F6-4D71-86CF-0456FEEDEB29} = {28F502E6-9CE4-4A26-9F42-FA96FEFDC965}
@@ -298,13 +209,10 @@ Global
 		{5ABD7D8C-E31D-4CF3-8A52-8357D0B466F4} = {010A1AEA-99CB-401D-A3E7-651CF9397978}
 		{17D58E56-2A83-4552-8AFE-664D78183A6B} = {D722EDBD-A4B9-4C53-A0C7-25EA263C727E}
 		{EDBAA806-6223-44E0-A828-A90DE275A56B} = {88D4EF12-311E-4451-8B3A-2DBBF849A07B}
-		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F} = {303B31D1-A582-4C5F-B138-8160E99480B2}
-		{4189327E-C2CF-4D8E-9E42-63DB5C305858} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
 		{C4D1A008-DACA-469E-9458-3FA758AA5BB8} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
 		{0364D81E-9497-499A-84CD-1F6D26B1D682} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
 		{BE74CB97-5171-49EB-86CB-BD8DA900C87E} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
-		{BE8A1416-DB0E-4D1F-BDCC-5BB664137045} = {5C39C6C8-67C0-4DA9-966D-DD06D9A61452}
-		{9E009D5F-7D23-4403-BD04-3AC9480658D1} = {88D4EF12-311E-4451-8B3A-2DBBF849A07B}
 		{4FF1971B-44FA-49A8-B8C9-731EFD6447D9} = {89487825-29E5-4A17-B4B9-3C1EE99DA891}
+		{1E2F1823-E0CE-4BEA-8C8E-7E2430CDDB4F} = {303B31D1-A582-4C5F-B138-8160E99480B2}
 	EndGlobalSection
 EndGlobal
