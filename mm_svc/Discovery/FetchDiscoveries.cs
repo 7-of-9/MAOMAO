@@ -12,6 +12,23 @@ namespace mm_svc.Discovery
 {
     public static class FetchDiscoveries
     {
+        public static DiscoveryInfo getForUrl(long url_id) {
+            using (var db = mm02Entities.Create())
+            {
+                var disc_url_qry = db.disc_url
+                    .Include("awis_site")
+                    .Include("disc_url_cwc")
+                    .Include("disc_url_osl").AsNoTracking().FirstOrDefault(p => p.id == url_id);
+                if(disc_url_qry != null) {
+                    return InfoFromDiscUrl(disc_url_qry);
+                }
+                else
+                {
+                    throw new ApplicationException("bad disc url");
+                }
+            }
+        }
+
         public static List<DiscoveryInfo> GetForUser(long user_id,
             int page_num = 0, int per_page = 120, string country = null, string city = null)
         {
