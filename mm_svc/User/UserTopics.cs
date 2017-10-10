@@ -9,6 +9,12 @@ namespace mm_svc
 {
     public static class UserTopics
     {
+        public class TopicInfo
+        {
+            public long term_id;
+            public string term_name;
+        }
+
         public static int AddUserTopics(long user_id, List<long> topic_ids)
         {
             using (var db = mm02Entities.Create()) {
@@ -45,6 +51,17 @@ namespace mm_svc
                     db.user_reg_topic.Remove(existing);
                     db.SaveChangesTraceValidationErrors();
                 }
+            }
+        }
+
+        public static List<TopicInfo> GetUserTopics(long user_id)
+        {
+            var topics = new List<TopicInfo>();
+            using (var db = mm02Entities.Create())
+            {
+                var topics_qry = db.user_reg_topic.Include("term").Where(p => p.user_id == user_id);
+                topics = topics_qry.Select(p => new TopicInfo() { term_id = p.term.id, term_name = p.term.name }).ToListNoLock();
+                return topics;
             }
         }
     }

@@ -44,12 +44,11 @@ namespace mmapi00.Controllers
         }
 
 
-        [Route("disc/url")]
+        [Route("disc/url/{url_id}")]
         [HttpGet]
         [CacheOutput(ClientTimeSpan = 60 * 60 * 1, ServerTimeSpan = 60 * 60 * 1)] // 1 hr / 1 hrs
         public IHttpActionResult Discovery_URL(long url_id)
         {
-
             var ret = mm_svc.Discovery.FetchDiscoveries.getForUrl(url_id);
             return Ok(ret);
         }

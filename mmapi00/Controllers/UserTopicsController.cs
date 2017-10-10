@@ -47,5 +47,16 @@ namespace mmapi00.Controllers
             mm_svc.UserTopics.RemoveUserTopic(user_id, topic_id);
             return Ok(new {});
         }
+
+        [Route("user_topics")]
+        [HttpGet]
+        public IHttpActionResult GetAllUserTopics(
+           long user_id, string hash)
+        {
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+
+            var topics = mm_svc.UserTopics.GetUserTopics(user_id);
+            return Ok(new { topics = topics });
+        }
     }
 }
