@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using WebApi.OutputCache.V2;
 
 namespace mmapi00.Controllers
 {
@@ -19,5 +20,18 @@ namespace mmapi00.Controllers
                 headers = s
             });
         }
+
+        [HttpGet]
+        [Route("test/cache")]
+        public IHttpActionResult DumpCache()
+        {
+            var cache = this.Configuration.CacheOutputConfiguration().GetCacheOutputProvider(this.Request);
+
+            return Ok(new {
+                contents = cache.AllKeys.ToList().Select(p => new { key = p, value = cache.Get(p).ToString() })
+            });
+
+        }
+
     }
 }

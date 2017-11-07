@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using WebApi.OutputCache.Core.Cache;
+using WebApi.OutputCache.V2;
 
 namespace mmapi00
 {
@@ -21,6 +23,10 @@ namespace mmapi00
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            // setup memory cache provider 
+            var cacheConfig = config.CacheOutputConfiguration();
+            cacheConfig.RegisterCacheOutputProvider(() => new MemoryCacheDefault());
 
             config.Filters.Add(new AiExceptionFilterAttribute());
         }

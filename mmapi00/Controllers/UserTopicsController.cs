@@ -21,20 +21,11 @@ namespace mmapi00.Controllers
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             int n = mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
-            return Ok(new { added = n });
+
+            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            return Ok(new { added = n, caches_invalidated = removed });
         }
 
-        //[Route("user_topics")]
-        //[HttpPost]
-        //public IHttpActionResult AddUserTopic(
-        //    long user_id, string hash,
-        //    [FromBody] long topic_id)
-        //{
-        //    if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
-
-        //    mm_svc.UserTopics.AddUserTopic(user_id, topic_id);
-        //    return Ok(new {});
-        //}
 
         [Route("user_topics/{topic_id}")]
         [HttpDelete]
@@ -45,7 +36,9 @@ namespace mmapi00.Controllers
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
             mm_svc.UserTopics.RemoveUserTopic(user_id, topic_id);
-            return Ok(new {});
+
+            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            return Ok( new { caches_invalidated = removed });
         }
 
         [Route("user_topics")]

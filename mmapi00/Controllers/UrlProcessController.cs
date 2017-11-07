@@ -46,7 +46,7 @@ namespace mmapi00.Controllers
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
             var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfoController t) => t.GetNlpInfo(null,null));
             var url_href = (string)(nlp_info.url.href.ToString());
-            this.RemoveCacheVariants(cacheKey + "-url=" + url_href);
+            this.RemoveCacheKeys_1(cacheKey + "-url=" + url_href);
 
             // record user_url history
             var url = mm_global.Util.RemoveHashFromUrl(nlp_info.url.href.ToString());
