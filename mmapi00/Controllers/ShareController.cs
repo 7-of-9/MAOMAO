@@ -21,18 +21,21 @@ namespace mmapi00.Controllers
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
-        /// <param name="url_id">Share single URL</param>
-        /// <param name="topic_id">Or: Share single topic</param>
-        /// <param name="share_all">Or: Share all</param>
+        /// <param name="url_id">Single Item: url_id, or</param>
+        /// <param name="disc_url_id">Single Item: disc_url_id</param>
+        /// <param name="topic_id">Single Topic: topic_id</param>
+        /// <param name="share_all">All: share all browsing</param>
         /// <returns>Share code to pass to share/accept</returns>
         [HttpPut] [Route("share/create")]
         public IHttpActionResult Create(
             long user_id, string hash,
-            long? url_id = null, long? topic_id = null, bool share_all = false)
+            long? url_id = null, long? disc_url_id = null,
+            long? topic_id = null,
+            bool share_all = false)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            var share_code = mm_svc.ShareCreator.CreateShare(user_id, null, url_id, topic_id, share_all);
+            var share_code = mm_svc.ShareCreator.CreateShare(user_id, null, url_id, disc_url_id, topic_id, share_all);
 
             return Ok( new {
                 share_code = share_code

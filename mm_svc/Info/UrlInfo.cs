@@ -34,11 +34,12 @@ namespace mm_svc
                     return db_url;
                 }
 
-                db_url = db.urls.Where(p => p.url_hash == document_head_hash).FirstOrDefaultNoLock();
-                if (db_url != null)
-                {
-                    g.LogLine($"returning URL DB info for url_id={db_url.id}, calais_as_of_utc={db_url.calais_as_of_utc}");
-                    return db_url;
+                if (!string.IsNullOrEmpty(document_head_hash)) {
+                    db_url = db.urls.Where(p => p.url_hash == document_head_hash).FirstOrDefaultNoLock();
+                    if (db_url != null) {
+                        g.LogLine($"returning URL DB info for url_id={db_url.id}, calais_as_of_utc={db_url.calais_as_of_utc}");
+                        return db_url;
+                    }
                 }
                 return null;
             }

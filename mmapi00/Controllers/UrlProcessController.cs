@@ -44,6 +44,7 @@ namespace mmapi00.Controllers
 
             // decache GetNlpInfo() for this url 
             // FIXME -- this doesnt' seem to be working properly; see above - removed caching completely for now on GetNlpInfo()
+            // TODO -- use RemoveCacheKeys_2() - seems to work much better
             var cacheKey = Configuration.CacheOutputConfiguration().MakeBaseCachekey((UrlInfoController t) => t.GetNlpInfo(null,null));
             var url_href = (string)(nlp_info.url.href.ToString());
             this.RemoveCacheKeys_1(cacheKey + "-url=" + url_href);

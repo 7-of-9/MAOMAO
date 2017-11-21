@@ -26,6 +26,7 @@ namespace mm_svc.SmartFinder
               , new CityCountry() { country = "UK", city = "London" }
               , new CityCountry() { country = "Indonesia", city = "Bali" }
               , new CityCountry() { country = "Singapore", city = "Singapore" }
+              , new CityCountry() { country = "Indonesia", city = "Jakarta" }
             };
 
         //

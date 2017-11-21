@@ -14,7 +14,7 @@ namespace tests
         [TestMethod]
         public void CreateShare_Test0()
         {
-            ShareCreator.CreateShare(2, 5, null, null, true);
+            ShareCreator.CreateShare(user_id: 271, target_user_id: null, url_id: null, disc_url_id: 1276035);
         }
 
         [TestMethod]
