@@ -74,7 +74,7 @@ namespace mmapi00.Controllers
         }
 
         /// <summary>
-        /// Stores user browse history
+        /// Links FB or Goog ID to user's account
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
@@ -90,7 +90,7 @@ namespace mmapi00.Controllers
             if (account == null) return BadRequest("bad linked account");
             if (account.google_user_id == null && account.fb_user_id == null) return BadRequest("missing google_user_id or fb_user_id");
 
-            var db_user = mm_svc.UserRegister.LinkAccount(user_id, (string)account.google_user_id,(string) account.fb_user_id);
+            var db_user = mm_svc.UserRegister.LinkAccount(user_id, (string)account.google_user_id, (string)account.fb_user_id);
 
             return Ok(new { id = db_user.id, email = db_user.email });
         }
@@ -122,7 +122,7 @@ namespace mmapi00.Controllers
         }
 
         /// <summary>
-        /// Returns user stream (topics)
+        /// Returns user stream - own and received shares
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
@@ -147,9 +147,7 @@ namespace mmapi00.Controllers
         //{
         //    if (!UserHash.Ok(user_id, hash)) return Unauthorized();
         //    var data = mm_svc.UrlClassifier.TmpDemo_ClassifyAllUserHistory(user_id);
-
         //    return Ok( new {
-
         //        topics = data.topics,
         //          urls = data.urls.Select(p => new {
         //            suggestions_for_url = p.suggestions,//.Select(p2 => new { suggested_term = p2.term_name, S = p2.S }),

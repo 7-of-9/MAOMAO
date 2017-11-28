@@ -481,8 +481,8 @@ namespace mm_svc
         [NonSerialized]
         public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
 
-        public DateTime hit_utc;
-        public double im_score, time_on_tab;
+        public DateTime? hit_utc;
+        public double? im_score, time_on_tab;
     }
 
     [DebuggerDisplay("{term_name} ({child_topics.Count})")]

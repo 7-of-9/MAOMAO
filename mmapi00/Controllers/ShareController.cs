@@ -140,6 +140,9 @@ namespace mmapi00.Controllers
                 url_title = data.url_title,
                 topic_title = data.topic_title,
                 share_all = data.share_all,
+                url_id = data.url_id,
+                topic_id = data.topic_id,
+                source_user_id = data.source_user_id,
             });
         }
     }

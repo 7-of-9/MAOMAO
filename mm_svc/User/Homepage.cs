@@ -131,7 +131,7 @@ namespace mm_svc
             // e.g: [ { id: 1, user: 'abc', list: [ { type: 'all', share_code: 'uniq_code', urls: []} ] ]
             using (var db = mm02Entities.Create()) {
 
-                Parallel.ForEach(received_shares, (received_share) => {
+                Parallel.ForEach(received_shares, new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 1 : 8 }, (received_share) => {
                 //foreach (var received_share in received_shares) {
 
                     var source_user_id = received_share.share.source_user_id;
@@ -182,8 +182,10 @@ namespace mm_svc
                             else {
 
                                 // url_id --> single page/URL share
+                                if (received_share.share.url_id == null)
+                                    throw new ApplicationException("expected URL single-item share");
 
-                                var url_infos = GetUserUrlInfos_ForSingleUrl(received_share.share.url_id, urls_terms);
+                                var url_infos = GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
 
                                 var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
                                 urls_share_list.Add(new ShareReceivedInfo() {
@@ -285,18 +287,21 @@ namespace mm_svc
             }
         }
 
-        private static List<UserUrlInfo> GetUserUrlInfos_ForSingleUrl(long? url_id, ConcurrentDictionary<long, List<term>> urls_terms)
+        private static List<UserUrlInfo> GetUserUrlInfos_ForSingleUrl(
+            long url_id,
+            long source_user_id,
+            ConcurrentDictionary<long, List<term>> urls_terms)
         {
             using (var db = mm02Entities.Create())
             {
-                var user_urls = db.user_url.AsNoTracking().Where(p => p.url_id == url_id && p.time_on_tab > 0).Distinct().ToListNoLock();
-                var url_ids = user_urls.Select(p => p.url_id).ToList();
+                var user_url = db.user_url.AsNoTracking().Where(p => p.url_id == url_id && p.user_id == source_user_id && p.time_on_tab > 0).Distinct().FirstOrDefaultNoLock();
+                //var url_ids = user_urls.Select(p => p.url_id).ToList();
 
-                var url_parent_terms_qry = db.url_parent_term//.AsNoTracking()
-                                             //.Include("term").Include("url")
+                var url_parent_terms_qry = db.url_parent_term
                                              .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
                                              .Where(p => p.S_norm > MIN_S_NORM)
-                                             .Where(p => url_ids.Contains(p.url_id))
+                                           //.Where(p => url_ids.Contains(p.url_id))
+                                             .Where(p => p.url_id == url_id)
                                              .Select(p => new {
                                                  url_id = p.url_id,
                                                  href = p.url.url1,
@@ -304,7 +309,6 @@ namespace mm_svc
                                                  meta_title = p.url.meta_title,
                                                  suggested_dynamic = p.suggested_dynamic,
                                                  S = p.S,
-
                                                  term = p.term //**
                                              });
                 //Debug.WriteLine(url_parent_terms_qry.ToString());
@@ -319,15 +323,15 @@ namespace mm_svc
                 return urls.Select(p => new UserUrlInfo()
                 {
                     url_id = p.url_id,
-                    href = p.href, //{ get { return url.url1; } }
-                    img = p.img_url, //{ get { return url.img_url; } }
-                    title = p.meta_title, //{ get { return url.meta_title; } }
+                    href = p.href,
+                    img = p.img_url, 
+                    title = p.meta_title, 
 
                     //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
 
-                    hit_utc = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).nav_utc,
-                    im_score = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).im_score ?? 0,
-                    time_on_tab = user_urls.FirstOrDefault(p2 => p2.url_id == p.url_id).time_on_tab ?? 0,
+                    hit_utc = user_url?.nav_utc,
+                    im_score = user_url?.im_score ?? 0,
+                    time_on_tab = user_url?.time_on_tab ?? 0,
                 }).ToList();
             }
         }
