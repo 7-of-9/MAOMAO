@@ -139,7 +139,6 @@ namespace mmapi00.Controllers
             return Ok( new { mine = data.mine, received = data.received, topics = data.topics });
         }
 
-     
         //[Route("user/home")]
         //[HttpGet]
         //public IHttpActionResult DEMO_CalcCategorizedHistory_All(

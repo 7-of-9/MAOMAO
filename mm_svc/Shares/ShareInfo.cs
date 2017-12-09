@@ -23,6 +23,7 @@ namespace mm_svc
                 return new ShareInfoReturn() {
                     fullname = (share.user.firstname + " " + share.user.lastname) ?? "",
                     url_title = (share.url != null) ? share.url.meta_title : "",
+                    img_url = (share.url != null) ? share.url.img_url : "",
                     topic_title = (share.term != null) ? share.term.name : "",
                     share_all = share.share_all,
                     url_id = share.url_id,
@@ -36,6 +37,7 @@ namespace mm_svc
     public class ShareInfoReturn {
         public string fullname;
         public string url_title;
+        public string img_url;
         public string topic_title;
 
         public bool share_all;

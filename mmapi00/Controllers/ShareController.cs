@@ -145,5 +145,25 @@ namespace mmapi00.Controllers
                 source_user_id = data.source_user_id,
             });
         }
+
+        /// <summary>
+        /// Returns a single-item url share -- required by new-user-referal flow, post signup to present the shared URL.
+        /// Expects only a single-item url share to be supplied; will throw if any other type of share is supplied.
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="hash"></param>
+        /// <param name="share_code"></param>
+        /// <returns></returns>
+        [Route("share/url")] [HttpGet]
+        public IHttpActionResult GetSingleItemShare(
+            long user_id, string hash,
+            string share_code)
+        {
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+
+            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id, share_code);
+
+            return Ok(new { url_share = data });
+        }
     }
 }

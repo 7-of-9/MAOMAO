@@ -37,8 +37,17 @@ namespace mm_svc
             if (topic_id != null && (url_id != null || disc_url_id != null || share_all == true)) throw new ApplicationException("bad args 3");
             if (share_all == true && (url_id != null || disc_url_id != null || topic_id != null)) throw new ApplicationException("bad args 4");
 
-            // promote [disc_url] -> [url]
-            if (disc_url_id != null) {
+            //
+            // creating share from homepage: (*) promote [disc_url] -> [url]
+            //
+            // TODO: user viewing from homepage should 
+            //        really should be recreating the *entire* mm02ce flow: i.e.
+            //          > calais processing, [user_url] record, and then [url_parent_terms] calculation!
+            //
+            // this is really just a crude hack at the moment; see Homepage.GetUserUrlInfos_ForSingleUrl() or the implications
+            //
+            if (disc_url_id != null)
+            {
                 url_id = Url_FromDiscUrl((long)disc_url_id);
             }
 
@@ -75,10 +84,10 @@ again:
         private static long Url_FromDiscUrl(long disc_url_id)
         {
             using (var db = mm02Entities.Create()) {
-                disc_url db_disc_url = db.disc_url.Find(disc_url_id);
+                disc_url disc_url = db.disc_url.Find(disc_url_id);
 
                 // get AWIS site
-                var url = mm_global.Util.RemoveHashFromUrl(db_disc_url.url.ToString());
+                var url = mm_global.Util.RemoveHashFromUrl(disc_url.url.ToString());
                 var awis_site = mm_svc.SiteInfo.GetOrQueryAwis(url, out bool returned_from_db);
                 if (awis_site == null) throw new ApplicationException("bad site");
                 //if (!SiteInfo.IsSiteAllowable(awis_site)) throw new ApplicationException("bad site");
@@ -88,14 +97,16 @@ again:
                 if (db_url == null) {
                     var note = $"N/A__FROM_DISC_URL_#{disc_url_id}";
                     db_url = new url() {
-                        url1 = db_disc_url.url,
+                        url1 = disc_url.url,
                         url_hash = note,
                         awis_site_id = awis_site.id,
                         cal_lang = "TBD",
-                        calais_as_of_utc = null, // no NLP yet
-                        meta_title = "TBD",
-                        meta_all = "TBD",
-                        raw_text = note,
+                        calais_as_of_utc = null, // no NLP yet!! the root of all evil hacks - homepage browsing should mirror extension browsing flow
+                        meta_all = "TBD", // sad
+                        raw_text = note, // bigly
+
+                        img_url = disc_url.img_url, // do what we can
+                        meta_title = disc_url.meta_title,
                     };
                     db.urls.Add(db_url);
                     db.SaveChangesTraceValidationErrors();

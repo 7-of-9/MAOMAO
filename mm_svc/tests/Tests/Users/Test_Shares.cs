@@ -22,5 +22,11 @@ namespace tests
         {
             var ok = ShareAcceptor.AcceptShare(5, "QIZYJS4K");
         }
+
+        [TestMethod]
+        public void GetSingleUrlShare_Test0()
+        {
+            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id: 281, share_code: "baec26f9");
+        }
     }
 }

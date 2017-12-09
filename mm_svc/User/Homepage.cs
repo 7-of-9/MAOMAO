@@ -112,6 +112,24 @@ namespace mm_svc
             return ret;
         }
 
+        // used by single-item-share new user homepage, when signed in we need to be able to query url info for immediate presentation
+        public static UserUrlInfo GetSingleShareUrl(long user_id, string share_code)
+        {
+            using (var db = mm02Entities.Create()) {
+                // expect exactly one accepted share for the single-item 
+                var received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
+                                       .Where(p => p.user_id == user_id
+                                                && p.share.share_code == share_code)
+                                       .SingleOrDefaultNoLock();
+
+                if (received_share.share.share_all || received_share.share.topic_id != null || received_share.share.url_id == null)
+                    throw new ApplicationException("expected single-item url share; got something else.");
+
+                var urls_terms = new ConcurrentDictionary<long, List<term>>();
+                return GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
+            }
+        }
+
         private static List<Homepage.OthersInfo> GetSharesReceivedFrom(List<share_active> received_shares, ConcurrentDictionary<long, List<term>> urls_terms)
         {
             var shares = new List<Homepage.OthersInfo>();
@@ -165,6 +183,8 @@ namespace mm_svc
 
                             if (received_share.share.topic_id != null) {
                                 // topic_id --> share of topic (main)
+                                if (received_share.share.share_code == "e5f1aae2" && Debugger.IsAttached)
+                                    Debugger.Break();
 
                                 var url_infos = GetUserUrlInfos_ForTopic(source_user_id, received_share.share.topic_id, urls_terms);
 
@@ -185,13 +205,16 @@ namespace mm_svc
                                 if (received_share.share.url_id == null)
                                     throw new ApplicationException("expected URL single-item share");
 
-                                var url_infos = GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
+                                if (received_share.share.share_code == "22cb3ad4" && Debugger.IsAttached)
+                                    Debugger.Break();
+
+                                var single_url_info = GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
 
                                 var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
                                 urls_share_list.Add(new ShareReceivedInfo() {
                                     share_code = received_share.share.share_code,
                                     type = "url",
-                                    urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
+                                    urls = new List<UserUrlInfo>() { single_url_info },
                                     source_user_deactivated = received_share.source_user_deactivated,
                                     target_user_deactivated = received_share.user_deactivated,
                                 });
@@ -215,6 +238,8 @@ namespace mm_svc
             }
             return shares.ToList();
         }
+
+
 
         private static List<UserUrlInfo> GetUserUrlInfos_ForTopic(long user_id, long? term_id, ConcurrentDictionary<long, List<term>> urls_terms)
         {
@@ -287,52 +312,70 @@ namespace mm_svc
             }
         }
 
-        private static List<UserUrlInfo> GetUserUrlInfos_ForSingleUrl(
+        private static UserUrlInfo GetUserUrlInfos_ForSingleUrl(
             long url_id,
             long source_user_id,
             ConcurrentDictionary<long, List<term>> urls_terms)
         {
             using (var db = mm02Entities.Create())
             {
+                //
+                // HACK: for shares of single-items from homepage; this is very messy
+                //  >>> see ShareCreator.CreateShare() for what homepage should ideally be doing <<<
+                //
+                // lookup will fail for single-item promoted [disc_url] -- they're just not in the table [user_url] table!
+                //
                 var user_url = db.user_url.AsNoTracking().Where(p => p.url_id == url_id && p.user_id == source_user_id && p.time_on_tab > 0).Distinct().FirstOrDefaultNoLock();
-                //var url_ids = user_urls.Select(p => p.url_id).ToList();
-
-                var url_parent_terms_qry = db.url_parent_term
-                                             .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
-                                             .Where(p => p.S_norm > MIN_S_NORM)
-                                           //.Where(p => url_ids.Contains(p.url_id))
-                                             .Where(p => p.url_id == url_id)
-                                             .Select(p => new {
-                                                 url_id = p.url_id,
-                                                 href = p.url.url1,
-                                                 img_url = p.url.img_url,
-                                                 meta_title = p.url.meta_title,
-                                                 suggested_dynamic = p.suggested_dynamic,
-                                                 S = p.S,
-                                                 term = p.term //**
-                                             });
-                //Debug.WriteLine(url_parent_terms_qry.ToString());
-
-                var url_parent_terms = url_parent_terms_qry.ToListNoLock();
-
-                url_parent_terms.ForEach(p => MaintainUrlTermsLookup(p.url_id, p.term, urls_terms));
-
-                //var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
-
-                var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList(); 
-                return urls.Select(p => new UserUrlInfo()
+                if (user_url == null)
                 {
-                    url_id = p.url_id,
-                    href = p.href,
-                    img = p.img_url, 
-                    title = p.meta_title, 
+                    // HACK path: we're being called by a share single-item from homepage, i.e. [disc_url] promotion...
+                    var url = db.urls.Find(url_id);
+                    return new UserUrlInfo() {
+                        url_id = url.id,
+                        href = url.url1,
+                        img = url.img_url,
+                        title = url.meta_title,
+                    };
+                }
+                else
+                {
+                    var url_parent_terms_qry = db.url_parent_term // also FAILS for promoted [disc_url] -> [url]: as above.
+                                                 .OrderBy(p => p.url_id).ThenByDescending(p => p.pri)
+                                                 .Where(p => p.S_norm > MIN_S_NORM)
+                                                 .Where(p => p.url_id == url_id)
+                                                 .Select(p => new {
+                                                     url_id = p.url_id,
+                                                     href = p.url.url1,
+                                                     img_url = p.url.img_url,
+                                                     meta_title = p.url.meta_title,
+                                                     suggested_dynamic = p.suggested_dynamic,
+                                                     S = p.S,
+                                                     term = p.term //**
+                                             });
+                    //Debug.WriteLine(url_parent_terms_qry.ToString());
+                    var url_parent_terms = url_parent_terms_qry.ToListNoLock();
 
-                    //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+                    url_parent_terms.ForEach(p => MaintainUrlTermsLookup(p.url_id, p.term, urls_terms));
 
-                    hit_utc = user_url?.nav_utc,
-                    im_score = user_url?.im_score ?? 0,
-                    time_on_tab = user_url?.time_on_tab ?? 0,
-                }).ToList();
+                    //var url_suggestions = url_parent_terms.Where(p => p.suggested_dynamic /*&& !p.term.IS_TOPIC*/).Where(p => p.S > 1).OrderByDescending(p => p.S).ToList();
+
+                    var urls = url_parent_terms.DistinctBy(p => p.url_id).ToList();
+                    if (urls.Count > 1)
+                        throw new ApplicationException("expected a single url; got > 1");
+
+                    return urls.Select(p => new UserUrlInfo() {
+                        url_id = p.url_id,
+                        href = p.href,
+                        img = p.img_url,
+                        title = p.meta_title,
+
+                        //suggestions = new List<SuggestionInfo>(url_suggestions.Where(p2 => p2.url_id == p.url_id).Select(p2 => new SuggestionInfo() { term_name = p2.term_name, S = p2.S ?? 0, is_topic = p2.is_topic }).ToList()),
+
+                        hit_utc = user_url?.nav_utc,
+                        im_score = user_url?.im_score ?? 0,
+                        time_on_tab = user_url?.time_on_tab ?? 0,
+                    }).ToList().FirstOrDefault();
+                }
             }
         }
      

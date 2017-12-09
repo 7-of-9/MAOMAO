@@ -42,5 +42,14 @@ namespace mmdb_model
                 return result;
             }
         }
+
+        public static T SingleOrDefaultNoLock<T>(this IQueryable<T> query)
+        {
+            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted })) {
+                var result = query.SingleOrDefault();
+                scope.Complete();
+                return result;
+            }
+        }
     }
 }
