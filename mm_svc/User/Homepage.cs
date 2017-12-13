@@ -452,7 +452,10 @@ namespace mm_svc
                 urls_terms.TryAdd(url_id, new List<term>() { term });
         }
 
-        private static List<TopicInfo> GetTopicInfos_ForUserUrls(List<long> url_ids, List<UserUrlInfo> url_infos, ConcurrentDictionary<long, List<term>> urls_terms)
+        private static List<TopicInfo> GetTopicInfos_ForUserUrls(
+            List<long> url_ids,
+            List<UserUrlInfo> url_infos,
+            ConcurrentDictionary<long, List<term>> urls_terms)
         {
             using (var db = mm02Entities.Create())
             {
@@ -479,16 +482,21 @@ namespace mm_svc
               
                 // urls --> topic chains
                 foreach (var url_info in url_infos) {
-                    //if (url_info.url_id == 13513)
-                    //    Debugger.Break();
 
-                    var topics_for_url = urls_terms[url_info.url_id];
-                    foreach (var topic in topics_for_url) {
-                        if (topic_chains.ContainsKey(topic.id))
-                        {
-                            var topic_chain = topic_chains[topic.id];
-                            url_info.topic_chains.Add(topic_chain);
+                    // HACK
+                    // need to make this check: single-item share from website hack (disc_url promotion) doesn't
+                    // trigger the required flow to make this populated...
+                    if (urls_terms.ContainsKey(url_info.url_id)) {
+
+                        var topics_for_url = urls_terms[url_info.url_id];
+
+                        foreach (var topic in topics_for_url) {
+                            if (topic_chains.ContainsKey(topic.id)) {
+                                var topic_chain = topic_chains[topic.id];
+                                url_info.topic_chains.Add(topic_chain);
+                            }
                         }
+
                     }
                 }
 
