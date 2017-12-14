@@ -76,7 +76,7 @@ namespace mm_svc.Terms
                 if (parent_single != null) {
                     if (chain.Any(p => p.id == parent_single.id)) {
                         g.LogLine($"### RecurseTopicLinkChain - CIRCULAR REF for {child_term_id}: abort.");
-                        if (Debugger.IsAttached) Debugger.Break();
+                        //if (Debugger.IsAttached) Debugger.Break();
                     }
                     else {
                         chain.Add(parent_single);

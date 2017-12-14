@@ -464,26 +464,6 @@ namespace mm_svc
         }
     }
 
-    public class UserUrlInfo
-    {
-        // cannot serialize DB EF types
-        //[NonSerialized]
-        //public url url;
-
-        public long url_id; //{ get { return url.id; } }
-        public string href; //{ get { return url.url1; } }
-        public string img; //{ get { return url.img_url; } }
-        public string title; //{ get { return url.meta_title; } }
-
-        [NonSerialized]
-        public List<SuggestionInfo> suggestions;
-
-        [NonSerialized]
-        public List<List<TopicInfo>> topic_chains = new List<List<TopicInfo>>();
-
-        public DateTime? hit_utc;
-        public double? im_score, time_on_tab;
-    }
 
     [DebuggerDisplay("{term_name} ({child_topics.Count})")]
     public class TopicInfo

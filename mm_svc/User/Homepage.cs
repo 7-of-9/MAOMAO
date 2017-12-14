@@ -20,95 +20,103 @@ namespace mm_svc
         public class Homepage
         {
             public class OwnInfo {
-                public class ShareIssuedInfo { // todo: refactor w/ ShareReceivedInfo
-                    public long user_id;
-                    public string share_code;
-                    public string email;
-                    public string fullname;
-                    public string avatar;
-
-                    public long? url_id;
-                    public long? topic_id;
-                    public string topic_name;
-                    public bool share_all;
-
-                    public bool source_user_deactivated; 
-                    public bool target_user_deactivated;
-                }
-
                 public string fullname;
                 public string avatar;
                 public string email;
                 public long user_id;
-                public List<UserUrlInfo> urls;
                 public List<ShareIssuedInfo> shares_issued;
             }
             public OwnInfo mine;
+            public List<UserUrlInfo> urls_mine;     // my urls: with pagination
 
             public class OthersInfo {
-                public class ShareReceivedInfo {
-                    public string type;
-                    public string topic_name;
-                    public string share_code;
-                    public List<UserUrlInfo> urls;
-
-                    public bool source_user_deactivated;
-                    public bool target_user_deactivated;
-                }
-
                 public string email;
                 public long user_id;
                 public string avatar;
                 public string fullname;
-                public List<ShareReceivedInfo> shares;
+                public List<ShareReceivedInfo> shares_received;
+
+                // perf: don't serialize non-paginated (all) urls
+                [NonSerialized]                     
+                public List<UserUrlInfo> urls;
             }
-            public List<OthersInfo> received;
+            public List<OthersInfo> received;       // all received shares; no pagination
+            public List<UserUrlInfo> urls_received; // urls received: with pagination
 
             public List<TopicInfo> topics;
         }
 
-        public static Homepage Get(long user_id)
+        public static Homepage Get(long user_id,
+            int? page_num = null, int per_page = 60,
+            bool get_own = true,
+            bool get_friends = true,
+            long? filter_user_id = null, 
+            long? filter_term_id = null)
         {
-            Homepage ret = new Homepage();
-
             GoldenParents.use_stored_parents_cache = true;
             GoldenTopics.use_topic_link_cache = true;
 
+            var ret = new Homepage() {
+                mine = new Homepage.OwnInfo(),
+            received = new List<Homepage.OthersInfo>()
+            };
             var urls_terms = new ConcurrentDictionary<long, List<term>>(); // url_id x term_ids[]
 
             var sw = new Stopwatch(); sw.Start();
             using (var db = mm02Entities.Create()) {
+
                 // get own history
-                var me = db.users.Find(user_id);
-                var own_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id && p.time_on_tab > 0).Distinct().ToListNoLock();
-                var own_url_infos = GetUserUrlInfos_ForUserUrls(me.id, urls_terms);
-                Debug.WriteLine($"1 = {sw.ElapsedMilliseconds}ms");
+                if (get_own) {
+                    var me = db.users.Find(user_id);
+                    var own_urls = db.user_url.AsNoTracking().Where(p => p.user_id == user_id && p.time_on_tab > 0).Distinct().ToListNoLock();
+                    ret.urls_mine = GetUserUrlInfos_ForUserUrls(me.id, urls_terms);
+                    ret.mine = new Homepage.OwnInfo() {
+                        user_id = me.id,
+                        email = me.email,
+                        avatar = me.avatar ?? "",
+                        fullname = me.firstname + " " + me.lastname,
+                        shares_issued = FindAcceptSharedFromUser(me),
+                    };
+                    Debug.WriteLine($"get_own = {sw.ElapsedMilliseconds}ms");
+                }
 
                 // get received & accepted shares
-                var received_shares = db.share_active.Include("share").Include("share.term").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
-                ret.received = GetSharesReceivedFrom(received_shares, urls_terms);
-                Debug.WriteLine($"2 = {sw.ElapsedMilliseconds}ms");
+                if (get_friends) {
+                    var received_shares = db.share_active.Include("share").Include("share.term").AsNoTracking().Where(p => p.user_id == user_id).Distinct().ToListNoLock();
 
-                ret.mine = new Homepage.OwnInfo() {
-                    user_id = me.id, email = me.email, avatar = me.avatar ?? "", fullname = me.firstname + " " + me.lastname,
-                    urls = own_url_infos.OrderByDescending(p => p.im_score).ToList(),
-                    shares_issued = FindAcceptSharedFromUser(me),
-                };
-                Debug.WriteLine($"3 = {sw.ElapsedMilliseconds}ms");
+                    if (filter_user_id != null)
+                        received_shares.RemoveAll(p => p.share.source_user_id != (long)filter_user_id);
 
-                // todo: (2) is_topic buggy?
-                var received_url_infos = ret.received.SelectMany(p => p.shares.SelectMany(p2 => p2.urls)).ToList();
-                var all_url_infos = own_url_infos.Union(received_url_infos).ToList();
-                var all_url_ids = all_url_infos.Select(p => p.url_id).ToList();
+                    if (filter_term_id != null)
+                        received_shares.RemoveAll(p => p.share.topic_id != filter_term_id);
 
-                ret.topics = GetTopicInfos_ForUserUrls(all_url_ids, all_url_infos, urls_terms);
+                    ret.received = GetSharesReceivedFrom(received_shares, urls_terms);
+                  //received_url_infos = ret.received.SelectMany(p => p.shares_received.SelectMany(p2 => p2.urls)).ToList();
+                    ret.urls_received = ret.received.SelectMany(p => p.urls).ToList();
+                    Debug.WriteLine($"get_friends = {sw.ElapsedMilliseconds}ms");
+                }
 
-                Debug.WriteLine($"4 = {sw.ElapsedMilliseconds}ms");
+                // get topic infos for all urls (no pagination)
+                List<UserUrlInfo> both_url_infos = null;
+                if (ret.urls_mine != null && ret.urls_received != null) ret.urls_mine.Union(ret.urls_received).ToList();
+                else both_url_infos = ret.urls_mine ?? ret.urls_received;
+
+                var both_url_ids = both_url_infos.Select(p => p.url_id).ToList();
+                ret.topics = GetTopicInfos_ForUserUrls(both_url_ids, both_url_infos, urls_terms);
+                Debug.WriteLine($"GetTopicInfos = {sw.ElapsedMilliseconds}ms");
+
+                // perf: optionally paginate mine/received urls;
+                if (page_num != null) {
+                    if (ret.urls_mine != null)
+                        ret.urls_mine = ret.urls_mine.OrderByDescending(p => p.hit_utc).Skip((int)page_num * per_page).Take(per_page).ToList();
+
+                    if (ret.urls_received != null)
+                        ret.urls_received = ret.urls_received.OrderByDescending(p => p.hit_utc).Skip((int)page_num * per_page).Take(per_page).ToList();
+                }
             }
 
             var ms = sw.ElapsedMilliseconds;
             g.LogInfo($"Homepage/get user_id={user_id} ms={ms}");
-
             return ret;
         }
 
@@ -130,27 +138,24 @@ namespace mm_svc
             }
         }
 
-        private static List<Homepage.OthersInfo> GetSharesReceivedFrom(List<share_active> received_shares, ConcurrentDictionary<long, List<term>> urls_terms)
+        private static List<Homepage.OthersInfo> GetSharesReceivedFrom(
+            List<share_active> received_shares,
+            ConcurrentDictionary<long, List<term>> urls_terms,
+            int page_num = 0, int per_page = 60
+        )
         {
-            var shares = new List<Homepage.OthersInfo>();
+            var ret = new List<Homepage.OthersInfo>();
             var share_all_user_ids = new List<long>();
             var user_share_lists = new ConcurrentDictionary<long, List<ShareReceivedInfo>>();
+            //var all_received_urls = new List<UserUrlInfo>();
 
             if (received_shares == null)
                 return null;
 
-            // (?todo process each type in one go?)
-            //var share_alls = received_shares.Where(p => p.share.share_all).ToList();
-            //var share_topics = received_shares.Where(p => p.share.topic_id != null && !share_alls.Select(p2 => p2.share.source_user_id).Contains(p.share.source_user_id)).ToList();
-            //var share_urls = received_shares.Where(p => p.share.url_id != null).ToList();
-
-            // we only get share urls if user accept share all
-            // or group all share by user 
-            // e.g: [ { id: 1, user: 'abc', list: [ { type: 'all', share_code: 'uniq_code', urls: []} ] ]
             using (var db = mm02Entities.Create()) {
 
-                Parallel.ForEach(received_shares, new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 1 : 8 }, (received_share) => {
-                //foreach (var received_share in received_shares) {
+                Parallel.ForEach(received_shares, new ParallelOptions() { MaxDegreeOfParallelism = Debugger.IsAttached ? 1 : 8 }, (received_share) =>
+                {
 
                     var source_user_id = received_share.share.source_user_id;
 
@@ -164,18 +169,20 @@ namespace mm_svc
                         share_all_user_ids.Add(source_user_id);
 
                         var url_infos = GetUserUrlInfos_ForUserUrls(source_user_id, urls_terms);
+                        url_infos.ForEach(p => p.from_share_id = received_share.share.id);
 
                         var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
-
-                        urls_share_list.Clear();
+                        //urls_share_list.Clear(); //???
 
                         urls_share_list.Add(new ShareReceivedInfo() {
+                            share_id = received_share.share.id,
                             share_code = received_share.share.share_code,
                             type = "all",
                             urls = url_infos.OrderByDescending(p => p.im_score).ToList(),
                             source_user_deactivated = received_share.source_user_deactivated,
                             target_user_deactivated = received_share.user_deactivated,
                         });
+                        //all_received_urls.AddRange(url_infos);
                     }
 
                     else {
@@ -183,13 +190,15 @@ namespace mm_svc
 
                             if (received_share.share.topic_id != null) {
                                 // topic_id --> share of topic (main)
-                                if (received_share.share.share_code == "e5f1aae2" && Debugger.IsAttached)
-                                    Debugger.Break();
+                                
+                                //if (received_share.share.share_code == "e5f1aae2" && Debugger.IsAttached) Debugger.Break();
 
                                 var url_infos = GetUserUrlInfos_ForTopic(source_user_id, received_share.share.topic_id, urls_terms);
+                                url_infos.ForEach(p => p.from_share_id = received_share.share.id);
 
                                 var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
                                 urls_share_list.Add(new ShareReceivedInfo() {
+                                    share_id = received_share.share.id,
                                     share_code = received_share.share.share_code,
                                     type = "topic",
                                     topic_name = received_share.share.term.name,
@@ -197,6 +206,7 @@ namespace mm_svc
                                     source_user_deactivated = received_share.source_user_deactivated,
                                     target_user_deactivated = received_share.user_deactivated,
                                 });
+                                //all_received_urls.AddRange(url_infos);
                             }
 
                             else {
@@ -205,19 +215,21 @@ namespace mm_svc
                                 if (received_share.share.url_id == null)
                                     throw new ApplicationException("expected URL single-item share");
 
-                                if (received_share.share.share_code == "22cb3ad4" && Debugger.IsAttached)
-                                    Debugger.Break();
+                                //if (received_share.share.share_code == "22cb3ad4" && Debugger.IsAttached) Debugger.Break();
 
                                 var single_url_info = GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
+                                single_url_info.from_share_id = received_share.share.id;
 
                                 var urls_share_list = user_share_lists[source_user_id] as List<ShareReceivedInfo>;
                                 urls_share_list.Add(new ShareReceivedInfo() {
+                                    share_id = received_share.share.id,
                                     share_code = received_share.share.share_code,
                                     type = "url",
                                     urls = new List<UserUrlInfo>() { single_url_info },
                                     source_user_deactivated = received_share.source_user_deactivated,
                                     target_user_deactivated = received_share.user_deactivated,
                                 });
+                                //all_received_urls.Add(single_url_info);
                             }
                         }
                     }
@@ -227,19 +239,20 @@ namespace mm_svc
                 foreach (long user_id in user_share_lists.Keys) {
                     var urls_share_list = user_share_lists[user_id] as List<ShareReceivedInfo>;
                     var user = db.users.Find(user_id);
-                    shares.Add(new Homepage.OthersInfo() {
+
+                    ret.Add(new Homepage.OthersInfo() {
                         user_id = user.id,
                         email = user.email,
                         avatar = user.avatar ?? "",
                         fullname = user.firstname + " " + user.lastname,
-                        shares = urls_share_list
+                        shares_received = urls_share_list,
+                        //urls = all_received_urls,
+                        urls = urls_share_list.SelectMany(p => p.urls).ToList(),
                     });
                 }
             }
-            return shares.ToList();
+            return ret.ToList();
         }
-
-
 
         private static List<UserUrlInfo> GetUserUrlInfos_ForTopic(long user_id, long? term_id, ConcurrentDictionary<long, List<term>> urls_terms)
         {
@@ -574,14 +587,15 @@ namespace mm_svc
             }
         }
 
-        private static List<Homepage.OwnInfo.ShareIssuedInfo> FindAcceptSharedFromUser(user me)
+        private static List<ShareIssuedInfo> FindAcceptSharedFromUser(user me)
         {
             using (var db = mm02Entities.Create()) {
                 var shares = db.share_active.AsNoTracking()
                                .Include("share").Include("user").Include("share.term")
                                .Where(p => p.share.source_user_id == me.id)
                                .ToListNoLock();
-                return shares.Select(p => new Homepage.OwnInfo.ShareIssuedInfo() {
+                return shares.Select(p => new ShareIssuedInfo() {
+                    share_id = p.share.id,
                     user_id = p.user_id,
                     email = p.user.email,
                     avatar = p.user.avatar,

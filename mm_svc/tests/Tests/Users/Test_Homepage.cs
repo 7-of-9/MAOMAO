@@ -13,9 +13,18 @@ namespace tests
     public class Test_Homepage
     {
         [TestMethod]
-        public void Homepage_Test0()
-        {
-            var ret = UserHomepage.Get(112);
+        public void Homepage_Test_Both_NoPagination() {
+            var ret = UserHomepage.Get(user_id: 281, page_num: null, per_page: 0, get_own: true, get_friends: true);
+        }
+
+        [TestMethod]
+        public void Homepage_Test_Both_Pagination() {
+            var ret = UserHomepage.Get(user_id: 281, page_num: 1, per_page: 10, get_own: true, get_friends: true);
+        }
+
+        [TestMethod]
+        public void Homepage_Test_One_Pagination() {
+            var ret = UserHomepage.Get(user_id: 281, page_num: 0, per_page: 50, get_own: true, get_friends: false);
         }
     }
 }

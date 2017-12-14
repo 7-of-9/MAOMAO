@@ -46,4 +46,38 @@ namespace mm_svc
 
         public long source_user_id;
     }
+
+    public class ShareIssuedInfo { // todo: refactor w/ ShareReceivedInfo / ShareInfoReturn
+
+        public long share_id;
+
+        public long user_id;  
+        public string share_code;
+        public string email;
+        public string fullname;
+        public string avatar;
+
+        public long? url_id;
+        public long? topic_id;
+        public string topic_name;
+        public bool share_all;
+
+        public bool source_user_deactivated;
+        public bool target_user_deactivated;
+    }
+
+    public class ShareReceivedInfo {
+        public long share_id;
+
+        public string type;
+        public string topic_name;
+        public string share_code;
+
+        [NonSerialized] // perf: full unpaginated urls - internal use: don't want to serialize back to client
+        public List<UserUrlInfo> urls;  
+
+        public bool source_user_deactivated;
+        public bool target_user_deactivated;
+    }
+
 }

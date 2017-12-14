@@ -22,20 +22,21 @@ namespace mmapi00.Controllers
             return Ok( new { removed_count = removed } );
         }
 
-        [Route("disc/root")]
-        [HttpGet]
-        [CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 1)] // only server cache, so we can invalidate
-        public IHttpActionResult DiscoveryUser_Root(long user_id, string hash,
-            int page_num = 0, int per_page = 60, string country = null, string city = null)
-        {
-            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+        //[Route("disc/root")]
+        //[HttpGet]
+        //[CacheOutput(ClientTimeSpan = 0, ServerTimeSpan = 60 * 60 * 1)] // only server cache, so we can invalidate
+        //    public IHttpActionResult DiscoveryUser_Root(long user_id, string hash,
+        //        int page_num = 0, int per_page = 60, string country = null, string city = null)
+        //{
+        //    if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
 
-            var ret = new {
-                  locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities(),
-                discoveries = mm_svc.Discovery.FetchDiscoveries.GetForUser(user_id, page_num, per_page: per_page, country: country, city: city),
-            };
-            return Ok(ret);
-        }
+        //    var ret = new {
+        //          locations = mm_svc.Discovery.FetchDiscoveries.GetCountryCities(),
+        //        discoveries = mm_svc.Discovery.FetchDiscoveries.GetForUser(
+        //            user_id, page_num, per_page: per_page, country: country, city: city),
+        //    };
+        //    return Ok(ret);
+        //}
 
         [Route("disc/term")]
         [HttpGet]
