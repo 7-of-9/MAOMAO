@@ -26,7 +26,7 @@ namespace tests
         [TestMethod]
         public void GetSingleUrlShare_Test0()
         {
-            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id: 281, share_code: "baec26f9");
+            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id: 281, share_code: "baec26f9", url_id: null);
         }
     }
 }

@@ -152,16 +152,19 @@ namespace mmapi00.Controllers
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
-        /// <param name="share_code"></param>
+        /// <param name="share_code">If populated, url_id should be null.</param>
+        /// <param name="url_id">If populated, share_code should be null.</param>
         /// <returns></returns>
         [Route("share/url")] [HttpGet]
         public IHttpActionResult GetSingleItemShare(
             long user_id, string hash,
-            string share_code)
+            string share_code, long? url_id)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+            if (!string.IsNullOrEmpty(share_code) && url_id != null) return BadRequest();
+            if (string.IsNullOrEmpty(share_code) && url_id == null) return BadRequest();
 
-            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id, share_code);
+            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id, share_code, url_id);
 
             return Ok(new { url_share = data });
         }

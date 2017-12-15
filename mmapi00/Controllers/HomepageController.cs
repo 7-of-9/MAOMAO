@@ -63,6 +63,7 @@ namespace mmapi00.Controllers
                 filter_user_id: filter_friend_id, filter_term_id: filter_topic_id);
             return Ok( new { received = data.received,
                         urls_received = data.urls_received,
+                             has_more = ((page_num * per_page) + per_page) < data.urls_received_total,
                                topics = data.topics });
         }
 
@@ -85,7 +86,8 @@ namespace mmapi00.Controllers
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             var data = mm_svc.UserHomepage.Get(user_id, page_num, per_page, get_own: true, get_friends: false);
             return Ok(new { mine = data.mine,
-                       urls_mine = data.urls_mine,
+                       urls_mine = data.urls_mine,     
+                        has_more = ((page_num * per_page) + per_page) < data.urls_mine_total,
                           topics = data.topics });
         }
 

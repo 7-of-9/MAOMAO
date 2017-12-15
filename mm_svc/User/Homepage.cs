@@ -28,6 +28,7 @@ namespace mm_svc
             }
             public OwnInfo mine;
             public List<UserUrlInfo> urls_mine;     // my urls: with pagination
+            public int urls_mine_total;
 
             public class OthersInfo {
                 public string email;
@@ -42,6 +43,7 @@ namespace mm_svc
             }
             public List<OthersInfo> received;       // all received shares; no pagination
             public List<UserUrlInfo> urls_received; // urls received: with pagination
+            public int urls_received_total;
 
             public List<TopicInfo> topics;
         }
@@ -96,6 +98,9 @@ namespace mm_svc
                     Debug.WriteLine($"get_friends = {sw.ElapsedMilliseconds}ms");
                 }
 
+                ret.urls_mine_total = ret.urls_mine.Count;
+                ret.urls_received_total = ret.urls_received.Count;
+
                 // perf: optionally paginate mine/received urls;
                 if (page_num != null) {
                     if (ret.urls_mine != null)
@@ -121,14 +126,18 @@ namespace mm_svc
         }
 
         // used by single-item-share new user homepage, when signed in we need to be able to query url info for immediate presentation
-        public static UserUrlInfo GetSingleShareUrl(long user_id, string share_code)
+        public static UserUrlInfo GetSingleShareUrl(long user_id, string share_code, long? url_id)
         {
             using (var db = mm02Entities.Create()) {
                 // expect exactly one accepted share for the single-item 
-                var received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
-                                       .Where(p => p.user_id == user_id
-                                                && p.share.share_code == share_code)
-                                       .SingleOrDefaultNoLock();
+                share_active received_share;
+                if (!string.IsNullOrEmpty(share_code))
+                    received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
+                                        .Where(p => p.user_id == user_id && p.share.share_code == share_code).SingleOrDefaultNoLock();
+                else if (url_id != null)
+                    received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
+                                        .Where(p => p.user_id == user_id && p.share.url_id == url_id).SingleOrDefaultNoLock();
+                else throw new ApplicationException("share_code or url_id must be supplied");
 
                 if (received_share.share.share_all || received_share.share.topic_id != null || received_share.share.url_id == null)
                     throw new ApplicationException("expected single-item url share; got something else.");
