@@ -24,7 +24,12 @@ namespace tests
 
         [TestMethod]
         public void Homepage_Test_One_Pagination() {
-            var ret = UserHomepage.Get(user_id: 281, page_num: 0, per_page: 50, get_own: true, get_friends: false);
+            var ret = UserHomepage.Get(user_id: 281, page_num: 0, per_page: 50, get_own: false, get_friends: true);
+            var flattened = ret.received.SelectMany(p => p.shares_received);
+
+            var share_id = ret.urls_received[0].from_share_id;
+            var test = flattened.Single(p => p.share_id == share_id); // no pointer to parent share orginator
+            var test2 = ret.received.Where(p => p.shares_received.Any(p2 => p2.share_id == share_id));
         }
     }
 }

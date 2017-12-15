@@ -17,6 +17,7 @@ namespace mm_svc.Discovery
 
         [NonSerialized]
         public term main_term;
+
         public string main_term_name; 
         public long main_term_id;
         //public string main_term_img; 
@@ -25,6 +26,7 @@ namespace mm_svc.Discovery
 
         [NonSerialized]
         public term sub_term;
+
         public string sub_term_name; 
         public long? sub_term_id;
         //public string sub_term_img; 

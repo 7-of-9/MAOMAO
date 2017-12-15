@@ -96,15 +96,6 @@ namespace mm_svc
                     Debug.WriteLine($"get_friends = {sw.ElapsedMilliseconds}ms");
                 }
 
-                // get topic infos for all urls (no pagination)
-                List<UserUrlInfo> both_url_infos = null;
-                if (ret.urls_mine != null && ret.urls_received != null) ret.urls_mine.Union(ret.urls_received).ToList();
-                else both_url_infos = ret.urls_mine ?? ret.urls_received;
-
-                var both_url_ids = both_url_infos.Select(p => p.url_id).ToList();
-                ret.topics = GetTopicInfos_ForUserUrls(both_url_ids, both_url_infos, urls_terms);
-                Debug.WriteLine($"GetTopicInfos = {sw.ElapsedMilliseconds}ms");
-
                 // perf: optionally paginate mine/received urls;
                 if (page_num != null) {
                     if (ret.urls_mine != null)
@@ -113,6 +104,15 @@ namespace mm_svc
                     if (ret.urls_received != null)
                         ret.urls_received = ret.urls_received.OrderByDescending(p => p.hit_utc).Skip((int)page_num * per_page).Take(per_page).ToList();
                 }
+
+                // get topic list after pagination
+                List<UserUrlInfo> both_url_infos = null;
+                if (ret.urls_mine != null && ret.urls_received != null) both_url_infos = ret.urls_mine.Union(ret.urls_received).ToList();
+                else both_url_infos = ret.urls_mine ?? ret.urls_received;
+
+                var both_url_ids = both_url_infos.Select(p => p.url_id).ToList();
+                ret.topics = GetTopicInfos_ForUserUrls(both_url_ids, both_url_infos, urls_terms);
+                Debug.WriteLine($"GetTopicInfos = {sw.ElapsedMilliseconds}ms");
             }
 
             var ms = sw.ElapsedMilliseconds;
