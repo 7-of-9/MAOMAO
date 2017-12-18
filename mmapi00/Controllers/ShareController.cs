@@ -158,13 +158,15 @@ namespace mmapi00.Controllers
         [Route("share/url")] [HttpGet]
         public IHttpActionResult GetSingleItemShare(
             long user_id, string hash,
-            string share_code, long? url_id)
+            string share_code = null, long? url_id = null)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
             if (!string.IsNullOrEmpty(share_code) && url_id != null) return BadRequest();
             if (string.IsNullOrEmpty(share_code) && url_id == null) return BadRequest();
 
             var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id, share_code, url_id);
+            if (data == null)
+                return NotFound();
 
             return Ok(new { url_share = data });
         }

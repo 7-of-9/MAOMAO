@@ -98,16 +98,17 @@ namespace mm_svc
                     Debug.WriteLine($"get_friends = {sw.ElapsedMilliseconds}ms");
                 }
 
-                ret.urls_mine_total = ret.urls_mine.Count;
-                ret.urls_received_total = ret.urls_received.Count;
-
                 // perf: optionally paginate mine/received urls;
                 if (page_num != null) {
-                    if (ret.urls_mine != null)
+                    if (ret.urls_mine != null) {
+                        ret.urls_mine_total = ret.urls_mine.Count;
                         ret.urls_mine = ret.urls_mine.OrderByDescending(p => p.hit_utc).Skip((int)page_num * per_page).Take(per_page).ToList();
+                    }
 
-                    if (ret.urls_received != null)
+                    if (ret.urls_received != null) {
+                        ret.urls_received_total = ret.urls_received.Count;
                         ret.urls_received = ret.urls_received.OrderByDescending(p => p.hit_utc).Skip((int)page_num * per_page).Take(per_page).ToList();
+                    }
                 }
 
                 // get topic list after pagination
@@ -138,6 +139,8 @@ namespace mm_svc
                     received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
                                         .Where(p => p.user_id == user_id && p.share.url_id == url_id).SingleOrDefaultNoLock();
                 else throw new ApplicationException("share_code or url_id must be supplied");
+                if (received_share == null)
+                    return null;
 
                 if (received_share.share.share_all || received_share.share.topic_id != null || received_share.share.url_id == null)
                     throw new ApplicationException("expected single-item url share; got something else.");

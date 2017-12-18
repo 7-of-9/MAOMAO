@@ -22,7 +22,8 @@ namespace mmapi00.Controllers
 
             int n = mm_svc.UserTopics.AddUserTopics(user_id, topic_ids);
 
-            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            //var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.homepagecontroller-gethome_discovery-user_id={user_id}");
             return Ok(new { added = n, caches_invalidated = removed });
         }
 
@@ -37,7 +38,8 @@ namespace mmapi00.Controllers
 
             mm_svc.UserTopics.RemoveUserTopic(user_id, topic_id);
 
-            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            //var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.discoverycontroller-discoveryuser_root-user_id={user_id}");
+            var removed = this.RemoveCacheKeys_2($"mmapi00.controllers.homepagecontroller-gethome_discovery-user_id={user_id}");
             return Ok( new { caches_invalidated = removed });
         }
 
