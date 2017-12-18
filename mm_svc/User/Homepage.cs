@@ -127,18 +127,33 @@ namespace mm_svc
         }
 
         // used by single-item-share new user homepage, when signed in we need to be able to query url info for immediate presentation
-        public static UserUrlInfo GetSingleShareUrl(long user_id, string share_code, long? url_id)
-        {
+        public static UserUrlInfo GetSingleShareUrl_By_ShareCode(long target_user_id, string share_code) {
             using (var db = mm02Entities.Create()) {
                 // expect exactly one accepted share for the single-item 
-                share_active received_share;
-                if (!string.IsNullOrEmpty(share_code))
-                    received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
-                                        .Where(p => p.user_id == user_id && p.share.share_code == share_code).SingleOrDefaultNoLock();
-                else if (url_id != null)
-                    received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
-                                        .Where(p => p.user_id == user_id && p.share.url_id == url_id).SingleOrDefaultNoLock();
-                else throw new ApplicationException("share_code or url_id must be supplied");
+                var received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
+                                        .Where(p => p.user_id == target_user_id 
+                                                 && p.share.share_code == share_code)
+                                        .SingleOrDefaultNoLock();
+                if (received_share == null)
+                    return null;
+
+                if (received_share.share.share_all || received_share.share.topic_id != null || received_share.share.url_id == null)
+                    throw new ApplicationException("expected single-item url share; got something else.");
+
+                var urls_terms = new ConcurrentDictionary<long, List<term>>();
+                return GetUserUrlInfos_ForSingleUrl((long)received_share.share.url_id, received_share.share.source_user_id, urls_terms);
+            }
+        }
+
+        // also used during logged-in flow to get share data for single-item share by url_id & known ori
+        public static UserUrlInfo GetSingleShareUrl_By_Url_Source_Target(long target_user_id, long source_user_id, long url_id) {
+            using (var db = mm02Entities.Create()) {
+                // expect exactly one accepted share for the single-item 
+                var received_share = db.share_active.Include("share").Include("share.term").AsNoTracking()
+                                        .Where(p => p.user_id == target_user_id 
+                                                 && p.share.source_user_id == source_user_id
+                                                 && p.share.url_id == url_id)
+                                        .SingleOrDefaultNoLock();
                 if (received_share == null)
                     return null;
 

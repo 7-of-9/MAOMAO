@@ -152,22 +152,37 @@ namespace mmapi00.Controllers
         /// </summary>
         /// <param name="user_id"></param>
         /// <param name="hash"></param>
-        /// <param name="share_code">If populated, url_id should be null.</param>
-        /// <param name="url_id">If populated, share_code should be null.</param>
+        /// <param name="share_code">The share code of the single-item share.</param>
         /// <returns></returns>
         [Route("share/url")] [HttpGet]
         public IHttpActionResult GetSingleItemShare(
             long user_id, string hash,
-            string share_code = null, long? url_id = null)
+            string share_code)
         {
             if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
-            if (!string.IsNullOrEmpty(share_code) && url_id != null) return BadRequest();
-            if (string.IsNullOrEmpty(share_code) && url_id == null) return BadRequest();
+            var data = mm_svc.UserHomepage.GetSingleShareUrl_By_ShareCode(user_id, share_code);
+            if (data == null) return NotFound();
+            return Ok(new { url_share = data });
+        }
 
-            var data = mm_svc.UserHomepage.GetSingleShareUrl(user_id, share_code, url_id);
-            if (data == null)
-                return NotFound();
-
+        /// <summary>
+        /// Returns a single-item url share
+        /// Expects only a single-item url share to be supplied; will throw if any other type of share is supplied.
+        /// </summary>
+        /// <param name="user_id"></param>
+        /// <param name="hash"></param>
+        /// <param name="url_id">The url_id of the single-item share.</param>
+        /// <param name="source_user_id">The user_id of the friend who shared you the single-item.</param>
+        /// <returns></returns>
+        [Route("share/url")]
+        [HttpGet]
+        public IHttpActionResult GetSingleItemShare(
+            long user_id, string hash,
+            long url_id, long source_user_id)
+        {
+            if (!UserAuth.Ok(user_id, hash)) return Unauthorized();
+            var data = mm_svc.UserHomepage.GetSingleShareUrl_By_Url_Source_Target(user_id, source_user_id, url_id);
+            if (data == null) return NotFound();
             return Ok(new { url_share = data });
         }
     }
