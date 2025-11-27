@@ -875,7 +875,7 @@ collation    : SQL_Latin1_General_CP1_CI_AS
 servertype   : New SQL Database Server
 servername   : r040tvt2gx
 user         : dbuser
-password     : REDACTED_PASSWORD
+password   : REDACTED_PASSWORD
 location     : West US
 
 PS C:\> Add-AzureSQLDatabase -DatabaseConfig $DatabaseConfig
